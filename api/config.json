@@ -1,0 +1,28 @@
+{
+    "apiVerson" : 1,
+	"systemTimeZone" : "America/Los_Angeles",
+	"defaultOutputType" : "JSON",
+	"xmlRootNode" : "XML",
+	"requestLimitPerHour" : 1000,
+	"correctLimitLockPass" : "sekret",
+	"rollbackPhrase" : "sekret",
+	
+	"serverAddress" : "127.0.0.1",
+	"serverPort" : 8080,
+	"serverName" : "daveAPIServer",
+	
+	"logging" : "true",
+	"logFolder" : "./log/",
+	"logFile" : "api.log",
+	"logTable" : "log",
+	
+	"dbType" : "MYSQL",
+	"tableConfigFile" : "db/schema.json",
+	"tableConfigRefreshTime" : 10,	
+    "database" : {
+        "host" : "127.0.0.1",
+		"db" : "daveapi",
+		"name" : "root",
+		"password" : null
+    }
+}
