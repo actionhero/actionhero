@@ -1,5 +1,4 @@
-var api = api = api || {}; // the main namespace for future methods
-
+var api = api = api || {}; // the api namespace.  Everything uses this.
 ////////////////////////////////////////////////////////////////////////////
 // Global Includes
 
@@ -11,27 +10,25 @@ api.fs = require("fs");
 
 ////////////////////////////////////////////////////////////////////////////
 // Init
-var app = require('express').createServer();
+api.app = require('express').createServer();
 api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8')); 
-api.utils = require("./utils.js").utils; // api.log() method
-api.log = require("./logger.js").log; // api.log() method
-try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {} // ensure the logging directory exists
+
+api.utils = require("./utils.js").utils;
+api.log = require("./logger.js").log;
+api.build_response = require("./response.js").build_response; 
+
+// ensure the logging directory exists
+try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 
 console.log("*** Server Started @ " + api.utils.sqlDateTime() + " ***");
-app.listen(api.configData.serverPort);
+api.app.listen(api.configData.serverPort);
 
-app.get('/', function(req, res){
-  res.send(build_resp());
-});
-
-
-
-function build_resp()
-{
-	var resp = "";
-	resp = resp + "Hello World!\r\n";
-	resp = resp + Math.random();
-	api.log("!");
+////////////////////////////////////////////////////////////////////////////
+// Request Processing
+api.app.get('/', function(req, res, next){
+	api.response = {}; // the data returned from the API
+	api.response.random = Math.random();
+	api.timer = {}; api.timer.startTime = new Date().getTime();
 	
-	return resp; 
-}
+  	res.send(api.build_response());
+});
