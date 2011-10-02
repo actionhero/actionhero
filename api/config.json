@@ -27,5 +27,11 @@
 		"db" : "daveapi",
 		"name" : "root",
 		"password" : null
-    }
+    },
+
+	"postVariables" : [
+		"action",
+		"upperLimit",
+		"lowerLimit"
+	]
 }
