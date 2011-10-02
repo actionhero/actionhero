@@ -19,16 +19,17 @@ api.build_response = require("./response.js").build_response;
 
 // ensure the logging directory exists
 try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
-
-console.log("*** Server Started @ " + api.utils.sqlDateTime() + " ***");
+api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ port " + api.configData.serverPort + " ***");
 api.app.listen(api.configData.serverPort);
 
 ////////////////////////////////////////////////////////////////////////////
 // Request Processing
 api.app.get('/', function(req, res, next){
+	api.timer = {};
+	api.timer.startTime = new Date().getTime();
+	
 	api.response = {}; // the data returned from the API
 	api.response.random = Math.random();
-	api.timer = {}; api.timer.startTime = new Date().getTime();
 	
   	res.send(api.build_response());
 });
