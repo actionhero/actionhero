@@ -22,4 +22,18 @@ utils.padDateDoubleStr = function(i)
     return (i < 10) ? "0" + i : "" + i;
 };
 
+utils.sleep = function ZZzzzZZzzzzzzZZZz(naptime)
+{
+	naptime = naptime * 1000;
+	var sleeping = true;
+	var now = new Date();
+	var alarm;
+	var startingMSeconds = now.getTime();
+	while(sleeping){
+	    alarm = new Date();
+	    alarmMSeconds = alarm.getTime();
+	    if(alarmMSeconds - startingMSeconds > naptime){ sleeping = false; }
+	}        
+}
+
 exports.utils = utils;

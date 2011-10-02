@@ -16,6 +16,9 @@
 	"logFile" : "api.log",
 	"logTable" : "log",
 	
+	"cronProcess" : true,
+	"cronTimeInterval" : 60000,
+	
 	"dbType" : "MYSQL",
 	"tableConfigFile" : "db/schema.json",
 	"tableConfigRefreshTime" : 10,	
