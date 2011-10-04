@@ -14,7 +14,9 @@
 	"logging" : "true",
 	"logFolder" : "./log/",
 	"logFile" : "api.log",
+	"maxLogFileSize" : "10485760",
 	"logTable" : "log",
+	"logRequests" : true,
 	
 	"cronProcess" : true,
 	"cronTimeInterval" : 60000,

@@ -25,11 +25,11 @@ api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
 
 api.utils = require("./utils.js").utils;
 api.log = require("./logger.js").log;
+api.tasks = require("./tasks.js").tasks;
 api.build_response = require("./response.js").build_response; 
 
 // ensure the logging directory exists
 try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
-api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ port " + api.configData.serverPort + " ***");
 api.app.listen(api.configData.serverPort);
 
 ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ api.app.listen(api.configData.serverPort);
 api.postVariables = api.configData.postVariables || [];
 
 ////////////////////////////////////////////////////////////////////////////
-// populate actions
+// populate actions & Tasks
 api.actions = {};
 api.actionsArray = [];
 api.fs.readdirSync("./actions").forEach( function(file) {
@@ -56,8 +56,10 @@ if (api.configData.cronProcess)
 {
 	api.processCron = require("./cron.js").processCron;
 	api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
-	api.log("cron interval set to process evey " + api.configData.cronTimeInterval + "ms");
+	api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms");
 }
+
+api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ port " + api.configData.serverPort + " ***");
 
 ////////////////////////////////////////////////////////////////////////////
 // Request Processing
@@ -73,6 +75,8 @@ api.app.get('/', function(req, res, next){
 		api.params[postVar] = req.param(postVar);
 		if (api.params[postVar] === undefined){ api.params[postVar] = req.cookies[postVar]; }
 	});
+	
+	if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
 		
 	// process
 	api.action = undefined;
@@ -94,5 +98,7 @@ api.app.get('/', function(req, res, next){
 	}
 	
 	// response
-  	res.send(api.build_response(res));
+	var response = api.build_response(res);
+  	res.send(response);
+	if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
 });

@@ -2,7 +2,8 @@ function processCron(api)
 {
 	api.log("* periodic cron tasks starting now *");
 	
-	//
+	// run all tasks every time
+	for(var task in api.tasks){if (task != "Task"){api.tasks[task](api);}}
 	
 	api.log("* periodic cron tasks comple. see you again in " + api.configData.cronTimeInterval + "ms *");
 	if(api.cronTimer) { clearTimeout(api.cronTimer); }

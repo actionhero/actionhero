@@ -1,7 +1,7 @@
 function build_response(res)
 {	
 	this.response = this.response || {};
-	
+		
 	// serverInformation information
 	this.response.serverInformation = {};
 	this.response.serverInformation.serverName = this.configData.serverName
