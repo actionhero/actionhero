@@ -1,7 +1,7 @@
 var tasks = {};
 
 ////////////////////////////////////////////////////////////////////////////
-// generic task
+// generic task prototype
 tasks.Task = { 
 	// prototypical params a task should have
 	"defaultParams" : {
@@ -15,7 +15,10 @@ tasks.Task = {
 	},
 	end: function () {
 		this.api.log("completed task: " + this.params.name);
-	}		
+	},		
+	run: function() {
+		//
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -27,25 +30,26 @@ tasks.cleanLogFiles = function(api) {
 	};
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params);
-	
-	var logs = [
-		(api.configData.logFolder + "/" + api.configData.logFile)
-	];
-	
-	logs.forEach(function(log){
-		api.path.exists(log, function (exists){
-			if(exists)
-			{
-				size = api.fs.statSync(log).size;
-				if(size >= api.configData.maxLogFileSize)
+	task.run = function() {
+		var logs = [
+			(api.configData.logFolder + "/" + api.configData.logFile)
+		];
+
+		logs.forEach(function(log){
+			api.path.exists(log, function (exists){
+				if(exists)
 				{
-					api.log(log + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.")
-					api.fs.unlinkSync(log);
+					size = api.fs.statSync(log).size;
+					if(size >= api.configData.maxLogFileSize)
+					{
+						api.log(log + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.")
+						api.fs.unlinkSync(log);
+					}
 				}
-			}
+			});
 		});
-	});
-	
+	};
+	task.run();
 	task.end();
 };
 
