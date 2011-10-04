@@ -21,14 +21,14 @@
 	"cronProcess" : true,
 	"cronTimeInterval" : 60000,
 	
-	"dbType" : "MYSQL",
-	"tableConfigFile" : "db/schema.json",
-	"tableConfigRefreshTime" : 10,	
     "database" : {
+		"dbType" : "MYSQL",
         "host" : "127.0.0.1",
-		"db" : "daveapi",
-		"name" : "root",
-		"password" : null
+		"database" : "dave_api",
+		"username" : "root",
+		"password" : null,
+		"port" : "3306",
+		"consoleLogging" : false
     },
 
 	"postVariables" : [
