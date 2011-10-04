@@ -102,46 +102,58 @@ function initListen(api)
 		api.timer.startTime = new Date().getTime();
 		api.response = {}; // the data returned from the API
 		api.error = false; 	// errors and requst state
-	
-		//params & cookies
-		api.params = {};
-		api.postVariables.forEach(function(postVar){
-			api.params[postVar] = req.param(postVar);
-			if (api.params[postVar] === undefined){ api.params[postVar] = req.cookies[postVar]; }
-		});
-	
-		if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
 		
-		// process
-		api.action = undefined;
-		if(api.params["action"] == undefined)
-		{
-			api.error = "You must provide an action. Use action=describeActions to see a list."
-		}
-		else
-		{
-			if(api.actions[api.params["action"]] != undefined)
+		//requset limit
+		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", req.connection.remoteAddress]}).on('success', function(requestThisHourSoFar) {
+			api.requestCounter = requestThisHourSoFar + 1;
+			//params & cookies
+			api.params = {};
+			api.postVariables.forEach(function(postVar){
+				api.params[postVar] = req.param(postVar);
+				if (api.params[postVar] === undefined){ api.params[postVar] = req.cookies[postVar]; }
+			});
+
+			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
+
+			if(api.requestCounter <= api.configData.apiRequestLimit)
 			{
-				api.action = api.params["action"];
-				api.actions[api.action](api);
+				// normal processing
+				api.action = undefined;
+				if(api.params["action"] == undefined)
+				{
+					api.error = "You must provide an action. Use action=describeActions to see a list."
+				}
+				else
+				{
+					if(api.actions[api.params["action"]] != undefined)
+					{
+						api.action = api.params["action"];
+						api.actions[api.action](api);
+					}
+					else
+					{
+						api.error = "That is not a known action. Use action=describeActions to see a list."
+					}
+				}
 			}
-			else
+			else // over rate limit for this hour
 			{
-				api.error = "That is not a known action. Use action=describeActions to see a list."
+				api.requestCounter = api.configData.apiRequestLimit;
+				api.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour."
 			}
-		}
-	
-		// response
-		var response = api.build_response(res);
-	  	res.send(response);
-		if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
-		var logRecord = api.models.log.build({
-			ip: req.connection.remoteAddress,
-			action: api.action,
-			error: api.error,
-			params: JSON.stringify(api.params)
-		});
-		logRecord.save();
+
+			// response
+			var response = api.build_response(res);
+		  	res.send(response);
+			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
+			var logRecord = api.models.log.build({
+				ip: req.connection.remoteAddress,
+				action: api.action,
+				error: api.error,
+				params: JSON.stringify(api.params)
+			});
+			logRecord.save();
+		})
 	});
 }
 

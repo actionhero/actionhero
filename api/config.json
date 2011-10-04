@@ -31,6 +31,8 @@
 		"consoleLogging" : false
     },
 
+	"apiRequestLimit" : 1000,
+
 	"postVariables" : [
 		"action",
 		"upperLimit",
