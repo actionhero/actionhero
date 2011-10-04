@@ -2,10 +2,15 @@
 // DAVE API Framweork in node.js
 // Evan Tahler @ Fall 2011
 
-var api = api = api || {}; // the api namespace.  Everything uses this.
+////////////////////////////////////////////////////////////////////////////
+// Force NPM to be update... you probably don't want this in production
+// exec = require('child_process').exec
+// exec("npm update");
 
 ////////////////////////////////////////////////////////////////////////////
 // Init
+
+var api = api = api || {}; // the api namespace.  Everything uses this.
 
 api.sys = require("sys"),
 api.http = require("http"),

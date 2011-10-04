@@ -1,1 +1,4 @@
 api/log/*
+api/node_modules/*
+api/.DS_Store
+.DS_Store
