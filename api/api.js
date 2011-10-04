@@ -26,6 +26,7 @@ api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
 api.utils = require("./utils.js").utils;
 api.log = require("./logger.js").log;
 api.tasks = require("./tasks.js").tasks;
+for(var task in api.tasks){if (task != "Task"){api.log("task loaded: "+task)}}
 api.build_response = require("./response.js").build_response; 
 
 // ensure the logging directory exists
