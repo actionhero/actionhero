@@ -54,5 +54,25 @@ tasks.cleanLogFiles = function(api) {
 };
 
 ////////////////////////////////////////////////////////////////////////////
+// cleaning old log entries
+tasks.cleanTaskDB = function(api) {
+	var params = {
+		"name" : "Clean Task DB",
+		"desc" : "I will remove old entires from the log DB."
+	};
+	var task = Object.create(api.tasks.Task);
+	task.init(api, params);
+	task.run = function() {
+		api.models.log.findAll({where: ["createdAt < (NOW() - INTERVAL 2 HOUR)"]}).on('success', function(old_logs) {
+			old_logs.forEach(function(log){
+				log.destroy();
+			});
+		});
+	};
+	task.run();
+	task.end();
+};
+
+////////////////////////////////////////////////////////////////////////////
 // Export
 exports.tasks = tasks;

@@ -115,7 +115,7 @@ function initListen(api)
 
 			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
 
-			if(api.requestCounter <= api.configData.apiRequestLimit)
+			if(api.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
 			{
 				// normal processing
 				api.action = undefined;
