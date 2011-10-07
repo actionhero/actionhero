@@ -65,6 +65,11 @@ function initDB(api)
 function initPostVariables(api)
 {
 	api.postVariables = api.configData.postVariables || [];
+	for(var model in api.models){
+		for(var attr in api.models[model].rawAttributes){
+			api.postVariables.push(attr);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
