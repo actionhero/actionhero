@@ -11,6 +11,7 @@ function build_response(res)
 	this.response.requestorInformation = {};
 	this.response.requestorInformation.remoteAddress = res.connection.remoteAddress;
 	this.response.requestorInformation.RequestsRemaining = this.configData.apiRequestLimit - this.requestCounter;
+	this.response.requestorInformation.recievedParams = this.params;
 	
 	// request timer
 	this.timer.stopTime = new Date().getTime();

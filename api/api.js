@@ -102,18 +102,17 @@ function initCron(api)
 // Request Processing
 function initListen(api)
 {
-	api.app.get('/', function(req, res, next){
+	api.app.all('/*', function(req, res, next){
 		api.timer = {};
 		api.timer.startTime = new Date().getTime();
 		api.req = req;
 		api.res = res;
 		api.response = {}; // the data returned from the API
 		api.error = false; 	// errors and requst state
-		
-		//requset limit
+				
 		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.req.connection.remoteAddress]}).on('success', function(requestThisHourSoFar) {
 			api.requestCounter = requestThisHourSoFar + 1;
-			//params & cookies
+
 			api.params = {};
 			api.postVariables.forEach(function(postVar){
 				api.params[postVar] = api.req.param(postVar);
@@ -124,10 +123,14 @@ function initListen(api)
 
 			if(api.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
 			{
-				// normal processing
 				api.action = undefined;
 				if(api.params["action"] == undefined)
 				{
+					api.params["action"] = api.req.params[0];
+				}
+				if(api.params["action"] == undefined)
+				{
+		
 					api.error = "You must provide an action. Use action=describeActions to see a list.";
 					api.respondToClient();
 				}
@@ -145,7 +148,7 @@ function initListen(api)
 					}
 				}
 			}
-			else // over rate limit for this hour
+			else
 			{
 				api.requestCounter = api.configData.apiRequestLimit;
 				api.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";

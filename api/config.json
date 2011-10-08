@@ -28,7 +28,7 @@
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
-		"consoleLogging" : true
+		"consoleLogging" : false
     },
 
 	"cache" : {
