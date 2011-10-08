@@ -17,7 +17,7 @@ function cacheTest(api, next)
 				api.response.cacheTestResults.loadResp = resp;
 				api.cache.destroy(api,key, function(resp){
 					api.response.cacheTestResults.deleteResp = resp;
-					next();
+					next(true);
 				});
 			});
 		});
@@ -25,7 +25,7 @@ function cacheTest(api, next)
 	}
 	else
 	{
-		next();
+		next(true);
 	}
 };
 

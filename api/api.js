@@ -126,7 +126,7 @@ function initListen(api)
 				api.action = undefined;
 				if(api.params["action"] == undefined)
 				{
-					api.params["action"] = api.req.params[0];
+					api.params["action"] = api.req.params[0].split("/")[0];
 				}
 				if(api.params["action"] == undefined)
 				{
@@ -160,9 +160,12 @@ function initListen(api)
 
 function initResponse(api)
 {
-	api.respondToClient = function(){
+	api.respondToClient = function(cont){
 		var response = api.build_response(api.res);
-	  	api.res.send(response);
+		if(cont != false)
+		{
+	  		api.res.send(response);
+		}
 		if(api.configData.logRequests){api.log("request from " + api.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
 		var logRecord = api.models.log.build({
 			ip: api.req.connection.remoteAddress,
