@@ -103,7 +103,7 @@ tasks.cleanOldSessionDB = function(api) {
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params);
 	task.run = function() {
-		api.models.session.findAll({where: ["updatedAt < (NOW() - INTERVAL 1 DAY)"]}).on('success', function(old_caches) {
+		api.models.session.findAll({where: ["updatedAt < (NOW() - INTERVAL " + api.configData.sessionDuration + " MICROSECOND)"]}).on('success', function(old_caches) {
 			old_caches.forEach(function(entry){
 				entry.destroy();
 			});
