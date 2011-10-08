@@ -109,8 +109,10 @@ function initListen(api)
 		api.res = res;
 		api.response = {}; // the data returned from the API
 		api.error = false; 	// errors and requst state
+		
+		api.remoteIP = api.res.connection.remoteAddress
 				
-		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.req.connection.remoteAddress]}).on('success', function(requestThisHourSoFar) {
+		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.remoteIP]}).on('success', function(requestThisHourSoFar) {
 			api.requestCounter = requestThisHourSoFar + 1;
 
 			api.params = {};

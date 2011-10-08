@@ -31,6 +31,8 @@
 		"consoleLogging" : false
     },
 
+	"flatFileDirectory" : "./public/",
+
 	"cache" : {
 		"defaultExpireTime" : "60000"
 	},

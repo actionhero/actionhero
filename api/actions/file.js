@@ -1,7 +1,7 @@
 function file(api, next)
 {
 	var fileName = api.params.fileName || api.req.params[0].split("/")[1];
-	fileName = "./public/" + fileName;
+	fileName = api.configData.flatFileDirectory + fileName;
 	api.path.exists(fileName, function(exists) {
 		if(exists)
 		{

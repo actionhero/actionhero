@@ -9,7 +9,7 @@ function build_response(res)
 	
 	// requestorInformation
 	this.response.requestorInformation = {};
-	this.response.requestorInformation.remoteAddress = res.connection.remoteAddress;
+	this.response.requestorInformation.remoteAddress = this.remoteIP;
 	this.response.requestorInformation.RequestsRemaining = this.configData.apiRequestLimit - this.requestCounter;
 	this.response.requestorInformation.recievedParams = this.params;
 	
