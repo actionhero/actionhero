@@ -16,6 +16,8 @@ function initRequires(api)
 	api.app.listen(api.configData.serverPort);
 }
 
+////////////////////////////////////////////////////////////////////////////
+// Init logging folder
 function initLogFolder(api)
 {
 	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
@@ -197,6 +199,11 @@ api.fs = require("fs");
 api.SequelizeBase = require("sequelize");
 api.expressServer = require('express');
 api.async = require('async');
+
+var templateValidator = require('validator').Validator;
+api.validator = new templateValidator();
+api.validator.error = function(msg){ api.error = msg; };
+
 api.app = api.expressServer.createServer();
 api.app.use(api.expressServer.cookieParser());
 api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));

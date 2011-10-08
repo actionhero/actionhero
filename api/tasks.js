@@ -74,5 +74,45 @@ tasks.cleanTaskDB = function(api) {
 };
 
 ////////////////////////////////////////////////////////////////////////////
+// cleaning old cache entries from DB
+tasks.cleanOldCacheDB = function(api) {
+	var params = {
+		"name" : "Clean cache DB",
+		"desc" : "I will clean old entires from the cache DB."
+	};
+	var task = Object.create(api.tasks.Task);
+	task.init(api, params);
+	task.run = function() {
+		api.models.cache.findAll({where: ["expireTime > NOW()"]}).on('success', function(old_caches) {
+			old_caches.forEach(function(entry){
+				entry.destroy();
+			});
+		});
+	};
+	task.run();
+	task.end();
+};
+
+////////////////////////////////////////////////////////////////////////////
+// cleaning old session entries from DB
+tasks.cleanOldSessionDB = function(api) {
+	var params = {
+		"name" : "Clean session DB",
+		"desc" : "I will clean old sessions from the session DB."
+	};
+	var task = Object.create(api.tasks.Task);
+	task.init(api, params);
+	task.run = function() {
+		api.models.session.findAll({where: ["updatedAt < (NOW() - INTERVAL 1 DAY)"]}).on('success', function(old_caches) {
+			old_caches.forEach(function(entry){
+				entry.destroy();
+			});
+		});
+	};
+	task.run();
+	task.end();
+};
+
+////////////////////////////////////////////////////////////////////////////
 // Export
 exports.tasks = tasks;
