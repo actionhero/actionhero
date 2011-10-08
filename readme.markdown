@@ -11,36 +11,6 @@ Dave will serve up flat files (html, images, etc) as well from your api/public f
 
 Dave also includes methods to run periodic tasks within your server (think built in cron tasks) which can process within the same appliaction which processes incomming events.  Hooray for the event queue!
 
-#### implamented up to here ^^^^^^^^
-
-The DAVE API understands 2 types of security methodology. "Public" actions can be called by anyone, and then can implement optional user-based security (checking userIDs and PasswordHashes?). Optionally, certain Actions can be defined as "Private", and will require a defined developer to authenticate with every request. This requires your developers to provide an MD5 hash of their APIKey and private DeveloperID to authenticate with. You can mix private and public actions.  Of course, you can make your own actions for this as well!
-
-Dave contains an end-to-end API test suite for TDD, a Task model, an Active Database Model, and a stand-alone development server (written in just PHP) to get you started.
-
-## Philosophical Questions
-If you have ever asked these questions of other web-frameworks, then DAVE might be the right fit for you:
-
-* Why do we really need a controller?
-* Why are linear actions so hidden in object abstraction?
-* Why can't I de-couple my M's, V's and C's?
-* Why can't my test suite use the real application?
-* Is there an option for a non-restFUL API?
-	
-## Features
-* Abstraction of basic DAVE (Delete, Add, Edit, View) actions
-* Active Database Modeling on-the-fly or fixed per your requirements
-* (optional) Objects for Database entities with DAVE abstraction
-* Built with a Multi-Node system in mind, but works great on a single machine as well
-* Developer-based authentication in tandem with user-level authentication
-* Rate Limiting for client connections
-* Class-based abstraction of mySQL connections
-* Built-in support for multiple types of Caching (Flat File, mySQL, memcache)
-* CRON processing of delayed events
-* Simple error handling and input sanitization
-* XML, JSON, Serialized PHP output types built in
-* Task Classes to automate periodic management and to ease development
-* End-to-end spec testing framework for the API including custom assertions
-
 ## Requirements
 * node.js server
 * npm
@@ -50,4 +20,6 @@ If you have ever asked these questions of other web-frameworks, then DAVE might 
 ...
 
 ## QuickStart
-...
+* brew install node
+* curl http://npmjs.org/install.sh | sudo sh
+* npm update
