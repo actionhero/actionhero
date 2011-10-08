@@ -4,21 +4,8 @@
 
 ////////////////////////////////////////////////////////////////////////////
 // Init
-function initRequires(api, next)
+function initRequires(api)
 {
-	// run me serially
-	api.sys = require("sys"),
-	api.http = require("http"),
-	api.url = require("url"),
-	api.path = require("path"),
-	api.fs = require("fs");
-	api.SequelizeBase = require("sequelize");
-	api.expressServer = require('express');
-	api.async = require('async');
-	api.app = api.expressServer.createServer();
-	api.app.use(api.expressServer.cookieParser());
-	api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8')); 
-
 	api.utils = require("./utils.js").utils;
 	api.log = require("./logger.js").log;
 	api.tasks = require("./tasks.js").tasks;
@@ -26,10 +13,12 @@ function initRequires(api, next)
 	for(var task in api.tasks){if (task != "Task"){api.log("task loaded: "+task)}}
 	api.build_response = require("./response.js").build_response; 
 
-	// ensure the logging directory exists
-	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 	api.app.listen(api.configData.serverPort);
-	next(api);
+}
+
+function initLogFolder(api)
+{
+	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -200,15 +189,27 @@ function initComplete(api)
 
 var api = api = api || {}; // the api namespace.  Everything uses this.
 
-initRequires(api, function(api) {
-	api.async.series([
-		initDB(api),
-		initPostVariables(api),
-		initActions(api),
-		initCron(api),
-		initResponse(api),
-		initListen(api),
-		initComplete(api),
-	]);
-});
+api.sys = require("sys"),
+api.http = require("http"),
+api.url = require("url"),
+api.path = require("path"),
+api.fs = require("fs");
+api.SequelizeBase = require("sequelize");
+api.expressServer = require('express');
+api.async = require('async');
+api.app = api.expressServer.createServer();
+api.app.use(api.expressServer.cookieParser());
+api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
+
+api.async.series([
+	initLogFolder(api),
+	initRequires(api),
+	initDB(api),
+	initPostVariables(api),
+	initActions(api),
+	initCron(api),
+	initResponse(api),
+	initListen(api),
+	initComplete(api),
+]);
 
