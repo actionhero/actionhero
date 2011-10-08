@@ -30,6 +30,8 @@
 		"port" : "3306",
 		"consoleLogging" : false
     },
+    
+    	"sessionDuration" :  86400000,
 
 	"flatFileDirectory" : "./public/",
 
