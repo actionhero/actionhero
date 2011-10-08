@@ -28,8 +28,12 @@
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
-		"consoleLogging" : false
+		"consoleLogging" : true
     },
+
+	"cache" : {
+		"defaultExpireTime" : "60000"
+	},
 
 	"apiRequestLimit" : 1000,
 

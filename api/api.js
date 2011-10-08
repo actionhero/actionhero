@@ -22,13 +22,13 @@ function initRequires(api, next)
 	api.utils = require("./utils.js").utils;
 	api.log = require("./logger.js").log;
 	api.tasks = require("./tasks.js").tasks;
+	api.cache = require("./cache.js").cache;
 	for(var task in api.tasks){if (task != "Task"){api.log("task loaded: "+task)}}
 	api.build_response = require("./response.js").build_response; 
 
 	// ensure the logging directory exists
 	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 	api.app.listen(api.configData.serverPort);
-	api.log("needed modules all included OK");
 	next(api);
 }
 
@@ -105,17 +105,19 @@ function initListen(api)
 	api.app.get('/', function(req, res, next){
 		api.timer = {};
 		api.timer.startTime = new Date().getTime();
+		api.req = req;
+		api.res = res;
 		api.response = {}; // the data returned from the API
 		api.error = false; 	// errors and requst state
 		
 		//requset limit
-		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", req.connection.remoteAddress]}).on('success', function(requestThisHourSoFar) {
+		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.req.connection.remoteAddress]}).on('success', function(requestThisHourSoFar) {
 			api.requestCounter = requestThisHourSoFar + 1;
 			//params & cookies
 			api.params = {};
 			api.postVariables.forEach(function(postVar){
-				api.params[postVar] = req.param(postVar);
-				if (api.params[postVar] === undefined){ api.params[postVar] = req.cookies[postVar]; }
+				api.params[postVar] = api.req.param(postVar);
+				if (api.params[postVar] === undefined){ api.params[postVar] = api.req.cookies[postVar]; }
 			});
 
 			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
@@ -126,40 +128,47 @@ function initListen(api)
 				api.action = undefined;
 				if(api.params["action"] == undefined)
 				{
-					api.error = "You must provide an action. Use action=describeActions to see a list."
+					api.error = "You must provide an action. Use action=describeActions to see a list.";
+					api.respondToClient();
 				}
 				else
 				{
 					if(api.actions[api.params["action"]] != undefined)
 					{
 						api.action = api.params["action"];
-						api.actions[api.action](api);
+						api.actions[api.action](api, api.respondToClient);
 					}
 					else
 					{
-						api.error = "That is not a known action. Use action=describeActions to see a list."
+						api.error = "That is not a known action. Use action=describeActions to see a list.";
+						api.respondToClient();
 					}
 				}
 			}
 			else // over rate limit for this hour
 			{
 				api.requestCounter = api.configData.apiRequestLimit;
-				api.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour."
+				api.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
+				api.respondToClient();
 			}
-
-			// response
-			var response = api.build_response(res);
-		  	res.send(response);
-			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
-			var logRecord = api.models.log.build({
-				ip: req.connection.remoteAddress,
-				action: api.action,
-				error: api.error,
-				params: JSON.stringify(api.params)
-			});
-			logRecord.save();
 		})
 	});
+}
+
+function initResponse(api)
+{
+	api.respondToClient = function(){
+		var response = api.build_response(api.res);
+	  	api.res.send(response);
+		if(api.configData.logRequests){api.log("request from " + api.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
+		var logRecord = api.models.log.build({
+			ip: api.req.connection.remoteAddress,
+			action: api.action,
+			error: api.error,
+			params: JSON.stringify(api.params)
+		});
+		logRecord.save();
+	};
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -184,6 +193,7 @@ initRequires(api, function(api) {
 		initPostVariables(api),
 		initActions(api),
 		initCron(api),
+		initResponse(api),
 		initListen(api),
 		initComplete(api),
 	]);

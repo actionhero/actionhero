@@ -1,5 +1,7 @@
 var utils = {};
 
+////////////////////////////////////////////////////////////////////////////
+// sqlDateTime
 utils.sqlDateTime = function()
 {
 	var temp = new Date();
@@ -17,11 +19,15 @@ utils.sqlDateTime = function()
 	return dateStr;
 };
 
+////////////////////////////////////////////////////////////////////////////
+// padDateDoubleStr
 utils.padDateDoubleStr = function(i) 
 {
     return (i < 10) ? "0" + i : "" + i;
 };
 
+////////////////////////////////////////////////////////////////////////////
+// blocking sleep
 utils.sleep = function ZZzzzZZzzzzzzZZZz(naptime)
 {
 	naptime = naptime * 1000;
@@ -36,4 +42,17 @@ utils.sleep = function ZZzzzZZzzzzzzZZZz(naptime)
 	}        
 }
 
+////////////////////////////////////////////////////////////////////////////
+// api param checking
+utils.requiredParamChecker = function(api, required_params)
+{
+	required_params.forEach(function(param){
+		if(api.error == false && (api.params[param] === undefined || api.params[param].length == 0)){
+			api.error = param + " is a required parameter for this action";
+		}
+	});
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Request Processing
 exports.utils = utils;
