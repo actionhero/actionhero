@@ -166,7 +166,12 @@ function initResponse(api)
 		var response = api.build_response(api.res);
 		if(cont != false)
 		{
-	  		api.res.send(response);
+	  		try{
+				api.res.send(response);
+			}catch(e)
+			{
+				
+			}
 		}
 		if(api.configData.logRequests){api.log("request from " + api.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
 		var logRecord = api.models.log.build({
