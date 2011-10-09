@@ -58,7 +58,7 @@ utils.requiredParamChecker = function(api, required_params)
 utils.randomString = function(bits)
 {
 	var chars,rand,i,ret
-	chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 	ret=''
   	while(bits > 0)
 	{
