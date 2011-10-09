@@ -111,6 +111,9 @@ function initListen(api)
 				api.params[postVar] = api.req.param(postVar);
 				if (api.params[postVar] === undefined){ api.params[postVar] = api.req.cookies[postVar]; }
 			});
+			
+			if(api.params.limit == null){ api.params.limit = api.configData.defaultLimit; }
+			if(api.params.offset == null){ api.params.offset = api.configData.defaultOffset; }
 
 			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
 
