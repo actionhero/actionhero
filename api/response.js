@@ -4,8 +4,8 @@ function build_response(res)
 		
 	// serverInformation information
 	this.response.serverInformation = {};
-	this.response.serverInformation.serverName = this.configData.serverName
-	this.response.serverInformation.apiVerson = this.configData.apiVerson
+	this.response.serverInformation.serverName = this.configData.serverName;
+	this.response.serverInformation.apiVerson = this.configData.apiVerson;
 	
 	// requestorInformation
 	this.response.requestorInformation = {};
@@ -26,15 +26,13 @@ function build_response(res)
 	{
 		this.response.error = this.error;
 	}
-	
-	this.response = JSON.stringify(this.response);
-	
+		
 	if(this.params.callback != null)
 	{
-		this.response = this.params.callback + "(" + this.response + ");";
+		return this.params.callback + "(" + JSON.stringify(this.response) + ");";
 	}
 	
-	return this.response;
+	return JSON.stringify(this.response);
 };
 
 exports.build_response = build_response;
