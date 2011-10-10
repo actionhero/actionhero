@@ -27,6 +27,13 @@ function build_response(res)
 		this.response.error = this.error;
 	}
 	
+	this.response = JSON.stringify(this.response);
+	
+	if(this.params.callback != null)
+	{
+		this.response = this.params.callback + "(" + this.response + ");";
+	}
+	
 	return this.response;
 };
 
