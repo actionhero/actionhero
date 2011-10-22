@@ -31,7 +31,7 @@
 		"consoleLogging" : false
     },
     
-    	"sessionDuration" :  86400000,
+    	"sessionDurationMinutes" : 1440,
 
 	"flatFileDirectory" : "./public/",
 
