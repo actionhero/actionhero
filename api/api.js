@@ -98,6 +98,7 @@ function initCron(api, next)
 // Generic Action processing
 function processAction(connection, next)
 {
+<<<<<<< HEAD
 	var templateValidator = require('validator').Validator;
 	connection.validator = new templateValidator();
 	connection.validator.error = function(msg){ connection.error = msg; };
@@ -113,6 +114,58 @@ function processAction(connection, next)
 			if(connection.params["action"] == undefined){
 				connection.error = "You must provide an action. Use action=describeActions to see a list.";
 				next(connection, true);
+=======
+	api.app.all('/*', function(req, res, next){
+		api.timer = {};
+		api.timer.startTime = new Date().getTime();
+		api.req = req;
+		api.res = res;
+		api.response = {}; // the data returned from the API
+		api.error = false; 	// errors and requst state
+		
+		api.remoteIP = api.res.connection.remoteAddress
+				
+		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.remoteIP]}).on('success', function(requestThisHourSoFar) {
+			api.requestCounter = requestThisHourSoFar + 1;
+
+			api.params = {};
+			api.postVariables.forEach(function(postVar){
+				api.params[postVar] = api.req.param(postVar);
+				if (api.params[postVar] === undefined){ api.params[postVar] = api.req.cookies[postVar]; }
+			});
+			
+			if(api.params.limit == null){ api.params.limit = api.configData.defaultLimit; }
+			if(api.params.offset == null){ api.params.offset = api.configData.defaultOffset; }
+
+			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
+
+			if(api.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
+			{
+				api.action = undefined;
+				if(api.params["action"] == undefined)
+				{
+					api.params["action"] = api.req.params[0].split("/")[0];
+				}
+				if(api.params["action"] == undefined)
+				{
+		
+					api.error = "You must provide an action. Use action=describeActions to see a list.";
+					api.respondToClient();
+				}
+				else
+				{
+					if(api.actions[api.params["action"]] != undefined)
+					{
+						api.action = api.params["action"];
+						api.actions[api.action](api, api.respondToClient);
+					}
+					else
+					{
+						api.error = "That is not a known action. Use action=describeActions to see a list.";
+						api.respondToClient();
+					}
+				}
+>>>>>>> 07dc215d372ff56edccdfcdd4f2527c547481312
 			}
 			else{
 				connection.action = connection.params["action"];

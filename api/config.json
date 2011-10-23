@@ -30,6 +30,8 @@
 		"port" : "3306",
 		"consoleLogging" : false
     },
+    
+    	"sessionDurationMinutes" : 1440,
 
 	"sessionDurationMinutes" : 1440,
 

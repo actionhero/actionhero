@@ -31,7 +31,11 @@ utils.padDateDoubleStr = function(i)
 utils.randomString = function(bits)
 {
 	var chars,rand,i,ret
+<<<<<<< HEAD
 	chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!'
+=======
+	chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+>>>>>>> 07dc215d372ff56edccdfcdd4f2527c547481312
 	ret=''
   	while(bits > 0)
 	{
@@ -59,6 +63,7 @@ utils.sleep = function(naptime)
 
 ////////////////////////////////////////////////////////////////////////////
 // session authentication checking
+<<<<<<< HEAD
 utils.sessionCheck = function(api, connection, next)
 {
 	api.utils.requiredParamChecker(api, connection, ["sessionKey"]);
@@ -67,12 +72,26 @@ utils.sessionCheck = function(api, connection, next)
 		api.models.session.find({ where: {key: connection.params.sessionKey} }).on('success', function(session) {
 			if(session == null){
 				connection.error = "sessionKey not found";
+=======
+utils.sessionCheck = function(api, next)
+{
+	api.utils.requiredParamChecker(api, ["sessionKey"]);
+	if(api.error == false)
+	{
+		api.models.session.find({ where: {key: api.params.sessionKey} }).on('success', function(session) {
+			if(session == null){
+				api.error = "sessionKey not found";
+>>>>>>> 07dc215d372ff56edccdfcdd4f2527c547481312
 				next(false);
 			}else{
 				api.models.user.find({ where: {id: session.userID} }).on('success', function(user) {
 					if(user == null)
 					{
+<<<<<<< HEAD
 						connection.error = "user not found";
+=======
+						api.error = "user not found";
+>>>>>>> 07dc215d372ff56edccdfcdd4f2527c547481312
 						next(false);
 					}else{
 						next(user);
@@ -86,6 +105,7 @@ utils.sessionCheck = function(api, connection, next)
 }
 
 ////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 // shellExec
 utils.shellExec = function(api, command, next)
 {
@@ -104,6 +124,8 @@ utils.shellExec = function(api, command, next)
 }
 
 ////////////////////////////////////////////////////////////////////////////
+=======
+>>>>>>> 07dc215d372ff56edccdfcdd4f2527c547481312
 // api param checking
 utils.requiredParamChecker = function(api, connection, required_params)
 {
