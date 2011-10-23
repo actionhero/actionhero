@@ -4,28 +4,28 @@
 
 ////////////////////////////////////////////////////////////////////////////
 // Init
-function initRequires(api)
+function initRequires(api, next)
 {
 	api.utils = require("./utils.js").utils;
 	api.log = require("./logger.js").log;
 	api.tasks = require("./tasks.js").tasks;
 	api.cache = require("./cache.js").cache;
-	for(var task in api.tasks){if (task != "Task"){api.log("task loaded: "+task)}}
-	api.build_response = require("./response.js").build_response; 
-
-	api.app.listen(api.configData.serverPort);
+	// for(var task in api.tasks){if (task != "Task"){api.log("task loaded: "+task)}}
+	api.buildWebResponse = require("./webResponse.js").buildWebResponse; 
+	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Init logging folder
-function initLogFolder(api)
+function initLogFolder(api, next)
 {
 	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
+	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // DB setup
-function initDB(api)
+function initDB(api, next)
 {
 	api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
 		host: api.configData.database.host,
@@ -49,11 +49,12 @@ function initDB(api)
 		api.log("exiting");
 		process.exit(1);
 	})
+	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // postVariable config and load
-function initPostVariables(api)
+function initPostVariables(api, next)
 {
 	api.postVariables = api.configData.postVariables || [];
 	for(var model in api.models){
@@ -61,25 +62,27 @@ function initPostVariables(api)
 			api.postVariables.push(attr);
 		}
 	}
+	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // populate actions
-function initActions(api)
+function initActions(api, next)
 {
 	api.actions = {};
 	api.actionsArray = [];
 	api.fs.readdirSync("./actions").forEach( function(file) {
-		var actionName = file.split(".")[0];
-		api.actions[actionName] = require("./actions/" + file)[actionName];
-		api.actionsArray.push(actionName);
-		api.log("action loaded: " + actionName);
-	});
+			var actionName = file.split(".")[0];
+			api.actions[actionName] = require("./actions/" + file)[actionName];
+			api.actionsArray.push(actionName);
+			api.log("action loaded: " + actionName);
+		});
+	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Periodic Tasks (fixed timer events)
-function initCron(api)
+function initCron(api, next)
 {
 	if (api.configData.cronProcess)
 	{
@@ -87,99 +90,215 @@ function initCron(api)
 		api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
 		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms");
 	}
+	next();
 }
 
+
 ////////////////////////////////////////////////////////////////////////////
-// Request Processing
-function initListen(api)
+// Generic Action processing
+function processAction(connection, next)
 {
-	api.app.all('/*', function(req, res, next){
-		api.timer = {};
-		api.timer.startTime = new Date().getTime();
-		api.req = req;
-		api.res = res;
-		api.response = {}; // the data returned from the API
-		api.error = false; 	// errors and requst state
-		
-		api.remoteIP = api.res.connection.remoteAddress
-				
-		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", api.remoteIP]}).on('success', function(requestThisHourSoFar) {
-			api.requestCounter = requestThisHourSoFar + 1;
-
-			api.params = {};
-			api.postVariables.forEach(function(postVar){
-				api.params[postVar] = api.req.param(postVar);
-				if (api.params[postVar] === undefined){ api.params[postVar] = api.req.cookies[postVar]; }
-			});
-
-			if(api.configData.logRequests){api.log("request from " + req.connection.remoteAddress + " | params: " + JSON.stringify(api.params));}
-
-			if(api.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
-			{
-				api.action = undefined;
-				if(api.params["action"] == undefined)
-				{
-					api.params["action"] = api.req.params[0].split("/")[0];
-				}
-				if(api.params["action"] == undefined)
-				{
-		
-					api.error = "You must provide an action. Use action=describeActions to see a list.";
-					api.respondToClient();
-				}
-				else
-				{
-					if(api.actions[api.params["action"]] != undefined)
-					{
-						api.action = api.params["action"];
-						api.actions[api.action](api, api.respondToClient);
-					}
-					else
-					{
-						api.error = "That is not a known action. Use action=describeActions to see a list.";
-						api.respondToClient();
-					}
+	var templateValidator = require('validator').Validator;
+	connection.validator = new templateValidator();
+	connection.validator.error = function(msg){ connection.error = msg; };
+	
+	api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
+		connection.requestCounter = requestThisHourSoFar + 1;
+		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
+		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
+		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
+		if(connection.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
+		{
+			connection.action = undefined;
+			if(connection.params["action"] == undefined){
+				connection.error = "You must provide an action. Use action=describeActions to see a list.";
+				next(connection, true);
+			}
+			else{
+				connection.action = connection.params["action"];
+				if(api.actions[connection.action] != undefined){
+					api.actions[connection.action](api, connection, next);
+				}else{
+					connection.error = connection.action + " is not a known action. Use action=describeActions to see a list.";
+					next(connection, true);
 				}
 			}
-			else
-			{
-				api.requestCounter = api.configData.apiRequestLimit;
-				api.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
-				api.respondToClient();
-			}
-		})
+		}else{
+			connection.requestCounter = api.configData.apiRequestLimit;
+			connection.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
+			next(connection, true);
+		}
 	});
 }
 
-function initResponse(api)
+function logAction(connection){
+	var logRecord = api.models.log.build({
+		ip: connection.remoteIP,
+		action: connection.action,
+		error: connection.error,
+		params: JSON.stringify(connection.params)
+	});
+	logRecord.save();
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Web Request Processing
+function initWebListen(api, next)
 {
-	api.respondToClient = function(cont){
-		var response = api.build_response(api.res);
+	api.webApp.listen(api.configData.webServerPort);
+	api.webApp.all('/*', function(req, res, next){
+		api.stats.numberOfWebRequests = api.stats.numberOfWebRequests + 1;
+		
+		var connection = {};
+		
+		connection.timer = {};
+		connection.timer.startTime = new Date().getTime();
+		connection.req = req;
+		connection.res = res;
+		connection.response = {}; // the data returned from the API
+		connection.error = false; 	// errors and requst state
+		connection.remoteIP = connection.req.connection.remoteAddress;
+		if(connection.req.headers['x-forwarded-for'] != null)
+		{
+			connection.remoteIP = connection.req.headers['x-forwarded-for'];	
+		}
+		
+		connection.params = {};
+		api.postVariables.forEach(function(postVar){
+			connection.params[postVar] = connection.req.param(postVar);
+			if (connection.params[postVar] === undefined){ connection.params[postVar] = connection.req.cookies[postVar]; }
+		});
+		
+		if(connection.params["action"] == undefined){
+			connection.params["action"] = connection.req.params[0].split("/")[0];
+		}
+		
+		// ignore proxy tests
+		if(connection.params["action"] == "status" && connection.remoteIP == "127.0.0.1"){
+			connection.res.send("OK");
+		}else{
+			processAction(connection, api.respondToWebClient);
+		}
+	});
+	
+	api.respondToWebClient = function(connection, cont){
 		if(cont != false)
 		{
+			var response = api.buildWebResponse(connection);
 	  		try{
-				api.res.send(response);
+				connection.res.send(response);
 			}catch(e)
 			{
 				
 			}
 		}
-		if(api.configData.logRequests){api.log("request from " + api.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
-		var logRecord = api.models.log.build({
-			ip: api.req.connection.remoteAddress,
-			action: api.action,
-			error: api.error,
-			params: JSON.stringify(api.params)
-		});
-		logRecord.save();
+		if(api.configData.logRequests){api.log("web request from " + connection.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
+		logAction(connection) 
 	};
+	next();
 }
 
+////////////////////////////////////////////////////////////////////////////
+// Socket Request Processing
+function initSocketServerListen(api, next){
+	api.socketServer = api.net.createServer(function (connection) {
+		api.stats.numberOfSocketRequests = api.stats.numberOfSocketRequests + 1;
+	  	connection.setEncoding("utf8");
+		connection.params = {};
+		connection.remoteIP = connection.remoteAddress;
+	
+	  	connection.on("connect", function () {
+	    	api.sendSocketMessage(connection, api.configData.socketServerWelcomeMessage);
+	    	api.log("socket connection "+connection.remoteIP+" | connected");
+	  	});
+	  	connection.on("data", function (data) {
+			var data = data.replace(/(\r\n|\n|\r)/gm,"");
+			var words = data.split(" ");
+	    	if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" || data.indexOf("\u0004") > -1 ){
+				api.sendSocketMessage(connection, "Bye!");
+				connection.end();
+				api.log("socket connection "+connection.remoteIP+" | requesting disconnect");
+			}else if(words[0] == "addParam"){
+				var parts = words[1].split("=");
+				connection.params[parts[0]] = parts[1];
+				api.sendSocketMessage(connection, "OK");
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "deleteParam"){
+				connection.data.params[words[1]] = null;
+				api.sendSocketMessage(connection, "OK");
+				api.log("socket connection "+connection.remoteIP+" | "+data)
+			}else if(words[0] == "viewParam"){
+				api.sendSocketMessage(connection, connection.params[words[1]]);
+				api.log("socket connection "+connection.remoteIP+" | "+data)
+			}else if(words[0] == "viewParams"){
+				api.sendSocketMessage(connection, JSON.stringify(connection.params));
+				api.log("socket connection "+connection.remoteIP+" | "+data)
+			}else if(words[0] == "deleteParams"){
+				connection.params = {};
+				api.sendSocketMessage(connection, "OK");
+				api.log("socket connection "+connection.remoteIP+" | "+data)
+			}else{
+				connection.error = false;
+				connection.response = {};
+				if(connection.params["action"] == null || words.length == 1){connection.params["action"] = words[0];}
+				processAction(connection, api.respondToSocketClient);
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}
+	  	});
+	  	connection.on("end", function () {
+	    	connection.end();
+			api.log("socket connection "+connection.remoteIP+" | disconnected");
+	  	});
+	});
+	
+	// action response helper
+	api.respondToSocketClient = function(connection, cont){
+		if(cont != false)
+		{
+			if(connection.error == false){
+				if(connection.response == {}){
+					connection.response = "OK";
+				}
+				api.sendSocketMessage(connection, JSON.stringify(connection.response));
+			}else{
+				api.sendSocketMessage(connection, connection.error);
+			}
+		}
+	}
+	
+	//message helper
+	api.sendSocketMessage = function(connection, message){
+		try{ connection.write(message + "\r\n\0"); }catch(e){ }
+	}
+	
+	// listen
+	api.socketServer.listen(api.configData.socketServerPort);
+	
+	next();
+}
+ 
 ////////////////////////////////////////////////////////////////////////////
 // final flag
 function initComplete(api)
 {
-	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ port " + api.configData.serverPort + " ***");
+	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***");
+}
+
+////////////////////////////////////////////////////////////////////////////
+// am I runnign already?
+function runningCheck(api, next)
+{
+	api.utils.shellExec(api, "ps awx | grep api.js | grep -v '/bin/sh' | grep -v grep --count", function(response){
+		if(response.stdout > 1){
+			api.utils.shellExec(api, "ps awx | grep api.js | grep -v grep", function(response){
+				console.log(response);
+				api.log("*** The server is already running, exiting this instance ***");
+				process.exit(0);
+			});
+		}else{
+			next();
+		}
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -192,6 +311,8 @@ function initComplete(api)
 var api = api = api || {}; // the api namespace.  Everything uses this.
 
 api.sys = require("sys"),
+api.exec = require('child_process').exec;
+api.net = require("net"),
 api.http = require("http"),
 api.url = require("url"),
 api.path = require("path"),
@@ -199,24 +320,34 @@ api.fs = require("fs");
 api.SequelizeBase = require("sequelize");
 api.expressServer = require('express');
 api.async = require('async');
+api.crypto = require("crypto");
 
-var templateValidator = require('validator').Validator;
-api.validator = new templateValidator();
-api.validator.error = function(msg){ api.error = msg; };
-
-api.app = api.expressServer.createServer();
-api.app.use(api.expressServer.cookieParser());
+api.webApp = api.expressServer.createServer();
+api.webApp.use(api.expressServer.cookieParser());
 api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
 
-api.async.series([
-	initLogFolder(api),
-	initRequires(api),
-	initDB(api),
-	initPostVariables(api),
-	initActions(api),
-	initCron(api),
-	initResponse(api),
-	initListen(api),
-	initComplete(api),
-]);
+api.stats = {};
+api.stats.numberOfWebRequests = 0;
+api.stats.numberOfSocketRequests = 0;
+api.stats.startTime = new Date().getTime();
+
+initLogFolder(api, function(){
+	initRequires(api, function(){
+		runningCheck(api, function(){
+			initDB(api, function(){
+				initPostVariables(api, function(){
+					initActions(api, function(){
+						initCron(api, function(){
+							initWebListen(api, function(){
+								initSocketServerListen(api, function(){
+									initComplete(api)
+								})
+							})
+						})
+					})
+				})
+			})
+		})
+	})
+})
 

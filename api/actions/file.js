@@ -1,17 +1,17 @@
-function file(api, next)
+function file(api, connection, next)
 {
-	var fileName = api.params.fileName || api.req.params[0].split("/")[1];
+	var fileName = connection.params.fileName || connection.req.params[0].split("/")[1];
 	fileName = api.configData.flatFileDirectory + fileName;
 	api.path.exists(fileName, function(exists) {
 		if(exists)
 		{
-			api.res.sendfile(fileName);
-			next(false);
+			connection.res.sendfile(fileName);
+			next(connection, false);
 		}
 		else
 		{
-			api.res.send('Sorry, that file is not found :(', 404);
-			next(false);
+			connection.res.send('Sorry, that file is not found :(', 404);
+			next(connection, false);
 		}
 	});
 };

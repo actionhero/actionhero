@@ -1,23 +1,23 @@
-function cacheTest(api, next)
+function cacheTest(api, connection, next)
 {
-	api.utils.requiredParamChecker(api, ["key","value"]);
-	if(api.error == false)
+	api.utils.requiredParamChecker(api, connection, ["key","value"]);
+	if(connection.error == false)
 	{
-		key = api.params.key;
-		value = api.params.value;
+		key = connection.params.key;
+		value = connection.params.value;
 		
-		api.response = {cacheTestResults : {
+		connection.response = {cacheTestResults : {
 			"key" : key,
 			"value" : value,
 		}};
 		
 		api.cache.save(api,key,value,null, function(resp){
-			api.response.cacheTestResults.saveResp = resp;
+			connection.response.cacheTestResults.saveResp = resp;
 			api.cache.load(api,key, function(resp){
-				api.response.cacheTestResults.loadResp = resp;
+				connection.response.cacheTestResults.loadResp = resp;
 				api.cache.destroy(api,key, function(resp){
-					api.response.cacheTestResults.deleteResp = resp;
-					next(true);
+					connection.response.cacheTestResults.deleteResp = resp;
+					next(connection, true);
 				});
 			});
 		});
@@ -25,7 +25,7 @@ function cacheTest(api, next)
 	}
 	else
 	{
-		next(true);
+		next(connection, true);
 	}
 };
 

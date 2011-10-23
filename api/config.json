@@ -4,12 +4,12 @@
 	"defaultOutputType" : "JSON",
 	"xmlRootNode" : "XML",
 	"requestLimitPerHour" : 1000,
-	"correctLimitLockPass" : "sekret",
-	"rollbackPhrase" : "sekret",
 	
 	"serverAddress" : "127.0.0.1",
-	"serverPort" : 8080,
+	"webServerPort" : 8080,
+	"socketServerPort" : 5000,
 	"serverName" : "daveAPIServer",
+	"socketServerWelcomeMessage" : "Hello! Welcome to the daveNodeApi server",
 	
 	"logging" : "true",
 	"logFolder" : "./log/",
@@ -24,12 +24,14 @@
     "database" : {
 		"dbType" : "MYSQL",
         "host" : "127.0.0.1",
-		"database" : "dave_api",
+		"database" : "mapz",
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
 		"consoleLogging" : false
     },
+
+	"sessionDurationMinutes" : 1440,
 
 	"flatFileDirectory" : "./public/",
 
@@ -38,11 +40,15 @@
 	},
 
 	"apiRequestLimit" : 1000,
+	"defaultLimit" : 100,
+	"defaultOffset" : 0,
 
 	"postVariables" : [
+		"callback",
 		"action",
 		"upperLimit",
 		"lowerLimit",
-		"fileName"
+		"fileName",
+		"sessionKey"
 	]
 }

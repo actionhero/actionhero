@@ -1,7 +1,7 @@
-function describeActions(api, next)
+function describeActions(api, connection, next)
 {
-	api.response.actions = api.actionsArray;
-	next(true);
+	connection.response.actions = api.actionsArray;
+	next(connection, true);
 };
 
 exports.describeActions = describeActions;

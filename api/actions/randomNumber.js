@@ -1,7 +1,7 @@
-function randomNumber(api, next)
+function randomNumber(api, connection, next)
 {
-	api.response.randomNumber = Math.random();
-	next(true);
+	connection.response.randomNumber = Math.random();
+	next(connection, true);
 };
 
 exports.randomNumber = randomNumber;
