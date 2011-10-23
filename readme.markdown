@@ -31,8 +31,7 @@ Socket Example:
 	>> addParam value=myValue
 	OK
 	>> viewParams
-	{"action":"showParams","limit":100,"offset":
-	0,"key":"myKey","value":"myValue"}
+	{"action":"showParams","limit":100,"offset":0,"key":"myKey","value":"myValue"}
 	>> cacheTest
 	{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"newrecord","loadResp":"myValue","deleteResp":true}}
 
