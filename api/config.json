@@ -30,8 +30,6 @@
 		"port" : "3306",
 		"consoleLogging" : false
     },
-    
-    	"sessionDurationMinutes" : 1440,
 
 	"sessionDurationMinutes" : 1440,
 
@@ -51,6 +49,7 @@
 		"upperLimit",
 		"lowerLimit",
 		"fileName",
+		"password",
 		"sessionKey"
 	]
 }
