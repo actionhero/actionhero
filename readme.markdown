@@ -19,37 +19,22 @@ Every socket action (including the special param methods above) will return a si
 
 Socket Example:
 
-`> telnet localhost 5000'`
-
-`Trying 127.0.0.1...`
-
-`Connected to localhost.`
-
-`Escape character is '^]'.`
-
-`Hello! Welcome to the daveNodeApi server`
-
-`> cacheTest`
-
-`key is a required parameter for this action`
-
-`> addParam key=myKey`
-
-`OK`
-
-`> addParam value=myValue`
-
-`OK`
-
-`> viewParams`
-
-`{"action":"showParams","limit":100,"offset":`
-
-`0,"key":"myKey","value":"myValue"}`
-
-`> cacheTest`
-
-`{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"newrecord","loadResp":"myValue","deleteResp":true}}`
+	>> telnet localhost 5000'
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+	Hello! Welcome to the daveNodeApi server
+	>> cacheTest
+	key is a required parameter for this action
+	>> addParam key=myKey
+	OK
+	>> addParam value=myValue
+	OK
+	>> viewParams
+	{"action":"showParams","limit":100,"offset":
+	0,"key":"myKey","value":"myValue"}
+	>> cacheTest
+	{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"newrecord","loadResp":"myValue","deleteResp":true}}
 
 Dave will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivelent to `http://{baseUrl}?action=file&fileName={pathToFile}`
 
