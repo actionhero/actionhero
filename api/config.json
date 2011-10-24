@@ -46,8 +46,8 @@
 	"postVariables" : [
 		"callback",
 		"action",
-		"upperLimit",
-		"lowerLimit",
+		"limit",
+		"offset",
 		"fileName",
 		"password",
 		"sessionKey"
