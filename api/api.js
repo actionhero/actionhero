@@ -205,39 +205,41 @@ function initSocketServerListen(api, next){
 	api.socketServer = api.net.createServer(function (connection) {
 		api.stats.numberOfSocketRequests = api.stats.numberOfSocketRequests + 1;
 	  	connection.setEncoding("utf8");
+	  	connection.type = "socket";
 		connection.params = {};
 		connection.remoteIP = connection.remoteAddress;
-		connection.type = "socket";
-	
+		connection.id = connection.remoteAddress + "@" + connection.remotePort;
+
 	  	connection.on("connect", function () {
-	    	api.sendSocketMessage(connection, api.configData.socketServerWelcomeMessage);
+	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 	  	});
 	  	connection.on("data", function (data) {
 			var data = data.replace(/(\r\n|\n|\r)/gm,"");
 			var words = data.split(" ");
 	    	if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" || data.indexOf("\u0004") > -1 ){
-				api.sendSocketMessage(connection, "Bye!");
+				api.sendSocketMessage(connection, {status: "Bye!"});
 				connection.end();
 				api.log("socket connection "+connection.remoteIP+" | requesting disconnect");
 			}else if(words[0] == "paramAdd"){
 				var parts = words[1].split("=");
 				connection.params[parts[0]] = parts[1];
-				api.sendSocketMessage(connection, "OK");
+				api.sendSocketMessage(connection, {status: "OK"});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else if(words[0] == "paramDelete"){
 				connection.data.params[words[1]] = null;
-				api.sendSocketMessage(connection, "OK");
+				api.sendSocketMessage(connection, {status: "OK"});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else if(words[0] == "paramView"){
-				api.sendSocketMessage(connection, connection.params[words[1]]);
+				var q = words[1];
+				api.sendSocketMessage(connection, {q: connection.params[q]});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else if(words[0] == "paramsView"){
-				api.sendSocketMessage(connection, JSON.stringify(connection.params));
+				api.sendSocketMessage(connection, connection.params);
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else if(words[0] == "paramsDelete"){
 				connection.params = {};
-				api.sendSocketMessage(connection, "OK");
+				api.sendSocketMessage(connection, {status: "OK"});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else{
 				connection.error = false;
@@ -253,7 +255,7 @@ function initSocketServerListen(api, next){
 			api.log("socket connection "+connection.remoteIP+" | disconnected");
 	  	});
 	});
-	
+
 	// action response helper
 	api.respondToSocketClient = function(connection, cont){
 		if(cont != false)
@@ -262,21 +264,21 @@ function initSocketServerListen(api, next){
 				if(connection.response == {}){
 					connection.response = "OK";
 				}
-				api.sendSocketMessage(connection, JSON.stringify(connection.response));
+				api.sendSocketMessage(connection, connection.response);
 			}else{
 				api.sendSocketMessage(connection, connection.error);
 			}
 		}
 	}
-	
+
 	//message helper
 	api.sendSocketMessage = function(connection, message){
-		try{ connection.write(message + "\r\n\0"); }catch(e){ }
+		try{ connection.write(JSON.stringify(message) + "\r\n\0"); }catch(e){ }
 	}
-	
+
 	// listen
 	api.socketServer.listen(api.configData.socketServerPort);
-	
+
 	next();
 }
  
