@@ -262,11 +262,11 @@ function initSocketServerListen(api, next){
 		{
 			if(connection.error == false){
 				if(connection.response == {}){
-					connection.response = "OK";
+					connection.response = {status: "OK"};
 				}
 				api.sendSocketMessage(connection, connection.response);
 			}else{
-				api.sendSocketMessage(connection, connection.error);
+				api.sendSocketMessage(connection, {error: connection.error});
 			}
 		}
 	}
