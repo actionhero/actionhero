@@ -151,6 +151,7 @@ function initWebListen(api, next)
 		
 		var connection = {};
 		
+		connection.type = "web";
 		connection.timer = {};
 		connection.timer.startTime = new Date().getTime();
 		connection.req = req;
@@ -206,6 +207,7 @@ function initSocketServerListen(api, next){
 	  	connection.setEncoding("utf8");
 		connection.params = {};
 		connection.remoteIP = connection.remoteAddress;
+		connection.type = "socket";
 	
 	  	connection.on("connect", function () {
 	    	api.sendSocketMessage(connection, api.configData.socketServerWelcomeMessage);
@@ -218,29 +220,30 @@ function initSocketServerListen(api, next){
 				api.sendSocketMessage(connection, "Bye!");
 				connection.end();
 				api.log("socket connection "+connection.remoteIP+" | requesting disconnect");
-			}else if(words[0] == "addParam"){
+			}else if(words[0] == "paramAdd"){
 				var parts = words[1].split("=");
 				connection.params[parts[0]] = parts[1];
 				api.sendSocketMessage(connection, "OK");
 				api.log("socket connection "+connection.remoteIP+" | "+data);
-			}else if(words[0] == "deleteParam"){
+			}else if(words[0] == "paramDelete"){
 				connection.data.params[words[1]] = null;
 				api.sendSocketMessage(connection, "OK");
-				api.log("socket connection "+connection.remoteIP+" | "+data)
-			}else if(words[0] == "viewParam"){
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "paramView"){
 				api.sendSocketMessage(connection, connection.params[words[1]]);
-				api.log("socket connection "+connection.remoteIP+" | "+data)
-			}else if(words[0] == "viewParams"){
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "paramsView"){
 				api.sendSocketMessage(connection, JSON.stringify(connection.params));
-				api.log("socket connection "+connection.remoteIP+" | "+data)
-			}else if(words[0] == "deleteParams"){
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "paramsDelete"){
 				connection.params = {};
 				api.sendSocketMessage(connection, "OK");
-				api.log("socket connection "+connection.remoteIP+" | "+data)
+				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else{
 				connection.error = false;
 				connection.response = {};
-				if(connection.params["action"] == null || words.length == 1){connection.params["action"] = words[0];}
+				// if(connection.params["action"] == null || words.length == 1){connection.params["action"] = words[0];}
+				connection.params["action"] = words[0];
 				processAction(connection, api.respondToSocketClient);
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}
