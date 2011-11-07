@@ -2,8 +2,7 @@ var utils = {};
 
 ////////////////////////////////////////////////////////////////////////////
 // sqlDateTime
-utils.sqlDateTime = function()
-{
+utils.sqlDateTime = function(){
 	var temp = new Date();
 	var dateStr = this.padDateDoubleStr(temp.getFullYear()) +
 					"-" + 
@@ -21,15 +20,13 @@ utils.sqlDateTime = function()
 
 ////////////////////////////////////////////////////////////////////////////
 // padDateDoubleStr
-utils.padDateDoubleStr = function(i) 
-{
+utils.padDateDoubleStr = function(i){
     return (i < 10) ? "0" + i : "" + i;
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // generate a random string
-utils.randomString = function(bits)
-{
+utils.randomString = function(bits){
 	var chars,rand,i,ret
 	chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!'
 	ret=''
@@ -43,8 +40,7 @@ utils.randomString = function(bits)
 
 ////////////////////////////////////////////////////////////////////////////
 // blocking sleep
-utils.sleep = function(naptime)
-{
+utils.sleepSync = function(naptime){
 	naptime = naptime * 1000;
 	var sleeping = true;
 	var now = new Date();
@@ -58,62 +54,122 @@ utils.sleep = function(naptime)
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// sort an array of hashes by a key
+utils.sort_by = function(field, reverse, primer){
+   reverse = (reverse) ? -1 : 1;
+   return function(a,b){
+       a = a[field];
+       b = b[field];
+       if (typeof(primer) != 'undefined'){
+           a = primer(a);
+           b = primer(b);
+       }
+       if (a<b) return reverse * -1;
+       if (a>b) return reverse * 1;
+       return 0;
+   }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// randomly sort an array
+utils.randomArraySort = function(a,b) {
+    return( parseInt( Math.random()*10 ) %2 );
+}
+
+////////////////////////////////////////////////////////////////////////////
 // session authentication checking
-utils.sessionCheck = function(api, connection, next)
-{
+utils.sessionCheck = function(api, connection, next){
 	api.utils.requiredParamChecker(api, connection, ["sessionKey"]);
 	if(connection.error == false)
 	{
 		api.models.session.find({ where: {key: connection.params.sessionKey} }).on('success', function(session) {
 			if(session == null){
 				connection.error = "sessionKey not found";
-				next(false);
+				process.nextTick(function() { next(false); });
 			}else{
 				api.models.user.find({ where: {id: session.userID} }).on('success', function(user) {
 					if(user == null)
 					{
 						connection.error = "user not found";
-						next(false);
+						process.nextTick(function() { next(false); });
 					}else{
-						next(user);
+						process.nextTick(function() { next(user); });
 					}
 				});
 			}
 		});
 	}else{
-		next(false);
+		process.nextTick(function() { next(false); });
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // shellExec
-utils.shellExec = function(api, command, next)
-{
+utils.shellExec = function(api, command, next){
 	var response = {};
 	child = api.exec(command, function (error, stdout, stderr) {
-	  	// api.sys.print('stdout: ' + stdout);
-		response.stdout = stdout.replace(/(\r\n|\n|\r)/gm,"");
-	  	// api.sys.print('stderr: ' + stderr);
-		response.stderr = stderr.replace(/(\r\n|\n|\r)/gm,"");
+		if (stdout.length > 0){ response.stdout = stdout.replace(/(\r\n|\n|\r)/gm,""); }else{response.stdout = stdout; }
+		if (stderr.length > 0){ response.stderr = stderr.replace(/(\r\n|\n|\r)/gm,""); }else{response.stderr = stderr; }
 	  	if (error !== null) {
-	    	// console.log('exec error: ' + error);
 			response.error = error.replace(/(\r\n|\n|\r)/gm,"");
 	  	}
-		next(response);
+	  	process.nextTick(function() { next(response); });
 	})
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // api param checking
-utils.requiredParamChecker = function(api, connection, required_params)
-{
-	required_params.forEach(function(param){
-		if(connection.error == false && (connection.params[param] === undefined || connection.params[param].length == 0)){
-			connection.error = param + " is a required parameter for this action";
+utils.requiredParamChecker = function(api, connection, required_params, mode){
+	if(mode == null){mode = "all";}
+	if(mode == "all"){
+		required_params.forEach(function(param){
+			if(connection.error == false && (connection.params[param] === undefined || connection.params[param].length == 0)){
+				connection.error = param + " is a required parameter for this action";
+			}
+		});
+	}
+	if(mode == "any"){
+		var paramString = "";
+		var found = false;
+		required_params.forEach(function(param){
+			if(paramString != ""){paramString = paramString + ",";}
+			paramString = paramString + " " + param;
+			if(connection.params[param] != null){
+				found = true;
+			}
+		});
+		if(found == false)
+		{
+			connection.error = "none of the required params for this action were provided.  Any of the following are required: " + paramString;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+// DB Seeding
+utils.DBSeed = function(api, model, seeds, next){
+	model.count().on('success', function(modelsFound) {
+		if(modelsFound > 0)
+		{
+			next(false, model);
+		}else{
+			var chainer = new api.SequelizeBase.Utils.QueryChainer;
+			for(var i in seeds){
+				seed = seeds[i];
+				chainer.add(model.build(seed).save());
+			}
+			chainer.run().on('success', function(){
+				next(true, model);
+			}).on('failure', function(errors){
+				for(var i in errors){
+					console.log(errors[i]);
+				}
+				next(false, model);
+			});
 		}
 	});
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// Request Processing
+// EXPORT
 exports.utils = utils;

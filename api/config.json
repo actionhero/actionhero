@@ -24,7 +24,7 @@
     "database" : {
 		"dbType" : "MYSQL",
         "host" : "127.0.0.1",
-		"database" : "mapz",
+		"database" : "api",
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",

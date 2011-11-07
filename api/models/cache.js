@@ -8,4 +8,9 @@ function defineModel(api)
 	return model;
 }
 
+function defineSeeds(api){
+	return null;
+}
+
 exports.defineModel = defineModel;
+exports.defineSeeds = defineSeeds;

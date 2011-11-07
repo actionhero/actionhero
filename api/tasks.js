@@ -22,7 +22,7 @@ tasks.Task = {
 };
 
 ////////////////////////////////////////////////////////////////////////////
-// cleaning large log files
+// ensure that log file doesn't get to big
 tasks.cleanLogFiles = function(api) {
 	var params = {
 		"name" : "Clean Log Files",
@@ -49,13 +49,13 @@ tasks.cleanLogFiles = function(api) {
 			});
 		});
 	};
-	task.run();
-	task.end();
+	process.nextTick(function() { task.run(); });
+	process.nextTick(function() { task.end(); });
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // cleaning old log entries
-tasks.cleanTaskDB = function(api) {
+tasks.cleanOldLogDB = function(api) {
 	var params = {
 		"name" : "Clean Task DB",
 		"desc" : "I will remove old entires from the log DB."
@@ -69,8 +69,8 @@ tasks.cleanTaskDB = function(api) {
 			});
 		});
 	};
-	task.run();
-	task.end();
+	process.nextTick(function() { task.run(); });
+	process.nextTick(function() { task.end(); });
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -89,8 +89,8 @@ tasks.cleanOldCacheDB = function(api) {
 			});
 		});
 	};
-	task.run();
-	task.end();
+	process.nextTick(function() { task.run(); });
+	process.nextTick(function() { task.end(); });
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -109,8 +109,8 @@ tasks.cleanOldSessionDB = function(api) {
 			});
 		});
 	};
-	task.run();
-	task.end();
+	process.nextTick(function() { task.run(); });
+	process.nextTick(function() { task.end(); });
 };
 
 ////////////////////////////////////////////////////////////////////////////
