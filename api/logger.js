@@ -3,7 +3,7 @@ function log(original_message)
 	var d = new Date();
 	message = this.utils.sqlDateTime() + " | " + original_message;
 	console.log(message);
-	if(this.configData.logging)
+	if(this.configData.logging == "true")
 	{
 		if (this.logWriter == null)
 		{
