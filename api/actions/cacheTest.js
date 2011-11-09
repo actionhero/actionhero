@@ -1,4 +1,26 @@
-function cacheTest(api, connection, next)
+var action = {};
+
+/////////////////////////////////////////////////////////////////////
+// metadata
+action.name = "cacheTest";
+action.description = "I will test the internal cache functions of the API";
+action.inputs = {
+	"required" : ["key", "value"],
+	"optional" : []
+};
+action.outputExample = {
+	cacheTestResults: {
+		key: "key",
+		value: "value",
+		saveResp: "OK",
+		loadResp: "OK",
+		deleteResp: "OK",
+	}
+}
+
+/////////////////////////////////////////////////////////////////////
+// functional
+action.run = function(api, connection, next)
 {
 	api.utils.requiredParamChecker(api, connection, ["key","value"]);
 	if(connection.error == false)
@@ -29,4 +51,6 @@ function cacheTest(api, connection, next)
 	}
 };
 
-exports.cacheTest = cacheTest;
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.action = action;

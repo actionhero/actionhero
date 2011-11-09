@@ -91,14 +91,14 @@ function initPostVariables(api, next)
 function initActions(api, next)
 {
 	api.actions = {};
-	api.actionsArray = [];
 	api.fs.readdirSync("./actions").forEach( function(file) {
+		if (file != ".DS_Store"){
 			var actionName = file.split(".")[0];
-			// api.actions[actionName] = require("./actions/" + file)[actionName];
-			autoReloadFileInit(api, ["actions", actionName], ("./actions/" + file), actionName);
-			api.actionsArray.push(actionName);
+			var thisAction = require("./actions/" + file)["action"];
+			autoReloadFileInit(api, ["actions", thisAction.name], ("./actions/" + file), "action");
 			api.log("action loaded: " + actionName);
-		});
+		}
+	});
 	next();
 }
 
@@ -108,7 +108,6 @@ function initCron(api, next)
 {
 	if (api.configData.cronProcess)
 	{
-		// api.processCron = require("./cron.js").processCron;
 		autoReloadFileInit(api, ["processCron"], "./cron.js", "processCron");
 		api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
 		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms");
@@ -140,7 +139,7 @@ function processAction(connection, next)
 			else{
 				connection.action = connection.params["action"];
 				if(api.actions[connection.action] != undefined){
-					process.nextTick(function() { api.actions[connection.action](api, connection, next); });
+					process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
 				}else{
 					connection.error = connection.action + " is not a known action. Use action=describeActions to see a list.";
 					process.nextTick(function() { next(connection, true); });
