@@ -74,7 +74,14 @@ action.run = function(api, connection, next){
 			outputExample: {"status": "OK"},
 		});
 	}
-	connection.response.actions = connection.response.actions.sort();
+	connection.response.actions.sort(function compare(a,b) {
+	  if (a.name < b.name)
+	     return -1;
+	  if (a.name > b.name)
+	    return 1;
+	  return 0;
+	});
+	
 	next(connection, true);
 };
 
