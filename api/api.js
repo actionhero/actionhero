@@ -168,6 +168,7 @@ function logAction(connection){
 function initWebListen(api, next)
 {
 	api.webApp.listen(api.configData.webServerPort);
+	api.webApp.use(api.expressServer.bodyParser());
 	api.webApp.all('/*', function(req, res, next){
 		api.stats.numberOfWebRequests = api.stats.numberOfWebRequests + 1;
 		
