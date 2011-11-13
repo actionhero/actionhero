@@ -202,14 +202,21 @@ function initWebListen(api, next)
 		if(connection.params["action"] == "status" && connection.remoteIP == "127.0.0.1"){
 			connection.res.send("OK");
 		}else{
-			if(connection.req.form != undefined){
-				connection.req.form.complete(function(err, fields, files){
-					api.postVariables.forEach(function(postVar){
-						if(fields[postVar] != null){ connection.params[postVar] = fields[postVar]; }
+			if(connection.req.form){
+				if (connection.req.body == null){
+					connection.req.form.complete(function(err, fields, files){
+						api.postVariables.forEach(function(postVar){
+							if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
+						});
+						connection.req.files = files;
+						process.nextTick(function() { processAction(connection, api.respondToWebClient); });
 					});
-					connection.req.files = files;
+				}else{
+					api.postVariables.forEach(function(postVar){
+						if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
+					});
 					process.nextTick(function() { processAction(connection, api.respondToWebClient); });
-				});
+				}
 			}else{
 				process.nextTick(function() { processAction(connection, api.respondToWebClient); });
 			}
