@@ -203,7 +203,7 @@ function initWebListen(api, next)
 			connection.res.send("OK");
 		}else{
 			if(connection.req.form){
-				if (connection.req.body == null){
+				if (connection.req.body == null || api.utils.hashLength(connection.req.body) == 0){
 					connection.req.form.complete(function(err, fields, files){
 						api.postVariables.forEach(function(postVar){
 							if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
@@ -212,7 +212,7 @@ function initWebListen(api, next)
 						process.nextTick(function() { processAction(connection, api.respondToWebClient); });
 					});
 				}else{
-					api.postVariables.forEach(function(postVar){
+ 					api.postVariables.forEach(function(postVar){ 
 						if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
 					});
 					process.nextTick(function() { processAction(connection, api.respondToWebClient); });
