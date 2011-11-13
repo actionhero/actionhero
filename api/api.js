@@ -235,7 +235,7 @@ function initWebListen(api, next)
 				
 			}
 		}
-		if(api.configData.logRequests){api.log("web request from " + connection.req.connection.remoteAddress + " | response: " + JSON.stringify(response));}
+		if(api.configData.logRequests){api.log("web request from " + connection.remoteIP + " | response: " + JSON.stringify(response));}
 		process.nextTick(function() { logAction(connection); });
 	};
 	next();
