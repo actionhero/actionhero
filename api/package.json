@@ -10,6 +10,6 @@
   "engines": {
     "node": "~v0.4.12"
   },
-  "dependencies": {"express":"2.4.x", "async":"0.1.x", "mysql":"0.9.4", "sequelize":"1.1.2", "async":"0.1.10", "validator":"0.2.8"},
+  "dependencies": {"express":"2.4.x", "async":"0.1.x", "mysql":"0.9.4", "sequelize":"1.1.2", "async":"0.1.10", "validator":"0.2.8", "connect-form":"0.2.x"},
   "devDependencies": {}
 }
