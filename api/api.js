@@ -235,7 +235,8 @@ function initWebListen(api, next)
 				
 			}
 		}
-		if(api.configData.logRequests){api.log("web request from " + connection.remoteIP + " | response: " + JSON.stringify(response));}
+		// if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | response: " + JSON.stringify(response), "grey");}
+		if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
 		process.nextTick(function() { logAction(connection); });
 	};
 	next();

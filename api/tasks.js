@@ -11,10 +11,10 @@ tasks.Task = {
 	init: function (api, params) {
 		this.params = params || this.defaultParams;
 		this.api = api;
-		this.api.log("starging task: " + this.params.name);
+		this.api.log("starging task: " + this.params.name, "yellow");
 	},
 	end: function () {
-		this.api.log("completed task: " + this.params.name);
+		this.api.log("completed task: " + this.params.name, "yellow");
 	},		
 	run: function() {
 		//
@@ -42,7 +42,7 @@ tasks.cleanLogFiles = function(api) {
 					size = api.fs.statSync(log).size;
 					if(size >= api.configData.maxLogFileSize)
 					{
-						api.log(log + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.")
+						api.log(log + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.", "yellow")
 						api.fs.unlinkSync(log);
 					}
 				}
