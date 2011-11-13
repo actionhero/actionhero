@@ -49,7 +49,7 @@ function initDB(api, next)
 		api.models[modelName] = require("./models/" + file)['defineModel'](api);
 		api.seeds[modelName] = require("./models/" + file)['defineSeeds'](api);
 		api.modelsArray.push(modelName); 
-		api.log("model loaded: " + modelName);
+		api.log("model loaded: " + modelName, "blue");
 	});
 	api.dbObj.sync().on('success', function() {
 		for(var i in api.seeds)
@@ -59,16 +59,16 @@ function initDB(api, next)
 			if (seeds != null)
 			{
 				api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
-					if(seeded){ api.log("Seeded data for: "+modelResp.name); }
+					if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); }
 				});
 			}
 		}
-		api.log("DB conneciton sucessfull and Objects mapped to DB tables");
+		api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green");
 		next();
 	}).on('failure', function(error) {
-		api.log("trouble synchronizing models and DB.  Correct DB credentials?");
+		api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
 		api.log(JSON.stringify(error));
-		api.log("exiting");
+		api.log("exiting", "red");
 		process.exit(1);
 	})
 }
@@ -96,7 +96,7 @@ function initActions(api, next)
 			var actionName = file.split(".")[0];
 			var thisAction = require("./actions/" + file)["action"];
 			autoReloadFileInit(api, ["actions", thisAction.name], ("./actions/" + file), "action");
-			api.log("action loaded: " + actionName);
+			api.log("action loaded: " + actionName, "blue");
 		}
 	});
 	next();
@@ -110,7 +110,7 @@ function initCron(api, next)
 	{
 		autoReloadFileInit(api, ["processCron"], "./cron.js", "processCron");
 		api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
-		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms");
+		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms", "green");
 	}
 	next();
 }
@@ -333,7 +333,7 @@ function initSocketServerListen(api, next){
 // final flag
 function initComplete(api){
 	api.log("");
-	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***");
+	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("");
 }
 
@@ -343,8 +343,7 @@ function runningCheck(api, next){
 	api.utils.shellExec(api, "ps awx | grep api.js | grep -v '/bin/sh' | grep -v grep --count", function(response){
 		if(response.stdout > 1){
 			api.utils.shellExec(api, "ps awx | grep api.js | grep -v grep", function(response){
-				console.log(response);
-				api.log("*** The server is already running, exiting this instance ***");
+				api.log("*** The server is already running, exiting this instance ***", "yellow");
 				process.exit(0);
 			});
 		}else{
@@ -399,6 +398,7 @@ api.expressServer = require('express');
 api.form = require('connect-form');
 api.async = require('async');
 api.crypto = require("crypto");
+api.consoleColors = require('colors');
 
 api.webApp = api.expressServer.createServer(
 	api.form({ keepExtensions: true })
