@@ -212,6 +212,7 @@ function initWebListen(api, next)
 				});
 			}else{
 				process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+			}
 		}
 	});
 	
