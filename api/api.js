@@ -182,6 +182,7 @@ function initWebListen(api, next)
 		connection.response = {}; // the data returned from the API
 		connection.error = false; 	// errors and requst state
 		connection.remoteIP = connection.req.connection.remoteAddress;
+		connection.res.header("X-Powered-By",api.configData.serverName);
 		if(connection.req.headers['x-forwarded-for'] != null)
 		{
 			connection.remoteIP = connection.req.headers['x-forwarded-for'];	
@@ -201,7 +202,16 @@ function initWebListen(api, next)
 		if(connection.params["action"] == "status" && connection.remoteIP == "127.0.0.1"){
 			connection.res.send("OK");
 		}else{
-			process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+			if(connection.req.form != undefined){
+				connection.req.form.complete(function(err, fields, files){
+					api.postVariables.forEach(function(postVar){
+						if(fields[postVar] != null){ connection.params[postVar] = fields[postVar]; }
+					});
+					connection.req.files = files;
+					process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+				});
+			}else{
+				process.nextTick(function() { processAction(connection, api.respondToWebClient); });
 		}
 	});
 	
@@ -210,7 +220,6 @@ function initWebListen(api, next)
 		{
 			var response = api.buildWebResponse(connection);
 	  		try{
-	  			connection.res.header("X-Powered-By",api.configData.serverName);
 	  			connection.res.header('Content-Type', "application/json");
 				process.nextTick(function() { connection.res.send(response); });
 			}catch(e)
@@ -379,10 +388,13 @@ api.fs = require("fs");
 api.mysql = require('mysql')
 api.SequelizeBase = require("sequelize");
 api.expressServer = require('express');
+api.form = require('connect-form');
 api.async = require('async');
 api.crypto = require("crypto");
 
-api.webApp = api.expressServer.createServer();
+api.webApp = api.expressServer.createServer(
+	api.form({ keepExtensions: true })
+);
 api.webApp.use(api.expressServer.cookieParser());
 api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
 
