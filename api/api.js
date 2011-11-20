@@ -10,7 +10,6 @@ function initRequires(api, next)
 	autoReloadFileInit(api, ["log"], "./logger.js", "log");
 	autoReloadFileInit(api, ["tasks"], "./tasks.js", "tasks");
 	autoReloadFileInit(api, ["cache"], "./cache.js", "cache");
-	autoReloadFileInit(api, ["buildWebResponse"], "./webResponse.js", "buildWebResponse");
 
 	next();
 }
@@ -182,6 +181,7 @@ function initWebListen(api, next)
 		connection.response = {}; // the data returned from the API
 		connection.error = false; 	// errors and requst state
 		connection.remoteIP = connection.req.connection.remoteAddress;
+		connection.contentType = "application/json";
 		connection.res.header("X-Powered-By",api.configData.serverName);
 		if(connection.req.headers['x-forwarded-for'] != null)
 		{
@@ -228,7 +228,7 @@ function initWebListen(api, next)
 		{
 			var response = api.buildWebResponse(connection);
 	  		try{
-	  			connection.res.header('Content-Type', "application/json");
+	  			connection.res.header('Content-Type', connection.contentType);
 				process.nextTick(function() { connection.res.send(response); });
 			}catch(e)
 			{
@@ -239,6 +239,47 @@ function initWebListen(api, next)
 		}
 		process.nextTick(function() { logAction(connection); });
 	};
+	
+	api.buildWebResponse = function(connection)
+	{	
+		connection.response = connection.response || {};
+			
+		// serverInformation information
+		connection.response.serverInformation = {};
+		connection.response.serverInformation.serverName = this.configData.serverName;
+		connection.response.serverInformation.apiVerson = this.configData.apiVerson;
+		
+		// requestorInformation
+		connection.response.requestorInformation = {};
+		connection.response.requestorInformation.remoteAddress = connection.remoteIP;
+		connection.response.requestorInformation.RequestsRemaining = this.configData.apiRequestLimit - connection.requestCounter;
+		connection.response.requestorInformation.recievedParams = {};
+		for(var k in connection.params){
+			if(connection.params[k] != undefined){
+				connection.response.requestorInformation.recievedParams[k] = connection.params[k] ;
+			}
+		};
+		
+		// request timer
+		connection.timer.stopTime = new Date().getTime();
+		connection.response.serverInformation.requestDuration = connection.timer.stopTime - connection.timer.startTime;
+			
+		// errors
+		if(connection.error == false){
+			connection.response.error = "OK";
+		}
+		else{
+			connection.response.error = connection.error;
+		}
+			
+		if(connection.params.callback != null){
+			connection.contentType = "application/javascript";
+			return connection.params.callback + "(" + JSON.stringify(connection.response) + ");";
+		}
+		
+		return JSON.stringify(connection.response);
+	};
+	
 	next();
 }
 
