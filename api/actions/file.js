@@ -14,7 +14,17 @@ action.outputExample = {}
 // functional
 action.run = function(api, connection, next)
 {
-	var fileName = connection.params.fileName || connection.req.params[0].split("/")[1];
+	var fileName = "";
+	if(connection.params.fileName == null || typeof connection.params.fileName == "undefined"){
+		var parts = connection.req.params[0].split("/");
+		parts.shift();
+		for (var i in parts){
+			if (fileName != ""){ fileName += "/"; }
+			fileName += parts[i];
+		}
+	}else{
+		fileName = connection.params.fileName;
+	}
 	fileName = api.configData.flatFileDirectory + fileName;
 	api.path.exists(fileName, function(exists) {
 		if(exists)
