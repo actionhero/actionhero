@@ -34,6 +34,8 @@
 	"sessionDurationMinutes" : 1440,
 
 	"flatFileDirectory" : "./public/",
+	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
+	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 
 	"cache" : {
 		"defaultExpireTime" : "60000"

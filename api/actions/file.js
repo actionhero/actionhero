@@ -15,16 +15,34 @@ action.outputExample = {}
 action.run = function(api, connection, next)
 {
 	var fileName = connection.params.fileName || connection.req.params[0].split("/")[1];
+	if (fileName == "" || fileName == null){fileName = "/";}
 	fileName = api.configData.flatFileDirectory + fileName;
 	api.path.exists(fileName, function(exists) {
 		if(exists)
 		{
-			connection.res.sendfile(fileName);
-			next(connection, false);
+			var isPath = false
+			if (api.path.extname(fileName) == "" || api.path.extname(fileName).indexOf("/") > -1){
+				isPath = true;
+			}
+			if(isPath){
+				var indexPage = fileName + "index.html";
+		  		api.path.exists(indexPage, function(indexExists) {
+		  			if(indexExists){
+		  				connection.res.sendfile(indexPage);
+						next(connection, false);
+		  			}else{
+		  				connection.res.send(api.configData.flatFileIndexPageNotFoundMessage, 404);
+						next(connection, false);
+		  			}
+		  		});
+			}else{
+		  		connection.res.sendfile(fileName);
+				next(connection, false);
+			}
 		}
 		else
 		{
-			connection.res.send('Sorry, that file is not found :(', 404);
+			connection.res.send(api.configData.flatFileNotFoundMessage, 404);
 			next(connection, false);
 		}
 	});
