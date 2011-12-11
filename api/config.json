@@ -19,7 +19,7 @@
 	"logRequests" : true,
 	
 	"cronProcess" : true,
-	"cronTimeInterval" : 60000,
+	"cronTimeInterval" : 6000,
 	
     "database" : {
 		"dbType" : "MYSQL",

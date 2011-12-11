@@ -8,28 +8,30 @@ tasks.Task = {
 		"name" : "generic task",
 		"desc" : "I do a thing!"
 	},
-	init: function (api, params) {
+	init: function (api, params, next) {
 		this.params = params || this.defaultParams;
 		this.api = api;
-		this.api.log("starging task: " + this.params.name, "yellow");
+		if (next != null){this.next = next;}
+		this.api.log("  starging task: " + this.params.name, "yellow");
 	},
 	end: function () {
-		this.api.log("completed task: " + this.params.name, "yellow");
+		this.api.log("  completed task: " + this.params.name, "yellow");
+		if (this.next != null){this.next();}
 	},		
 	run: function() {
-		//
+		this.api.log("RUNNING: "+this.params.name);
 	}
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // ensure that log file doesn't get to big
-tasks.cleanLogFiles = function(api) {
+tasks.cleanLogFiles = function(api, next) {
 	var params = {
 		"name" : "Clean Log Files",
 		"desc" : "I will clean (delete) all log files if they get to big."
 	};
 	var task = Object.create(api.tasks.Task);
-	task.init(api, params);
+	task.init(api, params, next);
 	task.run = function() {
 		var logs = [
 			(api.configData.logFolder + "/" + api.configData.logFile)
@@ -46,71 +48,74 @@ tasks.cleanLogFiles = function(api) {
 						api.fs.unlinkSync(log);
 					}
 				}
+				task.end();
 			});
 		});
 	};
-	process.nextTick(function() { task.run(); });
-	process.nextTick(function() { task.end(); });
+	//
+	task.run();
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // cleaning old log entries
-tasks.cleanOldLogDB = function(api) {
+tasks.cleanOldLogDB = function(api, next) {
 	var params = {
 		"name" : "Clean Task DB",
 		"desc" : "I will remove old entires from the log DB."
 	};
 	var task = Object.create(api.tasks.Task);
-	task.init(api, params);
+	task.init(api, params, next);
 	task.run = function() {
 		api.models.log.findAll({where: ["createdAt < (NOW() - INTERVAL 2 HOUR)"]}).on('success', function(old_logs) {
 			old_logs.forEach(function(log){
 				log.destroy();
 			});
+			task.end();
 		});
 	};
-	process.nextTick(function() { task.run(); });
-	process.nextTick(function() { task.end(); });
+	task.run();
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // cleaning old cache entries from DB
-tasks.cleanOldCacheDB = function(api) {
+tasks.cleanOldCacheDB = function(api, next) {
 	var params = {
 		"name" : "Clean cache DB",
 		"desc" : "I will clean old entires from the cache DB."
 	};
 	var task = Object.create(api.tasks.Task);
-	task.init(api, params);
+	task.init(api, params, next);
 	task.run = function() {
 		api.models.cache.findAll({where: ["expireTime > NOW()"]}).on('success', function(old_caches) {
 			old_caches.forEach(function(entry){
 				entry.destroy();
 			});
+			task.end();
 		});
 	};
-	process.nextTick(function() { task.run(); });
-	process.nextTick(function() { task.end(); });
+	//
+	task.run();
 };
 
 ////////////////////////////////////////////////////////////////////////////
 // cleaning old session entries from DB
-tasks.cleanOldSessionDB = function(api) {
+tasks.cleanOldSessionDB = function(api, next) {
 	var params = {
 		"name" : "Clean session DB",
 		"desc" : "I will clean old sessions from the session DB."
 	};
 	var task = Object.create(api.tasks.Task);
-	task.init(api, params);
+	task.init(api, params, next);
 	task.run = function() {
 		api.models.session.findAll({where: ["updatedAt < DATE_SUB(NOW(), INTERVAL " + api.configData.sessionDurationMinutes + " MINUTE)"]}).on('success', function(old_caches) {
 			old_caches.forEach(function(entry){
 				entry.destroy();
 			});
+			task.end();
 		});
 	};
-	process.nextTick(function() { task.run(); });
-	process.nextTick(function() { task.end(); });
+	//
+	task.run();
 };
 
 ////////////////////////////////////////////////////////////////////////////
