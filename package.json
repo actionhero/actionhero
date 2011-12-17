@@ -11,14 +11,19 @@
     "node": "~v0.4.12"
   },
   "dependencies": {
-	"express":"2.5.x", 
+    "express":"2.5.x", 
     "async":"0.1.x", 
     "mysql":"0.9.x", 
     "sequelize":"1.1.x", 
     "validator":"0.3.x",
     "forever":"0.7.x",
     "connect-form":"0.2.x",
-	"colors":"0.x.x"
+    "colors":"0.x.x"
 	},
-  "devDependencies": {}
+  "devDependencies": {
+    "vows":"0.x.x"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/vows ./spec/utils.js"
+  }
 }
