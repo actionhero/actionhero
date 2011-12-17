@@ -8,7 +8,7 @@
   },
   "main": "api",
   "engines": {
-    "node": "~v0.4.12"
+    "node": "0.6.x"
   },
   "dependencies": {
     "express":"2.5.x", 
