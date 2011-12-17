@@ -2,24 +2,22 @@ var utils = {};
 
 ////////////////////////////////////////////////////////////////////////////
 // sqlDateTime
-utils.sqlDateTime = function(){
-	var temp = new Date();
-	var dateStr = this.padDateDoubleStr(temp.getFullYear()) +
+utils.sqlDateTime = function(time){
+	if(time == null){ time = new Date(); }
+	var dateStr = this.padDateDoubleStr(time.getFullYear()) +
 					"-" + 
-	                  this.padDateDoubleStr(1 + temp.getMonth()) +
+	                  this.padDateDoubleStr(1 + time.getMonth()) +
 					"-" +
-	                  this.padDateDoubleStr(temp.getDate()) +
+	                  this.padDateDoubleStr(time.getDate()) +
 					" " +
-	                  this.padDateDoubleStr(temp.getHours()) +
+	                  this.padDateDoubleStr(time.getHours()) +
 					":" +
-	                  this.padDateDoubleStr(temp.getMinutes()) +
+	                  this.padDateDoubleStr(time.getMinutes()) +
 					":" +
-	                  this.padDateDoubleStr(temp.getSeconds());
+	                  this.padDateDoubleStr(time.getSeconds());
 	return dateStr;
 };
 
-////////////////////////////////////////////////////////////////////////////
-// padDateDoubleStr
 utils.padDateDoubleStr = function(i){
     return (i < 10) ? "0" + i : "" + i;
 };
