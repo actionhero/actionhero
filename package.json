@@ -24,6 +24,6 @@
     "vows":"0.x.x"
   },
   "scripts": {
-    "test": "./node_modules/.bin/vows ./spec/utils.js"
+    "test": "./node_modules/.bin/vows ./spec/*"
   }
 }
