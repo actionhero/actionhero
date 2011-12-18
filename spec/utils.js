@@ -53,8 +53,10 @@ suite.addBatch({
             return (end - start);
         },
         'Should be a number': function (result) { assert.isNumber(result); },
-        'System should have slept for 1 second' : function(result){ assert.isTrue(result > 1000); },
-        'System should have slept for 1 second' : function(result){ assert.isTrue(result < 2000); },
+        'System should have slept for 1 second' : function(result){ 
+            assert.isTrue(result > 1000); 
+            assert.isTrue(result < 2000);
+        },
     }
 });
 

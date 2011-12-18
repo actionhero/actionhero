@@ -448,6 +448,14 @@ api.webApp = api.expressServer.createServer(
 api.webApp.use(api.expressServer.cookieParser());
 api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
 
+process.argv.forEach(function (val, index, array) {
+  if(val == "test"){
+  	for (var i in api.configData.testVariables){
+  		api.configData[i] = api.configData.testVariables[i];
+  	}
+  }
+});
+
 api.stats = {};
 api.stats.numberOfWebRequests = 0;
 api.stats.numberOfSocketRequests = 0;
