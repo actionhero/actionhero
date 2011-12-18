@@ -2,11 +2,11 @@
   "author": "Evan Tahler <evan@evantahler.com>",
   "name": "daveApi",
   "description": "DAVE Api Server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "repository": {
     "url": "https://github.com/evantahler/nodeDaveAPI"
   },
-  "main": "api",
+  "main": "./api.js",
   "engines": {
     "node": "0.6.x"
   },

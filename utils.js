@@ -115,11 +115,12 @@ utils.sessionCheck = function(api, connection, next){
 // shellExec
 utils.shellExec = function(api, command, next){
 	var response = {};
+	console.log(command)
 	child = api.exec(command, function (error, stdout, stderr) {
 		if (stdout.length > 0){ response.stdout = stdout.replace(/(\r\n|\n|\r)/gm,""); }else{response.stdout = stdout; }
 		if (stderr.length > 0){ response.stderr = stderr.replace(/(\r\n|\n|\r)/gm,""); }else{response.stderr = stderr; }
 	  	if (error !== null) {
-			response.error = error.replace(/(\r\n|\n|\r)/gm,"");
+	  		api.log(JSON.stringify(error), ["red","bold"]);
 	  	}
 	  	process.nextTick(function() { next(response); });
 	})

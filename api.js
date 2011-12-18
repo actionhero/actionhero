@@ -2,21 +2,34 @@
 // DAVE API Framweork in node.js
 // Evan Tahler @ Fall 2011
 
+var nodeDaveAPI = {};
+
 ////////////////////////////////////////////////////////////////////////////
 // Init
-function initRequires(api, next)
+nodeDaveAPI.initRequires = function(api, next)
 {
-	autoReloadFileInit(api, ["utils"], "./utils.js", "utils");
-	autoReloadFileInit(api, ["log"], "./logger.js", "log");
-	autoReloadFileInit(api, ["tasks"], "./tasks.js", "tasks");
-	autoReloadFileInit(api, ["cache"], "./cache.js", "cache");
+	api.utils = require(__dirname + '/utils.js').utils;
+	api.cache = require(__dirname + '/cache.js').cache;
 
-	next();
+	if (api.cluster.isMaster) { 
+		var taskFile = "./tasks.js"
+		api.path.exists(taskFile, function (exists) {
+		  if(!exists){
+		  	var taskFile = __dirname + "/tasks.js";
+		  	api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
+		  	api.tasks = require(taskFile).tasks;
+		  }
+		  api.tasks = require(taskFile).tasks;
+		  next();	
+		});
+	}else{
+		next();	
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Init logging folder
-function initLogFolder(api, next)
+nodeDaveAPI.initLogFolder = function(api, next)
 {
 	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 	next();
@@ -24,7 +37,7 @@ function initLogFolder(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // DB setup
-function initDB(api, next)
+nodeDaveAPI.initDB = function(api, next)
 {
 	api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
 		host: api.configData.database.host,
@@ -43,38 +56,49 @@ function initDB(api, next)
 	api.models = {};
 	api.seeds = {};
 	api.modelsArray = [];
-	api.fs.readdirSync("./models").forEach( function(file) {
-		var modelName = file.split(".")[0];
-		api.models[modelName] = require("./models/" + file)['defineModel'](api);
-		api.seeds[modelName] = require("./models/" + file)['defineSeeds'](api);
-		api.modelsArray.push(modelName); 
-		if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
-	});
-	api.dbObj.sync().on('success', function() {
-		for(var i in api.seeds)
-		{
-			var seeds = api.seeds[i];
-			var model = api.models[i];
-			if (seeds != null)
-			{
-				api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
-					if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
-				});
-			}
+
+	var modelsPath = "./models/";
+	api.path.exists(modelsPath, function (exists) {
+	  if(!exists){
+	  	var defaultModelsPath = __dirname + "/models/";
+	  	if (api.cluster.isMaster) { api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow"); }
+		  modelsPath = defaultModelsPath;
 		}
-		if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
-		next();
-	}).on('failure', function(error) {
-		api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
-		api.log(JSON.stringify(error));
-		api.log("exiting", "red");
-		process.exit(1);
-	})
+
+		api.fs.readdirSync(modelsPath).forEach( function(file) {
+			var modelName = file.split(".")[0];
+			api.models[modelName] = require(modelsPath + file)['defineModel'](api);
+			api.seeds[modelName] = require(modelsPath + file)['defineSeeds'](api);
+			api.modelsArray.push(modelName); 
+			if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
+		});
+		api.dbObj.sync().on('success', function() {
+			for(var i in api.seeds)
+			{
+				var seeds = api.seeds[i];
+				var model = api.models[i];
+				if (seeds != null)
+				{
+					api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
+						if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
+					});
+				}
+			}
+			if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
+			next();
+		}).on('failure', function(error) {
+			api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
+			api.log(JSON.stringify(error));
+			api.log("exiting", "red");
+			process.exit(1);
+		})
+
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // postVariable config and load
-function initPostVariables(api, next)
+nodeDaveAPI.initPostVariables = function(api, next)
 {
 	api.postVariables = api.configData.postVariables || [];
 	for(var model in api.models){
@@ -87,27 +111,36 @@ function initPostVariables(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // populate actions
-function initActions(api, next)
+nodeDaveAPI.initActions = function(api, next)
 {
 	api.actions = {};
-	api.fs.readdirSync("./actions").forEach( function(file) {
-		if (file != ".DS_Store"){
-			var actionName = file.split(".")[0];
-			var thisAction = require("./actions/" + file)["action"];
-			autoReloadFileInit(api, ["actions", thisAction.name], ("./actions/" + file), "action");
-			if (api.cluster.isMaster) { api.log("action loaded: " + actionName, "blue"); }
+
+	var actionsPath = "./actions/";
+	api.path.exists(actionsPath, function (exists) {
+	  if(!exists){
+	  	var defaultActionsPath = __dirname + "/actions/";
+	  	if (api.cluster.isMaster) { api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow"); }
+		  actionsPath = defaultActionsPath;
 		}
+		api.fs.readdirSync(actionsPath).forEach( function(file) {
+			if (file != ".DS_Store"){
+				var actionName = file.split(".")[0];
+				var thisAction = require(actionsPath + file)["action"];
+				api.actions[thisAction.name] = require(actionsPath + file).action;
+				if (api.cluster.isMaster) { api.log("action loaded: " + actionName, "blue"); }
+			}
+		});
+		next();
 	});
-	next();
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Periodic Tasks (fixed timer events)
-function initCron(api, next)
+nodeDaveAPI.initCron = function(api, next)
 {
 	if (api.configData.cronProcess)
 	{
-		autoReloadFileInit(api, ["processCron"], "./cron.js", "processCron");
+		api.processCron = require(__dirname + "/cron.js").processCron;
 		api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
 		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms", "green");
 	}
@@ -117,54 +150,64 @@ function initCron(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Generic Action processing
-function processAction(connection, next)
+nodeDaveAPI.processAction = function(api, connection, next)
 {
 	var templateValidator = require('validator').Validator;
 	connection.validator = new templateValidator();
 	connection.validator.error = function(msg){ connection.error = msg; };
 	
-	api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
-		connection.requestCounter = requestThisHourSoFar + 1;
-		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
-		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
-		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
-		if(connection.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
-		{
-			connection.action = undefined;
-			if(connection.params["action"] == undefined){
-				connection.error = "You must provide an action. Use action=describeActions to see a list.";
-				process.nextTick(function() { next(connection, true); });
-			}
-			else{
+	if(api.models.log != null){
+		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
+			connection.requestCounter = requestThisHourSoFar + 1;
+			if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
+			if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
+			if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
+			if(connection.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
+			{
 				connection.action = connection.params["action"];
 				if(api.actions[connection.action] != undefined){
 					process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
 				}else{
-					connection.error = connection.action + " is not a known action. Use action=describeActions to see a list.";
+					if(connection.action == ""){connection.action = "{no action}";}
+					connection.error = connection.action + " is not a known action.";
 					process.nextTick(function() { next(connection, true); });
 				}
+			}else{
+				connection.requestCounter = api.configData.apiRequestLimit;
+				connection.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
+				process.nextTick(function() { next(connection, true); });
 			}
+		});
+	}else{
+		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
+		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
+		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
+		connection.action = connection.params["action"];
+		if(api.actions[connection.action] != undefined){
+			process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
 		}else{
-			connection.requestCounter = api.configData.apiRequestLimit;
-			connection.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
+			if(connection.action == ""){connection.action = "{no action}";}
+			connection.error = connection.action + " is not a known action.";
 			process.nextTick(function() { next(connection, true); });
 		}
-	});
+	}
 }
 
-function logAction(connection){
-	var logRecord = api.models.log.build({
-		ip: connection.remoteIP,
-		action: connection.action,
-		error: connection.error,
-		params: JSON.stringify(connection.params)
-	});
-	process.nextTick(function() { logRecord.save(); });
+nodeDaveAPI.logAction = function(api, connection){
+	if(api.models.log != null){
+		var logRecord = api.models.log.build({
+			ip: connection.remoteIP,
+			action: connection.action,
+			error: connection.error,
+			params: JSON.stringify(connection.params)
+		});
+		process.nextTick(function() { logRecord.save(); });
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Web Request Processing
-function initWebListen(api, next)
+nodeDaveAPI.initWebListen = function(api, next)
 {
 	api.webApp.listen(api.configData.webServerPort);
 	api.webApp.use(api.expressServer.bodyParser());
@@ -209,16 +252,16 @@ function initWebListen(api, next)
 							if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
 						});
 						connection.req.files = files;
-						process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+						process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
 					});
 				}else{
  					api.postVariables.forEach(function(postVar){ 
 						if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
 					});
-					process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+					process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
 				}
 			}else{
-				process.nextTick(function() { processAction(connection, api.respondToWebClient); });
+				process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
 			}
 		}
 	});
@@ -237,7 +280,7 @@ function initWebListen(api, next)
 			// if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | response: " + JSON.stringify(response), "grey");}
 			if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
 		}
-		process.nextTick(function() { logAction(connection); });
+		process.nextTick(function() { nodeDaveAPI.logAction(api, connection); });
 	};
 	
 	api.buildWebResponse = function(connection)
@@ -285,7 +328,7 @@ function initWebListen(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Socket Request Processing
-function initSocketServerListen(api, next){
+nodeDaveAPI.initSocketServerListen = function(api, next){
 	api.gameListeners = {}
 
 	api.socketServer = api.net.createServer(function (connection) {
@@ -332,7 +375,7 @@ function initSocketServerListen(api, next){
 				connection.response = {};
 				// if(connection.params["action"] == null || words.length == 1){connection.params["action"] = words[0];}
 				connection.params["action"] = words[0];
-				process.nextTick(function() { processAction(connection, api.respondToSocketClient); });
+				process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToSocketClient); });
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}
 	  	});
@@ -355,7 +398,7 @@ function initSocketServerListen(api, next){
 				api.sendSocketMessage(connection, {error: connection.error});
 			}
 		}
-		process.nextTick(function() { logAction(connection); });
+		process.nextTick(function() { nodeDaveAPI.logAction(api, connection); });
 	}
 	
 	//message helper
@@ -370,10 +413,62 @@ function initSocketServerListen(api, next){
 	
 	next();
 }
+
+////////////////////////////////////////////////////////////////////////////
+// logging
+nodeDaveAPI.log = function(original_message, styles){	
+	// styles is an array of styles
+	if (styles == null){styles = ["white"];}
+
+	if(this.utils != undefined){
+		var time_string = this.utils.sqlDateTime();
+	}else{
+		var time_string = "!";
+	}
+
+	var console_message = this.consoleColors.grey(time_string) + this.consoleColors.grey(" | ");
+	var inner_message = original_message;
+	for(var i in styles){
+		var style = styles[i];
+		if(style == "bold"){inner_message = this.consoleColors.bold(inner_message);}
+		else if(style == "italic"){inner_message = this.consoleColors.italic(inner_message);}
+		else if(style == "underline"){inner_message = this.consoleColors.underline(inner_message);}
+		else if(style == "inverse"){inner_message = this.consoleColors.inverse(inner_message);}
+		else if(style == "white"){inner_message = this.consoleColors.white(inner_message);}
+		else if(style == "grey"){inner_message = this.consoleColors.grey(inner_message);}
+		else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
+		else if(style == "blue"){inner_message = this.consoleColors.blue(inner_message);}
+		else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
+		else if(style == "green"){inner_message = this.consoleColors.green(inner_message);}
+		else if(style == "yellow"){inner_message = this.consoleColors.yellow(inner_message);}
+		else if(style == "red"){inner_message = this.consoleColors.red(inner_message);}
+		else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
+		else if(style == "magenta"){inner_message = this.consoleColors.magenta(inner_message);}
+		else if(style == "rainbow"){inner_message = this.consoleColors.rainbow(inner_message);}
+		else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
+		else if(style == "zebra"){inner_message = this.consoleColors.zebra(inner_message);}
+		else if(style == "zalgo"){inner_message = this.consoleColors.zalgo(inner_message);}
+	}
+	console_message += inner_message;
+	console.log(console_message);
+
+	if(this.configData != null && this.configData.logging == true)
+	{
+		var file_message = time_string + " | " + original_message;
+		if (this.logWriter == null){
+			this.logWriter = this.fs.createWriteStream((this.configData.logFolder + "/" + this.configData.logFile), {flags:"a"});
+		}
+		try{
+			this.logWriter.write(file_message + "\r\n");
+		}catch(e){
+			console.log(" !!! Error writing to log file: " + e);
+		}
+	}
+};
  
 ////////////////////////////////////////////////////////////////////////////
 // final flag
-function initMasterComplete(api){
+nodeDaveAPI.initMasterComplete = function(api){
 	api.log("");
 	api.log("*** Master Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("Starting workers:");
@@ -383,128 +478,105 @@ function initMasterComplete(api){
 	}
 }
 
-function initWorkerComplete(api){
+nodeDaveAPI.initWorkerComplete = function(api){
 	api.log("worker pid "+process.pid+" started", "green");
-}
-
-////////////////////////////////////////////////////////////////////////////
-// am I runnign already?
-function runningCheck(api, next){
-	api.utils.shellExec(api, "ps awx | grep api.js | grep -v '/bin/sh' | grep -v grep --count", function(response){
-		if(response.stdout > 1){
-			api.utils.shellExec(api, "ps awx | grep api.js | grep -v grep", function(response){
-				api.log("*** The server is already running, exiting this instance ***", "yellow");
-				process.exit(0);
-			});
-		}else{
-			next();
-		}
-	});
-}
-
-////////////////////////////////////////////////////////////////////////////
-// autoReload
-function autoReloadFileInit(api, apiVariables, path, theMethod){
-	if(api.configData.autoReloadFiles){
-		api.fs.watchFile(path, function () {
-			// console.log("*** "+path+" has changed, reloading module");
-			delete(require.cache[require.resolve(path)]);
-			if(apiVariables.length == 1){
-				api[apiVariables[0]] = require(path)[theMethod];
-			}else if(apiVariables.length == 2){
-				api[apiVariables[0]][apiVariables[1]] = require(path)[theMethod];
-			}
-		});
-	}
-
-	if(apiVariables.length == 1){
-		api[apiVariables[0]] = require(path)[theMethod];
-	}else if(apiVariables.length == 2){
-		api[apiVariables[0]][apiVariables[1]] = require(path)[theMethod];
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // GO!
 
-// Force NPM to be update... you probably don't want this in production
-// exec = require('child_process').exec
-// exec("npm update");
+nodeDaveAPI.start = function(params){
+	if (params == null){params = {};}
+	// the api namespace.  Everything uses this.
+	if(params.api == null){
+		var api = {};
+	}else{
+		var api = params.api
+	}
 
-process.chdir(__dirname);
+	api.util = require("util");
+	api.exec = require('child_process').exec;
+	api.net = require("net");
+	api.http = require("http");
+	api.url = require("url");
+	api.path = require("path");
+	api.fs = require("fs");
+	api.cluster = require("cluster");
+	api.os = require('os');
+	api.mysql = require('mysql');
+	api.SequelizeBase = require("sequelize");
+	api.expressServer = require('express');
+	api.form = require('connect-form');
+	api.async = require('async');
+	api.crypto = require("crypto");
+	api.consoleColors = require('colors');
+	api.log = nodeDaveAPI.log;
 
-var api = api = api || {}; // the api namespace.  Everything uses this.
+	api.webApp = api.expressServer.createServer(
+		api.form({ keepExtensions: true })
+	);
+	api.webApp.use(api.expressServer.cookieParser());
 
-api.util = require("util");
-api.exec = require('child_process').exec;
-api.net = require("net");
-api.http = require("http");
-api.url = require("url");
-api.path = require("path");
-api.fs = require("fs");
-api.cluster = require("cluster");
-api.os = require('os');
-api.mysql = require('mysql');
-api.SequelizeBase = require("sequelize");
-api.expressServer = require('express');
-api.form = require('connect-form');
-api.async = require('async');
-api.crypto = require("crypto");
-api.consoleColors = require('colors');
+	api.path.exists('./config.json', function (exists) {
+		if(exists){
+			api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
+		}else{
+			var defualtConfigFile = "./node_modules/nodeDaveAPI/config.json";
+			if(params.configChanges == null){
+				if (api.cluster.isMaster) { api.log('no local config.json found nor no provided configChanges; using default from '+defualtConfigFile, "red"); }
+			}else{
+				if (api.cluster.isMaster) {
+					api.log("configChanges found to default template in "+defualtConfigFile+":");
+					api.log(JSON.stringify(params.configChanges));
+				}
+			}
+			api.configData = JSON.parse(api.fs.readFileSync(defualtConfigFile,'utf8'));
+		}
 
-api.webApp = api.expressServer.createServer(
-	api.form({ keepExtensions: true })
-);
-api.webApp.use(api.expressServer.cookieParser());
-api.configData = JSON.parse(api.fs.readFileSync('config.json','utf8'));
+		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i]; }
 
-process.argv.forEach(function (val, index, array) {
-  if(val == "test"){
-  	for (var i in api.configData.testVariables){
-  		api.configData[i] = api.configData.testVariables[i];
-  	}
-  }
-});
+		api.stats = {};
+		api.stats.numberOfWebRequests = 0;
+		api.stats.numberOfSocketRequests = 0;
+		api.stats.startTime = new Date().getTime();	
 
-api.stats = {};
-api.stats.numberOfWebRequests = 0;
-api.stats.numberOfSocketRequests = 0;
-api.stats.startTime = new Date().getTime();
-
-if (api.cluster.isMaster) {
-	initLogFolder(api, function(){
-		initRequires(api, function(){
-			runningCheck(api, function(){
-				initCron(api, function(){
-					initDB(api, function(){
-						initPostVariables(api, function(){
-							initActions(api, function(){
-								initMasterComplete(api);
+		if (api.cluster.isMaster) {
+			nodeDaveAPI.initLogFolder(api, function(){
+				nodeDaveAPI.initRequires(api, function(){
+					nodeDaveAPI.initCron(api, function(){
+						nodeDaveAPI.initDB(api, function(){
+							nodeDaveAPI.initPostVariables(api, function(){
+								nodeDaveAPI.initActions(api, function(){
+									nodeDaveAPI.initMasterComplete(api);
+								});
 							});
 						});
 					});
 				});
 			});
-		});
-	});
 
-	api.cluster.on('death', function(worker) {
-		console.log('worker ' + worker.pid + ' died');
-	});
-}else{
-	initLogFolder(api, function(){
-		initRequires(api, function(){
-			initDB(api, function(){
-				initPostVariables(api, function(){
-					initActions(api, function(){
-						initWebListen(api, function(){
-							initSocketServerListen(api, function(){
-								initWorkerComplete(api);
+			api.cluster.on('death', function(worker) {
+				api.log('worker ' + worker.pid + ' died', "red");
+			});
+		}else{
+			nodeDaveAPI.initLogFolder(api, function(){
+				nodeDaveAPI.initRequires(api, function(){
+					nodeDaveAPI.initDB(api, function(){
+						nodeDaveAPI.initPostVariables(api, function(){
+							nodeDaveAPI.initActions(api, function(){
+								nodeDaveAPI.initWebListen(api, function(){
+									nodeDaveAPI.initSocketServerListen(api, function(){
+										nodeDaveAPI.initWorkerComplete(api);
+									});
+								});
 							});
 						});
 					});
 				});
 			});
-		});
+		}
+
 	});
 }
+
+exports.nodeDaveAPI = nodeDaveAPI;

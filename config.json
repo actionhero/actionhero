@@ -1,15 +1,10 @@
 {
     "apiVerson" : 1,
-	"systemTimeZone" : "America/Los_Angeles",
-	"defaultOutputType" : "JSON",
-	"xmlRootNode" : "XML",
-	"requestLimitPerHour" : 1000,
-	
-	"serverAddress" : "127.0.0.1",
 	"webServerPort" : 8080,
 	"socketServerPort" : 5000,
-	"serverName" : "daveAPIServer",
-	"socketServerWelcomeMessage" : "Hello! Welcome to the daveNodeApi server",
+	"serverName" : "nodeDaveAPI",
+	"socketServerWelcomeMessage" : "Hello! Welcome to the nodeDaveAPI server",
+	"apiBaseDir" : "./node_modules/nodeDaveAPI/",
 	
 	"logging" : true,
 	"logFolder" : "./log/",
@@ -22,7 +17,6 @@
 	"cronTimeInterval" : 60000,
 	
     "database" : {
-		"dbType" : "MYSQL",
         "host" : "127.0.0.1",
 		"database" : "node_dave_api",
 		"username" : "root",
@@ -33,12 +27,12 @@
 
 	"sessionDurationMinutes" : 1440,
 
-	"flatFileDirectory" : "./public/",
+	"flatFileDirectory" : "./node_modules/nodeDaveAPI/public/",
 	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 
 	"cache" : {
-		"defaultExpireTime" : "60000"
+		"defaultExpireTime" : "3600"
 	},
 
 	"apiRequestLimit" : 1000,
@@ -53,11 +47,5 @@
 		"fileName",
 		"password",
 		"sessionKey"
-	],
-
-	"testVariables":{
-		"webServerPort" : 8081,
-		"socketServerPort" : 5001,
-		"logging" : false
-	}
+	]
 }

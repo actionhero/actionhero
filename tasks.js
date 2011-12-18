@@ -66,12 +66,16 @@ tasks.cleanOldLogDB = function(api, next) {
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params, next);
 	task.run = function() {
-		api.models.log.findAll({where: ["createdAt < (NOW() - INTERVAL 2 HOUR)"]}).on('success', function(old_logs) {
-			old_logs.forEach(function(log){
-				log.destroy();
+		if(api.models.log != null){
+			api.models.log.findAll({where: ["createdAt < (NOW() - INTERVAL 2 HOUR)"]}).on('success', function(old_logs) {
+				old_logs.forEach(function(log){
+					log.destroy();
+				});
+				task.end();
 			});
+		}else{
 			task.end();
-		});
+		}
 	};
 	task.run();
 };
@@ -86,12 +90,16 @@ tasks.cleanOldCacheDB = function(api, next) {
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params, next);
 	task.run = function() {
-		api.models.cache.findAll({where: ["expireTime > NOW()"]}).on('success', function(old_caches) {
-			old_caches.forEach(function(entry){
-				entry.destroy();
+		if(api.models.cache != null){
+			api.models.cache.findAll({where: ["expireTime > NOW()"]}).on('success', function(old_caches) {
+				old_caches.forEach(function(entry){
+					entry.destroy();
+				});
+				task.end();
 			});
+		}else{
 			task.end();
-		});
+		}
 	};
 	//
 	task.run();
@@ -107,12 +115,16 @@ tasks.cleanOldSessionDB = function(api, next) {
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params, next);
 	task.run = function() {
-		api.models.session.findAll({where: ["updatedAt < DATE_SUB(NOW(), INTERVAL " + api.configData.sessionDurationMinutes + " MINUTE)"]}).on('success', function(old_caches) {
-			old_caches.forEach(function(entry){
-				entry.destroy();
+		if(api.models.session != null){
+			api.models.session.findAll({where: ["updatedAt < DATE_SUB(NOW(), INTERVAL " + api.configData.sessionDurationMinutes + " MINUTE)"]}).on('success', function(old_caches) {
+				old_caches.forEach(function(entry){
+					entry.destroy();
+				});
+				task.end();
 			});
+		}else{
 			task.end();
-		});
+		}
 	};
 	//
 	task.run();
