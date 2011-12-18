@@ -23,7 +23,26 @@ suite.addBatch({
     topic: function(){ specHelper.apiTest.get('', {} ,this.callback ); },
     '/ should repond something' : function(res, b){ specHelper.assert.ok(res.body); }
   }
-})
+});
+
+suite.addBatch({
+  "Server basic response should be JSON and have basic data": {
+    topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
+    'should be JSON' : function(res, b){ specHelper.assert.isObject(res.body); },
+    'requestorInformation' : function(res, b){ specHelper.assert.isObject(res.body.requestorInformation); },
+  },
+
+  "limit and offset should have defaults": {
+    topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
+    'limit' : function(res, b){ specHelper.assert.equal(100, res.body.requestorInformation.recievedParams.limit); },
+    'offset' : function(res, b){ specHelper.assert.equal(0, res.body.requestorInformation.recievedParams.offset); },
+  },
+
+  "default error should make sense": {
+    topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
+    'limit' : function(res, b){ specHelper.assert.equal("{no action} is not a known action.", res.body.error); },
+  }
+});
 
 // export
 suite.export(module);
