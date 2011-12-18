@@ -22,7 +22,8 @@
     "colors":"0.x.x"
 	},
   "devDependencies": {
-    "vows":"0.x.x"
+    "vows":"0.x.x",
+    "request":"2.x.x"
   },
   "scripts": {
     "test": "./node_modules/.bin/vows ./spec/*"

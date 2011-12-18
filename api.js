@@ -12,12 +12,11 @@ nodeDaveAPI.initRequires = function(api, next)
 	api.cache = require(__dirname + '/cache.js').cache;
 
 	if (api.cluster.isMaster) { 
-		var taskFile = "./tasks.js"
+		var taskFile = "./tasks.js";
 		api.path.exists(taskFile, function (exists) {
 		  if(!exists){
-		  	var taskFile = __dirname + "/tasks.js";
+		  	taskFile = __dirname + "/tasks.js";
 		  	api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
-		  	api.tasks = require(taskFile).tasks;
 		  }
 		  api.tasks = require(taskFile).tasks;
 		  next();	
@@ -417,43 +416,42 @@ nodeDaveAPI.initSocketServerListen = function(api, next){
 ////////////////////////////////////////////////////////////////////////////
 // logging
 nodeDaveAPI.log = function(original_message, styles){	
-	// styles is an array of styles
-	if (styles == null){styles = ["white"];}
-
-	if(this.utils != undefined){
-		var time_string = this.utils.sqlDateTime();
-	}else{
-		var time_string = "!";
-	}
-
-	var console_message = this.consoleColors.grey(time_string) + this.consoleColors.grey(" | ");
-	var inner_message = original_message;
-	for(var i in styles){
-		var style = styles[i];
-		if(style == "bold"){inner_message = this.consoleColors.bold(inner_message);}
-		else if(style == "italic"){inner_message = this.consoleColors.italic(inner_message);}
-		else if(style == "underline"){inner_message = this.consoleColors.underline(inner_message);}
-		else if(style == "inverse"){inner_message = this.consoleColors.inverse(inner_message);}
-		else if(style == "white"){inner_message = this.consoleColors.white(inner_message);}
-		else if(style == "grey"){inner_message = this.consoleColors.grey(inner_message);}
-		else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
-		else if(style == "blue"){inner_message = this.consoleColors.blue(inner_message);}
-		else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
-		else if(style == "green"){inner_message = this.consoleColors.green(inner_message);}
-		else if(style == "yellow"){inner_message = this.consoleColors.yellow(inner_message);}
-		else if(style == "red"){inner_message = this.consoleColors.red(inner_message);}
-		else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
-		else if(style == "magenta"){inner_message = this.consoleColors.magenta(inner_message);}
-		else if(style == "rainbow"){inner_message = this.consoleColors.rainbow(inner_message);}
-		else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
-		else if(style == "zebra"){inner_message = this.consoleColors.zebra(inner_message);}
-		else if(style == "zalgo"){inner_message = this.consoleColors.zalgo(inner_message);}
-	}
-	console_message += inner_message;
-	console.log(console_message);
-
 	if(this.configData != null && this.configData.logging == true)
 	{
+		// styles is an array of styles
+		if (styles == null){styles = ["white"];}
+
+		if(this.utils != undefined){
+			var time_string = this.utils.sqlDateTime();
+		}else{
+			var time_string = "!";
+		}
+
+		var console_message = this.consoleColors.grey(time_string) + this.consoleColors.grey(" | ");
+		var inner_message = original_message;
+		for(var i in styles){
+			var style = styles[i];
+			if(style == "bold"){inner_message = this.consoleColors.bold(inner_message);}
+			else if(style == "italic"){inner_message = this.consoleColors.italic(inner_message);}
+			else if(style == "underline"){inner_message = this.consoleColors.underline(inner_message);}
+			else if(style == "inverse"){inner_message = this.consoleColors.inverse(inner_message);}
+			else if(style == "white"){inner_message = this.consoleColors.white(inner_message);}
+			else if(style == "grey"){inner_message = this.consoleColors.grey(inner_message);}
+			else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
+			else if(style == "blue"){inner_message = this.consoleColors.blue(inner_message);}
+			else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
+			else if(style == "green"){inner_message = this.consoleColors.green(inner_message);}
+			else if(style == "yellow"){inner_message = this.consoleColors.yellow(inner_message);}
+			else if(style == "red"){inner_message = this.consoleColors.red(inner_message);}
+			else if(style == "cyan"){inner_message = this.consoleColors.cyan(inner_message);}
+			else if(style == "magenta"){inner_message = this.consoleColors.magenta(inner_message);}
+			else if(style == "rainbow"){inner_message = this.consoleColors.rainbow(inner_message);}
+			else if(style == "black"){inner_message = this.consoleColors.black(inner_message);}
+			else if(style == "zebra"){inner_message = this.consoleColors.zebra(inner_message);}
+			else if(style == "zalgo"){inner_message = this.consoleColors.zalgo(inner_message);}
+		}
+		console_message += inner_message;
+		console.log(console_message);
 		var file_message = time_string + " | " + original_message;
 		if (this.logWriter == null){
 			this.logWriter = this.fs.createWriteStream((this.configData.logFolder + "/" + this.configData.logFile), {flags:"a"});
@@ -468,7 +466,7 @@ nodeDaveAPI.log = function(original_message, styles){
  
 ////////////////////////////////////////////////////////////////////////////
 // final flag
-nodeDaveAPI.initMasterComplete = function(api){
+nodeDaveAPI.initMasterComplete = function(api, next){
 	api.log("");
 	api.log("*** Master Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("Starting workers:");
@@ -476,6 +474,7 @@ nodeDaveAPI.initMasterComplete = function(api){
 	for (var i = 0; i < api.os.cpus().length; i++) {
 	    api.cluster.fork();
 	}
+	next();
 }
 
 nodeDaveAPI.initWorkerComplete = function(api){
@@ -485,7 +484,7 @@ nodeDaveAPI.initWorkerComplete = function(api){
 ////////////////////////////////////////////////////////////////////////////
 // GO!
 
-nodeDaveAPI.start = function(params){
+nodeDaveAPI.start = function(params, callback){
 	if (params == null){params = {};}
 	// the api namespace.  Everything uses this.
 	if(params.api == null){
@@ -547,7 +546,11 @@ nodeDaveAPI.start = function(params){
 						nodeDaveAPI.initDB(api, function(){
 							nodeDaveAPI.initPostVariables(api, function(){
 								nodeDaveAPI.initActions(api, function(){
-									nodeDaveAPI.initMasterComplete(api);
+									nodeDaveAPI.initMasterComplete(api, function(){
+										if(callback != null){
+											process.nextTick(function() { callback(); });
+										}
+									});
 								});
 							});
 						});
