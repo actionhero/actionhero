@@ -30,7 +30,7 @@ function log(original_message, styles){
 	console_message += inner_message;
 	console.log(console_message);
 
-	if(this.configData.logging == "true")
+	if(this.configData.logging == true)
 	{
 		var file_message = time_string + " | " + original_message;
 		if (this.logWriter == null){
