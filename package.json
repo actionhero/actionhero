@@ -17,13 +17,13 @@
     "async":"0.x.x", 
     "mysql":"0.x.x", 
     "sequelize":"1.x.x", 
+    "request":"2.x.x",
     "validator":"0.x.x",
     "connect-form":"0.x.x",
     "colors":"0.x.x"
 	},
   "devDependencies": {
-    "vows":"0.x.x",
-    "request":"2.x.x"
+    "vows":"0.x.x"
   },
   "scripts": {
     "test": "./node_modules/.bin/vows ./spec/*"

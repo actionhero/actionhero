@@ -514,6 +514,7 @@ nodeDaveAPI.start = function(params, callback){
 	api.os = require('os');
 	api.mysql = require('mysql');
 	api.SequelizeBase = require("sequelize");
+	api.request = require("request");
 	api.expressServer = require('express');
 	api.form = require('connect-form');
 	api.async = require('async');
