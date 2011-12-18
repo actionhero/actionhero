@@ -5,6 +5,7 @@
 	"serverName" : "nodeDaveAPI",
 	"socketServerWelcomeMessage" : "Hello! Welcome to the nodeDaveAPI server",
 	"apiBaseDir" : "./node_modules/nodeDaveAPI/",
+	"cluster" : true ,
 	
 	"logging" : true,
 	"logFolder" : "./log/",

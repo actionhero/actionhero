@@ -1,14 +1,13 @@
-var vows = require('vows');
-var assert = require('assert');
+var specHelper = require('../specHelper.js').specHelper;
 //
 var utils = require('../utils.js').utils;
-var suite = vows.describe('API global Utils');
+var suite = specHelper.vows.describe('API global Utils');
 //
 suite.addBatch({
    'utils.sqlDateTime default': {
         topic: utils.sqlDateTime(),
-        'Should be a string': function (result) { assert.isString(result); },
-        'Should be the right length': function (result) { assert.equal(result.length, 19); }
+        'Should be a string': function (result) { specHelper.assert.isString(result); },
+        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 19); }
     },
     'utils.sqlDateTime specific time': {
         topic: function(){
@@ -16,20 +15,20 @@ suite.addBatch({
             var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
             return utils.sqlDateTime(now)
         },
-        'Should be the right length': function (result) { assert.equal(result.length, 19); }
-        // 'Should the time at 0': function (result) { assert.equal(result, "1970-01-01 00:00:00"); },
+        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 19); }
+        // 'Should the time at 0': function (result) { specHelper.assert.equal(result, "1970-01-01 00:00:00"); },
     }
 });
 
 suite.addBatch({
    'utils.randomString': {
         topic: utils.randomString(100),
-        'Should be a string': function (result) { assert.isString(result); },
-        'Should be the right length': function (result) { assert.equal(result.length, 17); },
+        'Should be a string': function (result) { specHelper.assert.isString(result); },
+        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 17); },
         'Should be random': function (result) { 
             var i = 0;
             while(i < 1000){
-                assert.notEqual(result.length, utils.randomString(100));
+                specHelper.assert.notEqual(result.length, utils.randomString(100));
                 i++;
             }
         }
@@ -39,8 +38,8 @@ suite.addBatch({
 suite.addBatch({
    'utils.hashLength': {
         topic: utils.hashLength({ a: 1, b: 2, c: {aa: 1, bb: 2}}),
-        'Should be a number': function (result) { assert.isNumber(result); },
-        'Should correct top level count': function (result) { assert.equal(result, 3); },
+        'Should be a number': function (result) { specHelper.assert.isNumber(result); },
+        'Should correct top level count': function (result) { specHelper.assert.equal(result, 3); },
     }
 });
 
@@ -52,10 +51,10 @@ suite.addBatch({
             var end = new Date();
             return (end - start);
         },
-        'Should be a number': function (result) { assert.isNumber(result); },
+        'Should be a number': function (result) { specHelper.assert.isNumber(result); },
         'System should have slept for 1 second' : function(result){ 
-            assert.isTrue(result > 1000); 
-            assert.isTrue(result < 2000);
+            specHelper.assert.isTrue(result > 1000); 
+            specHelper.assert.isTrue(result < 2000);
         },
     }
 });
@@ -77,25 +76,25 @@ suite.addBatch({
             connection.error = false;
             var required_params = ["a","b"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            assert.isFalse(connection.error); 
+            specHelper.assert.isFalse(connection.error); 
         },
         'all:failure': function (connection) { 
             connection.error = false;
             var required_params = ["a","b","d"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            assert.equal(connection.error,"d is a required parameter for this action"); 
+            specHelper.assert.equal(connection.error,"d is a required parameter for this action"); 
         },
         'any:ok': function (connection) { 
             connection.error = false;
             var required_params = ["a","b"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            assert.isFalse(connection.error); 
+            specHelper.assert.isFalse(connection.error); 
         },
         'any:failure': function (connection) { 
             connection.error = false;
             var required_params = ["d"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            assert.equal(connection.error,"d is a required parameter for this action"); 
+            specHelper.assert.equal(connection.error,"d is a required parameter for this action"); 
         },
     }
 });

@@ -1,41 +1,29 @@
-var vows = require('vows');
-var assert = require('assert');
-var http = require('http');
-//
-var suite = vows.describe('API general application');
-var api = {};
-//
-var apiThread = require('child_process').exec('cd .. && node api.js test',function (error, stdout, stderr) {
-    doTest();
+var specHelper = require('../specHelper.js').specHelper;
+var suite = specHelper.vows.describe('API general function');
+var apiObj = {};
+
+suite.addBatch({
+  'specHelper.prepare':{
+    topic: function(){
+      var cb = this.callback;
+      specHelper.prepare(function(api){
+        apiObj = specHelper.cleanAPIObject(api);
+        cb();
+      })
+    },
+    'api object should exist': function(){ specHelper.assert.isObject(apiObj); },
+    'api object should have actions': function(){ specHelper.assert.isObject(apiObj.actions); },
+    'api object should have tasks': function(){ specHelper.assert.isObject(apiObj.tasks); },
+    'api object should have utils': function(){ specHelper.assert.isObject(apiObj.utils); },
+  }
 });
 
-function doTest(){
-    suite.addBatch({
-       'api should be a website': {
-            topic: function() {
-                var options = {
-                  host: 'localhost',
-                  port: 8081,
-                  path: '/',
-                  method: 'GET'
-                };
+suite.addBatch({
+  "Server should be up and return data": {
+    topic: function(){ specHelper.apiTest.get('', {} ,this.callback ); },
+    '/ should repond something' : function(res, b){ specHelper.assert.ok(res.body); }
+  }
+})
 
-                var req = http.request(options, function(res) {
-                  console.log('STATUS: ' + res.statusCode);
-                  console.log('HEADERS: ' + JSON.stringify(res.headers));
-                  res.setEncoding('utf8');
-                  res.on('data', function (chunk) {
-                    console.log('BODY: ' + chunk);
-                  });
-                });
-
-                req.write('data\n');
-                req.end();
-            },
-            'Should be an object': function (result) { assert.isObject(api); },
-        },
-    });
-
-    // export
-    suite.export(module);
-}
+// export
+suite.export(module);

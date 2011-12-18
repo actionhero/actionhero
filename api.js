@@ -477,6 +477,13 @@ nodeDaveAPI.initMasterComplete = function(api, next){
 	next();
 }
 
+nodeDaveAPI.singleThreadComplete = function(api, next){
+	api.log("");
+	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
+	api.log("");
+	next();
+}
+
 nodeDaveAPI.initWorkerComplete = function(api){
 	api.log("worker pid "+process.pid+" started", "green");
 }
@@ -532,7 +539,7 @@ nodeDaveAPI.start = function(params, callback){
 			api.configData = JSON.parse(api.fs.readFileSync(defualtConfigFile,'utf8'));
 		}
 
-		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i]; }
+		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
 
 		api.stats = {};
 		api.stats.numberOfWebRequests = 0;
@@ -542,15 +549,23 @@ nodeDaveAPI.start = function(params, callback){
 		if (api.cluster.isMaster) {
 			nodeDaveAPI.initLogFolder(api, function(){
 				nodeDaveAPI.initRequires(api, function(){
-					nodeDaveAPI.initCron(api, function(){
-						nodeDaveAPI.initDB(api, function(){
+					nodeDaveAPI.initDB(api, function(){
+						nodeDaveAPI.initCron(api, function(){
 							nodeDaveAPI.initPostVariables(api, function(){
 								nodeDaveAPI.initActions(api, function(){
-									nodeDaveAPI.initMasterComplete(api, function(){
-										if(callback != null){
-											process.nextTick(function() { callback(); });
-										}
-									});
+									if(api.configData.cluster){
+										nodeDaveAPI.initMasterComplete(api, function(){
+											if(callback != null){ process.nextTick(function() { callback(api); }); }
+										});
+									}else{
+										nodeDaveAPI.initWebListen(api, function(){
+											nodeDaveAPI.initSocketServerListen(api, function(){
+												nodeDaveAPI.singleThreadComplete(api, function(){
+													if(callback != null){ process.nextTick(function() { callback(api); }); }
+												});
+											});
+										});
+									}
 								});
 							});
 						});
