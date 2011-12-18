@@ -60,5 +60,45 @@ suite.addBatch({
     }
 });
 
+suite.addBatch({
+   'utils.requiredParamChecker': {
+        topic: function(){ 
+            var connection = {
+                params:{
+                    a:1,
+                    b:2,
+                    c:3
+                },
+                error: false
+            };
+            return connection
+        },
+        'all:ok': function (connection) { 
+            connection.error = false;
+            var required_params = ["a","b"];
+            utils.requiredParamChecker({}, connection, required_params, "all");
+            assert.isFalse(connection.error); 
+        },
+        'all:failure': function (connection) { 
+            connection.error = false;
+            var required_params = ["a","b","d"];
+            utils.requiredParamChecker({}, connection, required_params, "all");
+            assert.equal(connection.error,"d is a required parameter for this action"); 
+        },
+        'any:ok': function (connection) { 
+            connection.error = false;
+            var required_params = ["a","b"];
+            utils.requiredParamChecker({}, connection, required_params, "all");
+            assert.isFalse(connection.error); 
+        },
+        'any:failure': function (connection) { 
+            connection.error = false;
+            var required_params = ["d"];
+            utils.requiredParamChecker({}, connection, required_params, "all");
+            assert.equal(connection.error,"d is a required parameter for this action"); 
+        },
+    }
+});
+
 // export
 suite.export(module);
