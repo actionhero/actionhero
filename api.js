@@ -117,7 +117,7 @@ nodeDaveAPI.initActions = function(api, next)
 {
 	api.actions = {};
 
-	var actionsPath = "./actions/";
+	var actionsPath = process.cwd() + "/actions/";
 	api.path.exists(actionsPath, function (exists) {
 	  if(!exists){
 	  	var defaultActionsPath = __dirname + "/actions/";
