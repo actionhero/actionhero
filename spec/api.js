@@ -32,6 +32,17 @@ suite.addBatch({
     'requestorInformation' : function(res, b){ specHelper.assert.isObject(res.body.requestorInformation); },
   },
 
+  "params work": {
+    topic: function(){ specHelper.apiTest.get('/testAction/', {},this.callback ); },
+    'limit' : function(res, b){ specHelper.assert.equal("testAction", res.body.requestorInformation.recievedParams.action); },
+  },
+
+  "params are ignored unless they are in the whitelist": {
+    topic: function(){ specHelper.apiTest.get('/testAction/?crazyParam123=something', {},this.callback ); },
+    'limit' : function(res, b){ specHelper.assert.equal("testAction", res.body.requestorInformation.recievedParams.action); },
+    'limit' : function(res, b){ specHelper.assert.equal(null, res.body.requestorInformation.recievedParams.crazyParam123); },
+  },
+
   "limit and offset should have defaults": {
     topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
     'limit' : function(res, b){ specHelper.assert.equal(100, res.body.requestorInformation.recievedParams.limit); },
