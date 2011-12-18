@@ -1,8 +1,10 @@
 var specHelper = {}
 
 specHelper.vows = require('vows');
+specHelper.net = require('net');
 specHelper.assert = require('assert');
 specHelper.request = require('request');
+specHelper.api = {};
 
 specHelper.params = {
 	"database" : {
@@ -35,11 +37,23 @@ specHelper.prepare = function(next){
 ////////////////////////////////////////////////////////////////////////////
 // Start Test Server
 specHelper.startServer = function(next){
-	var nodeDaveAPI = require(__dirname + "/api.js").nodeDaveAPI;
-	nodeDaveAPI.start({configChanges: specHelper.params}, function(api){
-		console.log("test server started");
-		next(api);
+	var conn = specHelper.net.createConnection(specHelper.params.webServerPort, host='127.0.0.1', function(){
+		next(specHelper.api);
+		conn.destroy();
 	});
+	conn.on('error', function(err) { 
+		if(err.code == "ECONNREFUSED"){
+			var nodeDaveAPI = require(__dirname + "/api.js").nodeDaveAPI;
+			nodeDaveAPI.start({configChanges: specHelper.params}, function(api){
+				// console.log("test server started");
+				specHelper.api = api;
+				next(api);
+			});
+		}else{
+			next(api);
+		}
+		conn.destroy();
+	}); 
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -61,7 +75,7 @@ specHelper.cleanDB = function(next){
 		rawDBConnction.query('TRUNCATE '+ specHelper.tables[i], function(err, rows, fields){
 			running--
 			if(running == 0){
-				console.log("test DB Truncated");
+				// console.log("test DB Truncated");
 				next();
 			}
 		});
@@ -72,7 +86,6 @@ specHelper.cleanDB = function(next){
 // API request
 specHelper.apiTest = {
   general: function( method, url, data, cb ){
-    //console.log( 'cb?', cb )
     specHelper.request(
       {
         method: method,

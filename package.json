@@ -13,12 +13,12 @@
     "node": "0.6.x"
   },
   "dependencies": {
-    "express":"2.5.x", 
-    "async":"0.1.x", 
-    "mysql":"0.9.x", 
-    "sequelize":"1.1.x", 
-    "validator":"0.3.x",
-    "connect-form":"0.2.x",
+    "express":"2.x.x", 
+    "async":"0.x.x", 
+    "mysql":"0.x.x", 
+    "sequelize":"1.x.x", 
+    "validator":"0.x.x",
+    "connect-form":"0.x.x",
     "colors":"0.x.x"
 	},
   "devDependencies": {
