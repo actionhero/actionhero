@@ -158,7 +158,7 @@ nodeDaveAPI.processAction = function(api, connection, next)
 	connection.validator = new templateValidator();
 	connection.validator.error = function(msg){ connection.error = msg; };
 	
-	if(api.models.log != null){
+	if(api.models != null && api.models.log != null){
 		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
 			connection.requestCounter = requestThisHourSoFar + 1;
 			if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
@@ -196,7 +196,7 @@ nodeDaveAPI.processAction = function(api, connection, next)
 }
 
 nodeDaveAPI.logAction = function(api, connection){
-	if(api.models.log != null){
+	if(api.models != null && api.models.log != null){
 		var logRecord = api.models.log.build({
 			ip: connection.remoteIP,
 			action: connection.action,
