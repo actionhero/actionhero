@@ -12,10 +12,8 @@ cache.exists = function(api, key, next){
 
 cache.save = function(api,key,value,expireTime,next){
 	var ts = Math.round((new Date()).getTime() / 1000);
-	console.log(ts);
 	var expiry = new Date()
 	expiry.setTime((ts + api.configData.defaultExpireTime) * 1000);
-	console.log(expiry);
 	var defualtExpireTime = api.utils.sqlDateTime(expiry);
 	expireTime = expireTime || defualtExpireTime;
 	api.cache.exists(api, key, function(exists){

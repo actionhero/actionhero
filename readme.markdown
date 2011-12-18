@@ -229,6 +229,8 @@ The contents of `index.js` should look something like this:
 			"database" : "node_dave_api",
 			"username" : "root",
 			"password" : null,
+			"port" : "3306",
+			"consoleLogging" : false
 	    },
 	}
 	

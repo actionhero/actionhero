@@ -18,7 +18,6 @@
     "mysql":"0.9.x", 
     "sequelize":"1.1.x", 
     "validator":"0.3.x",
-    "forever":"0.7.x",
     "connect-form":"0.2.x",
     "colors":"0.x.x"
 	},
