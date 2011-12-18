@@ -1,10 +1,12 @@
 {
-  "author": "Evan Tahler <evan@evantahler.com>",
-  "name": "daveApi",
-  "description": "DAVE Api Server",
+  "author": "Evan Tahler <evantahler@gmail.com>",
+  "name": "nodeDaveAPI",
+  "description": "DAVE is a minimalist, multi-node, transactional API framework written in javaScript",
   "version": "0.1.0",
+  "homepage": "https://github.com/evantahler/nodeDaveAPI",
   "repository": {
-    "url": "https://github.com/evantahler/nodeDaveAPI"
+    "type": "git",
+    "url": "git@github.com:evantahler/nodeDaveAPI.git"
   },
   "main": "./api.js",
   "engines": {
