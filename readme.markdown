@@ -270,3 +270,5 @@ Now `api.extraFunctions.randomNumber()` is available for any action to use!
 DAVE ships with the models and functions needed for mySQL-backed cache.  Check cache.js in both the application root and an action to see how to use it.
 ### Logging and API Request Limiting
 Every web request is logged to te `log` database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by apiRequestLimit).  You can also parse the logs to inspect user behavior.  Socket activity is not logged.
+### Safe Params
+Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params can be defined in config.json: postVariables

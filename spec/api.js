@@ -40,7 +40,39 @@ suite.addBatch({
 
   "default error should make sense": {
     topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
-    'limit' : function(res, b){ specHelper.assert.equal("{no action} is not a known action.", res.body.error); },
+    'error' : function(res, b){ specHelper.assert.equal("{no action} is not a known action.", res.body.error); },
+  }
+});
+
+var reqLimit = 0;
+suite.addBatch({
+  "Making requests should decrement your api requset limit": {
+    topic: function(){ specHelper.apiTest.get('', {} ,this.callback ); },
+    'user should have request limit' : function(res, b){ 
+      reqLimit = res.body.requestorInformation.RequestsRemaining;
+      specHelper.assert.isTrue(reqLimit > 0); 
+    }
+  }
+}).addBatch({
+  "updates should decrease your limit": {
+    topic: function(){ specHelper.apiTest.get('', {} ,this.callback ); },
+    'decrease' : function(res, b){ 
+      specHelper.assert.isTrue(res.body.requestorInformation.RequestsRemaining < reqLimit); 
+    }
+  },
+});
+
+suite.addBatch({
+  "gibberish actions have the right response": {
+    topic: function(){ specHelper.apiTest.get('/IAMNOTANACTION', {} ,this.callback ); },
+    'error' : function(res, b){ specHelper.assert.equal("IAMNOTANACTION is not a known action.", res.body.error); },
+  }
+});
+
+suite.addBatch({
+  "real actions respons with OK": {
+    topic: function(){ specHelper.apiTest.get('/actionsView', {} ,this.callback ); },
+    'error' : function(res, b){ specHelper.assert.equal("OK", res.body.error); },
   }
 });
 
