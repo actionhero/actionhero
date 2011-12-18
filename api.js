@@ -48,7 +48,7 @@ function initDB(api, next)
 		api.models[modelName] = require("./models/" + file)['defineModel'](api);
 		api.seeds[modelName] = require("./models/" + file)['defineSeeds'](api);
 		api.modelsArray.push(modelName); 
-		api.log("model loaded: " + modelName, "blue");
+		if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
 	});
 	api.dbObj.sync().on('success', function() {
 		for(var i in api.seeds)
@@ -58,11 +58,11 @@ function initDB(api, next)
 			if (seeds != null)
 			{
 				api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
-					if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); }
+					if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
 				});
 			}
 		}
-		api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green");
+		if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
 		next();
 	}).on('failure', function(error) {
 		api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
@@ -95,7 +95,7 @@ function initActions(api, next)
 			var actionName = file.split(".")[0];
 			var thisAction = require("./actions/" + file)["action"];
 			autoReloadFileInit(api, ["actions", thisAction.name], ("./actions/" + file), "action");
-			api.log("action loaded: " + actionName, "blue");
+			if (api.cluster.isMaster) { api.log("action loaded: " + actionName, "blue"); }
 		}
 	});
 	next();
@@ -373,10 +373,18 @@ function initSocketServerListen(api, next){
  
 ////////////////////////////////////////////////////////////////////////////
 // final flag
-function initComplete(api){
+function initMasterComplete(api){
 	api.log("");
-	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
+	api.log("*** Master Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
+	api.log("Starting workers:");
 	api.log("");
+	for (var i = 0; i < api.os.cpus().length; i++) {
+	    api.cluster.fork();
+	}
+}
+
+function initWorkerComplete(api){
+	api.log("worker pid "+process.pid+" started", "green");
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -427,14 +435,16 @@ process.chdir(__dirname);
 
 var api = api = api || {}; // the api namespace.  Everything uses this.
 
-api.util = require("util"),
+api.util = require("util");
 api.exec = require('child_process').exec;
-api.net = require("net"),
-api.http = require("http"),
-api.url = require("url"),
-api.path = require("path"),
+api.net = require("net");
+api.http = require("http");
+api.url = require("url");
+api.path = require("path");
 api.fs = require("fs");
-api.mysql = require('mysql')
+api.cluster = require("cluster");
+api.os = require('os');
+api.mysql = require('mysql');
 api.SequelizeBase = require("sequelize");
 api.expressServer = require('express');
 api.form = require('connect-form');
@@ -461,17 +471,15 @@ api.stats.numberOfWebRequests = 0;
 api.stats.numberOfSocketRequests = 0;
 api.stats.startTime = new Date().getTime();
 
-initLogFolder(api, function(){
-	initRequires(api, function(){
-		runningCheck(api, function(){
-			initDB(api, function(){
-				initPostVariables(api, function(){
-					initActions(api, function(){
-						initCron(api, function(){
-							initWebListen(api, function(){
-								initSocketServerListen(api, function(){
-									initComplete(api);
-								});
+if (api.cluster.isMaster) {
+	initLogFolder(api, function(){
+		initRequires(api, function(){
+			runningCheck(api, function(){
+				initCron(api, function(){
+					initDB(api, function(){
+						initPostVariables(api, function(){
+							initActions(api, function(){
+								initMasterComplete(api);
 							});
 						});
 					});
@@ -479,4 +487,24 @@ initLogFolder(api, function(){
 			});
 		});
 	});
-});
+
+	api.cluster.on('death', function(worker) {
+		console.log('worker ' + worker.pid + ' died');
+	});
+}else{
+	initLogFolder(api, function(){
+		initRequires(api, function(){
+			initDB(api, function(){
+				initPostVariables(api, function(){
+					initActions(api, function(){
+						initWebListen(api, function(){
+							initSocketServerListen(api, function(){
+								initWorkerComplete(api);
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
