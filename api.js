@@ -38,61 +38,64 @@ nodeDaveAPI.initLogFolder = function(api, next)
 // DB setup
 nodeDaveAPI.initDB = function(api, next)
 {
-	api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
-		host: api.configData.database.host,
-		port: api.configData.database.port,
-		logging: api.configData.database.consoleLogging
-	});
-
-	api.rawDBConnction = api.mysql.createClient({
-	  user: api.configData.database.username,
-	  password: api.configData.database.password,
-	  port: api.configData.database.port,
-	  host: api.configData.database.host
-	});
-	api.rawDBConnction.query('USE '+api.configData.database.database);
-
-	api.models = {};
-	api.seeds = {};
-	api.modelsArray = [];
-
-	var modelsPath = "./models/";
-	api.path.exists(modelsPath, function (exists) {
-	  if(!exists){
-	  	var defaultModelsPath = __dirname + "/models/";
-	  	if (api.cluster.isMaster) { api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow"); }
-		  modelsPath = defaultModelsPath;
-		}
-
-		api.fs.readdirSync(modelsPath).forEach( function(file) {
-			var modelName = file.split(".")[0];
-			api.models[modelName] = require(modelsPath + file)['defineModel'](api);
-			api.seeds[modelName] = require(modelsPath + file)['defineSeeds'](api);
-			api.modelsArray.push(modelName); 
-			if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
+	if(api.configData.database != null){
+		api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
+			host: api.configData.database.host,
+			port: api.configData.database.port,
+			logging: api.configData.database.consoleLogging
 		});
-		api.dbObj.sync().on('success', function() {
-			for(var i in api.seeds)
-			{
-				var seeds = api.seeds[i];
-				var model = api.models[i];
-				if (seeds != null)
-				{
-					api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
-						if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
-					});
-				}
-			}
-			if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
-			next();
-		}).on('failure', function(error) {
-			api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
-			api.log(JSON.stringify(error));
-			api.log("exiting", "red");
-			process.exit(1);
-		})
 
-	});
+		api.rawDBConnction = api.mysql.createClient({
+		  user: api.configData.database.username,
+		  password: api.configData.database.password,
+		  port: api.configData.database.port,
+		  host: api.configData.database.host
+		});
+		api.rawDBConnction.query('USE '+api.configData.database.database);
+
+		api.models = {};
+		api.seeds = {};
+		api.modelsArray = [];
+
+		var modelsPath = "./models/";
+		api.path.exists(modelsPath, function (exists) {
+		  if(!exists){
+		  	var defaultModelsPath = __dirname + "/models/";
+		  	if (api.cluster.isMaster) { api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow"); }
+			  modelsPath = defaultModelsPath;
+			}
+
+			api.fs.readdirSync(modelsPath).forEach( function(file) {
+				var modelName = file.split(".")[0];
+				api.models[modelName] = require(modelsPath + file)['defineModel'](api);
+				api.seeds[modelName] = require(modelsPath + file)['defineSeeds'](api);
+				api.modelsArray.push(modelName); 
+				if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
+			});
+			api.dbObj.sync().on('success', function() {
+				for(var i in api.seeds)
+				{
+					var seeds = api.seeds[i];
+					var model = api.models[i];
+					if (seeds != null)
+					{
+						api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
+							if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
+						});
+					}
+				}
+				if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
+				next();
+			}).on('failure', function(error) {
+				api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
+				api.log(JSON.stringify(error));
+				api.log("exiting", "red");
+				process.exit(1);
+			})
+		});
+	}else{
+		next();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
