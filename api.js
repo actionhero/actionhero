@@ -12,7 +12,7 @@ nodeDaveAPI.initRequires = function(api, next)
 	api.cache = require(__dirname + '/cache.js').cache;
 
 	if (api.cluster.isMaster) { 
-		var taskFile = "./tasks.js";
+		var taskFile = process.cwd() + "/tasks.js";
 		api.path.exists(taskFile, function (exists) {
 		  if(!exists){
 		  	taskFile = __dirname + "/tasks.js";
