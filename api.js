@@ -578,7 +578,9 @@ nodeDaveAPI.start = function(params, callback){
 			});
 
 			api.cluster.on('death', function(worker) {
-				api.log('worker ' + worker.pid + ' died', "red");
+				api.log('worker ' + worker.pid + ' died', ["red", "bold"]);
+				api.log('starting a new worker...', "yellow");
+				api.cluster.fork();
 			});
 		}else{
 			nodeDaveAPI.initLogFolder(api, function(){
