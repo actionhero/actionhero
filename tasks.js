@@ -53,7 +53,7 @@ tasks.cleanLogFiles = function(api, next) {
 		});
 	};
 	//
-	task.run();
+	process.nextTick(function () { task.run() });
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ tasks.cleanOldLogDB = function(api, next) {
 			task.end();
 		}
 	};
-	task.run();
+	process.nextTick(function () { task.run() });
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ tasks.cleanOldCacheDB = function(api, next) {
 		}
 	};
 	//
-	task.run();
+	process.nextTick(function () { task.run() });
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ tasks.cleanOldSessionDB = function(api, next) {
 		}
 	};
 	//
-	task.run();
+	process.nextTick(function () { task.run() });
 };
 
 ////////////////////////////////////////////////////////////////////////////
