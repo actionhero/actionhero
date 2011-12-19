@@ -558,15 +558,31 @@ nodeDaveAPI.start = function(params, callback){
 							nodeDaveAPI.initPostVariables(api, function(){
 								nodeDaveAPI.initActions(api, function(){
 									if(api.configData.cluster){
-										nodeDaveAPI.initMasterComplete(api, function(){
-											if(callback != null){ process.nextTick(function() { callback(api); }); }
-										});
+										if(typeof params.initFunction == "function"){
+											params.initFunction(api, function(){
+												nodeDaveAPI.initMasterComplete(api, function(){
+													if(callback != null){ process.nextTick(function() { callback(api); }); }
+												});
+											})
+										}else{
+											nodeDaveAPI.initMasterComplete(api, function(){
+												if(callback != null){ process.nextTick(function() { callback(api); }); }
+											});
+										}
 									}else{
 										nodeDaveAPI.initWebListen(api, function(){
 											nodeDaveAPI.initSocketServerListen(api, function(){
-												nodeDaveAPI.singleThreadComplete(api, function(){
-													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												});
+												if(typeof params.initFunction == "function"){
+													params.initFunction(api, function(){
+														nodeDaveAPI.singleThreadComplete(api, function(){
+															if(callback != null){ process.nextTick(function() { callback(api); }); }
+														});
+													})
+												}else{
+													nodeDaveAPI.singleThreadComplete(api, function(){
+														if(callback != null){ process.nextTick(function() { callback(api); }); }
+													});
+												}
 											});
 										});
 									}
@@ -590,7 +606,13 @@ nodeDaveAPI.start = function(params, callback){
 							nodeDaveAPI.initActions(api, function(){
 								nodeDaveAPI.initWebListen(api, function(){
 									nodeDaveAPI.initSocketServerListen(api, function(){
-										nodeDaveAPI.initWorkerComplete(api);
+										if(typeof params.initFunction == "function"){
+											params.initFunction(api, function(){
+												nodeDaveAPI.initWorkerComplete(api);
+											})
+										}else{
+											nodeDaveAPI.initWorkerComplete(api);
+										}
 									});
 								});
 							});
