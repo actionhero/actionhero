@@ -245,18 +245,19 @@ You will notice that you will be getting warning messages about how DAVE is usin
 The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own tasks.js file.
 
 A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:
-
-	var nodeDaveAPI = require("nodeDaveAPI").nodeDaveAPI;
-	var params = {};
-	params.api = {
-		"extraFunctions" : {}
+	
+	function initFunction(api, next){
+		api.utils.randomNumber = function(){
+			return Math.random() * 100;
+		};
 	};
-	api.extraFunctions.randomNumber = function(){
-		return Math.random();
-	}
-	nodeDaveAPI.start(params);
+	
+	var nodeDaveAPI = require("nodeDaveAPI").nodeDaveAPI;
+	nodeDaveAPI.start({initFunction: init}, function(api){
+		api.log("Loading complete!", ['green', 'bold']);
+	});
 
-Now `api.extraFunctions.randomNumber()` is available for any action to use!
+Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via ``params.initFunction`.  This allows all threads in an cluster to access the methods. Setting them another way may not propagate to the children of a node cluster.
 
 ## Default Actions you can try [[?action=..]] which are included in the framework:
 * cacheTest - a test of the DB-based key-value cache system
