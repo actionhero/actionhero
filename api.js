@@ -57,7 +57,7 @@ nodeDaveAPI.initDB = function(api, next)
 		api.seeds = {};
 		api.modelsArray = [];
 
-		var modelsPath = "./models/";
+		var modelsPath = process.cwd() + "/models/";
 		api.path.exists(modelsPath, function (exists) {
 		  if(!exists){
 		  	var defaultModelsPath = __dirname + "/models/";
