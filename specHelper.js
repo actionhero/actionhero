@@ -116,6 +116,9 @@ specHelper.cleanAPIObject = function(api){
 	cleanAPI["actions"] = api["actions"];
 	cleanAPI["tasks"] = api["tasks"];
 	cleanAPI["utils"] = api["utils"];
+	cleanAPI["configData"] = api["configData"];
+	cleanAPI["stats"] = api["stats"];
+	cleanAPI["postVariables"] = api["postVariables"];
 	return cleanAPI
 }
 

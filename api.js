@@ -139,6 +139,7 @@ actionHero.initPostVariables = function(api, next)
 			api.postVariables.push(attr);
 		}
 	}
+	api.postVariables = api.utils.arrayUniqueify(api.postVariables);
 	next();
 }
 

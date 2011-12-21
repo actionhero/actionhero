@@ -47,6 +47,20 @@ utils.hashLength = function(obj) {
 };
 
 ////////////////////////////////////////////////////////////////////////////
+// unique-ify an array
+utils.arrayUniqueify = function(arr) {
+    var a = [];
+    for(var i=0; i<arr.length; i++) {
+      for(var j=i+1; j<arr.length; j++) {
+        if (arr[i] === arr[j])
+          j = ++i;
+      }
+      a.push(arr[i]);
+    }
+    return a;
+};
+
+////////////////////////////////////////////////////////////////////////////
 // blocking sleep
 utils.sleepSync = function(naptime){
 	naptime = naptime * 1000;
