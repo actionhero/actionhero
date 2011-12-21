@@ -111,7 +111,29 @@ actionHero.initDB = function(api, next)
 // postVariable config and load
 actionHero.initPostVariables = function(api, next)
 {
-	api.postVariables = api.configData.postVariables || [];
+	// special params we will accept
+	api.postVariables = [
+		"callback",
+		"action",
+		"limit",
+		"offset",
+		"sessionKey",
+		"id",
+		"createdAt",
+		"updatedAt"
+	];
+	for(var i in api.actions){
+		var action = api.actions[i];
+		if(action.inputs.required.length > 0){
+			for(var j in action.inputs.required){
+			}
+		}
+		if(action.inputs.optional.length > 0){
+			for(var j in action.inputs.optional){
+				api.postVariables.push(action.inputs.optional[j]);
+			}
+		}
+	}
 	for(var model in api.models){
 		for(var attr in api.models[model].rawAttributes){
 			api.postVariables.push(attr);
@@ -564,8 +586,8 @@ actionHero.start = function(params, callback){
 				actionHero.initRequires(api, function(){
 					actionHero.initDB(api, function(){
 						actionHero.initCron(api, function(){
-							actionHero.initPostVariables(api, function(){
-								actionHero.initActions(api, function(){
+							actionHero.initActions(api, function(){
+								actionHero.initPostVariables(api, function(){
 									if(api.configData.cluster){
 										if(typeof params.initFunction == "function"){
 											params.initFunction(api, function(){
@@ -607,12 +629,13 @@ actionHero.start = function(params, callback){
 				api.log('starting a new worker...', "yellow");
 				api.cluster.fork();
 			});
+
 		}else{
 			actionHero.initLogFolder(api, function(){
 				actionHero.initRequires(api, function(){
 					actionHero.initDB(api, function(){
-						actionHero.initPostVariables(api, function(){
-							actionHero.initActions(api, function(){
+						actionHero.initActions(api, function(){
+							actionHero.initPostVariables(api, function(){
 								actionHero.initWebListen(api, function(){
 									actionHero.initSocketServerListen(api, function(){
 										if(typeof params.initFunction == "function"){

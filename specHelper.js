@@ -43,6 +43,9 @@ specHelper.startServer = function(next){
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
+			console.log(" >> starting test actionHero server on ports "+specHelper.params.webServerPort+" (webServerPort) and "+specHelper.params.socketServerPort+" (socketServerPort)");
+			console.log(" >> using test database: "+specHelper.params.database.database);
+			console.log("");
 			var actionHero = require(__dirname + "/api.js").actionHero;
 			actionHero.start({configChanges: specHelper.params}, function(api){
 				// console.log("test server started");

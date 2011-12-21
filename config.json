@@ -38,15 +38,5 @@
 
 	"apiRequestLimit" : 1000,
 	"defaultLimit" : 100,
-	"defaultOffset" : 0,
-
-	"postVariables" : [
-		"callback",
-		"action",
-		"limit",
-		"offset",
-		"fileName",
-		"password",
-		"sessionKey"
-	]
+	"defaultOffset" : 0
 }
