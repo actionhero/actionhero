@@ -6,15 +6,18 @@ specHelper.assert = require('assert');
 specHelper.request = require('request');
 specHelper.api = {};
 
+specHelper.url = "127.0.0.1";
+
 specHelper.params = {
 	"database" : {
-		"host" : "127.0.0.1",
+		"host" : specHelper.url,
 		"database" : "action_hero_api_test",
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
 		"consoleLogging" : false,
 	},
+	"flatFileDirectory":"./public/",
 	"cluster" : false,
 	"webServerPort" : 8081,
 	"socketServerPort" : 5001,
@@ -88,17 +91,17 @@ specHelper.cleanDB = function(next){
 ////////////////////////////////////////////////////////////////////////////
 // API request
 specHelper.apiTest = {
-  general: function( method, url, data, cb ){
-    specHelper.request(
-      {
-        method: method,
-        url: "http://127.0.0.1:"+specHelper.params.webServerPort+(url||''),
-        json: data || {}
-      },
-      function(req, res){
-        cb( res )
-      }
-    )
+  general: function(method, url, data, cb){
+  	var params = {}
+  	params.method = method;
+  	params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'') + "?";
+  	for(var i in data){
+  		params.url += i + "=" + data[i] + "&";
+  	}
+    specHelper.request(params,function(req, res){
+        try{ res.body = JSON.parse(res.body); }catch(e){};
+        cb( res );
+      })
   },
   get: function( url, data, cb  ){ specHelper.apiTest.general( 'GET', url, data, cb    )  },
   post: function( url, data, cb ){ specHelper.apiTest.general( 'POST', url, data, cb   )  },

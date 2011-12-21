@@ -16,8 +16,7 @@ action.outputExample = {
 
 /////////////////////////////////////////////////////////////////////
 // functional
-action.run = function(api, connection, next)
-{
+action.run = function(api, connection, next){
 	connection.response.status = "OK";
 	var now = new Date().getTime();
 	api.stats.uptime = now - api.stats.startTime;
@@ -27,14 +26,4 @@ action.run = function(api, connection, next)
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.action = action;function status(api, connection, next)
-{
-	connection.response.status = "OK";
-	var now = new Date().getTime();
-	api.stats.uptime = now - api.stats.startTime;
-	
-	connection.response.stats = api.stats;
-	next(connection, true);
-};
-
-exports.status = status;
+exports.action = action;

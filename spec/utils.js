@@ -7,7 +7,7 @@ suite.addBatch({
    'utils.sqlDateTime default': {
         topic: utils.sqlDateTime(),
         'Should be a string': function (result) { specHelper.assert.isString(result); },
-        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 19); }
+        'Should be the right length': function (result) { specHelper.assert.equal(19, result.length); }
     },
     'utils.sqlDateTime specific time': {
         topic: function(){
@@ -15,7 +15,7 @@ suite.addBatch({
             var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
             return utils.sqlDateTime(now)
         },
-        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 19); }
+        'Should be the right length': function (result) { specHelper.assert.equal(19, result.length); }
         // 'Should the time at 0': function (result) { specHelper.assert.equal(result, "1970-01-01 00:00:00"); },
     }
 });
@@ -24,7 +24,7 @@ suite.addBatch({
    'utils.randomString': {
         topic: utils.randomString(100),
         'Should be a string': function (result) { specHelper.assert.isString(result); },
-        'Should be the right length': function (result) { specHelper.assert.equal(result.length, 17); },
+        'Should be the right length': function (result) { specHelper.assert.equal(17, result.length); },
         'Should be random': function (result) { 
             var i = 0;
             while(i < 1000){
@@ -39,7 +39,7 @@ suite.addBatch({
    'utils.hashLength': {
         topic: utils.hashLength({ a: 1, b: 2, c: {aa: 1, bb: 2}}),
         'Should be a number': function (result) { specHelper.assert.isNumber(result); },
-        'Should correct top level count': function (result) { specHelper.assert.equal(result, 3); },
+        'Should correct top level count': function (result) { specHelper.assert.equal(3, result); },
     }
 });
 
@@ -82,7 +82,7 @@ suite.addBatch({
             connection.error = false;
             var required_params = ["a","b","d"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            specHelper.assert.equal(connection.error,"d is a required parameter for this action"); 
+            specHelper.assert.equal("d is a required parameter for this action", connection.error); 
         },
         'any:ok': function (connection) { 
             connection.error = false;
@@ -94,7 +94,7 @@ suite.addBatch({
             connection.error = false;
             var required_params = ["d"];
             utils.requiredParamChecker({}, connection, required_params, "all");
-            specHelper.assert.equal(connection.error,"d is a required parameter for this action"); 
+            specHelper.assert.equal("d is a required parameter for this action", connection.error); 
         },
     }
 });

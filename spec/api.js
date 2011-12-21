@@ -1,5 +1,5 @@
 var specHelper = require('../specHelper.js').specHelper;
-var suite = specHelper.vows.describe('API general function');
+var suite = specHelper.vows.describe('API general functions');
 var apiObj = {};
 
 suite.addBatch({
@@ -34,24 +34,24 @@ suite.addBatch({
 
   "params work": {
     topic: function(){ specHelper.apiTest.get('/testAction/', {},this.callback ); },
-    'limit' : function(res, b){ specHelper.assert.equal("testAction", res.body.requestorInformation.recievedParams.action); },
+    'limit' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.action, "testAction"); },
   },
 
   "params are ignored unless they are in the whitelist": {
     topic: function(){ specHelper.apiTest.get('/testAction/?crazyParam123=something', {},this.callback ); },
-    'limit' : function(res, b){ specHelper.assert.equal("testAction", res.body.requestorInformation.recievedParams.action); },
-    'limit' : function(res, b){ specHelper.assert.equal(null, res.body.requestorInformation.recievedParams.crazyParam123); },
+    'limit' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.action, "testAction"); },
+    'limit' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.crazyParam123, null); },
   },
 
   "limit and offset should have defaults": {
     topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
-    'limit' : function(res, b){ specHelper.assert.equal(100, res.body.requestorInformation.recievedParams.limit); },
-    'offset' : function(res, b){ specHelper.assert.equal(0, res.body.requestorInformation.recievedParams.offset); },
+    'limit' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.limit, 100); },
+    'offset' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.offset, 0); },
   },
 
   "default error should make sense": {
     topic: function(){ specHelper.apiTest.get('/', {} ,this.callback ); },
-    'error' : function(res, b){ specHelper.assert.equal("{no action} is not a known action.", res.body.error); },
+    'error' : function(res, b){ specHelper.assert.equal(res.body.error, "{no action} is not a known action."); },
   }
 });
 
@@ -76,14 +76,14 @@ suite.addBatch({
 suite.addBatch({
   "gibberish actions have the right response": {
     topic: function(){ specHelper.apiTest.get('/IAMNOTANACTION', {} ,this.callback ); },
-    'error' : function(res, b){ specHelper.assert.equal("IAMNOTANACTION is not a known action.", res.body.error); },
+    'error' : function(res, b){ specHelper.assert.equal(res.body.error, "IAMNOTANACTION is not a known action."); },
   }
 });
 
 suite.addBatch({
   "real actions respons with OK": {
     topic: function(){ specHelper.apiTest.get('/actionsView', {} ,this.callback ); },
-    'error' : function(res, b){ specHelper.assert.equal("OK", res.body.error); },
+    'error' : function(res, b){ specHelper.assert.equal(res.body.error, "OK"); },
   }
 });
 

@@ -273,29 +273,23 @@ actionHero.initWebListen = function(api, next)
 		if(connection.params["action"] == undefined){
 			connection.params["action"] = connection.req.params[0].split("/")[0];
 		}
-		
-		// ignore proxy tests
-		if(connection.params["action"] == "status" && connection.remoteIP == "127.0.0.1"){
-			connection.res.send("OK");
-		}else{
-			if(connection.req.form){
-				if (connection.req.body == null || api.utils.hashLength(connection.req.body) == 0){
-					connection.req.form.complete(function(err, fields, files){
-						api.postVariables.forEach(function(postVar){
-							if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
-						});
-						connection.req.files = files;
-						process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
+		if(connection.req.form){
+			if (connection.req.body == null || api.utils.hashLength(connection.req.body) == 0){
+				connection.req.form.complete(function(err, fields, files){
+					api.postVariables.forEach(function(postVar){
+						if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
 					});
-				}else{
- 					api.postVariables.forEach(function(postVar){ 
-						if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
-					});
+					connection.req.files = files;
 					process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
-				}
+				});
 			}else{
+					api.postVariables.forEach(function(postVar){ 
+					if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
+				});
 				process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
 			}
+		}else{
+			process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
 		}
 	});
 	
