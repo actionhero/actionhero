@@ -2,5 +2,5 @@ language: node_js
 node_js:
   - 0.6
 before_script:
-  - "mysql -e 'create database node_dave_api;'"
-  - "mysql -e 'create database node_dave_api_test;'"
+  - "mysql -e 'create database action_hero_api;'"
+  - "mysql -e 'create database action_hero_api_test;'"
