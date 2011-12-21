@@ -9,7 +9,7 @@ specHelper.api = {};
 specHelper.params = {
 	"database" : {
 		"host" : "127.0.0.1",
-		"database" : "node_dave_api_test",
+		"database" : "action_hero_api_test",
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
@@ -43,8 +43,8 @@ specHelper.startServer = function(next){
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
-			var nodeDaveAPI = require(__dirname + "/api.js").nodeDaveAPI;
-			nodeDaveAPI.start({configChanges: specHelper.params}, function(api){
+			var actionHero = require(__dirname + "/api.js").actionHero;
+			actionHero.start({configChanges: specHelper.params}, function(api){
 				// console.log("test server started");
 				specHelper.api = api;
 				next(api);

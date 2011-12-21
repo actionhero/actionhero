@@ -1,12 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////
-// DAVE API Framweork in node.js
-// Evan Tahler @ Fall 2011
+// actionHero Framweork in node.js
+// evantahler@gmail.com
+// https://github.com/evantahler/actionHero
 
-var nodeDaveAPI = {};
+var actionHero = {};
 
 ////////////////////////////////////////////////////////////////////////////
 // Init
-nodeDaveAPI.initRequires = function(api, next)
+actionHero.initRequires = function(api, next)
 {
 	api.utils = require(__dirname + '/utils.js').utils;
 	api.cache = require(__dirname + '/cache.js').cache;
@@ -28,7 +29,7 @@ nodeDaveAPI.initRequires = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Init logging folder
-nodeDaveAPI.initLogFolder = function(api, next)
+actionHero.initLogFolder = function(api, next)
 {
 	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
 	next();
@@ -36,62 +37,70 @@ nodeDaveAPI.initLogFolder = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // DB setup
-nodeDaveAPI.initDB = function(api, next)
+actionHero.initDB = function(api, next)
 {
 	if(api.configData.database != null){
-		api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
-			host: api.configData.database.host,
-			port: api.configData.database.port,
-			logging: api.configData.database.consoleLogging
-		});
-
-		api.rawDBConnction = api.mysql.createClient({
+		
+		var rawDBParams = {
 		  user: api.configData.database.username,
 		  password: api.configData.database.password,
 		  port: api.configData.database.port,
 		  host: api.configData.database.host
-		});
-		api.rawDBConnction.query('USE '+api.configData.database.database);
+		};
+		api.rawDBConnction = api.mysql.createClient(rawDBParams);
+		api.rawDBConnction.query('USE '+api.configData.database.database, function(e){
+			if(e){
+				console.log(" >> error connecting to database, exiting");
+				console.log(JSON.stringify({database: rawDBParams.database, user: rawDBParams.user, host: rawDBParams.host, port: rawDBParams.port, password: "[censored]"}));
+				process.exit();	
+			}else{
+				api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
+					host: api.configData.database.host,
+					port: api.configData.database.port,
+					logging: api.configData.database.consoleLogging
+				});
 
-		api.models = {};
-		api.seeds = {};
-		api.modelsArray = [];
+				api.models = {};
+				api.seeds = {};
+				api.modelsArray = [];
 
-		var modelsPath = process.cwd() + "/models/";
-		api.path.exists(modelsPath, function (exists) {
-		  if(!exists){
-		  	var defaultModelsPath = __dirname + "/models/";
-		  	if (api.cluster.isMaster) { api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow"); }
-			  modelsPath = defaultModelsPath;
-			}
-
-			api.fs.readdirSync(modelsPath).forEach( function(file) {
-				var modelName = file.split(".")[0];
-				api.models[modelName] = require(modelsPath + file)['defineModel'](api);
-				api.seeds[modelName] = require(modelsPath + file)['defineSeeds'](api);
-				api.modelsArray.push(modelName); 
-				if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
-			});
-			api.dbObj.sync().on('success', function() {
-				for(var i in api.seeds)
-				{
-					var seeds = api.seeds[i];
-					var model = api.models[i];
-					if (seeds != null)
-					{
-						api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
-							if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
-						});
+				var modelsPath = process.cwd() + "/models/";
+				api.path.exists(modelsPath, function (exists) {
+				  if(!exists){
+				  	var defaultModelsPath = __dirname + "/models/";
+				  	if (api.cluster.isMaster) { api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow"); }
+					  modelsPath = defaultModelsPath;
 					}
-				}
-				if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
-				next();
-			}).on('failure', function(error) {
-				api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
-				api.log(JSON.stringify(error));
-				api.log("exiting", "red");
-				process.exit(1);
-			})
+
+					api.fs.readdirSync(modelsPath).forEach( function(file) {
+						var modelName = file.split(".")[0];
+						api.models[modelName] = require(modelsPath + file)['defineModel'](api);
+						api.seeds[modelName] = require(modelsPath + file)['defineSeeds'](api);
+						api.modelsArray.push(modelName); 
+						if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
+					});
+					api.dbObj.sync().on('success', function() {
+						for(var i in api.seeds)
+						{
+							var seeds = api.seeds[i];
+							var model = api.models[i];
+							if (seeds != null)
+							{
+								api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
+									if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
+								});
+							}
+						}
+						if (api.cluster.isMaster) { api.log("DB conneciton sucessfull and Objects mapped to DB tables", "green"); }
+						next();
+					}).on('failure', function(error) {
+						api.log("trouble synchronizing models and DB.  Correct DB credentials?", "red");
+						api.log(JSON.stringify(error));
+						api.log("exiting", "red");
+						process.exit();
+					})
+				});
+			}
 		});
 	}else{
 		next();
@@ -100,7 +109,7 @@ nodeDaveAPI.initDB = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // postVariable config and load
-nodeDaveAPI.initPostVariables = function(api, next)
+actionHero.initPostVariables = function(api, next)
 {
 	api.postVariables = api.configData.postVariables || [];
 	for(var model in api.models){
@@ -113,7 +122,7 @@ nodeDaveAPI.initPostVariables = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // populate actions
-nodeDaveAPI.initActions = function(api, next)
+actionHero.initActions = function(api, next)
 {
 	api.actions = {};
 
@@ -138,7 +147,7 @@ nodeDaveAPI.initActions = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Periodic Tasks (fixed timer events)
-nodeDaveAPI.initCron = function(api, next)
+actionHero.initCron = function(api, next)
 {
 	if (api.configData.cronProcess)
 	{
@@ -152,7 +161,7 @@ nodeDaveAPI.initCron = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Generic Action processing
-nodeDaveAPI.processAction = function(api, connection, next)
+actionHero.processAction = function(api, connection, next)
 {
 	var templateValidator = require('validator').Validator;
 	connection.validator = new templateValidator();
@@ -195,7 +204,7 @@ nodeDaveAPI.processAction = function(api, connection, next)
 	}
 }
 
-nodeDaveAPI.logAction = function(api, connection){
+actionHero.logAction = function(api, connection){
 	if(api.models != null && api.models.log != null){
 		var logRecord = api.models.log.build({
 			ip: connection.remoteIP,
@@ -209,7 +218,7 @@ nodeDaveAPI.logAction = function(api, connection){
 
 ////////////////////////////////////////////////////////////////////////////
 // Web Request Processing
-nodeDaveAPI.initWebListen = function(api, next)
+actionHero.initWebListen = function(api, next)
 {
 	api.webApp.listen(api.configData.webServerPort);
 	api.webApp.use(api.expressServer.bodyParser());
@@ -254,16 +263,16 @@ nodeDaveAPI.initWebListen = function(api, next)
 							if(fields[postVar] != null && fields[postVar].length > 0){ connection.params[postVar] = fields[postVar]; }
 						});
 						connection.req.files = files;
-						process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
+						process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
 					});
 				}else{
  					api.postVariables.forEach(function(postVar){ 
 						if(connection.req.body[postVar] != null && connection.req.body[postVar].length > 0){ connection.params[postVar] = connection.req.body[postVar]; }
 					});
-					process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
+					process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
 				}
 			}else{
-				process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToWebClient); });
+				process.nextTick(function() { actionHero.processAction(api, connection, api.respondToWebClient); });
 			}
 		}
 	});
@@ -282,7 +291,7 @@ nodeDaveAPI.initWebListen = function(api, next)
 			// if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | response: " + JSON.stringify(response), "grey");}
 			if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
 		}
-		process.nextTick(function() { nodeDaveAPI.logAction(api, connection); });
+		process.nextTick(function() { actionHero.logAction(api, connection); });
 	};
 	
 	api.buildWebResponse = function(connection)
@@ -330,7 +339,7 @@ nodeDaveAPI.initWebListen = function(api, next)
 
 ////////////////////////////////////////////////////////////////////////////
 // Socket Request Processing
-nodeDaveAPI.initSocketServerListen = function(api, next){
+actionHero.initSocketServerListen = function(api, next){
 	api.gameListeners = {}
 
 	api.socketServer = api.net.createServer(function (connection) {
@@ -377,7 +386,7 @@ nodeDaveAPI.initSocketServerListen = function(api, next){
 				connection.response = {};
 				// if(connection.params["action"] == null || words.length == 1){connection.params["action"] = words[0];}
 				connection.params["action"] = words[0];
-				process.nextTick(function() { nodeDaveAPI.processAction(api, connection, api.respondToSocketClient); });
+				process.nextTick(function() { actionHero.processAction(api, connection, api.respondToSocketClient); });
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}
 	  	});
@@ -400,7 +409,7 @@ nodeDaveAPI.initSocketServerListen = function(api, next){
 				api.sendSocketMessage(connection, {error: connection.error});
 			}
 		}
-		process.nextTick(function() { nodeDaveAPI.logAction(api, connection); });
+		process.nextTick(function() { actionHero.logAction(api, connection); });
 	}
 	
 	//message helper
@@ -418,7 +427,7 @@ nodeDaveAPI.initSocketServerListen = function(api, next){
 
 ////////////////////////////////////////////////////////////////////////////
 // logging
-nodeDaveAPI.log = function(original_message, styles){	
+actionHero.log = function(original_message, styles){	
 	if(this.configData != null && this.configData.logging == true)
 	{
 		// styles is an array of styles
@@ -469,7 +478,7 @@ nodeDaveAPI.log = function(original_message, styles){
  
 ////////////////////////////////////////////////////////////////////////////
 // final flag
-nodeDaveAPI.initMasterComplete = function(api, next){
+actionHero.initMasterComplete = function(api, next){
 	api.log("");
 	api.log("*** Master Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("Starting workers:");
@@ -480,21 +489,21 @@ nodeDaveAPI.initMasterComplete = function(api, next){
 	next();
 }
 
-nodeDaveAPI.singleThreadComplete = function(api, next){
+actionHero.singleThreadComplete = function(api, next){
 	api.log("");
 	api.log("*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("");
 	next();
 }
 
-nodeDaveAPI.initWorkerComplete = function(api){
+actionHero.initWorkerComplete = function(api){
 	api.log("worker pid "+process.pid+" started", "green");
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // GO!
 
-nodeDaveAPI.start = function(params, callback){
+actionHero.start = function(params, callback){
 	if (params == null){params = {};}
 	// the api namespace.  Everything uses this.
 	if(params.api == null){
@@ -520,7 +529,7 @@ nodeDaveAPI.start = function(params, callback){
 	api.async = require('async');
 	api.crypto = require("crypto");
 	api.consoleColors = require('colors');
-	api.log = nodeDaveAPI.log;
+	api.log = actionHero.log;
 
 	api.webApp = api.expressServer.createServer(
 		api.form({ keepExtensions: true })
@@ -531,7 +540,7 @@ nodeDaveAPI.start = function(params, callback){
 		if(exists){
 			api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
 		}else{
-			var defualtConfigFile = "./node_modules/nodeDaveAPI/config.json";
+			var defualtConfigFile = "./node_modules/actionHero/config.json";
 			if(params.configChanges == null){
 				if (api.cluster.isMaster) { api.log('no local config.json found nor no provided configChanges; using default from '+defualtConfigFile, "red"); }
 			}else{
@@ -551,35 +560,35 @@ nodeDaveAPI.start = function(params, callback){
 		api.stats.startTime = new Date().getTime();	
 
 		if (api.cluster.isMaster) {
-			nodeDaveAPI.initLogFolder(api, function(){
-				nodeDaveAPI.initRequires(api, function(){
-					nodeDaveAPI.initDB(api, function(){
-						nodeDaveAPI.initCron(api, function(){
-							nodeDaveAPI.initPostVariables(api, function(){
-								nodeDaveAPI.initActions(api, function(){
+			actionHero.initLogFolder(api, function(){
+				actionHero.initRequires(api, function(){
+					actionHero.initDB(api, function(){
+						actionHero.initCron(api, function(){
+							actionHero.initPostVariables(api, function(){
+								actionHero.initActions(api, function(){
 									if(api.configData.cluster){
 										if(typeof params.initFunction == "function"){
 											params.initFunction(api, function(){
-												nodeDaveAPI.initMasterComplete(api, function(){
+												actionHero.initMasterComplete(api, function(){
 													if(callback != null){ process.nextTick(function() { callback(api); }); }
 												});
 											})
 										}else{
-											nodeDaveAPI.initMasterComplete(api, function(){
+											actionHero.initMasterComplete(api, function(){
 												if(callback != null){ process.nextTick(function() { callback(api); }); }
 											});
 										}
 									}else{
-										nodeDaveAPI.initWebListen(api, function(){
-											nodeDaveAPI.initSocketServerListen(api, function(){
+										actionHero.initWebListen(api, function(){
+											actionHero.initSocketServerListen(api, function(){
 												if(typeof params.initFunction == "function"){
 													params.initFunction(api, function(){
-														nodeDaveAPI.singleThreadComplete(api, function(){
+														actionHero.singleThreadComplete(api, function(){
 															if(callback != null){ process.nextTick(function() { callback(api); }); }
 														});
 													})
 												}else{
-													nodeDaveAPI.singleThreadComplete(api, function(){
+													actionHero.singleThreadComplete(api, function(){
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
 													});
 												}
@@ -599,19 +608,19 @@ nodeDaveAPI.start = function(params, callback){
 				api.cluster.fork();
 			});
 		}else{
-			nodeDaveAPI.initLogFolder(api, function(){
-				nodeDaveAPI.initRequires(api, function(){
-					nodeDaveAPI.initDB(api, function(){
-						nodeDaveAPI.initPostVariables(api, function(){
-							nodeDaveAPI.initActions(api, function(){
-								nodeDaveAPI.initWebListen(api, function(){
-									nodeDaveAPI.initSocketServerListen(api, function(){
+			actionHero.initLogFolder(api, function(){
+				actionHero.initRequires(api, function(){
+					actionHero.initDB(api, function(){
+						actionHero.initPostVariables(api, function(){
+							actionHero.initActions(api, function(){
+								actionHero.initWebListen(api, function(){
+									actionHero.initSocketServerListen(api, function(){
 										if(typeof params.initFunction == "function"){
 											params.initFunction(api, function(){
-												nodeDaveAPI.initWorkerComplete(api);
+												actionHero.initWorkerComplete(api);
 											})
 										}else{
-											nodeDaveAPI.initWorkerComplete(api);
+											actionHero.initWorkerComplete(api);
 										}
 									});
 								});
@@ -625,4 +634,4 @@ nodeDaveAPI.start = function(params, callback){
 	});
 }
 
-exports.nodeDaveAPI = nodeDaveAPI;
+exports.actionHero = actionHero;

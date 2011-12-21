@@ -2,9 +2,9 @@
     "apiVerson" : "0.1.0",
 	"webServerPort" : 8080,
 	"socketServerPort" : 5000,
-	"serverName" : "nodeDaveAPI",
-	"socketServerWelcomeMessage" : "Hello! Welcome to the nodeDaveAPI server",
-	"apiBaseDir" : "./node_modules/nodeDaveAPI/",
+	"serverName" : "actionHero API",
+	"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
+	"apiBaseDir" : "./node_modules/actionHero/",
 	"cluster" : true ,
 	
 	"logging" : true,
@@ -19,7 +19,7 @@
 	
     "database" : {
         "host" : "127.0.0.1",
-		"database" : "node_dave_api",
+		"database" : "action_hero_api",
 		"username" : "root",
 		"password" : null,
 		"port" : "3306",
@@ -28,7 +28,7 @@
 
 	"sessionDurationMinutes" : 1440,
 
-	"flatFileDirectory" : "./node_modules/nodeDaveAPI/public/",
+	"flatFileDirectory" : "./node_modules/actionHero/public/",
 	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 

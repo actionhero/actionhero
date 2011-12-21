@@ -1,14 +1,14 @@
-# node.js DAVE API Framework (nodeDaveAPI)
+# node.js actionHero API Framework
 
-## Who is DAVE?
-DAVE is a minimalist, multi-node, transactional API framework written in javaScript for the [node.js](http://nodejs.org) server.  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of dave are to create an easy-to-use package to get started making http and socket APIs RIGHT NOW.
+## Who is an actionHero?
+actionHero is a minimalist, multi-node, transactional API framework written in javaScript for the [node.js](http://nodejs.org) server.  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use package to get started making http and socket APIs RIGHT NOW.
 
-DAVE is an acronym that stands for Delete, Add, Edit, and View. These 4 methods make up the core functionality of many transactional web applications. The DAVE API aims to simplify and abstract may of the common tasks that these types of APIs require.  DAVE does the work for you, and he's not _CRUD_.  Dave was built to be both easy to use, but to be as simple as possible.  I was tired of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.  As applications grow and become more 'service oriented', this is the eventual route which many applications go.  I wanted to make is as simple as possible to create a new application with this mindset, and to allow for future flexibility.
+The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he's not _CRUD_, and he's never taking a _REST_.  actionHero was built to be both easy to use, but to be as simple as possible.  I was tired of bloated frameworks that were designed to be monolithic applications which include M's, V's, and C's together in a single running application.  As applications grow and become more 'service oriented', this is the eventual route which many applications go.  I wanted to make is as simple as possible to create a new application with this mindset, and to allow for future flexibility.
 
-The DAVE API defines a single access point and accepts GET and POST input. You define "Actions" that handle the input, such as "userAdd" or "geoLocate". The DAVE API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic Actions included. Look in `api/actions/`.    You can also visit `http://{baseUrl}/{action}` or can configure your own router (based on the expressJS framework, which is included).
+The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" that handle the input, such as "userAdd" or "geoLocate". The actionHero API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic Actions included. Look in `api/actions/`.    You can also visit `http://{baseUrl}/{action}` or can configure your own router (based on the expressJS framework, which is included).
 
 ## Actions
-The meat of DAVE is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` and `connection.error` values which will be turned to the client.  Here's an example of a simple action which will return a random number to the client:
+The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` and `connection.error` values which will be turned to the client.  Here's an example of a simple action which will return a random number to the client:
 
 	var action = {};
 	
@@ -41,7 +41,7 @@ Notes:
 * metadata.  The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  ``actions.name`` is the only required metadata element.
 
 ## Models & mySQL
-DAVE uses the sequelizeJS mySQL ORM.  It is awesome.  models (located in `./models/`) are used to define ORM objects in the API.  DAVE also adds seeding abilities to the API to pre-populate the database if you need.  Here is the default model for the cache table which ships with DAVE (in ./models/cache.js):
+actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  models (located in `./models/`) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if you need.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):
 
 	function defineModel(api)
 	{
@@ -80,14 +80,14 @@ You can then use api.models[myModel] to use the normal sequelize functions on.  
 	});
 	logRecord.save();
 
-DAVE also uses the native mySQL NPM package so you can execute raw mySQL actions.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
+actionHero also uses the native mySQL NPM package so you can execute raw mySQL actions.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
 
 	api.rawDBConnction.query("select * from table", function(err, rows, fields) {
 		// do stuff
 	});
 
 ## Tasks
-Tasks are periodic special actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with DAVE cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  
+Tasks are periodic special actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  
 
 The basic structure of a task _extends_ the task prototype like this example.
 
@@ -151,7 +151,7 @@ HTTP responses follow the format:
 	{
 		hello: "world"
 		serverInformation: {
-			serverName: "nodeDaveAPI",
+			serverName: "actionHero API",
 			apiVerson: 1,
 			requestDuration: 14
 		},
@@ -174,7 +174,7 @@ HTTP responses follow the format:
 
 ### Sockets
 
-You can also access DAVE's methods via a persistent socket connection rather than http.  The default port for this type of communication is 5000.  There are a few special actions which set and keep parameters bound to your session (so they don't need to be re-posted).  These special methods are:
+You can also access actionHero's methods via a persistent socket connection rather than http.  The default port for this type of communication is 5000.  There are a few special actions which set and keep parameters bound to your session (so they don't need to be re-posted).  These special methods are:
 
 * quit. disconnect from the session
 * paramAdd - save a singe variable to your connection.  IE: 'addParam screenName=evan'
@@ -190,7 +190,7 @@ Socket Example:
 	Trying 127.0.0.1...
 	Connected to localhost.
 	Escape character is '^]'.
-	{"welcome":"Hello! Welcome to the nodeDaveAPI server"}
+	{"welcome":"Hello! Welcome to the actionHero server"}
 	cacheTest
 	{"error":"key is a required parameter for this action"}
 	paramAdd key=myKey
@@ -202,9 +202,9 @@ Socket Example:
 	cacheTest
 	{"cacheTestResults":{"key":"myKey","value":"testValue","saveResp":"new record","loadResp":"testValue","deleteResp":true}}
 
-Dave will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivelent to `http://{baseUrl}?action=file&fileName={pathToFile}`
+actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivelent to `http://{baseUrl}?action=file&fileName={pathToFile}`
 
-Dave also includes methods to run periodic tasks within your server (think built in cron tasks) which can process within the same application which processes incoming events.  Hooray for the event queue!
+actionHero also includes methods to run periodic tasks within your server (think built in cron tasks) which can process within the same application which processes incoming events.  Hooray for the event queue!
 
 ## Requirements
 * node.js server
@@ -212,21 +212,21 @@ Dave also includes methods to run periodic tasks within your server (think built
 * mySQL (other ORMs coming soon?)
 
 ## Install & Quickstart
-* npm install nodeDaveAPI
-* startup mySQL and create a new database called `node_dave_api`
+* npm install actionHero
+* startup mySQL and create a new database called `action_hero_api` ( and `action_hero_api_test`if you want to run the tests)
 * Create a new file called `index.js`
 
 The contents of `index.js` should look something like this:
 
-	// load in the nodeDaveAPI class
-	var nodeDaveAPI = require("nodeDaveAPI").nodeDaveAPI;
+	// load in the actionHero class
+	var actionHero = require("actionHero").actionHero;
 	
-	// if there is no config.js file in the application's root, then Dave will load in a collection of default params.  You can overwrite them with params.configChanges
+	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 	var params = {};
 	params.configChanges = {
 		"database" : {
 	        "host" : "127.0.0.1",
-			"database" : "node_dave_api",
+			"database" : "action_hero_api",
 			"username" : "root",
 			"password" : null,
 			"port" : "3306",
@@ -235,13 +235,13 @@ The contents of `index.js` should look something like this:
 	}
 	
 	// start the server!
-	nodeDaveAPI.start(params);
+	actionHero.start(params);
 
 * Start up the server: `node index.js`
 
-You will notice that you will be getting warning messages about how DAVE is using default files contained within the NPM package.  This is normal.
+You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.
 
-## Extending DAVE
+## Extending actionHero
 The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own tasks.js file.
 
 A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:
@@ -252,8 +252,8 @@ A common practice to extend the API is to add new classes which are not actions,
 		};
 	};
 	
-	var nodeDaveAPI = require("nodeDaveAPI").nodeDaveAPI;
-	nodeDaveAPI.start({initFunction: init}, function(api){
+	var actionHero = require("actionHero").actionHero;
+	actionHero.start({initFunction: init}, function(api){
 		api.log("Loading complete!", ['green', 'bold']);
 	});
 
@@ -268,7 +268,7 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 
 ## Other Goodies
 ### Cache
-DAVE ships with the models and functions needed for mySQL-backed cache.  Check cache.js in both the application root and an action to see how to use it.
+actionHero ships with the models and functions needed for mySQL-backed cache.  Check cache.js in both the application root and an action to see how to use it.
 ### Logging and API Request Limiting
 Every web request is logged to te `log` database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by apiRequestLimit).  You can also parse the logs to inspect user behavior.  Socket activity is not logged.
 ### Safe Params
