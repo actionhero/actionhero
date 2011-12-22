@@ -1,5 +1,5 @@
 # node.js actionHero API Framework
-[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png)](http://travis-ci.org/[YOUR_GITHUB_USERNAME]/[YOUR_PROJECT_NAME])
+[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is an actionHero?
 actionHero is a minimalist, multi-node, transactional API framework written in javaScript for the [node.js](http://nodejs.org) server.  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use package to get started making http and socket APIs RIGHT NOW.
