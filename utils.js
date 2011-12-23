@@ -4,17 +4,13 @@ var utils = {};
 // sqlDateTime
 utils.sqlDateTime = function(time){
 	if(time == null){ time = new Date(); }
-	var dateStr = this.padDateDoubleStr(time.getFullYear()) +
-					"-" + 
-	                  this.padDateDoubleStr(1 + time.getMonth()) +
-					"-" +
-	                  this.padDateDoubleStr(time.getDate()) +
-					" " +
-	                  this.padDateDoubleStr(time.getHours()) +
-					":" +
-	                  this.padDateDoubleStr(time.getMinutes()) +
-					":" +
-	                  this.padDateDoubleStr(time.getSeconds());
+	var dateStr = 
+		this.padDateDoubleStr(time.getFullYear()) +
+		"-" + this.padDateDoubleStr(1 + time.getMonth()) +
+		"-" + this.padDateDoubleStr(time.getDate()) +
+		" " + this.padDateDoubleStr(time.getHours()) +
+		":" + this.padDateDoubleStr(time.getMinutes()) +
+		":" + this.padDateDoubleStr(time.getSeconds());
 	return dateStr;
 };
 

@@ -22,7 +22,10 @@ specHelper.params = {
 	"webServerPort" : 8081,
 	"socketServerPort" : 5001,
 	"logging":false,
-	"cronProcess":false
+	"cronProcess":false,
+	"cache" : {
+		"defaultExpireTimeSeconds" : 3600
+	},
 };
 
 specHelper.tables = [
@@ -118,6 +121,7 @@ specHelper.cleanAPIObject = function(api){
 	cleanAPI["utils"] = api["utils"];
 	cleanAPI["configData"] = api["configData"];
 	cleanAPI["stats"] = api["stats"];
+	cleanAPI["cache"] = api["cache"];
 	cleanAPI["postVariables"] = api["postVariables"];
 	return cleanAPI
 }

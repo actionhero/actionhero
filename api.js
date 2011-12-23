@@ -190,13 +190,14 @@ actionHero.processAction = function(api, connection, next)
 	connection.validator = new templateValidator();
 	connection.validator.error = function(msg){ connection.error = msg; };
 	
+	if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
+	if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
+	if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
+	
 	if(api.models != null && api.models.log != null){
 		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
 			connection.requestCounter = requestThisHourSoFar + 1;
-			if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
-			if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
-			if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
-			if(connection.requestCounter <= api.configData.apiRequestLimit || api.configData.logRequests == false)
+			if(connection.requestCounter <= api.configData.apiRequestLimitPerHour || api.configData.logRequests == false)
 			{
 				connection.action = connection.params["action"];
 				if(api.actions[connection.action] != undefined){
@@ -207,15 +208,12 @@ actionHero.processAction = function(api, connection, next)
 					process.nextTick(function() { next(connection, true); });
 				}
 			}else{
-				connection.requestCounter = api.configData.apiRequestLimit;
-				connection.error = "You have exceded the limit of " + api.configData.apiRequestLimit + " requests this hour.";
+				connection.requestCounter = api.configData.apiRequestLimitPerHour;
+				connection.error = "You have exceded the limit of " + api.configData.apiRequestLimitPerHour + " requests this hour.";
 				process.nextTick(function() { next(connection, true); });
 			}
 		});
 	}else{
-		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
-		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
-		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
 		connection.action = connection.params["action"];
 		if(api.actions[connection.action] != undefined){
 			process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
@@ -323,7 +321,7 @@ actionHero.initWebListen = function(api, next)
 		// requestorInformation
 		connection.response.requestorInformation = {};
 		connection.response.requestorInformation.remoteAddress = connection.remoteIP;
-		connection.response.requestorInformation.RequestsRemaining = this.configData.apiRequestLimit - connection.requestCounter;
+		connection.response.requestorInformation.RequestsRemaining = this.configData.apiRequestLimitPerHour - connection.requestCounter;
 		connection.response.requestorInformation.recievedParams = {};
 		for(var k in connection.params){
 			if(connection.params[k] != undefined){

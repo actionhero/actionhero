@@ -33,10 +33,10 @@
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 
 	"cache" : {
-		"defaultExpireTime" : "3600"
+		"defaultExpireTimeSeconds" : 3600
 	},
 
-	"apiRequestLimit" : 1000,
+	"apiRequestLimitPerHour" : 1000,
 	"defaultLimit" : 100,
 	"defaultOffset" : 0
 }
