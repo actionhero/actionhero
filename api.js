@@ -124,6 +124,7 @@ actionHero.initPostVariables = function(api, next)
 		var action = api.actions[i];
 		if(action.inputs.required.length > 0){
 			for(var j in action.inputs.required){
+				api.postVariables.push(action.inputs.required[j]);
 			}
 		}
 		if(action.inputs.optional.length > 0){

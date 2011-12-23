@@ -9,7 +9,9 @@ The actionHero API aims to simplify and abstract may of the common tasks that th
 The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" that handle the input, such as "userAdd" or "geoLocate". The actionHero API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions, this package comes with a basic Actions included. Look in `api/actions/`.    You can also visit `http://{baseUrl}/{action}` or can configure your own router (based on the expressJS framework, which is included).
 
 ## Actions
-The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` and `connection.error` values which will be turned to the client.  Here's an example of a simple action which will return a random number to the client:
+The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` ( and `connection.error` when needed) values to build the response to the client
+
+Here's an example of a simple action which will return a random number to the client:
 
 	var action = {};
 	
@@ -39,7 +41,9 @@ The meat of actionHero is the Action framework.  Actions are the basic units of 
 Notes:
 
 * Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Exiting an action is as simple as calling next(connection, true).  The second param in next  is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example)
-* metadata.  The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  ``actions.name`` is the only required metadata element.
+* Metadata.  The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
+
+`actions.name` is the only required metadata element.
 
 ## Models & mySQL
 actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  models (located in `./models/`) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if you need.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):
@@ -81,14 +85,14 @@ You can then use api.models[myModel] to use the normal sequelize functions on.  
 	});
 	logRecord.save();
 
-actionHero also uses the native mySQL NPM package so you can execute raw mySQL actions.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
+actionHero also uses the native node-mysql package so you can execute raw mySQL queries.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
 
 	api.rawDBConnction.query("select * from table", function(err, rows, fields) {
 		// do stuff
 	});
 
 ## Tasks
-Tasks are periodic special actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  
+Tasks are special periodic actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  
 
 The basic structure of a task _extends_ the task prototype like this example.
 
@@ -132,7 +136,6 @@ Make you own tasks in a `tasks.js` file in your project root.
 			console.log("Hello World!");
 			task.end();
 		};
-		//
 		task.run();
 	};
 	
@@ -140,12 +143,12 @@ Make you own tasks in a `tasks.js` file in your project root.
 	// Export
 	exports.tasks = tasks;
 
-All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it's execution.  `cron.js` manages the running of tasks and runs at the `cronTimeInterval`(ms) interval defined in `config.json`
+All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it's execution.  `cron.js` manages the running of tasks and runs at the `api.configData.cronTimeInterval`(ms) interval defined in `config.json`
 
 ## Connecting
 
 ### HTTP
-You can visit the API in a browser, Curl, etc.  ?action or /{action} will normally be provided.  The only action which doesn't return the default JSON format would be file, as it should return files with the appropriate headers, etc.
+You can visit the API in a browser, Curl, etc.  `{url}?action` or `{url}/{action}` is how you would access an action.  For example, using the default config.json you could reach the status action with both `http://127.0.0.1/status` or `http://127.0.0.1/?action=status`  The only action which doesn't return the default JSON format would be `file`, as it should return files with the appropriate headers etc. if they are found, and a 404 error if they are not.
 
 HTTP responses follow the format:
 
@@ -168,7 +171,7 @@ HTTP responses follow the format:
 		error: "OK"
 	}
 
-* you can provide the ?callback=myFunc param to initiate a JSON-p response which will wrap the returned JSON in your callback function.  
+* you can provide the `?callback=myFunc` param to initiate a JSON-p response which will wrap the returned JSON in your callback function.  
 * unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects.
 * the error if everything is OK will be "OK", otherwise, you should set an error within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
@@ -254,7 +257,7 @@ A common practice to extend the API is to add new classes which are not actions,
 	};
 	
 	var actionHero = require("actionHero").actionHero;
-	actionHero.start({initFunction: init}, function(api){
+	actionHero.start({initFunction: initFunction}, function(api){
 		api.log("Loading complete!", ['green', 'bold']);
 	});
 
@@ -268,10 +271,22 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 * status - returns server status and stats
 
 ## Other Goodies
+
 ### Cache
-actionHero ships with the models and functions needed for mySQL-backed cache.  Check cache.js in both the application root and an action to see how to use it.
+actionHero ships with the models and functions needed for mySQL-backed key-value cache.  Check cache.js in both the application root and an action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:
+
+* api.cache.save(api,key,value,expireTimeSeconds,next)
+* api.cache.load(api, key, next)
+* api.cache.destroy(api, key, next)
+
+
+api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.
+
 ### Logging and API Request Limiting
-Every web request is logged to te `log` database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by apiRequestLimitPerHour).  You can also parse the logs to inspect user behavior.  Socket activity is not logged.
+Every web request is logged to te `log` database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by `api.configData.apiRequestLimitPerHour`).  You can also parse the logs to inspect user behavior.  If you want to store this behavior for longer, it is recommended that you store it elsewhere from your operational database.
+
+Socket activity is not logged.
+
 ### Safe Params
 Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params you define as required or optional in your actions `action.inputs.required` and `action.inputs.optional`.  Special params which the api will always accept are: 
 	[
