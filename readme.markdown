@@ -216,8 +216,8 @@ actionHero also includes methods to run periodic tasks within your server (think
 * mySQL (other ORMs coming soon?)
 
 ## Install & Quickstart
-* npm install actionHero
-* startup mySQL and create a new database called `action_hero_api` ( and `action_hero_api_test`if you want to run the tests)
+* `npm install actionHero`
+* start up mySQL and create a new database called `action_hero_api` ( and `action_hero_api_test`if you want to run the tests)
 * Create a new file called `index.js`
 
 The contents of `index.js` should look something like this:
@@ -243,10 +243,10 @@ The contents of `index.js` should look something like this:
 
 * Start up the server: `node index.js`
 
-You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.
+You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.  actionHero will create the needed databases and seeds and then start the server.  Visit `http://127.0.0.1:8080` to see the actionHero in action!
 
 ## Extending actionHero
-The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own tasks.js file.
+The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own ``tasks.js` file.
 
 A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:
 	
