@@ -354,18 +354,22 @@ actionHero.initWebListen = function(api, next)
 ////////////////////////////////////////////////////////////////////////////
 // Socket Request Processing
 actionHero.initSocketServerListen = function(api, next){
-	api.gameListeners = {}
-
+	api.connections = [];
 	api.socketServer = api.net.createServer(function (connection) {
 		api.stats.numberOfSocketRequests = api.stats.numberOfSocketRequests + 1;
 	  	connection.setEncoding("utf8");
 	  	connection.type = "socket";
 		connection.params = {};
 		connection.remoteIP = connection.remoteAddress;
-		connection.id = connection.remoteAddress + "@" + connection.remotePort;
+		connection.id = new Buffer(connection.remoteAddress + "@" + connection.remotePort).toString('base64');
+		connection.room = api.configData.defaultSocketRoom;
+		connection.public = {};
+		connection.public.id = connection.id;
+		
+		api.connections.push(connection);
 	
 	  	connection.on("connect", function () {
-	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage});
+	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 	  	});
 	  	connection.on("data", function (data) {
@@ -373,6 +377,10 @@ actionHero.initSocketServerListen = function(api, next){
 			var words = data.split(" ");
 	    	if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" || data.indexOf("\u0004") > -1 ){
 				api.sendSocketMessage(connection, {status: "Bye!"});
+				for(var i in api.connections){
+					var thisConnection = api.connections[i];
+					if(thisConnection.id == connection.id){ api.connections.splice(i,1); }
+				}
 				connection.end();
 				api.log("socket connection "+connection.remoteIP+" | requesting disconnect");
 			}else if(words[0] == "paramAdd"){
@@ -395,6 +403,19 @@ actionHero.initSocketServerListen = function(api, next){
 				connection.params = {};
 				api.sendSocketMessage(connection, {status: "OK"});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "roomChange"){
+				connection.room = words[1];
+				api.sendSocketMessage(connection, {status: "OK", room: connection.room});
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "roomView"){
+				var stats = api.socketRoomStatus(api, connection.room);
+				api.sendSocketMessage(connection, {status: "OK", room: connection.room, stats: stats});
+				api.log("socket connection "+connection.remoteIP+" | "+data);
+			}else if(words[0] == "say"){
+				var message = data.substr(3);
+				api.socketRoomBroadcast(api, connection, message);
+				api.sendSocketMessage(connection, {status: "OK"});
+				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else{
 				connection.error = false;
 				connection.response = {};
@@ -409,6 +430,45 @@ actionHero.initSocketServerListen = function(api, next){
 			api.log("socket connection "+connection.remoteIP+" | disconnected");
 	  	});
 	});
+	
+	// broadcast a message to all connections in a room
+	api.socketRoomBroadcast = function(api, connection, message){
+		// tell the master if worker
+		if (api.cluster.isWorker) {
+			process.send({ socketMessage: {connection: connection, message: message} });
+		}
+		// tell workers if master
+		if(api.cluster.isMaster){
+			
+		}
+		// tell other local connections
+		for(var i in api.connections){
+			var thisConnection = api.connections[i];
+			if(connection == null){
+				api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName});
+			}else{
+				if(thisConnection.room == connection.room && thisConnection.id != connection.id){
+					api.sendSocketMessage(thisConnection, {message: message, from: connection.id});
+				}
+			}
+		}
+	}
+	
+	// stats for a room
+	api.socketRoomStatus = function(api, room){
+		results = {};
+		results.rooms = {};
+		for(var i in api.connections){
+			var thisConnection = api.connections[i];
+			var thisRoom = thisConnection.room;
+			if(results.rooms[thisRoom] == null){
+				results.rooms[thisRoom] = {members: [], membersCount: 0};
+			}
+			results.rooms[thisRoom].membersCount++;
+			results.rooms[thisRoom].members.push(thisConnection.public);
+		}
+		return results.rooms[room];
+	}
 	
 	// action response helper
 	api.respondToSocketClient = function(connection, cont){

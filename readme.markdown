@@ -186,6 +186,18 @@ You can also access actionHero's methods via a persistent socket connection rath
 * paramDelete - deletes a single param.  IE: 'deleteParam screenName'
 * paramsView - returns a JSON object of all the params set to this connection
 * paramsDelete - deletes all params set to this session
+* roomChange - change the `room` you are connected to.  By default all socket connections are in the `api.configData.defaultSocketRoom` room.   
+* roomView - show you the room you are connected to, and information about the members currently in that room.
+
+All socket connections are also joined to a room.  Rooms are used to broadcast messages from the system or other users.  Rooms can be created on the fly and don't require any special setup.  In this way. you can push messages to your users with a special function: `api.socketRoomBroadcast(api, connection, message)`.  connection can be null if you want the message to come from the server itself.
+
+Functions for helping with room communications are:
+
+* `api.socketRoomBroadcast(api, connection, message)`: tell a message to all members in a room
+* `api.socketRoomStatus(api, room)`: return the status object which contains information about a room and its members
+* `api.sendSocketMessage(api, connection, message)`: send a message directly to a socket connection
+
+
 Every socket action (including the special param methods above) will return a single line denoted by \r\n  It will often be "OK" or a JSON object.
 
 Socket Example:

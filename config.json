@@ -35,6 +35,8 @@
 	"cache" : {
 		"defaultExpireTimeSeconds" : 3600
 	},
+	
+	"defaultSocketRoom": "defaultRoom",
 
 	"apiRequestLimitPerHour" : 1000,
 	"defaultLimit" : 100,
