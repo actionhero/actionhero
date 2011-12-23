@@ -80,12 +80,10 @@ actionHero.initDB = function(api, next)
 						if (api.cluster.isMaster) { api.log("model loaded: " + modelName, "blue"); }
 					});
 					api.dbObj.sync().on('success', function() {
-						for(var i in api.seeds)
-						{
+						for(var i in api.seeds){
 							var seeds = api.seeds[i];
 							var model = api.models[i];
-							if (seeds != null)
-							{
+							if (seeds != null){
 								api.utils.DBSeed(api, model, seeds, function(seeded, modelResp){
 									if (api.cluster.isMaster) { if(seeded){ api.log("Seeded data for: "+modelResp.name, "cyan"); } }
 								});
