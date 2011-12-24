@@ -377,10 +377,6 @@ actionHero.initSocketServerListen = function(api, next){
 			var words = data.split(" ");
 	    	if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" || data.indexOf("\u0004") > -1 ){
 				api.sendSocketMessage(connection, {status: "Bye!"});
-				for(var i in api.connections){
-					var thisConnection = api.connections[i];
-					if(thisConnection.id == connection.id){ api.connections.splice(i,1); }
-				}
 				connection.end();
 				api.log("socket connection "+connection.remoteIP+" | requesting disconnect");
 			}else if(words[0] == "paramAdd"){
@@ -412,7 +408,7 @@ actionHero.initSocketServerListen = function(api, next){
 				api.sendSocketMessage(connection, {status: "OK", room: connection.room, stats: stats});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
 			}else if(words[0] == "say"){
-				var message = data.substr(3);
+				var message = data.substr(4);
 				api.socketRoomBroadcast(api, connection, message);
 				api.sendSocketMessage(connection, {status: "OK"});
 				api.log("socket connection "+connection.remoteIP+" | "+data);
@@ -427,28 +423,31 @@ actionHero.initSocketServerListen = function(api, next){
 	  	});
 	  	connection.on("end", function () {
 	    	connection.end();
-			api.log("socket connection "+connection.remoteIP+" | disconnected");
+			for(var i in api.connections){
+				var thisConnection = api.connections[i];
+				if(thisConnection.id == connection.id){ api.connections.splice(i,1); }
+			}
+			api.log("socket connection "+connection.remoteIP, connection.id+" | disconnected");
 	  	});
 	});
 	
 	// broadcast a message to all connections in a room
-	api.socketRoomBroadcast = function(api, connection, message){
+	api.socketRoomBroadcast = function(api, connection, message, broadcastToMaster){
 		// tell the master if worker
-		if (api.cluster.isWorker) {
-			process.send({ socketMessage: {connection: connection, message: message} });
-		}
-		// tell workers if master
-		if(api.cluster.isMaster){
-			
+		if(broadcastToMaster == null){broadcastToMaster = true;}
+		if (api.cluster.isWorker && broadcastToMaster) {
+			process.send({ cmd: 'socketMessage', data: {connection: {id: connection.id, room: connection.room}, message: message} });
 		}
 		// tell other local connections
 		for(var i in api.connections){
 			var thisConnection = api.connections[i];
-			if(connection == null){
-				api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName});
-			}else{
-				if(thisConnection.room == connection.room && thisConnection.id != connection.id){
-					api.sendSocketMessage(thisConnection, {message: message, from: connection.id});
+			if(thisConnection.room == connection.room){
+				if(connection == null){
+					api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName});
+				}else{
+					if(thisConnection.id != connection.id){
+						api.sendSocketMessage(thisConnection, {message: message, from: connection.id});
+					}
 				}
 			}
 		}
@@ -551,14 +550,27 @@ actionHero.log = function(original_message, styles){
 };
  
 ////////////////////////////////////////////////////////////////////////////
-// final flag
+// process init and message passing
 actionHero.initMasterComplete = function(api, next){
 	api.log("");
 	api.log("*** Master Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***", ["green", "bold"]);
 	api.log("Starting workers:");
 	api.log("");
+	
+	api.masterProcessMessage = function(api, m){
+		
+	}
+	
+	api.workers = [];
 	for (var i = 0; i < api.os.cpus().length; i++) {
-	    api.cluster.fork();
+	    var worker = api.cluster.fork();
+		worker.on('message', function(m) {
+			for (var i in api.workers){
+				if(api.workers[i].pid != worker.pid && m.cmd != "queryServer"){ api.workers[i].send(m); }
+			}
+			api.masterProcessMessage(api, m)
+		});
+		api.workers.push(worker);
 	}
 	next();
 }
@@ -571,6 +583,11 @@ actionHero.singleThreadComplete = function(api, next){
 }
 
 actionHero.initWorkerComplete = function(api){
+	
+	process.on('message', function(m){
+		if (m.cmd == "socketMessage"){ api.socketRoomBroadcast(api, m.data.connection, m.data.message, false); }
+	});
+	
 	api.log("worker pid "+process.pid+" started", "green");
 }
 
@@ -678,8 +695,6 @@ actionHero.start = function(params, callback){
 
 			api.cluster.on('death', function(worker) {
 				api.log('worker ' + worker.pid + ' died', ["red", "bold"]);
-				api.log('starting a new worker...', "yellow");
-				api.cluster.fork();
 			});
 
 		}else{
