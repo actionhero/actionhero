@@ -1,4 +1,4 @@
-var specHelper = require('../specHelper.js').specHelper;
+var specHelper = require('../_specHelper.js').specHelper;
 var suite = specHelper.vows.describe('API general functions');
 var apiObj = {};
 

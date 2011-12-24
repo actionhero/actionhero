@@ -1,8 +1,7 @@
-var specHelper = require('../specHelper.js').specHelper;
-//
+var specHelper = require('../_specHelper.js').specHelper;
 var utils = require('../utils.js').utils;
 var suite = specHelper.vows.describe('API global Utils');
-//
+
 suite.addBatch({
    'utils.sqlDateTime default': {
         topic: utils.sqlDateTime(),
