@@ -92,7 +92,7 @@ actionHero also uses the native node-mysql package so you can execute raw mySQL 
 	});
 
 ## Tasks
-Tasks are special periodic actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  
+Tasks are special periodic actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!
 
 The basic structure of a task _extends_ the task prototype like this example.
 
@@ -143,7 +143,7 @@ Make you own tasks in a `tasks.js` file in your project root.
 	// Export
 	exports.tasks = tasks;
 
-All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it's execution.  `cron.js` manages the running of tasks and runs at the `api.configData.cronTimeInterval`(ms) interval defined in `config.json`
+All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it's execution.  `cron.js` manages the running of tasks and runs at the `api.configData.cronTimeInterval` (ms) interval defined in `config.json`
 
 ## Connecting
 
@@ -176,6 +176,8 @@ HTTP responses follow the format:
 * the error if everything is OK will be "OK", otherwise, you should set an error within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
+actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}`
+
 ### Sockets
 
 You can also access actionHero's methods via a persistent socket connection rather than http.  The default port for this type of communication is 5000.  There are a few special actions which set and keep parameters bound to your session (so they don't need to be re-posted).  These special methods are:
@@ -188,10 +190,11 @@ You can also access actionHero's methods via a persistent socket connection rath
 * paramsDelete - deletes all params set to this session
 * roomChange - change the `room` you are connected to.  By default all socket connections are in the `api.configData.defaultSocketRoom` room.   
 * roomView - show you the room you are connected to, and information about the members currently in that room.
+* say [message]
 
-All socket connections are also joined to a room.  Rooms are used to broadcast messages from the system or other users.  Rooms can be created on the fly and don't require any special setup.  In this way. you can push messages to your users with a special function: `api.socketRoomBroadcast(api, connection, message)`.  connection can be null if you want the message to come from the server itself.
+All socket connections are also joined to a room.  Rooms are used to broadcast messages from the system or other users.  Rooms can be created on the fly and don't require any special setup.  In this way. you can push messages to your users with a special function: `api.socketRoomBroadcast(api, connection, message)`.  `connection` can be null if you want the message to come from the server itself.  The final special action socket connections have is `say` which will tell a message to all other users in the room, IE: `say Hello World`.
 
-Functions for helping with room communications are:
+API Functions for helping with room communications are:
 
 * `api.socketRoomBroadcast(api, connection, message)`: tell a message to all members in a room
 * `api.socketRoomStatus(api, room)`: return the status object which contains information about a room and its members
@@ -217,10 +220,6 @@ Socket Example:
 	{"action":"viewParams","limit":100,"offset":0,"key":"myKey","value":"testValue"}
 	cacheTest
 	{"cacheTestResults":{"key":"myKey","value":"testValue","saveResp":"new record","loadResp":"testValue","deleteResp":true}}
-
-actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivelent to `http://{baseUrl}?action=file&fileName={pathToFile}`
-
-actionHero also includes methods to run periodic tasks within your server (think built in cron tasks) which can process within the same application which processes incoming events.  Hooray for the event queue!
 
 ## Requirements
 * node.js server
@@ -275,7 +274,7 @@ A common practice to extend the API is to add new classes which are not actions,
 
 Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via ``params.initFunction`.  This allows all threads in an cluster to access the methods. Setting them another way may not propagate to the children of a node cluster.
 
-## Default Actions you can try [[?action=..]] which are included in the framework:
+## Default Actions you can try `?action=..` which are included in the framework:
 * cacheTest - a test of the DB-based key-value cache system
 * actionsView - returns a list of available actions on the server
 * file - servers flat files from `{serverRoot}\public\{filesNmae}` (defined in config.json)
@@ -287,9 +286,9 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 ### Cache
 actionHero ships with the models and functions needed for mySQL-backed key-value cache.  Check cache.js in both the application root and an action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:
 
-* api.cache.save(api,key,value,expireTimeSeconds,next)
-* api.cache.load(api, key, next)
-* api.cache.destroy(api, key, next)
+* `api.cache.save(api,key,value,expireTimeSeconds,next)`
+* `api.cache.load(api, key, next)`
+* `api.cache.destroy(api, key, next)`
 
 
 api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.
