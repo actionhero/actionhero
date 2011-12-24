@@ -14,8 +14,7 @@ params.configChanges = {
 		"port" : "3306",
 		"consoleLogging" : false
     },
-	"flatFileDirectory":"./public/",
-	"cluster": true
+	"flatFileDirectory":"./public/"
 }
 
 // any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction.  The api object will be availalbe.

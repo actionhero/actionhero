@@ -19,7 +19,8 @@ action.outputExample = {
 action.run = function(api, connection, next){
 	connection.response.status = "OK";
 	var now = new Date().getTime();
-	api.stats.uptime = now - api.stats.startTime;
+	api.stats.uptimeSeconds = (now - api.stats.startTime) / 1000;
+	api.stats.pid = process.pid;
 	connection.response.stats = api.stats;
 	next(connection, true);
 };

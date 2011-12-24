@@ -5,7 +5,6 @@
 	"serverName" : "actionHero API",
 	"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
 	"apiBaseDir" : "./node_modules/actionHero/",
-	"cluster" : true ,
 	
 	"logging" : true,
 	"logFolder" : "./log/",

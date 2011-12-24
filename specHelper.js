@@ -18,7 +18,6 @@ specHelper.params = {
 		"consoleLogging" : false,
 	},
 	"flatFileDirectory":"./public/",
-	"cluster" : false,
 	"webServerPort" : 8081,
 	"socketServerPort" : 5001,
 	"logging":false,
