@@ -157,13 +157,6 @@ suite.addBatch({
 });
 
 suite.addBatch({
-	"rooms can be changed back": {
-		topic: function(){ makeSocketRequest(client, this.callback, "roomChange "+apiObj.configData.defaultSocketRoom); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.status, "OK"); }
-	}
-});
-
-suite.addBatch({
 	"folks in my room hear what I say (and say works)": {
 		topic: function(){ 
 			cb = this.callback;
@@ -176,13 +169,6 @@ suite.addBatch({
 			client2.write("say hello?");
 		}, 
 		'works' : function(resp, d){ specHelper.assert.equal(d.message, "hello?"); }
-	}
-});
-
-suite.addBatch({
-	"client1 goes back to the otherRoom": {
-		topic: function(){ makeSocketRequest(client, this.callback, "roomChange otherRoom"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.status, "OK"); }
 	}
 });
 
