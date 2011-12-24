@@ -478,7 +478,7 @@ actionHero.initSocketServerListen = function(api, next){
 	//message helper
 	api.sendSocketMessage = function(connection, message){
 		process.nextTick(function() { 
-			try{ connection.write(JSON.stringify(message) + "\r\n\0"); }catch(e){ }
+			try{ connection.write(JSON.stringify(message) + "\r\n"); }catch(e){ }
 		});
 	}
 	

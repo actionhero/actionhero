@@ -21,7 +21,8 @@ suite.addBatch({
       specHelper.assert.isTrue(res.body.stats.numberOfWebRequests > 0);
       specHelper.assert.isTrue(res.body.stats.numberOfSocketRequests >= 0);
       specHelper.assert.isTrue(res.body.stats.startTime > 0);
-      specHelper.assert.isTrue(res.body.stats.uptime > 0);
+      specHelper.assert.isTrue(res.body.stats.uptimeSeconds > 0);
+	  specHelper.assert.isTrue(res.body.stats.pid > 0);
     },
   },
 
