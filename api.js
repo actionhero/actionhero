@@ -43,10 +43,9 @@ actionHero.start = function(params, callback){
 	}else{
 		var defualtConfigFile = "./node_modules/actionHero/config.json";
 		if(params.configChanges == null){
-			api.log('no local config.json found nor no provided configChanges; using default from '+defualtConfigFile, "red");
+			console.log(' >> no local config.json found nor no provided configChanges; using default from '+defualtConfigFile);
 		}else{
-			api.log("configChanges found to default template in "+defualtConfigFile+":");
-			api.log(JSON.stringify(params.configChanges));
+			console.log(" >> using configChanges as overrides to default template");
 		}
 		api.configData = JSON.parse(api.fs.readFileSync(defualtConfigFile,'utf8'));
 	}

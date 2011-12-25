@@ -8,7 +8,7 @@ var initActions = function(api, next)
 	var actionsPath = process.cwd() + "/actions/";
 	api.path.exists(actionsPath, function (exists) {
 	  if(!exists){
-	  	var defaultActionsPath = __dirname + "/actions/";
+	  	var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
 	  	api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow");
 		  actionsPath = defaultActionsPath;
 		}

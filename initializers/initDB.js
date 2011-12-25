@@ -31,7 +31,7 @@ var initDB = function(api, next)
 				var modelsPath = process.cwd() + "/models/";
 				api.path.exists(modelsPath, function (exists) {
 				  	if(!exists){
-				  		var defaultModelsPath = __dirname + "/models/";
+				  		var defaultModelsPath = process.cwd() + "/node_modules/actionHero/models/";
 				  		api.log("no ./modles path in project, loading defaults from "+defaultModelsPath, "yellow");
 						modelsPath = defaultModelsPath;
 					}
