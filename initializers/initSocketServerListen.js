@@ -10,7 +10,7 @@ var initSocketServerListen = function(api, next){
 	  	connection.type = "socket";
 		connection.params = {};
 		connection.remoteIP = connection.remoteAddress;
-		connection.id = new Buffer(connection.remoteAddress + connection.remotePort + Math.random()).toString('base64');
+		connection.id = new Buffer(connection.remotePort + connection.remoteAddress + Math.random()).toString('base64');
 		connection.room = api.configData.defaultSocketRoom;
 		connection.public = {};
 		connection.public.id = connection.id;
@@ -99,6 +99,7 @@ var initSocketServerListen = function(api, next){
 	api.socketRoomStatus = function(api, room){
 		results = {};
 		results.rooms = {};
+		results.rooms[room] = {members: [], membersCount: 0};
 		for(var i in api.connections){
 			var thisConnection = api.connections[i];
 			var thisRoom = thisConnection.room;

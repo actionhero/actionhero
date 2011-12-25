@@ -256,7 +256,7 @@ The contents of `index.js` should look something like this:
 
 * Start up the server: `node index.js`
 
-You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.  actionHero will create the needed databases and seeds and then start the server.  Visit `http://127.0.0.1:8080` to see the actionHero in action!
+You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.  actionHero will create the needed databases and seeds and then start the server.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
 ## Extending actionHero
 The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own ``tasks.js` file.
@@ -312,3 +312,11 @@ Params (GET and POST) provided by the user will be checked against a whitelist. 
 		"createdAt",
 		"updatedAt"
 	];
+Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.
+
+### Logging
+The `api.log()` method is available to you throughout the application.  `api.log()` will both write these log messages to file, but also display them on the console.  There are formatting options you can pass to ``api.log(yourMessage, options=[])`.  The options array can be many colors and formatting types, IE: `['blue','bold']`.  Check out `/initializers/initLog.js` to see the options.
+
+Remember that one of the default actions will delete the log file if it gets over 10MB.
+
+###

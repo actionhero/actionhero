@@ -25,8 +25,8 @@ action.run = function(api, connection, next)
 	api.utils.requiredParamChecker(api, connection, ["key","value"]);
 	if(connection.error == false)
 	{
-		key = connection.params.key;
-		value = connection.params.value;
+		var key = connection.params.key;
+		var value = connection.params.value;
 		
 		connection.response = {cacheTestResults : {
 			"key" : key,
