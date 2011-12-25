@@ -278,10 +278,11 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 
 ## Default Actions you can try `?action=..` which are included in the framework:
 * cacheTest - a test of the DB-based key-value cache system
-* actionsView - returns a list of available actions on the server
+* actionsView - returns a list of available actions on the server and their metadata
 * file - servers flat files from `{serverRoot}\public\{filesNmae}` (defined in config.json)
 * randomNumber - generates a random number
 * status - returns server status and stats
+* say - sends messages via http to clients connected via socket (in the room you specify)
 
 ## Other Goodies
 
