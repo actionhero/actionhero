@@ -31,18 +31,12 @@ actionHero.start = function(params, callback){
 	api.fs = require("fs");
 	api.os = require('os');
 	api.mysql = require('mysql');
+	api.formidable = require('formidable');
 	api.SequelizeBase = require("sequelize");
 	api.request = require("request");
-	api.expressServer = require('express');
-	api.form = require('connect-form');
 	api.async = require('async');
 	api.crypto = require("crypto");
 	api.consoleColors = require('colors');
-
-	api.webApp = api.expressServer.createServer(
-		api.form({ keepExtensions: true })
-	);
-	api.webApp.use(api.expressServer.cookieParser());
 
 	if(api.path.existsSync('./config.json')){
 		api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
