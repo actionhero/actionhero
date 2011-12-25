@@ -247,6 +247,8 @@ The contents of `index.js` should look something like this:
 			"port" : "3306",
 			"consoleLogging" : false
 	    },
+		"webServerPort" : 8080,
+		"socketServerPort" : 5000
 	}
 	
 	// start the server!
