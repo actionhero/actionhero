@@ -1,88 +1,129 @@
-<!DOCTYPE html>
+<!-- Free web templates by http://www.templatesdock.com; released for free under a Creative Commons Attribution 3.0 License -->
 <html>
 <head>
-  <meta charset='utf-8'>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="en" />
+	<meta name="description" content="actionHero.js" />
+	<link rel="stylesheet" media="screen,projection" type="text/css" href="css/main.css" />
+	<link rel="stylesheet" media="screen,projection" type="text/css" href="css/skin.css" />	
 
-  <title>evantahler/actionHero @ GitHub</title>
+	<script type="text/javascript" src="javascript/md/Markdown.Converter.js"></script>
+	<script type="text/javascript" src="javascript/md/Markdown.Sanitizer.js"></script>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #5450f1;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #abaf0e; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #abaf0e; }
-    h3 { text-align: center; color: #abaf0e; }
-    a { color: #abaf0e; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="javascript/cufon-yui.js"></script>
+	<script type="text/javascript" src="javascript/font.font.js"></script>
+	<script type="text/javascript">
+		Cufon.replace('h1, h2', {hover:true});
+	</script>
+	<title>actionHero.js</title>
 </head>
 
-<body>
-  <a href="https://github.com/evantahler/actionHero"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+<body id="hp"> 
+	
+<a href="https://github.com/evantahler/actionHero"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-  <div id="container">
+<div id="main">
 
-    <div class="download">
-      <a href="https://github.com/evantahler/actionHero/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/evantahler/actionHero/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-    </div>
+	<!-- HEADER -->
+	<div id="header" class="box">
 
-    <h1><a href="https://github.com/evantahler/actionHero">actionHero</a>
-      <span class="small">by <a href="https://github.com/evantahler">evantahler</a></span></h1>
+		<p id="logo"><a href="./" title="[Go to homepage]"><img src="logo/actionHeroWordsWhite.png" width="120" alt="" /></a></p>
 
-    <div class="description">
-      actionHero is a minimalist transactional API framework for sockets and http clients
-    </div>
+		<!-- NAVIGATION -->
+		<ul id="nav">
+			<li class="current"><a href="#"><span>Homepage</span></a></li>
+			<li><a href="https://raw.github.com/evantahler/actionHero"><span>GitHub</span></a></li>
+			<li><a href="http://search.npmjs.org/#/actionHero"><span>NPM</span></a></li>
+		</ul>		
+		
+	</div> <!-- /header -->
 
-    
+	<!-- WELCOME -->
+	<div id="welcome" class="box">
+		<div id="welcome-inner">
+			<h2>actionHero is a minimalist transactional API framework for sockets and http clients</h2>
+			<p>The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require. actionHero does the work for you, and he's not CRUD, and he's never taking a REST.</p>
+		</div> <!-- /welcome-inner -->
+		<!-- TWITTER -->
+		<div id="twitter" class="box">
+			<ul>
+				<li>- actionHero is for the node.js server.  Learn more here <a href="http://nodejs.org/">http://nodejs.org/</a></li>
+				<li>- actionHero is available in the NPM (node package manager).  Learn more <a href="http://search.npmjs.org/#/actionHero">here</a></li>
+				<li>&nbsp;</li>
+				<li><a href="http://travis-ci.org/evantahler/actionHero"><img src="https://secure.travis-ci.org/evantahler/actionHero.png" alt="Build Status" /></a></li>
+			</ul>
+		</div> <!-- /twitter -->
+		<div id="imac">
+			<img src="logo/actionHero.png" height="330" alt="ActionHero">
+		</div> <!-- /imac -->
+	</div> <!-- /welcome -->
+	
+	<!-- COLUMNS -->
+	<div id="section" class="box">
+		<!-- CONTENT -->
+		<div id="content">
+			LOADING...
+		</div> <!-- /content -->
+		<!-- SIDEBAR -->
+		<div id="aside">
+			<h2 class="nom">Updates:</h2>
+			<ul class="articles">
+				<li>
+					<h3>This Website!</h3>
+					<p class="date">2011-12-25</p>
+					<p>Enjoy the new actionHero.js website!  Hosted by GitHub Pages!  Theme from templatesDock.com</p>
+				</li>
+				<li>
+					<h3>Announced on HackerNews</h3>
+					<p class="date">2011-12-24</p>
+					<p>actionHero is now far enough along to ask for feedback!  I've asked the HackerNews community what they think.  <a href="http://news.ycombinator.com/item?id=3390456">Spread the word!</a></p>
+				</li>
+				<li>
+					<h3>Announced on HackerNews</h3>
+					<p class="date">2011-11</p>
+					<p>actionHero is now available in the NPM repository.  Learn more here <a href="http://search.npmjs.org/#/actionHero">http://search.npmjs.org/#/actionHero</a></p>
+				</li>
+			</ul>
+		</div> <!-- /aside -->
+	</div> <!-- /section -->
 
-    
+	<!-- CONTACT -->
+	<div id="contact">
+		<h1>Get it Now:</h1>
+	    <div>
+         <a href="https://github.com/evantahler/actionHero/zipball/master">
+           <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
+         <a href="https://github.com/evantahler/actionHero/tarball/master">
+           <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+       </div>
+	   <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+         by running:
+         <pre>$ git clone git://github.com/evantahler/actionHero</pre>
+       </p>
+	</div> <!-- /contact -->	
+	<!-- FOOTER -->
+	<div id="footer" class="box">
+		<p class="f-right t-right"><a href="http://www.templatesdock.com/">Free web templates</a> by TemplatesDock
+		<p class="f-left">Hosted on <a href="http://pages.github.com/">GitHub Pages</a></p>
+	</div> <!-- /footer -->
+</div> <!-- /main -->
 
-    
+<script>	
+	$.ajax({
+	    url: "markdown/readme.markdown",
+	    type: 'GET',
+		dataType: 'jsonp text',
+	    success: function(res) {
+			var converter = new Markdown.getSanitizingConverter();
+			var outputHTML = converter.makeHtml(res);
+			console.log(outputHTML);
+			$('#content').html(outputHTML);
+	    }
+	});
+</script>
 
-    
 
-    
-      <h2>Authors</h2>
-      <p>Evan Tahler (evantahler@gmail.com)<br/>      </p>
-    
-
-    
-      <h2>Contact</h2>
-      <p>Evan Tahler (evantahler@gmail.com)<br/>      </p>
-    
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/evantahler/actionHero/zipball/master">zip</a> or
-      <a href="https://github.com/evantahler/actionHero/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/evantahler/actionHero</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/evantahler/actionHero">evantahler/actionHero</a>
-    </div>
-
-  </div>
-
+<script type="text/javascript"> Cufon.now(); </script>
 </body>
 </html>
