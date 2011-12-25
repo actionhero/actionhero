@@ -2,7 +2,7 @@
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is an actionHero?
-actionHero is a minimalist transactional API framework written in javaScript for the [node.js](http://nodejs.org) server.  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use package to get started making combination http and socket APIs RIGHT NOW.
+actionHero is a minimalist transactional API framework for sockets and http clients using [node.js](http://nodejs.org).  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use package to get started making combination http and socket APIs RIGHT NOW.
 
 The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he's not _CRUD_, and he's never taking a _REST_.  I was tired of bloated frameworks that were designed to run as monolithic applications which include M's, V's, and C's together in a single running application.  This tethering of view to business logic doesn't make much sense in modern web development when your presentation layer can just as easily be a mobile application or a website.  There are also many scaling issues when you expect your single application to be able to handle all these separate types of consumers.
 
