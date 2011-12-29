@@ -43,35 +43,39 @@ var initActions = function(api, next)
 		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
 		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
 		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
-	
-		if(api.models != null && api.models.log != null){
-			api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
-				connection.requestCounter = requestThisHourSoFar + 1;
-				if(connection.requestCounter <= api.configData.apiRequestLimitPerHour || api.configData.logRequests == false)
-				{
-					connection.action = connection.params["action"];
-					if(api.actions[connection.action] != undefined){
-						process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
+		
+		if (connection.error === false){
+			if(api.models != null && api.models.log != null){
+				api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
+					connection.requestCounter = requestThisHourSoFar + 1;
+					if(connection.requestCounter <= api.configData.apiRequestLimitPerHour || api.configData.logRequests == false)
+					{
+						connection.action = connection.params["action"];
+						if(api.actions[connection.action] != undefined){
+							process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
+						}else{
+							if(connection.action == ""){connection.action = "{no action}";}
+							connection.error = connection.action + " is not a known action.";
+							process.nextTick(function() { next(connection, true); });
+						}
 					}else{
-						if(connection.action == ""){connection.action = "{no action}";}
-						connection.error = connection.action + " is not a known action.";
+						connection.requestCounter = api.configData.apiRequestLimitPerHour;
+						connection.error = "You have exceded the limit of " + api.configData.apiRequestLimitPerHour + " requests this hour.";
 						process.nextTick(function() { next(connection, true); });
 					}
+				});
+			}else{
+				connection.action = connection.params["action"];
+				if(api.actions[connection.action] != undefined){
+					process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
 				}else{
-					connection.requestCounter = api.configData.apiRequestLimitPerHour;
-					connection.error = "You have exceded the limit of " + api.configData.apiRequestLimitPerHour + " requests this hour.";
+					if(connection.action == ""){connection.action = "{no action}";}
+					connection.error = connection.action + " is not a known action.";
 					process.nextTick(function() { next(connection, true); });
 				}
-			});
-		}else{
-			connection.action = connection.params["action"];
-			if(api.actions[connection.action] != undefined){
-				process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
-			}else{
-				if(connection.action == ""){connection.action = "{no action}";}
-				connection.error = connection.action + " is not a known action.";
-				process.nextTick(function() { next(connection, true); });
 			}
+		}else{
+			process.nextTick(function() { next(connection, true); });
 		}
 	}
 }

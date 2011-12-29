@@ -34,17 +34,29 @@ var initWebListen = function(api, next)
 		
 		// parse POST variables
 		if (connection.req.method.toLowerCase() == 'post') {
-			var form = new api.formidable.IncomingForm();
-		    form.parse(connection.req, function(err, fields, files) {
-			  fillParamsFromWebRequest(api, connection, files);
-			  fillParamsFromWebRequest(api, connection, fields);
-			  process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
-		    });
+			if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
+				connection.error = "content-type is a required header for processing this form.";
+				process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+			}else{
+				var form = new api.formidable.IncomingForm();
+			    form.parse(connection.req, function(err, fields, files) {
+					if(err){
+						api.log(err, "red");
+						connection.error = "There was an error processign this form."
+						process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+					}else{
+				  		fillParamsFromWebRequest(api, connection, files);
+				  		fillParamsFromWebRequest(api, connection, fields);
+				  		process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+					}
+			    });
+			}
 		}else{
 			process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
 		}		
 	})
 	
+	// Go server!
 	api.webApp.listen(api.configData.webServerPort, "0.0.0.0"); // listen on all bound addresses
 	
 	var fillParamsFromWebRequest = function(api, connection, varsHash){
