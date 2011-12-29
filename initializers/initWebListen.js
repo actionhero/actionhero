@@ -24,7 +24,8 @@ var initWebListen = function(api, next)
 		connection.responseHttpCode = 200;
 		if(connection.req.headers['x-forwarded-for'] != null)
 		{
-			connection.remoteIP = connection.req.headers['x-forwarded-for'];	
+			var IPs = connection.req.headers['x-forwarded-for'].split(",");
+			connection.remoteIP = IPs[0];	
 		}
 		
 		// parse GET (URL) variables
