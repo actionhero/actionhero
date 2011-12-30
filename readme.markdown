@@ -2,14 +2,14 @@
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is an actionHero?
-actionHero is a minimalist transactional API framework for sockets and http clients using [node.js](http://nodejs.org).  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use package to get started making combination http and socket APIs RIGHT NOW.
+actionHero is a minimalist transactional API framework for sockets and http clients using [node.js](http://nodejs.org).  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use framework to get started making combination http and socket APIs as quickly as possible.
 
-The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he's not _CRUD_, and he's never taking a _REST_.  I was tired of bloated frameworks that were designed to run as monolithic applications which include M's, V's, and C's together in a single running application.  This tethering of view to business logic doesn't make much sense in modern web development when your presentation layer can just as easily be a mobile application or a website.  There are also many scaling issues when you expect your single application to be able to handle all these separate types of consumers.
+The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he's not _CRUD_, and he's never taking a _REST_.  I was tired of "heavy" frameworks that were designed to run as monolithic applications which include M's, V's, and C's together in a single running application.  This tethering of view to business logic doesn't make much sense in modern web development (from a server PoV) when your presentation layer can just as easily be a mobile application or a website. 
 
-The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" which handle input and response, such as "userAdd" or "geoLocate". The actionHero API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the functions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions this package comes with a few basic Actions included. Check them out in `api/actions/`.    
+The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" which handle input and response, such as "userAdd" or "geoLocate". The actionHero API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions this package comes with a few basic Actions included. Check them out in `api/actions/`.    
 
 ## Actions
-The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` ( and `connection.error` when needed) values to build the response to the client
+The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` ( and `connection.error` when needed) value to build the response to the client
 
 Here's an example of a simple action which will return a random number to the client:
 
@@ -40,13 +40,12 @@ Here's an example of a simple action which will return a random number to the cl
 
 Notes:
 
-* Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Exiting an action is as simple as calling next(connection, true).  The second param in next  is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example)
-* Metadata.  The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
 
-`actions.name` is the only required metadata element.
+* Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, true)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example) where you would not want to render the default messages.
+* The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
 
 ## Models & mySQL
-actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  models (located in `./models/`) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if you need.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):
+actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  Models (located in `./models/`) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if needed.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):
 
 	function defineModel(api)
 	{
@@ -87,12 +86,12 @@ You can then use api.models[myModel] to use the normal sequelize functions on.  
 
 actionHero also uses the native node-mysql package so you can execute raw mySQL queries.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
 
-	api.rawDBConnction.query("select * from table", function(err, rows, fields) {
+	api.rawDBConnction.query("describe myTable", function(err, rows, fields) {
 		// do stuff
 	});
 
 ## Tasks
-Tasks are special periodic actions the server will do at a certain interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!
+Tasks are special periodically run actions the server will do at a set interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!
 
 The basic structure of a task _extends_ the task prototype like this example.
 
@@ -148,7 +147,7 @@ All of the metadata in the example task is required, as is task.init and task.ru
 ## Connecting
 
 ### HTTP
-You can visit the API in a browser, Curl, etc.  `{url}?action` or `{url}/{action}` is how you would access an action.  For example, using the default config.json you could reach the status action with both `http://127.0.0.1/status` or `http://127.0.0.1/?action=status`  The only action which doesn't return the default JSON format would be `file`, as it should return files with the appropriate headers etc. if they are found, and a 404 error if they are not.
+You can visit the API in a browser, Curl, etc.  `{url}?action` or `{url}/{action}` is how you would access an action.  For example, using the default ports in config.json you could reach the status action with both `http://127.0.0.1/status` or `http://127.0.0.1/?action=status`  The only action which doesn't return the default JSON format would be `file`, as it should return files with the appropriate headers if they are found, and a 404 error if they are not.
 
 HTTP responses follow the format:
 
@@ -172,8 +171,8 @@ HTTP responses follow the format:
 	}
 
 * you can provide the `?callback=myFunc` param to initiate a JSON-p response which will wrap the returned JSON in your callback function.  
-* unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects.
-* the error if everything is OK will be "OK", otherwise, you should set an error within your action
+* unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).
+* the error if everything is OK will be "OK", otherwise, you should set a string error within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
 actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}`
@@ -192,6 +191,8 @@ You can also access actionHero's methods via a persistent socket connection rath
 * roomView - show you the room you are connected to, and information about the members currently in that room.
 * say [message]
 
+Please note that any params set using the above method will be 'sticky' to the connection and sent for all subsequent requests.  Be sure to delete or update your params!
+
 All socket connections are also joined to a room.  Rooms are used to broadcast messages from the system or other users.  Rooms can be created on the fly and don't require any special setup.  In this way. you can push messages to your users with a special function: `api.socketRoomBroadcast(api, connection, message)`.  `connection` can be null if you want the message to come from the server itself.  The final special action socket connections have is `say` which will tell a message to all other users in the room, IE: `say Hello World`.
 
 API Functions for helping with room communications are:
@@ -201,7 +202,7 @@ API Functions for helping with room communications are:
 * `api.sendSocketMessage(api, connection, message)`: send a message directly to a socket connection
 
 
-Every socket action (including the special param methods above) will return a single line denoted by \r\n  It will often be "OK" or a JSON object.
+Every socket action (including the special param methods above) will return a single line denoted by \r\n  in JSON.  If the Action was executed successfully, the response will be `{"status":"OK"}`.
 
 Socket Example:
 
@@ -256,7 +257,7 @@ The contents of `index.js` should look something like this:
 
 * Start up the server: `node index.js`
 
-You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal.  actionHero will create the needed databases and seeds and then start the server.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
+You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  actionHero will not create databases on its own, so you should create the `action_hero_api` database on your local mySQL server.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
 ## Extending actionHero
 The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own ``tasks.js` file.
