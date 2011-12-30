@@ -1,0 +1,175 @@
+2011-12-29 14:33:07 | model loaded: cache
+2011-12-29 14:33:07 | model loaded: log
+2011-12-29 14:33:07 | model loaded: session
+2011-12-29 14:33:07 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:33:07 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:33:07 | action loaded: actionsView
+2011-12-29 14:33:07 | action loaded: cacheTest
+2011-12-29 14:33:07 | action loaded: file
+2011-12-29 14:33:07 | action loaded: randomNumber
+2011-12-29 14:33:07 | action loaded: say
+2011-12-29 14:33:07 | action loaded: status
+2011-12-29 14:33:07 | *** Server Started @ 2011-12-29 14:33:07 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:33:07 | Boot Sucessful!
+2011-12-29 14:33:31 | action @ 127.0.0.1 | params: {"action":"","limit":100,"offset":0}
+2011-12-29 14:33:31 |  > web request from 127.0.0.1 | responded in : 28ms
+2011-12-29 14:33:55 | model loaded: cache
+2011-12-29 14:33:55 | model loaded: log
+2011-12-29 14:33:55 | model loaded: session
+2011-12-29 14:33:55 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:33:55 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:33:55 | action loaded: actionsView
+2011-12-29 14:33:55 | action loaded: cacheTest
+2011-12-29 14:33:55 | action loaded: file
+2011-12-29 14:33:55 | action loaded: randomNumber
+2011-12-29 14:33:55 | action loaded: say
+2011-12-29 14:33:55 | action loaded: status
+2011-12-29 14:33:55 | *** Server Started @ 2011-12-29 14:33:55 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:33:55 | Boot Sucessful!
+2011-12-29 14:33:59 | action @ 127.0.0.1 | params: {"action":"","limit":100,"offset":0}
+2011-12-29 14:33:59 |  > web request from 127.0.0.1 | responded in : 24ms
+2011-12-29 14:34:55 | * periodic cron tasks starting now *
+2011-12-29 14:34:55 |   starging task: Clean Log Files
+2011-12-29 14:34:55 |   starging task: Clean Task DB
+2011-12-29 14:34:55 |   starging task: Clean cache DB
+2011-12-29 14:34:55 |   starging task: Clean session DB
+2011-12-29 14:34:55 |   completed task: Clean Log Files
+2011-12-29 14:34:55 |   completed task: Clean Task DB
+2011-12-29 14:34:55 |   completed task: Clean cache DB
+2011-12-29 14:34:55 |   completed task: Clean session DB
+2011-12-29 14:34:55 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:35:51 |  > web request from 127.0.0.1 | responded in : 2ms
+2011-12-29 14:35:55 | * periodic cron tasks starting now *
+2011-12-29 14:35:55 |   starging task: Clean Log Files
+2011-12-29 14:35:55 |   starging task: Clean Task DB
+2011-12-29 14:35:55 |   starging task: Clean cache DB
+2011-12-29 14:35:55 |   starging task: Clean session DB
+2011-12-29 14:35:55 |   completed task: Clean Log Files
+2011-12-29 14:35:55 |   completed task: Clean Task DB
+2011-12-29 14:35:55 |   completed task: Clean cache DB
+2011-12-29 14:35:55 |   completed task: Clean session DB
+2011-12-29 14:35:55 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:36:49 |  > web request from 127.0.0.1 | responded in : 2ms
+2011-12-29 14:36:55 | * periodic cron tasks starting now *
+2011-12-29 14:36:55 |   starging task: Clean Log Files
+2011-12-29 14:36:55 |   starging task: Clean Task DB
+2011-12-29 14:36:55 |   starging task: Clean cache DB
+2011-12-29 14:36:55 |   starging task: Clean session DB
+2011-12-29 14:36:55 |   completed task: Clean Log Files
+2011-12-29 14:36:55 |   completed task: Clean Task DB
+2011-12-29 14:36:55 |   completed task: Clean cache DB
+2011-12-29 14:36:55 |   completed task: Clean session DB
+2011-12-29 14:36:55 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:36:56 | model loaded: cache
+2011-12-29 14:36:56 | model loaded: log
+2011-12-29 14:36:56 | model loaded: session
+2011-12-29 14:36:56 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:36:56 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:36:56 | action loaded: actionsView
+2011-12-29 14:36:56 | action loaded: cacheTest
+2011-12-29 14:36:56 | action loaded: file
+2011-12-29 14:36:56 | action loaded: randomNumber
+2011-12-29 14:36:56 | action loaded: say
+2011-12-29 14:36:56 | action loaded: status
+2011-12-29 14:36:56 | *** Server Started @ 2011-12-29 14:36:56 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:36:56 | Boot Sucessful!
+2011-12-29 14:36:58 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:36:58 |  > web request from 127.0.0.1 | responded in : 23ms
+2011-12-29 14:37:56 | * periodic cron tasks starting now *
+2011-12-29 14:37:56 |   starging task: Clean Log Files
+2011-12-29 14:37:56 |   starging task: Clean Task DB
+2011-12-29 14:37:56 |   starging task: Clean cache DB
+2011-12-29 14:37:56 |   starging task: Clean session DB
+2011-12-29 14:37:56 |   completed task: Clean Log Files
+2011-12-29 14:37:56 |   completed task: Clean Task DB
+2011-12-29 14:37:56 |   completed task: Clean cache DB
+2011-12-29 14:37:56 |   completed task: Clean session DB
+2011-12-29 14:37:56 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:38:56 | * periodic cron tasks starting now *
+2011-12-29 14:38:56 |   starging task: Clean Log Files
+2011-12-29 14:38:56 |   starging task: Clean Task DB
+2011-12-29 14:38:56 |   starging task: Clean cache DB
+2011-12-29 14:38:56 |   starging task: Clean session DB
+2011-12-29 14:38:56 |   completed task: Clean Log Files
+2011-12-29 14:38:56 |   completed task: Clean Task DB
+2011-12-29 14:38:56 |   completed task: Clean cache DB
+2011-12-29 14:38:56 |   completed task: Clean session DB
+2011-12-29 14:38:56 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:39:01 | model loaded: cache
+2011-12-29 14:39:01 | model loaded: log
+2011-12-29 14:39:01 | model loaded: session
+2011-12-29 14:39:01 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:39:01 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:39:01 | action loaded: actionsView
+2011-12-29 14:39:01 | action loaded: cacheTest
+2011-12-29 14:39:01 | action loaded: file
+2011-12-29 14:39:01 | action loaded: randomNumber
+2011-12-29 14:39:01 | action loaded: say
+2011-12-29 14:39:01 | action loaded: status
+2011-12-29 14:39:01 | *** Server Started @ 2011-12-29 14:39:01 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:39:01 | Boot Sucessful!
+2011-12-29 14:39:03 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:39:03 |  > web request from 127.0.0.1 | responded in : 24ms
+2011-12-29 14:40:01 | * periodic cron tasks starting now *
+2011-12-29 14:40:01 |   starging task: Clean Log Files
+2011-12-29 14:40:01 |   starging task: Clean Task DB
+2011-12-29 14:40:01 |   starging task: Clean cache DB
+2011-12-29 14:40:01 |   starging task: Clean session DB
+2011-12-29 14:40:01 |   completed task: Clean Log Files
+2011-12-29 14:40:01 |   completed task: Clean Task DB
+2011-12-29 14:40:01 |   completed task: Clean cache DB
+2011-12-29 14:40:01 |   completed task: Clean session DB
+2011-12-29 14:40:01 | * periodic cron tasks comple. see you again in 60000ms *
+2011-12-29 14:40:11 | model loaded: cache
+2011-12-29 14:40:11 | model loaded: log
+2011-12-29 14:40:11 | model loaded: session
+2011-12-29 14:40:11 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:40:11 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:40:11 | action loaded: actionsView
+2011-12-29 14:40:11 | action loaded: cacheTest
+2011-12-29 14:40:11 | action loaded: file
+2011-12-29 14:40:11 | action loaded: randomNumber
+2011-12-29 14:40:11 | action loaded: say
+2011-12-29 14:40:11 | action loaded: status
+2011-12-29 14:40:11 | *** Server Started @ 2011-12-29 14:40:11 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:40:11 | Boot Sucessful!
+2011-12-29 14:40:13 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:40:13 |  > web request from 127.0.0.1 | responded in : 23ms
+2011-12-29 14:40:44 | model loaded: cache
+2011-12-29 14:40:44 | model loaded: log
+2011-12-29 14:40:44 | model loaded: session
+2011-12-29 14:40:44 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:40:44 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:40:44 | action loaded: actionsView
+2011-12-29 14:40:44 | action loaded: cacheTest
+2011-12-29 14:40:44 | action loaded: file
+2011-12-29 14:40:44 | action loaded: randomNumber
+2011-12-29 14:40:44 | action loaded: say
+2011-12-29 14:40:44 | action loaded: status
+2011-12-29 14:40:44 | *** Server Started @ 2011-12-29 14:40:44 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:40:44 | Boot Sucessful!
+2011-12-29 14:40:46 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:40:46 |  > web request from 127.0.0.1 | responded in : 22ms
+2011-12-29 14:40:55 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:40:55 |  > web request from 127.0.0.1 | responded in : 9ms
+2011-12-29 14:41:00 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:41:00 |  > web request from 127.0.0.1 | responded in : 8ms
+2011-12-29 14:41:49 | model loaded: cache
+2011-12-29 14:41:49 | model loaded: log
+2011-12-29 14:41:49 | model loaded: session
+2011-12-29 14:41:49 | DB conneciton sucessfull and Objects mapped to DB tables
+2011-12-29 14:41:49 | periodic (internal cron) interval set to process evey 60000ms
+2011-12-29 14:41:49 | action loaded: actionsView
+2011-12-29 14:41:49 | action loaded: cacheTest
+2011-12-29 14:41:49 | action loaded: file
+2011-12-29 14:41:49 | action loaded: randomNumber
+2011-12-29 14:41:49 | action loaded: say
+2011-12-29 14:41:49 | action loaded: status
+2011-12-29 14:41:49 | *** Server Started @ 2011-12-29 14:41:49 @ web port 8080 & socket port 5000 ***
+2011-12-29 14:41:49 | Boot Sucessful!
+2011-12-29 14:41:50 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:41:50 |  > web request from 127.0.0.1 | responded in : 22ms
+2011-12-29 14:41:51 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:41:51 |  > web request from 127.0.0.1 | responded in : 9ms
+2011-12-29 14:41:52 | action @ 127.0.0.1 | params: {"action":"","key":"value","limit":100,"offset":0}
+2011-12-29 14:41:52 |  > web request from 127.0.0.1 | responded in : 8ms
