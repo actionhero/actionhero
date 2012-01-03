@@ -204,23 +204,30 @@ API Functions for helping with room communications are:
 
 Every socket action (including the special param methods above) will return a single line denoted by \r\n  in JSON.  If the Action was executed successfully, the response will be `{"status":"OK"}`.
 
+To help sort out the potential stream of messages a socket user may receive, it is best to set a "context" as part of the JSON response.  For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent.  Messages sent by a user via the 'say' command have the context of `user` indicating they came form a user.  Every minute a ping is sent from the server to keep the TCP connection alive and send the current time.  This message has the context of `api`.  Messages resulting from data sent to the api (like an action) will have the `response` context.
+
 Socket Example:
 
 	> telnet localhost 5000
 	Trying 127.0.0.1...
 	Connected to localhost.
 	Escape character is '^]'.
-	{"welcome":"Hello! Welcome to the actionHero server"}
+	{"welcome":"Hello! Welcome to the actionHero api","room":"defaultRoom","context":"api","messageCount":0}
+	randomNumber
+	{"context":"response","randomNumber":0.6138995781075209,"messageCount":1}
 	cacheTest
-	{"error":"key is a required parameter for this action"}
+	{"context":"response","error":"key is a required parameter for this action","messageCount":2}
 	paramAdd key=myKey
-	{"status":"OK"}
-	paramAdd value=testValue
-	{"status":"OK"}
+	{"status":"OK","context":"response","messageCount":3}
+	paramAdd value=myValue
+	{"status":"OK","context":"response","messageCount":4}
 	paramsView
-	{"action":"viewParams","limit":100,"offset":0,"key":"myKey","value":"testValue"}
+	{"context":"response","params":{"action":"cacheTest","limit":100,"offset":0,"key":"myKey","value":"myValue"},"messageCount":5}
 	cacheTest
-	{"cacheTestResults":{"key":"myKey","value":"testValue","saveResp":"new record","loadResp":"testValue","deleteResp":true}}
+	{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"new record","loadResp":"myValue","deleteResp":true},"messageCount":6}
+	say hooray!
+	{"context":"response","status":"OK","messageCount":7}
+	{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":8}
 
 ## Requirements
 * node.js server
@@ -320,5 +327,8 @@ Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This 
 The `api.log()` method is available to you throughout the application.  `api.log()` will both write these log messages to file, but also display them on the console.  There are formatting options you can pass to ``api.log(yourMessage, options=[])`.  The options array can be many colors and formatting types, IE: `['blue','bold']`.  Check out `/initializers/initLog.js` to see the options.
 
 Remember that one of the default actions will delete the log file if it gets over 10MB.
+
+## Versions of this API
+see `versions.markdown` to see what's new in each version
 
 ###

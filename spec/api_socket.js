@@ -66,8 +66,8 @@ suite.addBatch({
 		topic: function(){ 
 			makeSocketRequest(client, this.callback, "paramsView");
 		}, 'works' : function(resp, d){
-			specHelper.assert.equal(d.limit, 100);
-			specHelper.assert.equal(d.offset, 0);
+			specHelper.assert.equal(d.params.limit, 100);
+			specHelper.assert.equal(d.params.offset, 0);
 		}
 	}
 });
@@ -96,7 +96,7 @@ suite.addBatch({
 suite.addBatch({
 	"a new param can be viewed once added": {
 		topic: function(){ makeSocketRequest(client, this.callback, "paramView key"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.q, "socketTestKey"); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.params.key, "socketTestKey");}
 	}
 });
 
@@ -117,7 +117,7 @@ suite.addBatch({
 suite.addBatch({
 	"updated parms persist": {
 		topic: function(){ makeSocketRequest(client, this.callback, "paramsView"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.limit, 50); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.params.limit, 50); }
 	}
 });
 

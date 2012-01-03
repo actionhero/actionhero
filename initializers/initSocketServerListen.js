@@ -10,15 +10,20 @@ var initSocketServerListen = function(api, next){
 	  	connection.type = "socket";
 		connection.params = {};
 		connection.remoteIP = connection.remoteAddress;
-		connection.id = new Buffer(connection.remotePort + connection.remoteAddress + Math.random()).toString('base64');
 		connection.room = api.configData.defaultSocketRoom;
 		connection.public = {};
 		connection.public.id = connection.id;
+		connection.messageCount = 0;
+		
+		var md5 = api.crypto.createHash('md5');
+		var hashBuff = new Buffer(connection.remotePort + connection.remoteAddress + Math.random()).toString('base64');
+		md5.update(hashBuff);
+		connection.id = md5.digest('hex');
 		
 		api.connections.push(connection);
 	
 	  	connection.on("connect", function () {
-	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room});
+	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 	  	});
 	  	connection.on("data", function (data) {
@@ -31,39 +36,42 @@ var initSocketServerListen = function(api, next){
 			}else if(words[0] == "paramAdd"){
 				var parts = words[1].split("=");
 				connection.params[parts[0]] = parts[1];
-				api.sendSocketMessage(connection, {status: "OK"});
+				api.sendSocketMessage(connection, {status: "OK", context: "response"});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "paramDelete"){
 				connection.data.params[words[1]] = null;
-				api.sendSocketMessage(connection, {status: "OK"});
+				api.sendSocketMessage(connection, {status: "OK", context: "response"});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "paramView"){
 				var q = words[1];
-				api.sendSocketMessage(connection, {q: connection.params[q]});
+				var params = {}
+				params[q] = connection.params[q];
+				api.sendSocketMessage(connection, {context: "response", params: params});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "paramsView"){
-				api.sendSocketMessage(connection, connection.params);
+				api.sendSocketMessage(connection, {context: "response", params: connection.params});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "paramsDelete"){
 				connection.params = {};
-				api.sendSocketMessage(connection, {status: "OK"});
+				api.sendSocketMessage(connection, {context: "response", status: "OK"});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "roomChange"){
 				connection.room = words[1];
-				api.sendSocketMessage(connection, {status: "OK", room: connection.room});
+				api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "roomView"){
 				var roomStatus = api.socketRoomStatus(api, connection.room);
-				api.sendSocketMessage(connection, {status: "OK", room: connection.room, roomStatus: roomStatus});
+				api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "say"){
 				var message = data.substr(4);
 				api.socketRoomBroadcast(api, connection, message);
-				api.sendSocketMessage(connection, {status: "OK"});
+				api.sendSocketMessage(connection, {context: "response", status: "OK"});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else{
 				connection.error = false;
 				connection.response = {};
+				connection.response.context = "response";
 				connection.params["action"] = words[0];
 				process.nextTick(function() { api.processAction(api, connection, api.respondToSocketClient); });
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
@@ -85,10 +93,10 @@ var initSocketServerListen = function(api, next){
 			var thisConnection = api.connections[i];
 			if(thisConnection.room == connection.room){
 				if(connection == null){
-					api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName});
+					api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
 				}else{
 					if(thisConnection.id != connection.id){
-						api.sendSocketMessage(thisConnection, {message: message, from: connection.id});
+						api.sendSocketMessage(thisConnection, {message: message, from: connection.id, context: "user"});
 					}
 				}
 			}
@@ -122,7 +130,10 @@ var initSocketServerListen = function(api, next){
 				}
 				api.sendSocketMessage(connection, connection.response);
 			}else{
-				api.sendSocketMessage(connection, {error: connection.error});
+				if(connection.response.error == null){
+					connection.response.error = connection.error;
+				}
+				api.sendSocketMessage(connection, connection.response);
 			}
 		}
 		process.nextTick(function() { api.logAction(api, connection); });
@@ -131,7 +142,11 @@ var initSocketServerListen = function(api, next){
 	//message helper
 	api.sendSocketMessage = function(connection, message){
 		process.nextTick(function() { 
-			try{ connection.write(JSON.stringify(message) + "\r\n"); }catch(e){ }
+			try{
+				message.messageCount = connection.messageCount;
+				connection.write(JSON.stringify(message) + "\r\n"); 
+				connection.messageCount++;
+			}catch(e){ }
 		});
 	}
 	

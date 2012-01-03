@@ -125,7 +125,6 @@ utils.sessionCheck = function(api, connection, next){
 // shellExec
 utils.shellExec = function(api, command, next){
 	var response = {};
-	console.log(command)
 	child = api.exec(command, function (error, stdout, stderr) {
 		if (stdout.length > 0){ response.stdout = stdout.replace(/(\r\n|\n|\r)/gm,""); }else{response.stdout = stdout; }
 		if (stderr.length > 0){ response.stderr = stderr.replace(/(\r\n|\n|\r)/gm,""); }else{response.stderr = stderr; }
@@ -181,7 +180,7 @@ utils.DBSeed = function(api, model, seeds, next){
 				next(true, model);
 			}).on('failure', function(errors){
 				for(var i in errors){
-					console.log(errors[i]);
+					api.log(errors[i], "red");
 				}
 				next(false, model);
 			});
