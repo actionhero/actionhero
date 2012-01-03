@@ -7,7 +7,17 @@ var actionHero = {};
 
 actionHero.start = function(params, callback){
 	
-	actionHero.initializers = [ "initLog", "initDB", "initPostVariables", "initActions", "initCron", "initWebListen", "initSocketServerListen", "initCache" ];
+	actionHero.initializers = [ 
+		"initLog", 
+		"initDB", 
+		"initPostVariables", 
+		"initActions", 
+		"initCron", 
+		"initWebListen", 
+		"initSocketServerListen", 
+		"initCache" 
+	];
+	
 	for(var i in actionHero.initializers){
 		var p = actionHero.initializers[i];
 		actionHero[p] = require(__dirname + '/initializers/'+p+'.js')[p];

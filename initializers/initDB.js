@@ -14,8 +14,8 @@ var initDB = function(api, next)
 		api.rawDBConnction = api.mysql.createClient(rawDBParams);
 		api.rawDBConnction.query('USE '+api.configData.database.database, function(e){
 			if(e){
-				console.log(" >> error connecting to database, exiting");
-				console.log(JSON.stringify({database: rawDBParams.database, user: rawDBParams.user, host: rawDBParams.host, port: rawDBParams.port, password: "[censored]"}));
+				api.log(" >> error connecting to database, exiting", ["red", "bold"]);
+				api.log(JSON.stringify({database: rawDBParams.database, user: rawDBParams.user, host: rawDBParams.host, port: rawDBParams.port, password: "[censored]"}));
 				process.exit();	
 			}else{
 				api.dbObj = new api.SequelizeBase(api.configData.database.database, api.configData.database.username, api.configData.database.password, {
