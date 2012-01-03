@@ -33,24 +33,21 @@ tasks.cleanLogFiles = function(api, next) {
 	var task = Object.create(api.tasks.Task);
 	task.init(api, params, next);
 	task.run = function() {
-		var logs = [
-			(api.configData.logFolder + "/" + api.configData.logFile)
-		];
-
-		logs.forEach(function(log){
-			api.path.exists(log, function (exists){
+		api.fs.readdirSync(api.configData.logFolder).forEach( function(file) {
+			file = api.configData.logFolder + "/" + file;
+			api.path.exists(file, function (exists){
 				if(exists)
 				{
-					size = api.fs.statSync(log).size;
+					size = api.fs.statSync(file).size;
 					if(size >= api.configData.maxLogFileSize)
 					{
-						api.log(log + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.", "yellow")
-						api.fs.unlinkSync(log);
+						api.log(file + " is larger than " + api.configData.maxLogFileSize + " bytes.  Deleting.", "yellow")
+						api.fs.unlinkSync(file);
 					}
 				}
-				task.end();
 			});
 		});
+		task.end();
 	};
 	//
 	process.nextTick(function () { task.run() });
