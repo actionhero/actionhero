@@ -147,6 +147,8 @@ All of the metadata in the example task is required, as is task.init and task.ru
 ## Connecting
 
 ### HTTP
+
+#### General
 You can visit the API in a browser, Curl, etc.  `{url}?action` or `{url}/{action}` is how you would access an action.  For example, using the default ports in config.json you could reach the status action with both `http://127.0.0.1/status` or `http://127.0.0.1/?action=status`  The only action which doesn't return the default JSON format would be `file`, as it should return files with the appropriate headers if they are found, and a 404 error if they are not.
 
 HTTP responses follow the format:
@@ -170,14 +172,46 @@ HTTP responses follow the format:
 		error: "OK"
 	}
 
+HTTP Example: 
+
+	> curl localhost:8080/api -v
+	* About to connect() to localhost port 8080 (#0)
+	*   Trying ::1... Connection refused
+	*   Trying 127.0.0.1... connected
+	* Connected to localhost (127.0.0.1) port 8080 (#0)
+	> GET /api HTTP/1.1
+	> User-Agent: curl/7.21.4 (universal-apple-darwin11.0) libcurl/7.21.4 OpenSSL/0.9.8r zlib/1.2.5
+	> Host: localhost:8080
+	> Accept: */*
+	> 
+	< HTTP/1.1 200 OK
+	< Content-Type: application/json
+	< X-Powered-By: actionHero API
+	< Connection: keep-alive
+	< Transfer-Encoding: chunked
+	< 
+	* Connection #0 to host localhost left intact
+	* Closing connection #0
+	{"serverInformation":{"serverName":"actionHero API","apiVerson":"0.1.5","requestDuration":16},"requestorInformation":{"remoteAddress":"127.0.0.1","RequestsRemaining":905,"recievedParams":{"limit":100,"offset":0}},"error":"undefined is not a known action."}
+
 * you can provide the `?callback=myFunc` param to initiate a JSON-p response which will wrap the returned JSON in your callback function.  
 * unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).
 * the error if everything is OK will be "OK", otherwise, you should set a string error within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
-actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a `file` action. `http://{baseUrl}/file/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}`
+#### Files and Routes
+
+actionHero can also serve up flat files.  There is an action, `file` which is used to do this and a file server is part of the core framework (check out `initFileserver` for more information).  
+
+* /file and /api are  routes which expose the 'directories' of those types.  These top level paths can be configured in `config.json` with `api.configData.urlPathForActions` and `api.configData.urlPathForFiles`.
+* the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.configData.rootEndpointType`. The default is `api`.
+* actionHero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via a `file` action or via the 'file' route as described above. `http://{baseUrl}/file/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}`. 
+* Errors will result in a 404 (file not found).
+* proper mime-type headers will be set when possible.
 
 ### Sockets
+
+#### General
 
 You can also access actionHero's methods via a persistent socket connection rather than http.  The default port for this type of communication is 5000.  There are a few special actions which set and keep parameters bound to your session (so they don't need to be re-posted).  These special methods are:
 
@@ -228,6 +262,13 @@ Socket Example:
 	say hooray!
 	{"context":"response","status":"OK","messageCount":7}
 	{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":8}
+
+#### Files and Routes
+
+Connections over socket can also use the file action.  
+
+* errors are returned in the normal way `{error: someError}` rather than setting headers.  That wouldn't make sense in this context
+* a successful file transfer will return the raw file data in a single send().  
 
 ## Requirements
 * node.js server
@@ -287,7 +328,6 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 ## Default Actions you can try `?action=..` which are included in the framework:
 * cacheTest - a test of the DB-based key-value cache system
 * actionsView - returns a list of available actions on the server and their metadata
-* file - servers flat files from `{serverRoot}\public\{filesNmae}` (defined in config.json)
 * randomNumber - generates a random number
 * status - returns server status and stats
 * say - sends messages via http to clients connected via socket (in the room you specify)

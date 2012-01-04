@@ -28,33 +28,61 @@ var initWebListen = function(api, next)
 			connection.remoteIP = IPs[0];	
 		}
 		
-		// parse GET (URL) variables
+		// determine API or FILE
 		var parsedURL = api.url.parse(connection.req.url, true);
-		fillParamsFromWebRequest(api, connection, parsedURL.query);
-		if(connection.params.action === undefined){ connection.params.action = parsedURL.pathname.split("/")[1]; }
-		
-		// parse POST variables
-		if (connection.req.method.toLowerCase() == 'post') {
-			if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
-				connection.error = "content-type is a required header for processing this form.";
-				process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
-			}else{
-				var form = new api.formidable.IncomingForm();
-			    form.parse(connection.req, function(err, fields, files) {
-					if(err){
-						api.log(err, "red");
-						connection.error = "There was an error processign this form."
-						process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
-					}else{
-				  		fillParamsFromWebRequest(api, connection, files);
-				  		fillParamsFromWebRequest(api, connection, fields);
-				  		process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
-					}
-			    });
+		var pathParts = parsedURL.pathname.split("/");
+		connection.requestMode = api.configData.rootEndpointType; // api or file
+		connection.directModeAccess = false;
+		if(pathParts.length > 0){
+			if(pathParts[1] == api.configData.urlPathForActions){ 
+				connection.requestMode = "api"; 
+				connection.directModeAccess = true;
 			}
-		}else{
+			else if(pathParts[1] == api.configData.urlPathForFiles){ 
+				connection.requestMode = "file"; 
+				connection.directModeAccess = true;
+			}
+		}
+		
+		if(connection.requestMode == "api"){
+			// parse GET (URL) variables
+			fillParamsFromWebRequest(api, connection, parsedURL.query);
+			if(connection.params.action === undefined){ 
+				if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
+				else{ connection.params.action = pathParts[1]; }
+			}
+		
+			// parse POST variables
+			if (connection.req.method.toLowerCase() == 'post') {
+				if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
+					connection.error = "content-type is a required header for processing this form.";
+					process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+				}else{
+					var form = new api.formidable.IncomingForm();
+				    form.parse(connection.req, function(err, fields, files) {
+						if(err){
+							api.log(err, "red");
+							connection.error = "There was an error processign this form."
+							process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+						}else{
+					  		fillParamsFromWebRequest(api, connection, files);
+					  		fillParamsFromWebRequest(api, connection, fields);
+					  		process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+						}
+				    });
+				}
+			}else{
+				process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+			}
+		}
+		
+		if(connection.requestMode == "file"){
+			connection.params = {
+				action: 'file',
+			};
 			process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
-		}		
+		}
+		
 	})
 	
 	// Go server!

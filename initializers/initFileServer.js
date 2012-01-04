@@ -8,8 +8,11 @@ var initFileServer = function(api, next){
 		if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 			var parsedURL = api.url.parse(connection.req.url);
 			var parts = parsedURL.pathname.split("/");
+			
 			parts.shift();
-			parts.shift();
+			if (connection.directModeAccess == true){ parts.shift(); }
+			if (connection.requestMode == "api"){ parts.shift(); }
+			
 			for (var i in parts){
 				if (fileName != ""){ fileName += "/"; }
 				fileName += parts[i];

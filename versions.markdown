@@ -1,5 +1,17 @@
 # Action Hero API Versions
 
+## Version 0.1.6
+
+**Summary:** This release changes the way that actions and files are routed
+
+**Details:**
+
+* Mode Routing
+	* /file and /api are now routes which expose the 'directories' of those types.  These top level paths can be configured in `config.json` with `api.configData.urlPathForActions` and `api.configData.urlPathForFiles`.
+	* the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.configData.rootEndpointType`. Versions prior to this can be thought of as always choosing /api as the default. The default is `api`.
+	* `/file` now works for socket connections.  The raw contents of the file will be streamed back to the client upon success.  Rather than sending HTTP headers on errors, a string messages in the normal way will be sent upon error.
+	* `file` is still an action, but its logic is moved into the code API.  Socket connections will only be using /api/ as their endpoint.
+
 ## Version 0.1.5
 
 **Summary:** This release contains a number of fixes for socket clients and some minor task updates.
