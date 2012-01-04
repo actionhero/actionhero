@@ -63,8 +63,10 @@ var sendFile = function(api, file, connection, next){
 				connection.res.writeHead(200, connection.responseHeaders);
 				connection.res.end(data);
 			}else{
-				connection.write(data + "\r\n"); 
-				connection.messageCount++;
+				try { 
+					connection.write(data + "\r\n"); 
+					connection.messageCount++;
+				}catch(e){}
 			}
 		}
 		next(connection, false);
