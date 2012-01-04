@@ -14,7 +14,7 @@ action.outputExample = {}
 // functional
 action.run = function(api, connection, next){
 	var fileName = "";
-	if(connection.params.fileName == null || typeof connection.params.fileName == "undefined"){
+	if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 		var parsedURL = api.url.parse(connection.req.url);
 		var parts = parsedURL.pathname.split("/");
 		parts.shift();
@@ -23,47 +23,66 @@ action.run = function(api, connection, next){
 			if (fileName != ""){ fileName += "/"; }
 			fileName += parts[i];
 		}
+	}else if(connection.req == null){
+		// socket connection
+		api.utils.requiredParamChecker(api, connection, ["fileName"]);
+		if(connection.error == false){ fileName = connection.params.fileName; }
 	}else{
 		fileName = connection.params.fileName;
 	}
-	fileName = api.configData.flatFileDirectory + fileName;
-	api.path.exists(fileName, function(exists) {
-		if(exists){
-			var isPath = false
-			if (api.path.extname(fileName) == "" || api.path.extname(fileName).indexOf("/") > -1){
-				isPath = true;
+	if(connection.error == false){
+		fileName = api.configData.flatFileDirectory + fileName;
+		api.path.exists(fileName, function(exists) {
+			if(exists){
+				var isPath = false
+				if (api.path.extname(fileName) == "" || api.path.extname(fileName).indexOf("/") > -1){
+					isPath = true;
+				}
+				if(isPath){
+					var indexPage = fileName + "index.html";
+			  		api.path.exists(indexPage, function(indexExists) {
+			  			if(indexExists){ sendFile(api, indexPage, connection, next); }
+						else{ sendFileNotFound(api, connection, next); }
+			  		});
+				} else{ sendFile(api, fileName, connection, next); }
 			}
-			if(isPath){
-				var indexPage = fileName + "index.html";
-		  		api.path.exists(indexPage, function(indexExists) {
-		  			if(indexExists){ sendFile(api, indexPage, connection, next); }
-					else{ sendFileNotFound(api, connection, next); }
-		  		});
-			} else{ sendFile(api, fileName, connection, next); }
-		}
-		else{ sendFileNotFound(api, connection, next); }
-	});
+			else{ sendFileNotFound(api, connection, next); }
+		});
+	}else{
+		sendFileNotFound(api, connection, next); 
+	}
 };
 
 var sendFile = function(api, file, connection, next){
-	connection.params.localFileName = file;
 	api.fs.readFile(file, function (err, data) {
 		if(err){
 			api.log("error reading: "+file, "red");
 		}else{
-			connection.responseHeaders['Content-Type'] = determineMimeType(file);
-			connection.res.writeHead(200, connection.responseHeaders);
-			connection.res.end(data);
+			if(connection.req != null){
+				connection.responseHeaders['Content-Type'] = determineMimeType(file);
+				connection.res.writeHead(200, connection.responseHeaders);
+				connection.res.end(data);
+			}else{
+				connection.write(data + "\r\n"); 
+				connection.messageCount++;
+			}
 		}
 		next(connection, false);
 	});
 }
 
 var sendFileNotFound = function(api, connection, next){
-	connection.responseHeaders['Content-Type'] = 'text/html';
-	connection.res.writeHead(404, connection.responseHeaders);
-	connection.res.end(api.configData.flatFileNotFoundMessage);
-	next(connection, false);
+	if(connection.req != null){
+		connection.responseHeaders['Content-Type'] = 'text/html';
+		connection.res.writeHead(404, connection.responseHeaders);
+		connection.res.end(api.configData.flatFileNotFoundMessage);
+		next(connection, false);
+	}else{
+		if(connection.error == false){
+			connection.error = "The file, "+connection.params.fileName+", is not found.";
+		}
+		next(connection, true);
+	}
 }
 
 var determineMimeType = function(fileName){
