@@ -29,10 +29,14 @@ var initSocketServerListen = function(api, next){
 	  	connection.on("data", function (data) {
 			var data = data.replace(/(\r\n|\n|\r)/gm,"");
 			var words = data.split(" ");
-	    	if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" || data.indexOf("\u0004") > -1 ){
-				api.sendSocketMessage(connection, {status: "Bye!"});
-				connection.end();
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
+			if(data.indexOf("\u0004") > -1){
+				// trap for break chars; do nothing
+			}
+	    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
+				try{ 
+					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
+					api.sendSocketMessage(connection, {status: "Bye!"}); 
+				}catch(e){ }
 			}else if(words[0] == "paramAdd"){
 				var parts = words[1].split("=");
 				connection.params[parts[0]] = parts[1];

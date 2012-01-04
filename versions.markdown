@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-# Version 0.1.5
+## Version 0.1.5
 
 **Summary:** This release contains a number of fixes for socket clients and some minor task updates.
 
