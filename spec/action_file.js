@@ -23,17 +23,17 @@ suite.addBatch({
   "file: an html page": {
     topic: function(){ specHelper.apiTest.get(actionUrl + "index.html", {} ,this.callback ); },
     statusCode: function(res, b){ specHelper.assert.equal(res.statusCode, 200);},
-    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>Hello!</h1>\nI am a flat file being served to you via the API. <br />\nEnjoy!');},
+    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/index.html<br />');},
   },
   "file: ?filename should work like a path": {
     topic: function(){ specHelper.apiTest.get(actionUrl + "?filename=index.html", {} ,this.callback ); },
     statusCode: function(res, b){ specHelper.assert.equal(res.statusCode, 200);},
-    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>Hello!</h1>\nI am a flat file being served to you via the API. <br />\nEnjoy!');},
+    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/index.html<br />');},
   },
   "file: index page should be served when requesting a path": {
     topic: function(){ specHelper.apiTest.get(actionUrl, {} ,this.callback ); },
     statusCode: function(res, b){ specHelper.assert.equal(res.statusCode, 200);},
-    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>Hello!</h1>\nI am a flat file being served to you via the API. <br />\nEnjoy!');},
+    content: function(res, b){ specHelper.assert.equal(res.body, '<h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/index.html<br />');},
   },
   "file: sub paths should work": {
     topic: function(){ specHelper.apiTest.get(actionUrl + "/img/piano.jpg", {} ,this.callback ); },
