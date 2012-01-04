@@ -54,7 +54,7 @@ var initActions = function(api, next)
 						if(api.actions[connection.action] != undefined){
 							process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
 						}else{
-							if(connection.action == ""){connection.action = "{no action}";}
+							if(connection.action == "" || connection.action == null){connection.action = "{no action}";}
 							connection.error = connection.action + " is not a known action.";
 							process.nextTick(function() { next(connection, true); });
 						}
