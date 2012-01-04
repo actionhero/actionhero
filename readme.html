@@ -1,0 +1,515 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    color: #737373;
+    margin: 10px 13px 10px 13px;
+}
+a {
+    color: #0069d6;
+}
+a:hover {
+    color: #0050a3;
+    text-decoration: none;
+}
+a img {
+    border: none;
+}
+p {
+    margin-bottom: 9px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #404040;
+    line-height: 36px;
+}
+h1 {
+    margin-bottom: 18px;
+    font-size: 30px;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+h5 {
+    font-size: 14px;
+}
+h6 {
+    font-size: 13px;
+}
+hr {
+    margin: 0 0 19px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+blockquote {
+    padding: 13px 13px 21px 15px;
+    margin-bottom: 18px;
+    font-family:georgia,serif;
+    font-style: italic;
+}
+blockquote:before {
+    content:"\201C";
+    font-size:40px;
+    margin-left:-10px;
+    font-family:georgia,serif;
+    color:#eee;
+}
+blockquote p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 18px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+code, pre {
+    font-family: Monaco, Andale Mono, Courier New, monospace;
+}
+code {
+    background-color: #fee9cc;
+    color: rgba(0, 0, 0, 0.75);
+    padding: 1px 3px;
+    font-size: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+pre {
+    display: block;
+    padding: 14px;
+    margin: 0 0 18px;
+    line-height: 16px;
+    font-size: 11px;
+    border: 1px solid #d9d9d9;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+pre code {
+    background-color: #fff;
+    color:#737373;
+    font-size: 11px;
+    padding: 0;
+}
+@media screen and (min-width: 768px) {
+    body {
+        width: 748px;
+        margin:10px auto;
+    }
+}
+</style>
+<title>Untitled.html</title>
+</head>
+<body>
+<h1>node.js actionHero API Framework</h1>
+
+<p><a href="http://travis-ci.org/evantahler/actionHero"><img src="https://secure.travis-ci.org/evantahler/actionHero.png" alt="Build Status" /></a></p>
+
+<h2>Who is an actionHero?</h2>
+
+<p>actionHero is a minimalist transactional API framework for sockets and http clients using <a href="http://nodejs.org">node.js</a>.  It was inspired by the <a href="http://github.com/evantahler/php-dave-api">DAVE PHP framework</a>.  The goals of actionHero are to create an easy-to-use framework to get started making combination http and socket APIs as quickly as possible.</p>
+
+<p>The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he&rsquo;s not <em>CRUD</em>, and he&rsquo;s never taking a <em>REST</em>.  I was tired of &ldquo;heavy&rdquo; frameworks that were designed to run as monolithic applications which include M&rsquo;s, V&rsquo;s, and C&rsquo;s together in a single running application.  This tethering of view to business logic doesn&rsquo;t make much sense in modern web development (from a server PoV) when your presentation layer can just as easily be a mobile application or a website.</p>
+
+<p>The actionHero API defines a single access point and accepts GET and POST input. You define &ldquo;Actions&rdquo; which handle input and response, such as &ldquo;userAdd&rdquo; or &ldquo;geoLocate&rdquo;. The actionHero API is NOT &ldquo;RESTful&rdquo;, in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions this package comes with a few basic Actions included. Check them out in <code>api/actions/</code>.</p>
+
+<h2>Actions</h2>
+
+<p>The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the <code>connection.response</code> ( and <code>connection.error</code> when needed) value to build the response to the client</p>
+
+<p>Here&rsquo;s an example of a simple action which will return a random number to the client:</p>
+
+<pre><code>var action = {};
+
+/////////////////////////////////////////////////////////////////////
+// metadata
+action.name = "randomNumber";
+action.description = "I am an API method which will generate a random number";
+action.inputs = {
+    "required" : [],
+    "optional" : []
+};
+action.outputExample = {
+    randomNumber: 123
+}
+
+/////////////////////////////////////////////////////////////////////
+// functional
+action.run = function(api, connection, next){
+    connection.response.randomNumber = Math.random();
+    next(connection, true);
+};
+
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.action = action;
+</code></pre>
+
+<p>Notes:</p>
+
+<ul>
+<li>Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code>next(connection, true)</code>.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the <code>file.js</code> action for an example) where you would not want to render the default messages.</li>
+<li>The metadata is used in reflexive and self-documenting actions in the API, such as <code>actionsView</code>.  <code>actions.inputs.required</code> and <code>actions.inputs.required</code> are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).</li>
+</ul>
+
+
+<h2>Models &amp; mySQL</h2>
+
+<p>actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  Models (located in <code>./models/</code>) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if needed.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):</p>
+
+<pre><code>function defineModel(api)
+{
+    var model = api.dbObj.define('Cache', {
+        key: { type: api.SequelizeBase.STRING, allowNull: false, defaultValue: null, unique: true, autoIncrement: false},
+        value: { type: api.SequelizeBase.STRING, allowNull: false, defaultValue: null, unique: false, autoIncrement: false},
+        expireTime: { type: api.SequelizeBase.DATE, allowNull: false, defaultValue: null, unique: false, autoIncrement: false}
+    }); 
+    return model;
+}
+
+function defineSeeds(api){
+    return null;
+}
+
+exports.defineModel = defineModel;
+exports.defineSeeds = defineSeeds;
+</code></pre>
+
+<p>Seeds are simple JSON objects.  You don&rsquo;t need to set all the values as long as they have sensible defaults in the model definition.  Seeding is only run if the table is empty.  If you wanted a seed, you would add it like so:</p>
+
+<pre><code>function defineSeeds(api){
+    var seeds = [
+        {key: "foo", value:"bar"},
+        {key: "foo2", value:"bar2"},
+    ];
+    return seeds;
+}
+</code></pre>
+
+<p>You can then use api.models[myModel] to use the normal sequelize functions on.  Check <a href="www.sequelizejs.com">http://www.sequelizejs.com</a> for more info.  Here&rsquo;s how you would add a log record:</p>
+
+<pre><code>var logRecord = api.models.log.build({
+    ip: connection.remoteIP,
+    action: connection.action,
+    error: connection.error,
+    params: JSON.stringify(connection.params)
+});
+logRecord.save();
+</code></pre>
+
+<p>actionHero also uses the native node-mysql package so you can execute raw mySQL queries.  To use this, you can make use of the <code>api.rawDBConnction.query</code> object.  For example:</p>
+
+<pre><code>api.rawDBConnction.query("describe myTable", function(err, rows, fields) {
+    // do stuff
+});
+</code></pre>
+
+<h2>Tasks</h2>
+
+<p>Tasks are special periodically run actions the server will do at a set interval.  Because nodeJS has internal timers, it&rsquo;s simple to emulate a &ldquo;cron&rdquo; functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!</p>
+
+<p>The basic structure of a task <em>extends</em> the task prototype like this example.</p>
+
+<p>Make you own tasks in a <code>tasks.js</code> file in your project root.</p>
+
+<pre><code>var tasks = {};
+
+////////////////////////////////////////////////////////////////////////////
+// generic task prototype
+tasks.Task = { 
+    // prototypical params a task should have
+    "defaultParams" : {
+        "name" : "generic task",
+        "desc" : "I do a thing!"
+    },
+    init: function (api, params, next) {
+        this.params = params || this.defaultParams;
+        this.api = api;
+        if (next != null){this.next = next;}
+        this.api.log("  starging task: " + this.params.name, "yellow");
+    },
+    end: function () {
+        this.api.log("  completed task: " + this.params.name, "yellow");
+        if (this.next != null){this.next();}
+    },      
+    run: function() {
+        this.api.log("RUNNING: "+this.params.name);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////
+// A test task 
+tasks.testTask = function(api, next) {
+    var params = {
+        "name" : "Test Task",
+        "desc" : "I will say 'hello world' to the console every time I run"
+    };
+    var task = Object.create(api.tasks.Task);
+    task.init(api, params, next);
+    task.run = function() {
+        console.log("Hello World!");
+        task.end();
+    };
+    task.run();
+};
+
+////////////////////////////////////////////////////////////////////////////
+// Export
+exports.tasks = tasks;
+</code></pre>
+
+<p>All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it&rsquo;s execution.  <code>cron.js</code> manages the running of tasks and runs at the <code>api.configData.cronTimeInterval</code> (ms) interval defined in <code>config.json</code></p>
+
+<h2>Connecting</h2>
+
+<h3>HTTP</h3>
+
+<p>You can visit the API in a browser, Curl, etc.  <code>{url}?action</code> or <code>{url}/{action}</code> is how you would access an action.  For example, using the default ports in config.json you could reach the status action with both <code>http://127.0.0.1/status</code> or <code>http://127.0.0.1/?action=status</code>  The only action which doesn&rsquo;t return the default JSON format would be <code>file</code>, as it should return files with the appropriate headers if they are found, and a 404 error if they are not.</p>
+
+<p>HTTP responses follow the format:</p>
+
+<pre><code>{
+    hello: "world"
+    serverInformation: {
+        serverName: "actionHero API",
+        apiVerson: 1,
+        requestDuration: 14
+    },
+    requestorInformation: {
+        remoteAddress: "127.0.0.1",
+        RequestsRemaining: 989,
+        recievedParams: {
+            action: "",
+            limit: 100,
+            offset: 0
+        }
+    },
+    error: "OK"
+}
+</code></pre>
+
+<ul>
+<li>you can provide the <code>?callback=myFunc</code> param to initiate a JSON-p response which will wrap the returned JSON in your callback function.</li>
+<li>unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).</li>
+<li>the error if everything is OK will be &ldquo;OK&rdquo;, otherwise, you should set a string error within your action</li>
+<li>to build the response for &ldquo;hello&rdquo; above, the action would have set <code>connection.response.hello = "world";</code></li>
+</ul>
+
+
+<p>actionHero will serve up flat files (html, images, etc) as well from your api/public folder.  This is accomplished via a <code>file</code> action. <code>http://{baseUrl}/file/{pathToFile}</code> is equivalent to <code>http://{baseUrl}?action=file&amp;fileName={pathToFile}</code></p>
+
+<h3>Sockets</h3>
+
+<p>You can also access actionHero&rsquo;s methods via a persistent socket connection rather than http.  The default port for this type of communication is 5000.  There are a few special actions which set and keep parameters bound to your session (so they don&rsquo;t need to be re-posted).  These special methods are:</p>
+
+<ul>
+<li>quit. disconnect from the session</li>
+<li>paramAdd &ndash; save a singe variable to your connection.  IE: &lsquo;addParam screenName=evan&rsquo;</li>
+<li>paramView &ndash; returns the details of a single param. IE: &lsquo;viewParam screenName&rsquo;</li>
+<li>paramDelete &ndash; deletes a single param.  IE: &lsquo;deleteParam screenName&rsquo;</li>
+<li>paramsView &ndash; returns a JSON object of all the params set to this connection</li>
+<li>paramsDelete &ndash; deletes all params set to this session</li>
+<li>roomChange &ndash; change the <code>room</code> you are connected to.  By default all socket connections are in the <code>api.configData.defaultSocketRoom</code> room.</li>
+<li>roomView &ndash; show you the room you are connected to, and information about the members currently in that room.</li>
+<li>say [message]</li>
+</ul>
+
+
+<p>Please note that any params set using the above method will be &lsquo;sticky&rsquo; to the connection and sent for all subsequent requests.  Be sure to delete or update your params!</p>
+
+<p>All socket connections are also joined to a room.  Rooms are used to broadcast messages from the system or other users.  Rooms can be created on the fly and don&rsquo;t require any special setup.  In this way. you can push messages to your users with a special function: <code>api.socketRoomBroadcast(api, connection, message)</code>.  <code>connection</code> can be null if you want the message to come from the server itself.  The final special action socket connections have is <code>say</code> which will tell a message to all other users in the room, IE: <code>say Hello World</code>.</p>
+
+<p>API Functions for helping with room communications are:</p>
+
+<ul>
+<li><code>api.socketRoomBroadcast(api, connection, message)</code>: tell a message to all members in a room</li>
+<li><code>api.socketRoomStatus(api, room)</code>: return the status object which contains information about a room and its members</li>
+<li><code>api.sendSocketMessage(api, connection, message)</code>: send a message directly to a socket connection</li>
+</ul>
+
+
+<p>Every socket action (including the special param methods above) will return a single line denoted by \r\n  in JSON.  If the Action was executed successfully, the response will be <code>{"status":"OK"}</code>.</p>
+
+<p>To help sort out the potential stream of messages a socket user may receive, it is best to set a &ldquo;context&rdquo; as part of the JSON response.  For example, by default all actions set a context of &ldquo;response&rdquo; indicating that the message being sent to the client is response to a request they sent.  Messages sent by a user via the &lsquo;say&rsquo; command have the context of <code>user</code> indicating they came form a user.  Every minute a ping is sent from the server to keep the TCP connection alive and send the current time.  This message has the context of <code>api</code>.  Messages resulting from data sent to the api (like an action) will have the <code>response</code> context.</p>
+
+<p>Socket Example:</p>
+
+<pre><code>&gt; telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+{"welcome":"Hello! Welcome to the actionHero api","room":"defaultRoom","context":"api","messageCount":0}
+randomNumber
+{"context":"response","randomNumber":0.6138995781075209,"messageCount":1}
+cacheTest
+{"context":"response","error":"key is a required parameter for this action","messageCount":2}
+paramAdd key=myKey
+{"status":"OK","context":"response","messageCount":3}
+paramAdd value=myValue
+{"status":"OK","context":"response","messageCount":4}
+paramsView
+{"context":"response","params":{"action":"cacheTest","limit":100,"offset":0,"key":"myKey","value":"myValue"},"messageCount":5}
+cacheTest
+{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"new record","loadResp":"myValue","deleteResp":true},"messageCount":6}
+say hooray!
+{"context":"response","status":"OK","messageCount":7}
+{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":8}
+</code></pre>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>node.js server</li>
+<li>npm</li>
+<li>mySQL (other ORMs coming soon?)</li>
+</ul>
+
+
+<h2>Install &amp; Quickstart</h2>
+
+<ul>
+<li><code>npm install actionHero</code></li>
+<li>start up mySQL and create a new database called <code>action_hero_api</code> ( and <code>action_hero_api_test</code>if you want to run the tests)</li>
+<li>Create a new file called <code>index.js</code></li>
+</ul>
+
+
+<p>The contents of <code>index.js</code> should look something like this:</p>
+
+<pre><code>// load in the actionHero class
+var actionHero = require("actionHero").actionHero;
+
+// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
+var params = {};
+params.configChanges = {
+    "database" : {
+        "host" : "127.0.0.1",
+        "database" : "action_hero_api",
+        "username" : "root",
+        "password" : null,
+        "port" : "3306",
+        "consoleLogging" : false
+    },
+    "webServerPort" : 8080,
+    "socketServerPort" : 5000
+}
+
+// start the server!
+actionHero.start(params);
+</code></pre>
+
+<ul>
+<li>Start up the server: <code>node index.js</code></li>
+</ul>
+
+
+<p>You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  actionHero will not create databases on its own, so you should create the <code>action_hero_api</code> database on your local mySQL server.  Visit <code>http://127.0.0.1:8080</code> in your browser and telnet to <code>telnet localhost 5000</code> to see the actionHero in action!</p>
+
+<h2>Extending actionHero</h2>
+
+<p>The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own <code>`tasks.js</code> file.</p>
+
+<p>A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:</p>
+
+<pre><code>function initFunction(api, next){
+    api.utils.randomNumber = function(){
+        return Math.random() * 100;
+    };
+};
+
+var actionHero = require("actionHero").actionHero;
+actionHero.start({initFunction: initFunction}, function(api){
+    api.log("Loading complete!", ['green', 'bold']);
+});
+</code></pre>
+
+<p>Now <code>api.utils.randomNumber()</code> is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via <code>`params.initFunction</code>.  This allows all threads in an cluster to access the methods. Setting them another way may not propagate to the children of a node cluster.</p>
+
+<h2>Default Actions you can try <code>?action=..</code> which are included in the framework:</h2>
+
+<ul>
+<li>cacheTest &ndash; a test of the DB-based key-value cache system</li>
+<li>actionsView &ndash; returns a list of available actions on the server and their metadata</li>
+<li>file &ndash; servers flat files from <code>{serverRoot}\public\{filesNmae}</code> (defined in config.json)</li>
+<li>randomNumber &ndash; generates a random number</li>
+<li>status &ndash; returns server status and stats</li>
+<li>say &ndash; sends messages via http to clients connected via socket (in the room you specify)</li>
+</ul>
+
+
+<h2>Other Goodies</h2>
+
+<h3>Cache</h3>
+
+<p>actionHero ships with the models and functions needed for mySQL-backed key-value cache.  Check cache.js in both the application root and an action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:</p>
+
+<ul>
+<li><code>api.cache.save(api,key,value,expireTimeSeconds,next)</code></li>
+<li><code>api.cache.load(api, key, next)</code></li>
+<li><code>api.cache.destroy(api, key, next)</code></li>
+</ul>
+
+
+<p>api.cache.save is used to both create new entires or update existing cache entires.  If you don&rsquo;t define an expireTimeSeconds, the default will be used from <code>api.configData.cache.defaultExpireTimeSeconds</code>.</p>
+
+<h3>Logging and API Request Limiting</h3>
+
+<p>Every web request is logged to te <code>log</code> database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by <code>api.configData.apiRequestLimitPerHour</code>).  You can also parse the logs to inspect user behavior.  If you want to store this behavior for longer, it is recommended that you store it elsewhere from your operational database.</p>
+
+<p>Socket activity is not logged.</p>
+
+<h3>Safe Params</h3>
+
+<p>Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params you define as required or optional in your actions <code>action.inputs.required</code> and <code>action.inputs.optional</code>.  Special params which the api will always accept are:</p>
+
+<pre><code>[
+    "callback",
+    "action",
+    "limit",
+    "offset",
+    "sessionKey",
+    "id",
+    "createdAt",
+    "updatedAt"
+];
+</code></pre>
+
+<p>Params are loaded in this order GET &ndash;> POST (normal) &ndash;> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable <code>key</code>=<code>postValue</code> as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.</p>
+
+<h3>Logging</h3>
+
+<p>The <code>api.log()</code> method is available to you throughout the application.  <code>api.log()</code> will both write these log messages to file, but also display them on the console.  There are formatting options you can pass to <code>`api.log(yourMessage, options=[])</code>.  The options array can be many colors and formatting types, IE: <code>['blue','bold']</code>.  Check out <code>/initializers/initLog.js</code> to see the options.</p>
+
+<p>Remember that one of the default actions will delete the log file if it gets over 10MB.</p>
+
+<h2>Versions of this API</h2>
+
+<p>see <code>versions.markdown</code> to see what&rsquo;s new in each version</p>
+
+<h2>#</h2>
+</body>
+</html>
