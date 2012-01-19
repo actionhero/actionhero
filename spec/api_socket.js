@@ -110,7 +110,7 @@ suite.addBatch({
 suite.addBatch({
 	"actions will work once all the needed params are added": {
 		topic: function(){ makeSocketRequest(client, this.callback, "cacheTest"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.cacheTestResults.saveResp, "new record"); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.cacheTestResults.saveResp, true); }
 	}
 });
 

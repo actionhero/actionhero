@@ -1,78 +1,49 @@
 ////////////////////////////////////////////////////////////////////////////
 // cache
+// I am an in-memory cache solution
 
 var initCache = function(api, next){
 	
 	api.cache = {};
-	
-	api.cache.buildSQLExpireString = function(api, secondsFromNow){
-		var now = new Date();
-		var expireDate = new Date();
-		expireDate.setTime(now.getTime() + (secondsFromNow * 1000));
-		var expireDateString = api.utils.sqlDateTime(expireDate);
-		return expireDateString;	
-	}
-
-	api.cache.exists = function(api, key, next){
-		api.models.cache.count({ where: {key: key} }).on('success', function(num) {
-			if(num == 1){ 
-				process.nextTick(function() { next(true); });
-			}else{ 
-				process.nextTick(function() { next(false); });
-			}
-		});
-	};
+	api.cache.data = {};
 
 	api.cache.save = function(api,key,value,expireTimeSeconds,next){
 		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = api.configData.cache.defaultExpireTimeSeconds; }
-		var expireTimeString = api.cache.buildSQLExpireString(api, expireTimeSeconds);
-		api.cache.exists(api, key, function(exists){
-			if(exists)
-			{
-				api.models.cache.find({ where: {key: key} }).on('success', function(entry) {
-					if(value == null){value = JSON.parse(entry.value);}
-					entry.updateAttributes({
-					  value: JSON.stringify(value),
-					  expireTime: expireTimeString
-					}).on('success', function(){
-						process.nextTick(function() { next("updated record"); });
-					});
-				});
-			}
-			else
-			{
-				api.models.cache.build({
-					key: key,
-					value: JSON.stringify(value),
-					expireTime: expireTimeString
-				}).save().on('success', function() {
-					process.nextTick(function() { next("new record"); });
-				});
-			}
-		});
+		var expireTimestamp = new Date().getTime();
+		expireTimestamp = expireTimestamp + (expireTimeSeconds * 100);
+		try{
+			api.cache.data[key] = {
+				value: value,
+				expireTimestamp: expireTimestamp
+			};
+			process.nextTick(function() { next(true); });
+		}catch(e){
+			console.log(e);
+			process.nextTick(function() { next(false); });
+		}
 	};
 
 	api.cache.load = function(api, key, next){
-		var nowSQLString = api.utils.sqlDateTime();
-		api.models.cache.find({ where: ["`key` = ? and expireTime > ?", key, nowSQLString] }).on('success', function(entry) {
-			if(entry){
-				var resp = JSON.parse(entry.value);
-				process.nextTick(function() { next(resp); });
+		var cacheObj = api.cache.data[key];
+		if(cacheObj == null){
+			process.nextTick(function() { next(false); });
+		}else{
+			if(cacheObj.expireTimestamp >= (new Date().getTime())){
+				process.nextTick(function() { next(cacheObj.value); });
 			}else{
 				process.nextTick(function() { next(false); });
 			}
-		});
+		}
 	};
 
 	api.cache.destroy = function(api, key, next){
-		api.models.cache.find({ where: {key: key} }).on('success', function(entry) {
-			if(entry){
-				entry.destroy();
-				process.nextTick(function() { next(true); });
-			}else{
-				process.nextTick(function() { next(false); });
-			}
-		});
+		var cacheObj = api.cache.data[key];
+		if(cacheObj == null){
+			process.nextTick(function() { next(false); });
+		}else{
+			delete api.cache.data[key];
+			process.nextTick(function() { next(true); });
+		}
 	};
 	
 	next();

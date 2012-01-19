@@ -1,5 +1,18 @@
 # Action Hero API Versions
 
+## Version 0.1.7
+
+**Summary:** This release prepares for multiple DB types and changes the cache to be in-memory
+
+**Details:**
+
+* Be careful not to waste all your ram with the in-memory cache!
+* All DB connection options must define: api.rateLimitCheck = function(api, connection, next) which will be used in all web connections.  It should return requestThisHourSoFar (int)
+* Reminder:  You can add DB specific by adding your task to the api.taks object
+* Your DB init function should be called init and be exported.  init = function(api, next)
+* Name your DB init file the same thing you want folks to use in api.configData.database.type
+* It is now easier to use actionHero without any database as well.  
+
 ## Version 0.1.6
 
 **Summary:** This release changes the way that actions and files are routed

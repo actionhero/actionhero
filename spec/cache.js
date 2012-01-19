@@ -21,39 +21,23 @@ suite.addBatch({
     	'should exist: objects' : function(api){ specHelper.assert.isObject(api.cache); },
     	'should exist: save' : function(api){ specHelper.assert.isFunction(api.cache.save); },
     	'should exist: destroy' : function(api){ specHelper.assert.isFunction(api.cache.destroy); },
-    	'should exist: load' : function(api){ specHelper.assert.isFunction(api.cache.load); },
-    	'should exist: exists' : function(api){ specHelper.assert.isFunction(api.cache.exists); }
+    	'should exist: load' : function(api){ specHelper.assert.isFunction(api.cache.load); }
 	},
 });
 
 suite.addBatch({
 	"cache.save": {
     	topic: function(){ apiObj.cache.save(apiObj,"testKey","abc123",null,this.callback) },
-    	saved: function(resp, f){ specHelper.assert.equal(resp, "new record"); }
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
 
 suite.addBatch({
 	"cache.save again": {
     	topic: function(){ apiObj.cache.save(apiObj,"testKey","abc123",null,this.callback) },
-    	save: function(resp, f){ specHelper.assert.equal(resp, "updated record"); }
+    	save: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
-
-suite.addBatch({
-	"cache.exists sucess": {
-    	topic: function(){ apiObj.cache.exists(apiObj,"testKey",this.callback) },
-    	save: function(resp, f){ specHelper.assert.isTrue(f); } // use f because truth is propigated down by vows
-	},
-});
-
-suite.addBatch({
-	"cache.exists fail": {
-    	topic: function(){ apiObj.cache.exists(apiObj,"something else",this.callback) },
-    	save: function(resp, f){ specHelper.assert.isFalse(f); } // use f because truth is propigated down by vows
-	},
-});
-
 
 suite.addBatch({
 	"cache.load sucess": {
@@ -86,26 +70,33 @@ suite.addBatch({
 // mess with expire time
 suite.addBatch({
 	"cache.save expire time win": {
-    	topic: function(){ apiObj.cache.save(apiObj,"testKey_slow","abc123",100,this.callback) },
-    	saved: function(resp, f){ specHelper.assert.equal(resp, "new record"); }
+    	topic: function(){ apiObj.cache.save(apiObj,"testKey_not_slow","abc123",10,this.callback) },
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
 suite.addBatch({
 	"cache.load expire time win": {
-    	topic: function(){ apiObj.cache.load(apiObj,"testKey_slow",this.callback) },
+    	topic: function(){ apiObj.cache.load(apiObj,"testKey_not_slow",this.callback) },
     	save: function(resp, f){ specHelper.assert.equal(resp, "abc123"); }
 	},
 });
 suite.addBatch({
 	"cache.save expire time fail": {
-    	topic: function(){ apiObj.cache.save(apiObj,"testKey_slow","abc123",0,this.callback) },
-    	saved: function(resp, f){ specHelper.assert.equal(resp, "updated record"); }
+    	topic: function(){ 
+			apiObj.cache.save(apiObj,"testKey_slow","abc123",0,this.callback) 
+		},
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
 suite.addBatch({
 	"cache.load expire time fail": {
-    	topic: function(){ apiObj.cache.load(apiObj,"testKey_slow",this.callback) },
-    	save: function(resp, f){ specHelper.assert.equal(resp, null); }
+    	topic: function(){ 
+			var cb = this.callback;			
+			setTimeout(function(){
+				apiObj.cache.load(apiObj,"testKey_slow",cb)
+			}, 1000);
+		},
+    	save: function(resp,f){specHelper.assert.equal(f, false); }
 	},
 });
 
@@ -113,7 +104,7 @@ suite.addBatch({
 suite.addBatch({
 	"cache.save array": {
     	topic: function(){ apiObj.cache.save(apiObj,"array_key",[1,2,3],null,this.callback) },
-    	saved: function(resp, f){ specHelper.assert.equal(resp, "new record"); }
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
 suite.addBatch({
@@ -129,18 +120,18 @@ suite.addBatch({
 });
 
 suite.addBatch({
-	"cache.save array": {
+	"cache.save object": {
     	topic: function(){ 
 			var data = {};
 			data.thing = "stuff";
 			data.otherThing = [1,2,3];
 			apiObj.cache.save(apiObj,"obj_key",data,null,this.callback) 
 		},
-    	saved: function(resp, f){ specHelper.assert.equal(resp, "new record"); }
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
 	},
 });
 suite.addBatch({
-	"cache.load array": {
+	"cache.load object": {
     	topic: function(){ apiObj.cache.load(apiObj,"obj_key",this.callback) },
     	save: function(resp, f){
 			specHelper.assert.isObject(resp);

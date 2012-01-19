@@ -33,7 +33,7 @@ suite.addBatch({
     params: function(res, b){ 
       specHelper.assert.equal(res.body.cacheTestResults.key, "testKey"); 
       specHelper.assert.equal(res.body.cacheTestResults.value, "abc123"); 
-      specHelper.assert.equal(res.body.cacheTestResults.saveResp, "new record"); 
+      specHelper.assert.equal(res.body.cacheTestResults.saveResp, true); 
       specHelper.assert.equal(res.body.cacheTestResults.loadResp, "abc123"); 
       specHelper.assert.equal(res.body.cacheTestResults.deleteResp, true); 
     },
