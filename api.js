@@ -33,6 +33,7 @@ actionHero.start = function(params, callback){
 		var api = params.api
 	}
 
+	// core packages for the API
 	api.util = require("util");
 	api.exec = require('child_process').exec;
 	api.net = require("net");
@@ -41,9 +42,7 @@ actionHero.start = function(params, callback){
 	api.path = require("path");
 	api.fs = require("fs");
 	api.os = require('os');
-	api.mysql = require('mysql');
 	api.formidable = require('formidable');
-	api.SequelizeBase = require("sequelize");
 	api.request = require("request");
 	api.async = require('async');
 	api.crypto = require("crypto");

@@ -10,6 +10,7 @@ specHelper.url = "127.0.0.1";
 
 specHelper.params = {
 	"database" : {
+		"type":"mySQL",
 		"host" : specHelper.url,
 		"database" : "action_hero_api_test",
 		"username" : "root",

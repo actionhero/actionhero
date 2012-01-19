@@ -21,6 +21,7 @@
 	"cronTimeInterval" : 60000,
 	
     "database" : {
+		"type" : "mySQL",
         "host" : "127.0.0.1",
 		"database" : "action_hero_api",
 		"username" : "root",
