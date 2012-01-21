@@ -160,6 +160,7 @@ var initSocketServerListen = function(api, next){
 	// actionCluster
 	api.actionCluster = {};
 	api.actionCluster.peers = {}; // peers["host:port"] = connected
+	api.actionCluster.connectionsToPeers = [];
 	
 	api.actionCluster.parseMessage = function(api, connection, rawMessage){
 		try{ var message = JSON.parse(rawMessage); }catch(e){ }
@@ -190,6 +191,7 @@ var initSocketServerListen = function(api, next){
 		if(api.actionCluster.peers[host+":"+port] != "connected"){
 			var client = api.net.connect(port, host, function(){
 				client.setEncoding('utf8');
+				api.actionCluster.connectionsToPeers.push(client);
 				api.actionCluster.peers[host+":"+port] = "connected";
 				client.send('actionCluster {"action":"join", "key":"'+api.configData.actionClusterKey+'", "port":'+api.configData.socketServerPort+'}');
 				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
@@ -202,6 +204,11 @@ var initSocketServerListen = function(api, next){
 				client.on('end', function() {
 					api.log("connection to actionCluster peer @ "+this.remotePeer.host+":"+this.remotePeer.port+" closed", "red");
 					api.actionCluster.peers[this.remotePeer.host+":"+this.remotePeer.port] = "disconnected";
+					for (var i in api.actionCluster.connectionsToPeers){
+						if(api.actionCluster.connectionsToPeers[i].remotePeer.host == this.remotePeer.host && api.actionCluster.connectionsToPeers[i].remotePeer.port == this.remotePeer.port){
+							api.actionCluster.connectionsToPeers.splice(i,1);
+						}
+					}
 				});
 
 				if(typeof next == "function"){
@@ -217,6 +224,12 @@ var initSocketServerListen = function(api, next){
 			client.send = function(msg){ client.write(msg + "\r\n"); }
 		}else{
 			// api.log("Already connected to actionCluster peer @ "+host+":"+port, "blue");
+		}
+	}
+	
+	api.actionCluster.sendToAllPeers = function(msg){
+		for (var i in api.actionCluster.connectionsToPeers){
+			api.actionCluster.connectionsToPeers[i].send(msg);
 		}
 	}
 	
