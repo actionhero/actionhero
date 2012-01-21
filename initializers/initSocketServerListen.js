@@ -36,6 +36,7 @@ var initSocketServerListen = function(api, next){
 				try{ 
 					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
 					api.sendSocketMessage(connection, {status: "Bye!"}); 
+					connection.end();
 				}catch(e){ }
 			}else if(words[0] == "paramAdd"){
 				var parts = words[1].split("=");
