@@ -160,7 +160,6 @@ var initSocketServerListen = function(api, next){
 	// actionCluster
 	api.actionCluster = {};
 	api.actionCluster.peers = {}; // peers["host:port"] = connected
-	api.actionCluster.peerConnections = [];
 	
 	api.actionCluster.parseMessage = function(api, connection, rawMessage){
 		try{ var message = JSON.parse(rawMessage); }catch(e){ }
@@ -192,7 +191,6 @@ var initSocketServerListen = function(api, next){
 			var client = api.net.connect(port, host, function(){
 				client.setEncoding('utf8');
 				api.actionCluster.peers[host+":"+port] = "connected";
-				api.actionCluster.peerConnections.push(client);
 				client.send('actionCluster {"action":"join", "key":"'+api.configData.actionClusterKey+'", "port":'+api.configData.socketServerPort+'}');
 				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
 				client.remotePeer = {host: host, port:port}
@@ -213,7 +211,7 @@ var initSocketServerListen = function(api, next){
 		
 			client.on('error', function() {
 			  api.log("Cannot connect to peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, ['red', 'bold']);
-			  process.exit();
+			  next(false);
 			});
 		
 			client.send = function(msg){ client.write(msg + "\r\n"); }
@@ -222,6 +220,29 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	
+	// task to reconnect to any peers who have been DC'd
+	api.tasks.reconnectToLostPeers = function(api, next) {
+		var params = {
+			"name" : "reconnectToLostPeers",
+			"desc" : "I will check to see if I can reconnect to peers which have gone away"
+		};
+		var task = Object.create(api.tasks.Task);
+		task.init(api, params, next);
+		task.run = function() {
+			for (var i in api.actionCluster.peers){
+				var parts = i.split(":")
+				var status = api.actionCluster.peers[i];
+				if(status == "disconnected"){
+					// async
+					task.log("trying to recconect with peer @ "+parts[0]+":"+parts[1]);
+					api.actionCluster.connectToClusterMember(api, parts[0], parts[1]);
+				}
+			}
+			task.end();
+		};
+		process.nextTick(function () { task.run() });
+	};
+	
 	// listen
 	api.socketServer.listen(api.configData.socketServerPort);
 	
@@ -229,8 +250,12 @@ var initSocketServerListen = function(api, next){
 	if(api.configData.actionClusterStartingPeer.host != null){
 		api.log("connecting to first actionCluster peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, "gray")
 		api.actionCluster.peers[api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port] = "disconnected";
-		api.actionCluster.connectToClusterMember(api, api.configData.actionClusterStartingPeer.host, api.configData.actionClusterStartingPeer.port, function(){
-			next();
+		api.actionCluster.connectToClusterMember(api, api.configData.actionClusterStartingPeer.host, api.configData.actionClusterStartingPeer.port, function(resp){
+			if(resp == false){
+				process.exit();
+			}else{
+				next();
+			}
 		})
 	}else{
 		next();
