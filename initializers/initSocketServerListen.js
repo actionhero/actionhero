@@ -187,7 +187,7 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	
-	api.actionCluster.connectToClusterMember = function(api, host, port, first, next){
+	api.actionCluster.connectToClusterMember = function(api, host, port, next){
 		if(api.actionCluster.peers[host+":"+port] != "connected"){
 			var client = api.net.connect(port, host, function(){
 				client.setEncoding('utf8');
@@ -195,18 +195,19 @@ var initSocketServerListen = function(api, next){
 				api.actionCluster.peerConnections.push(client);
 				client.send('actionCluster {"action":"join", "key":"'+api.configData.actionClusterKey+'", "port":'+api.configData.socketServerPort+'}');
 				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
+				client.remotePeer = {host: host, port:port}
 		  
 				client.on('data', function(data) {
-				  // console.log(data);
+					// console.log(data);
 				});
 	  
 				client.on('end', function() {
-				  api.log("connection to actionCluster peer @ "+this.peer.host+":"+this.peer.port+" closed", "red");
-				  // ?
+					api.log("connection to actionCluster peer @ "+this.remotePeer.host+":"+this.remotePeer.port+" closed", "red");
+					api.actionCluster.peers[this.remotePeer.host+":"+this.remotePeer.port] = "disconnected";
 				});
 
 				if(typeof next == "function"){
-				  next(client);
+					next(client);
 				}
 			});
 		
@@ -226,9 +227,9 @@ var initSocketServerListen = function(api, next){
 	
 	// connect to peer
 	if(api.configData.actionClusterStartingPeer.host != null){
-		api.log("connecting to first actionCluster peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, "blue")
+		api.log("connecting to first actionCluster peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, "gray")
 		api.actionCluster.peers[api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port] = "disconnected";
-		api.actionCluster.connectToClusterMember(api, api.configData.actionClusterStartingPeer.host, api.configData.actionClusterStartingPeer.port, true, function(){
+		api.actionCluster.connectToClusterMember(api, api.configData.actionClusterStartingPeer.host, api.configData.actionClusterStartingPeer.port, function(){
 			next();
 		})
 	}else{
