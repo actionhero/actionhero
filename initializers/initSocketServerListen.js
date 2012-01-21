@@ -95,7 +95,19 @@ var initSocketServerListen = function(api, next){
 	});
 	
 	// broadcast a message to all connections in a room
-	api.socketRoomBroadcast = function(api, connection, message){
+	api.socketRoomBroadcast = function(api, connection, message, clusterRelay){
+		if(clusterRelay == null){clusterRelay = true;}
+		if(clusterRelay){
+			api.actionCluster.sendToAllPeers({action: "broadcast", connection: {
+				type: connection.type,
+				params: connection.params,
+				remoteIP: connection.remoteIP,
+				room: connection.room,
+				public: connection.public,
+				messageCount: connection.messageCount,
+				id: connection.id
+			}, message: message});
+		}
 		for(var i in api.connections){
 			var thisConnection = api.connections[i];
 			if(thisConnection.room == connection.room && connection.type == "socket"){
@@ -157,6 +169,14 @@ var initSocketServerListen = function(api, next){
 		});
 	}
 	
+	// listen
+	api.socketServer.listen(api.configData.socketServerPort);
+	
+	
+	
+	
+	
+	
 	// actionCluster
 	api.actionCluster = {};
 	api.actionCluster.peers = {}; // peers["host:port"] = connected
@@ -180,6 +200,9 @@ var initSocketServerListen = function(api, next){
 			if(connection.type == "actionCluster"){
 				if(message.action == "peersList"){
 					
+				}else if(message.action == "broadcast"){
+					message.message
+					api.socketRoomBroadcast(api, message.connection, message.message, false)
 				}
 			}else{
 				api.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCLuster"});
@@ -227,9 +250,10 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	
-	api.actionCluster.sendToAllPeers = function(msg){
+	api.actionCluster.sendToAllPeers = function(msgObj){
+		console.log(msgObj);
 		for (var i in api.actionCluster.connectionsToPeers){
-			api.actionCluster.connectionsToPeers[i].send(msg);
+			api.actionCluster.connectionsToPeers[i].send("actionCluster "+ JSON.stringify(msgObj));
 		}
 	}
 	
@@ -255,9 +279,6 @@ var initSocketServerListen = function(api, next){
 		};
 		process.nextTick(function () { task.run() });
 	};
-	
-	// listen
-	api.socketServer.listen(api.configData.socketServerPort);
 	
 	// connect to peer
 	if(api.configData.actionClusterStartingPeer.host != null){
