@@ -20,6 +20,12 @@
 	"cronProcess" : true,
 	"cronTimeInterval" : 60000,
 	
+	"actionClusterKey" : "4ijhaijhm43yjnawhja43jaj",
+	"actionClusterStartingPeer" : {
+		"host": null,
+		"port": null
+	},
+	
     "database" : {
 		"type" : "mySQL",
         "host" : "127.0.0.1",

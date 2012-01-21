@@ -73,6 +73,9 @@ var initSocketServerListen = function(api, next){
 				api.socketRoomBroadcast(api, connection, message);
 				api.sendSocketMessage(connection, {context: "response", status: "OK"});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
+			}else if(words[0] == "actionCluster"){
+				var message = data.substr(14);
+				api.actionCluster.parseMessage(api, connection, message);
 			}else{
 				connection.error = false;
 				connection.response = {};
@@ -83,11 +86,10 @@ var initSocketServerListen = function(api, next){
 			}
 	  	});
 	  	connection.on("end", function () {
-	    	try{ connection.end(); }catch(e){}
 			for(var i in api.connections){
-				var thisConnection = api.connections[i];
-				if(thisConnection.id == connection.id){ api.connections.splice(i,1); }
+				if(api.connections[i].id == connection.id){ api.connections.splice(i,1); }
 			}
+			try{ connection.end(); }catch(e){}
 			if(api.configData.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
 	  	});
 	});
@@ -96,7 +98,7 @@ var initSocketServerListen = function(api, next){
 	api.socketRoomBroadcast = function(api, connection, message){
 		for(var i in api.connections){
 			var thisConnection = api.connections[i];
-			if(thisConnection.room == connection.room){
+			if(thisConnection.room == connection.room && connection.type == "socket"){
 				if(connection == null){
 					api.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
 				}else{
@@ -155,10 +157,84 @@ var initSocketServerListen = function(api, next){
 		});
 	}
 	
+	// actionCluster
+	api.actionCluster = {};
+	api.actionCluster.peers = {}; // peers["host:port"] = connected
+	api.actionCluster.peerConnections = [];
+	
+	api.actionCluster.parseMessage = function(api, connection, rawMessage){
+		try{ var message = JSON.parse(rawMessage); }catch(e){ }
+		console.log(message);
+		// actionCluster {"action":"join", "key":"4ijhaijhm43yjnawhja43jaj", "port":5678}
+		if(typeof message == "object" && message.action == "join"){
+			if(message.key == api.configData.actionClusterKey){
+				connection.type = "actionCluster";
+				connection.room = null;
+				api.sendSocketMessage(connection, {context: "response", status: "OK"});
+				api.log("actionCluster member joined from "+connection.remoteIP+":"+connection.remotePort, "blue");
+				api.actionCluster.connectToClusterMember(api, connection.remoteIP, message.port); 
+			}else{
+				api.sendSocketMessage(connection, {context: "response", status: "That is not the correct actionClusterKey"});
+			}
+		}else{
+			if(connection.type == "actionCluster"){
+				if(message.action == "peersList"){
+					
+				}
+			}else{
+				api.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCLuster"});
+			}
+		}
+	}
+	
+	api.actionCluster.connectToClusterMember = function(api, host, port, first, next){
+		if(api.actionCluster.peers[host+":"+port] != "connected"){
+			var client = api.net.connect(port, host, function(){
+				client.setEncoding('utf8');
+				api.actionCluster.peers[host+":"+port] = "connected";
+				api.actionCluster.peerConnections.push(client);
+				client.send('actionCluster {"action":"join", "key":"'+api.configData.actionClusterKey+'", "port":'+api.configData.socketServerPort+'}');
+				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
+		  
+				client.on('data', function(data) {
+				  // console.log(data);
+				});
+	  
+				client.on('end', function() {
+				  api.log("connection to actionCluster peer @ "+this.peer.host+":"+this.peer.port+" closed", "red");
+				  // ?
+				});
+
+				if(typeof next == "function"){
+				  next(client);
+				}
+			});
+		
+			client.on('error', function() {
+			  api.log("Cannot connect to peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, ['red', 'bold']);
+			  process.exit();
+			});
+		
+			client.send = function(msg){ client.write(msg + "\r\n"); }
+		}else{
+			// api.log("Already connected to actionCluster peer @ "+host+":"+port, "blue");
+		}
+	}
+	
 	// listen
 	api.socketServer.listen(api.configData.socketServerPort);
 	
-	next();
+	// connect to peer
+	if(api.configData.actionClusterStartingPeer.host != null){
+		api.log("connecting to first actionCluster peer @ "+api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port, "blue")
+		api.actionCluster.peers[api.configData.actionClusterStartingPeer.host+":"+api.configData.actionClusterStartingPeer.port] = "disconnected";
+		api.actionCluster.connectToClusterMember(api, api.configData.actionClusterStartingPeer.host, api.configData.actionClusterStartingPeer.port, true, function(){
+			next();
+		})
+	}else{
+		next();
+	}
+
 }
 
 /////////////////////////////////////////////////////////////////////
