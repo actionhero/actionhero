@@ -7,7 +7,7 @@ var initCache = function(api, next){
 	api.cache = {};
 	api.cache.data = {};
 
-	api.cache.save = function(api,key,value,expireTimeSeconds,next){
+	api.cache.save = function(api, key, value, expireTimeSeconds, next){
 		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = api.configData.cache.defaultExpireTimeSeconds; }
 		var expireTimestamp = new Date().getTime();
 		expireTimestamp = expireTimestamp + (expireTimeSeconds * 100);

@@ -22,6 +22,7 @@
 	
 	"actionClusterKey" : "4ijhaijhm43yjnawhja43jaj",
 	"actionClusterReConnectToLostPeersMS" : 3000,
+	"actionClusterRemoteTimeoutWaitMS" : 5000,
 	"actionClusterStartingPeer" : {
 		"host": null,
 		"port": null

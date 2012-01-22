@@ -127,9 +127,28 @@ var initSocketServerListen = function(api, next){
 	
 	// status for a room
 	api.socketRoomStatus = function(api, room, next){
-		api.cache.load(api, "_roomStatus", function(resp){
-			next(resp.rooms[room]);
-		});
+		if(api.utils.hashLength(api.actionCluster.peers) == 0){
+			api.cache.load(api, "_roomStatus", function(resp){
+				next(resp.rooms[room]);
+			});
+		}else{
+			api.actionCluster.cache.load(api, "_roomStatus", function(resp){
+				var returnVal = {};
+				returnVal.membersCount = 0
+				returnVal.members = [];
+				for(var i in resp.peerResponses){
+					for(var j in resp.peerResponses[i]["value"]["rooms"]){
+						if(j == room){
+							for(var z in resp.peerResponses[i]["value"]["rooms"][j]["members"]){
+								returnVal.membersCount++;
+								returnVal.members.push(resp.peerResponses[i]["value"]["rooms"][j]["members"][z]);
+							}
+						}
+					}
+				}
+				next(returnVal);
+			});
+		}
 	}
 	
 	api.calculateRoomStatus = function(api, loop){
@@ -147,7 +166,7 @@ var initSocketServerListen = function(api, next){
 		}
 		var expireTimeSeconds = 60*60; // 1 hour
 		api.cache.save(api,"_roomStatus",results,expireTimeSeconds,function(){
-			if(loop){ setTimeout(api.calculateRoomStatus, 5000, api); }
+			if(loop){ setTimeout(api.calculateRoomStatus, 30000, api); }
 		});
 	}
 	api.calculateRoomStatus(api, true);
@@ -194,7 +213,6 @@ var initSocketServerListen = function(api, next){
 	api.actionCluster = {};
 	api.actionCluster.peers = {}; // peers["host:port"] = connected
 	api.actionCluster.connectionsToPeers = [];
-	api.actionCluster.questionCounter = 0;
 	
 	api.actionCluster.parseMessage = function(api, connection, rawMessage){
 		try{ var message = JSON.parse(rawMessage); }catch(e){ }
@@ -202,6 +220,7 @@ var initSocketServerListen = function(api, next){
 			if(message.key == api.configData.actionClusterKey){
 				connection.type = "actionCluster";
 				connection.room = null;
+				api.calculateRoomStatus(api, false);
 				api.sendSocketMessage(connection, {context: "response", status: "OK"});
 				api.log("actionCluster peer joined from "+connection.remoteIP+":"+connection.remotePort, "blue");
 				api.actionCluster.connectToClusterMember(api, connection.remoteIP, message.port, function(status){
@@ -223,6 +242,11 @@ var initSocketServerListen = function(api, next){
 				}else if(message.action == "broadcast"){
 					api.socketRoomBroadcast(api, message.connection, message.message, false)
 				}
+				else if (message.action == "cacheView"){
+					api.cache.load(api, message.key, function(value){
+						api.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
+					});
+				}
 			}else{
 				api.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCLuster"});
 			}
@@ -240,7 +264,12 @@ var initSocketServerListen = function(api, next){
 				client.remotePeer = {host: host, port:port}
 		  
 				client.on('data', function(data) {
-					// console.log(data);
+					try{ var message = JSON.parse(data); }catch(e){ }
+					if(message.context == "response"){
+						if(message.requestID != null){
+							api.actionCluster.cache.results[message.requestID]["peerResponses"].push({remotePeer:client.remotePeer, value: message.value});
+						}
+					}
 				});
 	  
 				client.on('end', function() {
@@ -301,6 +330,41 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	setTimeout(api.actionCluster.reconnectToLostPeers, api.configData.actionClusterReConnectToLostPeersMS, api);
+	
+	
+	
+	// shared cache access
+	api.actionCluster.cache = {};
+	api.actionCluster.cache.results = {}
+	api.actionCluster.requestID = 0;
+	
+	api.actionCluster.cache.save = function(api, key, value, expireTimeSeconds, remotePeer, next){
+		
+	}
+	
+	api.actionCluster.cache.load = function(api, key, next){
+		api.actionCluster.requestID++;
+		var requestID = api.actionCluster.requestID;
+		api.actionCluster.cache.results[requestID] = {
+			requestID: requestID,
+			returned: false,
+			key: key,
+			peerResponses: []
+		};
+		api.actionCluster.sendToAllPeers({action: "cacheView", key: key, requestID: requestID});
+		setTimeout(function(){
+			if(api.actionCluster.cache.results[requestID]["returned"] == false){
+				next(api.actionCluster.cache.results[requestID]);
+			}
+		},api.configData.actionClusterRemoteTimeoutWaitMS);
+		setTimeout(function(){
+			delete api.actionCluster.cache.results[requestID];
+		}, (api.configData.actionClusterRemoteTimeoutWaitMS * 2))
+	}
+	
+	api.actionCluster.cache.destroy = function(api, key, next){
+		
+	}
 	
 	// connect to first peer
 	if(api.configData.actionClusterStartingPeer.host != null){
