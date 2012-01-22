@@ -21,6 +21,7 @@
 	"cronTimeInterval" : 60000,
 	
 	"actionClusterKey" : "4ijhaijhm43yjnawhja43jaj",
+	"actionClusterReConnectToLostPeersMS" : 3000,
 	"actionClusterStartingPeer" : {
 		"host": null,
 		"port": null
