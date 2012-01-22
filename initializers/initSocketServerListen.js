@@ -203,7 +203,13 @@ var initSocketServerListen = function(api, next){
 		}else{
 			if(connection.type == "actionCluster"){
 				if(message.action == "peersList"){
-					
+					for(var i in message.peers){
+						var parts = i.split(":");
+						if(api.actionCluster.peers[i] == null){ 
+							api.actionCluster.peers[i] = "disconnected"; 
+							api.log("new peer in cluster @ "+i, "grey");
+						}
+					}
 				}else if(message.action == "broadcast"){
 					api.socketRoomBroadcast(api, message.connection, message.message, false)
 				}
@@ -235,22 +241,29 @@ var initSocketServerListen = function(api, next){
 							api.actionCluster.connectionsToPeers.splice(i,1);
 						}
 					}
+					delete client;
 				});
-				if(typeof next == "function"){
-					next(client);
-				}
+				if(typeof next == "function"){ process.nextTick( function(){ next(client) } ); }
 			});
 		
-			client.on('error', function() {
-			  api.log("Cannot connect to peer @ "+host+":"+port, ['red', 'bold']);
-			  next(false);
+			client.on('error', function(e) {
+				delete client;
+				api.log("Cannot connect to peer @ "+host+":"+port, ['red', 'bold']);
+				if(typeof next == "function"){ process.nextTick( function(){ next(false) } ); }
 			});
 		
 			client.send = function(msg){ client.write(msg + "\r\n"); }
 		}else{
-			next(true);
+			if(typeof next == "function"){ 
+				process.nextTick( function(){ next(false) } ); 
+			}
 			// api.log("Already connected to actionCluster peer @ "+host+":"+port, "blue");
 		}
+	}
+	
+	api.actionCluster.shareMyPeers = function(api){
+		msgObj = {action: "peersList", peers: api.actionCluster.peers};
+		api.actionCluster.sendToAllPeers(msgObj);
 	}
 	
 	api.actionCluster.sendToAllPeers = function(msgObj){
@@ -259,42 +272,16 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	
-	api.actionCluster.askAllPeers = function(method, params, next){
-		api.actionCluster.questionCounter++;
-		var questionID = api.actionCluster.questionCounter;
-		var results = [];
-		var counter = 0;
-		
-		// ask myself
-		counter++;
-		method(params, function(resp){ 
-			results.push(resp) 
-			if(counter == 0){ api.actionCluster.reduce(api, results, questionID) }
-		});
-		
-		// ask peers
-		var msgObject = {action: "map", method: method, params: params, questionID: questionID};
-		api.actionCluster.sendToAllPeers(msgObject);
-		
-	}
-	
-	api.actionCluster.map = function(){
-		
-	}
-	
-	api.actionCluster.reduce = function(){
-		
-	}
-	
 	// task to reconnect to any peers who have been DC'd
 	api.actionCluster.reconnectToLostPeers = function(api){
+		api.actionCluster.shareMyPeers(api);
 		var started = 0;
 		if(api.utils.hashLength(api.actionCluster.peers) > 0){
 			for (var i in api.actionCluster.peers){
 				started++;
 				var parts = i.split(":")
 				var status = api.actionCluster.peers[i];
-				if(status != "connected"){ api.log("trying to recconect with peer @ "+parts[0]+":"+parts[1], "grey"); }
+				// if(status != "connected"){ api.log("trying to recconect with peer @ "+parts[0]+":"+parts[1], "grey"); }
 				api.actionCluster.connectToClusterMember(api, parts[0], parts[1], function(){
 					started--;
 					if(started == 0){ setTimeout(api.actionCluster.reconnectToLostPeers, api.configData.actionClusterReConnectToLostPeersMS, api); }
