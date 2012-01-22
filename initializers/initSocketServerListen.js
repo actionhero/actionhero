@@ -24,6 +24,7 @@ var initSocketServerListen = function(api, next){
 	  	connection.on("connect", function () {
 	    	api.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
+			api.calculateRoomStatus(api, false);
 	  	});
 	  	connection.on("data", function (data) {
 			var data = data.replace(/(\r\n|\n|\r)/gm,"");
@@ -61,12 +62,14 @@ var initSocketServerListen = function(api, next){
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "roomChange"){
 				connection.room = words[1];
+				api.calculateRoomStatus(api, false);
 				api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
 				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
 			}else if(words[0] == "roomView"){
-				var roomStatus = api.socketRoomStatus({api: api, room: connection.room});
-				api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
+				api.socketRoomStatus(api, connection.room, function(roomStatus){
+					api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
+					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
+				});				
 			}else if(words[0] == "say"){
 				var message = data.substr(4);
 				api.socketRoomBroadcast(api, connection, message);
@@ -89,6 +92,7 @@ var initSocketServerListen = function(api, next){
 				if(api.connections[i].id == connection.id){ api.connections.splice(i,1); }
 			}
 			try{ connection.end(); }catch(e){}
+			api.calculateRoomStatus(api, false);
 			if(api.configData.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
 	  	});
 	});
@@ -122,12 +126,16 @@ var initSocketServerListen = function(api, next){
 	}
 	
 	// status for a room
-	api.socketRoomStatus = function(params, next){
-		var api = params.api;
-		var room = params.room;
+	api.socketRoomStatus = function(api, room, next){
+		api.cache.load(api, "_roomStatus", function(resp){
+			next(resp.rooms[room]);
+		});
+	}
+	
+	api.calculateRoomStatus = function(api, loop){
+		if(loop == null){loop = true;}
 		results = {};
 		results.rooms = {};
-		results.rooms[room] = {members: [], membersCount: 0};
 		for(var i in api.connections){
 			var thisConnection = api.connections[i];
 			var thisRoom = thisConnection.room;
@@ -137,9 +145,12 @@ var initSocketServerListen = function(api, next){
 			results.rooms[thisRoom].membersCount++;
 			results.rooms[thisRoom].members.push(thisConnection.public);
 		}
-		if(typeof next == "function"){ next(results.rooms[room]); }
-		return results.rooms[room];
+		var expireTimeSeconds = 60*60; // 1 hour
+		api.cache.save(api,"_roomStatus",results,expireTimeSeconds,function(){
+			if(loop){ setTimeout(api.calculateRoomStatus, 5000, api); }
+		});
 	}
+	api.calculateRoomStatus(api, true);
 	
 	// action response helper
 	api.respondToSocketClient = function(connection, cont){
@@ -187,7 +198,6 @@ var initSocketServerListen = function(api, next){
 	
 	api.actionCluster.parseMessage = function(api, connection, rawMessage){
 		try{ var message = JSON.parse(rawMessage); }catch(e){ }
-		// actionCluster {"action":"join", "key":"4ijhaijhm43yjnawhja43jaj", "port":5678}
 		if(typeof message == "object" && message.action == "join"){
 			if(message.key == api.configData.actionClusterKey){
 				connection.type = "actionCluster";
@@ -272,7 +282,6 @@ var initSocketServerListen = function(api, next){
 		}
 	}
 	
-	// task to reconnect to any peers who have been DC'd
 	api.actionCluster.reconnectToLostPeers = function(api){
 		api.actionCluster.shareMyPeers(api);
 		var started = 0;
