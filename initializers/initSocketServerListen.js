@@ -3,6 +3,7 @@
 
 var initSocketServerListen = function(api, next){
 	api.connections = [];
+	api.socketDataString = "";
 	api.socketServer = api.net.createServer(function (connection) {
 		api.stats.numberOfSocketRequests = api.stats.numberOfSocketRequests + 1;
 		
@@ -26,65 +27,71 @@ var initSocketServerListen = function(api, next){
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 			api.calculateRoomStatus(api, false);
 	  	});
-	  	connection.on("data", function (data) {
-			var data = data.replace(/(\r\n|\n|\r)/gm,"");
-			var words = data.split(" ");
-			if(data.indexOf("\u0004") > -1){
-				// trap for break chars; do nothing
-			}
-	    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
-				try{ 
-					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
-					api.sendSocketMessage(connection, {status: "Bye!"}); 
-					connection.end();
-				}catch(e){ }
-			}else if(words[0] == "paramAdd"){
-				var parts = words[1].split("=");
-				connection.params[parts[0]] = parts[1];
-				api.sendSocketMessage(connection, {status: "OK", context: "response"});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "paramDelete"){
-				connection.data.params[words[1]] = null;
-				api.sendSocketMessage(connection, {status: "OK", context: "response"});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "paramView"){
-				var q = words[1];
-				var params = {}
-				params[q] = connection.params[q];
-				api.sendSocketMessage(connection, {context: "response", params: params});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "paramsView"){
-				api.sendSocketMessage(connection, {context: "response", params: connection.params});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "paramsDelete"){
-				connection.params = {};
-				api.sendSocketMessage(connection, {context: "response", status: "OK"});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "roomChange"){
-				connection.room = words[1];
-				api.calculateRoomStatus(api, false);
-				api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "roomView"){
-				api.socketRoomStatus(api, connection.room, function(roomStatus){
-					api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
-					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-				});				
-			}else if(words[0] == "say"){
-				var message = data.substr(4);
-				api.socketRoomBroadcast(api, connection, message);
-				api.sendSocketMessage(connection, {context: "response", status: "OK"});
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
-			}else if(words[0] == "actionCluster"){
-				var message = data.substr(14);
-				api.actionCluster.parseMessage(api, connection, message);
-			}else{
-				connection.error = false;
-				connection.response = {};
-				connection.response.context = "response";
-				connection.params["action"] = words[0];
-				process.nextTick(function() { api.processAction(api, connection, api.respondToSocketClient); });
-				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+data, "grey");}
+	  	connection.on("data", function (chunk) {
+			api.socketDataString += chunk.toString('utf8');
+			var index, line;
+			while((index = api.socketDataString.indexOf('\r\n')) > -1) {
+				line = api.socketDataString.slice(0, index);
+				api.socketDataString = api.socketDataString.slice(index + 2);
+				if(line.length > 0) {
+					var line = line.replace(/(\r\n|\n|\r)/gm,"");
+					var words = line.split(" ");
+					if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
+			    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
+						try{ 
+							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
+							api.sendSocketMessage(connection, {status: "Bye!"}); 
+							connection.end();
+						}catch(e){ }
+					}else if(words[0] == "paramAdd"){
+						var parts = words[1].split("=");
+						connection.params[parts[0]] = parts[1];
+						api.sendSocketMessage(connection, {status: "OK", context: "response"});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "paramDelete"){
+						connection.params[words[1]] = null;
+						api.sendSocketMessage(connection, {status: "OK", context: "response"});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "paramView"){
+						var q = words[1];
+						var params = {}
+						params[q] = connection.params[q];
+						api.sendSocketMessage(connection, {context: "response", params: params});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "paramsView"){
+						api.sendSocketMessage(connection, {context: "response", params: connection.params});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "paramsDelete"){
+						connection.params = {};
+						api.sendSocketMessage(connection, {context: "response", status: "OK"});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "roomChange"){
+						connection.room = words[1];
+						api.calculateRoomStatus(api, false);
+						api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "roomView"){
+						api.socketRoomStatus(api, connection.room, function(roomStatus){
+							api.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
+							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+						});				
+					}else if(words[0] == "say"){
+						var message = line.substr(4);
+						api.socketRoomBroadcast(api, connection, message);
+						api.sendSocketMessage(connection, {context: "response", status: "OK"});
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}else if(words[0] == "actionCluster"){
+						var message = line.substr(14);
+						api.actionCluster.parseMessage(api, connection, message);
+					}else{
+						connection.error = false;
+						connection.response = {};
+						connection.response.context = "response";
+						connection.params["action"] = words[0];
+						process.nextTick(function() { api.processAction(api, connection, api.respondToSocketClient); });
+						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+					}
+				}
 			}
 	  	});
 	  	connection.on("end", function () {
@@ -136,12 +143,12 @@ var initSocketServerListen = function(api, next){
 				var returnVal = {};
 				returnVal.membersCount = 0
 				returnVal.members = [];
-				for(var i in resp.peerResponses){
-					for(var j in resp.peerResponses[i]["value"]["rooms"]){
+				for(var i in resp){
+					for(var j in resp[i]["value"]["rooms"]){
 						if(j == room){
-							for(var z in resp.peerResponses[i]["value"]["rooms"][j]["members"]){
+							for(var z in resp[i]["value"]["rooms"][j]["members"]){
 								returnVal.membersCount++;
-								returnVal.members.push(resp.peerResponses[i]["value"]["rooms"][j]["members"][z]);
+								returnVal.members.push(resp[i]["value"]["rooms"][j]["members"][z]);
 							}
 						}
 					}

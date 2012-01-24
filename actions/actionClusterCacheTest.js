@@ -28,15 +28,19 @@ action.run = function(api, connection, next)
 		var key = connection.params.key;
 		var value = connection.params.value;
 		
-		connection.response = {cacheTestResults : {
-			"key" : key,
-			"value" : value,
-		}};
+		connection.response.clusterCacheTest = {};
+		connection.response.nodeDuplication = api.configData.actionCluster.nodeDuplication;
 		
-		api.actionCluster.cache.save(api, key, value, null, function(resp){
-			console.log(resp);
-			connection.response.cacheTest = resp
-			next(connection, true);
+		api.actionCluster.cache.save(api, key, value, null, function(saveResp){
+			connection.response.clusterCacheTest.saveTest = saveResp
+			api.actionCluster.cache.load(api, key, function(loadResp){
+				connection.response.clusterCacheTest.loadTest = loadResp;
+				api.actionCluster.cache.destroy(api, key, function(destroyResp){
+					connection.response.clusterCacheTest.destroyTest = destroyResp;
+					api.actionCluster.cache.save(api, key, value, null, null);
+					next(connection, true);
+				});
+			});
 		});
 
 	}
