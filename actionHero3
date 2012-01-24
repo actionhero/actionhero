@@ -17,6 +17,7 @@ params.configChanges = {
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
 		"RemoteTimeoutWaitMS" : 5000,
+		"cacheDuplicates" : 2,
 		"StartingPeer" : {
 			"host": "127.0.0.1",
 			"port": "5000"

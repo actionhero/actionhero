@@ -370,44 +370,40 @@ var initSocketServerListen = function(api, next){
 	
 	api.actionCluster.cache.save = function(api, key, value, expireTimeSeconds, next){
 		
-		var saveObjectAtOncePeer = function(api, key, value, expireTimeSeconds, requestID){
-			if(i < api.utils.hashLength(api.actionCluster.connectionsToPeers)){
-				var host = api.actionCluster.connectionsToPeers[i].remotePeer.host;
-				var port = api.actionCluster.connectionsToPeers[i].remotePeer.port;
-				api.actionCluster.sendToPeer({
-					action: "cacheSave", 
-					key: key, 
-					value: value, 
-					expireTimeSeconds: expireTimeSeconds, 
-					requestID: requestID},
-				host, port);
-				i++;
-			}
+		var saveObjectAtOncePeer = function(api, key, value, expireTimeSeconds, requestID, i){
+			var host = api.actionCluster.connectionsToPeers[i].remotePeer.host;
+			var port = api.actionCluster.connectionsToPeers[i].remotePeer.port;
+			api.actionCluster.sendToPeer({
+				action: "cacheSave", 
+				key: key, 
+				value: value, 
+				expireTimeSeconds: expireTimeSeconds, 
+				requestID: requestID},
+			host, port);
 		}
 		
-		var saveAtEnoughPeers = function(api, key, value, expireTimeSeconds, requestID, next){
-			if(requestID == null){
+		var saveAtEnoughPeers = function(api, key, value, expireTimeSeconds, requestID, i, instnaceCounter, next){
+			if(requestID == null || i == null || instnaceCounter == null){
+				api.actionCluster.requestID++;
+				var requestID = api.actionCluster.requestID;
+				var instnaceCounter = 0;
+				var i = 0;
 				api.actionCluster.cache.results[requestID] = {
 					requestID: requestID,
 					complete: false,
 					key: key,
 					peerResponses: []
 				};
-				api.actionCluster.requestID++;
-				var requestID = api.actionCluster.requestID;
-				var instnaceCounter = 0;
-				var i = 0;
 			}
-			
 			if(i < api.utils.hashLength(api.actionCluster.connectionsToPeers)){
-				saveObjectAtOncePeer(api, key, value, expireTimeSeconds, requestID);
+				saveObjectAtOncePeer(api, key, value, expireTimeSeconds, requestID, i);
 				api.actionCluster.cache.checkForComplete(api, requestID, (i+1), function(resp){
-					if(resp.peerResponses[i]["value"] == true){ instnaceCounter++; }
+					if(resp.peerResponses[i]["value"] == true){ instnaceCounter++; }					
 					if(instnaceCounter == api.configData.actionCluster.cacheDuplicates){
 						next(true);
 					}else{
 						i++;
-						saveAtEnoughPeers(api, key, value, expireTimeSeconds, requestID, next);
+						saveAtEnoughPeers(api, key, value, expireTimeSeconds, requestID, i, instnaceCounter, next);
 					}
 				});
 			}else{
@@ -416,7 +412,7 @@ var initSocketServerListen = function(api, next){
 		}	
 		
 		// go!
-		saveAtEnoughPeers(api, key, value, expireTimeSeconds, null, next);
+		saveAtEnoughPeers(api, key, value, expireTimeSeconds, null, null, null, next);
 	}
 	
 	api.actionCluster.cache.ensureObjectDuplication = function(api, next){
