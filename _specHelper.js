@@ -29,7 +29,7 @@ specHelper.params = {
 };
 
 specHelper.tables = [
-	"Caches", "Logs", "Sessions"
+	"Logs", "Sessions"
 ];
 
 specHelper.prepare = function(next){

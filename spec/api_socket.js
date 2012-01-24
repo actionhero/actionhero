@@ -14,7 +14,7 @@ function makeSocketRequest(thisClient, cb, message){
 		cb(true, parsed); 
 	};
 	thisClient.on('data', rsp);
-	thisClient.write(message);
+	thisClient.write(message + "\r\n");
 }
 
 suite.addBatch({
@@ -42,10 +42,10 @@ suite.addBatch({
 suite.addBatch({
 	"socket connections should be able to connect and get JSON": {
 		topic: function(){ 
-			makeSocketRequest(client, this.callback, "\r\n");
+			makeSocketRequest(client, this.callback, "hello");
 		}, 'should be a JSON response 1' : function(resp, d){
 			specHelper.assert.isObject(d);
-			specHelper.assert.equal("{no action} is not a known action.", d.error);
+			specHelper.assert.equal("hello is not a known action.", d.error);
 		}
 	}
 });
@@ -137,7 +137,7 @@ suite.addBatch({
 
 suite.addBatch({
 	"rooms can be changed": {
-		topic: function(){ makeSocketRequest(client, this.callback, "roomChange otherRoom"); }, 
+		topic: function(){ makeSocketRequest(client, this.callback, "roomChange otherRoom");}, 
 		'works' : function(resp, d){ specHelper.assert.equal(d.status, "OK"); }
 	}
 });
@@ -166,9 +166,9 @@ suite.addBatch({
 				cb(true, parsed); 
 			};
 			client3.on('data', rsp);
-			client2.write("say hello?");
+			client2.write("say hello?" + "\r\n");
 		}, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.message, "hello?"); }
+		'works' : function(resp, d){specHelper.assert.equal(d.message, "hello?"); }
 	}
 });
 
