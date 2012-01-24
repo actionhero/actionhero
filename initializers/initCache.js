@@ -11,15 +11,20 @@ var initCache = function(api, next){
 		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = api.configData.cache.defaultExpireTimeSeconds; }
 		var expireTimestamp = new Date().getTime();
 		expireTimestamp = expireTimestamp + (expireTimeSeconds * 100);
-		try{
-			api.cache.data[key] = {
-				value: value,
-				expireTimestamp: expireTimestamp
-			};
-			process.nextTick(function() { next(true); });
-		}catch(e){
-			console.log(e);
-			process.nextTick(function() { next(false); });
+		if(api.configData.cache.maxMemoryBytes - process.memoryUsage().heapUsed < 0){
+			api.log("Memory @ "+process.memoryUsage().heapUsed+" bytes; not saving another cache object, out of ram (as limtied by api.configData.cache.maxMemoryBytes)", "red")
+			next(false);
+		}else{
+			try{
+				api.cache.data[key] = {
+					value: value,
+					expireTimestamp: expireTimestamp
+				};
+				process.nextTick(function() { next(true); });
+			}catch(e){
+				console.log(e);
+				process.nextTick(function() { next(false); });
+			}
 		}
 	};
 

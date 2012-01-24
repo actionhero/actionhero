@@ -12,9 +12,15 @@ params.configChanges = {
 	
 	"logFile" : "api3.log",
 	
-	"actionClusterStartingPeer" : {
-		"host": "127.0.0.1",
-		"port": "5000"
+	"actionCluster": {
+		"Key" : "4ijhaijhm43yjnawhja43jaj",
+		"ReConnectToLostPeersMS" : 1000,
+		"CycleCheckTimeMS" : 100,
+		"RemoteTimeoutWaitMS" : 5000,
+		"StartingPeer" : {
+			"host": "127.0.0.1",
+			"port": "5000"
+		}
 	},
 	
 	"database" : {
