@@ -16,7 +16,8 @@ actionHero.start = function(params, callback){
 		"initFileServer",
 		"initWebListen", 
 		"initSocketServerListen", 
-		"initCache" 
+		"initCache",
+		"initActionCluster"
 	];
 	
 	for(var i in actionHero.initializers){
@@ -88,16 +89,18 @@ actionHero.start = function(params, callback){
 						actionHero.initPostVariables(api, function(){
 							actionHero.initFileServer(api, function(){
 								actionHero.initWebListen(api, function(){
-									actionHero.initSocketServerListen(api, function(){
-										if(typeof params.initFunction == "function"){
-											params.initFunction(api, function(){
+									actionHero.initSocketServerListen(api, function(){ 
+										actionHero.initActionCluster(api, function(){
+											if(typeof params.initFunction == "function"){
+												params.initFunction(api, function(){
+													api.log(successMessage, ["green", "bold"]);
+													if(callback != null){ process.nextTick(function() { callback(api); }); }
+												})
+											}else{
 												api.log(successMessage, ["green", "bold"]);
 												if(callback != null){ process.nextTick(function() { callback(api); }); }
-											})
-										}else{
-											api.log(successMessage, ["green", "bold"]);
-											if(callback != null){ process.nextTick(function() { callback(api); }); }
-										}
+											}
+										});
 									});
 								});
 							});
