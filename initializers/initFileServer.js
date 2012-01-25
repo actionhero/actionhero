@@ -26,7 +26,6 @@ var initFileServer = function(api, next){
 		}
 		if(connection.error == false){
 			fileName = api.configData.flatFileDirectory + fileName;
-			console.log(fileName);
 			api.path.exists(fileName, function(exists) {
 				if(exists){
 					var isPath = false
