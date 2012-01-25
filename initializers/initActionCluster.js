@@ -63,15 +63,24 @@ var initActionCluster= function(api, next){
 				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
 				client.remotePeer = {host: host, port:port}
 		  
-				client.on('data', function(data) {
-					try{ 
-						var message = JSON.parse(data); 
-						if(message.context == "response"){
-							if(message.requestID != null){
-								api.actionCluster.cache.results[message.requestID]["peerResponses"].push({remotePeer:client.remotePeer, value: message.value});
-							}
+		  	  	var socketDataString = ""; 
+				client.on('data', function(chunk) {
+					socketDataString += chunk.toString('utf8');
+					var index, line;
+					while((index = socketDataString.indexOf('\r\n')) > -1) {
+						line = socketDataString.slice(0, index);
+						socketDataString = socketDataString.slice(index + 2);
+						if(line.length > 0) {
+							try{ 
+								var message = JSON.parse(line); 
+								if(message.context == "response"){
+									if(message.requestID != null){
+										api.actionCluster.cache.results[message.requestID]["peerResponses"].push({remotePeer:client.remotePeer, value: message.value});
+									}
+								}
+							}catch(e){ api.log("actionCluser networking error: "+e, "red") }
 						}
-					}catch(e){ }
+					}
 				});
 	  
 				client.on('end', function() {
@@ -243,71 +252,87 @@ var initActionCluster= function(api, next){
 	}
 	
 	api.actionCluster.cache.checkForComplete = function(api, requestID, numExpectedResponses, next){
-		if(numExpectedResponses == null){numExpectedResponses = api.actionCluster.connectionsToPeers.length}
-		if(api.actionCluster.cache.results[requestID]["peerResponses"].length < numExpectedResponses){
-			setTimeout(api.actionCluster.cache.checkForComplete, api.configData.actionCluster.CycleCheckTimeMS, api, requestID, numExpectedResponses, next);
+		if(numExpectedResponses == null){numExpectedResponses = api.actionCluster.connectionsToPeers.length;}
+		if(api.actionCluster.cache.results[requestID] == null){
+			next(false);
 		}else{
-			clearTimeout(api.actionCluster.cache.results[requestID].timeoutTimer);
-			if(typeof next == "function"){ next(api.actionCluster.cache.results[requestID]["peerResponses"]); }
-		}
-		
-		// catch for lost/unresponsive peers
-		if(api.actionCluster.cache.results[requestID].timeoutTimer == null){
-			api.actionCluster.cache.results[requestID].timeoutTimer = setTimeout(function(){
-				if(api.actionCluster.cache.results[requestID].complete == false){
-					if(typeof next == "function"){ next(api.actionCluster.cache.results[requestID]["peerResponses"]); }
-				}
-			},api.configData.actionCluster.RemoteTimeoutWaitMS);
-		}
-		
-		// clear result set data
-		if(api.actionCluster.cache.results[requestID].dataClearTimer == null){
-			api.actionCluster.cache.results[requestID].dataClearTimer = setTimeout(function(){
+			if(api.actionCluster.cache.results[requestID]["peerResponses"].length < numExpectedResponses){
+				setTimeout(api.actionCluster.cache.checkForComplete, api.configData.actionCluster.CycleCheckTimeMS, api, requestID, numExpectedResponses, next);
+			}else{
 				clearTimeout(api.actionCluster.cache.results[requestID].timeoutTimer);
-				delete api.actionCluster.cache.results[requestID];
-			}, (api.configData.actionCluster.RemoteTimeoutWaitMS * 2))
+				if(typeof next == "function"){ next(api.actionCluster.cache.results[requestID]["peerResponses"]); }
+			}
+		
+			// catch for lost/unresponsive peers
+			if(api.actionCluster.cache.results[requestID].timeoutTimer == null){
+				api.actionCluster.cache.results[requestID].timeoutTimer = setTimeout(function(){
+					if(api.actionCluster.cache.results[requestID].complete == false){
+						if(typeof next == "function"){ next(api.actionCluster.cache.results[requestID]["peerResponses"]); }
+					}
+				},api.configData.actionCluster.RemoteTimeoutWaitMS);
+			}
+		
+			// clear result set data
+			if(api.actionCluster.cache.results[requestID].dataClearTimer == null){
+				api.actionCluster.cache.results[requestID].dataClearTimer = setTimeout(function(){
+					clearTimeout(api.actionCluster.cache.results[requestID].timeoutTimer);
+					delete api.actionCluster.cache.results[requestID];
+				}, (api.configData.actionCluster.RemoteTimeoutWaitMS * 2))
+			}
 		}
 	}
 	
-	// api.actionCluster.cache.ensureObjectDuplication = function(api){			
-	// 	var counter = 0;
-	// 	var started = 0;
-	// 	
-	// 	var completeAndRestart = function(started, counter){
-	// 		if(started == 0){
-	// 			if(counter > 0){
-	// 				api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "red");
-	// 			}
-	// 			setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
-	// 		}
-	// 	}
-	// 	
-	// 	if(api.actionCluster.connectionsToPeers.length > 0){
-	// 		for(var i in api.cache.data){
-	// 			started++;
-	// 			var key = i;
-	// 			var value = api.cache.data[i].value;
-	// 			var expireTimestamp = api.cache.data[i].expireTimestamp;
-	// 			var expireTimeSeconds = (expireTimestamp - (new Date().getTime())) / 1000;
-	// 			if(expireTimestamp - (new Date().getTime()) > api.configData.actionCluster.RemoteTimeoutWaitMS){
-	// 				api.actionCluster.cache.load(api, key, function(resp){
-	// 					started--;
-	// 					if(resp.length < api.configData.actionCluster.nodeDuplication){
-	// 						api.actionCluster.cache.save(api, key, value, expireTimeSeconds);
-	// 						counter++;
-	// 					}
-	// 					completeAndRestart(started, counter);
-	// 				});
-	// 			}else{
-	// 				started--;
-	// 			}
-	// 		}
-	// 		completeAndRestart(started, counter);
-	// 	}else{
-	// 		completeAndRestart(started, counter);
-	// 	}
-	// }
-	// setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
+	api.actionCluster.cache.ensureObjectDuplication = function(api){			
+		var completeAndRestart = function(){
+			if(started == 0){
+				if(counter > 0){
+					api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "red");
+				}
+				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
+			}else{
+				setTimeout(completeAndRestart, 1000);
+			}
+		}
+		
+		var doCacheCheck = function(key, cacheObj){
+			started++;
+			var value = cacheObj.value;
+			var expireTimestamp = cacheObj.expireTimestamp;
+			var expireTimeSeconds = (expireTimestamp - (new Date().getTime())) / 1000;
+			if(expireTimestamp - (new Date().getTime()) > api.configData.actionCluster.RemoteTimeoutWaitMS){
+				api.actionCluster.cache.load(api, key, function(resp){
+					var truthyResponses = 0;
+					for (var i in resp){
+						if(resp[i].value != null){ truthyResponses++; }
+					}
+					if(truthyResponses < api.configData.actionCluster.nodeDuplication){
+						api.actionCluster.cache.save(api, key, value, expireTimeSeconds, function(){
+							started--;
+							counter++;
+						});
+					}else{
+						started--;
+					}
+				});
+			}else{
+				started--;
+			}
+		}
+		
+		var started = 0;
+		var counter = 0;
+		if(api.actionCluster.connectionsToPeers.length > 0){
+			for(var i in api.cache.data){
+				doCacheCheck(i, api.cache.data[i]);
+			}
+			completeAndRestart(api);
+		}else{
+			completeAndRestart(api);
+		}
+		
+	}
+	setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
+	
 	
 	// connect to first peer
 	if(api.configData.actionCluster.StartingPeer.host != null){

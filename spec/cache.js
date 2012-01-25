@@ -96,7 +96,7 @@ suite.addBatch({
 				apiObj.cache.load(apiObj,"testKey_slow",cb)
 			}, 1000);
 		},
-    	save: function(resp,f){specHelper.assert.equal(f, false); }
+    	save: function(resp,f){specHelper.assert.equal(f, null); }
 	},
 });
 

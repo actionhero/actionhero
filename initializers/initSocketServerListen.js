@@ -3,7 +3,7 @@
 
 var initSocketServerListen = function(api, next){
 	api.connections = [];
-	api.socketDataString = "";
+	var socketDataString = "";
 	api.socketServer = api.net.createServer(function (connection) {
 		api.stats.numberOfSocketRequests = api.stats.numberOfSocketRequests + 1;
 		
@@ -28,11 +28,11 @@ var initSocketServerListen = function(api, next){
 			api.calculateRoomStatus(api, false);
 	  	});
 	  	connection.on("data", function (chunk) {
-			api.socketDataString += chunk.toString('utf8');
+			socketDataString += chunk.toString('utf8');
 			var index, line;
-			while((index = api.socketDataString.indexOf('\r\n')) > -1) {
-				line = api.socketDataString.slice(0, index);
-				api.socketDataString = api.socketDataString.slice(index + 2);
+			while((index = socketDataString.indexOf('\r\n')) > -1) {
+				line = socketDataString.slice(0, index);
+				socketDataString = socketDataString.slice(index + 2);
 				if(line.length > 0) {
 					var line = line.replace(/(\r\n|\n|\r)/gm,"");
 					var words = line.split(" ");
