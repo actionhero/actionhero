@@ -4,7 +4,8 @@ var actionHero = require(__dirname + "/../api.js").actionHero; // normally if in
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
 params.configChanges = {
-	"database" : null
+	"database" : null,
+	"flatFileDirectory" : "../public/"
 }
 
 // any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction.  The api object will be availalbe.

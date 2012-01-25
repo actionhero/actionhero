@@ -54,6 +54,7 @@ var initActionCluster= function(api, next){
 	}
 	
 	api.actionCluster.connectToPeer = function(api, host, port, next){
+		port = parseInt(port);
 		if(api.actionCluster.peers[host+":"+port] != "connected"){
 			var client = api.net.connect(port, host, function(){
 				client.setEncoding('utf8');
@@ -61,7 +62,7 @@ var initActionCluster= function(api, next){
 				api.actionCluster.peers[host+":"+port] = "connected";
 				client.send('actionCluster {"action":"join", "key":"'+api.configData.actionCluster.Key+'", "port":'+api.configData.socketServerPort+'}');
 				api.log("connected to actionCluster peer @ "+host+":"+port, "blue");
-				client.remotePeer = {host: host, port:port}
+				client.remotePeer = {host: host, port: port}
 		  
 		  	  	var socketDataString = ""; 
 				client.on('data', function(chunk) {
