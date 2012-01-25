@@ -24,7 +24,7 @@
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
-		"RemoteTimeoutWaitMS" : 10000,
+		"remoteTimeoutWaitMS" : 10000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": null,

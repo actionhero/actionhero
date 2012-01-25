@@ -269,7 +269,7 @@ var initActionCluster= function(api, next){
 					if(api.actionCluster.cache.results[requestID].complete == false){
 						if(typeof next == "function"){ next(api.actionCluster.cache.results[requestID]["peerResponses"]); }
 					}
-				},api.configData.actionCluster.RemoteTimeoutWaitMS);
+				},api.configData.actionCluster.remoteTimeoutWaitMS);
 			}
 		
 			// clear result set data
@@ -277,7 +277,7 @@ var initActionCluster= function(api, next){
 				api.actionCluster.cache.results[requestID].dataClearTimer = setTimeout(function(){
 					clearTimeout(api.actionCluster.cache.results[requestID].timeoutTimer);
 					delete api.actionCluster.cache.results[requestID];
-				}, (api.configData.actionCluster.RemoteTimeoutWaitMS * 2))
+				}, (api.configData.actionCluster.remoteTimeoutWaitMS * 2))
 			}
 		}
 	}
@@ -288,7 +288,7 @@ var initActionCluster= function(api, next){
 				if(counter > 0){
 					api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "red");
 				}
-				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
+				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 			}else{
 				setTimeout(completeAndRestart, 1000);
 			}
@@ -299,7 +299,7 @@ var initActionCluster= function(api, next){
 			var value = cacheObj.value;
 			var expireTimestamp = cacheObj.expireTimestamp;
 			var expireTimeSeconds = (expireTimestamp - (new Date().getTime())) / 1000;
-			if(expireTimestamp - (new Date().getTime()) > api.configData.actionCluster.RemoteTimeoutWaitMS){
+			if(expireTimestamp - (new Date().getTime()) > api.configData.actionCluster.remoteTimeoutWaitMS){
 				api.actionCluster.cache.load(api, key, function(resp){
 					var truthyResponses = 0;
 					for (var i in resp){
@@ -331,7 +331,7 @@ var initActionCluster= function(api, next){
 		}
 		
 	}
-	setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.RemoteTimeoutWaitMS, api);
+	setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 	
 	
 	// connect to first peer

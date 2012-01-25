@@ -1,22 +1,20 @@
-#!/usr/bin/env node
-
 // load in the actionHero class
-var actionHero = require(__dirname + "/api.js").actionHero; // normally if installed by npm: var actionHero = require("actionHero").actionHero;
+var actionHero = require(__dirname + "/../api.js").actionHero; // normally if installed by npm: var actionHero = require("actionHero").actionHero;
 
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
 params.configChanges = {
 	
-	"webServerPort" : 8082,
-	"socketServerPort" : 5002,
+	"webServerPort" : 8081,
+	"socketServerPort" : 5001,
 	
-	"logFile" : "api3.log",
-	
+	"logFile" : "api_peer_2.log",
+
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
-		"RemoteTimeoutWaitMS" : 10000,
+		"remoteTimeoutWaitMS" : 10000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": "127.0.0.1",
@@ -32,15 +30,21 @@ params.configChanges = {
 		"password" : null,
 		"port" : "3306",
 		"consoleLogging" : false
-    },
-	"flatFileDirectory":"./public/"
+    }
 }
 
 // any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction.  The api object will be availalbe.
 params.initFunction = function(api, next){
-	api.randomNumberGenerator = Math.random() * 100;
+	api.showCacheData = function(api){
+		api.log("--------- CACHE --------");
+		api.log(JSON.stringify(api.cache.data));
+		setTimeout(api.showCacheData, 5000, api);
+	}
+	setTimeout(api.showCacheData, 5000, api);
+	
 	next();
 }
+
 
 // start the server!
 actionHero.start(params, function(api){
