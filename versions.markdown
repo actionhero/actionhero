@@ -1,5 +1,22 @@
 # Action Hero API Versions
 
+## Version 0.2.0
+
+**Summary:** This release introduces the actionCluster!
+
+**Details:**
+
+actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:
+
+* `ring-based` communication.  Lists of peers are shared among all members of the actionCluster, and each member communicates directly with all other members.  This allows any member of the cluster to fail and the cluster to continue.
+* reconnection.  Peers will always attempt to reconnect to disconnected peers
+* cluster security.  Each actionCluster has a unique membership phrase `api.configData.actionCluster.Key` defined by you
+* shared messaging: the `say` socket command will message all clients in the same room in all peers.  `roomView` will aggregate information for all peer's connections
+* shared or individual configuration for each peer.
+* Shared memory objects!
+	* actionHero's single-node cache,  `api.cache` is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn't hold any of the data being accessed.
+	* Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question
+
 ## Version 0.1.7
 
 **Summary:** This release prepares for multiple DB types and changes the cache to be in-memory

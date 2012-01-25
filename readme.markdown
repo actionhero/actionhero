@@ -437,6 +437,7 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 
 ## Default Actions you can try `?action=..` which are included in the framework:
 * cacheTest - a test of the DB-based key-value cache system
+* actionClusterCacheTest - another version of a cache test, but this one works across many nodes in the actionCluster.  This version also persists an object after the test is compete.
 * actionsView - returns a list of available actions on the server and their metadata
 * randomNumber - generates a random number
 * status - returns server status and stats
