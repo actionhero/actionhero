@@ -282,7 +282,9 @@ If you do not provide a `remotePeer`, `api.actionCluster.cache.destroy` will del
 `api.actionCluster.cache` actions differ from their local cousins in their responses.  As peers may differ in their value for a given object, this method returns an array of objets which contain the values and which peer they came from.  In this way, you can handle differing responses however you like.  Responses from all peers will be collected, and many may be `null` if they aren't holding the object.  Examples:
 
 **api.actionCluster.cache.save**
+
 Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.
+
 	[
        {
            "remotePeer": {
@@ -301,6 +303,7 @@ Note that only those peers which the object was saved to are returned.  In this 
 	]
 
 **api.actionCluster.cache.load**
+
 Note that responses from all peers are listed, and those that do not hold the object return null.
 
 	[
@@ -328,6 +331,7 @@ Note that responses from all peers are listed, and those that do not hold the ob
 	]
 
 **api.actionCluster.cache.destroy**
+
 Note that responses from all peers are listed, and those that successfully deleted are true.
 
 	[
@@ -354,7 +358,7 @@ Note that responses from all peers are listed, and those that successfully delet
        }
 	]
 
-All actionCluster.cache actions will also include the local peer in their operations.  all actionCluster.cache will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	
+All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).
 
 ## Requirements
 * node.js server
