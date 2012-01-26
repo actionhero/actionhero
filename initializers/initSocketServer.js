@@ -102,7 +102,7 @@ var initSocketServer = function(api, next){
 	  	});
 		
 	  	connection.on("end", function () {
-			for(var i in api.connections){
+			for(var i in api.socketServer.connections){
 				if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
 			}
 			try{ connection.end(); }catch(e){}
