@@ -100,6 +100,7 @@ var initSocketServer = function(api, next){
 				}
 			}
 	  	});
+		
 	  	connection.on("end", function () {
 			for(var i in api.connections){
 				if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
@@ -125,14 +126,17 @@ var initSocketServer = function(api, next){
 				id: connection.id
 			}, message: message});
 		}
-		for(var i in api.socketServer.connections){
-			var thisConnection = api.socketServer.connections[i];
-			if(thisConnection.room == connection.room && connection.type == "socket"){
-				if(connection == null){
-					api.socketServer.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
-				}else{
-					if(thisConnection.id != connection.id){
-						api.socketServer.sendSocketMessage(thisConnection, {message: message, from: connection.id, context: "user"});
+		
+		if(clusterRelay == false || api.utils.hashLength(api.actionCluster.peers) == 0){
+			for(var i in api.socketServer.connections){
+				var thisConnection = api.socketServer.connections[i];
+				if(thisConnection.room == connection.room && ( connection.type == "socket" || connection.type == "web")){
+					if(connection == null){
+						api.socketServer.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
+					}else{
+						if(thisConnection.id != connection.id){
+							api.socketServer.sendSocketMessage(thisConnection, {message: message, from: connection.id, context: "user"});
+						}
 					}
 				}
 			}

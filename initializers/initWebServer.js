@@ -124,19 +124,21 @@ var initWebServer = function(api, next)
 		if(connection.error == false){ connection.response.error = "OK"; }
 		else{ connection.response.error = connection.error; }
 		
-		if(cont != false){
-			var stringResponse = JSON.stringify(connection.response);		
+		process.nextTick(function() {
+			if(cont != false){
+				var stringResponse = JSON.stringify(connection.response);		
 			
-			if(connection.params.callback != null){
-				connection.responseHeaders['Content-Type'] = "application/javascript";
-				stringResponse = connection.params.callback + "(" + stringResponse + ");";
+				if(connection.params.callback != null){
+					connection.responseHeaders['Content-Type'] = "application/javascript";
+					stringResponse = connection.params.callback + "(" + stringResponse + ");";
+				}
+			
+				connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
+				connection.res.end(stringResponse);
 			}
-			
-			connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
-			connection.res.end(stringResponse);
-		}
-		if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
-		process.nextTick(function() { api.logAction(api, connection); });
+			if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
+			process.nextTick(function() { api.logAction(api, connection); });
+		});
 	};
 	
 	////////////////////////////////////////////////////////////////////////////

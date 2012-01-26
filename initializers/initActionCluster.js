@@ -65,6 +65,7 @@ var initActionCluster= function(api, next){
 				client.remotePeer = {host: host, port: port}
 		  
 		  	  	var socketDataString = ""; 
+				
 				client.on('data', function(chunk) {
 					socketDataString += chunk.toString('utf8');
 					var index, line;

@@ -64,7 +64,7 @@ var initFileServer = function(api, next){
 					}catch(e){}
 				}
 			}
-			next(connection, false);
+			process.nextTick(function() { next(connection, false); });
 		});
 	}
 

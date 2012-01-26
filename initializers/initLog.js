@@ -41,16 +41,18 @@ var initLog = function(api, next){
 				else if(style == "zalgo"){inner_message = api.consoleColors.zalgo(inner_message);}
 			}
 			console_message += inner_message;
-			console.log(console_message);
+			process.nextTick(function() { console.log(console_message); });
 			var file_message = time_string + " | " + original_message;
 			if (api.logWriter == null){
 				api.logWriter = api.fs.createWriteStream((api.configData.logFolder + "/" + api.configData.logFile), {flags:"a"});
 			}
-			try{
-				api.logWriter.write(file_message + "\r\n");
-			}catch(e){
-				console.log(" !!! Error writing to log file: " + e);
-			}
+			process.nextTick(function() { 
+				try{
+					api.logWriter.write(file_message + "\r\n");
+				}catch(e){
+					console.log(" !!! Error writing to log file: " + e);
+				}
+			});
 		}
 	};
 	

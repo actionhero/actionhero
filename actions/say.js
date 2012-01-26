@@ -31,11 +31,15 @@ action.run = function(api, connection, next){
 		// extra stuff the socket users have that http users don't
 		connection.id = new Buffer(Math.random() + connection.remoteIP + Math.random()).toString('base64');
 		connection.room = room;
+		connection.messageCount = 0;
+		connection.public = {id: connection.id };
 		
 		// say it!
-		api.socketRoomBroadcast(api, connection, message);
-		connection.response.roomStatus = api.socketRoomStatus(api, room);
-		next(connection, true);
+		api.socketServer.socketRoomBroadcast(api, connection, message, true);
+		api.socketServer.socketRoomStatus(api, room, function(status){
+			connection.response.roomStatus = status;
+			next(connection, true);
+		});
 	}
 	else{
 		next(connection, true);
