@@ -13,14 +13,14 @@ var initActionCluster= function(api, next){
 			if(message.key == api.configData.actionCluster.Key){
 				connection.type = "actionCluster";
 				connection.room = null;
-				api.calculateRoomStatus(api, false);
-				api.sendSocketMessage(connection, {context: "response", status: "OK"});
+				api.socketServer.calculateRoomStatus(api, false);
+				api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
 				api.log("actionCluster peer joined from "+connection.remoteIP+":"+connection.remotePort, "blue");
 				api.actionCluster.connectToPeer(api, connection.remoteIP, message.port, function(status){
 					//
 				}); 
 			}else{
-				api.sendSocketMessage(connection, {context: "response", status: "That is not the correct actionClusterKey"});
+				api.socketServer.sendSocketMessage(connection, {context: "response", status: "That is not the correct actionClusterKey"});
 			}
 		}else{
 			if(connection.type == "actionCluster"){
@@ -33,22 +33,22 @@ var initActionCluster= function(api, next){
 						}
 					}
 				}else if(message.action == "broadcast"){
-					api.socketRoomBroadcast(api, message.connection, message.message, false)
+					api.socketServer.socketRoomBroadcast(api, message.connection, message.message, false)
 				}else if (message.action == "cacheSave"){
 					api.cache.save(api, message.key, message.value, message.expireTimeSeconds, function(value){
-						api.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
 					});
 				}else if (message.action == "cacheView"){
 					api.cache.load(api, message.key, function(value){
-						api.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
 					});
 				}else if (message.action == "cacheDestroy"){
 					api.cache.destroy(api, message.key, function(value){
-						api.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
 					});
 				}
 			}else{
-				api.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCluster"});
+				api.socketServer.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCluster"});
 			}
 		}
 	}
@@ -108,7 +108,6 @@ var initActionCluster= function(api, next){
 			if(typeof next == "function"){ 
 				process.nextTick( function(){ next(false) } ); 
 			}
-			// api.log("Already connected to actionCluster peer @ "+host+":"+port, "blue");
 		}
 	}
 	
@@ -159,7 +158,7 @@ var initActionCluster= function(api, next){
 	
 	api.actionCluster.cache.save = function(api, key, value, expireTimeSeconds, next){
 		
-		var saveObjectAtOncePeer = function(api, key, value, expireTimeSeconds, requestID, i){
+		var saveObjectAtOnePeer = function(api, key, value, expireTimeSeconds, requestID, i){
 			var host = api.actionCluster.connectionsToPeers[i].remotePeer.host;
 			var port = api.actionCluster.connectionsToPeers[i].remotePeer.port;
 			api.actionCluster.sendToPeer({
@@ -185,7 +184,7 @@ var initActionCluster= function(api, next){
 				};
 			}
 			if(i < api.utils.hashLength(api.actionCluster.connectionsToPeers)){
-				saveObjectAtOncePeer(api, key, value, expireTimeSeconds, requestID, i);
+				saveObjectAtOnePeer(api, key, value, expireTimeSeconds, requestID, i);
 				api.actionCluster.cache.checkForComplete(api, requestID, (i+1), function(resp){
 					if(resp[i]["value"] == true){ instnaceCounter++; }					
 					if(instnaceCounter == api.configData.actionCluster.nodeDuplication){
@@ -200,7 +199,6 @@ var initActionCluster= function(api, next){
 			}
 		}	
 		
-		// go!
 		api.actionCluster.cache.destroy(api, key, function(){
 			saveAtEnoughPeers(api, key, value, expireTimeSeconds, null, null, null, next);
 		})

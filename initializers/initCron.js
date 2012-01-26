@@ -28,6 +28,7 @@ var initCron = function(api, next)
 		api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
 		api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms", "green");
 	}
+	
 	next();
 }
 

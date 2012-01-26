@@ -95,32 +95,7 @@ Tasks are special periodically run actions the server will do at a set interval.
 
 The basic structure of a task _extends_ the task prototype like this example.
 
-Make you own tasks in a `tasks.js` file in your project root.
-
-	var tasks = {};
-	
-	////////////////////////////////////////////////////////////////////////////
-	// generic task prototype
-	tasks.Task = { 
-		// prototypical params a task should have
-		"defaultParams" : {
-			"name" : "generic task",
-			"desc" : "I do a thing!"
-		},
-		init: function (api, params, next) {
-			this.params = params || this.defaultParams;
-			this.api = api;
-			if (next != null){this.next = next;}
-			this.api.log("  starging task: " + this.params.name, "yellow");
-		},
-		end: function () {
-			this.api.log("  completed task: " + this.params.name, "yellow");
-			if (this.next != null){this.next();}
-		},		
-		run: function() {
-			this.api.log("RUNNING: "+this.params.name);
-		}
-	};
+Make you own tasks in a `tasks.js` file in your project root, or add them anywhere in the project by added them to the `api.tasks` object.
 
 	////////////////////////////////////////////////////////////////////////////
 	// A test task 
@@ -278,7 +253,9 @@ actionHero ships with the functions needed for an in-memory key-value cache.  Ch
 * `api.cache.destroy(api, key, next)`
 
 
-api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.  A task will periodically go though and delete expired cache entries.  As this is an in-memory cache, the maximum ram refined for the entire application is set with `api.configData.cache.maxMemoryBytes`.  If your application is consuming more than the defined amount of ram, the cache will not save any new objects, and `api.cache.save` will return false.  No other part of actionHero will halt due to this ram limitation. 
+api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.  A task will periodically go though and delete expired cache entries.  As this is an in-memory cache, the maximum ram refined for the entire application is set with `api.configData.cache.maxMemoryBytes`.  If your application is consuming more than the defined amount of ram, the cache will not save any new objects, and `api.cache.save` will return false.  No other part of actionHero will halt due to this memory limitation. 
+
+Note: that the keys starting with an "_" should not be used, as they are in use by core parts of the system.
 
 ## actionCluster
 actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:
@@ -290,7 +267,7 @@ actionHero can be run either as a stand-alone server or as part of a cluster.  W
 * shared or individual configuration for each peer.
 * Shared memory objects!
 	* actionHero's single-node cache,  `api.cache` is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn't hold any of the data being accessed.
-	* Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question
+	* Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question.  actionHero will not delete extra copies of an object across peers, with the assumption they all might be different.  
 
 __actionCluster.cache__ functions:
 
@@ -377,8 +354,7 @@ Note that responses from all peers are listed, and those that successfully delet
        }
 	]
 
-All actionCluster.cache actions will also include the local peer in their operations.  all actionCluster.cache will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.
-	
+All actionCluster.cache actions will also include the local peer in their operations.  all actionCluster.cache will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	
 
 ## Requirements
 * node.js server
@@ -418,7 +394,7 @@ The contents of `index.js` should look something like this:
 You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  actionHero will not create databases on its own, so you should create the `action_hero_api` database on your local mySQL server.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
 ## Extending actionHero
-The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own ``tasks.js` file.
+The first thing to do is to make your own ./actions (and ./models) folder.  If you like the default actions, feel free to copy them in.  You should also make you own tasks as defined above.
 
 A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:
 	
@@ -433,9 +409,11 @@ A common practice to extend the API is to add new classes which are not actions,
 		api.log("Loading complete!", ['green', 'bold']);
 	});
 
-Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via ``params.initFunction`.  This allows all threads in an cluster to access the methods. Setting them another way may not propagate to the children of a node cluster.
+Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via ``params.initFunction`.  This allows all threads in an cluster to access the methods. Even though the api object is returned to you, setting globally-available functions after initialization way may not propagate to the parts of actionHero.
 
-## Default Actions you can try `?action=..` which are included in the framework:
+## Default Content
+__Actions__:
+
 * cacheTest - a test of the DB-based key-value cache system
 * actionClusterCacheTest - another version of a cache test, but this one works across many nodes in the actionCluster.  This version also persists an object after the test is compete.
 * actionsView - returns a list of available actions on the server and their metadata
@@ -443,10 +421,15 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 * status - returns server status and stats
 * say - sends messages via http to clients connected via socket (in the room you specify)
 
+__Files__:
+
+There are also some static files (index.html and img/piano.jpg) included in `/public/` which you can check with the file action.
+
 ## Other Goodies 
 
 ### Logging and API Request Limiting
-Every web request is logged to te `log` database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by `api.configData.apiRequestLimitPerHour`).  You can also parse the logs to inspect user behavior.  If you want to store this behavior for longer, it is recommended that you store it elsewhere from your operational database.
+
+Every database driver for for actionHero should contain a `api.rateLimitCheck = function(api, connection, next) ` method.  This method returns `requestThisHourSoFar`.  If present, all web requests will first check to see if the the client has made too many requests this hour, as defined in `api.configData.apiRequestLimitPerHour`.  The mySQL driver which ships with actionHero stores these logs in the logs table, accessible via the log model in `models/log.js`
 
 Socket activity is not logged.
 

@@ -22,15 +22,7 @@ params.configChanges = {
 		}
 	},
 	
-	"database" : {
-		"type":"mySQL",
-        "host" : "127.0.0.1",
-		"database" : "action_hero_api",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false
-    },
+	"database" : null,
 	"flatFileDirectory" : "./public/"
 }
 
@@ -38,14 +30,15 @@ params.configChanges = {
 params.initFunction = function(api, next){
 	api.showCacheData = function(api){
 		api.log("--------- CACHE --------");
-		api.log(JSON.stringify(api.cache.data));
+		for (var i in api.cache.data){
+			api.log("  "+i)
+		}
 		setTimeout(api.showCacheData, 5000, api);
 	}
 	setTimeout(api.showCacheData, 5000, api);
 	
 	next();
 }
-
 
 // start the server!
 actionHero.start(params, function(api){

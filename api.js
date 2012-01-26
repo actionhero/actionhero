@@ -10,12 +10,13 @@ actionHero.start = function(params, callback){
 	actionHero.initializers = [ 
 		"initLog", 
 		"initDB", 
+		"initStats",
 		"initPostVariables", 
 		"initActions", 
 		"initCron", 
 		"initFileServer",
-		"initWebListen", 
-		"initSocketServerListen", 
+		"initWebServer", 
+		"initSocketServer", 
 		"initCache",
 		"initActionCluster"
 	];
@@ -66,15 +67,11 @@ actionHero.start = function(params, callback){
 		
 	api.utils = require(__dirname + '/utils.js').utils;
 		
-	api.stats = {};
-	api.stats.numberOfWebRequests = 0;
-	api.stats.numberOfSocketRequests = 0;
-	api.stats.startTime = new Date().getTime();	
-		
 	var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
 
 	actionHero.initLog(api, function(){
 			
+		api.tasks = {};
 		var taskFile = process.cwd() + "/tasks.js";
 		if(!api.path.existsSync(taskFile)){
 			taskFile = __dirname + "/tasks.js";
@@ -85,21 +82,23 @@ actionHero.start = function(params, callback){
 		actionHero.initDB(api, function(){
 			actionHero.initCron(api, function(){
 				actionHero.initCache(api, function(){
-					actionHero.initActions(api, function(){
-						actionHero.initPostVariables(api, function(){
-							actionHero.initFileServer(api, function(){
-								actionHero.initWebListen(api, function(){
-									actionHero.initSocketServerListen(api, function(){ 
-										actionHero.initActionCluster(api, function(){
-											if(typeof params.initFunction == "function"){
-												params.initFunction(api, function(){
+					actionHero.initStats(api, function(){
+						actionHero.initActions(api, function(){
+							actionHero.initPostVariables(api, function(){
+								actionHero.initFileServer(api, function(){
+									actionHero.initWebServer(api, function(){
+										actionHero.initSocketServer(api, function(){ 
+											actionHero.initActionCluster(api, function(){
+												if(typeof params.initFunction == "function"){
+													params.initFunction(api, function(){
+														api.log(successMessage, ["green", "bold"]);
+														if(callback != null){ process.nextTick(function() { callback(api); }); }
+													})
+												}else{
 													api.log(successMessage, ["green", "bold"]);
 													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												})
-											}else{
-												api.log(successMessage, ["green", "bold"]);
-												if(callback != null){ process.nextTick(function() { callback(api); }); }
-											}
+												}
+											});
 										});
 									});
 								});

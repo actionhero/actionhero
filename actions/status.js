@@ -17,12 +17,10 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
-	connection.response.status = "OK";
-	var now = new Date().getTime();
-	api.stats.uptimeSeconds = (now - api.stats.startTime) / 1000;
-	api.stats.pid = process.pid;
-	connection.response.stats = api.stats;
-	next(connection, true);
+	api.stats.load(function(resp){
+		connection.response.stats = resp;
+		next(connection, true);
+	});
 };
 
 /////////////////////////////////////////////////////////////////////

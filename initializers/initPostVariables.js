@@ -32,6 +32,35 @@ var initPostVariables = function(api, next)
 		}
 	}
 	api.postVariables = api.utils.arrayUniqueify(api.postVariables);
+	
+	////////////////////////////////////////////////////////////////////////////
+	// api param checking
+	api.utils.requiredParamChecker = function(api, connection, required_params, mode){
+		if(mode == null){mode = "all";}
+		if(mode == "all"){
+			required_params.forEach(function(param){
+				if(connection.error == false && (connection.params[param] === undefined || connection.params[param].length == 0)){
+					connection.error = param + " is a required parameter for this action";
+				}
+			});
+		}
+		if(mode == "any"){
+			var paramString = "";
+			var found = false;
+			required_params.forEach(function(param){
+				if(paramString != ""){paramString = paramString + ",";}
+				paramString = paramString + " " + param;
+				if(connection.params[param] != null){
+					found = true;
+				}
+			});
+			if(found == false)
+			{
+				connection.error = "none of the required params for this action were provided.  Any of the following are required: " + paramString;
+			}
+		}
+	}
+	
 	next();
 }
 

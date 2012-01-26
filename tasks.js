@@ -27,30 +27,6 @@ tasks.Task = {
 };
 
 ////////////////////////////////////////////////////////////////////////////
-// Ping!
-tasks.pingSocketClients = function(api, next) {
-	var params = {
-		"name" : "pingSocketClients",
-		"desc" : "I will send a message to all connected socket clients.  This will help with TCP keep-alive and send the current server time"
-	};
-	var task = Object.create(api.tasks.Task);
-	task.init(api, params, next);
-	task.run = function() {
-		for(var i in api.connections){
-			var message = {};
-			message.context = "api";
-			message.status = "keep-alive";
-			message.serverTime = new Date();
-			api.sendSocketMessage(api.connections[i], message);
-		}
-		task.log("sent keepAlive to "+api.connections.length+" socket clients");
-		task.end();
-	};
-	//
-	process.nextTick(function () { task.run() });
-};
-
-////////////////////////////////////////////////////////////////////////////
 // cleaning old cache entries from ram
 tasks.cleanOldCacheObjects = function(api, next) {
 	var params = {
@@ -100,6 +76,24 @@ tasks.cleanLogFiles = function(api, next) {
 			});
 		});
 		task.end();
+	};
+	//
+	process.nextTick(function () { task.run() });
+};
+
+////////////////////////////////////////////////////////////////////////////
+// server stats
+tasks.caclculateStats = function(api, next) {
+	var params = {
+		"name" : "caclculateStats",
+		"desc" : "I will caclculate this (local) server's stats"
+	};
+	var task = Object.create(api.tasks.Task);
+	task.init(api, params, next);
+	task.run = function() {
+		api.stats.calculate(api, function(){
+			task.end();
+		}) ;
 	};
 	//
 	process.nextTick(function () { task.run() });

@@ -1,10 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////
 // Web Request Processing
 
-var initWebListen = function(api, next)
+var initWebServer = function(api, next)
 {
-	api.webApp = api.http.createServer(function (req, res) {
-		api.stats.numberOfWebRequests = api.stats.numberOfWebRequests + 1;
+	api.webServer = {};
+	api.webServer.numberOfWebRequests = 0;
+	
+	////////////////////////////////////////////////////////////////////////////
+	// server
+	api.webServer.webApp = api.http.createServer(function (req, res) {
+		api.webServer.numberOfWebRequests = api.webServer.numberOfWebRequests + 1;
 		
 		var connection = {};
 			
@@ -56,23 +61,23 @@ var initWebListen = function(api, next)
 			if (connection.req.method.toLowerCase() == 'post') {
 				if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
 					connection.error = "content-type is a required header for processing this form.";
-					process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+					process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 				}else{
 					var form = new api.formidable.IncomingForm();
 				    form.parse(connection.req, function(err, fields, files) {
 						if(err){
 							api.log(err, "red");
 							connection.error = "There was an error processign this form."
-							process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+							process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 						}else{
 					  		fillParamsFromWebRequest(api, connection, files);
 					  		fillParamsFromWebRequest(api, connection, fields);
-					  		process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+					  		process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 						}
 				    });
 				}
 			}else{
-				process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+				process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 			}
 		}
 		
@@ -80,13 +85,10 @@ var initWebListen = function(api, next)
 			connection.params = {
 				action: 'file',
 			};
-			process.nextTick(function() { api.processAction(api, connection, api.respondToWebClient); });
+			process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 		}
 		
 	})
-	
-	// Go server!
-	api.webApp.listen(api.configData.webServerPort, "0.0.0.0"); // listen on all bound addresses
 	
 	var fillParamsFromWebRequest = function(api, connection, varsHash){
 		api.postVariables.forEach(function(postVar){
@@ -96,7 +98,9 @@ var initWebListen = function(api, next)
 		});
 	}
 	
-	api.respondToWebClient = function(connection, cont){
+	////////////////////////////////////////////////////////////////////////////
+	// Response Prety-maker
+	api.webServer.respondToWebClient = function(connection, cont){
 		connection.response = connection.response || {};
 					
 		// serverInformation information
@@ -135,10 +139,14 @@ var initWebListen = function(api, next)
 		if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
 		process.nextTick(function() { api.logAction(api, connection); });
 	};
-
+	
+	////////////////////////////////////////////////////////////////////////////
+	// Go server!
+	api.webServer.webApp.listen(api.configData.webServerPort, "0.0.0.0"); // listen on all bound addresses
+	
 	next();
 }
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initWebListen = initWebListen;
+exports.initWebServer = initWebServer;
