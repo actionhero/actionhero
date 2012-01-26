@@ -7,6 +7,7 @@
 **Details:**
 
 * Removed the notion of (http) sessions from the project, as they are not core to this api.  Simpler code!  
+* better test page (public/index.html) which shows a simple example of how to parse output from the API.
 * Stats calculation now works across the actionCluster and is moved to an initializer
 * cleanup to lots of methods for better encapsulation 
 * all files in the initialization directory will now be loaded automatically, however their execution will still remain manual (to enforce load order)

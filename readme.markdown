@@ -423,7 +423,7 @@ __Actions__:
 
 __Files__:
 
-There are also some static files (index.html and img/piano.jpg) included in `/public/` which you can check with the file action.
+There are also some static files (index.html and associate files for a test) included in `/public/` which you can check with the file action.
 
 ## Other Goodies 
 
