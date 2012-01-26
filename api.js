@@ -7,25 +7,6 @@ var actionHero = {};
 
 actionHero.start = function(params, callback){
 	
-	actionHero.initializers = [ 
-		"initLog", 
-		"initDB", 
-		"initStats",
-		"initPostVariables", 
-		"initActions", 
-		"initCron", 
-		"initFileServer",
-		"initWebServer", 
-		"initSocketServer", 
-		"initCache",
-		"initActionCluster"
-	];
-	
-	for(var i in actionHero.initializers){
-		var p = actionHero.initializers[i];
-		actionHero[p] = require(__dirname + '/initializers/'+p+'.js')[p];
-	}
-	
 	if (params == null){params = {};}
 	
 	// the api namespace.  Everything uses this.
@@ -64,40 +45,49 @@ actionHero.start = function(params, callback){
 
 	// overide config.js with params.configChanges if exists 
 	for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
+	
+	var initPath = process.cwd() + "/initializers/";
+	api.path.exists(initPath, function (exists) {
+		if(!exists){ initPath = process.cwd() + "/node_modules/actionHero/initializers/"; }
+		api.fs.readdirSync(initPath).forEach( function(file) {
+			if (file != ".DS_Store"){
+				var initalizer = file.split(".")[0];
+				actionHero[initalizer] = require(initPath + file)[initalizer];
+			}
+		});
 		
-	api.utils = require(__dirname + '/utils.js').utils;
-		
-	var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
-
-	actionHero.initLog(api, function(){
+		api.utils = require(__dirname + '/utils.js').utils;
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
+		actionHero.initLog(api, function(){
 			
-		api.tasks = {};
-		var taskFile = process.cwd() + "/tasks.js";
-		if(!api.path.existsSync(taskFile)){
-			taskFile = __dirname + "/tasks.js";
-			api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
-		}
-		api.tasks = require(taskFile).tasks;
+			api.tasks = {};
+			var taskFile = process.cwd() + "/tasks.js";
+			if(!api.path.existsSync(taskFile)){
+				taskFile = __dirname + "/tasks.js";
+				api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
+			}
+			api.tasks = require(taskFile).tasks;
 			
-		actionHero.initDB(api, function(){
-			actionHero.initCron(api, function(){
-				actionHero.initCache(api, function(){
-					actionHero.initStats(api, function(){
-						actionHero.initActions(api, function(){
-							actionHero.initPostVariables(api, function(){
-								actionHero.initFileServer(api, function(){
-									actionHero.initWebServer(api, function(){
-										actionHero.initSocketServer(api, function(){ 
-											actionHero.initActionCluster(api, function(){
-												if(typeof params.initFunction == "function"){
-													params.initFunction(api, function(){
+			actionHero.initDB(api, function(){
+				actionHero.initCron(api, function(){
+					actionHero.initCache(api, function(){
+						actionHero.initStats(api, function(){
+							actionHero.initActions(api, function(){
+								actionHero.initPostVariables(api, function(){
+									actionHero.initFileServer(api, function(){
+										actionHero.initWebServer(api, function(){
+											actionHero.initSocketServer(api, function(){ 
+												actionHero.initActionCluster(api, function(){
+													if(typeof params.initFunction == "function"){
+														params.initFunction(api, function(){
+															api.log(successMessage, ["green", "bold"]);
+															if(callback != null){ process.nextTick(function() { callback(api); }); }
+														})
+													}else{
 														api.log(successMessage, ["green", "bold"]);
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													})
-												}else{
-													api.log(successMessage, ["green", "bold"]);
-													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												}
+													}
+												});
 											});
 										});
 									});

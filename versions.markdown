@@ -9,6 +9,7 @@
 * Removed the notion of (http) sessions from the project, as they are not core to this api.  Simpler code!  
 * Stats calculation now works across the actionCluster and is moved to an initializer
 * cleanup to lots of methods for better encapsulation 
+* all files in the initialization directory will now be loaded automatically, however their execution will still remain manual (to enforce load order)
 * note: with api.cache, the _stats and _roomStatus keys are reserved for the system
 
 ## Version 0.2.0
