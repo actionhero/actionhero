@@ -65,7 +65,6 @@ suite.addBatch({
         "action",
         "limit",
         "offset",
-        "sessionKey",
         "id",
         "createdAt",
         "updatedAt"

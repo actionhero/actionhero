@@ -95,33 +95,6 @@ utils.randomArraySort = function(a,b) {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// session authentication checking
-utils.sessionCheck = function(api, connection, next){
-	api.utils.requiredParamChecker(api, connection, ["sessionKey"]);
-	if(connection.error == false)
-	{
-		api.models.session.find({ where: {key: connection.params.sessionKey} }).on('success', function(session) {
-			if(session == null){
-				connection.error = "sessionKey not found";
-				process.nextTick(function() { next(false); });
-			}else{
-				api.models.user.find({ where: {id: session.userID} }).on('success', function(user) {
-					if(user == null)
-					{
-						connection.error = "user not found";
-						process.nextTick(function() { next(false); });
-					}else{
-						process.nextTick(function() { next(user); });
-					}
-				});
-			}
-		});
-	}else{
-		process.nextTick(function() { next(false); });
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////
 // shellExec
 utils.shellExec = function(api, command, next){
 	var response = {};
@@ -162,32 +135,6 @@ utils.requiredParamChecker = function(api, connection, required_params, mode){
 		}
 	}
 }
-
-////////////////////////////////////////////////////////////////////////////
-// DB Seeding
-utils.DBSeed = function(api, model, seeds, next){
-	model.count().on('success', function(modelsFound) {
-		if(modelsFound > 0)
-		{
-			next(false, model);
-		}else{
-			var chainer = new api.SequelizeBase.Utils.QueryChainer;
-			for(var i in seeds){
-				seed = seeds[i];
-				chainer.add(model.build(seed).save());
-			}
-			chainer.run().on('success', function(){
-				next(true, model);
-			}).on('failure', function(errors){
-				for(var i in errors){
-					api.log(errors[i], "red");
-				}
-				next(false, model);
-			});
-		}
-	});
-}
-
 
 ////////////////////////////////////////////////////////////////////////////
 // EXPORT

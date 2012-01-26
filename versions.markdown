@@ -1,5 +1,14 @@
 # Action Hero API Versions
 
+## Version 0.2.1
+
+**Summary:** This is a general cleanup release
+
+**Details:**
+
+* Removed the notion of (http) sessions from the project, as they are not core to this api.  Simpler code!  
+* 
+
 ## Version 0.2.0
 
 **Summary:** This release introduces the actionCluster!

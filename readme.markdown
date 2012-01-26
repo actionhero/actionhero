@@ -457,7 +457,6 @@ Params (GET and POST) provided by the user will be checked against a whitelist. 
 		"action",
 		"limit",
 		"offset",
-		"sessionKey",
 		"id",
 		"createdAt",
 		"updatedAt"

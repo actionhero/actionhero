@@ -42,8 +42,6 @@
 		"consoleLogging" : false
     },
 
-	"sessionDurationMinutes" : 1440,
-
 	"flatFileDirectory" : "./node_modules/actionHero/public/",
 	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",

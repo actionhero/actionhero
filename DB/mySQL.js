@@ -69,6 +69,7 @@ var init = function(api, next){
 		}
 	});
 			
+	////////////////////////////////////////////////////////////////////////////
 	// define the rate limit check function
 	api.rateLimitCheck = function(api, connection, next){
 		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
@@ -76,6 +77,7 @@ var init = function(api, next){
 		});
 	}
 			
+	////////////////////////////////////////////////////////////////////////////
 	// special tasks for the DB
 	api.tasks.cleanOldLogDB = function(api, next) {
 		var params = {
@@ -123,6 +125,32 @@ var init = function(api, next){
 		//
 		process.nextTick(function () { task.run() });
 	};
+	
+	////////////////////////////////////////////////////////////////////////////
+	// DB Seeding
+	api.utils.DBSeed = function(api, model, seeds, next){
+		model.count().on('success', function(modelsFound) {
+			if(modelsFound > 0)
+			{
+				next(false, model);
+			}else{
+				var chainer = new api.SequelizeBase.Utils.QueryChainer;
+				for(var i in seeds){
+					seed = seeds[i];
+					chainer.add(model.build(seed).save());
+				}
+				chainer.run().on('success', function(){
+					next(true, model);
+				}).on('failure', function(errors){
+					for(var i in errors){
+						api.log(errors[i], "red");
+					}
+					next(false, model);
+				});
+			}
+		});
+	}
+	
 }
 
 exports.init = init;

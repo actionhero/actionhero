@@ -9,7 +9,6 @@ var initPostVariables = function(api, next)
 		"action",
 		"limit",
 		"offset",
-		"sessionKey",
 		"id",
 		"createdAt",
 		"updatedAt"
