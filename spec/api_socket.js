@@ -56,7 +56,7 @@ suite.addBatch({
 			makeSocketRequest(client, this.callback, "status");
 		}, 'works' : function(resp, d){
 			specHelper.assert.isObject(d.stats);
-			specHelper.assert.equal(d.stats.numberOfSocketRequests, 3);
+			specHelper.assert.equal(d.stats.socketServer.numberOfSocketRequests, 3);
 		}
 	}
 });

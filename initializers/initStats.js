@@ -7,8 +7,6 @@ var initStats = function(api, next){
 	
 	api.stats.init = function(api, next){
 		var stats = {};
-		stats.numberOfWebRequests = 0;
-		stats.numberOfSocketRequests = 0;
 		stats.startTime = new Date().getTime();	
 		stats.pid = process.pid;
 		api.cache.save(api, "_stats", stats, cacheTime, function(){
@@ -17,12 +15,10 @@ var initStats = function(api, next){
 	}
 	
 	api.stats.load = function(next){
-		api.stats.calculate(api, function(){
+		api.stats.calculate(api, function(stats){
 			api.actionCluster.cache.load(api, "_stats", function(clusterResp){
 				if(clusterResp == false){
-					api.cache.load(api, "_stats", function(localResp){
-						next(localResp);
-					});
+					next(stats);
 				}else{
 					next(clusterResp);
 				}
@@ -51,7 +47,7 @@ var initStats = function(api, next){
 			};
 			
 			api.cache.save(api, "_stats", stats, cacheTime, function(){
-				if(typeof next == "function"){ next(); }
+				if(typeof next == "function"){ next(stats); }
 			});
 		});
 	}

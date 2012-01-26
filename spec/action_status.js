@@ -15,11 +15,12 @@ suite.addBatch({
     topic: function(){ specHelper.apiTest.get(actionUrl, {} ,this.callback ); },
     error: function(res, b){ specHelper.assert.equal(res.body.error, "OK");},
   },
+
   "status: stats": {
     topic: function(){ specHelper.apiTest.get(actionUrl, {} ,this.callback ); },
     stats: function(res, b){ 
-      specHelper.assert.isTrue(res.body.stats.numberOfWebRequests > 0);
-      specHelper.assert.isTrue(res.body.stats.numberOfSocketRequests >= 0);
+      specHelper.assert.isTrue(res.body.stats.webServer.numberOfWebRequests > 0);
+      specHelper.assert.isTrue(res.body.stats.socketServer.numberOfSocketRequests >= 0);
       specHelper.assert.isTrue(res.body.stats.startTime > 0);
       specHelper.assert.isTrue(res.body.stats.uptimeSeconds > 0);
 	  specHelper.assert.isTrue(res.body.stats.pid > 0);

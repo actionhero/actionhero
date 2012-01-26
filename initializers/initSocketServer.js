@@ -172,8 +172,8 @@ var initSocketServer = function(api, next){
 		if(loop == null){loop = true;}
 		results = {};
 		results.rooms = {};
-		for(var i in api.connections){
-			var thisConnection = api.connections[i];
+		for(var i in api.socketServer.connections){
+			var thisConnection = api.socketServer.connections[i];
 			var thisRoom = thisConnection.room;
 			if(results.rooms[thisRoom] == null){
 				results.rooms[thisRoom] = {members: [], membersCount: 0};
