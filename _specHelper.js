@@ -97,10 +97,15 @@ specHelper.apiTest = {
   general: function(method, url, data, cb){
   	var params = {}
   	params.method = method;
-  	params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'') + "?";
-  	for(var i in data){
-  		params.url += i + "=" + data[i] + "&";
-  	}
+	if(url.indexOf("?") > -1){
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'');
+	}else{
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'') + "?";
+	  	for(var i in data){
+	  		params.url += i + "=" + data[i] + "&";
+	  	}
+	}
+  
     specHelper.request(params,function(req, res){
         try{ res.body = JSON.parse(res.body); }catch(e){};
         cb( res );

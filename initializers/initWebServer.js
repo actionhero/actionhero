@@ -82,9 +82,8 @@ var initWebServer = function(api, next)
 		}
 		
 		if(connection.requestMode == "file"){
-			connection.params = {
-				action: 'file',
-			};
+			fillParamsFromWebRequest(api, connection, parsedURL.query);
+			connection.params.action = "file";
 			process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 		}
 		

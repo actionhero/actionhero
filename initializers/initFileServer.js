@@ -4,6 +4,7 @@
 var initFileServer = function(api, next){
 	
 	api.sendFile = function(api, connection, next){
+		
 		var fileName = "";
 		if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 			var parsedURL = api.url.parse(connection.req.url);
