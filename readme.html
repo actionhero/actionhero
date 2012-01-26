@@ -107,34 +107,9 @@ logRecord.save();
 
 <p>The basic structure of a task <em>extends</em> the task prototype like this example.</p>
 
-<p>Make you own tasks in a <code>tasks.js</code> file in your project root.</p>
+<p>Make you own tasks in a <code>tasks.js</code> file in your project root, or add them anywhere in the project by added them to the <code>api.tasks</code> object.</p>
 
-<pre><code>var tasks = {};
-
-////////////////////////////////////////////////////////////////////////////
-// generic task prototype
-tasks.Task = { 
-    // prototypical params a task should have
-    "defaultParams" : {
-        "name" : "generic task",
-        "desc" : "I do a thing!"
-    },
-    init: function (api, params, next) {
-        this.params = params || this.defaultParams;
-        this.api = api;
-        if (next != null){this.next = next;}
-        this.api.log("  starging task: " + this.params.name, "yellow");
-    },
-    end: function () {
-        this.api.log("  completed task: " + this.params.name, "yellow");
-        if (this.next != null){this.next();}
-    },      
-    run: function() {
-        this.api.log("RUNNING: "+this.params.name);
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////
+<pre><code>////////////////////////////////////////////////////////////////////////////
 // A test task 
 tasks.testTask = function(api, next) {
     var params = {
@@ -301,6 +276,135 @@ say hooray!
 </ul>
 
 
+<h2>Cache</h2>
+
+<p>actionHero ships with the functions needed for an in-memory key-value cache.  Check the cacheTest action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:</p>
+
+<ul>
+<li><code>api.cache.save(api, key, value, expireTimeSeconds, next)</code></li>
+<li><code>api.cache.load(api, key, next)</code></li>
+<li><code>api.cache.destroy(api, key, next)</code></li>
+</ul>
+
+
+<p>api.cache.save is used to both create new entires or update existing cache entires.  If you don&rsquo;t define an expireTimeSeconds, the default will be used from <code>api.configData.cache.defaultExpireTimeSeconds</code>.  A task will periodically go though and delete expired cache entries.  As this is an in-memory cache, the maximum ram refined for the entire application is set with <code>api.configData.cache.maxMemoryBytes</code>.  If your application is consuming more than the defined amount of ram, the cache will not save any new objects, and <code>api.cache.save</code> will return false.  No other part of actionHero will halt due to this memory limitation.</p>
+
+<p>Note: that the keys starting with an &ldquo;_&rdquo; should not be used, as they are in use by core parts of the system.</p>
+
+<h2>actionCluster</h2>
+
+<p>actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:</p>
+
+<ul>
+<li><code>ring-based</code> communication.  Lists of peers are shared among all members of the actionCluster, and each member communicates directly with all other members.  This allows any member of the cluster to fail and the cluster to continue.</li>
+<li>reconnection.  Peers will always attempt to reconnect to disconnected peers</li>
+<li>cluster security.  Each actionCluster has a unique membership phrase <code>api.configData.actionCluster.Key</code> defined by you</li>
+<li>shared messaging: the <code>say</code> socket command will message all clients in the same room in all peers.  <code>roomView</code> will aggregate information for all peer&rsquo;s connections</li>
+<li>shared or individual configuration for each peer.</li>
+<li>Shared memory objects!
+
+<ul>
+<li>actionHero&rsquo;s single-node cache,  <code>api.cache</code> is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn&rsquo;t hold any of the data being accessed.</li>
+<li>Object duplication.  Using <code>api.configData.actionCluster.nodeDuplication</code>, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question.  actionHero will not delete extra copies of an object across peers, with the assumption they all might be different.</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>actionCluster.cache</strong> functions:</p>
+
+<ul>
+<li><code>api.actionCluster.cache.save(api, key, value, expireTimeSeconds, next)</code></li>
+<li><code>api.actionCluster.cache.load(api, key, next)</code></li>
+<li><code>api.actionCluster.cache.destroy(api, key, remotePeer, next)</code></li>
+</ul>
+
+
+<p>Just like the local version, <code>api.actionCluster.cache.save</code> will default to <code>api.configData.cache.defaultExpireTimeSeconds</code> if <code>expireTimeSeconds</code> is not set.</p>
+
+<p>If you do not provide a <code>remotePeer</code>, <code>api.actionCluster.cache.destroy</code> will delete the object on all peers.</p>
+
+<p><code>api.actionCluster.cache</code> actions differ from their local cousins in their responses.  As peers may differ in their value for a given object, this method returns an array of objets which contain the values and which peer they came from.  In this way, you can handle differing responses however you like.  Responses from all peers will be collected, and many may be <code>null</code> if they aren&rsquo;t holding the object.  Examples:</p>
+
+<p><strong>api.actionCluster.cache.save</strong>
+Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.</p>
+
+<pre><code>[
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5000"
+       }, 
+       "value": true
+   }, 
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5002"
+       }, 
+       "value": true
+   }
+]
+</code></pre>
+
+<p><strong>api.actionCluster.cache.load</strong>
+Note that responses from all peers are listed, and those that do not hold the object return null.</p>
+
+<pre><code>[
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5002"
+       }, 
+       "value": "myValue"
+   }, 
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5001"
+       }, 
+       "value": null
+   }, 
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5000"
+       }, 
+       "value": "myValue"
+   }
+]
+</code></pre>
+
+<p><strong>api.actionCluster.cache.destroy</strong>
+Note that responses from all peers are listed, and those that successfully deleted are true.</p>
+
+<pre><code>[
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5002"
+       }, 
+       "value": true
+   }, 
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5000"
+       }, 
+       "value": true
+   }, 
+   {
+       "remotePeer": {
+           "host": "127.0.0.1", 
+           "port": "5001"
+       }, 
+       "value": false
+   }
+]
+</code></pre>
+
+<p>All actionCluster.cache actions will also include the local peer in their operations.  all actionCluster.cache will also only wait <code>api.configData.actionCluster.remoteTimeoutWaitMS</code> to collect responses from peers, and will then return whatever information they have collected so far.</p>
+
 <h2>Requirements</h2>
 
 <ul>
@@ -352,7 +456,7 @@ actionHero.start(params);
 
 <h2>Extending actionHero</h2>
 
-<p>The first thing to do is to make your own ./actions and ./models folders.  If you like the default actions, feel free to copy them in.  You should also make you own <code>`tasks.js</code> file.</p>
+<p>The first thing to do is to make your own ./actions (and ./models) folder.  If you like the default actions, feel free to copy them in.  You should also make you own tasks as defined above.</p>
 
 <p>A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:</p>
 
@@ -368,12 +472,15 @@ actionHero.start({initFunction: initFunction}, function(api){
 });
 </code></pre>
 
-<p>Now <code>api.utils.randomNumber()</code> is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via <code>`params.initFunction</code>.  This allows all threads in an cluster to access the methods. Setting them another way may not propagate to the children of a node cluster.</p>
+<p>Now <code>api.utils.randomNumber()</code> is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via <code>`params.initFunction</code>.  This allows all threads in an cluster to access the methods. Even though the api object is returned to you, setting globally-available functions after initialization way may not propagate to the parts of actionHero.</p>
 
-<h2>Default Actions you can try <code>?action=..</code> which are included in the framework:</h2>
+<h2>Default Content</h2>
+
+<p><strong>Actions</strong>:</p>
 
 <ul>
 <li>cacheTest &ndash; a test of the DB-based key-value cache system</li>
+<li>actionClusterCacheTest &ndash; another version of a cache test, but this one works across many nodes in the actionCluster.  This version also persists an object after the test is compete.</li>
 <li>actionsView &ndash; returns a list of available actions on the server and their metadata</li>
 <li>randomNumber &ndash; generates a random number</li>
 <li>status &ndash; returns server status and stats</li>
@@ -381,24 +488,15 @@ actionHero.start({initFunction: initFunction}, function(api){
 </ul>
 
 
+<p><strong>Files</strong>:</p>
+
+<p>There are also some static files (index.html and associate files for a test) included in <code>/public/</code> which you can check with the file action.</p>
+
 <h2>Other Goodies</h2>
-
-<h3>Cache</h3>
-
-<p>actionHero ships with the models and functions needed for mySQL-backed key-value cache.  Check cache.js in both the application root and an action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:</p>
-
-<ul>
-<li><code>api.cache.save(api,key,value,expireTimeSeconds,next)</code></li>
-<li><code>api.cache.load(api, key, next)</code></li>
-<li><code>api.cache.destroy(api, key, next)</code></li>
-</ul>
-
-
-<p>api.cache.save is used to both create new entires or update existing cache entires.  If you don&rsquo;t define an expireTimeSeconds, the default will be used from <code>api.configData.cache.defaultExpireTimeSeconds</code>.</p>
 
 <h3>Logging and API Request Limiting</h3>
 
-<p>Every web request is logged to te <code>log</code> database table.  By default, these are only kept for an hour and cleaned up by a task.  These records are used to rate limit API access (set in config.json by <code>api.configData.apiRequestLimitPerHour</code>).  You can also parse the logs to inspect user behavior.  If you want to store this behavior for longer, it is recommended that you store it elsewhere from your operational database.</p>
+<p>Every database driver for for actionHero should contain a <code>api.rateLimitCheck = function(api, connection, next)</code> method.  This method returns <code>requestThisHourSoFar</code>.  If present, all web requests will first check to see if the the client has made too many requests this hour, as defined in <code>api.configData.apiRequestLimitPerHour</code>.  The mySQL driver which ships with actionHero stores these logs in the logs table, accessible via the log model in <code>models/log.js</code></p>
 
 <p>Socket activity is not logged.</p>
 
@@ -411,7 +509,6 @@ actionHero.start({initFunction: initFunction}, function(api){
     "action",
     "limit",
     "offset",
-    "sessionKey",
     "id",
     "createdAt",
     "updatedAt"
