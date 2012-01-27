@@ -8,11 +8,11 @@
 
 var initDB = function(api, next){	
 	if(api.configData.database != null){
-		var dbInitFile = "./DB/" + api.configData.database.type + ".js";
-		if(api.path.existsSync(dbInitFile)){
-			require("." + dbInitFile).init(api, next); 
+		var dbInitFile = "../DB/" + api.configData.database.type + ".js";
+		if(api.path.existsSync(api.path.dirname(__filename) + '/' + dbInitFile)){
+			require(dbInitFile).init(api, next); 
 		}else{
-			api.log("I do not know how to initialze a database of type: "+api.configData.database.type+"  Exiting.", "red");
+			api.log("I do not know how to initialize a database of type: "+api.configData.database.type+"  Exiting.", "red");
 			process.exit();
 		}
 	}else{
