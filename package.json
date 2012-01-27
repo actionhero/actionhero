@@ -10,7 +10,7 @@
   },
   "main": "./api.js",
   "engines": {
-    "node": "0.6.x"
+    "node": ">=0.6.0"
   },
   "dependencies": {
     "async":"0.x.x", 
