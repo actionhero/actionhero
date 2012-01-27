@@ -107,7 +107,7 @@
 			out += "</ul>";
 			
 			out += "<b>Example Output:</b><br />";
-			out += JSON.stringify(action.outputExample);
+			out += JSON.stringify(action.outputExample, null, 4);
 			
 		}
 		$("#apiContent").html(out);
