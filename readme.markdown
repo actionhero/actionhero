@@ -379,12 +379,13 @@ The contents of `index.js` should look something like this:
 	var params = {};
 	params.configChanges = {
 		"database" : {
-	        "host" : "127.0.0.1",
+			"host" : "127.0.0.1",
 			"database" : "action_hero_api",
 			"username" : "root",
 			"password" : null,
 			"port" : "3306",
-			"consoleLogging" : false
+			"consoleLogging" : false,
+			"type" : "mySQL"
 	    },
 		"webServerPort" : 8080,
 		"socketServerPort" : 5000
