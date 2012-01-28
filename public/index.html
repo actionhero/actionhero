@@ -13,6 +13,9 @@
 	<script type="text/javascript" src="/file/javascript/cufon-yui.js"></script>
 	<script type="text/javascript" src="/file/javascript/font.font.js"></script>
 	
+	<link href="/file/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="/file/google-code-prettify/prettify.js"></script>
+	
 	<script type="text/javascript">
 		Cufon.replace('h1, h2', {hover:true});
 	</script>
@@ -85,7 +88,6 @@
 	});
 	
 	var actionsViewCallback = function(api){
-		console.log(api);
 		var out = "";
 		for(var i in api.actions){
 			var action = api.actions[i];
@@ -107,9 +109,11 @@
 			out += "</ul>";
 			
 			out += "<b>Example Output:</b><br />";
+			out += "<pre class=\"prettyprint lang-js\">";
 			out += JSON.stringify(action.outputExample, null, 4);
-			
+			out += "</pre>";
 		}
+		
 		$("#apiContent").html(out);
 	}
 
