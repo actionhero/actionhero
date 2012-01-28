@@ -291,6 +291,46 @@ say hooray!
 
 <p>Note: that the keys starting with an &ldquo;_&rdquo; should not be used, as they are in use by core parts of the system.</p>
 
+<p><strong>api.cache.save</strong>: Response</p>
+
+<ul>
+<li>true / false
+
+<ul>
+<li>will be true unless the object could not be saved (perhaps out of ram or a bad object type).</li>
+<li>overwriting an existing object will return <code>true</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>api.cache.load</strong>: Response</p>
+
+<ul>
+<li><code>(value, expireTimestamp, createdAt, readAt)</code>
+
+<ul>
+<li>value will be the object which was saved</li>
+<li>expireTimestamp(ms) is when the object is set to expire in system time</li>
+<li>createdAt(ms) is when the object was created</li>
+<li>readAt(ms) is the timestamp at which the object was last read with <code>api.cache.load</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>api.cache.destroy</strong>: Response</p>
+
+<ul>
+<li>true / false
+
+<ul>
+<li>will be false if the object cannot be found</li>
+</ul>
+</li>
+</ul>
+
+
 <h2>actionCluster</h2>
 
 <p>actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:</p>
@@ -326,8 +366,9 @@ say hooray!
 
 <p><code>api.actionCluster.cache</code> actions differ from their local cousins in their responses.  As peers may differ in their value for a given object, this method returns an array of objets which contain the values and which peer they came from.  In this way, you can handle differing responses however you like.  Responses from all peers will be collected, and many may be <code>null</code> if they aren&rsquo;t holding the object.  Examples:</p>
 
-<p><strong>api.actionCluster.cache.save</strong>
-Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.</p>
+<p><strong>api.actionCluster.cache.save</strong>: response object</p>
+
+<p>Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.</p>
 
 <pre><code>[
    {
@@ -347,8 +388,9 @@ Note that only those peers which the object was saved to are returned.  In this 
 ]
 </code></pre>
 
-<p><strong>api.actionCluster.cache.load</strong>
-Note that responses from all peers are listed, and those that do not hold the object return null.</p>
+<p><strong>api.actionCluster.cache.load</strong>: response object</p>
+
+<p>Note that responses from all peers are listed, and those that do not hold the object return null.</p>
 
 <pre><code>[
    {
@@ -356,27 +398,40 @@ Note that responses from all peers are listed, and those that do not hold the ob
            "host": "127.0.0.1", 
            "port": "5002"
        }, 
-       "value": "myValue"
+       "value": "myValue",
+       "expireTimestamp": 1327726850689,
+       "createdAt": 1327723250689,
+       "readAt": 1327723250890,
+       "key": "ActionClusterCacheTest_myKey"
    }, 
    {
        "remotePeer": {
            "host": "127.0.0.1", 
            "port": "5001"
        }, 
-       "value": null
+       "value": null,
+       "expireTimestamp": null,
+       "createdAt": null,
+       "readAt": null,
+       "key": "ActionClusterCacheTest_myKey"
    }, 
    {
        "remotePeer": {
            "host": "127.0.0.1", 
            "port": "5000"
        }, 
-       "value": "myValue"
+       "value": "myValue",
+       "expireTimestamp": 1327726850689,
+       "createdAt": 1327723250690,
+       "readAt": 1327723250890,
+       "key": "ActionClusterCacheTest_myKey"
    }
 ]
 </code></pre>
 
-<p><strong>api.actionCluster.cache.destroy</strong>
-Note that responses from all peers are listed, and those that successfully deleted are true.</p>
+<p><strong>api.actionCluster.cache.destroy</strong>: response object</p>
+
+<p>Note that responses from all peers are listed, and those that successfully deleted are true.</p>
 
 <pre><code>[
    {
@@ -403,7 +458,7 @@ Note that responses from all peers are listed, and those that successfully delet
 ]
 </code></pre>
 
-<p>All actionCluster.cache actions will also include the local peer in their operations.  all actionCluster.cache will also only wait <code>api.configData.actionCluster.remoteTimeoutWaitMS</code> to collect responses from peers, and will then return whatever information they have collected so far.</p>
+<p>All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait <code>api.configData.actionCluster.remoteTimeoutWaitMS</code> to collect responses from peers, and will then return whatever information they have collected so far.    This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).</p>
 
 <h2>Requirements</h2>
 
@@ -437,7 +492,8 @@ params.configChanges = {
         "username" : "root",
         "password" : null,
         "port" : "3306",
-        "consoleLogging" : false
+        "consoleLogging" : false,
+        "type" : "mySQL"
     },
     "webServerPort" : 8080,
     "socketServerPort" : 5000
