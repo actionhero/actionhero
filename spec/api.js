@@ -6,7 +6,7 @@ suite.addBatch({
   'specHelper.prepare':{
     topic: function(){
       var cb = this.callback;
-      specHelper.prepare(function(api){
+      specHelper.prepare(0, function(api){
         apiObj = specHelper.cleanAPIObject(api);
         cb();
       })

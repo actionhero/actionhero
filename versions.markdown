@@ -1,5 +1,17 @@
 # Action Hero API Versions
 
+## Version 0.2.2
+
+**Summary:** This release adds additional functionality to the actionCluster and Cache
+
+**Details:**
+
+* Both `api.actionCluster.cache.load` and `api.cache.load` now both return 4 values, `(value, expireTimestamp, createdAt, readAt)`.  This new information can be used to avoid race conditions if another peer has recently accessed a saved object.
+* Reading a object with the corresponding load command will update the readAt value.
+* A pretty new example html in `/public/` which will demonstrate the `showActions` method
+* npm tests for the cluster
+
+
 ## Version 0.2.1
 
 **Summary:** This is a general cleanup release

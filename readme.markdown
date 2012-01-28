@@ -257,6 +257,25 @@ api.cache.save is used to both create new entires or update existing cache entir
 
 Note: that the keys starting with an "_" should not be used, as they are in use by core parts of the system.
 
+**api.cache.save**: Response
+
+* true / false
+	* will be true unless the object could not be saved (perhaps out of ram or a bad object type).
+	* overwriting an existing object will return `true`
+
+**api.cache.load**: Response
+
+* `(value, expireTimestamp, createdAt, readAt)`
+	* value will be the object which was saved
+	* expireTimestamp(ms) is when the object is set to expire in system time
+	* createdAt(ms) is when the object was created
+	* readAt(ms) is the timestamp at which the object was last read with `api.cache.load`
+
+**api.cache.destroy**: Response
+
+* true / false
+	* will be false if the object cannot be found
+
 ## actionCluster
 actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:
 
@@ -281,7 +300,7 @@ If you do not provide a `remotePeer`, `api.actionCluster.cache.destroy` will del
 
 `api.actionCluster.cache` actions differ from their local cousins in their responses.  As peers may differ in their value for a given object, this method returns an array of objets which contain the values and which peer they came from.  In this way, you can handle differing responses however you like.  Responses from all peers will be collected, and many may be `null` if they aren't holding the object.  Examples:
 
-**api.actionCluster.cache.save**
+**api.actionCluster.cache.save**: response object
 
 Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.
 
@@ -302,7 +321,7 @@ Note that only those peers which the object was saved to are returned.  In this 
        }
 	]
 
-**api.actionCluster.cache.load**
+**api.actionCluster.cache.load**: response object
 
 Note that responses from all peers are listed, and those that do not hold the object return null.
 
@@ -312,25 +331,37 @@ Note that responses from all peers are listed, and those that do not hold the ob
                "host": "127.0.0.1", 
                "port": "5002"
            }, 
-           "value": "myValue"
+           "value": "myValue",
+		   "expireTimestamp": 1327726850689,
+		   "createdAt": 1327723250689,
+           "readAt": 1327723250890,
+           "key": "ActionClusterCacheTest_myKey"
        }, 
        {
            "remotePeer": {
                "host": "127.0.0.1", 
                "port": "5001"
            }, 
-           "value": null
+           "value": null,
+		   "expireTimestamp": null,
+		   "createdAt": null,
+           "readAt": null,
+           "key": "ActionClusterCacheTest_myKey"
        }, 
        {
            "remotePeer": {
                "host": "127.0.0.1", 
                "port": "5000"
            }, 
-           "value": "myValue"
+           "value": "myValue",
+		   "expireTimestamp": 1327726850689,
+		   "createdAt": 1327723250690,
+           "readAt": 1327723250890,
+           "key": "ActionClusterCacheTest_myKey"
        }
 	]
 
-**api.actionCluster.cache.destroy**
+**api.actionCluster.cache.destroy**: response object
 
 Note that responses from all peers are listed, and those that successfully deleted are true.
 

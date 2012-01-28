@@ -4,11 +4,11 @@ specHelper.vows = require('vows');
 specHelper.net = require('net');
 specHelper.assert = require('assert');
 specHelper.request = require('request');
-specHelper.api = {};
-
+specHelper.apis = [];
 specHelper.url = "127.0.0.1";
+specHelper.params = [];
 
-specHelper.params = {
+specHelper.params[0] = {
 	"database" : {
 		"type":"mySQL",
 		"host" : specHelper.url,
@@ -19,22 +19,98 @@ specHelper.params = {
 		"consoleLogging" : false,
 	},
 	"flatFileDirectory":"./public/",
-	"webServerPort" : 8081,
-	"socketServerPort" : 5001,
+	"webServerPort" : 9000,
+	"socketServerPort" : 6000,
 	"logging":false,
 	"cronProcess":false,
 	"cache" : {
 		"defaultExpireTimeSeconds" : 3600
 	},
+	
+	"actionCluster": {
+		"Key" : "4ijhaijhm43yjnawhja43jaj",
+		"ReConnectToLostPeersMS" : 1000,
+		"CycleCheckTimeMS" : 100,
+		"remoteTimeoutWaitMS" : 10000,
+		"nodeDuplication" : 2,
+		"StartingPeer" : {
+			"host": null,
+			"port": null
+		}
+	}
 };
 
-specHelper.tables = [
-	"Logs", "Sessions"
-];
+specHelper.params[1] = {
+	"database" : {
+		"type":"mySQL",
+		"host" : specHelper.url,
+		"database" : "action_hero_api_test",
+		"username" : "root",
+		"password" : null,
+		"port" : "3306",
+		"consoleLogging" : false,
+	},
+	"flatFileDirectory":"./public/",
+	"webServerPort" : 9001,
+	"socketServerPort" : 6001,
+	"logging":false,
+	"cronProcess":false,
+	"cache" : {
+		"defaultExpireTimeSeconds" : 3600
+	},
+	
+	"actionCluster": {
+		"Key" : "4ijhaijhm43yjnawhja43jaj",
+		"ReConnectToLostPeersMS" : 1000,
+		"CycleCheckTimeMS" : 100,
+		"remoteTimeoutWaitMS" : 10000,
+		"nodeDuplication" : 2,
+		"StartingPeer" : {
+			"host": specHelper.url,
+			"port": specHelper.params.socketServerPort
+		}
+	}
+};
 
-specHelper.prepare = function(next){
-	specHelper.cleanDB(function(){
-		specHelper.startServer(function(api){
+specHelper.params[2] = {
+	"database" : {
+		"type":"mySQL",
+		"host" : specHelper.url,
+		"database" : "action_hero_api_test",
+		"username" : "root",
+		"password" : null,
+		"port" : "3306",
+		"consoleLogging" : false,
+	},
+	"flatFileDirectory":"./public/",
+	"webServerPort" : 9002,
+	"socketServerPort" : 6002,
+	"logging":false,
+	"cronProcess":false,
+	"cache" : {
+		"defaultExpireTimeSeconds" : 3600
+	},
+	
+	"actionCluster": {
+		"Key" : "4ijhaijhm43yjnawhja43jaj",
+		"ReConnectToLostPeersMS" : 1000,
+		"CycleCheckTimeMS" : 100,
+		"remoteTimeoutWaitMS" : 10000,
+		"nodeDuplication" : 2,
+		"StartingPeer" : {
+			"host": specHelper.url,
+			"port": specHelper.params.socketServerPort
+		}
+	}
+};
+
+// tables to truncate each round of testing
+specHelper.tables = [ "Logs" ];
+
+specHelper.prepare = function(serverID, next){
+	if(serverID == null){serverID = 0};
+	specHelper.cleanDB(serverID, function(){
+		specHelper.startServer(serverID, function(api){
 			next(api);
 		});
 	});
@@ -42,24 +118,25 @@ specHelper.prepare = function(next){
 
 ////////////////////////////////////////////////////////////////////////////
 // Start Test Server
-specHelper.startServer = function(next){
-	var conn = specHelper.net.createConnection(specHelper.params.webServerPort, host='127.0.0.1', function(){
-		next(specHelper.api);
+specHelper.startServer = function(serverID, next){
+	if(serverID == null){serverID = 0};
+	var conn = specHelper.net.createConnection(specHelper.params[serverID].webServerPort, host=specHelper.url, function(){
+		next(specHelper.apis[serverID]);
 		conn.destroy();
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
-			console.log(" >> starting test actionHero server on ports "+specHelper.params.webServerPort+" (webServerPort) and "+specHelper.params.socketServerPort+" (socketServerPort)");
-			console.log(" >> using test database: "+specHelper.params.database.database);
+			console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
+			console.log(" >> using test database: "+specHelper.params[serverID].database.database);
 			console.log("");
 			var actionHero = require(__dirname + "/api.js").actionHero;
-			actionHero.start({configChanges: specHelper.params}, function(api){
+			actionHero.start({configChanges: specHelper.params[serverID]}, function(api){
 				// console.log("test server started");
-				specHelper.api = api;
-				next(api);
+				specHelper.apis[serverID] = api;
+				next(specHelper.apis[serverID]);
 			});
 		}else{
-			next(api);
+			next(specHelper.apis[serverID]);
 		}
 		conn.destroy();
 	}); 
@@ -67,14 +144,15 @@ specHelper.startServer = function(next){
 
 ////////////////////////////////////////////////////////////////////////////
 // Clean Test DB
-specHelper.cleanDB = function(next){
+specHelper.cleanDB = function(serverID, next){
+	if(serverID == null){serverID = 0};
 	var mysql = require('mysql');
 	var mySQLparams = {
-	  user: specHelper.params.database.username,
-	  password: specHelper.params.database.password,
-	  port: specHelper.params.database.port,
-	  host: specHelper.params.database.host,
-	  database: specHelper.params.database.database,
+	  user: specHelper.params[serverID].database.username,
+	  password: specHelper.params[serverID].database.password,
+	  port: specHelper.params[serverID].database.port,
+	  host: specHelper.params[serverID].database.host,
+	  database: specHelper.params[serverID].database.database,
 	};
 	rawDBConnction = mysql.createClient(mySQLparams);
 
@@ -94,13 +172,14 @@ specHelper.cleanDB = function(next){
 ////////////////////////////////////////////////////////////////////////////
 // API request
 specHelper.apiTest = {
-  general: function(method, url, data, cb){
+  general: function(method, serverID, url, data, cb){
+	if(serverID == null){serverID = 0};
   	var params = {}
   	params.method = method;
 	if(url.indexOf("?") > -1){
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'');
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].webServerPort + (url||'');
 	}else{
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params.webServerPort + (url||'') + "?";
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].webServerPort + (url||'') + "?";
 	  	for(var i in data){
 	  		params.url += i + "=" + data[i] + "&";
 	  	}
@@ -111,10 +190,10 @@ specHelper.apiTest = {
         cb( res );
       })
   },
-  get: function( url, data, cb  ){ specHelper.apiTest.general( 'GET', url, data, cb    )  },
-  post: function( url, data, cb ){ specHelper.apiTest.general( 'POST', url, data, cb   )  },
-  put: function( url, data, cb  ){ specHelper.apiTest.general( 'PUT', url, data, cb    )  },
-  del: function( url, data, cb  ){ specHelper.apiTest.general( 'DELETE', url, data, cb )  }
+  get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
+  post: function( url, serverID, data, cb ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
+  put: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb    )  },
+  del: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  }
 }
 
 ////////////////////////////////////////////////////////////////////////////

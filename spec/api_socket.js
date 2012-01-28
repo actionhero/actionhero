@@ -21,12 +21,12 @@ suite.addBatch({
   'specHelper.prepare':{
     topic: function(){
       var cb = this.callback;
-      specHelper.prepare(function(api){
-		  client = net.connect(specHelper.params.socketServerPort, function(){
+      specHelper.prepare(0, function(api){
+		  client = net.connect(specHelper.params[0].socketServerPort, function(){
 			  client.setEncoding('utf8');
-			  client2 = net.connect(specHelper.params.socketServerPort, function(){
+			  client2 = net.connect(specHelper.params[0].socketServerPort, function(){
 				  client2.setEncoding('utf8');
-				  client3 = net.connect(specHelper.params.socketServerPort, function(){
+				  client3 = net.connect(specHelper.params[0].socketServerPort, function(){
 					  client3.setEncoding('utf8');
 					  apiObj = specHelper.cleanAPIObject(api);
 					  cb();

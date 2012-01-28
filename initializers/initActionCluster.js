@@ -39,8 +39,8 @@ var initActionCluster= function(api, next){
 						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
 					});
 				}else if (message.action == "cacheView"){
-					api.cache.load(api, message.key, function(value){
-						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
+					api.cache.load(api, message.key, function(value, expireTimestamp, createdAt, readAt){
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, expireTimestamp: expireTimestamp, createdAt: createdAt, readAt: readAt, key: message.key, requestID: message.requestID})
 					});
 				}else if (message.action == "cacheDestroy"){
 					api.cache.destroy(api, message.key, function(value){
@@ -77,7 +77,15 @@ var initActionCluster= function(api, next){
 								var message = JSON.parse(line); 
 								if(message.context == "response"){
 									if(message.requestID != null){
-										api.actionCluster.cache.results[message.requestID]["peerResponses"].push({remotePeer:client.remotePeer, value: message.value});
+										var returnedObj = {
+											remotePeer:client.remotePeer
+										};
+										for (var i in message){
+											if(i !== "requestID" && i !== "context" && i !== "messageCount" && i !== "remotePeer"){
+												returnedObj[i] = message[i];
+											}
+										}
+										api.actionCluster.cache.results[message.requestID]["peerResponses"].push(returnedObj);
 									}
 								}
 							}catch(e){ api.log("actionCluser networking error: "+e, "red") }

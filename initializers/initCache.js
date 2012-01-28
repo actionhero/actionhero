@@ -18,7 +18,9 @@ var initCache = function(api, next){
 			try{
 				api.cache.data[key] = {
 					value: value,
-					expireTimestamp: expireTimestamp
+					expireTimestamp: expireTimestamp,
+					createdAt: new Date().getTime(),
+					readAt: null
 				};
 				process.nextTick(function() { next(true); });
 			}catch(e){
@@ -31,12 +33,13 @@ var initCache = function(api, next){
 	api.cache.load = function(api, key, next){
 		var cacheObj = api.cache.data[key];
 		if(cacheObj == null){
-			process.nextTick(function() { next(null); });
+			process.nextTick(function() { next(null, null, null, null); });
 		}else{
 			if(cacheObj.expireTimestamp >= (new Date().getTime())){
-				process.nextTick(function() { next(cacheObj.value); });
+				api.cache.data[key].readAt = new Date().getTime();
+				process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
 			}else{
-				process.nextTick(function() { next(null); });
+				process.nextTick(function() { next(null, null, null, null); });
 			}
 		}
 	};
