@@ -6,8 +6,9 @@
 var actionHero = {};
 
 actionHero.start = function(params, callback){
-	
+	actionHero.running = false;
 	if (params == null){params = {};}
+	actionHero.startngParams = params;
 	
 	// the api namespace.  Everything uses this.
 	if(params.api == null){
@@ -15,6 +16,7 @@ actionHero.start = function(params, callback){
 	}else{
 		var api = params.api
 	}
+	actionHero.api = api;
 
 	// core packages for the API
 	api.util = require("util");
@@ -81,10 +83,12 @@ actionHero.start = function(params, callback){
 													if(typeof params.initFunction == "function"){
 														params.initFunction(api, function(){
 															api.log(successMessage, ["green", "bold"]);
+															actionHero.running = true;
 															if(callback != null){ process.nextTick(function() { callback(api); }); }
 														})
 													}else{
 														api.log(successMessage, ["green", "bold"]);
+														actionHero.running = true;
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
 													}
 												});
@@ -100,5 +104,60 @@ actionHero.start = function(params, callback){
 		});
 	});
 }
+
+actionHero.stop = function(next){	
+	if(actionHero.running == true)
+	{
+		actionHero.api.log("Shutting down open servers (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+") and pausing tasks", "bold");
+		var closed = 0;
+		var checkForDone = function(closed){
+			if(closed == 2){
+				actionHero.running = false;
+				actionHero.api.log("The actionHero has been stopped", "bold");
+				next(true);
+			}else{
+				actionHero.api.log("waiting for open ports to close...");
+				setTimeout(checkForDone, 1000, closed);
+			}
+		}
+	
+		actionHero.api.socketServer.server.on("close", function(){
+			actionHero.api.log("Closed socket-server");
+			closed++;
+		});
+	
+		actionHero.api.webServer.webApp.on("close", function(){
+			actionHero.api.log("Closed web-server");
+			closed++;
+		});
+	
+		actionHero.api.socketServer.server.close();
+		actionHero.api.webServer.webApp.close();
+		for(var i in actionHero.api.socketServer.connections){
+			actionHero.api.socketServer.connections[i].end("Server going down NOW");
+			actionHero.api.socketServer.connections[i].destroy();
+		}
+		clearTimeout(actionHero.api.cronTimer);
+		checkForDone(closed);
+	}else{
+		actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
+		next(false);
+	}
+}
+
+actionHero.restart = function(next){
+	if(actionHero.running == true){
+		actionHero.stop(function(){
+			actionHero.start(actionHero.startngParams, function(){
+				if(typeof next == "function"){ next(true); } 
+			});
+		});
+	}else{
+		actionHero.start(actionHero.startngParams, function(){
+			if(typeof next == "function"){ next(true); } 
+		});
+	}
+}
+
 
 exports.actionHero = actionHero;

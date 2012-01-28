@@ -1,12 +1,15 @@
 var specHelper = {}
-
+var showLogs = false;
 specHelper.vows = require('vows');
 specHelper.net = require('net');
 specHelper.assert = require('assert');
 specHelper.request = require('request');
 specHelper.apis = [];
+specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
+
+var baseActionHero = require(__dirname + "/api.js").actionHero;
 
 specHelper.params[0] = {
 	"database" : {
@@ -21,7 +24,7 @@ specHelper.params[0] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9000,
 	"socketServerPort" : 6000,
-	"logging":false,
+	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
 		"defaultExpireTimeSeconds" : 3600
@@ -53,7 +56,7 @@ specHelper.params[1] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9001,
 	"socketServerPort" : 6001,
-	"logging":false,
+	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
 		"defaultExpireTimeSeconds" : 3600
@@ -67,7 +70,7 @@ specHelper.params[1] = {
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": specHelper.url,
-			"port": specHelper.params.socketServerPort
+			"port": specHelper.params[0].socketServerPort
 		}
 	}
 };
@@ -85,7 +88,7 @@ specHelper.params[2] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9002,
 	"socketServerPort" : 6002,
-	"logging":false,
+	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
 		"defaultExpireTimeSeconds" : 3600
@@ -99,7 +102,7 @@ specHelper.params[2] = {
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": specHelper.url,
-			"port": specHelper.params.socketServerPort
+			"port": specHelper.params[0].socketServerPort
 		}
 	}
 };
@@ -128,10 +131,11 @@ specHelper.startServer = function(serverID, next){
 		if(err.code == "ECONNREFUSED"){
 			console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
 			console.log(" >> using test database: "+specHelper.params[serverID].database.database);
-			console.log("");
-			var actionHero = require(__dirname + "/api.js").actionHero;
-			actionHero.start({configChanges: specHelper.params[serverID]}, function(api){
-				// console.log("test server started");
+			specHelper.actionHeroes[serverID] = objClone(baseActionHero);
+			specHelper.actionHeroes[serverID].id = serverID;
+			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(api){
+				console.log("There are now "+specHelper.actionHeroes.length+" test servers running");
+				console.log("");
 				specHelper.apis[serverID] = api;
 				next(specHelper.apis[serverID]);
 			});
@@ -141,6 +145,22 @@ specHelper.startServer = function(serverID, next){
 		conn.destroy();
 	}); 
 }
+
+specHelper.stopServer = function(serverID, next){
+	if(serverID == null){serverID = 0};
+	console.log(specHelper.actionHeroes[serverID].api.configData.webServerPort);
+	specHelper.actionHeroes[serverID].stop(function(resp){
+		next(resp);
+	});
+};
+
+specHelper.restartServer = function(serverID, next){
+	if(serverID == null){serverID = 0};
+	specHelper.actionHeroes[serverID].restart(function(resp){
+		next(resp);
+	});
+};
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Clean Test DB
@@ -209,6 +229,15 @@ specHelper.cleanAPIObject = function(api){
 	cleanAPI["postVariables"] = api["postVariables"];
 	return cleanAPI
 }
+
+////////////////////////////////////////////////////////////////////////////
+// local copy of clone
+objClone = function(obj){
+    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
+       return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
+    }, {}));
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // EXPORT

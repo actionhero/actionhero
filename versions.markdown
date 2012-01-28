@@ -10,6 +10,7 @@
 * Reading a object with the corresponding load command will update the readAt value.
 * A pretty new example html in `/public/` which will demonstrate the `showActions` method
 * npm tests for the cluster
+* `actionHero.stop(next)` and `actionHero.restart(next)` added to api
 
 
 ## Version 0.2.1

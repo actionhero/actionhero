@@ -109,5 +109,13 @@ utils.shellExec = function(api, command, next){
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// object Clone
+utils.objClone = function(obj){
+    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
+       return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
+    }, {}));
+}
+
+////////////////////////////////////////////////////////////////////////////
 // EXPORT
 exports.utils = utils;
