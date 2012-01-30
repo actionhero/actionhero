@@ -234,12 +234,12 @@ var initSocketServer = function(api, next){
 		var task = Object.create(api.tasks.Task);
 		task.init(api, params, next);
 		task.run = function() {
-			for(var i in api.connections){
+			for(var i in api.socketServer.connections){
 				var message = {};
 				message.context = "api";
 				message.status = "keep-alive";
 				message.serverTime = new Date();
-				api.sendSocketMessage(api.connections[i], message);
+				api.socketServer.sendSocketMessage(api.socketServer.connections[i], message);
 			}
 			task.log("sent keepAlive to "+api.socketServer.connections.length+" socket clients");
 			task.end();
