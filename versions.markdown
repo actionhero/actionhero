@@ -7,6 +7,7 @@
 **Details:**
 
 * The cache will now write its contents to disc periodically, as defined by the  `tasks.saveCacheToDisk` task.  The api will also attempt to load in a cache file on boot.
+* If you application needs to manage more than one instance of an actionHero test, you can call `require('actionHero').createActionHero()` rather than `require('actionHero').actionHero`.  `createActionHero()` will return a new instance of a server each time rather than a shared object.
 
 ## Version 0.2.2
 

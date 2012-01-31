@@ -9,7 +9,7 @@ specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 
-var baseActionHero = require(__dirname + "/api.js").actionHero;
+var baseActionHero = require(__dirname + "/api.js").createActionHero;
 
 specHelper.params[0] = {
 	"database" : {
@@ -129,13 +129,10 @@ specHelper.startServer = function(serverID, next){
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
-			console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
-			console.log(" >> using test database: "+specHelper.params[serverID].database.database);
-			specHelper.actionHeroes[serverID] = require(__dirname + "/api.js").actionHero;
-			specHelper.actionHeroes[serverID].id = serverID;
+			// console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
+			// console.log(" >> using test database: "+specHelper.params[serverID].database.database);
+			specHelper.actionHeroes[serverID] = new baseActionHero;
 			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(api){
-				console.log("There are now "+specHelper.actionHeroes.length+" test servers running");
-				console.log("");
 				specHelper.apis[serverID] = api;
 				conn.destroy();
 				next(specHelper.apis[serverID]);
@@ -148,10 +145,8 @@ specHelper.startServer = function(serverID, next){
 }
 
 specHelper.stopServer = function(serverID, next){
-	console.log(specHelper.actionHeroes[0].api.configData.socketServerPort);
-	console.log(specHelper.actionHeroes[1].api.configData.socketServerPort);
-	console.log(specHelper.actionHeroes[2].api.configData.socketServerPort);
 	if(serverID == null){serverID = 0};
+	// console.log(" << stopping test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
 	specHelper.actionHeroes[serverID].stop(function(resp){
 		next(resp);
 	});
