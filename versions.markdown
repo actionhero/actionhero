@@ -1,5 +1,13 @@
 # Action Hero API Versions
 
+## Version 0.2.3
+
+**Summary:** This is a general cleanup release
+
+**Details:**
+
+* The cache will now write its contents to disc periodically, as defined by the  `tasks.saveCacheToDisk` task.  The api will also attempt to load in a cache file on boot.
+
 ## Version 0.2.2
 
 **Summary:** This release adds additional functionality to the actionCluster and Cache

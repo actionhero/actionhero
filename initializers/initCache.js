@@ -54,6 +54,17 @@ var initCache = function(api, next){
 		}
 	};
 	
+	// check for an existing cache file
+	try{
+		var fileData = api.fs.readFileSync(api.configData.logFolder + "/cache.json",'utf8');
+		api.cache.data = JSON.parse(fileData);
+		api.log("data cache from backup file.");
+	}catch(e){
+		api.log("no cache backup file found, continuing.");
+		// api.log(" > "+e);
+	}
+	
+	
 	next();
 }
 

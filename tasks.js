@@ -100,5 +100,30 @@ tasks.caclculateStats = function(api, next) {
 };
 
 ////////////////////////////////////////////////////////////////////////////
+// perioducally save cache to disc
+tasks.saveCacheToDisk = function(api, next) {
+	var params = {
+		"name" : "saveCacheToDisk",
+		"desc" : "I will save the cache object, api.cache.data, to disc every so often"
+	};
+	var task = Object.create(api.tasks.Task);
+	task.init(api, params, next);
+	task.run = function() {
+		try{
+			var fs = api.fs.createWriteStream((api.configData.logFolder + "/cache.json"), {flags:"w"})
+			var encodedData = new Buffer(JSON.stringify(api.cache.data)).toString('utf8')
+			fs.write(encodedData);
+			fs.end();
+			task.end();
+		}catch(e){
+			api.log("Error writing to datalogFolder file: " + e, "red");
+			task.end();
+		}
+	};
+	//
+	process.nextTick(function () { task.run() });
+};
+
+////////////////////////////////////////////////////////////////////////////
 // Export
 exports.tasks = tasks;
