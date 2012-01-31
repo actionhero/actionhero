@@ -111,8 +111,11 @@ var initActionCluster= function(api, next){
 				api.log("Cannot connect to peer @ "+host+":"+port, ['red', 'bold']);
 				if(typeof next == "function"){ process.nextTick( function(){ next(false) } ); }
 			});
-		
-			client.send = function(msg){ client.write(msg + "\r\n"); }
+			client.send = function(msg){ 
+				try{
+					client.write(msg + "\r\n"); 
+				}catch(e){ }
+			}
 		}else{
 			if(typeof next == "function"){ 
 				process.nextTick( function(){ next(false) } ); 

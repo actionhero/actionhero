@@ -141,13 +141,13 @@ suite.addBatch({
 suite.addBatch({
   'actionCluster.stop - 1':{
     topic: function(){ specHelper.stopServer(1, this.callback); },
-    'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
+    'actionHero should be stopped - 1': function(resp){ specHelper.assert.equal(resp, true); } }
 });
 
 suite.addBatch({
   'actionCluster.stop - 2':{
     topic: function(){ specHelper.stopServer(2, this.callback); },
-    'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
+    'actionHero should be stopped - 2': function(resp){ specHelper.assert.equal(resp, true); } }
 });
 
 // export
