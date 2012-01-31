@@ -25,6 +25,7 @@
     "vows":"0.x.x"
   },
   "scripts": {
-    "test": "./node_modules/.bin/vows ./spec/*"
+	  "start": "./actionHero",
+	  "test": "./node_modules/.bin/vows ./spec/*"
   }
 }

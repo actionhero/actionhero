@@ -18,7 +18,7 @@ var init = function(api, next){
 	api.rawDBConnction = api.mysql.createClient(rawDBParams);
 	api.rawDBConnction.query('USE '+api.configData.database.database, function(e){
 		if(e){
-			api.log(" >> error connecting to database, exiting", ["red", "bold"]);
+			api.log(" >> error connecting to database `"+api.configData.database.database+"`, exiting", ["red", "bold"]);
 			api.log(JSON.stringify({database: rawDBParams.database, user: rawDBParams.user, host: rawDBParams.host, port: rawDBParams.port, password: "[censored]"}));
 			process.exit();	
 		}else{

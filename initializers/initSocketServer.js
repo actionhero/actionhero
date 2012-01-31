@@ -130,7 +130,7 @@ var initSocketServer = function(api, next){
 		if(clusterRelay == false || api.utils.hashLength(api.actionCluster.peers) == 0){
 			for(var i in api.socketServer.connections){
 				var thisConnection = api.socketServer.connections[i];
-				if(thisConnection.room == connection.room && ( connection.type == "socket" || connection.type == "web")){
+				if(thisConnection.room == connection.room && ( connection.type != "actionCluster" )){
 					if(connection == null){
 						api.socketServer.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
 					}else{
