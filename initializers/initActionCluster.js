@@ -265,7 +265,7 @@ var initActionCluster= function(api, next){
 	api.actionCluster.cache.checkForComplete = function(api, requestID, numExpectedResponses, next){
 		if(numExpectedResponses == null){numExpectedResponses = api.actionCluster.connectionsToPeers.length;}
 		if(api.actionCluster.cache.results[requestID] == null){
-			next(false);
+			if(typeof next == "function"){ next(false); }
 		}else{
 			if(api.actionCluster.cache.results[requestID]["peerResponses"].length < numExpectedResponses){
 				setTimeout(api.actionCluster.cache.checkForComplete, api.configData.actionCluster.CycleCheckTimeMS, api, requestID, numExpectedResponses, next);

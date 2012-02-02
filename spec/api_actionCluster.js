@@ -127,8 +127,163 @@ suite.addBatch({
 ////////////////////////////////////////////////////////////////////////////
 // say and rooms
 
+var net = require('net');
+
+var client1 = {};
+var client2 = {};
+var client3 = {};
+
+function makeSocketRequest(thisClient, cb, message){
+	var rsp = function(d){ 
+		parsed = JSON.parse(d);
+		thisClient.removeListener('data', rsp); 
+		cb(true, parsed); 
+	};
+	thisClient.on('data', rsp);
+	thisClient.write(message + "\r\n");
+}
+
+suite.addBatch({
+  'specHelper.prepare.socketClients':{
+    topic: function(){
+      var cb = this.callback;
+	  client1 = net.connect(specHelper.params[0].socketServerPort, function(){
+		  client1.setEncoding('utf8');
+		  client2 = net.connect(specHelper.params[1].socketServerPort, function(){
+			  client2.setEncoding('utf8');
+			  client3 = net.connect(specHelper.params[2].socketServerPort, function(){
+				  client3.setEncoding('utf8');
+				  setTimeout(cb, 1000);
+			  }); 
+		  }); 
+	  });
+    },
+    'api object should exist': function(){ 
+		specHelper.assert.isObject(client1); 
+		specHelper.assert.isObject(client2); 
+		specHelper.assert.isObject(client3); 
+	},
+  }
+});
+
+suite.addBatch({
+	"all connections should be in the default room and other members should be seen": {
+		topic: function(){ 
+			makeSocketRequest(client1, this.callback, "roomView");
+		}, 'should be a JSON response 1' : function(resp, d){
+			specHelper.assert.isObject(d);
+			specHelper.assert.equal("defaultRoom", d.room);
+			specHelper.assert.equal(3, d.roomStatus.members.length);
+		}
+	},
+	"socket 2 connections should be able to connect and get JSON": {
+		topic: function(){ 
+			makeSocketRequest(client2, this.callback, "roomView");
+		}, 'should be a JSON response 2' : function(resp, d){
+			specHelper.assert.isObject(d);
+			specHelper.assert.equal("defaultRoom", d.room);
+			specHelper.assert.equal(3, d.roomStatus.members.length);
+		}
+	},
+	"socket 3 connections should be able to connect and get JSON": {
+		topic: function(){ 
+			makeSocketRequest(client3, this.callback, "roomView");
+		}, 'should be a JSON response 3' : function(resp, d){
+			specHelper.assert.isObject(d);
+			specHelper.assert.equal("defaultRoom", d.room);
+			specHelper.assert.equal(3, d.roomStatus.members.length);
+		}
+	}	
+});
+
+suite.addBatch({
+	"one guy says something, the other should hear it": {
+		topic: function(){ 
+			makeSocketRequest(client2, this.callback, "");
+			client1.write("say Hi there!" + "\r\n");
+		}, 'say should work across peers' : function(resp, d){
+			specHelper.assert.isObject(d);
+			specHelper.assert.equal("Hi there!", d.message);
+			specHelper.assert.equal("user", d.context);
+		}
+	},
+});
+
+
 ////////////////////////////////////////////////////////////////////////////
 // cache and duplication
+
+var hostsWhichUsedCache = [];
+suite.addBatch({
+  'I can save an object with parity of 2':{
+    topic: function(){ var cb = this.callback; apis[0].actionCluster.cache.save(apis[0], "test_key", "123", null, cb) },
+    'save resp': function(a,b){ 
+		specHelper.assert.equal(a.length,2);
+		specHelper.assert.equal(a[0].value,true);
+		specHelper.assert.equal(a[0].key,"test_key");
+		specHelper.assert.equal(a[1].value,true);
+		specHelper.assert.equal(a[1].key,"test_key");
+		hostsWhichUsedCache.push(a[0].remotePeer);
+		hostsWhichUsedCache.push(a[1].remotePeer);
+	} }
+});
+
+suite.addBatch({
+  'I can retrieve objects, even from nodes which do not have the data':{
+    topic: function(){ var cb = this.callback; apis[0].actionCluster.cache.load(apis[0], "test_key", cb) },
+    'load resp': function(a,b){ 
+		specHelper.assert.equal(a.length,3);
+		for(var i in a){
+			var r = a[i];
+			specHelper.assert.equal(r.key,"test_key");
+			if(r.remotePeer.port == hostsWhichUsedCache[0].port || r.remotePeer.port == hostsWhichUsedCache[1].port){
+				specHelper.assert.equal(r.value,"123");
+				specHelper.assert.equal(r.expireTimestamp > 1, true);
+				specHelper.assert.equal(r.createdAt > 1, true);
+				specHelper.assert.equal(r.readAt > 1, true);
+			}else{
+				specHelper.assert.isNull(r.value);
+				specHelper.assert.isNull(r.expireTimestamp);
+				specHelper.assert.isNull(r.createdAt);
+				specHelper.assert.isNull(r.readAt);
+			}
+		}
+	} }
+});
+
+var hostsWhichUsedCache = [];
+suite.addBatch({
+  'I can delete the object on all peers':{
+    topic: function(){ var cb = this.callback; apis[0].actionCluster.cache.destroy(apis[0], "test_key", cb) },
+    'delete resp': function(a,b){ 
+		specHelper.assert.equal(a.length,3);
+		for(var i in a){
+			var r = a[i];
+			specHelper.assert.equal(r.key,"test_key");
+			if(r.remotePeer.port == hostsWhichUsedCache[0].port || r.remotePeer.port == hostsWhichUsedCache[1].port){
+				specHelper.assert.equal(r.value,true);
+			}else{
+				specHelper.assert.equal(r.value,false);
+			}
+		}
+	} }
+});
+
+suite.addBatch({
+  'Loading data from peers after deletion will make nulls happen':{
+    topic: function(){ var cb = this.callback; apis[0].actionCluster.cache.load(apis[0], "test_key", cb) },
+    'load resp': function(a,b){ 
+		specHelper.assert.equal(a.length,3);
+		for(var i in a){
+			var r = a[i];
+			specHelper.assert.equal(r.key,"test_key");
+			specHelper.assert.isNull(r.value);
+			specHelper.assert.isNull(r.expireTimestamp);
+			specHelper.assert.isNull(r.createdAt);
+			specHelper.assert.isNull(r.readAt);
+		}
+	} }
+});
 
 ////////////////////////////////////////////////////////////////////////////
 // stop the servers when done so the other tests can use a single instance
