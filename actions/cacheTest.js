@@ -22,35 +22,26 @@ action.outputExample = {
 // functional
 action.run = function(api, connection, next)
 {
-	api.utils.requiredParamChecker(api, connection, ["key","value"]);
-	if(connection.error == false)
-	{
-		var key = "cacheTest_" + connection.params.key;
-		var value = connection.params.value;
+	var key = "cacheTest_" + connection.params.key;
+	var value = connection.params.value;
 		
-		connection.response.cacheTestResults = {};
+	connection.response.cacheTestResults = {};
 		
-		api.cache.save(api,key,value,null, function(resp){
-			connection.response.cacheTestResults.saveResp = resp;
-			api.cache.load(api,key, function(resp, expireTimestamp, createdAt, readAt){
-				connection.response.cacheTestResults.loadResp = {
-					value: resp,
-					expireTimestamp: expireTimestamp, 
-					createdAt: createdAt,
-					readAt: readAt
-				};
-				api.cache.destroy(api,key, function(resp){
-					connection.response.cacheTestResults.deleteResp = resp;
-					next(connection, true);
-				});
+	api.cache.save(api,key,value,null, function(resp){
+		connection.response.cacheTestResults.saveResp = resp;
+		api.cache.load(api,key, function(resp, expireTimestamp, createdAt, readAt){
+			connection.response.cacheTestResults.loadResp = {
+				value: resp,
+				expireTimestamp: expireTimestamp, 
+				createdAt: createdAt,
+				readAt: readAt
+			};
+			api.cache.destroy(api,key, function(resp){
+				connection.response.cacheTestResults.deleteResp = resp;
+				next(connection, true);
 			});
 		});
-
-	}
-	else
-	{
-		next(connection, true);
-	}
+	});
 };
 
 /////////////////////////////////////////////////////////////////////
