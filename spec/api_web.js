@@ -52,24 +52,6 @@ suite.addBatch({
   }
 });
 
-var reqLimit = 0;
-suite.addBatch({
-  "Making requests should decrement your api requset limit": {
-    topic: function(){ specHelper.apiTest.get('', 0, {} ,this.callback ); },
-    'user should have request limit' : function(res, b){ 
-      reqLimit = res.body.requestorInformation.RequestsRemaining;
-      specHelper.assert.isTrue(reqLimit > 0); 
-    }
-  }
-}).addBatch({
-  "updates should decrease your limit": {
-    topic: function(){ specHelper.apiTest.get('', 0, {} ,this.callback ); },
-    'decrease' : function(res, b){ 
-      specHelper.assert.isTrue(res.body.requestorInformation.RequestsRemaining < reqLimit); 
-    }
-  },
-});
-
 suite.addBatch({
   "gibberish actions have the right response": {
     topic: function(){ specHelper.apiTest.get('/IAMNOTANACTION', 0, {} ,this.callback ); },

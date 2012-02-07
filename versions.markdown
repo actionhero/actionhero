@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 0.2.4
+
+**Summary:** Goodbye Rate Limiting
+
+**Details:**
+
+* Removed anything to do with rate-limiting.  I don't think that anyone was using it anyway.  This really isn't a core feature and was causing trouble at the DB layer.
+	* api will no longer return details of requests remaining
+	* DBs no longer need to build the `api.rateLimitCheck` method
+* `npm start` can not be used to stat an example actionHero server
+
 ## Version 0.2.3
 
 **Summary:** This is a general cleanup release

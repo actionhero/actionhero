@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // DB setup
 //
-// All DB connection options must define: api.rateLimitCheck = function(api, connection, next) which will be used in all web connections.  It should return requestThisHourSoFar (int)
 // You can add DB specific by adding your task to the api.taks object
 // Your DB init function should be called init and be exported.  init = function(api, next)
 // Name your DB init file the same thing you want folks to use in api.configData.database.type
@@ -68,14 +67,6 @@ var init = function(api, next){
 			});
 		}
 	});
-			
-	////////////////////////////////////////////////////////////////////////////
-	// define the rate limit check function
-	api.rateLimitCheck = function(api, connection, next){
-		api.models.log.count({where: ["ip = ? AND createdAt > (NOW() - INTERVAL 1 HOUR)", connection.remoteIP]}).on('success', function(requestThisHourSoFar) {
-			next(requestThisHourSoFar);
-		});
-	}
 			
 	////////////////////////////////////////////////////////////////////////////
 	// special tasks for the DB
