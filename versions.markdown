@@ -2,10 +2,12 @@
 
 ## Version 0.2.4
 
-**Summary:** Goodbye Rate Limiting
+**Summary:** Goodbye Rate Limiting, validators, and XML
 
 **Details:**
 
+* Actions will be checked for the proper variables and methods. 
+* Actions' required params will be automatically checked for existence. 
 * Removed anything to do with rate-limiting.  I don't think that anyone was using it anyway.  This really isn't a core feature and was causing trouble at the DB layer.
 	* api will no longer return details of requests remaining
 	* DBs no longer need to build the `api.rateLimitCheck` method

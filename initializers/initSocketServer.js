@@ -209,7 +209,6 @@ var initSocketServer = function(api, next){
 				api.socketServer.sendSocketMessage(connection, connection.response);
 			}
 		}
-		process.nextTick(function() { api.logAction(api, connection); });
 	}
 	
 	////////////////////////////////////////////////////////////////////////////

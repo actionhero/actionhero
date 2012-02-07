@@ -23,18 +23,6 @@ var initActions = function(api, next)
 		next();
 	});
 	
-	api.logAction = function(api, connection){
-		if(api.models != null && api.models.log != null){
-			var logRecord = api.models.log.build({
-				ip: connection.remoteIP,
-				action: connection.action,
-				error: connection.error,
-				params: JSON.stringify(connection.params)
-			});
-			process.nextTick(function() { logRecord.save(); });
-		}
-	}
-	
 	api.processAction = function(api, connection, next){
 		var templateValidator = require('validator').Validator;
 		connection.validator = new templateValidator();

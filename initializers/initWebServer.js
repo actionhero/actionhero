@@ -137,7 +137,6 @@ var initWebServer = function(api, next)
 				connection.res.end(stringResponse);
 			}
 			if(api.configData.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
-			process.nextTick(function() { api.logAction(api, connection); });
 		});
 	};
 	
