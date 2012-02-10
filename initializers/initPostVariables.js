@@ -9,9 +9,7 @@ var initPostVariables = function(api, next)
 		"action",
 		"limit",
 		"offset",
-		"id",
-		"createdAt",
-		"updatedAt"
+		"outputType"
 	];
 	for(var i in api.actions){
 		var action = api.actions[i];

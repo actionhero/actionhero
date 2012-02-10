@@ -476,9 +476,7 @@ Params (GET and POST) provided by the user will be checked against a whitelist. 
 		"action",
 		"limit",
 		"offset",
-		"id",
-		"createdAt",
-		"updatedAt"
+		"outputType"
 	];
 Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.
 

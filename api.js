@@ -35,6 +35,7 @@ var createActionHero = function(){
 		api.async = require('async');
 		api.crypto = require("crypto");
 		api.consoleColors = require('colors');
+		api.data2xml = require('data2xml');
 
 		if(api.path.existsSync('./config.json')){
 			api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));

@@ -6,6 +6,7 @@
 
 **Details:**
 
+* You can now request XML output rather than json.  Pass `outputType=XML` to the api
 * Actions will be checked for the proper variables and methods. 
 * Actions' required params will be automatically checked for existence. 
 * Removed anything to do with rate-limiting.  I don't think that anyone was using it anyway.  This really isn't a core feature and was causing trouble at the DB layer.

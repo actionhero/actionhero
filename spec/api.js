@@ -65,9 +65,7 @@ suite.addBatch({
         "action",
         "limit",
         "offset",
-        "id",
-        "createdAt",
-        "updatedAt"
+        "outputType"
       ];
       for (var i in required){
         specHelper.assert.isTrue(api.postVariables.indexOf(required[i]) > -1);

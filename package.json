@@ -19,7 +19,8 @@
     "request":"2.x.x",
     "validator":"0.x.x",
     "formidable":"1.x.x",
-    "colors":"0.x.x"
+    "colors":"0.x.x",
+	"data2xml":"x"
 	},
   "devDependencies": {
     "vows":"0.x.x"

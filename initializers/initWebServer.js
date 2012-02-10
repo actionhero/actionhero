@@ -126,7 +126,16 @@ var initWebServer = function(api, next)
 		
 		process.nextTick(function() {
 			if(cont != false){
-				var stringResponse = JSON.stringify(connection.response);		
+				var stringResponse = "";
+				if(typeof connection.params.outputType == "string"){
+					if(connection.params.outputType.toLowerCase() == "xml"){
+						stringResponse = api.data2xml('XML', connection.response);
+					}else{
+						stringResponse = JSON.stringify(connection.response);	
+					}
+				}else{
+					stringResponse = JSON.stringify(connection.response);
+				}
 			
 				if(connection.params.callback != null){
 					connection.responseHeaders['Content-Type'] = "application/javascript";
