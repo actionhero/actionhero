@@ -63,7 +63,7 @@ tasks.cleanLogFiles = function(api, next) {
 	task.run = function() {
 		api.fs.readdirSync(api.configData.logFolder).forEach( function(file) {
 			file = api.configData.logFolder + "/" + file;
-			api.path.exists(file, function (exists){
+			api.fs.exists(file, function (exists){
 				if(exists)
 				{
 					size = api.fs.statSync(file).size;

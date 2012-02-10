@@ -27,7 +27,7 @@ var initFileServer = function(api, next){
 		}
 		if(connection.error == false){
 			fileName = api.configData.flatFileDirectory + fileName;
-			api.path.exists(fileName, function(exists) {
+			api.fs.exists(fileName, function(exists) {
 				if(exists){
 					var isPath = false
 					if (api.path.extname(fileName) == "" || api.path.extname(fileName).indexOf("/") > -1){
@@ -35,7 +35,7 @@ var initFileServer = function(api, next){
 					}
 					if(isPath){
 						var indexPage = fileName + "index.html";
-				  		api.path.exists(indexPage, function(indexExists) {
+				  		api.fs.exists(indexPage, function(indexExists) {
 				  			if(indexExists){ sendFile(api, indexPage, connection, next); }
 							else{ sendFileNotFound(api, connection, next); }
 				  		});

@@ -27,8 +27,8 @@ var createActionHero = function(){
 		api.net = require("net");
 		api.http = require("http");
 		api.url = require("url");
-		api.path = require("path");
 		api.fs = require("fs");
+		api.path = require("path");
 		api.os = require('os');
 		api.formidable = require('formidable');
 		api.request = require("request");
@@ -36,8 +36,14 @@ var createActionHero = function(){
 		api.crypto = require("crypto");
 		api.consoleColors = require('colors');
 		api.data2xml = require('data2xml');
+		
+		// backwards compatibility for old node versions
+		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
+			api.fs.existsSync = api.path.existsSync;
+			api.fs.exists = api.path.exists;
+		}
 
-		if(api.path.existsSync('./config.json')){
+		if(api.fs.existsSync('./config.json')){
 			api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
 		}else{
 			var defualtConfigFile = "./node_modules/actionHero/config.json";
@@ -53,7 +59,7 @@ var createActionHero = function(){
 		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
 	
 		var initPath = process.cwd() + "/initializers/";
-		api.path.exists(initPath, function (exists) {
+		api.fs.exists(initPath, function (exists) {
 			if(!exists){ initPath = process.cwd() + "/node_modules/actionHero/initializers/"; }
 			api.fs.readdirSync(initPath).forEach( function(file) {
 				if (file != ".DS_Store"){
@@ -68,7 +74,7 @@ var createActionHero = function(){
 			
 				api.tasks = {};
 				var taskFile = process.cwd() + "/tasks.js";
-				if(!api.path.existsSync(taskFile)){
+				if(!api.fs.existsSync(taskFile)){
 					taskFile = __dirname + "/tasks.js";
 					api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
 				}
@@ -119,28 +125,29 @@ var createActionHero = function(){
 					next(true);
 				}else{
 					actionHero.api.log("waiting for open ports to close...");
-					setTimeout(checkForDone, 1000, closed);
 				}
 			}
 	
 			actionHero.api.socketServer.server.on("close", function(){
 				actionHero.api.log("Closed socket-server");
 				closed++;
+				checkForDone(closed);
 			});
 	
 			actionHero.api.webServer.webApp.on("close", function(){
 				actionHero.api.log("Closed web-server");
 				closed++;
+				checkForDone(closed);
 			});
 	
 			actionHero.api.socketServer.server.close();
 			actionHero.api.webServer.webApp.close();
+			checkForDone(closed);
 			for(var i in actionHero.api.socketServer.connections){
 				actionHero.api.socketServer.connections[i].end("Server going down NOW");
 				actionHero.api.socketServer.connections[i].destroy();
 			}
 			clearTimeout(actionHero.api.cronTimer);
-			checkForDone(closed);
 		}else{
 			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
 			next(false);
