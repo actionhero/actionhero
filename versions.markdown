@@ -1,8 +1,20 @@
 # Action Hero API Versions
 
+## Version 0.2.5
+
+**Summary:** Goodbye Databases & Models
+
+**Details:**
+
+* In order to keep actionHero as compartmentalized as possible, we have removed databases and models.  
+	* There are tons of great ORMs and drivers for node.  When deploying actionHero in production, I expect that you will make use of them.  However, requiring database integration with actionHero is no longer a core part of the framework.  The previous DB connection support was too specific to my test implementations to be useful for everyone.  
+	* This makes previous implementations of actionHero incompatible with versions > 0.2.4.
+		* I'm sorry, but that's the price of progress!
+* The location where the cache is saved and loaded from is configurable in `config.json` via `api.configData.cache.cacheFolder` and `api.configData.cache.cacheFile`
+
 ## Version 0.2.4
 
-**Summary:** Goodbye Rate Limiting, validators, and XML
+**Summary:** Goodbye Rate Limiting; Hello validators, and XML
 
 **Details:**
 

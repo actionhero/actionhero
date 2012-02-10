@@ -1,5 +1,5 @@
 { 
-    "apiVerson" : "0.2.4",
+    "apiVerson" : "0.2.5",
 	"webServerPort" : 8080,
 	"socketServerPort" : 5000,
 	"serverName" : "actionHero API",
@@ -31,22 +31,14 @@
 			"port": null
 		}
 	},
-	
-    "database" : {
-		"type" : "mysql",
-                "host" : "127.0.0.1",
-		"database" : "action_hero_api",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false
-    },
 
 	"flatFileDirectory" : "./node_modules/actionHero/public/",
 	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 
 	"cache" : {
+		"cacheFolder" : "./cache/",
+		"cacheFile" : "api.cache",
 		"defaultExpireTimeSeconds" : 3600,
 		"maxMemoryBytes" : 524288000
 	},

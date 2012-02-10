@@ -173,7 +173,7 @@ suite.addBatch({
 		}, 'should be a JSON response 1' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.equal(3, d.roomStatus.members.length);
+			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
 		}
 	},
 	"socket 2 connections should be able to connect and get JSON": {
@@ -182,7 +182,7 @@ suite.addBatch({
 		}, 'should be a JSON response 2' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.equal(3, d.roomStatus.members.length);
+			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
 		}
 	},
 	"socket 3 connections should be able to connect and get JSON": {
@@ -191,7 +191,7 @@ suite.addBatch({
 		}, 'should be a JSON response 3' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.equal(3, d.roomStatus.members.length);
+			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
 		}
 	}	
 });

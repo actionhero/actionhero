@@ -110,7 +110,7 @@ tasks.saveCacheToDisk = function(api, next) {
 	task.init(api, params, next);
 	task.run = function() {
 		try{
-			var fs = api.fs.createWriteStream((api.configData.logFolder + "/cache.json"), {flags:"w"})
+			var fs = api.fs.createWriteStream((api.configData.cache.cacheFolder + api.configData.cache.cacheFile), {flags:"w"})
 			var encodedData = new Buffer(JSON.stringify(api.cache.data)).toString('utf8')
 			fs.write(encodedData);
 			fs.end();

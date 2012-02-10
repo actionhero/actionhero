@@ -73,29 +73,27 @@ var createActionHero = function(){
 					api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
 				}
 				api.tasks = require(taskFile).tasks;
-			
-				actionHero.initDB(api, function(){
-					actionHero.initCron(api, function(){
-						actionHero.initCache(api, function(){
-							actionHero.initStats(api, function(){
-								actionHero.initActions(api, function(){
-									actionHero.initPostVariables(api, function(){
-										actionHero.initFileServer(api, function(){
-											actionHero.initWebServer(api, function(){
-												actionHero.initSocketServer(api, function(){ 
-													actionHero.initActionCluster(api, function(){
-														if(typeof params.initFunction == "function"){
-															params.initFunction(api, function(){
-																api.log(successMessage, ["green", "bold"]);
-																actionHero.running = true;
-																if(callback != null){ process.nextTick(function() { callback(api); }); }
-															})
-														}else{
+
+				actionHero.initCron(api, function(){
+					actionHero.initCache(api, function(){
+						actionHero.initStats(api, function(){
+							actionHero.initActions(api, function(){
+								actionHero.initPostVariables(api, function(){
+									actionHero.initFileServer(api, function(){
+										actionHero.initWebServer(api, function(){
+											actionHero.initSocketServer(api, function(){ 
+												actionHero.initActionCluster(api, function(){
+													if(typeof params.initFunction == "function"){
+														params.initFunction(api, function(){
 															api.log(successMessage, ["green", "bold"]);
 															actionHero.running = true;
 															if(callback != null){ process.nextTick(function() { callback(api); }); }
-														}
-													});
+														})
+													}else{
+														api.log(successMessage, ["green", "bold"]);
+														actionHero.running = true;
+														if(callback != null){ process.nextTick(function() { callback(api); }); }
+													}
 												});
 											});
 										});

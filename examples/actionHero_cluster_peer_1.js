@@ -21,8 +21,7 @@ params.configChanges = {
 			"port": null
 		}
 	},
-	
-	"database" : null,
+
 	"flatFileDirectory" : "./public/"
 }
 

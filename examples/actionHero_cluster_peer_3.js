@@ -22,7 +22,6 @@ params.configChanges = {
 		}
 	},
 	
-	"database" : null,
 	"flatFileDirectory" : "./public/"
 }
 

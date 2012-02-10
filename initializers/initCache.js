@@ -6,6 +6,8 @@ var initCache = function(api, next){
 	
 	api.cache = {};
 	api.cache.data = {};
+	
+	try { api.fs.mkdirSync(api.configData.cache.cacheFolder, "777") } catch(e) {}; 
 
 	api.cache.save = function(api, key, value, expireTimeSeconds, next){
 		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = api.configData.cache.defaultExpireTimeSeconds; }
@@ -56,7 +58,7 @@ var initCache = function(api, next){
 	
 	// check for an existing cache file
 	try{
-		var fileData = api.fs.readFileSync(api.configData.logFolder + "/cache.json",'utf8');
+		var fileData = api.fs.readFileSync(api.configData.cache.cacheFolder + api.configData.cache.cacheFile,'utf8');
 		api.cache.data = JSON.parse(fileData);
 		api.log("data cache from backup file.");
 	}catch(e){

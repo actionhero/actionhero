@@ -1,5 +1,6 @@
 var specHelper = {}
 var showLogs = false;
+specHelper.fs = require('fs');
 specHelper.vows = require('vows');
 specHelper.net = require('net');
 specHelper.assert = require('assert');
@@ -12,22 +13,16 @@ specHelper.params = [];
 var baseActionHero = require(__dirname + "/api.js").createActionHero;
 
 specHelper.params[0] = {
-	"database" : {
-		"type":"mySQL",
-		"host" : specHelper.url,
-		"database" : "action_hero_api_test",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false,
-	},
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9000,
 	"socketServerPort" : 6000,
 	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
-		"defaultExpireTimeSeconds" : 3600
+		"cacheFile" : "test_cache_1.cache",
+		"defaultExpireTimeSeconds" : 3600,
+		"cacheFolder" : "./cache/",
+		"maxMemoryBytes" : 524288000
 	},
 	
 	"actionCluster": {
@@ -44,22 +39,16 @@ specHelper.params[0] = {
 };
 
 specHelper.params[1] = {
-	"database" : {
-		"type":"mySQL",
-		"host" : specHelper.url,
-		"database" : "action_hero_api_test",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false,
-	},
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9001,
 	"socketServerPort" : 6001,
 	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
-		"defaultExpireTimeSeconds" : 3600
+		"cacheFile" : "test_cache_2.cache",
+		"defaultExpireTimeSeconds" : 3600,
+		"cacheFolder" : "./cache/",
+		"maxMemoryBytes" : 524288000
 	},
 	
 	"actionCluster": {
@@ -76,22 +65,16 @@ specHelper.params[1] = {
 };
 
 specHelper.params[2] = {
-	"database" : {
-		"type":"mySQL",
-		"host" : specHelper.url,
-		"database" : "action_hero_api_test",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false,
-	},
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9002,
 	"socketServerPort" : 6002,
 	"logging":showLogs,
 	"cronProcess":false,
 	"cache" : {
-		"defaultExpireTimeSeconds" : 3600
+		"cacheFile" : "test_cache_3.cache",
+		"defaultExpireTimeSeconds" : 3600,
+		"cacheFolder" : "./cache/",
+		"maxMemoryBytes" : 524288000
 	},
 	
 	"actionCluster": {
@@ -112,10 +95,9 @@ specHelper.tables = [ "Logs" ];
 
 specHelper.prepare = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	specHelper.cleanDB(serverID, function(){
-		specHelper.startServer(serverID, function(api){
-			next(api);
-		});
+	try{ specHelper.fs.unlinkSync(specHelper.params[serverID].cache.cacheFolder + specHelper.params[serverID].cache.cacheFile); }catch(e){ }
+	specHelper.startServer(serverID, function(api){
+		next(api);
 	});
 }
 
@@ -130,7 +112,6 @@ specHelper.startServer = function(serverID, next){
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
 			// console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
-			// console.log(" >> using test database: "+specHelper.params[serverID].database.database);
 			specHelper.actionHeroes[serverID] = new baseActionHero;
 			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(api){
 				specHelper.apis[serverID] = api;
@@ -158,34 +139,6 @@ specHelper.restartServer = function(serverID, next){
 		next(resp);
 	});
 };
-
-
-////////////////////////////////////////////////////////////////////////////
-// Clean Test DB
-specHelper.cleanDB = function(serverID, next){
-	if(serverID == null){serverID = 0};
-	var mysql = require('mysql');
-	var mySQLparams = {
-	  user: specHelper.params[serverID].database.username,
-	  password: specHelper.params[serverID].database.password,
-	  port: specHelper.params[serverID].database.port,
-	  host: specHelper.params[serverID].database.host,
-	  database: specHelper.params[serverID].database.database,
-	};
-	rawDBConnction = mysql.createClient(mySQLparams);
-
-	var running = 0;
-	for(var i in specHelper.tables){
-		running++;
-		rawDBConnction.query('TRUNCATE '+ specHelper.tables[i], function(err, rows, fields){
-			running--
-			if(running == 0){
-				// console.log("test DB Truncated");
-				next();
-			}
-		});
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // API request

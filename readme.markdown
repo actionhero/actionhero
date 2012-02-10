@@ -44,52 +44,6 @@ Notes:
 * Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, true)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example) where you would not want to render the default messages.
 * The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
 
-## Models & mySQL
-actionHero uses the sequelizeJS mySQL ORM.  It is awesome.  Models (located in `./models/`) are used to define ORM objects in the API.  actionHero also adds seeding abilities to the API to pre-populate the database if needed.  Here is the default model for the cache table which ships with actionHero (in ./models/cache.js):
-
-	function defineModel(api)
-	{
-		var model = api.dbObj.define('Cache', {
-			key: { type: api.SequelizeBase.STRING, allowNull: false, defaultValue: null, unique: true, autoIncrement: false},
-			value: { type: api.SequelizeBase.STRING, allowNull: false, defaultValue: null, unique: false, autoIncrement: false},
-			expireTime: { type: api.SequelizeBase.DATE, allowNull: false, defaultValue: null, unique: false, autoIncrement: false}
-		});	
-		return model;
-	}
-	
-	function defineSeeds(api){
-		return null;
-	}
-	
-	exports.defineModel = defineModel;
-	exports.defineSeeds = defineSeeds;
-
-Seeds are simple JSON objects.  You don't need to set all the values as long as they have sensible defaults in the model definition.  Seeding is only run if the table is empty.  If you wanted a seed, you would add it like so:
-
-	function defineSeeds(api){
-		var seeds = [
-			{key: "foo", value:"bar"},
-			{key: "foo2", value:"bar2"},
-		];
-		return seeds;
-	}
-
-You can then use api.models[myModel] to use the normal sequelize functions on.  Check [http://www.sequelizejs.com](www.sequelizejs.com) for more info.  Here's how you would add a log record:
-
-	var logRecord = api.models.log.build({
-		ip: connection.remoteIP,
-		action: connection.action,
-		error: connection.error,
-		params: JSON.stringify(connection.params)
-	});
-	logRecord.save();
-
-actionHero also uses the native node-mysql package so you can execute raw mySQL queries.  To use this, you can make use of the `api.rawDBConnction.query` object.  For example: 
-
-	api.rawDBConnction.query("describe myTable", function(err, rows, fields) {
-		// do stuff
-	});
-
 ## Tasks
 Tasks are special periodically run actions the server will do at a set interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!
 
@@ -398,7 +352,6 @@ All actionCluster.cache actions will also include the local peer in their operat
 
 ## Install & Quickstart
 * `npm install actionHero`
-* start up mySQL and create a new database called `action_hero_api` ( and `action_hero_api_test`if you want to run the tests)
 * Create a new file called `index.js`
 
 The contents of `index.js` should look something like this:
@@ -409,15 +362,6 @@ The contents of `index.js` should look something like this:
 	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 	var params = {};
 	params.configChanges = {
-		"database" : {
-			"host" : "127.0.0.1",
-			"database" : "action_hero_api",
-			"username" : "root",
-			"password" : null,
-			"port" : "3306",
-			"consoleLogging" : false,
-			"type" : "mySQL"
-	    },
 		"webServerPort" : 8080,
 		"socketServerPort" : 5000
 	}
@@ -427,7 +371,33 @@ The contents of `index.js` should look something like this:
 
 * Start up the server: `node index.js`
 
-You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  actionHero will not create databases on its own, so you should create the `action_hero_api` database on your local mySQL server.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
+You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
+
+You can pragmatically control an actionHero server with `actionHero.start(params, callback)`, `actionHero.stop(callback)` and `actionHero.restart(callback)`
+
+	var timer = 5000;
+	actionHero.start(params, function(api){
+		
+		api.log(" >> Boot Sucessful!");
+		setTimeout(function(){
+			
+			api.log(" >> restarting server...");
+			actionHero.restart(function(){
+				
+				api.log(" >> Restarted!");
+				setTimeout(function(){
+					
+					api.log(" >> stopping server...");
+					actionHero.stop(function(){
+						
+						api.log(" >> Stopped!");
+						process.exit();
+						
+					});
+				}, timer);
+			})
+		}, timer);
+	});
 
 ## Extending actionHero
 The first thing to do is to make your own ./actions (and ./models) folder.  If you like the default actions, feel free to copy them in.  You should also make you own tasks as defined above.
@@ -462,12 +432,6 @@ __Files__:
 There are also some static files (index.html and associate files for a test) included in `/public/` which you can check with the file action.
 
 ## Other Goodies 
-
-### Logging and API Request Limiting
-
-Every database driver for for actionHero should contain a `api.rateLimitCheck = function(api, connection, next) ` method.  This method returns `requestThisHourSoFar`.  If present, all web requests will first check to see if the the client has made too many requests this hour, as defined in `api.configData.apiRequestLimitPerHour`.  The mySQL driver which ships with actionHero stores these logs in the logs table, accessible via the log model in `models/log.js`
-
-Socket activity is not logged.
 
 ### Safe Params
 Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params you define as required or optional in your actions `action.inputs.required` and `action.inputs.optional`.  Special params which the api will always accept are: 

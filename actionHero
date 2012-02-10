@@ -6,15 +6,6 @@ var actionHero = require(__dirname + "/api.js").actionHero; // normally if insta
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
 params.configChanges = {
-	"database" : {
-		"type":"mySQL",
-        "host" : "127.0.0.1",
-		"database" : "action_hero_api",
-		"username" : "root",
-		"password" : null,
-		"port" : "3306",
-		"consoleLogging" : false
-    },
 	"flatFileDirectory" : "./public/",
 }
 
