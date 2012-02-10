@@ -6,7 +6,7 @@
 
 **Details:**
 
-* You can now use actionHero on node.js version 5 upwards (including the new 0.7!)
+* You can now use actionHero on node.js version 5 upwards (including the new v0.7)
 * In order to keep actionHero as compartmentalized as possible, we have removed databases and models.  
 	* There are tons of great ORMs and drivers for node.  When deploying actionHero in production, I expect that you will make use of them.  However, requiring database integration with actionHero is no longer a core part of the framework.  The previous DB connection support was too specific to my test implementations to be useful for everyone.  
 	* This makes previous implementations of actionHero incompatible with versions > 0.2.4.
