@@ -37,7 +37,8 @@ var initSocketServer = function(api, next){
 			api.socketServer.socketDataString += chunk.toString('utf8');
 			var index, line;
 			while((index = api.socketServer.socketDataString.indexOf('\r\n')) > -1) {
-				line = api.socketServer.socketDataString.slice(0, index);
+				var line = api.socketServer.socketDataString.slice(0, index);
+				connection.lastLine = line;
 				api.socketServer.socketDataString = api.socketServer.socketDataString.slice(index + 2);
 				if(line.length > 0) {
 					var line = line.replace(/(\r\n|\n|\r)/gm,"");
