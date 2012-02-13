@@ -151,9 +151,15 @@ var initWebServer = function(api, next)
 	
 	////////////////////////////////////////////////////////////////////////////
 	// Go server!
-	api.webServer.webApp.listen(api.configData.webServerPort, "0.0.0.0"); // listen on all bound addresses
+	api.webServer.webApp.on("error", function(e){
+		api.log("Cannot start web server @ port " + api.configData.webServerPort + "; Exiting.", ["red", "bold"]);
+		api.log(e, "red");
+		process.exit();
+	});
 	
-	next();
+	api.webServer.webApp.listen(api.configData.webServerPort, "0.0.0.0", function(){
+		next();
+	});
 }
 
 /////////////////////////////////////////////////////////////////////

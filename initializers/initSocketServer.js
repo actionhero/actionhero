@@ -249,9 +249,15 @@ var initSocketServer = function(api, next){
 	
 	////////////////////////////////////////////////////////////////////////////
 	// listen
-	api.socketServer.server.listen(api.configData.socketServerPort);
+	api.socketServer.server.on("error", function(e){
+		api.log("Cannot start socket server @ port " + api.configData.socketServerPort + "; Exiting.", ["red", "bold"]);
+		api.log(e);
+		process.exit();
+	});
 	
-	next();
+	api.socketServer.server.listen(api.configData.socketServerPort, "0.0.0.0", function(){
+		next();
+	});
 }
 
 /////////////////////////////////////////////////////////////////////
