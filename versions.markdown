@@ -1,5 +1,22 @@
 # Action Hero API Versions
 
+## Version 1.0.0
+
+**Summary:** OMG 1.0
+
+**Details:**
+
+* After some refactoring, actionHero is now at v 1.0
+* The last message sent by a socket client can now be read by inspecting `connection.lastLine`
+* Better error handling if the socket / web port are in use
+* Cleanup of the example HTML pages
+
+## Version 0.2.6
+
+**Summary:** Cluster task splitting
+
+**Details:**
+
 ## Version 0.2.5
 
 **Summary:** Goodbye Databases & Models, hello other versions of Node!
