@@ -35,36 +35,45 @@ var initTasks = function(api, next)
 	
 	api.tasks.process = function(api){		
 		clearTimeout(api.tasks.processTimer);
-		api.tasks.startPeriodicTasks(api, function(){
-			if(api.tasks.queue.length > 0){
-				var thisTask = api.tasks.queue[0];
-				api.tasks.queue = api.tasks.queue.splice(1);
-				if(api.actionCluster.connectionsToPeers.length < 2){
-					api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-						api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-					});
-				}else{
-					api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
-						var otherPeerTasks = {}
-						for(var i in clusterResp){
-							for(var j in clusterResp[i]['value']){
-								otherPeerTasks[clusterResp[i]['value'][j]] = true;
-							}
+		if(api.tasks.queue.length > 0){
+			var thisTask = api.tasks.queue[0];
+			api.tasks.queue = api.tasks.queue.splice(1);
+			if(api.actionCluster.connectionsToPeers.length < 2){
+				api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+				});
+			}else{
+				api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
+					var otherPeerTasks = {}
+					for(var i in clusterResp){
+						for(var j in clusterResp[i]['value']){
+							otherPeerTasks[clusterResp[i]['value'][j]] = true;
 						}
-						var t = api.tasks.tasks[thisTask.taskName];
+					}
+					var t = api.tasks.tasks[thisTask.taskName];
+					api.cache.load(api, "_periodicTasks", function(_periodicTasks){
 						if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
 							api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+								if(_periodicTasks.indexOf(t.name) < 0){
+									_periodicTasks.push(t.name);
+								}
+								api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
+									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+								});
 							});
 						}else{
-							api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							_periodicTasks.splice(_periodicTasks.indexOf(t.name),1);
+							api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
+								api.tasks.timers[t.name] = setTimeout(api.tasks.enqueue, t.frequency, api, t.name);
+								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							});
 						}
 					});
-				}
-			}else{
-				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+				});
 			}
-		});
+		}else{
+			api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+		}
 	};
 	
 	api.tasks.startPeriodicTasks = function(api, next){
@@ -123,10 +132,10 @@ var initTasks = function(api, next)
 		}
 	}
 	
-	api.cache.save(api, "_periodicTasks", [], null, function(){
+	api.tasks.startPeriodicTasks(api, function(){
 		api.tasks.process(api);
-		next();
-	});
+		next();	
+	})
 }
 
 /////////////////////////////////////////////////////////////////////
