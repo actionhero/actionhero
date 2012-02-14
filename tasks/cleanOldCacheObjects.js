@@ -18,7 +18,7 @@ task.run = function(api, params, next){
 			delete api.cache.data[i];
 		}
 	}
-	if(deleted > 0){ api.log("Cleared "+deleted+" objects from the cache", "yellow"); }
+	// if(deleted > 0){ api.log("Cleared "+deleted+" objects from the cache", "yellow"); }
 	
 	next(true, null);
 };

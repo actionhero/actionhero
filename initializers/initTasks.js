@@ -39,9 +39,28 @@ var initTasks = function(api, next)
 			if(api.tasks.queue.length > 0){
 				var thisTask = api.tasks.queue[0];
 				api.tasks.queue = api.tasks.queue.splice(1);
-				api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-				});
+				if(api.actionCluster.connectionsToPeers.length < 2){
+					api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+						api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+					});
+				}else{
+					api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
+						var otherPeerTasks = {}
+						for(var i in clusterResp){
+							for(var j in clusterResp[i]['value']){
+								otherPeerTasks[clusterResp[i]['value'][j]] = true;
+							}
+						}
+						var t = api.tasks.tasks[thisTask.taskName];
+						if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
+							api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							});
+						}else{
+							api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+						}
+					});
+				}
 			}else{
 				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 			}
@@ -50,45 +69,18 @@ var initTasks = function(api, next)
 	
 	api.tasks.startPeriodicTasks = function(api, next){
 		var _periodicTasks = [];
-		if(api.actionCluster.connectionsToPeers.length < 2){
-			for(var i in api.tasks.tasks){
-				var task = api.tasks.tasks[i];
-				if(task.frequency > 0){ // all scopes ok for single node
-					if(api.tasks.timers[task.name] == null){
-						api.tasks.timers[task.name] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
-					}
-					_periodicTasks.push(task.name);
+		for(var i in api.tasks.tasks){
+			var task = api.tasks.tasks[i];
+			if(task.frequency > 0){ // all scopes ok for single node
+				if(api.tasks.timers[task.name] == null){
+					api.tasks.timers[task.name] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
 				}
+				_periodicTasks.push(task.name);
 			}
-			api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(){
-				next();
-			});
-		}else{
-			api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
-				var otherPeerTasks = {}
-				for(var i in clusterResp){
-					for(var j in clusterResp[i]['value']){
-						otherPeerTasks[clusterResp[i]['value'][j]] = true;
-					}
-				}
-				for(var i in api.tasks.tasks){
-					var task = api.tasks.tasks[i];
-					if(task.frequency > 0 && ( task.scope == "all" || otherPeerTasks[task.name] == null)){
-						console.log("ADDING: "+task.name);
-						if(api.tasks.timers[task.name] == null){
-							api.tasks.timers[task.name] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
-						}
-						_periodicTasks.push(task.name);
-					}else{
-						console.log("KILLING: "+task.name);
-						clearTimeout(api.tasks.timers[task.name]);
-					}
-				}
-				api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(){
-					next();
-				});
-			});
 		}
+		api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(){
+			next();
+		});
 	}
 		
 	// init
