@@ -2,7 +2,7 @@
 
 ## Version 1.0.0
 
-**Summary:** OMG 1.0
+**Summary:** OMG 1.0!
 
 **Details:**
 
@@ -13,7 +13,7 @@
 
 ## Version 0.2.6
 
-**Summary:** Cluster task splitting
+**Summary:** Cluster Task Managment
 
 **Details:**
 

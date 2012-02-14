@@ -70,25 +70,17 @@ var createActionHero = function(){
 
 			api.utils = require(__dirname + '/utils.js').utils;
 			var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
-			actionHero.initLog(api, function(){
 			
-				api.tasks = {};
-				var taskFile = process.cwd() + "/tasks.js";
-				if(!api.fs.existsSync(taskFile)){
-					taskFile = __dirname + "/tasks.js";
-					api.log("no ./tasks.js file in project, loading defaults tasks from  "+taskFile, "yellow");
-				}
-				api.tasks = require(taskFile).tasks;
-
-				actionHero.initCron(api, function(){
-					actionHero.initCache(api, function(){
-						actionHero.initStats(api, function(){
-							actionHero.initActions(api, function(){
-								actionHero.initPostVariables(api, function(){
-									actionHero.initFileServer(api, function(){
-										actionHero.initWebServer(api, function(){
-											actionHero.initSocketServer(api, function(){ 
-												actionHero.initActionCluster(api, function(){
+			actionHero.initLog(api, function(){
+				actionHero.initCache(api, function(){
+					actionHero.initStats(api, function(){
+						actionHero.initActions(api, function(){
+							actionHero.initPostVariables(api, function(){
+								actionHero.initFileServer(api, function(){
+									actionHero.initWebServer(api, function(){
+										actionHero.initSocketServer(api, function(){ 
+											actionHero.initActionCluster(api, function(){
+												actionHero.initTasks(api, function(){
 													if(typeof params.initFunction == "function"){
 														params.initFunction(api, function(){
 															api.log(successMessage, ["green", "bold"]);
@@ -147,7 +139,6 @@ var createActionHero = function(){
 				actionHero.api.socketServer.connections[i].end("Server going down NOW");
 				actionHero.api.socketServer.connections[i].destroy();
 			}
-			clearTimeout(actionHero.api.cronTimer);
 		}else{
 			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
 			next(false);

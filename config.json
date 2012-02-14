@@ -16,10 +16,7 @@
 	"maxLogFileSize" : "10485760",
 	"logTable" : "log",
 	"logRequests" : true,
-	
-	"cronProcess" : true,
-	"cronTimeInterval" : 60000,
-	
+		
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,

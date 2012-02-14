@@ -1,15 +1,14 @@
 # node.js actionHero API Framework
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png)](http://travis-ci.org/evantahler/actionHero)
 
-## Who is an actionHero?
-actionHero is a minimalist transactional API framework for sockets and http clients using [node.js](http://nodejs.org).  It was inspired by the [DAVE PHP framework](http://github.com/evantahler/php-dave-api).  The goals of actionHero are to create an easy-to-use framework to get started making combination http and socket APIs as quickly as possible.
+## Who is the actionHero?
+actionHero is a [node.js](http://nodejs.org) API framework for both **tcp sockets** and **http clients**.  The goals of actionHero are to create an easy-to-use toolkit to get started making combination http and socket APIs as quickly as possible.  An actionHero can work as a stand-alone server or in concert with other actionHero servers in a cluster to handle larger load.
 
-The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he's not _CRUD_, and he's never taking a _REST_.  I was tired of "heavy" frameworks that were designed to run as monolithic applications which include M's, V's, and C's together in a single running application.  This tethering of view to business logic doesn't make much sense in modern web development (from a server PoV) when your presentation layer can just as easily be a mobile application or a website. 
+The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" which handle input and response, such as "userAdd" or "geoLocate". The actionHero API is not "RESTful" (which is meaningless for persistent socket connections). This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.  
 
-The actionHero API defines a single access point and accepts GET and POST input. You define "Actions" which handle input and response, such as "userAdd" or "geoLocate". The actionHero API is NOT "RESTful", in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions this package comes with a few basic Actions included. Check them out in `api/actions/`.    
 
 ## Actions
-The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` ( and `connection.error` when needed) value to build the response to the client
+The core of actionHero is the Action framework, **actions** are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the `connection.response` ( and `connection.error` when needed) value to build the response to the client
 
 Here's an example of a simple action which will return a random number to the client:
 
@@ -41,7 +40,7 @@ Here's an example of a simple action which will return a random number to the cl
 Notes:
 
 
-* Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, true)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example) where you would not want to render the default messages.
+* Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, true)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example) where you would not want to render the default messages.
 * The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
 
 ## Tasks
@@ -451,5 +450,9 @@ Remember that one of the default actions will delete the log file if it gets ove
 
 ## Versions of this API
 see `versions.markdown` to see what's new in each version
+
+## Who?
+* The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com)
+* If you want to contribute to actionHero, contribute to the conversation on [github](https://github.com/evantahler/actionHero)
 
 ###

@@ -225,30 +225,6 @@ var initSocketServer = function(api, next){
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
-	// Ping!
-	api.tasks.pingSocketClients = function(api, next) {
-		var params = {
-			"name" : "pingSocketClients",
-			"desc" : "I will send a message to all connected socket clients.  This will help with TCP keep-alive and send the current server time"
-		};
-		var task = Object.create(api.tasks.Task);
-		task.init(api, params, next);
-		task.run = function() {
-			for(var i in api.socketServer.connections){
-				var message = {};
-				message.context = "api";
-				message.status = "keep-alive";
-				message.serverTime = new Date();
-				api.socketServer.sendSocketMessage(api.socketServer.connections[i], message);
-			}
-			task.log("sent keepAlive to "+api.socketServer.connections.length+" socket clients");
-			task.end();
-		};
-		//
-		process.nextTick(function () { task.run() });
-	};
-	
-	////////////////////////////////////////////////////////////////////////////
 	// listen
 	api.socketServer.server.on("error", function(e){
 		api.log("Cannot start socket server @ port " + api.configData.socketServerPort + "; Exiting.", ["red", "bold"]);
