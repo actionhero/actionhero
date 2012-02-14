@@ -3,48 +3,17 @@
 
 var initTasks = function(api, next)
 {
-	// if (api.configData.cronProcess)
-	// {
-	// 	api.processCron = function(api){
-	// 		api.log("* periodic cron tasks starting now *");
-	// 
-	// 		// run all tasks every time async
-	// 		var runningTasks = 0;
-	// 		for(var task in api.tasks){
-	// 			if (task != "Task"){
-	// 				runningTasks++;
-	// 				api.tasks[task](api, function(){
-	// 					runningTasks--;
-	// 					if(runningTasks == 0){
-	// 						api.log("* periodic cron tasks comple. see you again in " + api.configData.cronTimeInterval + "ms *");
-	// 						if(api.cronTimer) { clearTimeout(api.cronTimer); }
-	// 						api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
-	// 					}
-	// 				});
-	// 			}
-	// 		}
-	// 	};
-	// 
-	// 	api.cronTimer = setTimeout(api.processCron, api.configData.cronTimeInterval, api);
-	// 	api.log("periodic (internal cron) interval set to process evey " + api.configData.cronTimeInterval + "ms", "green");
-	// }
-	
 	api.tasks = {};
 	api.tasks.tasks = {};
-	api.tasks.processing = false;
+	api.tasks.queue = [];
 	api.tasks.timers = {};
 	api.tasks.cycleTimeMS = 1000;
 	
-	api.tasks.queue = function(api, taskName, params){
-		if(api.tasks.processing){
-			var recheckTime = api.tasks.cycleTimeMS / 4;
-			setTimeout(api.tasks.queue, recheckTime, api, taskName, params);
-		}else{
-			api.cache.data["_taskQueue"].value.push({
-				taskName: taskName,
-				params: params
-			});
-		}
+	api.tasks.enqueue = function(api, taskName, params){
+		api.tasks.queue.push({
+			taskName: taskName,
+			params: params
+		});
 	};
 	
 	api.tasks.run = function(api, taskName, params, next){
@@ -54,7 +23,7 @@ var initTasks = function(api, next)
 			api.tasks.tasks[taskName].run(api, params, function(resp){
 				var task = api.tasks.tasks[taskName];
 				if(task.frequency > 0){
-					api.tasks.timers[taskName] = setTimeout(api.tasks.queue, task.frequency, api, task.name);
+					api.tasks.timers[taskName] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
 				}
 				if(typeof next == "function"){ next(resp); }
 			})
@@ -64,34 +33,63 @@ var initTasks = function(api, next)
 		}
 	};
 	
-	api.tasks.process = function(api){
-		api.tasks.processing = true;
+	api.tasks.process = function(api){		
 		clearTimeout(api.tasks.processTimer);
-		api.actionCluster.cache.load(api, "_taskQueue", function(clusterResp){
-			if(clusterResp == false){ // no cluster
-				api.cache.load(api, "_taskQueue", function(localResp){
-					if(localResp.length > 0){
-						var thisTask = localResp[0];
-						newQueue = localResp.splice(1);
-						api.cache.save(api, "_taskQueue", newQueue, null, function(){
-							api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-								api.tasks.processing = false;
-							})
-						});
-					}else{
-						api.cache.save(api, "_taskQueue", localResp, null, function(){
-							api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-							api.tasks.processing = false;
-						});
-					}
-				})
-			}else{ // other peers
+		api.tasks.startPeriodicTasks(api, function(){
+			if(api.tasks.queue.length > 0){
+				var thisTask = api.tasks.queue[0];
+				api.tasks.queue = api.tasks.queue.splice(1);
+				api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+				});
+			}else{
 				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-				api.tasks.processing = false;
 			}
 		});
 	};
+	
+	api.tasks.startPeriodicTasks = function(api, next){
+		var _periodicTasks = [];
+		if(api.actionCluster.connectionsToPeers.length < 2){
+			for(var i in api.tasks.tasks){
+				var task = api.tasks.tasks[i];
+				if(task.frequency > 0){ // all scopes ok for single node
+					if(api.tasks.timers[task.name] == null){
+						api.tasks.timers[task.name] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
+					}
+					_periodicTasks.push(task.name);
+				}
+			}
+			api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(){
+				next();
+			});
+		}else{
+			api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
+				var otherPeerTasks = {}
+				for(var i in clusterResp){
+					for(var j in clusterResp[i]['value']){
+						otherPeerTasks[clusterResp[i]['value'][j]] = true;
+					}
+				}
+				for(var i in api.tasks.tasks){
+					var task = api.tasks.tasks[i];
+					if(task.frequency > 0 && ( task.scope == "all" || otherPeerTasks[task.name] == null)){
+						console.log("ADDING: "+task.name);
+						if(api.tasks.timers[task.name] == null){
+							api.tasks.timers[task.name] = setTimeout(api.tasks.enqueue, task.frequency, api, task.name);
+						}
+						_periodicTasks.push(task.name);
+					}else{
+						console.log("KILLING: "+task.name);
+						clearTimeout(api.tasks.timers[task.name]);
+					}
+				}
+				api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(){
+					next();
+				});
+			});
+		}
+	}
 		
 	// init
 	var validateTask = function(api, task){
@@ -133,23 +131,9 @@ var initTasks = function(api, next)
 		}
 	}
 	
-	api.cache.save(api, "_taskQueue", [], null, function(){
-		if(api.actionCluster.connectionsToPeers.length == 0){
-			api.tasks.manager = true;
-			api.log("I will be the task manager", ["yellow", "bold"]);
-			api.tasks.process(api);
-			// populate recurring tasks
-			for(var i in api.tasks.tasks){
-				var task = api.tasks.tasks[i];
-				if(task.frequency > 0){
-					api.tasks.timers[task.name] = setTimeout(api.tasks.queue, task.frequency, api, task.name);
-				}
-			}
-			next();
-		}else{
-			api.tasks.manager = false;
-			next();
-		}
+	api.cache.save(api, "_periodicTasks", [], null, function(){
+		api.tasks.process(api);
+		next();
 	});
 }
 

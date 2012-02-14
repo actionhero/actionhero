@@ -24,10 +24,10 @@ var initCache = function(api, next){
 					createdAt: new Date().getTime(),
 					readAt: null
 				};
-				process.nextTick(function() { next(true); });
+				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
 			}catch(e){
 				console.log(e);
-				process.nextTick(function() { next(false); });
+				if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
 			}
 		}
 	};
@@ -39,9 +39,13 @@ var initCache = function(api, next){
 		}else{
 			if(cacheObj.expireTimestamp >= (new Date().getTime())){
 				api.cache.data[key].readAt = new Date().getTime();
-				process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+				if(typeof next == "function"){  
+					process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+				}
 			}else{
-				process.nextTick(function() { next(null, null, null, null); });
+				if(typeof next == "function"){ 
+					process.nextTick(function() { next(null, null, null, null); });
+				}
 			}
 		}
 	};
@@ -49,10 +53,10 @@ var initCache = function(api, next){
 	api.cache.destroy = function(api, key, next){
 		var cacheObj = api.cache.data[key];
 		if(cacheObj == null){
-			process.nextTick(function() { next(false); });
+			if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
 		}else{
 			delete api.cache.data[key];
-			process.nextTick(function() { next(true); });
+			if(typeof next == "function"){  process.nextTick(function() { next(true); }); }
 		}
 	};
 	
