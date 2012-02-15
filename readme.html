@@ -2,17 +2,15 @@
 
 <p><a href="http://travis-ci.org/evantahler/actionHero"><img src="https://secure.travis-ci.org/evantahler/actionHero.png" alt="Build Status" /></a></p>
 
-<h2>Who is an actionHero?</h2>
+<h2>Who is the actionHero?</h2>
 
-<p>actionHero is a minimalist transactional API framework for sockets and http clients using <a href="http://nodejs.org">node.js</a>.  It was inspired by the <a href="http://github.com/evantahler/php-dave-api">DAVE PHP framework</a>.  The goals of actionHero are to create an easy-to-use framework to get started making combination http and socket APIs as quickly as possible.</p>
+<p>actionHero is a <a href="http://nodejs.org">node.js</a> API framework for both <strong>tcp sockets</strong> and <strong>http clients</strong>.  The goals of actionHero are to create an easy-to-use toolkit to get started making combination http and socket APIs as quickly as possible.  An actionHero can work as a stand-alone server or in concert with other actionHero servers in a cluster to handle larger load.</p>
 
-<p>The actionHero API aims to simplify and abstract may of the common tasks that these types of APIs require.  actionHero does the work for you, and he&rsquo;s not <em>CRUD</em>, and he&rsquo;s never taking a <em>REST</em>.  I was tired of &ldquo;heavy&rdquo; frameworks that were designed to run as monolithic applications which include M&rsquo;s, V&rsquo;s, and C&rsquo;s together in a single running application.  This tethering of view to business logic doesn&rsquo;t make much sense in modern web development (from a server PoV) when your presentation layer can just as easily be a mobile application or a website.</p>
-
-<p>The actionHero API defines a single access point and accepts GET and POST input. You define &ldquo;Actions&rdquo; which handle input and response, such as &ldquo;userAdd&rdquo; or &ldquo;geoLocate&rdquo;. The actionHero API is NOT &ldquo;RESTful&rdquo;, in that it does not use the normal http verbs (Get, Put, etc) and uses a single path/endpoint. This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.  To see how simple it is to handle basic actions this package comes with a few basic Actions included. Check them out in <code>api/actions/</code>.</p>
+<p>The actionHero API defines a single access point and accepts GET and POST input. You define &ldquo;Actions&rdquo; which handle input and response, such as &ldquo;userAdd&rdquo; or &ldquo;geoLocate&rdquo;. The actionHero API is not &ldquo;RESTful&rdquo; (which is meaningless for persistent socket connections). This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.</p>
 
 <h2>Actions</h2>
 
-<p>The meat of actionHero is the Action framework.  Actions are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the <code>connection.response</code> ( and <code>connection.error</code> when needed) value to build the response to the client</p>
+<p>The core of actionHero is the Action framework, <strong>actions</strong> are the basic units of a request and work for HTTP and socket responses.  The goal of an action is to set the <code>connection.response</code> ( and <code>connection.error</code> when needed) value to build the response to the client</p>
 
 <p>Here&rsquo;s an example of a simple action which will return a random number to the client:</p>
 
@@ -45,41 +43,10 @@ exports.action = action;
 <p>Notes:</p>
 
 <ul>
-<li>Actions are asynchronous, and take in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code>next(connection, true)</code>.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the <code>file.js</code> action for an example) where you would not want to render the default messages.</li>
+<li>Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code>next(connection, true)</code>.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the <code>file.js</code> action for an example) where you would not want to render the default messages.</li>
 <li>The metadata is used in reflexive and self-documenting actions in the API, such as <code>actionsView</code>.  <code>actions.inputs.required</code> and <code>actions.inputs.required</code> are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).</li>
 </ul>
 
-
-<h2>Tasks</h2>
-
-<p>Tasks are special periodically run actions the server will do at a set interval.  Because nodeJS has internal timers, it&rsquo;s simple to emulate a &ldquo;cron&rdquo; functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!</p>
-
-<p>The basic structure of a task <em>extends</em> the task prototype like this example.</p>
-
-<p>Make you own tasks in a <code>tasks.js</code> file in your project root, or add them anywhere in the project by added them to the <code>api.tasks</code> object.</p>
-
-<pre><code>////////////////////////////////////////////////////////////////////////////
-// A test task 
-tasks.testTask = function(api, next) {
-    var params = {
-        "name" : "Test Task",
-        "desc" : "I will say 'hello world' to the console every time I run"
-    };
-    var task = Object.create(api.tasks.Task);
-    task.init(api, params, next);
-    task.run = function() {
-        console.log("Hello World!");
-        task.end();
-    };
-    task.run();
-};
-
-////////////////////////////////////////////////////////////////////////////
-// Export
-exports.tasks = tasks;
-</code></pre>
-
-<p>All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it&rsquo;s execution.  <code>cron.js</code> manages the running of tasks and runs at the <code>api.configData.cronTimeInterval</code> (ms) interval defined in <code>config.json</code></p>
 
 <h2>Connecting</h2>
 
@@ -409,6 +376,91 @@ say hooray!
 
 <p>All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait <code>api.configData.actionCluster.remoteTimeoutWaitMS</code> to collect responses from peers, and will then return whatever information they have collected so far.    This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).</p>
 
+<h2>Tasks</h2>
+
+<p>Tasks are special periodically run actions the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:</p>
+
+<ul>
+<li>calculateStats
+
+<ul>
+<li>Polls all other members in the actionCluster to build up statistics</li>
+<li>Runs every 10 seconds</li>
+</ul>
+</li>
+<li>cleanLogFiles
+
+<ul>
+<li>removes all files in <code>./log/</code> if they are larger than <code>api.configData.maxLogFileSize</code></li>
+<li>runs every 60 seconds</li>
+</ul>
+</li>
+<li>cleanOldCacheObjects
+
+<ul>
+<li>removes expired objects in <code>api.cache.data</code></li>
+<li>runs every 10 seconds</li>
+</ul>
+</li>
+<li>pingSocketClients
+
+<ul>
+<li>sends a keep-alive message to all TCP socket clients</li>
+<li>runs every 60 seconds</li>
+</ul>
+</li>
+<li>runAction
+
+<ul>
+<li>a wrapper to run an action as a task</li>
+<li>will not run automatically</li>
+</ul>
+</li>
+<li>saveCacheToDisk
+
+<ul>
+<li>will save the contents of <code>api.cache.data</code> to disc</li>
+<li>runs every 60 seconds</li>
+</ul>
+</li>
+</ul>
+
+
+<p>You can create you own tasks by placing them in a <code>./tasks/</code> folder at the root of your application.  Like actions, all tasks have some required metadata:</p>
+
+<ul>
+<li><code>task.name</code>: The unique name of your task</li>
+<li><code>task.description</code>: a description</li>
+<li><code>task.scope</code>: &ldquo;any&rdquo; or &ldquo;all&rdquo;.  Should a single actionCluster server (any) run this task, or should all of them?</li>
+<li><code>task.frequency</code>: In milliseconds, how often should I run?.  Setting me to 0 will cause me not to run automatically, but I can still be run with <code>api.task.run</code></li>
+</ul>
+
+
+<p>As stated above, any task can also be called programmatically with <code>api.tasks.run(api, taskName, params, next)</code>.</p>
+
+<p>An example Task:</p>
+
+<pre><code>var task = {};
+
+/////////////////////////////////////////////////////////////////////
+// metadata
+task.name = "sayHello";
+task.description = "I am a demo task which should only be on one node";
+task.scope = "any";
+task.frequency = 1000;
+
+/////////////////////////////////////////////////////////////////////
+// functional
+task.run = function(api, params, next){
+    api.log("----- Hi There! ----", "green");
+    next(true);
+};
+
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.task = task;
+</code></pre>
+
 <h2>Requirements</h2>
 
 <ul>
@@ -540,5 +592,13 @@ actionHero.start({initFunction: initFunction}, function(api){
 <h2>Versions of this API</h2>
 
 <p>see <code>versions.markdown</code> to see what&rsquo;s new in each version</p>
+
+<h2>Who?</h2>
+
+<ul>
+<li>The primary creator of the actionHero framework is <a href="http://evantahler.com">Evan Tahler</a></li>
+<li>If you want to contribute to actionHero, contribute to the conversation on <a href="https://github.com/evantahler/actionHero">github</a></li>
+</ul>
+
 
 <h2>#</h2>
