@@ -6,6 +6,7 @@
 
 **Details:**
 
+* This is a cleanup and bug-fix release
 * After some refactoring, actionHero is now at v 1.0
 * The last message sent by a socket client can now be read by inspecting `connection.lastLine`
 * Better error handling if the socket / web port are in use
@@ -16,6 +17,30 @@
 **Summary:** Cluster Task Managment
 
 **Details:**
+
+* rewrite of the task system to be more like actions
+* tasks now live in ./tasks/ in your application root
+* tasks can now have their own specific timers
+* tasks are now scoped to be "any" or "all", to run once per actionCluster (any) or on all nodes (all)
+* Default tasks within the api are now better explained:
+	* calculateStats
+		* Polls all other members in the actionCluster to build up statistics
+		* Runs every 10 seconds
+	* cleanLogFiles
+		* removes all files in `./log/` if they are larger than `api.configData.maxLogFileSize`
+		* runs every 60 seconds
+	* cleanOldCacheObjects
+		* removes expired objects in `api.cache.data`
+		* runs every 10 seconds
+	* pingSocketClients
+		* sends a keep-alive message to all TCP socket clients
+		* runs every 60 seconds
+	* runAction
+		* a wrapper to run an action as a task
+		* will not run automatically
+	* saveCacheToDisk
+		* will save the contents of `api.cache.data` to disc
+		* runs every 60 seconds
 
 ## Version 0.2.5
 

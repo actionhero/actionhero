@@ -43,35 +43,6 @@ Notes:
 * Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, true)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client (default = true).  There are some actions where you may have already sent the user output (see the `file.js` action for an example) where you would not want to render the default messages.
 * The metadata is used in reflexive and self-documenting actions in the API, such as `actionsView`.  `actions.inputs.required` and `actions.inputs.required` are used for both documentation and for building the whitelist of allowed GET and POST variables the API will accept (in addition to your schema/models).  
 
-## Tasks
-Tasks are special periodically run actions the server will do at a set interval.  Because nodeJS has internal timers, it's simple to emulate a "cron" functionality in the server.  Some of the example tasks which ship with actionHero cleanup expired sessions and cache entries in the DB, and also check to see if the log file has gotten to large.  Huzzah for the event queue!
-
-The basic structure of a task _extends_ the task prototype like this example.
-
-Make you own tasks in a `tasks.js` file in your project root, or add them anywhere in the project by added them to the `api.tasks` object.
-
-	////////////////////////////////////////////////////////////////////////////
-	// A test task 
-	tasks.testTask = function(api, next) {
-		var params = {
-			"name" : "Test Task",
-			"desc" : "I will say 'hello world' to the console every time I run"
-		};
-		var task = Object.create(api.tasks.Task);
-		task.init(api, params, next);
-		task.run = function() {
-			console.log("Hello World!");
-			task.end();
-		};
-		task.run();
-	};
-	
-	////////////////////////////////////////////////////////////////////////////
-	// Export
-	exports.tasks = tasks;
-
-All of the metadata in the example task is required, as is task.init and task.run.  Note that task.run calls the task.end() callback at the close of it's execution.  `cron.js` manages the running of tasks and runs at the `api.configData.cronTimeInterval` (ms) interval defined in `config.json`
-
 ## Connecting
 
 ### HTTP
@@ -343,6 +314,59 @@ Note that responses from all peers are listed, and those that successfully delet
 	]
 
 All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).
+
+## Tasks
+Tasks are special periodically run actions the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:
+
+* calculateStats
+	* Polls all other members in the actionCluster to build up statistics
+	* Runs every 10 seconds
+* cleanLogFiles
+	* removes all files in `./log/` if they are larger than `api.configData.maxLogFileSize`
+	* runs every 60 seconds
+* cleanOldCacheObjects
+	* removes expired objects in `api.cache.data`
+	* runs every 10 seconds
+* pingSocketClients
+	* sends a keep-alive message to all TCP socket clients
+	* runs every 60 seconds
+* runAction
+	* a wrapper to run an action as a task
+	* will not run automatically
+* saveCacheToDisk
+	* will save the contents of `api.cache.data` to disc
+	* runs every 60 seconds
+
+You can create you own tasks by placing them in a `./tasks/` folder at the root of your application.  Like actions, all tasks have some required metadata:
+
+* `task.name`: The unique name of your task
+* `task.description`: a description
+* `task.scope`: "any" or "all".  Should a single actionCluster server (any) run this task, or should all of them?
+* `task.frequency`: In milliseconds, how often should I run?.  Setting me to 0 will cause me not to run automatically, but I can still be run with `api.task.run`
+
+As stated above, any task can also be called programmatically with `api.tasks.run(api, taskName, params, next)`.
+
+An example Task:
+
+	var task = {};
+	
+	/////////////////////////////////////////////////////////////////////
+	// metadata
+	task.name = "sayHello";
+	task.description = "I am a demo task which should only be on one node";
+	task.scope = "any";
+	task.frequency = 1000;
+	
+	/////////////////////////////////////////////////////////////////////
+	// functional
+	task.run = function(api, params, next){
+		api.log("----- Hi There! ----", "green");
+		next(true);
+	};
+	
+	/////////////////////////////////////////////////////////////////////
+	// exports
+	exports.task = task;
 
 ## Requirements
 * node.js server
