@@ -58,41 +58,47 @@ var createActionHero = function(){
 		// overide config.js with params.configChanges if exists 
 		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
 	
-		var initPath = process.cwd() + "/initializers/";
-		api.fs.exists(initPath, function (exists) {
-			if(!exists){ initPath = process.cwd() + "/node_modules/actionHero/initializers/"; }
-			api.fs.readdirSync(initPath).forEach( function(file) {
-				if (file != ".DS_Store"){
-					var initalizer = file.split(".")[0];
-					actionHero[initalizer] = require(initPath + file)[initalizer];
-				}
-			});
-
-			api.utils = require(__dirname + '/utils.js').utils;
-			var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
+		var initializerFolders = [ 
+			process.cwd() + "/initializers/", 
+			process.cwd() + "/node_modules/actionHero/initializers/"
+		]
 			
-			actionHero.initLog(api, function(){
-				actionHero.initCache(api, function(){
-					actionHero.initStats(api, function(){
-						actionHero.initActions(api, function(){
-							actionHero.initPostVariables(api, function(){
-								actionHero.initFileServer(api, function(){
-									actionHero.initWebServer(api, function(){
-										actionHero.initSocketServer(api, function(){ 
-											actionHero.initActionCluster(api, function(){
-												actionHero.initTasks(api, function(){
-													if(typeof params.initFunction == "function"){
-														params.initFunction(api, function(){
-															api.log(successMessage, ["green", "bold"]);
-															actionHero.running = true;
-															if(callback != null){ process.nextTick(function() { callback(api); }); }
-														})
-													}else{
+		for(var i in initializerFolders){
+			var folder = initializerFolders[i];
+			if(api.path.existsSync(folder)){
+				api.fs.readdirSync(folder).forEach( function(file) {
+					if (file != ".DS_Store"){
+						var initalizer = file.split(".")[0];
+						actionHero[initalizer] = require(initializerFolders[i] + file)[initalizer];
+					}
+				});
+			}
+		}
+			
+		api.utils = require(__dirname + '/utils.js').utils;
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
+			
+		actionHero.initLog(api, function(){
+			actionHero.initCache(api, function(){
+				actionHero.initStats(api, function(){
+					actionHero.initActions(api, function(){
+						actionHero.initPostVariables(api, function(){
+							actionHero.initFileServer(api, function(){
+								actionHero.initWebServer(api, function(){
+									actionHero.initSocketServer(api, function(){ 
+										actionHero.initActionCluster(api, function(){
+											actionHero.initTasks(api, function(){
+												if(typeof params.initFunction == "function"){
+													params.initFunction(api, function(){
 														api.log(successMessage, ["green", "bold"]);
 														actionHero.running = true;
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													}
-												});
+													})
+												}else{
+													api.log(successMessage, ["green", "bold"]);
+													actionHero.running = true;
+													if(callback != null){ process.nextTick(function() { callback(api); }); }
+												}
 											});
 										});
 									});
@@ -103,6 +109,7 @@ var createActionHero = function(){
 				});
 			});
 		});
+
 	};
 
 	actionHero.stop = function(next){	
