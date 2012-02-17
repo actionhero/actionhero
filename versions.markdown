@@ -6,6 +6,9 @@
 
 **Details:**
 
+* initializers
+	* you can add your own initializers to a folder called `initializers` in your project's root.  They will be loaded at boot and accessible like this:
+		* actionHero.myNewInitFunction(api, function(){ next(); });
 * This is a cleanup and bug-fix release
 * After some refactoring, actionHero is now at v 1.0
 * The last message sent by a socket client can now be read by inspecting `connection.lastLine`
