@@ -18,6 +18,7 @@ task.run = function(api, params, next){
 		error: false,
 		remoteIP: "task",
 		action: params.action,
+		response: {}
 	};
 	
 	api.processAction(api, connection, function(connection, cont){
