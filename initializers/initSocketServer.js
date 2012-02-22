@@ -110,6 +110,11 @@ var initSocketServer = function(api, next){
 			api.socketServer.calculateRoomStatus(api, false);
 			if(api.configData.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
 	  	});
+		
+		connection.on("error", function(e){
+			api.log("socket error: " + e, "red");
+			connection.end();
+		});
 	});
 	
 	////////////////////////////////////////////////////////////////////////////

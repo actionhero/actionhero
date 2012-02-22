@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-## Version 1.0.0
+## Version 1.0.0 (coming soon!)
 
 **Summary:** OMG 1.0!
 
