@@ -34,7 +34,6 @@ action.run = function(api, connection, next)
 			connection.response.clusterCacheTest.loadTest = loadResp;
 			api.actionCluster.cache.destroy(api, key, function(destroyResp){
 				connection.response.clusterCacheTest.destroyTest = destroyResp;
-				api.actionCluster.cache.save(api, key, value, null, null);
 				next(connection, true);
 			});
 		});

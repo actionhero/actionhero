@@ -301,7 +301,7 @@ var initActionCluster= function(api, next){
 				}
 				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 			}else{
-				setTimeout(completeAndRestart, 1000);
+				setTimeout(completeAndRestart, api.configData.actionCluster.remoteTimeoutWaitMS);
 			}
 		}
 		

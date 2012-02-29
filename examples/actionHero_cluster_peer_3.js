@@ -13,8 +13,8 @@ params.configChanges = {
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
-		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 10000,
+		"CycleCheckTimeMS" : 10,
+		"remoteTimeoutWaitMS" : 5000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": "127.0.0.1",
