@@ -13,8 +13,7 @@ task.run = function(api, params, next){
 	api.fs.readdirSync(api.configData.logFolder).forEach( function(file) {
 		file = api.configData.logFolder + "/" + file;
 		api.fs.exists(file, function (exists){
-			if(exists)
-			{
+			if(exists){
 				size = api.fs.statSync(file).size;
 				if(size >= api.configData.maxLogFileSize)
 				{
