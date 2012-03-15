@@ -119,6 +119,7 @@ var initWebServer = function(api, next)
 		// request timer
 		connection.timer.stopTime = new Date().getTime();
 		connection.response.serverInformation.requestDuration = connection.timer.stopTime - connection.timer.startTime;
+		connection.response.serverInformation.currentTime = connection.timer.stopTime;
 					
 		// errors
 		if(connection.error == false){ connection.response.error = "OK"; }

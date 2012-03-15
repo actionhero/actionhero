@@ -14,6 +14,7 @@
 * The last message sent by a socket client can now be read by inspecting `connection.lastLine`
 * Better error handling if the socket / web port are in use
 * Cleanup of the example HTML pages
+* HTTP requets will now return serverInformation.currentTime
 
 ## Version 0.2.6
 
