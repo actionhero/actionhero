@@ -54,23 +54,21 @@ var initTasks = function(api, next)
 					}
 					var t = api.tasks.tasks[thisTask.taskName];
 					api.cache.load(api, "_periodicTasks", function(_periodicTasks){
-						if(_periodicTasks != null){
-							if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
-								api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-									if(_periodicTasks.indexOf(t.name) < 0){
-										_periodicTasks.push(t.name);
-									}
-									api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
-										api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-									});
-								});
-							}else{
-								_periodicTasks.splice(_periodicTasks.indexOf(t.name),1);
+						if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
+							api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+								if(_periodicTasks.indexOf(t.name) < 0){
+									_periodicTasks.push(t.name);
+								}
 								api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
-									api.tasks.timers[t.name] = setTimeout(api.tasks.enqueue, t.frequency, api, t.name);
 									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 								});
-							}
+							});
+						}else{
+							_periodicTasks.splice(_periodicTasks.indexOf(t.name),1);
+							api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
+								api.tasks.timers[t.name] = setTimeout(api.tasks.enqueue, t.frequency, api, t.name);
+								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							});
 						}
 					});
 				});

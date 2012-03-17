@@ -162,7 +162,7 @@ suite.addBatch({
 	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
 	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
 	  	}else{
-	  		setTimeout(cb,1000);
+	  		setTimeout(cb, (apis[0].configData.actionCluster.ReConnectToLostPeersMS * 2));
 	  	}
 	  }
 	  
@@ -378,6 +378,187 @@ suite.addBatch({
 
 ////////////////////////////////////////////////////////////////////////////
 // Tests to ensure that tasks only fire the proper number of time for "all" and "any"
+suite.addBatch({
+  '_periodicTasks should have been reloaded and populated at reboot':{
+    topic: function(){ 
+		var cb = this.callback;
+		var resp = [];
+		apis[0].cache.load(apis[0], "_periodicTasks", function(_periodicTasks_a){
+			resp[0] = _periodicTasks_a;
+			apis[1].cache.load(apis[1], "_periodicTasks", function(_periodicTasks_b){
+				resp[1] = _periodicTasks_b;
+				apis[2].cache.load(apis[2], "_periodicTasks", function(_periodicTasks_c){
+					resp[2] = _periodicTasks_c;
+					cb(resp);
+				});
+			});
+		});
+	},
+    'should have data in all servers': function(resp, err){ 
+		for (var i in resp){
+			specHelper.assert.deepEqual(resp[i],[
+				'caclculateStats',
+				'cleanLogFiles',
+				'cleanOldCacheObjects',
+				'pingSocketClients',
+				'saveCacheToDisk'	
+			]);
+		}
+	} }
+});
+
+function removePeriodicTasks(cb){
+	var resp = [];
+	apis[0].cache.save(apis[0], "_periodicTasks", [], 100000, function(_periodicTasks_a){
+		resp[0] = _periodicTasks_a;
+		apis[1].cache.save(apis[1], "_periodicTasks", [], 100000, function(_periodicTasks_b){
+			resp[1] = _periodicTasks_b;
+			apis[2].cache.save(apis[2], "_periodicTasks", [], 100000, function(_periodicTasks_c){
+				resp[2] = _periodicTasks_c;
+				cb(resp);
+			});
+		});
+	});
+}
+
+suite.addBatch({
+  'I can remove all existing tasks (will help with testing)':{
+    topic: function(){ 
+		var cb = this.callback;
+		removePeriodicTasks(cb)
+	},
+    'should have been deleted': function(resp, err){ 
+		for (var i in resp){
+			specHelper.assert.deepEqual(resp[i],true);
+		}
+	} }
+});
+
+suite.addBatch({
+  'I can add new tasks to the api':{
+    topic: function(){ 
+		var cb = this.callback;
+		var resp = [];
+		
+		var all_task = {
+			name: "all_task",
+			description: "I will add a line to a file",
+			scope: "all",
+			frequency: 1000,
+			run: function(api, params, next){
+				console.log("RUNNING ALL TASK @ "+api.configData.webServerPort);
+				try{
+					var file = "./cache/all_task.log";
+					var fs = api.fs.createWriteStream(file, {flags:"a"})
+					data = api.configData.webServerPort + " @ all_task" + "\r\n";
+					fs.write(data);
+					fs.end();
+					next(true, null);
+				}catch(e){
+					console.log("Error writing to file: " + e);
+					next(true, null);
+				}
+			}
+		};
+
+		var any_task = {
+			name: "any_task",
+			description: "I will add a line to a file",
+			scope: "any",
+			frequency: 1000,
+			run: function(api, params, next){
+				console.log("RUNNING ANY TASK @ "+api.configData.webServerPort);
+				try{
+					var file = "./cache/any_task.log";
+					var fs = api.fs.createWriteStream(file, {flags:"a"})
+					data = api.configData.webServerPort + " @ any_task" + "\r\n";
+					fs.write(data);
+					fs.end();
+					next(true, null);
+				}catch(e){
+					console.log("Error writing to file: " + e);
+					next(true, null);
+				}
+			}
+		};
+		
+		var exists = apis[0].fs.existsSync("./cache/all_task.log");
+		if(exists){ apis[0].fs.unlinkSync("./cache/all_task.log"); }
+		var exists = apis[0].fs.existsSync("./cache/any_task.log");
+		if(exists){ apis[0].fs.unlinkSync("./cache/any_task.log"); }
+		
+		for (var i in apis){
+			apis[i].tasks.tasks["all_task"] = all_task;
+			apis[i].tasks.tasks["any_task"] = any_task;
+		}
+		
+		setTimeout(cb,1)
+	},
+    'new tasks added': function(resp, err){ 
+		for (var i in apis){
+			specHelper.assert.isObject(apis[i].tasks.tasks["all_task"]);
+			specHelper.assert.isObject(apis[i].tasks.tasks["any_task"]);
+		}
+	},
+    'timers should be on': function(resp, err){ 
+		for (var i in apis){
+			specHelper.assert.equal(apis[i].actionCluster.cache.duplicationTimer._idleTimeout, 1000)
+		}
+	}}
+});
+
+suite.addBatch({
+  'The ALL tasks should happen on all servers':{
+    topic: function(){ 
+		var cb = this.callback;
+		apis[0].tasks.enqueue(apis[0], "all_task", null);
+		apis[1].tasks.enqueue(apis[1], "all_task", null);
+		apis[2].tasks.enqueue(apis[2], "all_task", null);
+		setTimeout(cb, 10000);
+	},
+    'check the file...': function(resp){ 
+		var lines = apis[0].fs.readFileSync("./cache/all_task.log").toString().split("\n");
+		console.log(lines);
+	}}
+});
+
+suite.addBatch({
+  'I can remove all existing tasks (CLER ALL)':{
+    topic: function(){ 
+		var cb = this.callback;
+		removePeriodicTasks(cb)
+	},
+    'should have been deleted': function(resp, err){ 
+		for (var i in resp){
+			specHelper.assert.deepEqual(resp[i],true);
+		}
+	} }
+});
+
+suite.addBatch({
+  'I can remove all existing tasks (CLER ANY)':{
+    topic: function(){ 
+		var cb = this.callback;
+		removePeriodicTasks(cb)
+	},
+    'should have been deleted': function(resp, err){ 
+		for (var i in resp){
+			specHelper.assert.deepEqual(resp[i],true);
+		}
+	} }
+});
+
+
+suite.addBatch({
+  'delete the test files when done':{
+    topic: function(){ var cb = this.callback; setTimeout(cb, 1) },
+    'done!': function(resp){ 
+		var exists = apis[0].fs.existsSync("./cache/all_task.log");
+		if(exists){ apis[0].fs.unlinkSync("./cache/all_task.log"); }
+		var exists = apis[0].fs.existsSync("./cache/any_task.log");
+		if(exists){ apis[0].fs.unlinkSync("./cache/any_task.log"); }
+	}
+}});
 
 ////////////////////////////////////////////////////////////////////////////
 // stop the servers when done so the other tests can use a single instance
