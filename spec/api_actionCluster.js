@@ -298,15 +298,14 @@ suite.addBatch({
     topic: function(){ 
 		var cb = this.callback; 
 		hostsWhichUsedCache = []; // reset
-		apis[0].actionCluster.cache.save(apis[0], "test_key", "123", null, cb) 
+		apis[0].actionCluster.cache.save(apis[0], "test_key_again", "123", null, cb) 
 	},
     'save resp (again)': function(a,b){ 
-		console.log(a)
 		specHelper.assert.equal(a.length,2);
 		specHelper.assert.equal(a[0].value,true);
-		specHelper.assert.equal(a[0].key,"test_key");
+		specHelper.assert.equal(a[0].key,"test_key_again");
 		specHelper.assert.equal(a[1].value,true);
-		specHelper.assert.equal(a[1].key,"test_key");
+		specHelper.assert.equal(a[1].key,"test_key_again");
 		hostsWhichUsedCache.push(a[0].remotePeer);
 		hostsWhichUsedCache.push(a[1].remotePeer);
 	} }
@@ -316,10 +315,9 @@ suite.addBatch({
   'I can remove a cache entry for a single peer':{
     topic: function(){ 
 		var cb = this.callback; 
-		apis[0].actionCluster.cache.destroy(apis[0], "test_key", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
+		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
 	},
     'save resp for single peer': function(a,b){ 
-		console.log(a)
 		specHelper.assert.equal(a[0].value, true);
 	} }
 });
@@ -328,14 +326,14 @@ suite.addBatch({
   'The entry removed above should now only be on one peer':{
     topic: function(){ 
 		var cb = this.callback; 
-		apis[0].actionCluster.cache.load(apis[0], "test_key", cb)
+		apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
 	},
     'load resp on one peer': function(a,b){ 
 		specHelper.assert.equal(a.length,3);
 		var numRecords = 0;
 		for(var i in a){
 			var r = a[i];
-			specHelper.assert.equal(r.key,"test_key");
+			specHelper.assert.equal(r.key,"test_key_again");
 			if(r.value == "123"){
 				numRecords++;
 			}
@@ -350,7 +348,7 @@ suite.addBatch({
     topic: function(){ 
 		var cb = this.callback; 
 		setTimeout(function(){
-			apis[0].actionCluster.cache.load(apis[0], "test_key", cb)
+			apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
 		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 4)
 	},
     'load resp afeter waiting to come back': function(a,b){ 
@@ -358,7 +356,7 @@ suite.addBatch({
 		var numRecords = 0;
 		for(var i in a){
 			var r = a[i];
-			specHelper.assert.equal(r.key,"test_key");
+			specHelper.assert.equal(r.key,"test_key_again");
 			if(r.value == "123"){
 				numRecords++;
 			}

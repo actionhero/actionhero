@@ -52,7 +52,7 @@ var initCache = function(api, next){
 
 	api.cache.destroy = function(api, key, next){
 		var cacheObj = api.cache.data[key];
-		if(cacheObj == null){
+		if(typeof cacheObj == "undefined"){
 			if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
 		}else{
 			delete api.cache.data[key];

@@ -215,9 +215,7 @@ var initActionCluster= function(api, next){
 			}
 		}	
 		
-		api.actionCluster.cache.destroy(api, key, function(){
-			saveAtEnoughPeers(api, key, value, expireTimeSeconds, null, null, null, next);
-		})
+		saveAtEnoughPeers(api, key, value, expireTimeSeconds, null, null, null, next);
 	}
 	
 	api.actionCluster.cache.load = function(api, key, next){
