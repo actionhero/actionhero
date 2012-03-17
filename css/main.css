@@ -55,9 +55,9 @@ LAYOUT
 PAGE: HOMEPAGE (body#hp)
 -------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-#hp #section {margin:30px 0; padding:0; background:url("../design/hp-section.png") 600px 0 repeat-y;}
-#hp #content {float:left; width:570px; overflow:hidden;}
-#hp #aside {float:right; width:330px; overflow:hidden;}
+#hp #section {margin:30px 0; padding:0; background:url("../design/hp-section.png") 700px 0 repeat-y;}
+#hp #content {float:left; width:670px; overflow:hidden;}
+#hp #aside {float:right; width:230px; overflow:hidden;}
 #welcome {position:relative; height:380px; overflow:hidden; background:url("../design/welcome.png") 0 0 no-repeat;}
 #welcome #imac {position:absolute; top:30px; right:0; width:398px; height:330px; overflow:hidden; }
 #welcome #imac #slider {position:relative; top:13px; left:14px; width:371px; height:211px; overflow:hidden; margin:0;}
