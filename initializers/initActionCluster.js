@@ -301,9 +301,9 @@ var initActionCluster= function(api, next){
 				if(counter > 0){
 					api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "yellow");
 				}
-				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
+				api.actionCluster.cache.duplicationTimer = setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 			}else{
-				setTimeout(completeAndRestart, api.configData.actionCluster.remoteTimeoutWaitMS);
+				api.actionCluster.cache.duplicationTimer = setTimeout(completeAndRestart, api.configData.actionCluster.remoteTimeoutWaitMS);
 			}
 		}
 		
@@ -344,7 +344,7 @@ var initActionCluster= function(api, next){
 		}
 		
 	}
-	setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
+	api.actionCluster.cache.duplicationTimer = setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 	
 	
 	// connect to first peer

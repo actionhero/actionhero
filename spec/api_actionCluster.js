@@ -162,7 +162,7 @@ suite.addBatch({
 	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
 	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
 	  	}else{
-	  		setTimeout(cb,1);
+	  		setTimeout(cb,1000);
 	  	}
 	  }
 	  
@@ -314,6 +314,11 @@ suite.addBatch({
 suite.addBatch({
   'I can remove a cache entry for a single peer':{
     topic: function(){ 
+		// turn off duplication
+		for(var i in apis){
+		  clearTimeout(apis[i].actionCluster.cache.duplicationTimer);
+		}
+		
 		var cb = this.callback; 
 		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
 	},
@@ -347,6 +352,11 @@ suite.addBatch({
 suite.addBatch({
   'The entry removed above should come back to this (or another) peer after waiting':{
     topic: function(){ 
+		// turn duplication back on
+	  	  for (var i in apis){
+			  apis[i].actionCluster.cache.duplicationTimer = setTimeout(apis[i].actionCluster.cache.ensureObjectDuplication, apis[i].configData.actionCluster.remoteTimeoutWaitMS, apis[i]);
+	  	  }
+		
 		var cb = this.callback; 
 		setTimeout(function(){
 			apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
