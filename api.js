@@ -113,9 +113,9 @@ var createActionHero = function(){
 	};
 
 	actionHero.stop = function(next){	
-		if(actionHero.running == true)
-		{
+		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+") and pausing tasks", "bold");
+			clearTimeout(actionHero.api.tasks.processTimer);
 			var closed = 0;
 			var checkForDone = function(closed){
 				if(closed == 2){

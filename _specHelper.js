@@ -5,6 +5,7 @@ specHelper.vows = require('vows');
 specHelper.net = require('net');
 specHelper.assert = require('assert');
 specHelper.request = require('request');
+specHelper.utils = require('./utils.js').utils;
 specHelper.apis = [];
 specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
@@ -17,7 +18,6 @@ specHelper.params[0] = {
 	"webServerPort" : 9000,
 	"socketServerPort" : 6000,
 	"logging":showLogs,
-	"cronProcess":false,
 	"cache" : {
 		"cacheFile" : "test_cache_1.cache",
 		"defaultExpireTimeSeconds" : 3600,
@@ -29,7 +29,7 @@ specHelper.params[0] = {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 10000,
+		"remoteTimeoutWaitMS" : 1000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": null,
@@ -43,7 +43,6 @@ specHelper.params[1] = {
 	"webServerPort" : 9001,
 	"socketServerPort" : 6001,
 	"logging":showLogs,
-	"cronProcess":false,
 	"cache" : {
 		"cacheFile" : "test_cache_2.cache",
 		"defaultExpireTimeSeconds" : 3600,
@@ -55,7 +54,7 @@ specHelper.params[1] = {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 10000,
+		"remoteTimeoutWaitMS" : 1000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": specHelper.url,
@@ -69,7 +68,6 @@ specHelper.params[2] = {
 	"webServerPort" : 9002,
 	"socketServerPort" : 6002,
 	"logging":showLogs,
-	"cronProcess":false,
 	"cache" : {
 		"cacheFile" : "test_cache_3.cache",
 		"defaultExpireTimeSeconds" : 3600,
@@ -81,7 +79,7 @@ specHelper.params[2] = {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
 		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 10000,
+		"remoteTimeoutWaitMS" : 1000,
 		"nodeDuplication" : 2,
 		"StartingPeer" : {
 			"host": specHelper.url,

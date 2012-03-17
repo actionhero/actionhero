@@ -113,7 +113,7 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'actionClusters should reconnect to eachother nAt':{
+  'actionClusters should reconnect to eachother n\'at':{
     topic: function(){ var cb = this.callback; setTimeout(cb, (apis[0].configData.actionCluster.ReConnectToLostPeersMS * 2)); },
     'pause it over': function(){ 
 		for (var i = 0; i<=2; i++){
@@ -147,23 +147,33 @@ suite.addBatch({
   'specHelper.prepare.socketClients':{
     topic: function(){
       var cb = this.callback;
-	  client1 = net.connect(specHelper.params[0].socketServerPort, function(){
-		  client1.setEncoding('utf8');
-		  client2 = net.connect(specHelper.params[1].socketServerPort, function(){
-			  client2.setEncoding('utf8');
-			  client3 = net.connect(specHelper.params[2].socketServerPort, function(){
-				  client3.setEncoding('utf8');
-				  setTimeout(cb, 1000);
-			  }); 
-		  }); 
-	  });
+	  var connectedSockets = {};
+	  client1 = net.connect(specHelper.params[0].socketServerPort);
+	  client1.setEncoding('utf8');
+	  client2 = net.connect(specHelper.params[1].socketServerPort);
+	  client2.setEncoding('utf8');
+	  client3 = net.connect(specHelper.params[2].socketServerPort);
+	  client3.setEncoding('utf8');
+	  client1.on("data", function(){ connectedSockets[0] = true ;})
+	  client1.on("data", function(){ connectedSockets[1] = true ;})
+	  client1.on("data", function(){ connectedSockets[2] = true ;})
+	  
+	  function checkForSocketConnections(connectedSockets, expectedCount, cb){
+	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
+	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
+	  	}else{
+	  		console.log(cb)
+	  		cb;
+	  	}
+	  }
+	  
+	  checkForSocketConnections(connectedSockets, 3, cb);
     },
-    'api object should exist': function(){ 
+    'api object should exist': function(resp){ 
 		specHelper.assert.isObject(client1); 
 		specHelper.assert.isObject(client2); 
 		specHelper.assert.isObject(client3); 
-	},
-  }
+	}}
 });
 
 suite.addBatch({
@@ -173,7 +183,7 @@ suite.addBatch({
 		}, 'should be a JSON response 1' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
+			specHelper.assert.equal(d.roomStatus.members.length, 3);
 		}
 	},
 	"socket 2 connections should be able to connect and get JSON": {
@@ -182,7 +192,7 @@ suite.addBatch({
 		}, 'should be a JSON response 2' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
+			specHelper.assert.equal(d.roomStatus.members.length, 3);
 		}
 	},
 	"socket 3 connections should be able to connect and get JSON": {
@@ -191,7 +201,7 @@ suite.addBatch({
 		}, 'should be a JSON response 3' : function(resp, d){
 			specHelper.assert.isObject(d);
 			specHelper.assert.equal("defaultRoom", d.room);
-			specHelper.assert.isTrue(3 <= d.roomStatus.members.length);
+			specHelper.assert.equal(d.roomStatus.members.length, 3);
 		}
 	}	
 });
@@ -251,7 +261,6 @@ suite.addBatch({
 	} }
 });
 
-var hostsWhichUsedCache = [];
 suite.addBatch({
   'I can delete the object on all peers':{
     topic: function(){ var cb = this.callback; apis[0].actionCluster.cache.destroy(apis[0], "test_key", cb) },
@@ -284,6 +293,83 @@ suite.addBatch({
 		}
 	} }
 });
+
+suite.addBatch({
+  'I can save an object with parity of 2 (again)':{
+    topic: function(){ 
+		var cb = this.callback; 
+		hostsWhichUsedCache = []; // reset
+		apis[0].actionCluster.cache.save(apis[0], "test_key", "123", null, cb) 
+	},
+    'save resp (again)': function(a,b){ 
+		console.log(a)
+		specHelper.assert.equal(a.length,2);
+		specHelper.assert.equal(a[0].value,true);
+		specHelper.assert.equal(a[0].key,"test_key");
+		specHelper.assert.equal(a[1].value,true);
+		specHelper.assert.equal(a[1].key,"test_key");
+		hostsWhichUsedCache.push(a[0].remotePeer);
+		hostsWhichUsedCache.push(a[1].remotePeer);
+	} }
+});
+
+suite.addBatch({
+  'I can remove a cache entry for a single peer':{
+    topic: function(){ 
+		var cb = this.callback; 
+		apis[0].actionCluster.cache.destroy(apis[0], "test_key", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
+	},
+    'save resp for single peer': function(a,b){ 
+		console.log(a)
+		specHelper.assert.equal(a[0].value, true);
+	} }
+});
+
+suite.addBatch({
+  'The entry removed above should now only be on one peer':{
+    topic: function(){ 
+		var cb = this.callback; 
+		apis[0].actionCluster.cache.load(apis[0], "test_key", cb)
+	},
+    'load resp on one peer': function(a,b){ 
+		specHelper.assert.equal(a.length,3);
+		var numRecords = 0;
+		for(var i in a){
+			var r = a[i];
+			specHelper.assert.equal(r.key,"test_key");
+			if(r.value == "123"){
+				numRecords++;
+			}
+		}
+		specHelper.assert.equal(numRecords,1);
+	} }
+});
+
+
+suite.addBatch({
+  'The entry removed above should come back to this (or another) peer after waiting':{
+    topic: function(){ 
+		var cb = this.callback; 
+		setTimeout(function(){
+			apis[0].actionCluster.cache.load(apis[0], "test_key", cb)
+		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 4)
+	},
+    'load resp afeter waiting to come back': function(a,b){ 
+		specHelper.assert.equal(a.length,3);
+		var numRecords = 0;
+		for(var i in a){
+			var r = a[i];
+			specHelper.assert.equal(r.key,"test_key");
+			if(r.value == "123"){
+				numRecords++;
+			}
+		}
+		specHelper.assert.equal(numRecords,2);
+	} }
+});
+
+////////////////////////////////////////////////////////////////////////////
+// Tests to ensure that tasks only fire the proper number of time for "all" and "any"
 
 ////////////////////////////////////////////////////////////////////////////
 // stop the servers when done so the other tests can use a single instance

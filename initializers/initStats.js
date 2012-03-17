@@ -28,27 +28,32 @@ var initStats = function(api, next){
 	
 	api.stats.calculate = function(api, next){
 		api.cache.load(api, "_stats", function(stats){
-			var now = new Date().getTime();
-			stats.lastCalculation = now;
-			stats.uptimeSeconds = (now - stats.startTime) / 1000;
-			stats.cache = {
-				numberOfObjects: api.utils.hashLength(api.cache.data)
-			};
-			stats.socketServer = {
-				numberOfSocketRequests: api.socketServer.numberOfSocketRequests
-			};
-			stats.webServer = {
-				numberOfWebRequests: api.webServer.numberOfWebRequests
-			};
-			stats.memoryConsumption = process.memoryUsage().heapUsed;
-			stats.actionCluster = {
-				peers: api.actionCluster.peers,
-				clusterRequests: api.actionCluster.requestID
-			};
-			
-			api.cache.save(api, "_stats", stats, cacheTime, function(){
-				if(typeof next == "function"){ next(stats); }
-			});
+			if(stats != null){
+				var now = new Date().getTime();
+				stats.lastCalculation = now;
+				stats.uptimeSeconds = (now - stats.startTime) / 1000;
+				stats.cache = {
+					numberOfObjects: api.utils.hashLength(api.cache.data)
+				};
+				stats.socketServer = {
+					numberOfSocketRequests: api.socketServer.numberOfSocketRequests
+				};
+				stats.webServer = {
+					numberOfWebRequests: api.webServer.numberOfWebRequests
+				};
+				stats.memoryConsumption = process.memoryUsage().heapUsed;
+				stats.actionCluster = {
+					peers: api.actionCluster.peers,
+					clusterRequests: api.actionCluster.requestID
+				};
+				api.cache.save(api, "_stats", stats, cacheTime, function(){
+					if(typeof next == "function"){ next(stats); }
+				});
+			}else{
+				api.stats.init(api, function(){
+					api.stats.calculate(api, next)
+				});
+			}
 		});
 	}
 	

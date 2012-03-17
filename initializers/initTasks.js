@@ -7,7 +7,7 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.queue = [];
 	api.tasks.timers = {};
-	api.tasks.cycleTimeMS = 1000;
+	api.tasks.cycleTimeMS = 500;
 	
 	api.tasks.enqueue = function(api, taskName, params){
 		api.tasks.queue.push({
@@ -38,10 +38,12 @@ var initTasks = function(api, next)
 		if(api.tasks.queue.length > 0){
 			var thisTask = api.tasks.queue[0];
 			api.tasks.queue = api.tasks.queue.splice(1);
+			// no peers, so do all types of tasks
 			if(api.actionCluster.connectionsToPeers.length < 2){
 				api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
 					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 				});
+			// cluster: need to ensure that the "any" tasks aren't done more than once
 			}else{
 				api.actionCluster.cache.load(api, "_periodicTasks", function(clusterResp){
 					var otherPeerTasks = {}
@@ -52,21 +54,25 @@ var initTasks = function(api, next)
 					}
 					var t = api.tasks.tasks[thisTask.taskName];
 					api.cache.load(api, "_periodicTasks", function(_periodicTasks){
-						if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
-							api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
-								if(_periodicTasks.indexOf(t.name) < 0){
-									_periodicTasks.push(t.name);
-								}
+						if(_periodicTasks != null){
+							if(t.scope == "all" || otherPeerTasks[thisTask.taskName] != true){
+								api.tasks.run(api, thisTask.taskName, thisTask.params, function(){
+									if(_periodicTasks.indexOf(t.name) < 0){
+										_periodicTasks.push(t.name);
+									}
+									api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
+										api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+									});
+								});
+							}else{
+								_periodicTasks.splice(_periodicTasks.indexOf(t.name),1);
 								api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
+									api.tasks.timers[t.name] = setTimeout(api.tasks.enqueue, t.frequency, api, t.name);
 									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 								});
-							});
+							}
 						}else{
-							_periodicTasks.splice(_periodicTasks.indexOf(t.name),1);
-							api.cache.save(api, "_periodicTasks", _periodicTasks, null, function(resp){
-								api.tasks.timers[t.name] = setTimeout(api.tasks.enqueue, t.frequency, api, t.name);
-								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-							});
+							api.tasks.startPeriodicTasks();
 						}
 					});
 				});
@@ -79,6 +85,10 @@ var initTasks = function(api, next)
 	api.tasks.startPeriodicTasks = function(api, next){
 		var _periodicTasks = [];
 		for(var i in api.tasks.tasks){
+			
+			
+			// I THINK THAT api.tasks.tasks IS NOT GETTING RELOADED AT SERER RESTART PROPERLY BECAUSE OF MODLUES NOT GETTING RELOADED! 
+			
 			var task = api.tasks.tasks[i];
 			if(task.frequency > 0){ // all scopes ok for single node
 				if(api.tasks.timers[task.name] == null){

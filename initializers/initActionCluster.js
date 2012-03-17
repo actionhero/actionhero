@@ -198,12 +198,16 @@ var initActionCluster= function(api, next){
 			if(i < api.utils.hashLength(api.actionCluster.connectionsToPeers)){
 				saveObjectAtOnePeer(api, key, value, expireTimeSeconds, requestID, i);
 				api.actionCluster.cache.checkForComplete(api, requestID, (i+1), function(resp){
-					if(resp[i]["value"] == true){ instnaceCounter++; }					
-					if(instnaceCounter == api.configData.actionCluster.nodeDuplication){
-						if(typeof next == "function"){ next(resp); }
+					if(resp == false){
+						// TODO: ?
 					}else{
-						i++;
-						saveAtEnoughPeers(api, key, value, expireTimeSeconds, requestID, i, instnaceCounter, next);
+						if(resp[i]["value"] == true){ instnaceCounter++; }					
+						if(instnaceCounter == api.configData.actionCluster.nodeDuplication){
+							if(typeof next == "function"){ next(resp); }
+						}else{
+							i++;
+							saveAtEnoughPeers(api, key, value, expireTimeSeconds, requestID, i, instnaceCounter, next);
+						}
 					}
 				});
 			}else{
@@ -247,7 +251,7 @@ var initActionCluster= function(api, next){
 			peerResponses: []
 		};
 		
-		if(api.utils.hashLength(api.actionCluster.connectionsToPeers)){
+		if(api.utils.hashLength(api.actionCluster.connectionsToPeers) > 0){
 			var msgObj = {action: "cacheDestroy", key: key, requestID: requestID};
 			if(remotePeer == null){
 				api.actionCluster.sendToAllPeers(msgObj);
@@ -297,7 +301,7 @@ var initActionCluster= function(api, next){
 		var completeAndRestart = function(){
 			if(started == 0){
 				if(counter > 0){
-					api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "red");
+					api.log(counter + " cache objects on this server do not have corresponding duplicates in peers; Attempting to re-duplicate", "yellow");
 				}
 				setTimeout(api.actionCluster.cache.ensureObjectDuplication, api.configData.actionCluster.remoteTimeoutWaitMS, api);
 			}else{

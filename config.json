@@ -19,7 +19,7 @@
 		
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 1000,
+		"ReConnectToLostPeersMS" : 5000,
 		"CycleCheckTimeMS" : 10,
 		"remoteTimeoutWaitMS" : 5000,
 		"nodeDuplication" : 2,
