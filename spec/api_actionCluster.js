@@ -318,6 +318,7 @@ suite.addBatch({
 		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
 	},
     'save resp for single peer': function(a,b){ 
+		specHelper.assert.equal(a[0].key, "test_key_again");
 		specHelper.assert.equal(a[0].value, true);
 	} }
 });
