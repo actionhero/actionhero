@@ -150,19 +150,19 @@ suite.addBatch({
 	  var connectedSockets = {};
 	  client1 = net.connect(specHelper.params[0].socketServerPort);
 	  client1.setEncoding('utf8');
+	  client1.on("data", function(){ connectedSockets[0] = true ;})
 	  client2 = net.connect(specHelper.params[1].socketServerPort);
 	  client2.setEncoding('utf8');
+	  client2.on("data", function(){ connectedSockets[1] = true ;})
 	  client3 = net.connect(specHelper.params[2].socketServerPort);
-	  client3.setEncoding('utf8');
-	  client1.on("data", function(){ connectedSockets[0] = true ;})
-	  client1.on("data", function(){ connectedSockets[1] = true ;})
-	  client1.on("data", function(){ connectedSockets[2] = true ;})
+	  client3.setEncoding('utf8');	  
+	  client3.on("data", function(){ connectedSockets[2] = true ;})
 	  
 	  function checkForSocketConnections(connectedSockets, expectedCount, cb){
 	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
 	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
 	  	}else{
-	  		setTimeout(cb,(apis[0].configData.actionCluster.ReConnectToLostPeersMS * 2));
+	  		setTimeout(cb,1);
 	  	}
 	  }
 	  
