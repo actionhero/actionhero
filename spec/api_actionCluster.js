@@ -396,13 +396,13 @@ suite.addBatch({
 	},
     'should have data in all servers': function(resp, err){ 
 		for (var i in resp){
-			specHelper.assert.deepEqual(resp[i],[
+			specHelper.assert.deepEqual(resp[i].sort(),[
 				'caclculateStats',
 				'cleanLogFiles',
 				'cleanOldCacheObjects',
 				'pingSocketClients',
 				'saveCacheToDisk'	
-			]);
+			].sort());
 		}
 	} }
 });
