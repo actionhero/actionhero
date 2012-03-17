@@ -162,8 +162,7 @@ suite.addBatch({
 	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
 	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
 	  	}else{
-	  		console.log(cb)
-	  		cb;
+	  		setTimeout(cb,(apis[0].configData.actionCluster.ReConnectToLostPeersMS * 2));
 	  	}
 	  }
 	  

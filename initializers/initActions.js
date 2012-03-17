@@ -39,6 +39,9 @@ var initActions = function(api, next)
 			if (file != ".DS_Store"){
 				var actionName = file.split(".")[0];
 				var thisAction = require(actionsPath + file)["action"];
+				if(require.cache[actionsPath + file] != null){
+					delete require.cache[actionsPath + file];
+				}
 				api.actions[thisAction.name] = require(actionsPath + file).action;
 				validateAction(api, api.actions[thisAction.name]);
 				api.log("action loaded: " + actionName, "blue");

@@ -71,8 +71,6 @@ var initTasks = function(api, next)
 									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 								});
 							}
-						}else{
-							api.tasks.startPeriodicTasks();
 						}
 					});
 				});
@@ -85,10 +83,6 @@ var initTasks = function(api, next)
 	api.tasks.startPeriodicTasks = function(api, next){
 		var _periodicTasks = [];
 		for(var i in api.tasks.tasks){
-			
-			
-			// I THINK THAT api.tasks.tasks IS NOT GETTING RELOADED AT SERER RESTART PROPERLY BECAUSE OF MODLUES NOT GETTING RELOADED! 
-			
 			var task = api.tasks.tasks[i];
 			if(task.frequency > 0){ // all scopes ok for single node
 				if(api.tasks.timers[task.name] == null){
@@ -133,6 +127,9 @@ var initTasks = function(api, next)
 			api.fs.readdirSync(folder).forEach( function(file) {
 				if (file != ".DS_Store"){
 					var taskName = file.split(".")[0];
+					if(require.cache[folder + file] != null){
+						delete require.cache[folder + file];
+					}
 					var thisTask = require(folder + file)["task"];
 					api.tasks.tasks[thisTask.name] = require(folder + file).task;
 					validateTask(api, api.tasks.tasks[thisTask.name]);

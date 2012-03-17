@@ -36,7 +36,7 @@ var createActionHero = function(){
 		api.crypto = require("crypto");
 		api.consoleColors = require('colors');
 		api.data2xml = require('data2xml');
-		
+				
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
 			api.fs.existsSync = api.path.existsSync;
@@ -69,6 +69,9 @@ var createActionHero = function(){
 				api.fs.readdirSync(folder).forEach( function(file) {
 					if (file != ".DS_Store"){
 						var initalizer = file.split(".")[0];
+						if(require.cache[initializerFolders[i] + file] != null){
+							delete require.cache[initializerFolders[i] + file];
+						}
 						actionHero[initalizer] = require(initializerFolders[i] + file)[initalizer];
 					}
 				});
