@@ -345,7 +345,7 @@ suite.addBatch({
 		for(var i in a){
 			var r = a[i];
 			specHelper.assert.equal(r.key,"test_key_again");
-			if(r.value == "123"){
+			if(r.value === "123"){
 				numRecords++;
 			}
 		}
