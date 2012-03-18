@@ -130,13 +130,13 @@ exports.action = action;
 
 <ul>
 <li>quit. disconnect from the session</li>
-<li>paramAdd &ndash; save a singe variable to your connection.  IE: &lsquo;addParam screenName=evan&rsquo;</li>
-<li>paramView &ndash; returns the details of a single param. IE: &lsquo;viewParam screenName&rsquo;</li>
-<li>paramDelete &ndash; deletes a single param.  IE: &lsquo;deleteParam screenName&rsquo;</li>
-<li>paramsView &ndash; returns a JSON object of all the params set to this connection</li>
-<li>paramsDelete &ndash; deletes all params set to this session</li>
-<li>roomChange &ndash; change the <code>room</code> you are connected to.  By default all socket connections are in the <code>api.configData.defaultSocketRoom</code> room.</li>
-<li>roomView &ndash; show you the room you are connected to, and information about the members currently in that room.</li>
+<li>paramAdd - save a singe variable to your connection.  IE: &lsquo;addParam screenName=evan&rsquo;</li>
+<li>paramView - returns the details of a single param. IE: &lsquo;viewParam screenName&rsquo;</li>
+<li>paramDelete - deletes a single param.  IE: &lsquo;deleteParam screenName&rsquo;</li>
+<li>paramsView - returns a JSON object of all the params set to this connection</li>
+<li>paramsDelete - deletes all params set to this session</li>
+<li>roomChange - change the <code>room</code> you are connected to.  By default all socket connections are in the <code>api.configData.defaultSocketRoom</code> room.</li>
+<li>roomView - show you the room you are connected to, and information about the members currently in that room.</li>
 <li>say [message]</li>
 </ul>
 
@@ -378,7 +378,7 @@ say hooray!
 
 <h2>Tasks</h2>
 
-<p>Tasks are special periodically run actions the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:</p>
+<p>Tasks are special actions (potentially periodically run) the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:</p>
 
 <ul>
 <li>calculateStats
@@ -431,7 +431,7 @@ say hooray!
 <ul>
 <li><code>task.name</code>: The unique name of your task</li>
 <li><code>task.description</code>: a description</li>
-<li><code>task.scope</code>: &ldquo;any&rdquo; or &ldquo;all&rdquo;.  Should a single actionCluster server (any) run this task, or should all of them?</li>
+<li><code>task.scope</code>: &ldquo;any&rdquo; or &ldquo;all&rdquo;.  Should a single actionCluster server (any) run this task, or should all of them? For example, <code>calculateStats</code> is run by all peers in the action cluster (because we want to know all peer&rsquo;s status), but if you had a task to clean old sessions from your database or send an email, you would only want a single node to do that.</li>
 <li><code>task.frequency</code>: In milliseconds, how often should I run?.  Setting me to 0 will cause me not to run automatically, but I can still be run with <code>api.task.run</code></li>
 </ul>
 
@@ -461,12 +461,13 @@ task.run = function(api, params, next){
 exports.task = task;
 </pre>
 
+<p>&ldquo;all&rdquo; tasks will be run on all nodes in the actionCluster, but &ldquo;any&rdquo; tasks will only be run on the mater process (the first one to start, the one without <code>configData.actionCluster.startingPeer</code> set).</p>
+
 <h2>Requirements</h2>
 
 <ul>
 <li>node.js server</li>
 <li>npm</li>
-<li>mySQL (other ORMs coming soon?)</li>
 </ul>
 
 
@@ -548,17 +549,70 @@ actionHero.start({initFunction: initFunction}, function(api){
 
 <p>Now <code>api.utils.randomNumber()</code> is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via <code>`params.initFunction</code>.  This allows all threads in an cluster to access the methods. Even though the api object is returned to you, setting globally-available functions after initialization way may not propagate to the parts of actionHero.</p>
 
+<h2>Configuration</h2>
+
+<p>Create a config.json file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assuemd from the default.</p>
+
+<pre class="brush: js">{ 
+    "apiVerson" : "1.0.0",
+    "webServerPort" : 8080,
+    "socketServerPort" : 5000,
+    "serverName" : "actionHero API",
+    "socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
+    "apiBaseDir" : "./node_modules/actionHero/",
+
+    "urlPathForActions" : "api",
+    "urlPathForFiles" : "file",
+    "rootEndpointType" : "api",
+
+    "logging" : true,
+    "logFolder" : "./log/",
+    "logFile" : "api.log",
+    "maxLogFileSize" : 10485760,
+    "logTable" : "log",
+    "logRequests" : true,
+
+    "actionCluster": {
+        "Key" : "4ijhaijhm43yjnawhja43jaj",
+        "ReConnectToLostPeersMS" : 5000,
+        "CycleCheckTimeMS" : 10,
+        "remoteTimeoutWaitMS" : 5000,
+        "nodeDuplication" : 2,
+        "StartingPeer" : {
+            "host": null,
+            "port": null
+        }
+    },
+
+    "flatFileDirectory" : "./node_modules/actionHero/public/",
+    "flatFileNotFoundMessage" : "Sorry, that file is not found :(",
+    "flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
+
+    "cache" : {
+        "cacheFolder" : "./cache/",
+        "cacheFile" : "api.cache",
+        "defaultExpireTimeSeconds" : 3600,
+        "maxMemoryBytes" : 524288000
+    },
+
+    "defaultSocketRoom": "defaultRoom",
+
+    "defaultLimit" : 100,
+    "defaultOffset" : 0
+}
+</pre>
+
 <h2>Default Content</h2>
 
 <p><strong>Actions</strong>:</p>
 
 <ul>
-<li>cacheTest &ndash; a test of the DB-based key-value cache system</li>
-<li>actionClusterCacheTest &ndash; another version of a cache test, but this one works across many nodes in the actionCluster.  This version also persists an object after the test is compete.</li>
-<li>actionsView &ndash; returns a list of available actions on the server and their metadata</li>
-<li>randomNumber &ndash; generates a random number</li>
-<li>status &ndash; returns server status and stats</li>
-<li>say &ndash; sends messages via http to clients connected via socket (in the room you specify)</li>
+<li>cacheTest - a test of the DB-based key-value cache system</li>
+<li>actionClusterCacheTest - another version of a cache test, but this one works across many nodes in the actionCluster.  This version also persists an object after the test is compete.</li>
+<li>actionsView - returns a list of available actions on the server and their metadata</li>
+<li>randomNumber - generates a random number</li>
+<li>status - returns server status and stats</li>
+<li>say - sends messages via http to clients connected via socket (in the room you specify)</li>
 </ul>
 
 
@@ -570,18 +624,15 @@ actionHero.start({initFunction: initFunction}, function(api){
 
 <h3>Safe Params</h3>
 
-<p>Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params you define as required or optional in your actions <code>action.inputs.required</code> and <code>action.inputs.optional</code>.  Special params which the api will always accept are:</p>
-
-<pre class="brush: js">[
-    "callback",
-    "action",
-    "limit",
-    "offset",
-    "outputType"
-];
-</pre>
-
-<p>Params are loaded in this order GET &ndash;> POST (normal) &ndash;> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable <code>key</code>=<code>postValue</code> as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.</p>
+<p>Params (GET and POST) provided by the user will be checked against a whitelist.  Any column headers in your tables (like firstName, lastName) will be accepted and additional params you define as required or optional in your actions <code>action.inputs.required</code> and <code>action.inputs.optional</code>.  Special params which the api will always accept are:
+    [
+        &ldquo;callback&rdquo;,
+        &ldquo;action&rdquo;,
+        &ldquo;limit&rdquo;,
+        &ldquo;offset&rdquo;,
+        &ldquo;outputType&rdquo;
+    ];
+Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable <code>key</code>=<code>postValue</code> as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.</p>
 
 <h3>Logging</h3>
 
