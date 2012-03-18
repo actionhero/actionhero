@@ -441,6 +441,57 @@ A common practice to extend the API is to add new classes which are not actions,
 
 Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via ``params.initFunction`.  This allows all threads in an cluster to access the methods. Even though the api object is returned to you, setting globally-available functions after initialization way may not propagate to the parts of actionHero.
 
+## Configuration
+Create a config.json file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assuemd from the default.
+
+	{ 
+	    "apiVerson" : "1.0.0",
+		"webServerPort" : 8080,
+		"socketServerPort" : 5000,
+		"serverName" : "actionHero API",
+		"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
+		"apiBaseDir" : "./node_modules/actionHero/",
+	
+		"urlPathForActions" : "api",
+		"urlPathForFiles" : "file",
+		"rootEndpointType" : "api",
+		
+		"logging" : true,
+		"logFolder" : "./log/",
+		"logFile" : "api.log",
+		"maxLogFileSize" : 10485760,
+		"logTable" : "log",
+		"logRequests" : true,
+		
+		"actionCluster": {
+			"Key" : "4ijhaijhm43yjnawhja43jaj",
+			"ReConnectToLostPeersMS" : 5000,
+			"CycleCheckTimeMS" : 10,
+			"remoteTimeoutWaitMS" : 5000,
+			"nodeDuplication" : 2,
+			"StartingPeer" : {
+				"host": null,
+				"port": null
+			}
+		},
+
+		"flatFileDirectory" : "./node_modules/actionHero/public/",
+		"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
+		"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
+
+		"cache" : {
+			"cacheFolder" : "./cache/",
+			"cacheFile" : "api.cache",
+			"defaultExpireTimeSeconds" : 3600,
+			"maxMemoryBytes" : 524288000
+		},
+	
+		"defaultSocketRoom": "defaultRoom",
+
+		"defaultLimit" : 100,
+		"defaultOffset" : 0
+	}
+
 ## Default Content
 __Actions__:
 
