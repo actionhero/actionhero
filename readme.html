@@ -14,7 +14,7 @@
 
 <p>Here&rsquo;s an example of a simple action which will return a random number to the client:</p>
 
-<pre><code>var action = {};
+<pre class="brush: js">var action = {};
 
 /////////////////////////////////////////////////////////////////////
 // metadata
@@ -38,7 +38,7 @@ action.run = function(api, connection, next){
 /////////////////////////////////////////////////////////////////////
 // exports
 exports.action = action;
-</code></pre>
+</pre>
 
 <p>Notes:</p>
 
@@ -58,7 +58,7 @@ exports.action = action;
 
 <p>HTTP responses follow the format:</p>
 
-<pre><code>{
+<pre class="brush: js">{
     hello: "world"
     serverInformation: {
         serverName: "actionHero API",
@@ -76,11 +76,11 @@ exports.action = action;
     },
     error: "OK"
 }
-</code></pre>
+</pre>
 
 <p>HTTP Example:</p>
 
-<pre><code>&gt; curl localhost:8080/api -v
+<pre class="brush: js">&gt; curl localhost:8080/api -v
 * About to connect() to localhost port 8080 (#0)
 *   Trying ::1... Connection refused
 *   Trying 127.0.0.1... connected
@@ -99,7 +99,7 @@ exports.action = action;
 * Connection #0 to host localhost left intact
 * Closing connection #0
 {"serverInformation":{"serverName":"actionHero API","apiVerson":"0.1.5","requestDuration":16},"requestorInformation":{"remoteAddress":"127.0.0.1","RequestsRemaining":905,"recievedParams":{"limit":100,"offset":0}},"error":"undefined is not a known action."}
-</code></pre>
+</pre>
 
 <ul>
 <li>you can provide the <code>?callback=myFunc</code> param to initiate a JSON-p response which will wrap the returned JSON in your callback function.</li>
@@ -160,7 +160,7 @@ exports.action = action;
 
 <p>Socket Example:</p>
 
-<pre><code>&gt; telnet localhost 5000
+<pre class="brush: js">&gt; telnet localhost 5000
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
@@ -180,7 +180,7 @@ cacheTest
 say hooray!
 {"context":"response","status":"OK","messageCount":7}
 {"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":8}
-</code></pre>
+</pre>
 
 <h4>Files and Routes</h4>
 
@@ -286,7 +286,7 @@ say hooray!
 
 <p>Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.</p>
 
-<pre><code>[
+<pre class="brush: js">[
    {
        "remotePeer": {
            "host": "127.0.0.1", 
@@ -302,13 +302,13 @@ say hooray!
        "value": true
    }
 ]
-</code></pre>
+</pre>
 
 <p><strong>api.actionCluster.cache.load</strong>: response object</p>
 
 <p>Note that responses from all peers are listed, and those that do not hold the object return null.</p>
 
-<pre><code>[
+<pre class="brush: js">[
    {
        "remotePeer": {
            "host": "127.0.0.1", 
@@ -343,13 +343,13 @@ say hooray!
        "key": "ActionClusterCacheTest_myKey"
    }
 ]
-</code></pre>
+</pre>
 
 <p><strong>api.actionCluster.cache.destroy</strong>: response object</p>
 
 <p>Note that responses from all peers are listed, and those that successfully deleted are true.</p>
 
-<pre><code>[
+<pre class="brush: js">[
    {
        "remotePeer": {
            "host": "127.0.0.1", 
@@ -372,7 +372,7 @@ say hooray!
        "value": false
    }
 ]
-</code></pre>
+</pre>
 
 <p>All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait <code>api.configData.actionCluster.remoteTimeoutWaitMS</code> to collect responses from peers, and will then return whatever information they have collected so far.    This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).</p>
 
@@ -440,7 +440,7 @@ say hooray!
 
 <p>An example Task:</p>
 
-<pre><code>var task = {};
+<pre class="brush: js">var task = {};
 
 /////////////////////////////////////////////////////////////////////
 // metadata
@@ -459,7 +459,7 @@ task.run = function(api, params, next){
 /////////////////////////////////////////////////////////////////////
 // exports
 exports.task = task;
-</code></pre>
+</pre>
 
 <p>&ldquo;all&rdquo; tasks will be run on all nodes in the actionCluster, but &ldquo;any&rdquo; tasks will only be run on the mater process (the first one to start, the one without <code>configData.actionCluster.startingPeer</code> set).</p>
 
@@ -481,7 +481,7 @@ exports.task = task;
 
 <p>The contents of <code>index.js</code> should look something like this:</p>
 
-<pre><code>// load in the actionHero class
+<pre class="brush: js">// load in the actionHero class
 var actionHero = require("actionHero").actionHero;
 
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
@@ -493,7 +493,7 @@ params.configChanges = {
 
 // start the server!
 actionHero.start(params);
-</code></pre>
+</pre>
 
 <ul>
 <li>Start up the server: <code>node index.js</code></li>
@@ -504,7 +504,7 @@ actionHero.start(params);
 
 <p>You can pragmatically control an actionHero server with <code>actionHero.start(params, callback)</code>, <code>actionHero.stop(callback)</code> and <code>actionHero.restart(callback)</code></p>
 
-<pre><code>var timer = 5000;
+<pre class="brush: js">var timer = 5000;
 actionHero.start(params, function(api){
 
     api.log(" &gt;&gt; Boot Sucessful!");
@@ -527,7 +527,7 @@ actionHero.start(params, function(api){
         })
     }, timer);
 });
-</code></pre>
+</pre>
 
 <h2>Extending actionHero</h2>
 
@@ -535,7 +535,7 @@ actionHero.start(params, function(api){
 
 <p>A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:</p>
 
-<pre><code>function initFunction(api, next){
+<pre class="brush: js">function initFunction(api, next){
     api.utils.randomNumber = function(){
         return Math.random() * 100;
     };
@@ -545,7 +545,7 @@ var actionHero = require("actionHero").actionHero;
 actionHero.start({initFunction: initFunction}, function(api){
     api.log("Loading complete!", ['green', 'bold']);
 });
-</code></pre>
+</pre>
 
 <p>Now <code>api.utils.randomNumber()</code> is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via <code>`params.initFunction</code>.  This allows all threads in an cluster to access the methods. Even though the api object is returned to you, setting globally-available functions after initialization way may not propagate to the parts of actionHero.</p>
 
@@ -553,7 +553,7 @@ actionHero.start({initFunction: initFunction}, function(api){
 
 <p>Create a config.json file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assuemd from the default.</p>
 
-<pre><code>{ 
+<pre class="brush: js">{ 
     "apiVerson" : "1.0.0",
     "webServerPort" : 8080,
     "socketServerPort" : 5000,
@@ -600,7 +600,7 @@ actionHero.start({initFunction: initFunction}, function(api){
     "defaultLimit" : 100,
     "defaultOffset" : 0
 }
-</code></pre>
+</pre>
 
 <h2>Default Content</h2>
 
