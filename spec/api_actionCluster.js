@@ -320,14 +320,16 @@ suite.addBatch({
 		}
 		
 		var cb = this.callback; 
-		var results = [];
-		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
-			results.push(resp);
-			apis[0].actionCluster.cache.load(apis[0], "test_key_again", function(resp2){
-				results.push(resp2);
-				cb(results);
-			})
-		});
+		setTimeout(function(){
+			var results = [];
+			apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
+				results.push(resp);
+				apis[0].actionCluster.cache.load(apis[0], "test_key_again", function(resp2){
+					results.push(resp2);
+					cb(results);
+				})
+			});
+		}, (apis[0].configData.actionCluster.remoteTimeoutWaitMS * 2))
 	},
     'delete resp for single peer': function(a,b){ 
 		resp = a[0];
