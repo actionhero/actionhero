@@ -333,10 +333,16 @@ suite.addBatch({
 suite.addBatch({
   'The entry removed above should now only be on one peer':{
     topic: function(){ 
+		// turn off duplication
+		for(var i in apis){
+		  clearTimeout(apis[i].actionCluster.cache.duplicationTimer);
+		}
+		
 		var cb = this.callback; 
 		apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
 	},
     'load resp on one peer': function(a,b){ 
+		console.log(a)
 		specHelper.assert.equal(a.length,3);
 		var numRecords = 0;
 		for(var i in a){
