@@ -15,6 +15,8 @@
 * Better error handling if the socket / web port are in use
 * Cleanup of the example HTML pages
 * HTTP requets will now return serverInformation.currentTime
+* The original server (the one with no `configData.actionCluster.startingPeer` will be the only server to run 'any' tasks)
+	* Other servers will NOT assume the role of runing "any" tasks, but they will keep them in memory until the master server comes back upon a crash.
 
 ## Version 0.2.6
 

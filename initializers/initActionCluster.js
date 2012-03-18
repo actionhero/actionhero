@@ -46,6 +46,16 @@ var initActionCluster= function(api, next){
 					api.cache.destroy(api, message.key, function(value){
 						api.socketServer.sendSocketMessage(connection, {context: "response", value: value, key: message.key, requestID: message.requestID})
 					});
+				}else if (message.action == "masterStatus"){
+					api.socketServer.sendSocketMessage(connection, {context: "response", value: api.actionCluster.master, key: "masterStatus", requestID: message.requestID})
+				}else if (message.action == "taskEnqueue"){
+					if(api.actionCluster.master === true){
+						api.tasks.enqueue(api, message.taskName, message.params)
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: true, key: "taskEnqueue", requestID: message.requestID})
+						api.log("enqued remote task: "+message.taskName+" from peer "+connection.remoteIP+":"+connection.remotePort, "yellow")
+					}else{
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: "not master", key: "taskEnqueue", requestID: message.requestID})
+					}
 				}
 			}else{
 				api.socketServer.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCluster"});
@@ -111,6 +121,7 @@ var initActionCluster= function(api, next){
 				api.log("Cannot connect to peer @ "+host+":"+port, ['red', 'bold']);
 				if(typeof next == "function"){ process.nextTick( function(){ next(false) } ); }
 			});
+			
 			client.send = function(msg){ 
 				try{
 					client.write(msg + "\r\n"); 
@@ -349,6 +360,7 @@ var initActionCluster= function(api, next){
 	
 	// connect to first peer
 	if(api.configData.actionCluster.StartingPeer.host != null){
+		api.actionCluster.master = false;
 		api.log("connecting to first actionCluster peer @ "+api.configData.actionCluster.StartingPeer.host+":"+api.configData.actionCluster.StartingPeer.port, "gray")
 		api.actionCluster.peers[api.configData.actionCluster.StartingPeer.host+":"+api.configData.actionCluster.StartingPeer.port] = "disconnected";
 		api.actionCluster.connectToPeer(api, api.configData.actionCluster.StartingPeer.host, api.configData.actionCluster.StartingPeer.port, function(resp){
@@ -359,6 +371,8 @@ var initActionCluster= function(api, next){
 			}
 		})
 	}else{
+		api.actionCluster.master = true;
+		api.log("I am the master process in the cluster");
 		next();
 	}
 	

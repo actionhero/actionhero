@@ -12,7 +12,7 @@ params.configChanges = {
 	
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 1000,
+		"ReConnectToLostPeersMS" : 5000,
 		"CycleCheckTimeMS" : 10,
 		"remoteTimeoutWaitMS" : 5000,
 		"nodeDuplication" : 2,
@@ -27,14 +27,14 @@ params.configChanges = {
 
 // any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction.  The api object will be availalbe.
 params.initFunction = function(api, next){
-	api.showCacheData = function(api){
-		api.log("--------- CACHE --------");
-		for (var i in api.cache.data){
-			api.log("  "+i)
-		}
-		setTimeout(api.showCacheData, 5000, api);
-	}
-	setTimeout(api.showCacheData, 5000, api);
+	// api.showCacheData = function(api){
+	// 	api.log("--------- CACHE --------");
+	// 	for (var i in api.cache.data){
+	// 		api.log("  "+i)
+	// 	}
+	// 	setTimeout(api.showCacheData, 5000, api);
+	// }
+	// setTimeout(api.showCacheData, 5000, api);
 	
 	next();
 }

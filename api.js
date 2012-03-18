@@ -24,6 +24,7 @@ var createActionHero = function(){
 		// core packages for the API
 		api.util = require("util");
 		api.exec = require('child_process').exec;
+		api.fork = require('child_process').fork;
 		api.net = require("net");
 		api.http = require("http");
 		api.url = require("url");

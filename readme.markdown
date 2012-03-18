@@ -316,7 +316,7 @@ Note that responses from all peers are listed, and those that successfully delet
 All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).
 
 ## Tasks
-Tasks are special periodically run actions the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:
+Tasks are special actions (potentially periodically run) the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:
 
 * calculateStats
 	* Polls all other members in the actionCluster to build up statistics
@@ -367,11 +367,12 @@ An example Task:
 	/////////////////////////////////////////////////////////////////////
 	// exports
 	exports.task = task;
+	
+"all" tasks will be run on all nodes in the actionCluster, but "any" tasks will only be run on the mater process (the first one to start, the one without `configData.actionCluster.startingPeer` set).
 
 ## Requirements
 * node.js server
 * npm
-* mySQL (other ORMs coming soon?)
 
 ## Install & Quickstart
 * `npm install actionHero`
