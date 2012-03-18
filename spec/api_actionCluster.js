@@ -320,11 +320,9 @@ suite.addBatch({
 		}
 		
 		var cb = this.callback; 
-		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
-			setTimeout(cb, 1000, resp)
-		});
+		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
 	},
-    'save resp for single peer': function(a,b){ 
+    'delete resp for single peer': function(a,b){ 
 		specHelper.assert.equal(a[0].key, "test_key_again");
 		specHelper.assert.equal(a[0].value, true);
 	} }
@@ -342,7 +340,6 @@ suite.addBatch({
 		apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
 	},
     'load resp on one peer': function(a,b){ 
-		console.log(a)
 		specHelper.assert.equal(a.length,3);
 		var numRecords = 0;
 		for(var i in a){
