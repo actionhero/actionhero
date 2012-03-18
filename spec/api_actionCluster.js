@@ -312,7 +312,7 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'I can remove a cache entry for a single peer':{
+  'I can remove a cache entry for a single peer and only one entry will be left':{
     topic: function(){ 
 		// turn off duplication
 		for(var i in apis){
@@ -320,39 +320,35 @@ suite.addBatch({
 		}
 		
 		var cb = this.callback; 
-		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, cb);
+		var results = [];
+		apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
+			results.push(resp);
+			apis[0].actionCluster.cache.load(apis[0], "test_key_again", function(resp2){
+				results.push(resp2);
+				cb(results);
+			})
+		});
 	},
     'delete resp for single peer': function(a,b){ 
-		specHelper.assert.equal(a[0].key, "test_key_again");
-		specHelper.assert.equal(a[0].value, true);
-	} }
-});
-
-suite.addBatch({
-  'The entry removed above should now only be on one peer':{
-    topic: function(){ 
-		// turn off duplication
-		for(var i in apis){
-		  clearTimeout(apis[i].actionCluster.cache.duplicationTimer);
-		}
-		
-		var cb = this.callback; 
-		apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
+		resp = a[0];
+		specHelper.assert.equal(resp.length, 1);
+		specHelper.assert.equal(resp[0].key, "test_key_again");
+		specHelper.assert.equal(resp[0].value, true);
 	},
-    'load resp on one peer': function(a,b){ 
-		specHelper.assert.equal(a.length,3);
+	'reload response' : function(a,b){
+		resp = a[1];
+		specHelper.assert.equal(resp.length,3);
 		var numRecords = 0;
-		for(var i in a){
-			var r = a[i];
+		for(var i in resp){
+			var r = resp[i];
 			specHelper.assert.equal(r.key,"test_key_again");
-			if(r.value === "123"){
+			if(r.value == "123"){
 				numRecords++;
 			}
 		}
 		specHelper.assert.equal(numRecords,1);
-	} }
+	}}
 });
-
 
 suite.addBatch({
   'The entry removed above should come back to this (or another) peer after waiting':{
