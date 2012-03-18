@@ -17,9 +17,9 @@ input, select, textarea {font-size:100%; font-family:"arial",sans-serif;}
 table.table {border-collapse:collapse; border-spacing:0;}
 table.table th, table.table td {padding:7px 10px;}
 table.table th {font-weight:bold;}
-ul.ul {margin-left:20px; list-style:none;}
-ul.ul li {padding-left:15px; background:url("../design/ul.gif") 0 5px no-repeat;}
-ul.ul ul {margin:0 0 0 20px; list-style:none;}
+ul {margin-left:20px; list-style:none;}
+ul li {padding-left:15px; background:url("../design/ul.gif") 0 5px no-repeat;}
+ul ul {margin:0 0 0 20px; list-style:none;}
 img.f-left {margin-right:15px;}
 img.f-right {margin-left:15px;}
 
