@@ -55,6 +55,7 @@ var initFileServer = function(api, next){
 			}else{
 				if(connection.req != null){
 					connection.responseHeaders['Content-Type'] = api.mime.lookup(file);
+					connection.responseHeaders['Cache-Control'] = "max-age=600, must-revalidate";
 					connection.res.writeHead(200, connection.responseHeaders);
 					connection.res.end(data);
 				}else{
