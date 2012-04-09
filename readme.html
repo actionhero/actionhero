@@ -109,6 +109,16 @@ exports.action = action;
 </ul>
 
 
+<p>You may also enable a HTTPS server with actionHero.  It works exactly the same as the http server, and you can have both running with little overhead.  The following information should be enabled in your <code>config.json</code> file:</p>
+
+<pre class="brush: js">"secureWebServer" : {
+    "port": 4443,
+    "enable": true,
+    "keyFile": "./certs/server-key.pem",
+    "certFile": "./certs/server-cert.pem"
+},
+</pre>
+
 <h4>Files and Routes</h4>
 
 <p>actionHero can also serve up flat files.  There is an action, <code>file</code> which is used to do this and a file server is part of the core framework (check out <code>initFileserver</code> for more information).</p>
