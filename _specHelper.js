@@ -24,7 +24,6 @@ specHelper.params[0] = {
 		"cacheFolder" : "./cache/",
 		"maxMemoryBytes" : 524288000
 	},
-	
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
@@ -35,6 +34,9 @@ specHelper.params[0] = {
 			"host": null,
 			"port": null
 		}
+	},
+	"secureWebServer" : {
+		"enable": false
 	}
 };
 
@@ -49,7 +51,6 @@ specHelper.params[1] = {
 		"cacheFolder" : "./cache/",
 		"maxMemoryBytes" : 524288000
 	},
-	
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
@@ -60,6 +61,9 @@ specHelper.params[1] = {
 			"host": specHelper.url,
 			"port": specHelper.params[0].socketServerPort
 		}
+	},
+	"secureWebServer" : {
+		"enable": false
 	}
 };
 
@@ -74,7 +78,6 @@ specHelper.params[2] = {
 		"cacheFolder" : "./cache/",
 		"maxMemoryBytes" : 524288000
 	},
-	
 	"actionCluster": {
 		"Key" : "4ijhaijhm43yjnawhja43jaj",
 		"ReConnectToLostPeersMS" : 1000,
@@ -85,6 +88,9 @@ specHelper.params[2] = {
 			"host": specHelper.url,
 			"port": specHelper.params[0].socketServerPort
 		}
+	},
+	"secureWebServer" : {
+		"enable": false
 	}
 };
 

@@ -1,5 +1,24 @@
 # Action Hero API Versions
 
+## Version 1.0.1
+
+** SSL / HTTPS web server **
+
+** Details **
+
+* You can now spin up a secure https server along with you http server in action hero.  It will work exactly the same as the http server, and you can have both on at the same time with no overhead.
+    * There are new configuration settins in `config.json` for this below
+
+Settings for https server:
+
+	"secureWebServer" : {
+		"port": 4443,
+		"enable": true,
+		"keyFile": "./certs/server-key.pem",
+		"certFile": "./certs/server-cert.pem"
+	},
+	
+
 ## Version 1.0.0
 
 **Summary:** OMG 1.0!

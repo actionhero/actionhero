@@ -98,6 +98,16 @@ HTTP Example:
 * the error if everything is OK will be "OK", otherwise, you should set a string error within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
+You may also enable a HTTPS server with actionHero.  It works exactly the same as the http server, and you can have both running with little overhead.  The following information should be enabled in your `config.json` file:
+
+	"secureWebServer" : {
+		"port": 4443,
+		"enable": true,
+		"keyFile": "./certs/server-key.pem",
+		"certFile": "./certs/server-cert.pem"
+	},
+
+
 #### Files and Routes
 
 actionHero can also serve up flat files.  There is an action, `file` which is used to do this and a file server is part of the core framework (check out `initFileserver` for more information).  

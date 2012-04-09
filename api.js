@@ -27,6 +27,7 @@ var createActionHero = function(){
 		api.fork = require('child_process').fork;
 		api.net = require("net");
 		api.http = require("http");
+		api.https = require("https");
 		api.url = require("url");
 		api.fs = require("fs");
 		api.path = require("path");
@@ -81,7 +82,11 @@ var createActionHero = function(){
 		}
 			
 		api.utils = require(__dirname + '/utils.js').utils;
-		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort + " & socket port " + api.configData.socketServerPort + " ***";
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
+		if(api.configData.secureWebServer.enable){
+			successMessage += " & secure web port " + api.configData.secureWebServer.port + " ***";
+		}
+		successMessage += " & socket port " + api.configData.socketServerPort + " ***";
 			
 		actionHero.initLog(api, function(){
 			actionHero.initCache(api, function(){

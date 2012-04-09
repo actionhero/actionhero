@@ -9,6 +9,21 @@ var initWebServer = function(api, next)
 	////////////////////////////////////////////////////////////////////////////
 	// server
 	api.webServer.webApp = api.http.createServer(function (req, res) {
+		handleRequest(req, res);
+	});
+	
+	if(api.configData.secureWebServer == null){
+		api.configData.secureWebServer = { enable: false }
+	}
+	if(api.configData.secureWebServer.enable){
+		var key = api.fs.readFileSync(api.configData.secureWebServer.keyFile);
+		var cert = api.fs.readFileSync(api.configData.secureWebServer.certFile);
+		api.webServer.secureWebApp = api.https.createServer({key: key, cert: cert}, function (req, res) {
+			handleRequest(req, res);
+		});
+	}
+	
+	function handleRequest(req, res){
 		api.webServer.numberOfWebRequests = api.webServer.numberOfWebRequests + 1;
 		
 		var connection = {};
@@ -87,7 +102,7 @@ var initWebServer = function(api, next)
 			process.nextTick(function() { api.processAction(api, connection, api.webServer.respondToWebClient); });
 		}
 		
-	})
+	}
 	
 	var fillParamsFromWebRequest = function(api, connection, varsHash){
 		api.postVariables.forEach(function(postVar){
@@ -158,8 +173,22 @@ var initWebServer = function(api, next)
 		process.exit();
 	});
 	
+	if(api.configData.secureWebServer.enable){
+		api.webServer.secureWebApp.on("error", function(e){
+			api.log("Cannot start secure web server @ port " + api.configData.secureWebServer.port + "; Exiting.", ["red", "bold"]);
+			api.log(e, "red");
+			process.exit();
+		});
+	}
+	
 	api.webServer.webApp.listen(api.configData.webServerPort, "0.0.0.0", function(){
-		next();
+		if(api.configData.secureWebServer.enable){
+			api.webServer.secureWebApp.listen(api.configData.secureWebServer.port, "0.0.0.0", function(){
+				next();
+			});
+		}else{
+			next();
+		}
 	});
 }
 
