@@ -41,7 +41,10 @@ suite.addBatch({
   "file: binary files should work": {
     topic: function(){ specHelper.apiTest.get(actionUrl + "/logo/actionHero.png", 0, {} ,this.callback ); },
     statusCode: function(res, b){ specHelper.assert.equal(res.statusCode, 200);},
-    content: function(res, b){ specHelper.assert.equal(res.body.length, 19571);}, // bytes of file
+    content: function(res, b){ 
+		specHelper.assert.equal(res.body.length >= 19571, true);
+		specHelper.assert.equal(res.body.length < 20000, true);
+	}, // bytes of file
   },
 });
 
