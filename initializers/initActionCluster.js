@@ -56,6 +56,11 @@ var initActionCluster= function(api, next){
 					}else{
 						api.socketServer.sendSocketMessage(connection, {context: "response", value: "not master", key: "taskEnqueue", requestID: message.requestID})
 					}
+				}else if(message.action == "taskRun"){
+					// api.tasks.enqueue(api, message.taskName, message.params);
+					api.tasks.runLocaly(api, message.taskName, message.params, function(taskResp){
+						api.socketServer.sendSocketMessage(connection, {context: "response", value: true, key: "taskRun", taskResp: taskResp, requestID: message.requestID})
+					})
 				}
 			}else{
 				api.socketServer.sendSocketMessage(connection, {context: "response", status: "This connection is not in the actionCluster"});
@@ -189,8 +194,8 @@ var initActionCluster= function(api, next){
 				key: key, 
 				value: value, 
 				expireTimeSeconds: expireTimeSeconds, 
-				requestID: requestID},
-			host, port);
+				requestID: requestID
+			}, host, port);
 		}
 		
 		var saveAtEnoughPeers = function(api, key, value, expireTimeSeconds, requestID, i, instnaceCounter, next){
