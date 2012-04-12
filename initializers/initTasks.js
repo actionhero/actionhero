@@ -180,7 +180,7 @@ var initTasks = function(api, next)
 	
 	for(var i in taskFolders){
 		var folder = taskFolders[i];
-		if(api.path.existsSync(folder)){
+		if(api.fs.existsSync(folder)){
 			api.fs.readdirSync(folder).forEach( function(file) {
 				if (file != ".DS_Store"){
 					var taskName = file.split(".")[0];
