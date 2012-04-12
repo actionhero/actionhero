@@ -1,5 +1,14 @@
 # Action Hero API Versions
 
+## Version 1.0.2
+
+** Task Sharing **
+
+** Details **
+
+- The master process will now delegate tasks in his queue to other peers in the cluster.
+- Minor bug fixes
+
 ## Version 1.0.1
 
 ** SSL / HTTPS web server **
