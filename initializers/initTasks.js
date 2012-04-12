@@ -96,28 +96,38 @@ var initTasks = function(api, next)
 		var parts = peer.split(":");
 		api.actionCluster.sendToPeer(msgObj, parts[0], parts[1]);
 		
-		var checkForTaskComplete = function(api, requestID, taskName, peer){
-			api.actionCluster.cache.checkForComplete(api, requestID, 1, function(resp){
-				if(resp == false || resp.length == 0){
-					// peer still there?
-					if(api.actionCluster.peers[peer] == "connected"){
-						api.log("waiting for "+respPeer +"to comple task...", "yellow");
-						checkForTaskComplete(api, requestID, taskName, peer);
-					}else{
-						api.tasks.processing[peer] = false;
-						api.tasks.enqueue(api, taskName, params);
-					}
+		var clusterCallback = function(resp){
+			if(resp == false || resp.length == 0){
+				// peer still there?
+				if(api.actionCluster.peers[peer] == "connected"){
+					api.log("waiting for "+peer +" to comple task "+taskName, "yellow");
+					clearTimeout(api.actionCluster.cache.results[requestID].timeoutTimer);
+					clearTimeout(api.actionCluster.cache.results[requestID].dataClearTimer);
+					api.actionCluster.cache.results[requestID] = {
+						requestID: requestID,
+						complete: false,
+						peerResponses: []
+					};
+					checkForTaskComplete(api, requestID, taskName, peer);
 				}else{
-					var content = resp.taskResp;
-					var respPeer = resp[0].remotePeer.host + ":" + resp[0].remotePeer.port;
-					api.log("task complete on peer "+respPeer, "yellow");
-					api.tasks.processing[respPeer] = false;
-					if(api.tasks.tasks[taskName].frequency > 0){
-						api.tasks.timers[taskName] = setTimeout(api.tasks.enqueue, api.tasks.tasks[taskName].frequency, api, taskName);
-					}
+					api.tasks.processing[peer] = false;
+					api.tasks.enqueue(api, taskName, params);
 				}
-			});
+			}else{
+				var content = resp.taskResp;
+				api.log("task "+taskName+" complete on peer "+peer, "yellow");
+				api.tasks.processing[peer] = false;
+				if(api.tasks.tasks[taskName].frequency > 0){
+					clearTimeout(api.tasks.timers[taskName]);
+					api.tasks.timers[taskName] = setTimeout(api.tasks.enqueue, api.tasks.tasks[taskName].frequency, api, taskName);
+				}
+			}
 		}
+		
+		var checkForTaskComplete = function(api, requestID, taskName, peer){
+			api.actionCluster.cache.checkForComplete(api, requestID, 1, clusterCallback);
+		}
+		
 		checkForTaskComplete(api, requestID, taskName, peer);
 	}
 	
