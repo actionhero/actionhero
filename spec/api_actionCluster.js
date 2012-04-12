@@ -322,7 +322,7 @@ suite.addBatch({
 		var cb = this.callback; 
 		setTimeout(function(){
 			var results = [];
-			apis[0].actionCluster.cache.destroy(apis[0], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
+			apis[1].actionCluster.cache.destroy(apis[1], "test_key_again", hostsWhichUsedCache[1].host + ":" + hostsWhichUsedCache[1].port, function(resp){
 				results.push(resp);
 				apis[0].actionCluster.cache.load(apis[0], "test_key_again", function(resp2){
 					results.push(resp2);
@@ -349,23 +349,23 @@ suite.addBatch({
 			}
 		}
 		specHelper.assert.equal(numRecords,1);
+		
+		// turn duplication back on for next test
+	  	  for (var i in apis){
+			  apis[i].actionCluster.cache.duplicationTimer = setTimeout(apis[i].actionCluster.cache.ensureObjectDuplication, apis[i].configData.actionCluster.remoteTimeoutWaitMS, apis[i]);
+	  	  }
 	}}
 });
 
 suite.addBatch({
   'The entry removed above should come back to this (or another) peer after waiting':{
-    topic: function(){ 
-		// turn duplication back on
-	  	  for (var i in apis){
-			  apis[i].actionCluster.cache.duplicationTimer = setTimeout(apis[i].actionCluster.cache.ensureObjectDuplication, apis[i].configData.actionCluster.remoteTimeoutWaitMS, apis[i]);
-	  	  }
-		
+    topic: function(){ 		
 		var cb = this.callback; 
 		setTimeout(function(){
 			process.nextTick(function(){
 				apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
 			});
-		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 4)
+		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 6)
 	},
     'load resp afeter waiting to come back': function(a,b){ 
 		specHelper.assert.equal(a.length,3);
