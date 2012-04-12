@@ -432,6 +432,78 @@ You can pragmatically control an actionHero server with `actionHero.start(params
 			})
 		}, timer);
 	});
+	
+## Application Structure
+
+The actionCluster module contains no native code and is arranged like this:
+
+	/
+	|- actions
+	|-- (the base actions)
+	|
+	|- certs
+	|-- (example certs for the https server, keyed for 'localhost')
+	|
+	|- examples
+	|-- (some common examples of using actionHero in the actionCluster)
+	|
+	|- initializers
+	|-- (the common intiilzers for he web and socket servers, actions, logging, etc)
+	|
+	|- node_modules
+	|-- (actionHero dependancies get installed here)
+	|
+	|- public
+	|-- (default location for public assets served by /file path)
+	|
+	|- spec
+	|-- (tests)
+	|
+	|- tasks
+	|-- (default tasks)
+	|
+	_specHelper.js
+	actionHero
+	api.js
+	config.json
+	license.txt
+	package.json
+	readme.markdown
+	utils.js
+	versions.markdown
+	
+Your application structure should look similar.  
+
+actions in /actions will be loaded in automatically, along /initializers and /tasks. /public will become your applicaiton's default static asset location.  You can make your own config.json in your application root with only the partial changes you want to use over the default settings.
+
+	/
+	|- actions
+	|-- (your actions)
+	|
+	|- cache
+	|-- (where the api.cache.data will be saved/loaded from)
+	|
+	|- certs
+	|-- (your https certs for your domain)
+	|
+	|- initializers
+	|-- (any additional initializers you want)
+	|
+	|- log
+	|-- (default location for logs)
+	|
+	|- node_modules
+	|-- (your modules, actionHero should be npm installed in here)
+	|
+	|- public
+	|-- (your static assets to be served by /file)
+	|
+	|- tasks
+	|-- (your tasks)
+	|
+	your_main_app.js
+	config.json
+	package.json (be sure to include 'actionHero':'x')
 
 ## Extending actionHero
 The first thing to do is to make your own ./actions (and ./models) folder.  If you like the default actions, feel free to copy them in.  You should also make you own tasks as defined above.
@@ -461,6 +533,8 @@ Create a config.json file in the root of your project.  Here is the default conf
 		"serverName" : "actionHero API",
 		"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
 		"apiBaseDir" : "./node_modules/actionHero/",
+		
+		"headers":{}
 	
 		"urlPathForActions" : "api",
 		"urlPathForFiles" : "file",
