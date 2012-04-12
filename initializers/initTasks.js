@@ -99,8 +99,14 @@ var initTasks = function(api, next)
 		var checkForTaskComplete = function(api, requestID, taskName, peer){
 			api.actionCluster.cache.checkForComplete(api, requestID, 1, function(resp){
 				if(resp == false || resp.length == 0){
-					api.tasks.processing[peer] = false;
-					api.tasks.enqueue(api, taskName, params);
+					// peer still there?
+					if(api.actionCluster.peers[peer] == "connected"){
+						api.log("waiting for "+respPeer +"to comple task...", "yellow");
+						checkForTaskComplete(api, requestID, taskName, peer);
+					}else{
+						api.tasks.processing[peer] = false;
+						api.tasks.enqueue(api, taskName, params);
+					}
 				}else{
 					var content = resp.taskResp;
 					var respPeer = resp[0].remotePeer.host + ":" + resp[0].remotePeer.port;
