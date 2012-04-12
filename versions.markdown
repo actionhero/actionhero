@@ -1,5 +1,14 @@
 # Action Hero API Versions
 
+## Version 1.0.3
+
+** Optional Headers **
+
+** Details **
+
+- You can now define custom host-headers in `config.json` which will be sent with every http/https response
+- bug fixes introduced with task sharing (v 1.0.1)
+
 ## Version 1.0.2
 
 ** Task Sharing **
