@@ -363,7 +363,7 @@ suite.addBatch({
 		var cb = this.callback; 
 		setTimeout(function(){
 			apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
-		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 4)
+		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 6)
 	},
     'load resp afeter waiting to come back': function(a,b){ 
 		specHelper.assert.equal(a.length,3);
