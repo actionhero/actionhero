@@ -120,7 +120,7 @@ var initWebServer = function(api, next)
 		// serverInformation information
 		connection.response.serverInformation = {};
 		connection.response.serverInformation.serverName = api.configData.serverName;
-		connection.response.serverInformation.apiVerson = api.configData.apiVerson;
+		connection.response.serverInformation.apiVersion = api.configData.apiVersion;
 				
 		// requestorInformation
 		connection.response.requestorInformation = {};

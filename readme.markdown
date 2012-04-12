@@ -56,7 +56,7 @@ HTTP responses follow the format:
 		hello: "world"
 		serverInformation: {
 			serverName: "actionHero API",
-			apiVerson: 1,
+			apiVersion: 1,
 			requestDuration: 14
 		},
 		requestorInformation: {
@@ -91,7 +91,7 @@ HTTP Example:
 	< 
 	* Connection #0 to host localhost left intact
 	* Closing connection #0
-	{"serverInformation":{"serverName":"actionHero API","apiVerson":"0.1.5","requestDuration":16},"requestorInformation":{"remoteAddress":"127.0.0.1","RequestsRemaining":905,"recievedParams":{"limit":100,"offset":0}},"error":"undefined is not a known action."}
+	{"serverInformation":{"serverName":"actionHero API","apiVersion":"0.1.5","requestDuration":16},"requestorInformation":{"remoteAddress":"127.0.0.1","RequestsRemaining":905,"recievedParams":{"limit":100,"offset":0}},"error":"undefined is not a known action."}
 
 * you can provide the `?callback=myFunc` param to initiate a JSON-p response which will wrap the returned JSON in your callback function.  
 * unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).
@@ -455,7 +455,7 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 Create a config.json file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assuemd from the default.
 
 	{ 
-	    "apiVerson" : "1.0.0",
+	    "apiVersion" : "1.0.0",
 		"webServerPort" : 8080,
 		"socketServerPort" : 5000,
 		"serverName" : "actionHero API",
