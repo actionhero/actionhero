@@ -39,8 +39,15 @@ var initWebServer = function(api, next)
 		connection.remoteIP = connection.req.connection.remoteAddress;
 		connection.responseHeaders = {
 			'Content-Type': "application/json",
-			"X-Powered-By": api.configData.serverName,
+			"X-Powered-By": api.configData.serverName
 		};
+                
+                if(typeof(api.configData.httpHeaders) != 'undefined'){
+                    for(var i in api.configData.httpHeaders){
+                        connection.responseHeaders[i] = api.configData.httpHeaders[i];
+                    }
+                }
+                
 		connection.responseHttpCode = 200;
 		if(connection.req.headers['x-forwarded-for'] != null)
 		{
