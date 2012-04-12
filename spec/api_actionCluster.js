@@ -363,17 +363,17 @@ suite.addBatch({
 		var cb = this.callback; 
 		setTimeout(function(){
 			apis[0].actionCluster.cache.load(apis[0], "test_key_again", cb)
-		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 6)
+		}, apis[0].configData.actionCluster.remoteTimeoutWaitMS * 4)
 	},
     'load resp afeter waiting to come back': function(a,b){ 
+		console.log(a)
+		console.log(b)
 		specHelper.assert.equal(a.length,3);
 		var numRecords = 0;
 		for(var i in a){
 			var r = a[i];
 			specHelper.assert.equal(r.key,"test_key_again");
-			if(r.value == "123"){
-				numRecords++;
-			}
+			if(r.value == "123"){ numRecords++; }
 		}
 		specHelper.assert.equal(numRecords,2);
 	} }
