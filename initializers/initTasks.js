@@ -7,6 +7,7 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.queue = [];
 	api.tasks.timers = {};
+	api.tasks.cycleTimeMS = 50;
 	api.tasks.processing = {};
 	
 	api.tasks.enqueue = function(api, taskName, params){
@@ -149,10 +150,10 @@ var initTasks = function(api, next)
 						api.tasks.timers[thisTask.taskName] = setTimeout(api.tasks.enqueue, api.tasks.tasks[thisTask.taskName].frequency, api, thisTask.taskName);
 					}
 				}
-				process.nextTick(function(){ api.tasks.process(api); })
+				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 			});
 		}else{
-			process.nextTick(function(){ api.tasks.process(api); })
+			api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 		}
 	};
 	
