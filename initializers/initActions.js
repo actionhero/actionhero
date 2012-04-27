@@ -51,8 +51,8 @@ var initActions = function(api, next)
 	});
 	
 	api.processAction = function(api, connection, next){	
-		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }
-		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }
+		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
+		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
 		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
 		
 		if (connection.error === false){

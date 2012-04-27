@@ -132,7 +132,6 @@ var initWebServer = function(api, next)
 		// requestorInformation
 		connection.response.requestorInformation = {};
 		connection.response.requestorInformation.remoteAddress = connection.remoteIP;
-		if(connection.requestCounter != null){ connection.response.requestorInformation.RequestsRemaining = api.configData.apiRequestLimitPerHour - connection.requestCounter; }
 		connection.response.requestorInformation.recievedParams = {};
 		for(var k in connection.params){
 			connection.response.requestorInformation.recievedParams[k] = connection.params[k] ;
