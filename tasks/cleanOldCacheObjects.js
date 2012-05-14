@@ -5,7 +5,7 @@ var task = {};
 task.name = "cleanOldCacheObjects";
 task.description = "I will clean out expired cache objects";
 task.scope = "all";
-task.frequency = 10000;
+task.frequency = 60000;
 
 /////////////////////////////////////////////////////////////////////
 // functional

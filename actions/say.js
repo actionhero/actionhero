@@ -33,7 +33,7 @@ action.run = function(api, connection, next){
 	connection.public = {id: connection.id };
 		
 	// say it!
-	api.socketServer.socketRoomBroadcast(api, connection, message, true);
+	api.socketServer.socketRoomBroadcast(api, connection, message);
 	api.socketServer.socketRoomStatus(api, room, function(status){
 		connection.response.roomStatus = status;
 		next(connection, true);
