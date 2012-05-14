@@ -3,5 +3,9 @@ node_js:
   # - 0.5
   - 0.6
   - 0.7
+branches:
+  only:
+    - master
+    - develop
 before_script:
-	
+# redis is already there on localhost
