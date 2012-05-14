@@ -10,7 +10,7 @@ var initSocketServer = function(api, next){
 	////////////////////////////////////////////////////////////////////////////
 	// server
 	api.socketServer.server = api.net.createServer(function (connection) {
-		api.socketServer.numberOfSocketRequests = api.socketServer.numberOfSocketRequests + 1;
+		api.stats.incrament(api, "numberOfSocketRequests");
 		
 	  	connection.setEncoding("utf8");
 	  	connection.type = "socket";
@@ -28,6 +28,7 @@ var initSocketServer = function(api, next){
 		api.socketServer.connections.push(connection);
 	
 	  	connection.on("connect", function () {
+	  		api.stats.incrament(api, "numberOfActiveSocketClients");
 	    	api.socketServer.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 			api.socketServer.calculateRoomStatus(api, false);
@@ -103,6 +104,7 @@ var initSocketServer = function(api, next){
 	  	});
 		
 	  	connection.on("end", function () {
+	  		api.stats.incrament(api, "numberOfActiveSocketClients", -1);
 			for(var i in api.socketServer.connections){
 				if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
 			}

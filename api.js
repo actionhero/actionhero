@@ -39,6 +39,7 @@ var createActionHero = function(){
 		api.consoleColors = require('colors');
 		api.data2xml = require('data2xml');
 		api.mime = require('mime');
+		api.redisPackage = require('redis');
 				
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
@@ -82,33 +83,43 @@ var createActionHero = function(){
 		}
 			
 		api.utils = require(__dirname + '/utils.js').utils;
+
+		// determine my unique ID
+		var externalIP = api.utils.getExternalIPAddress();
+		api.id = externalIP + ":" + api.configData.webServerPort + "&" + api.configData.socketServerPort;
+
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
 		if(api.configData.secureWebServer.enable){
 			successMessage += " & secure web port " + api.configData.secureWebServer.port + " ***";
 		}
-		successMessage += " & socket port " + api.configData.socketServerPort + " ***";
+		successMessage += " & socket port " + api.configData.socketServerPort;
+		successMessage += " ~ server ID: " + api.id + " ***";
+
+		api.bootTime = new Date().getTime();
 			
 		actionHero.initLog(api, function(){
-			actionHero.initCache(api, function(){
-				actionHero.initStats(api, function(){
-					actionHero.initActions(api, function(){
-						actionHero.initPostVariables(api, function(){
-							actionHero.initFileServer(api, function(){
-								actionHero.initWebServer(api, function(){
-									actionHero.initSocketServer(api, function(){ 
-										actionHero.initActionCluster(api, function(){
-											actionHero.initTasks(api, function(){
-												if(typeof params.initFunction == "function"){
-													params.initFunction(api, function(){
+			actionHero.initRedis(api, function(){
+				actionHero.initCache(api, function(){
+					actionHero.initStats(api, function(){
+						actionHero.initActions(api, function(){
+							actionHero.initPostVariables(api, function(){
+								actionHero.initFileServer(api, function(){
+									actionHero.initWebServer(api, function(){
+										actionHero.initSocketServer(api, function(){ 
+											actionHero.initActionCluster(api, function(){
+												actionHero.initTasks(api, function(){
+													if(typeof params.initFunction == "function"){
+														params.initFunction(api, function(){
+															api.log(successMessage, ["green", "bold"]);
+															actionHero.running = true;
+															if(callback != null){ process.nextTick(function() { callback(api); }); }
+														})
+													}else{
 														api.log(successMessage, ["green", "bold"]);
 														actionHero.running = true;
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													})
-												}else{
-													api.log(successMessage, ["green", "bold"]);
-													actionHero.running = true;
-													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												}
+													}
+												});
 											});
 										});
 									});
@@ -119,13 +130,16 @@ var createActionHero = function(){
 				});
 			});
 		});
-
 	};
 
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+") and pausing tasks", "bold");
 			clearTimeout(actionHero.api.tasks.processTimer);
+			
+			// remove from the list of hosts
+			api.redis.client.lrem("actionHero::peers", 1, api.ip);
+
 			var closed = 0;
 			var checkForDone = function(closed){
 				if(closed == 2){

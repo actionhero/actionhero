@@ -117,5 +117,22 @@ utils.objClone = function(obj){
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// get this server's external internface
+utils.getExternalIPAddress = function(){
+	var os = require('os')
+	var ifaces = os.networkInterfaces();
+	var ip = false;
+	for (var dev in ifaces) {
+	  var alias = 0;
+	  ifaces[dev].forEach(function(details){
+	    if (details.family == 'IPv4' && details.address != "127.0.0.1") {
+	      ip =  details.address;
+	    }
+	  });
+	}
+	return ip;
+}
+
+////////////////////////////////////////////////////////////////////////////
 // EXPORT
 exports.utils = utils;

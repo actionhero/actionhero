@@ -24,7 +24,7 @@ var initWebServer = function(api, next)
 	}
 	
 	function handleRequest(req, res){
-		api.webServer.numberOfWebRequests = api.webServer.numberOfWebRequests + 1;
+		api.stats.incrament(api, "numberOfWebRequests");
 		
 		var connection = {};
 			

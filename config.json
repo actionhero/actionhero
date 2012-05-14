@@ -39,16 +39,17 @@
 		}
 	},
 
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
+
 	"flatFileDirectory" : "./node_modules/actionHero/public/",
 	"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 	"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
-
-	"cache" : {
-		"cacheFolder" : "./cache/",
-		"cacheFile" : "api.cache",
-		"defaultExpireTimeSeconds" : 3600,
-		"maxMemoryBytes" : 524288000
-	},
 	
 	"defaultSocketRoom": "defaultRoom",
 

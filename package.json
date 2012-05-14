@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionHero",
   "description": "actionHero is a minimalist, multi-node, transactional API framework written in javaScript",
-  "version": "1.0.3",
+  "version": "3.0.0",
   "homepage": "https://github.com/evantahler/actionHero",
   "repository": {
     "type": "git",
@@ -18,8 +18,10 @@
     "validator":"0.x.x",
     "formidable":"1.x.x",
     "colors":"0.x.x",
-	"data2xml":"x",
-	"mime":"1.x.x"
+    "data2xml":"x",
+    "mime":"1.x.x",
+    "hiredis":"0.x.x",
+    "redis":"0.x.x"
 	},
   "devDependencies": {
     "vows":"0.x.x"

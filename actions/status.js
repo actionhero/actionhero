@@ -17,7 +17,7 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
-	api.stats.load(function(resp){
+	api.stats.load(api, function(resp){
 		connection.response.stats = resp;
 		next(connection, true);
 	});

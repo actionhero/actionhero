@@ -6,24 +6,26 @@ var initCache = function(api, next){
 	
 	api.cache = {};
 	api.cache.data = {};
+	var redisCacheKey = "actionHero::cache";
+	var defaultExpireTime = 31622400 // 1 year
 	
-	try { api.fs.mkdirSync(api.configData.cache.cacheFolder, "777") } catch(e) {}; 
-
 	api.cache.save = function(api, key, value, expireTimeSeconds, next){
-		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = api.configData.cache.defaultExpireTimeSeconds; }
+		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = defaultExpireTime; }
 		var expireTimestamp = new Date().getTime();
 		expireTimestamp = expireTimestamp + (expireTimeSeconds * 1000);
-		if(api.configData.cache.maxMemoryBytes - process.memoryUsage().heapUsed < 0){
-			api.log("Memory @ "+process.memoryUsage().heapUsed+" bytes; not saving another cache object, out of ram (as limtied by api.configData.cache.maxMemoryBytes)", "red")
-			next(false);
+		var cacheObj = {
+						value: value,
+						expireTimestamp: expireTimestamp,
+						createdAt: new Date().getTime(),
+						readAt: null
+					}
+		if(api.redis.enable === true){
+			api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
+				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
+			});
 		}else{
 			try{
-				api.cache.data[key] = {
-					value: value,
-					expireTimestamp: expireTimestamp,
-					createdAt: new Date().getTime(),
-					readAt: null
-				};
+				api.cache.data[key] = cacheObj;
 				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
 			}catch(e){
 				console.log(e);
@@ -32,44 +34,67 @@ var initCache = function(api, next){
 		}
 	};
 
-	api.cache.load = function(api, key, next){
-		var cacheObj = api.cache.data[key];
-		if(cacheObj == null){
-			process.nextTick(function() { next(null, null, null, null); });
+	api.cache.size = function(api, next){
+		if(api.redis.enable === true){
+			api.redis.client.hlen(redisCacheKey, function(count){
+				next(count);
+			});
 		}else{
-			if(cacheObj.expireTimestamp >= (new Date().getTime())){
-				api.cache.data[key].readAt = new Date().getTime();
-				if(typeof next == "function"){  
-					process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+			next(api.utils.hashLength(api.cache.data));
+		}
+	}
+
+	api.cache.load = function(api, key, next){
+		if(api.redis.enable === true){
+			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
+				cacheObj = JSON.parse(cacheObj);
+				if(cacheObj.expireTimestamp >= (new Date().getTime())){
+					cacheObj.readAt = new Date().getTime();
+					api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
+						if(typeof next == "function"){  
+							process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+						}
+					});
+				}else{
+					if(typeof next == "function"){ 
+						process.nextTick(function() { next(null, null, null, null); });
+					}
 				}
+			})
+		}else{
+			var cacheObj = api.cache.data[key];
+			if(cacheObj == null){
+				process.nextTick(function() { next(null, null, null, null); });
 			}else{
-				if(typeof next == "function"){ 
-					process.nextTick(function() { next(null, null, null, null); });
+				if(cacheObj.expireTimestamp >= (new Date().getTime())){
+					api.cache.data[key].readAt = new Date().getTime();
+					if(typeof next == "function"){  
+						process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+					}
+				}else{
+					if(typeof next == "function"){ 
+						process.nextTick(function() { next(null, null, null, null); });
+					}
 				}
 			}
 		}
 	};
 
 	api.cache.destroy = function(api, key, next){
-		var cacheObj = api.cache.data[key];
-		if(typeof cacheObj == "undefined"){
-			if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
+		if(api.redis.enable === true){
+			api.redis.client.hdel(redisCacheKey, key, function(){
+				if(typeof next == "function"){  process.nextTick(function() { next(true); }); }
+			});
 		}else{
-			delete api.cache.data[key];
-			if(typeof next == "function"){  process.nextTick(function() { next(true); }); }
+			var cacheObj = api.cache.data[key];
+			if(typeof cacheObj == "undefined"){
+				if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
+			}else{
+				delete api.cache.data[key];
+				if(typeof next == "function"){  process.nextTick(function() { next(true); }); }
+			}
 		}
 	};
-	
-	// check for an existing cache file
-	try{
-		var fileData = api.fs.readFileSync(api.configData.cache.cacheFolder + api.configData.cache.cacheFile,'utf8');
-		api.cache.data = JSON.parse(fileData);
-		api.log("data cache from backup file.");
-	}catch(e){
-		api.log("no cache backup file found, continuing.");
-		// api.log(" > "+e);
-	}
-	
 	
 	next();
 }

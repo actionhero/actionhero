@@ -48,12 +48,12 @@ suite.addBatch({
   }
 });
 
-suite.addBatch({
-  "api.stats": {
-    topic: function(){ return apiObj },
-    'should exist: objects' : function(api){ specHelper.assert.isObject(api.stats); },
-  }
-});
+// suite.addBatch({
+//   "api.stats": {
+//     topic: function(){ return apiObj },
+//     'should exist: objects' : function(api){ specHelper.assert.isObject(api.stats); },
+//   }
+// });
 
 suite.addBatch({
   "api.postVariables": {
