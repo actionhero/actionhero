@@ -5,6 +5,7 @@
 Data and what they do:
 - actionHero::peers [] a list of all the peers in the action cluster.  New members add themselves to it
 - actionHero::tasks [] a list of tasks to be completed.  Any memeber can push to the queue; all workers will pull one at a time from the queue
+- actionHero::tasksClaimed [] a list of tasks being either worked on or sleeping by a node.
 - actionHero::cache [] the common shared cache object
 - actionHero::stats [] the common shared stats object
 - actionHero::roomMembers-{roomName} [] a list of the folks in a given socket room
@@ -22,6 +23,13 @@ var initRedis = function(api, next)
 	api.redis = {};
 	api.redis.enable = c.enable;
 	if(c.enable == true){
+
+		api.redis.channelHandlers = {};
+		api.redis.registerChannel = function(api, channel, handler){
+			api.redis.clientSubscriber.subscribe(channel);
+			api.redis.channelHandlers[channel] = handler;
+		}
+
 		api.redis.client = api.redisPackage.createClient(c.port, c.host, c.options);
 		api.redis.client.on("error", function (err) {
 	        api.log("Redis Error: " + err, ["red", "bold"]);
@@ -47,17 +55,21 @@ var init = function(api, next){
 			api.redis.clientSubscriber = api.redisPackage.createClient(c.port, c.host, c.options);
 			api.redis.clientSubscriber.on("connect", function (err) {
 		        if(c.password != null){ api.redis.client.auth(c.password); }
-
-		       	api.redis.clientSubscriber.subscribe("actionHero::say");
-				api.redis.clientSubscriber.subscribe("actionHero::tasks");
+		       	
 				api.redis.clientSubscriber.on("message", function(channel, message){
-					message = JSON.parse(message);
-					if(channel === "actionHero::say"){
-						api.socketServer.socketRoomBroadcast(api, message.connection, message.message, true);
-					}else if(channel === "actionHero::tasks"){
-
-					}else{
-						api.log("message from unknown channel ("+channel+"): "+message, "red");
+					try{
+						var found = false;
+						for(var i in api.redis.channelHandlers){
+							if(i === channel){
+								found = true;
+								api.redis.channelHandlers[i](channel, message);
+							}
+						}
+						if(found == false){
+							api.log("message from unknown channel ("+channel+"): "+message, "red");
+						}
+					}catch(e){
+						api.log("redis message processing error: " + e, ["red", "bold"])
 					}
 				});
 

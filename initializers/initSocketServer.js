@@ -260,6 +260,14 @@ var initSocketServer = function(api, next){
 		api.log(e);
 		process.exit();
 	});
+
+	// register for messages
+	if(api.redis.enable === true){
+		api.redis.registerChannel(api, "actionHero::say", function(channel, message){
+			message = JSON.parse(message);
+			api.socketServer.socketRoomBroadcast(api, message.connection, message.message, true);
+		});
+	}
 	
 	api.socketServer.server.listen(api.configData.socketServerPort, "0.0.0.0", function(){
 		next();

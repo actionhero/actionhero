@@ -5,7 +5,9 @@
 var initCache = function(api, next){
 	
 	api.cache = {};
-	api.cache.data = {};
+	if(api.redis.enable !== true){
+		api.cache.data = {};
+	}
 	var redisCacheKey = "actionHero::cache";
 	var defaultExpireTime = 31622400 // 1 year
 	
