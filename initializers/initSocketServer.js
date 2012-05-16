@@ -5,7 +5,7 @@ var initSocketServer = function(api, next){
 	api.socketServer = {};
 	api.socketServer.connections = [];
 	api.socketServer.socketDataString = "";
-	api.socketServer.numberOfSocketRequests = 0;
+	api.socketServer.numberOfLocalSocketRequests = 0;
 
 	if(api.redis.enable === false){
 		api.socketServer.rooms = {};
@@ -17,7 +17,7 @@ var initSocketServer = function(api, next){
 	// server
 	api.socketServer.server = api.net.createServer(function (connection) {
 		api.stats.incrament(api, "numberOfSocketRequests");
-		api.socketServer.numberOfSocketRequests++;
+		api.socketServer.numberOfLocalSocketRequests++;
 		
 	  	connection.setEncoding("utf8");
 	  	connection.type = "socket";

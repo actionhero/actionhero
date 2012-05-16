@@ -4,7 +4,7 @@
 var initWebServer = function(api, next)
 {
 	api.webServer = {};
-	api.webServer.numberOfWebRequests = 0;
+	api.webServer.numberOfLocalWebRequests = 0;
 	
 	////////////////////////////////////////////////////////////////////////////
 	// server
@@ -25,7 +25,7 @@ var initWebServer = function(api, next)
 	
 	function handleRequest(req, res){
 		api.stats.incrament(api, "numberOfWebRequests");
-		api.webServer.numberOfWebRequests++;
+		api.webServer.numberOfLocalWebRequests++;
 		
 		var connection = {};
 			

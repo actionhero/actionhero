@@ -15,6 +15,13 @@ params.configChanges = {
 		"password": null,
 		"options": null
 	},
+
+	"secureWebServer" : {
+		"port": 4443,
+		"enable": true,
+		"keyFile": "./certs/server-key.pem",
+		"certFile": "./certs/server-cert.pem"
+	},
 	
 	"logFile" : "api_peer_1.log",
 

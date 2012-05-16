@@ -64,12 +64,12 @@ var initStats = function(api, next){
 								};
 								stats.socketServer = {
 									numberOfGlobalSocketRequests: numberOfSocketRequests,
-									numberOfLocalSocketRequests: api.socketServer.numberOfSocketRequests,
-									numberOfLocalActiveSocketClients: numberOfActiveSocketClients
+									numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
+									numberOfLocalActiveSocketClients: api.socketServer.connections.length
 								};
 								stats.webServer = {
 									numberOfGlobalWebRequests: numberOfWebRequests,
-									numberOfLocalWebRequests: api.webServer.numberOfWebRequests
+									numberOfLocalWebRequests: api.webServer.numberOfWebLocalRequests
 								};
 								sleepingTasks = [];
 								for (var i in api.tasks.timers){ sleepingTasks.push(i); }

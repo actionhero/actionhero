@@ -9,4 +9,3 @@ branches:
     - develop
 before_script:
 # redis is already there on localhost
-	
