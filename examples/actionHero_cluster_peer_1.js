@@ -7,20 +7,16 @@ params.configChanges = {
 	
 	"webServerPort" : 8080,
 	"socketServerPort" : 5000,
+
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
 	
 	"logFile" : "api_peer_1.log",
-
-	"actionCluster": {
-		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 5000,
-		"CycleCheckTimeMS" : 10,
-		"remoteTimeoutWaitMS" : 5000,
-		"nodeDuplication" : 2,
-		"StartingPeer" : {
-			"host": null,
-			"port": null
-		}
-	},
 
 	"flatFileDirectory" : "./public/"
 }

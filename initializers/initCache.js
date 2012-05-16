@@ -10,6 +10,16 @@ var initCache = function(api, next){
 	}
 	var redisCacheKey = "actionHero::cache";
 	var defaultExpireTime = 31622400 // 1 year
+
+	api.cache.size = function(api, next){
+		if(api.redis.enable === true){
+			api.redis.client.hlen(redisCacheKey, function(err, count){
+				next(count);
+			});
+		}else{
+			next(api.utils.hashLength(api.cache.data));
+		}
+	}
 	
 	api.cache.save = function(api, key, value, expireTimeSeconds, next){
 		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = defaultExpireTime; }
@@ -35,16 +45,6 @@ var initCache = function(api, next){
 			}
 		}
 	};
-
-	api.cache.size = function(api, next){
-		if(api.redis.enable === true){
-			api.redis.client.hlen(redisCacheKey, function(count){
-				next(count);
-			});
-		}else{
-			next(api.utils.hashLength(api.cache.data));
-		}
-	}
 
 	api.cache.load = function(api, key, next){
 		if(api.redis.enable === true){

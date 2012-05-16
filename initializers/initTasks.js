@@ -11,6 +11,7 @@ var initTasks = function(api, next)
 
 	if(api.redis.enable === true){
 		api.tasks.redisQueue = "actionHero::tasks";
+		api.tasks.redisQueueLocal = "actionHero::tasks::" + api.id;
 		api.tasks.redisProcessingQueue = "actionHero::tasksClaimed";
 	}else{
 		api.tasks.queue = [];
@@ -25,33 +26,37 @@ var initTasks = function(api, next)
 			msg = JSON.stringify(msg);
 			if(api.redis.enable === true){
 				var toEnqueue = true;
-				api.redis.client.llen(api.tasks.redisQueue, function(err, length){
-					api.redis.client.lrange(api.tasks.redisQueue, 0, (length * 2), function(err, enquedTasks){
-						for(var i in enquedTasks){
-							var t = JSON.parse(enquedTasks);
-							if(t.taskName == taskName){
-								toEnqueue = false;
-								api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow")
+				if(api.tasks.tasks[taskName].scope == "all"){
+					api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){ });
+				}else{
+					api.tasks.queueLength(api, function(length){
+						api.redis.client.lrange(api.tasks.redisQueue, 0, (length * 2), function(err, enquedTasks){
+							for(var i in enquedTasks){
+								var t = JSON.parse(enquedTasks);
+								if(t.taskName == taskName){
+									toEnqueue = false;
+									api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow")
+								}
 							}
-						}
-						if(toEnqueue){
-							api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
-								if(taskProcessing != null){
-									var data = JSON.parse(taskProcessing);
-									var rawTask = api.tasks.tasks[data.taskName];
-									if(rawTask.frequency > 0){
-										toEnqueue = false;
-										api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+							if(toEnqueue){
+								api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
+									if(taskProcessing != null){
+										var data = JSON.parse(taskProcessing);
+										var rawTask = api.tasks.tasks[data.taskName];
+										if(rawTask.frequency > 0){
+											toEnqueue = false;
+											api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+										}else{
+											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
+										}
 									}else{
 										api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
 									}
-								}else{
-									api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
-								}
-							});							
-						}
+								});							
+							}
+						});
 					});
-				});
+				}
 			}else{
 				api.tasks.queue.push(msg);
 			}
@@ -60,8 +65,19 @@ var initTasks = function(api, next)
 		}
 	};
 
+	api.tasks.queueLength = function(api, next){
+		if(api.redis.enable === true){
+			api.redis.client.llen(api.tasks.redisQueue, function(err, length){
+				next(length);
+			})
+		}else{
+			next(api.tasks.queue.length);
+		}
+	}
+
 	api.tasks.getNextTask = function(api, next){
 		if(api.redis.enable === true){
+			// get a global task
 			api.redis.client.lpop(api.tasks.redisQueue, function(err, task){
 				if(task != null){
 					task = JSON.parse(task);
@@ -74,7 +90,15 @@ var initTasks = function(api, next)
 						next(task);
 					});
 				}else{
-					next(null);
+					// get a local task
+					api.redis.client.lpop(api.tasks.redisQueueLocal, function(err, task){
+						if(task != null){
+							task = JSON.parse(task);
+							next(task);
+						}else{
+							next(null);
+						}
+					});
 				}
 			});
 		}else{
@@ -116,7 +140,7 @@ var initTasks = function(api, next)
 
 	api.tasks.enqueuePeriodicTask = function(api, task){
 		if(task.frequency > 0){
-			api.tasks.timers[task.taskName] = setTimeout(function(api, task){
+			api.tasks.timers[task.name] = setTimeout(function(api, task){
 				// remove the task from the processing queue
 				if(api.redis.enable === true){
 					api.redis.client.hdel(api.tasks.redisProcessingQueue, task.name, function(){ });

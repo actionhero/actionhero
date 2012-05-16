@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // actionHero Framweork in node.js
-// evantahler@gmail.com 
+// evan@evantahler.com 
 // https://github.com/evantahler/actionHero
 
 var createActionHero = function(){
@@ -90,14 +90,14 @@ var createActionHero = function(){
 
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
 		if(api.configData.secureWebServer.enable){
-			successMessage += " & secure web port " + api.configData.secureWebServer.port + " ***";
+			successMessage += " & secure web port " + api.configData.secureWebServer.port;
 		}
-		successMessage += " & socket port " + api.configData.socketServerPort;
-		successMessage += " ~ server ID: " + api.id + " ***";
+		successMessage += " & socket port " + api.configData.socketServerPort + " ***";
 
 		api.bootTime = new Date().getTime();
 			
 		actionHero.initLog(api, function(){
+			api.log("server ID: " + api.id);
 			actionHero.initRedis(api, function(){
 				actionHero.initCache(api, function(){
 					actionHero.initStats(api, function(){
@@ -106,20 +106,18 @@ var createActionHero = function(){
 								actionHero.initFileServer(api, function(){
 									actionHero.initWebServer(api, function(){
 										actionHero.initSocketServer(api, function(){ 
-											actionHero.initActionCluster(api, function(){
-												actionHero.initTasks(api, function(){
-													if(typeof params.initFunction == "function"){
-														params.initFunction(api, function(){
-															api.log(successMessage, ["green", "bold"]);
-															actionHero.running = true;
-															if(callback != null){ process.nextTick(function() { callback(api); }); }
-														})
-													}else{
+											actionHero.initTasks(api, function(){
+												if(typeof params.initFunction == "function"){
+													params.initFunction(api, function(){
 														api.log(successMessage, ["green", "bold"]);
 														actionHero.running = true;
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													}
-												});
+													})
+												}else{
+													api.log(successMessage, ["green", "bold"]);
+													actionHero.running = true;
+													if(callback != null){ process.nextTick(function() { callback(api); }); }
+												}
 											});
 										});
 									});
@@ -138,38 +136,53 @@ var createActionHero = function(){
 			clearTimeout(actionHero.api.tasks.processTimer);
 			
 			// remove from the list of hosts
-			api.redis.client.lrem("actionHero::peers", 1, api.ip);
+			if(actionHero.api.redis.enable){
+				actionHero.api.redis.client.lrem("actionHero::peers", 1, api.ip, function(){ });
+			}
 
 			var closed = 0;
-			var checkForDone = function(closed){
-				if(closed == 2){
+			var neededClosed = 2;
+			if(actionHero.api.configData.secureWebServer.enable){ neededClosed++; }
+			var checkForDone = function(){
+				if(closed == neededClosed){
+					closed = -1;
 					actionHero.running = false;
 					actionHero.api.log("The actionHero has been stopped", "bold");
 					next(true);
 				}else{
-					actionHero.api.log("waiting for open ports to close...");
+					// actionHero.api.log("waiting for open ports to close...");
 				}
 			}
-	
-			actionHero.api.socketServer.server.on("close", function(){
-				actionHero.api.log("Closed socket-server");
-				closed++;
-				checkForDone(closed);
-			});
-	
-			actionHero.api.webServer.webApp.on("close", function(){
-				actionHero.api.log("Closed web-server");
-				closed++;
-				checkForDone(closed);
-			});
-	
-			actionHero.api.socketServer.server.close();
-			actionHero.api.webServer.webApp.close();
-			checkForDone(closed);
+
 			for(var i in actionHero.api.socketServer.connections){
 				actionHero.api.socketServer.connections[i].end("Server going down NOW");
 				actionHero.api.socketServer.connections[i].destroy();
 			}
+
+			actionHero.api.socketServer.server.on("close", function(){
+				actionHero.api.log("Closed socket-server");
+				closed++;
+				checkForDone();
+			});
+
+			actionHero.api.webServer.webApp.on("close", function(){
+				actionHero.api.log("Closed web-server");
+				closed++;
+				checkForDone();
+			});
+
+			if(actionHero.api.configData.secureWebServer.enable){
+				actionHero.api.webServer.secureWebApp.on("close", function(){
+					actionHero.api.log("Closed secure web-server");
+					closed++;
+					checkForDone();
+				});
+			}
+
+			actionHero.api.socketServer.server.close();
+			actionHero.api.webServer.webApp.close();
+			if(actionHero.api.configData.secureWebServer.enable){ actionHero.api.webServer.secureWebApp.close(); }
+			checkForDone(closed);
 		}else{
 			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
 			next(false);
@@ -179,6 +192,7 @@ var createActionHero = function(){
 	actionHero.restart = function(next){
 		if(actionHero.running == true){
 			actionHero.stop(function(){
+				console.log("HERE")
 				actionHero.start(actionHero.startngParams, function(){
 					if(typeof next == "function"){ next(true); } 
 				});

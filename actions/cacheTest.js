@@ -29,16 +29,19 @@ action.run = function(api, connection, next)
 		
 	api.cache.save(api,key,value,null, function(resp){
 		connection.response.cacheTestResults.saveResp = resp;
-		api.cache.load(api,key, function(resp, expireTimestamp, createdAt, readAt){
-			connection.response.cacheTestResults.loadResp = {
-				value: resp,
-				expireTimestamp: expireTimestamp, 
-				createdAt: createdAt,
-				readAt: readAt
-			};
-			api.cache.destroy(api,key, function(resp){
-				connection.response.cacheTestResults.deleteResp = resp;
-				next(connection, true);
+		api.cache.size(api, function(numberOfCacheObjects){
+			connection.response.cacheTestResults.sizeResp = numberOfCacheObjects;
+			api.cache.load(api,key, function(resp, expireTimestamp, createdAt, readAt){
+				connection.response.cacheTestResults.loadResp = {
+					value: resp,
+					expireTimestamp: expireTimestamp, 
+					createdAt: createdAt,
+					readAt: readAt
+				};
+				api.cache.destroy(api,key, function(resp){
+					connection.response.cacheTestResults.deleteResp = resp;
+					next(connection, true);
+				});
 			});
 		});
 	});

@@ -5,6 +5,7 @@
 Data and what they do:
 - actionHero::peers [] a list of all the peers in the action cluster.  New members add themselves to it
 - actionHero::tasks [] a list of tasks to be completed.  Any memeber can push to the queue; all workers will pull one at a time from the queue
+- actionHero::tasks::{serverID} [] a list of tasks to be completed by only this node.  This queue will be drained at a lower priority than the regular task queue
 - actionHero::tasksClaimed [] a list of tasks being either worked on or sleeping by a node.
 - actionHero::cache [] the common shared cache object
 - actionHero::stats [] the common shared stats object

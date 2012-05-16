@@ -17,6 +17,7 @@ var initSocketServer = function(api, next){
 	// server
 	api.socketServer.server = api.net.createServer(function (connection) {
 		api.stats.incrament(api, "numberOfSocketRequests");
+		api.socketServer.numberOfSocketRequests++;
 		
 	  	connection.setEncoding("utf8");
 	  	connection.type = "socket";

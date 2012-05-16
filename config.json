@@ -11,7 +11,7 @@
         
 	"secureWebServer" : {
 		"port": 4443,
-		"enable": false,
+		"enable": true,
 		"keyFile": "./certs/server-key.pem",
 		"certFile": "./certs/server-cert.pem"
 	},
