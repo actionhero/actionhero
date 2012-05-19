@@ -141,52 +141,63 @@ var createActionHero = function(){
 			
 			// remove from the list of hosts
 			if(actionHero.api.redis.enable){
-				actionHero.api.redis.client.lrem("actionHero::peers", 1, api.ip, function(){ });
+				actionHero.api.redis.client.llen("actionHero::peers", function(err, length){
+					actionHero.api.redis.client.lrange("actionHero::peers", 0, length, function(err, peers){
+						actionHero.api.redis.client.lrem("actionHero::peers", 1, actionHero.api.id, function(err, count){
+							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
+							cont();
+						});
+					});
+				});
+			}else{
+				cont();
 			}
 
-			var closed = 0;
-			var neededClosed = 2;
-			if(actionHero.api.configData.secureWebServer.enable){ neededClosed++; }
-			var checkForDone = function(){
-				if(closed == neededClosed){
-					closed = -1;
-					actionHero.running = false;
-					actionHero.api.log("The actionHero has been stopped", "bold");
-					next(true);
-				}else{
-					// actionHero.api.log("waiting for open ports to close...");
+			function cont(){
+				var closed = 0;
+				var neededClosed = 2;
+				if(actionHero.api.configData.secureWebServer.enable){ neededClosed++; }
+				var checkForDone = function(){
+					if(closed == neededClosed){
+						closed = -1;
+						actionHero.running = false;
+						actionHero.api.log("The actionHero has been stopped", "bold");
+						next(true);
+					}else{
+						// actionHero.api.log("waiting for open ports to close...");
+					}
 				}
-			}
 
-			for(var i in actionHero.api.socketServer.connections){
-				actionHero.api.socketServer.connections[i].end("Server going down NOW");
-				actionHero.api.socketServer.connections[i].destroy();
-			}
+				for(var i in actionHero.api.socketServer.connections){
+					actionHero.api.socketServer.connections[i].end("Server going down NOW");
+					actionHero.api.socketServer.connections[i].destroy();
+				}
 
-			actionHero.api.socketServer.server.on("close", function(){
-				actionHero.api.log("Closed socket-server");
-				closed++;
-				checkForDone();
-			});
-
-			actionHero.api.webServer.webApp.on("close", function(){
-				actionHero.api.log("Closed web-server");
-				closed++;
-				checkForDone();
-			});
-
-			if(actionHero.api.configData.secureWebServer.enable){
-				actionHero.api.webServer.secureWebApp.on("close", function(){
-					actionHero.api.log("Closed secure web-server");
+				actionHero.api.socketServer.server.on("close", function(){
+					actionHero.api.log("Closed socket-server");
 					closed++;
 					checkForDone();
 				});
-			}
 
-			actionHero.api.socketServer.server.close();
-			actionHero.api.webServer.webApp.close();
-			if(actionHero.api.configData.secureWebServer.enable){ actionHero.api.webServer.secureWebApp.close(); }
-			checkForDone(closed);
+				actionHero.api.webServer.webApp.on("close", function(){
+					actionHero.api.log("Closed web-server");
+					closed++;
+					checkForDone();
+				});
+
+				if(actionHero.api.configData.secureWebServer.enable){
+					actionHero.api.webServer.secureWebApp.on("close", function(){
+						actionHero.api.log("Closed secure web-server");
+						closed++;
+						checkForDone();
+					});
+				}
+
+				actionHero.api.socketServer.server.close();
+				actionHero.api.webServer.webApp.close();
+				if(actionHero.api.configData.secureWebServer.enable){ actionHero.api.webServer.secureWebApp.close(); }
+				checkForDone(closed);
+			}
 		}else{
 			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
 			next(false);
