@@ -28,6 +28,6 @@
   },
   "scripts": {
 	  "start": "./actionHero",
-	  "test": "./node_modules/.bin/vows ./spec/*"
+	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix"
   }
 }
