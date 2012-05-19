@@ -5,9 +5,9 @@
 	"serverName" : "actionHero API",
 	"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
 	"apiBaseDir" : "./node_modules/actionHero/",
-	
-        "httpHeaders" : {
-        },
+
+	"httpHeaders" : {
+	},
         
 	"secureWebServer" : {
 		"port": 4443,

@@ -2,17 +2,41 @@
 
 ## Version 2.0.0
 
-** Redis-powered Cluster & Major re-write **
+** Redis-powered Cluster & major re-write **
 
 ** Details **
 
-This version is likley to be incompatable with prior versions.  Running an actionCluster now requires redis.
+This version realizes the dream of a true cluster for actionHero.  There is no longer a need for a master process, and every node in the cluster can work alone or in a group.  This release also enables using the node.js cluster module to make the most of your server(s).  
 
-** Other Notes **
+*This version is likley to be incompatable with prior versions.  Running an actionCluster now requires redis (running a single node does not require redis and is still a pure node.js implamentation).*
 
-- shared cache
+Using a [redis](http://redis.io/) backend, actionHero nodes can now truly share memory objects and have a common queue for tasks.  Philosophically, we have changed from a mesh network to a queue-based network.  This means that no longer will every node talk to every other node, but rather all nodes will talk to redis.  Now, I know that you are thinking "isn't that bad because it creates a single point of failure?"  Normally, the answer is yes, but redis already has mesh networking support! The suggested method of deployment is to setup a redis instance on each server, and they will handle the mesh networking for you.  
+
+`api.cache` now works in a shared way if you are part of an actionCluster.  All cache actions refer to redis and in this way, all peers can have access to shared ojects.  To avoid conflicts, you will have access to 'lastReadAt' as part of `api.cache.load` responses.  actionHero will also no longer store its own cache to disc periodically as redis does this already.
+
+The task system also has undergone some major refactoring.  All tasks are now stored in a shared queue within redis.  All peers will periodically check the queue for unfilled tasks, and drain the queue one at a time.  In this manner, you can add more task capacity by spinning up more actionHero nodes which may or may not also handle web/socket traffic.  This also means that tasks will not get lost if a node crashes as they will remain in the redis queue until drained.  Each peer also has a 'personal' task queue for "all" actions.
+
+For periodic tasks ("any" and "all"), the peer which most recently completed the task while hold the semaphore for that task (in a `actionHero::tasksClaimed` shared list) until the proper amount of time has elapsed, then they will re-enqueue the task.  This does not mean that a specific node will always preform tasks of the same type.
+
+There are new requirements to `config.json` to configure redis.  Here is an example:
+
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
+
+All methods under the `api.actionCluster` namespace have been removed for simplicity.  Just use the normal cache methods, and if you are in a cluster, you will operate in a shared memory space.
+
+** Notes **
+
+- all peers now share the same `api.cache` data
 - using redis cache save; no longer saving cache periodically
-- all nodes are equal, no need for a master
+- all nodes are created equal; there is no need for a master
+- the entire `actionCluster` namesapace has been removed
+- there are new requirements to `config.json` to setup redis
 - every node will try to handle requests and process one job pending in the task queue at a time
 - shared tasks will be prefered over per-node tasks
 - the 'status' action has some new output type sto reflect 'global' stats in comparison to 'local' stats (IE: cout of web requests that this node has served vs total)

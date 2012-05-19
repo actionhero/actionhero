@@ -4,7 +4,7 @@ var task = {};
 // metadata
 task.name = "cleanOldCacheObjects";
 task.description = "I will clean out expired cache objects";
-task.scope = "all";
+task.scope = "any";
 task.frequency = 60000;
 
 /////////////////////////////////////////////////////////////////////

@@ -110,7 +110,7 @@ You may also enable a HTTPS server with actionHero.  It works exactly the same a
 
 #### Files and Routes
 
-actionHero can also serve up flat files.  There is an action, `file` which is used to do this and a file server is part of the core framework (check out `initFileserver` for more information).  
+actionHero can also serve up flat files.  There is an action, `file` which is used to do this and a file server is part of the core framework (check out `initFileserver` for more information).  actionHero will not cache thses files, nor do we have any templating languages built in.  Each request to `file` will re-read the file from disk (like the nginx web server)
 
 * /file and /api are  routes which expose the 'directories' of those types.  These top level paths can be configured in `config.json` with `api.configData.urlPathForActions` and `api.configData.urlPathForFiles`.
 * the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.configData.rootEndpointType`. The default is `api`.
@@ -187,7 +187,7 @@ actionHero ships with the functions needed for an in-memory key-value cache.  Ch
 * `api.cache.destroy(api, key, next)`
 
 
-api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.  A task will periodically go though and delete expired cache entries.  As this is an in-memory cache, the maximum ram refined for the entire application is set with `api.configData.cache.maxMemoryBytes`.  If your application is consuming more than the defined amount of ram, the cache will not save any new objects, and `api.cache.save` will return false.  No other part of actionHero will halt due to this memory limitation. 
+api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.  A task will periodically go though and delete expired cache entries.  If you are running a stand-alone version of actionHero, this cache will be in memory of the actionHero process, otherwise this data will be stored in redis.
 
 Note: that the keys starting with an "_" should not be used, as they are in use by core parts of the system.
 
@@ -211,141 +211,29 @@ Note: that the keys starting with an "_" should not be used, as they are in use 
 	* will be false if the object cannot be found
 
 ## actionCluster
-actionHero can be run either as a stand-alone server or as part of a cluster.  When running in cluster mode, the api will make use of the actionCluster methods.  Features of an actionCluster:
+actionHero can be run either as a stand-alone server or as part of a cluster.  The goal of actionCluster is to allow you to create a group of servers which will share memory state and all be able to handle requets and run tasks.  You can also add and remove nodes from the cluster without fear of data loss or task duplication.  You can run many instances of actionHero using node.js' cluster methods.
 
-* `ring-based` communication.  Lists of peers are shared among all members of the actionCluster, and each member communicates directly with all other members.  This allows any member of the cluster to fail and the cluster to continue.
-* reconnection.  Peers will always attempt to reconnect to disconnected peers
-* cluster security.  Each actionCluster has a unique membership phrase `api.configData.actionCluster.Key` defined by you
-* shared messaging: the `say` socket command will message all clients in the same room in all peers.  `roomView` will aggregate information for all peer's connections
-* shared or individual configuration for each peer.
-* Shared memory objects!
-	* actionHero's single-node cache,  `api.cache` is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn't hold any of the data being accessed.
-	* Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question.  actionHero will not delete extra copies of an object across peers, with the assumption they all might be different.  
+Using a [redis](http://redis.io/) backend, actionHero nodes can now truly share memory objects and have a common queue for tasks.  Philosophically, we have changed from a mesh network to a queue-based network.  This means that no longer will every node talk to every other node, but rather all nodes will talk to redis.  Now, I know that you are thinking "isn't that bad because it creates a single point of failure?"  Normally, the answer is yes, but redis already has mesh networking support! The suggested method of deployment is to setup a redis instance on each server, and they will handle the mesh networking for you.  
 
-__actionCluster.cache__ functions:
+When working within an actionCluster the `api.cache` methods described above switch from using an in-process memory store, to using a common one based on redis.  This means that all peers will be in sync at all times.  The task system described below also becomes a common queue which all peers will work on draining.  There should be no changes needed to your use of the api to use the benifits of cluster deployment and synchronization.  
 
-* `api.actionCluster.cache.save(api, key, value, expireTimeSeconds, next)`
-* `api.actionCluster.cache.load(api, key, next)`
-* `api.actionCluster.cache.destroy(api, key, remotePeer, next)`
-
-Just like the local version, `api.actionCluster.cache.save` will default to `api.configData.cache.defaultExpireTimeSeconds` if `expireTimeSeconds` is not set.
-
-If you do not provide a `remotePeer`, `api.actionCluster.cache.destroy` will delete the object on all peers.
-
-`api.actionCluster.cache` actions differ from their local cousins in their responses.  As peers may differ in their value for a given object, this method returns an array of objets which contain the values and which peer they came from.  In this way, you can handle differing responses however you like.  Responses from all peers will be collected, and many may be `null` if they aren't holding the object.  Examples:
-
-**api.actionCluster.cache.save**: response object
-
-Note that only those peers which the object was saved to are returned.  In this case, nodeDuplication was set to 2.
-
-	[
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5000"
-           }, 
-           "value": true
-       }, 
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5002"
-           }, 
-           "value": true
-       }
-	]
-
-**api.actionCluster.cache.load**: response object
-
-Note that responses from all peers are listed, and those that do not hold the object return null.
-
-	[
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5002"
-           }, 
-           "value": "myValue",
-		   "expireTimestamp": 1327726850689,
-		   "createdAt": 1327723250689,
-           "readAt": 1327723250890,
-           "key": "ActionClusterCacheTest_myKey"
-       }, 
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5001"
-           }, 
-           "value": null,
-		   "expireTimestamp": null,
-		   "createdAt": null,
-           "readAt": null,
-           "key": "ActionClusterCacheTest_myKey"
-       }, 
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5000"
-           }, 
-           "value": "myValue",
-		   "expireTimestamp": 1327726850689,
-		   "createdAt": 1327723250690,
-           "readAt": 1327723250890,
-           "key": "ActionClusterCacheTest_myKey"
-       }
-	]
-
-**api.actionCluster.cache.destroy**: response object
-
-Note that responses from all peers are listed, and those that successfully deleted are true.
-
-	[
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5002"
-           }, 
-           "value": true
-       }, 
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5000"
-           }, 
-           "value": true
-       }, 
-       {
-           "remotePeer": {
-               "host": "127.0.0.1", 
-               "port": "5001"
-           }, 
-           "value": false
-       }
-	]
-
-All actionCluster.cache actions will also include the local peer in their operations.  All actionCluster.cache actions will also only wait `api.configData.actionCluster.remoteTimeoutWaitMS` to collect responses from peers, and will then return whatever information they have collected so far.	This helps ensure that clients get the data they need even if a peer becomes unresponsive (some data is better than no data).
+*There have recently been signigigant chagnes to the cluster system, so if you are upgrading from v1.x, please checkout the changelog.*
 
 ## Tasks
 Tasks are special actions (potentially periodically run) the server will do at a set interval.  Tasks can be run on every node in the actionCluster or just one.  There are a few tasks which are core to actionHero which include:
 
-* calculateStats
-	* Polls all other members in the actionCluster to build up statistics
-	* Runs every 10 seconds
-* cleanLogFiles
+* cleanLogFiles (all)
 	* removes all files in `./log/` if they are larger than `api.configData.maxLogFileSize`
 	* runs every 60 seconds
-* cleanOldCacheObjects
+* cleanOldCacheObjects (any)
 	* removes expired objects in `api.cache.data`
 	* runs every 10 seconds
-* pingSocketClients
+* pingSocketClients (all)
 	* sends a keep-alive message to all TCP socket clients
 	* runs every 60 seconds
-* runAction
+* runAction (any)
 	* a wrapper to run an action as a task
 	* will not run automatically
-* saveCacheToDisk
-	* will save the contents of `api.cache.data` to disc
-	* runs every 60 seconds
 
 You can create you own tasks by placing them in a `./tasks/` folder at the root of your application.  Like actions, all tasks have some required metadata:
 
@@ -363,7 +251,7 @@ An example Task:
 	/////////////////////////////////////////////////////////////////////
 	// metadata
 	task.name = "sayHello";
-	task.description = "I am a demo task which should only be on one node";
+	task.description = "I am a demo task which will be run only on one peer";
 	task.scope = "any";
 	task.frequency = 1000;
 	
@@ -383,6 +271,7 @@ An example Task:
 ## Requirements
 * node.js server
 * npm
+* redis (for actionCluster)
 
 ## Install & Quickstart
 * `npm install actionHero`
@@ -527,14 +416,21 @@ Now `api.utils.randomNumber()` is available for any action to use!  It is import
 Create a config.json file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assuemd from the default.
 
 	{ 
-	    "apiVersion" : "1.0.0",
+	    "apiVersion" : "2.0.0",
 		"webServerPort" : 8080,
 		"socketServerPort" : 5000,
 		"serverName" : "actionHero API",
 		"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
 		"apiBaseDir" : "./node_modules/actionHero/",
 		
-		"headers":{}
+		"secureWebServer" : {
+			"port": 4443,
+			"enable": true,
+			"keyFile": "./certs/server-key.pem",
+			"certFile": "./certs/server-cert.pem"
+		},
+		
+		"httpheaders":{}
 	
 		"urlPathForActions" : "api",
 		"urlPathForFiles" : "file",
@@ -546,29 +442,18 @@ Create a config.json file in the root of your project.  Here is the default conf
 		"maxLogFileSize" : 10485760,
 		"logTable" : "log",
 		"logRequests" : true,
-		
-		"actionCluster": {
-			"Key" : "4ijhaijhm43yjnawhja43jaj",
-			"ReConnectToLostPeersMS" : 5000,
-			"CycleCheckTimeMS" : 10,
-			"remoteTimeoutWaitMS" : 5000,
-			"nodeDuplication" : 2,
-			"StartingPeer" : {
-				"host": null,
-				"port": null
-			}
+			
+		"redis" : {
+			"enable": true,
+			"host": "127.0.0.1",
+			"port": 6379,
+			"password": null,
+			"options": null
 		},
 
 		"flatFileDirectory" : "./node_modules/actionHero/public/",
 		"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 		"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
-
-		"cache" : {
-			"cacheFolder" : "./cache/",
-			"cacheFile" : "api.cache",
-			"defaultExpireTimeSeconds" : 3600,
-			"maxMemoryBytes" : 524288000
-		},
 	
 		"defaultSocketRoom": "defaultRoom",
 
