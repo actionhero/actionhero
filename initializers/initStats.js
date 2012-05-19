@@ -70,7 +70,7 @@ var initStats = function(api, next){
 								};
 								stats.webServer = {
 									numberOfGlobalWebRequests: numberOfWebRequests,
-									numberOfLocalWebRequests: api.webServer.numberOfWebLocalRequests
+									numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
 								};
 								sleepingTasks = [];
 								for (var i in api.tasks.timers){ sleepingTasks.push(i); }
