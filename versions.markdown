@@ -1,5 +1,22 @@
 # Action Hero API Versions
 
+## Version 2.0.0
+
+** Redis-powered Cluster & Major re-write **
+
+** Details **
+
+This version is likley to be incompatable with prior versions.  Running an actionCluster now requires redis.
+
+** Other Notes **
+
+- shared cache
+- using redis cache save; no longer saving cache periodically
+- all nodes are equal, no need for a master
+- every node will try to handle requests and process one job pending in the task queue at a time
+- shared tasks will be prefered over per-node tasks
+- the 'status' action has some new output type sto reflect 'global' stats in comparison to 'local' stats (IE: cout of web requests that this node has served vs total)
+
 ## Version 1.0.3
 
 ** Optional Headers **

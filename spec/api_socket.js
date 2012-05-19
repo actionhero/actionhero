@@ -56,7 +56,7 @@ suite.addBatch({
 			makeSocketRequest(client, this.callback, "status");
 		}, 'works' : function(resp, d){
 			specHelper.assert.isObject(d.stats);
-			specHelper.assert.equal(d.stats.socketServer.numberOfSocketRequests, 3);
+			specHelper.assert.equal(d.stats.socketServer.numberOfLocalSocketRequests, 3);
 		}
 	}
 });
@@ -131,7 +131,7 @@ suite.addBatch({
 suite.addBatch({
 	"clients can view additional infor about rooms they are in": {
 		topic: function(){ makeSocketRequest(client, this.callback, "roomView"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.roomStatus.membersCount, 3); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.roomStatus.membersCount >= 3, true); }
 	}
 });
 
@@ -152,7 +152,7 @@ suite.addBatch({
 suite.addBatch({
 	"connections in the first room see the count go down": {
 		topic: function(){ makeSocketRequest(client2, this.callback, "roomView"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.roomStatus.membersCount, 2); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.roomStatus.membersCount >= 2, true); }
 	}
 });
 

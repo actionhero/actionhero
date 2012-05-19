@@ -86,6 +86,10 @@ var createActionHero = function(){
 
 		// determine my unique ID
 		var externalIP = api.utils.getExternalIPAddress();
+		if(externalIP == false){
+			console.log("Error fetching this host's external IP address; setting to random string")
+			externalIP = api.utils.randomString(128);
+		}
 		api.id = externalIP + ":" + api.configData.webServerPort + "&" + api.configData.socketServerPort;
 
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;

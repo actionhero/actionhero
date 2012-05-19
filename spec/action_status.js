@@ -19,11 +19,10 @@ suite.addBatch({
   "status: stats": {
     topic: function(){ specHelper.apiTest.get(actionUrl, 0, {} ,this.callback ); },
     stats: function(res, b){ 
-      specHelper.assert.isTrue(res.body.stats.webServer.numberOfWebRequests > 0);
-      specHelper.assert.isTrue(res.body.stats.socketServer.numberOfSocketRequests >= 0);
-      specHelper.assert.isTrue(res.body.stats.startTime > 0);
+      specHelper.assert.isTrue(res.body.stats.webServer.numberOfGlobalWebRequests > 0);
+      specHelper.assert.isTrue(res.body.stats.socketServer.numberOfGlobalSocketRequests >= 0);
       specHelper.assert.isTrue(res.body.stats.uptimeSeconds > 0);
-	  specHelper.assert.isTrue(res.body.stats.pid > 0);
+	  specHelper.assert.isTrue(res.body.stats.id.length > 0);
     },
   },
 

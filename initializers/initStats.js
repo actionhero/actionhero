@@ -38,6 +38,7 @@ var initStats = function(api, next){
 	api.stats.load = function(api, next){
 		var stats = {};
 		var now = new Date().getTime();
+		stats.id = api.id;
 		stats.uptimeSeconds = (now - api.bootTime) / 1000;
 		api.cache.size(api, function(numberOfCacheObjects){
 			api.stats.get(api, "numberOfSocketRequests", function(numberOfSocketRequests){
