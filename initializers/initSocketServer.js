@@ -174,10 +174,17 @@ var initSocketServer = function(api, next){
 				});
 			});
 		}else{
-			next({
-				members: api.socketServer.rooms[room],
-				membersCount: api.socketServer.rooms[room].length
-			});
+			if(api.socketServer.rooms[room] != null){
+				next({
+					members: api.socketServer.rooms[room],
+					membersCount: api.socketServer.rooms[room].length
+				});
+			}else{
+				next({
+					members: null,
+					membersCount: 0
+				});
+			}
 		}
 	}
 
