@@ -5,8 +5,8 @@ var initTasks = function(api, next)
 	api.tasks = {};
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
-	api.tasks.cycleTimeMS = 10;
-	api.tasks.reloadPeriodicsTime = 5000;
+	api.tasks.cycleTimeMS = 50;
+	api.tasks.reloadPeriodicsTime = 60000;
 	api.tasks.processTimer = null;
 
 	if(api.redis.enable === true){
@@ -30,12 +30,13 @@ var initTasks = function(api, next)
 					api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){ });
 				}else{
 					api.tasks.queueLength(api, function(length){
-						api.redis.client.lrange(api.tasks.redisQueue, 0, (length * 2), function(err, enquedTasks){
+						api.redis.client.lrange(api.tasks.redisQueue, 0, length, function(err, enquedTasks){
 							for(var i in enquedTasks){
 								var t = JSON.parse(enquedTasks);
 								if(t.taskName == taskName){
 									toEnqueue = false;
-									api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow")
+									api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
+									break;
 								}
 							}
 							if(toEnqueue){
@@ -131,6 +132,10 @@ var initTasks = function(api, next)
 					}else{
 						api.log("task failed to run: "+JSON.stringify(task), "red")
 					}
+					if(api.redis.enable === true){
+						// remove the task from the processing queue
+						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){ });
+					}
 					api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName])
 					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 				});
@@ -140,24 +145,24 @@ var initTasks = function(api, next)
 
 	api.tasks.enqueuePeriodicTask = function(api, task){
 		if(task.frequency > 0){
-			api.tasks.timers[task.name] = setTimeout(function(api, task){
-				// remove the task from the processing queue
-				if(api.redis.enable === true){
-					api.redis.client.hdel(api.tasks.redisProcessingQueue, task.name, function(){ });
-				}
-				// enqueue
-				api.tasks.enqueue(api, task.name, null);
-			}, task.frequency, api, task);
+			if(api.tasks.timers[task.name] == null || api.tasks.timers[task.name].ontimeout == null){
+				api.tasks.timers[task.name] = setTimeout(function(api, task){
+					clearTimeout(api.tasks.timers[task.name]);
+					api.tasks.enqueue(api, task.name, null);
+				}, task.frequency, api, task);
+			}
 		}
 	}
 	
 	api.tasks.startPeriodicTasks = function(api, next){
+		clearTimeout(api.tasks.periodicTaskReloader);
 		for(var i in api.tasks.tasks){
 			var task = api.tasks.tasks[i];
 			if(task.frequency > 0){
 				api.tasks.enqueuePeriodicTask(api, task)
 			}
 		}
+		api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api) // check to be sure that all the period tasks are still present
 		if(typeof next == "function"){ next(); }
 	}
 		
