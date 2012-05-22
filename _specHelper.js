@@ -37,7 +37,14 @@ specHelper.params[0] = {
 	},
 	"secureWebServer" : {
 		"enable": false
-	}
+	},
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
 };
 
 specHelper.params[1] = {
@@ -64,7 +71,14 @@ specHelper.params[1] = {
 	},
 	"secureWebServer" : {
 		"enable": false
-	}
+	},
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
 };
 
 specHelper.params[2] = {
@@ -91,7 +105,14 @@ specHelper.params[2] = {
 	},
 	"secureWebServer" : {
 		"enable": false
-	}
+	},
+	"redis" : {
+		"enable": true,
+		"host": "127.0.0.1",
+		"port": 6379,
+		"password": null,
+		"options": null
+	},
 };
 
 // tables to truncate each round of testing
