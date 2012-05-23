@@ -120,7 +120,6 @@ specHelper.tables = [ "Logs" ];
 
 specHelper.prepare = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	try{ specHelper.fs.unlinkSync(specHelper.params[serverID].cache.cacheFolder + specHelper.params[serverID].cache.cacheFile); }catch(e){ }
 	specHelper.startServer(serverID, function(api){
 		next(api);
 	});
