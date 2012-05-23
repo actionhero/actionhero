@@ -2,7 +2,7 @@
 
 ## Version 2.0.0
 
-** Redis-powered Cluster & major re-write **
+** Redis-powered Cluster & major refactor **
 
 ** Details **
 
