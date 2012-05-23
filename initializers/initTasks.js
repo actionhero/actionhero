@@ -6,7 +6,7 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
 	api.tasks.cycleTimeMS = 50;
-	api.tasks.reloadPeriodicsTime = 60000;
+	api.tasks.reloadPeriodicsTime = 600000;
 	api.tasks.processTimer = null;
 
 	if(api.redis.enable === true){
@@ -196,7 +196,7 @@ var initTasks = function(api, next)
 	}
 	
 	api.tasks.startPeriodicTasks = function(api, next){
-		api.log("setting up period tasks...", "yellow")
+		api.log("setting up periodic tasks...", "yellow")
 		clearTimeout(api.tasks.periodicTaskReloader);
 		for(var i in api.tasks.tasks){
 			var task = api.tasks.tasks[i];
