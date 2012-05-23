@@ -4,9 +4,11 @@
 
 <h2>Who is the actionHero?</h2>
 
-<p>actionHero is a <a href="http://nodejs.org">node.js</a> API framework for both <strong>tcp sockets</strong> and <strong>http clients</strong>.  The goals of actionHero are to create an easy-to-use toolkit to get started making combination http and socket APIs as quickly as possible.  An actionHero can work as a stand-alone server or in concert with other actionHero servers in a cluster to handle larger load.</p>
+<p>actionHero is a <a href="http://nodejs.org">node.js</a> API framework for both <strong>tcp sockets</strong> and <strong>http clients</strong>.  The goals of actionHero are to create an easy-to-use toolkit to get started making combination http and socket APIs as quickly as possible.</p>
 
-<p>The actionHero API defines a single access point and accepts GET and POST input. You define &ldquo;Actions&rdquo; which handle input and response, such as &ldquo;userAdd&rdquo; or &ldquo;geoLocate&rdquo;. The actionHero API is not &ldquo;RESTful&rdquo; (which is meaningless for persistent socket connections). This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs.</p>
+<p>actionHero servers can process both requests and tasks (delayed actions like send e-mail or other batch jobs).  actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.</p>
+
+<p>The actionHero API defines a single access point and accepts GET, POST, and PUT input. You define "Actions" which handle input and response, such as "userAdd" or "geoLocate". HTTP, HTTPS, and TCP clients can all use these actions.  The actionHero API is not "RESTful" (which is meaningless for persistent socket connections). This was chosen to make it as simple as possible for devices/users to access the actions, including low-level embedded devices which may have trouble with all the HTTP verbs. </p>
 
 <h2>Actions</h2>
 
