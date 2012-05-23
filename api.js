@@ -40,6 +40,7 @@ var createActionHero = function(){
 		api.data2xml = require('data2xml');
 		api.mime = require('mime');
 		api.redisPackage = require('redis');
+		api.cluster = require('cluster');
 				
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
@@ -91,6 +92,9 @@ var createActionHero = function(){
 			externalIP = api.utils.randomString(128);
 		}
 		api.id = externalIP + ":" + api.configData.webServerPort + "&" + api.configData.socketServerPort;
+		if(api.cluster.isWorker){
+			api.id += ":" + process.pid;
+		}
 
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
 		if(api.configData.secureWebServer.enable){

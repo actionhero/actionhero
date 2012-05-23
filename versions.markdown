@@ -8,7 +8,7 @@
 
 This version realizes the dream of a true cluster for actionHero.  There is no longer a need for a master process, and every node in the cluster can work alone or in a group.  This release also enables using the node.js cluster module to make the most of your server(s).  
 
-*This version is likley to be incompatable with prior versions.  Running an actionCluster now requires redis (running a single node does not require redis and is still a pure node.js implamentation).*
+*This version is likley to be incompatible with prior versions.  Running an actionCluster now requires redis (running a single node does not require redis and is still a pure node.js implementation).*
 
 Using a [redis](http://redis.io/) backend, actionHero nodes can now share memory objects and have a common queue for tasks.  Philosophically, we have changed from a mesh network to a queue-based network.  This means that no longer will every node talk to every other node, but rather all nodes will talk to redis.  Now, I know that you are thinking "isn't that bad because it creates a single point of failure?"  Normally, the answer is yes, but redis already has mesh networking support! The suggested method of deployment is to setup a redis instance on each server, and they will handle the mesh networking for you.  
 
@@ -40,7 +40,7 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 - there are new requirements to `config.json` to setup redis
 - every node will try to handle requests and process one job pending in the task queue at a time
 - shared tasks will be prefered over per-node tasks
-- the 'status' action has some new output type sto reflect 'global' stats in comparison to 'local' stats (IE: cout of web requests that this node has served vs total)
+- the 'status' action has some new output types to reflect 'global' stats in comparison to 'local' stats (IE: count of web requests that this node has served vs total)
 
 ## Version 1.0.3
 

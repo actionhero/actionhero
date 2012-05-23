@@ -16,6 +16,9 @@ var initLog = function(api, next){
 			}else{
 				var time_string = "!";
 			}
+			if(api.cluster.isWorker){
+				time_string += " [" + process.pid + "]";
+			}
 
 			var console_message = api.consoleColors.grey(time_string) + api.consoleColors.grey(" | ");
 			var inner_message = original_message;

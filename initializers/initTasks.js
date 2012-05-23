@@ -36,7 +36,7 @@ var initTasks = function(api, next)
 									var t = JSON.parse(enquedTasks[i]);
 									if(t.taskName == taskName){
 										toEnqueue = false;
-										api.log("not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
+										// api.log("not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
 										break;
 									}
 								}
@@ -54,14 +54,14 @@ var initTasks = function(api, next)
 									var t = JSON.parse(enquedTasks[i]);
 									if(t.taskName == taskName){
 										toEnqueue = false;
-										api.log("not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
+										// api.log("not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
 										break;
 									}
 								}
 								if(toEnqueue){
 									api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
 										if(taskProcessing != null){
-											api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+											// api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
 										}else{
 											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
 										}
@@ -80,7 +80,7 @@ var initTasks = function(api, next)
 						var t = JSON.parse(api.tasks.queue[i]);
 						if(t.taskName == taskName){
 							toEnqueue = false;
-							api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
+							// api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
 							break;
 						}
 					}
