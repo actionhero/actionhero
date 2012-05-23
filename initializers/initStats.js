@@ -45,7 +45,7 @@ var initStats = function(api, next){
 				api.stats.get(api, "numberOfActiveSocketClients", function(numberOfActiveSocketClients){
 					api.stats.get(api, "numberOfWebRequests", function(numberOfWebRequests){
 						api.stats.get(api, "numberOfPeers", function(numberOfPeers){
-							api.tasks.queueLength(api, api.tasks.redisQueue, function(queueLength){
+							api.tasks.queueLength(api, api.tasks.redisQueue, function(queueLength){ // api.tasks.redisQueue will be null if not set
 
 								if(numberOfCacheObjects == null){numberOfCacheObjects = 0;}
 								if(numberOfSocketRequests == null){numberOfSocketRequests = 0;}
