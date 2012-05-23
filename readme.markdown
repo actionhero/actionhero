@@ -242,6 +242,9 @@ You can create you own tasks by placing them in a `./tasks/` folder at the root 
 * `task.scope`: "any" or "all".  Should a single actionCluster server (any) run this task, or should all of them? For example, `calculateStats` is run by all peers in the action cluster (because we want to know all peer's status), but if you had a task to clean old sessions from your database or send an email, you would only want a single node to do that.
 * `task.frequency`: In milliseconds, how often should I run?.  Setting me to 0 will cause me not to run automatically, but I can still be run with `api.task.run`
 
+To enqueue a task (the normal way of doing things) use `api.tasks.enqueue(api, taskName, runAtTime, params)`.  To run a task in the future, set runAtTime, otherwise leave it null or set in the past.
+
+
 As stated above, any task can also be called programmatically with `api.tasks.run(api, taskName, params, next)`.
 
 An example Task:

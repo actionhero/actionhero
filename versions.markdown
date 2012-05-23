@@ -33,6 +33,7 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 ** Notes **
 
 - all peers now share the same `api.cache` data
+- api.tasks.enqueue is now `api.tasks.enqueue(api, taskName, runAtTime, params)`  Set runAtTime to 0 to run the task as soon as possible
 - using redis cache save; no longer saving cache periodically
 - all nodes are created equal; there is no need for a master
 - the entire `actionCluster` namesapace has been removed
