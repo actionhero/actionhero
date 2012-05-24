@@ -123,9 +123,10 @@ var initTasks = function(api, next)
 						});
 					}else{
 						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params);
-						next(null);
+						task = null;
 					}
-				}else{
+				}
+				if(task == null){
 					// get a local task
 					api.redis.client.lpop(api.tasks.redisQueueLocal, function(err, task){
 						if(task != null){
