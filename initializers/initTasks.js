@@ -17,7 +17,7 @@ var initTasks = function(api, next)
 		api.tasks.queue = [];
 	}
 	
-	api.tasks.enqueue = function(api, taskName, runAtTime, params){
+	api.tasks.enqueue = function(api, taskName, runAtTime, params, next){
 		if(typeof api.tasks.tasks[taskName] === "object"){
 			var msg = {
 				taskName: taskName,
@@ -40,11 +40,19 @@ var initTasks = function(api, next)
 										break;
 									}
 								}
+								if(toEnqueue){
+									api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
+										if(typeof next == "function"){ next(true); }
+									});
+								}else{
+									if(typeof next == "function"){ next(false); }
+								}
 							});
 						});
-					}
-					if(toEnqueue){
-						api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){ });
+					}else{
+						api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
+							if(typeof next == "function"){ next(true); }
+						});
 					}
 				}else{
 					if(api.tasks.tasks[taskName].frequency > 0){
@@ -62,15 +70,21 @@ var initTasks = function(api, next)
 									api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
 										if(taskProcessing != null){
 											// api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+											if(typeof next == "function"){ next(false); }
 										}else{
-											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
+											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){
+												if(typeof next == "function"){ next(true); }
+											});
 										}
 									});							
+								}else{
+									if(typeof next == "function"){ next(true); }
 								}
 							});
 						});
 					}else{
 						api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
+						if(typeof next == "function"){ next(true); }
 					}
 				}
 			}else{
@@ -87,10 +101,14 @@ var initTasks = function(api, next)
 				}
 				if(toEnqueue){
 					api.tasks.queue.push(msg);
+					if(typeof next == "function"){ next(true); }
+				}else{
+					if(typeof next == "function"){ next(false); }
 				}
 			}
 		}else{
 			api.log(taskName + " is not a known task", "red");
+			if(typeof next == "function"){ next(false); }
 		}
 	};
 
@@ -134,8 +152,9 @@ var initTasks = function(api, next)
 							if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 								next(parsedTask);
 							}else{
-								api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params);
-								next(null);
+								api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+									next(null);
+								});
 							}
 						}else{
 							next(null);
@@ -150,8 +169,9 @@ var initTasks = function(api, next)
 				if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 					next(parsedTask);
 				}else{
-					api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params);
-					next(null);
+					api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+						next(null);
+					});
 				}
 			}else{
 				next(null);
@@ -182,31 +202,53 @@ var initTasks = function(api, next)
 						// remove the task from the processing queue
 						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){ });
 					}
-					api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName])
-					api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+					api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+						api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+					})
 				});
 			}
 		})
 	};
 
-	api.tasks.enqueuePeriodicTask = function(api, task){
+	api.tasks.enqueuePeriodicTask = function(api, task, next){
 		if(task.frequency > 0){
 			var runAtTime = new Date().getTime() + task.frequency;
-			api.tasks.enqueue(api, task.name, runAtTime, null);
+			api.tasks.enqueue(api, task.name, runAtTime, null, function(){
+				next();
+			});
 		}
 	}
 	
 	api.tasks.startPeriodicTasks = function(api, next){
 		api.log("setting up periodic tasks...", "yellow")
 		clearTimeout(api.tasks.periodicTaskReloader);
-		for(var i in api.tasks.tasks){
-			var task = api.tasks.tasks[i];
-			if(task.frequency > 0){
-				api.tasks.enqueuePeriodicTask(api, task)
+		if(api.tasks.tasks.length == 0){
+			api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+			if(typeof next == "function"){ next(); }
+		}else{
+			var started = 0;
+			for(var i in api.tasks.tasks){
+				started++;
+				var task = api.tasks.tasks[i];
+				if(task.frequency > 0){
+					api.tasks.enqueuePeriodicTask(api, task, function(){
+						started--;
+						if(started == 0){
+							api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+							if(typeof next == "function"){ next(); }
+						}
+					});
+				}else{
+					process.nextTick(function (){
+						started--;
+						if(started == 0){
+							api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+							if(typeof next == "function"){ next(); }
+						}
+					})
+				}
 			}
-		}
-		api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api) // check to be sure that all the period tasks are still present
-		if(typeof next == "function"){ next(); }
+		}		
 	}
 		
 	// init
