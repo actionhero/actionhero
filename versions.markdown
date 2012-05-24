@@ -1,5 +1,8 @@
 # Action Hero API Versions
 
+## Version 2.0.1
+** Bug Fixes **
+
 ## Version 2.0.0
 
 ** Redis-powered Cluster & major refactor **
