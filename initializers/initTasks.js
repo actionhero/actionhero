@@ -164,7 +164,7 @@ var initTasks = function(api, next)
 			});
 		}else{
 			if(api.tasks.queue.length > 0){
-				var task = api.tasks.queue.pop();
+				var task = api.tasks.queue.shift();
 				var parsedTask = JSON.parse(task);
 				if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 					next(parsedTask);
