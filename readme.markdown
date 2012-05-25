@@ -271,7 +271,7 @@ An example Task:
 	// exports
 	exports.task = task;
 	
-"all" tasks will be run on all nodes in the actionCluster, but "any" tasks will only be run on the mater process (the first one to start, the one without `configData.actionCluster.startingPeer` set).
+"all" tasks will be run on all nodes in the actionCluster, but "any" tasks will be run on all peers (and kept in thier own local queue)
 
 ## Requirements
 * node.js server
