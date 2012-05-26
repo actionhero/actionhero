@@ -295,7 +295,7 @@ var initTasks = function(api, next)
 	}
 	
 	api.tasks.startPeriodicTasks(api, function(){
-		api.tasks.process(api);
+		setTimeout(api.tasks.process, 5000, api); // pause to ensure the rest of init
 		next();	
 	})
 }
