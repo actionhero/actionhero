@@ -6,7 +6,7 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
 	api.tasks.cycleTimeMS = 50;
-	api.tasks.reloadPeriodicsTime = 600000;
+	api.tasks.reloadPeriodicsTime = 1000 * 60; // once an hour
 	api.tasks.processTimer = null;
 
 	if(api.redis.enable === true){
@@ -36,7 +36,7 @@ var initTasks = function(api, next)
 									var t = JSON.parse(enquedTasks[i]);
 									if(t.taskName == taskName){
 										toEnqueue = false;
-										// api.log("not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
+										api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
 										break;
 									}
 								}
@@ -62,14 +62,14 @@ var initTasks = function(api, next)
 									var t = JSON.parse(enquedTasks[i]);
 									if(t.taskName == taskName){
 										toEnqueue = false;
-										// api.log("not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
+										api.log(" > not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
 										break;
 									}
 								}
 								if(toEnqueue){
 									api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
 										if(taskProcessing != null){
-											// api.log("not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+											api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
 											if(typeof next == "function"){ next(false); }
 										}else{
 											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){
@@ -94,7 +94,7 @@ var initTasks = function(api, next)
 						var t = JSON.parse(api.tasks.queue[i]);
 						if(t.taskName == taskName){
 							toEnqueue = false;
-							// api.log("not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
+							api.log(" > not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
 							break;
 						}
 					}
@@ -250,6 +250,39 @@ var initTasks = function(api, next)
 			}
 		}		
 	}
+
+	api.tasks.clearSuckClaimedTasks = function(api, next){
+
+		function done(started){
+			started--;
+			if(started == 0){ next(); }
+		}
+
+		var started = 0;
+		for(var i in api.tasks.tasks){
+			var task = api.tasks.tasks[i];
+			started++;
+			if(task.frequency > 0 && task.scope == "any"){
+				api.redis.client.hget(api.tasks.redisProcessingQueue, task.name, function (err, taskProcessing){
+					if(taskProcessing){
+						var redisTask = JSON.parse(taskProcessing);
+						if(redisTask.server == api.id){
+							api.log(" > clearing a stuck task `"+redisTask.taskName+"` which was previously registered by this server", ["yellow", "bold"]);
+							api.redis.client.hdel(api.tasks.redisProcessingQueue, redisTask.taskName, function(){
+								done(started)
+							});
+						}else{
+							done(started)
+						}
+					}else{
+						done(started)
+					}
+				});
+			}else{
+				done(started)
+			}
+		}
+	}
 		
 	// init
 	var validateTask = function(api, task){
@@ -294,10 +327,12 @@ var initTasks = function(api, next)
 		}
 	}
 	
-	api.tasks.startPeriodicTasks(api, function(){
-		setTimeout(api.tasks.process, 5000, api); // pause to ensure the rest of init
-		next();	
-	})
+	api.tasks.clearSuckClaimedTasks(api, function(){
+		api.tasks.startPeriodicTasks(api, function(){
+			setTimeout(api.tasks.process, 5000, api); // pause to ensure the rest of init
+			next();	
+		});
+	});
 }
 
 /////////////////////////////////////////////////////////////////////
