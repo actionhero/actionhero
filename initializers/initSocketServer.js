@@ -99,11 +99,15 @@ var initSocketServer = function(api, next){
 						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 					}else{
 						connection.error = false;
+						connection.actionStartTime = new Date().getTime();
 						connection.response = {};
 						connection.response.context = "response";
 						connection.params["action"] = words[0];
-						process.nextTick(function() { api.processAction(api, connection, api.socketServer.respondToSocketClient); });
-						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+						process.nextTick(function() { api.processAction(api, connection, function(connection, cont){
+							var delta = new Date().getTime() - connection.actionStartTime;
+							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line + " | responded in "+delta+"ms" , "grey");}
+							api.socketServer.respondToSocketClient(connection, cont);
+						}); });
 					}
 				}
 			}
