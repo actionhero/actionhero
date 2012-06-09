@@ -13,7 +13,8 @@ params.configChanges = {
 		"host": "127.0.0.1",
 		"port": 6379,
 		"password": null,
-		"options": null
+		"options": null,
+		"DB": 0
 	},
 
 	"secureWebServer" : {

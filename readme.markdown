@@ -453,7 +453,8 @@ Create a config.json file in the root of your project.  Here is the default conf
 			"host": "127.0.0.1",
 			"port": 6379,
 			"password": null,
-			"options": null
+			"options": null,
+			"DB": 0
 		},
 
 		"flatFileDirectory" : "./node_modules/actionHero/public/",

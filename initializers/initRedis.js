@@ -25,6 +25,8 @@ var initRedis = function(api, next)
 	api.redis.enable = c.enable;
 	if(c.enable == true){
 
+		if(c.DB == null){ c.DB = 1; }
+
 		api.redis.channelHandlers = {};
 		api.redis.registerChannel = function(api, channel, handler){
 			api.redis.clientSubscriber.subscribe(channel);
@@ -38,8 +40,15 @@ var initRedis = function(api, next)
 	    });
 
 		api.redis.client.on("connect", function (err) {
-	        if(c.password != null){ api.redis.client.auth(c.password); }
-	        init(api, next);
+			api.redis.client.select(c.DB, function(err,res){
+				if(err){
+					api.log("Error selecting DB #"+c.DB+" on redis.  exiting", ["red", "bold"]);
+					process.exit();
+				}else{
+		        	if(c.password != null){ api.redis.client.auth(c.password); }
+		        	init(api, next);
+		        }
+	        });
 	    });
 	}else{
 		api.log("running without redis");
@@ -75,7 +84,7 @@ var init = function(api, next){
 				});
 
 				// complete
-				api.log("connected to redis @ "+c.host+":"+c.port);
+				api.log("connected to redis @ "+c.host+":"+c.port+" on DB #"+c.DB);
 				next();
 		    });
 

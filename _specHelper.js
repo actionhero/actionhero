@@ -43,7 +43,8 @@ specHelper.params[0] = {
 		"host": "127.0.0.1",
 		"port": 6379,
 		"password": null,
-		"options": null
+		"options": null,
+		"DB": 2
 	},
 };
 
@@ -77,7 +78,8 @@ specHelper.params[1] = {
 		"host": "127.0.0.1",
 		"port": 6379,
 		"password": null,
-		"options": null
+		"options": null,
+		"DB": 2
 	},
 };
 
@@ -111,7 +113,8 @@ specHelper.params[2] = {
 		"host": "127.0.0.1",
 		"port": 6379,
 		"password": null,
-		"options": null
+		"options": null,
+		"DB": 2
 	},
 };
 
