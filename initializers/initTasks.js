@@ -6,7 +6,7 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
 	api.tasks.cycleTimeMS = 50;
-	api.tasks.reloadPeriodicsTime = 1000 * 60; // once an hour
+	api.tasks.reloadPeriodicsTime = 1000 * 60 * 60; // once an hour
 	api.tasks.processTimer = null;
 
 	if(api.redis.enable === true){
