@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<title>actionHero</title>
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="-1">
+
+		<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+
+		<script>
+
+		///////////////////////////////////////////////
+		// DEFINE AN APP NAMESPACE
+
+		var app = app || {};
+
+		///////////////////////////////////////////////
+		// DEFINE ANY VARIABLES NEEDED
+
+		app.config = {
+			"apiURL" : "http://localhost:8080/api/"
+		};
+
+		///////////////////////////////////////////////
+		// CREATE AN API REQUEST FUNCTION
+		// only the $.ajax part is needed, the rest is decoration for this example
+
+		app.apiRequest = function(Action, Callback, Params){
+			if(Params == null){ Params = {}; }
+
+			t = new Date();
+		    timestamp = t.getTime();
+			Params.RAND = timestamp;
+			Params.action = Action;
+			
+			param_string = "?callback=" + Callback
+		    for(x in Params) {
+				param_string += "&" + encodeURIComponent(x) + "=" + encodeURIComponent(Params[x]);
+		    }
+		    api_req = app.config.apiURL + param_string;
+		    if (console) { console.log("requesting: " + api_req); }
+			
+			$.ajax({
+				url: app.config.apiURL,
+				data: Params,
+				type: "POST",
+				dataType: "jsonp",
+				jsonp : "callback",
+				jsonpCallback: Callback,
+			});
+
+			return api_req;
+		};
+
+		///////////////////////////////////////////////
+		// CREATE THE CALLER OF THE API REQUEST
+
+		app.loadActions = function(){
+			var url = app.apiRequest("actionsView", "app.processResponse");
+			$('#requestURL').html("URL representation of request: <a href=\""+url+"\"><strong>"+url+"</strong></a>");
+		}
+
+		///////////////////////////////////////////////
+		// CREATE THE CALLBACK TO HANDLE THE API DATA
+		// be sure to check for api.error (which will be "OK" if everything worked)
+
+		app.processResponse = function(api){
+			if(api.error != "OK"){
+				alert(api.error);
+			}else{
+				html = "<h3>API Actions:</h3>"
+				html += "<ul>";
+				for(var i in api.actions){
+					var action = api.actions[i];
+					html += "<li>"
+					html += "<strong>"+action.name + "</strong>: " + action.description;
+					html += "</li>"
+
+				}
+				html += "</ul>";
+				$("#results").html(html);
+			}
+		}
+
+		</script>
+	</head>
+
+	<body>			
+		<h1>A simple HTML test of actionHero</h1>
+		<p>I will load `actionsView` action from your local actionHero server and display the results</p>
+		<p><button onClick="app.loadActions();">click to load</button></p>
+		<hr>
+		<div id="requestURL"></div>
+		<br />
+		<div id="results"></div>
+	</body>
+
+</html>
