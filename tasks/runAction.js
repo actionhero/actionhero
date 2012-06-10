@@ -21,7 +21,7 @@ task.run = function(api, params, next){
 		response: {}
 	};
 	
-	api.processAction(api, connection, function(connection, cont){
+	api.processAction(api, connection, null, function(connection, cont){
 		if(connection.error){
 			api.log("task error: "+connection.error, "red");
 		}

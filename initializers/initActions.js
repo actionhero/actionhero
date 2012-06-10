@@ -50,7 +50,7 @@ var initActions = function(api, next)
 		next();
 	});
 	
-	api.processAction = function(api, connection, next){	
+	api.processAction = function(api, connection, messageID, next){	
 		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
 		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
 		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
@@ -60,17 +60,29 @@ var initActions = function(api, next)
 			if(api.actions[connection.action] != undefined){
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
 				if(connection.error == false){
-					process.nextTick(function() { api.actions[connection.action].run(api, connection, next); });
+					process.nextTick(function() { api.actions[connection.action].run(api, connection, function(connection, toRender){
+						connection.respondingTo = messageID;
+						next(connection, toRender);
+					}); });
 				}else{
-					process.nextTick(function() { next(connection, true);  });
+					process.nextTick(function() { 
+						connection.respondingTo = messageID;
+						next(connection, true);  
+					});
 				}
 			}else{
 				if(connection.action == "" || connection.action == null){connection.action = "{no action}";}
 				connection.error = connection.action + " is not a known action.";
-				process.nextTick(function() { next(connection, true); });
+				process.nextTick(function(){ 
+					connection.respondingTo = messageID;
+					next(connection, true); 
+				});
 			}
 		}else{
-			process.nextTick(function() { next(connection, true); });
+			process.nextTick(function(){ 
+				connection.respondingTo = messageID;
+				next(connection, true); 
+			});
 		}
 	}
 }

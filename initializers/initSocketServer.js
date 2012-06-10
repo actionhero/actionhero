@@ -36,9 +36,11 @@ var initSocketServer = function(api, next){
 	
 	  	connection.on("connect", function () {
 	  		api.stats.incrament(api, "numberOfActiveSocketClients");
-	    	api.socketServer.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
 			api.socketServer.roomAddMember(api, connection);
+			process.nextTick(function(){
+				api.socketServer.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
+			})
 	  	});
 		
 	  	connection.on("data", function (chunk) {
@@ -49,19 +51,24 @@ var initSocketServer = function(api, next){
 				connection.lastLine = line;
 				api.socketServer.socketDataString = api.socketServer.socketDataString.slice(index + 2);
 				if(line.length > 0) {
+					connection.messageCount++; // incrament at the start of the requset so that responses can be caught in order on the client
 					var line = line.replace(/(\r\n|\n|\r)/gm,"");
 					var words = line.split(" ");
 					if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
 			    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
 						try{ 
 							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
-							api.socketServer.sendSocketMessage(connection, {status: "Bye!"}); 
+							api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response"}); 
 							connection.end();
 						}catch(e){ }
 					}else if(words[0] == "paramAdd"){
 						var parts = words[1].split("=");
-						connection.params[parts[0]] = parts[1];
-						api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
+						if(parts[0] != null){
+							connection.params[parts[0]] = parts[1];
+							api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
+						}else{
+							api.socketServer.sendSocketMessage(connection, {status: "Cannot set null", context: "response"});
+						}
 						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 					}else if(words[0] == "paramDelete"){
 						connection.params[words[1]] = null;
@@ -103,11 +110,11 @@ var initSocketServer = function(api, next){
 						connection.response = {};
 						connection.response.context = "response";
 						connection.params["action"] = words[0];
-						process.nextTick(function() { api.processAction(api, connection, function(connection, cont){
+						api.processAction(api, connection, connection.messageCount, function(connection, cont){
 							var delta = new Date().getTime() - connection.actionStartTime;
 							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line + " | responded in "+delta+"ms" , "grey");}
 							api.socketServer.respondToSocketClient(connection, cont);
-						}); });
+						});
 					}
 				}
 			}
@@ -240,6 +247,7 @@ var initSocketServer = function(api, next){
 		if(cont != false)
 		{
 			if(connection.error == false){
+				connection.response.error = connection.error;
 				if(connection.response == {}){
 					connection.response = {status: "OK"};
 				}
@@ -256,13 +264,17 @@ var initSocketServer = function(api, next){
 	////////////////////////////////////////////////////////////////////////////
 	//message helper
 	api.socketServer.sendSocketMessage = function(connection, message){
-		process.nextTick(function() { 
-			try{
+		try{
+			if(connection.respondingTo != null){
+				message.messageCount = connection.respondingTo;
+				connection.respondingTo = null;
+			}else{
 				message.messageCount = connection.messageCount;
-				connection.write(JSON.stringify(message) + "\r\n"); 
-				connection.messageCount++;
-			}catch(e){ }
-		});
+			}
+			connection.write(JSON.stringify(message) + "\r\n"); 
+		}catch(e){
+			api.log("socket write error: "+e, "red");
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
