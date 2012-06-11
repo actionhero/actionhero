@@ -3,6 +3,12 @@
 ## Version 2.0.1
 ** Bug Fixes **
 
+** Notes **
+- Updates to how socket client requests are tracked to enfore proper message IDs.  If you directly used `api.action.run` before, the interface has changed.
+
+## Version 2.0.1
+** Bug Fixes **
+
 ## Version 2.0.0
 
 ** Redis-powered Cluster & major refactor **
