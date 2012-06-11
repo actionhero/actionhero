@@ -2,21 +2,22 @@
 
 ## [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) released! Connect node to node! 
 
-## Version 2.0.1
+## Version 2.0.2
 
 **Summary:** Bug Fixes & Examples
 
 ** Details **
-Check the notes for the bug fixes.  There are now also more examples in the prject, showing off how you can connect from various enviorments.  This also ccoencides with the release of the actionHeroClient NPM package.  More coming soon.  
+Check the notes for the bug fixes.  There are now also more examples in the prject, showing off how you can connect from various enviorments.  This also ccoencides with the release of the [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) NPM package.  More coming soon.  
 
 ** Notes **
+
 - Updates to how socket client requests are tracked to enfore proper message IDs.  If you directly used `api.processAction` before, the interface has changed.
 - running the test suite will now use a seperate redis db.  You can also set this in config.json for your app.
 - better logic to ensure that tasks are enqueued properly
 - cluster members will remove stale tasks they were working on when the app is started (in case of a crash)
 
 ## Version 2.0.1
-** Bug Fixes **
+Bug Fixes
 
 ## Version 2.0.0
 
