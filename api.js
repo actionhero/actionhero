@@ -49,7 +49,12 @@ var createActionHero = function(){
 		}
 
 		if(api.fs.existsSync('./config.json')){
-			api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
+			try{
+				api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
+			}catch(e){
+				console.log("Problem reading ./config.JSON");
+				process.exit();
+			}
 		}else{
 			var defualtConfigFile = "./node_modules/actionHero/config.json";
 			if(params.configChanges == null){
