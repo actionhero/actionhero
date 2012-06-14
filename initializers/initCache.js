@@ -9,7 +9,6 @@ var initCache = function(api, next){
 		api.cache.data = {};
 	}
 	var redisCacheKey = "actionHero::cache";
-	var defaultExpireTime = 31622400 // 1 year
 
 	api.cache.size = function(api, next){
 		if(api.redis.enable === true){
@@ -21,16 +20,22 @@ var initCache = function(api, next){
 		}
 	}
 	
-	api.cache.save = function(api, key, value, expireTimeSeconds, next){
-		if(expireTimeSeconds < 0 || expireTimeSeconds == null){ expireTimeSeconds = defaultExpireTime; }
-		var expireTimestamp = new Date().getTime();
-		expireTimestamp = expireTimestamp + (expireTimeSeconds * 1000);
+	api.cache.save = function(api, key, value, expireTimeMS, next){
+		if(typeof expireTimeMS == "function" && typeof next == "undefined"){
+			next = expireTimeMS;
+			expireTimeMS = null;
+		}
+		if(expireTimeMS != null){
+			var expireTimestamp = new Date().getTime() + expireTimeMS;
+		}else{
+			expireTimestamp = null;
+		}
 		var cacheObj = {
-						value: value,
-						expireTimestamp: expireTimestamp,
-						createdAt: new Date().getTime(),
-						readAt: null
-					}
+			value: value,
+			expireTimestamp: expireTimestamp,
+			createdAt: new Date().getTime(),
+			readAt: null
+		}
 		if(api.redis.enable === true){
 			api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
 				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
@@ -50,7 +55,7 @@ var initCache = function(api, next){
 		if(api.redis.enable === true){
 			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
 				cacheObj = JSON.parse(cacheObj);
-				if(cacheObj != null && cacheObj.expireTimestamp >= (new Date().getTime())){
+				if(cacheObj != null && ( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null )) {
 					cacheObj.readAt = new Date().getTime();
 					api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
 						if(typeof next == "function"){  
@@ -68,7 +73,7 @@ var initCache = function(api, next){
 			if(cacheObj == null){
 				process.nextTick(function() { next(null, null, null, null); });
 			}else{
-				if(cacheObj.expireTimestamp >= (new Date().getTime())){
+				if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null ){
 					api.cache.data[key].readAt = new Date().getTime();
 					if(typeof next == "function"){  
 						process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });

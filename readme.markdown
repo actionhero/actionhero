@@ -184,12 +184,12 @@ Connections over socket can also use the file action.
 ## Cache
 actionHero ships with the functions needed for an in-memory key-value cache.  Check the cacheTest action to see how to use it.  You can cache strings, numbers, arrays and objects (as long as they contain only strings, numbers, and arrays). Cache functions:
 
-* `api.cache.save(api, key, value, expireTimeSeconds, next)`
+* `api.cache.save(api, key, value, expireTimeMS, next)`
 * `api.cache.load(api, key, next)`
 * `api.cache.destroy(api, key, next)`
 
 
-api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeSeconds, the default will be used from `api.configData.cache.defaultExpireTimeSeconds`.  A task will periodically go though and delete expired cache entries.  If you are running a stand-alone version of actionHero, this cache will be in memory of the actionHero process, otherwise this data will be stored in redis.
+api.cache.save is used to both create new entires or update existing cache entires.  If you don't define an expireTimeMS, (null) it will not expire.  A task will periodically go though and delete expired cache entries.  If you are running a stand-alone version of actionHero, this cache will be in memory of the actionHero process, otherwise this data will be stored in redis.
 
 Note: that the keys starting with an "_" should not be used, as they are in use by core parts of the system.
 

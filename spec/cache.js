@@ -100,6 +100,34 @@ suite.addBatch({
 	},
 });
 
+// objects saved with negative expire time will not load
+suite.addBatch({
+	"cache.save expire negative": {
+    	topic: function(){ apiObj.cache.save(apiObj,"testKeyInThePast","abc123",-1,this.callback) },
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
+	},
+});
+suite.addBatch({
+	"cache.load expire time negative should not load": {
+    	topic: function(){ apiObj.cache.load(apiObj,"testKeyInThePast",this.callback) },
+    	save: function(resp, f){  specHelper.assert.equal(resp, null); }
+	},
+});
+
+// objects can have null expire time
+suite.addBatch({
+	"cache.save expire negative": {
+    	topic: function(){ apiObj.cache.save(apiObj,"testKeyForNullExpireTime","abc123",this.callback) },
+    	saved: function(resp, f){ specHelper.assert.equal(f, true); }
+	},
+});
+suite.addBatch({
+	"cache.load expire time negative should not load": {
+    	topic: function(){ apiObj.cache.load(apiObj,"testKeyForNullExpireTime",this.callback) },
+    	save: function(resp, f){  specHelper.assert.equal(resp, "abc123"); }
+	},
+});
+
 // mess with object types to save
 suite.addBatch({
 	"cache.save array": {

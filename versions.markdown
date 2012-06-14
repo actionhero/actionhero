@@ -2,6 +2,15 @@
 
 ## [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) released! Connect node to node! 
 
+## Version 2.0.3
+
+**Summary:** Bug Fixes
+
+** Notes **
+
+- cache actions now take miliseconds like everything else.
+- you can now have non-expiring cache entires (just pass a null value for expireTimeMS)
+
 ## Version 2.0.2
 
 **Summary:** Bug Fixes & Examples

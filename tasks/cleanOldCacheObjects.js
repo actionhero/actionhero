@@ -13,7 +13,7 @@ task.run = function(api, params, next){
 	var deleted = 0;
 	for (var i in api.cache.data){
 		var thisEntry = api.cache.data[i];
-		if (thisEntry.expireTimestamp < (new Date().getTime())){
+		if ( thisEntry.expireTimestamp != null && thisEntry.expireTimestamp < new Date().getTime() ){
 			deleted++;
 			delete api.cache.data[i];
 		}
