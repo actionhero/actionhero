@@ -138,10 +138,12 @@ var initTasks = function(api, next)
 						}
 						api.redis.client.hset(api.tasks.redisProcessingQueue, parsedTask.taskName, JSON.stringify(data), function(){
 							next(parsedTask);
+							return
 						});
 					}else{
-						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params);
-						task = null;
+						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+							next(null);
+						});
 					}
 				}
 				if(task == null){
@@ -157,7 +159,7 @@ var initTasks = function(api, next)
 								});
 							}
 						}else{
-							next(null);
+							
 						}
 					});
 				}
@@ -180,7 +182,6 @@ var initTasks = function(api, next)
 	}
 	
 	api.tasks.run = function(api, taskName, params, next){
-		api.log("running task: "+taskName, "yellow");
 		api.tasks.tasks[taskName].run(api, params, function(resp){
 			if(typeof next == "function"){ next(true); }
 		})
@@ -189,25 +190,31 @@ var initTasks = function(api, next)
 	api.tasks.process = function(api){		
 		clearTimeout(api.tasks.processTimer);
 		api.tasks.getNextTask(api, function(task){
+			api.log(JSON.stringify(task), "red")
 			if(task == null){
 				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 			}else{
 				api.tasks.run(api, task.taskName, task.params, function(run){
 					if(run){
-						//
+						api.log("ran task: "+task.taskName, "yellow");
 					}else{
 						api.log("task failed to run: "+JSON.stringify(task), "red")
 					}
 					if(api.redis.enable === true){
 						// remove the task from the processing queue
-						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){ });
+						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
+							api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							});
+						});
+					}else{
+						api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+							api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+						});
 					}
-					api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
-						api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-					})
 				});
 			}
-		})
+		});
 	};
 
 	api.tasks.enqueuePeriodicTask = function(api, task, next){
