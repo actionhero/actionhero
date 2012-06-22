@@ -190,7 +190,6 @@ var initTasks = function(api, next)
 	api.tasks.process = function(api){		
 		clearTimeout(api.tasks.processTimer);
 		api.tasks.getNextTask(api, function(task){
-			api.log(JSON.stringify(task), "red")
 			if(task == null){
 				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
 			}else{
