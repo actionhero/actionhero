@@ -1,9 +1,9 @@
 {
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionHero",
-  "description": "actionHero is a minimalist, multi-node, transactional API framework written in javaScript",
+  "description": "actionHero is a node.js API framework for both tcp sockets and http clients",
   "version": "2.0.3",
-  "homepage": "https://github.com/evantahler/actionHero",
+  "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
     "url": "git://github.com/evantahler/actionHero.git"
