@@ -60,10 +60,6 @@ params.initFunction = function(api, next){
 actionHero.start(params, function(api){
 	api.log("Boot Sucessful!");
 
-	function eval(cmd, context, filename, callback) {
-	  callback(null, result);
-	}
-
 	for(var i in welcome_messages){
 		console.log(welcome_messages[i]);
 	}
