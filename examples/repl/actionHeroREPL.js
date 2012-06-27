@@ -47,7 +47,7 @@ params.configChanges = {
 	
 	"logFile" : "repl.log",
 
-	"flatFileDirectory" : "../../../public/"
+	"flatFileDirectory" : "./public/"
 }
 
 params.initFunction = function(api, next){
