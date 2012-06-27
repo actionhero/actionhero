@@ -1,5 +1,5 @@
 var specHelper = {}
-var showLogs = true;
+var showLogs = false;
 specHelper.fs = require('fs');
 specHelper.vows = require('vows');
 specHelper.net = require('net');
@@ -16,7 +16,7 @@ var baseActionHero = require(__dirname + "/api.js").createActionHero;
 specHelper.params[0] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9000,
-	"socketServerPort" : 6000,
+	"socketServerPort" : 7000,
 	"logging":showLogs,
 	"cache" : {
 		"cacheFile" : "test_cache_1.cache",
@@ -51,7 +51,7 @@ specHelper.params[0] = {
 specHelper.params[1] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9001,
-	"socketServerPort" : 6001,
+	"socketServerPort" : 7001,
 	"logging":showLogs,
 	"cache" : {
 		"cacheFile" : "test_cache_2.cache",
@@ -86,7 +86,7 @@ specHelper.params[1] = {
 specHelper.params[2] = {
 	"flatFileDirectory":"./public/",
 	"webServerPort" : 9002,
-	"socketServerPort" : 6002,
+	"socketServerPort" : 7002,
 	"logging":showLogs,
 	"cache" : {
 		"cacheFile" : "test_cache_3.cache",
