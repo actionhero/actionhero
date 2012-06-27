@@ -1,16 +1,20 @@
 # Action Hero API Versions
 
-## [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) released! Connect node to node! 
-
 ## Version 2.0.3
 
-**Summary:** Bug Fixes
+**Summary:** Bug Fixes, Examples, and REPL
+
+- actionHero now has a REPL! You can use the command line to use all the api-namespaced functions and define your own.  Great for debugging or checking on the status of the cluster.  
+- Checkout the /examples folder for how to use the actionHeroClient package, browser javascript, and curl to interface with actionHero.  More languages coming soon.
 
 ** Notes **
 
 - cache actions now take miliseconds like everything else.
 - you can now have non-expiring cache entires (just pass a null value for expireTimeMS)
 - there are no no default periodically-run tasks.  Look in `/examples` for the tasks that used to be there and copy them into your own project's /tasks folder.  This was done to reduce the 'magic' in the framework.  the runTask task still remains, as it was not run periodically.
+
+## Note:
+** [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) released! Connect node to node! **
 
 ## Version 2.0.2
 

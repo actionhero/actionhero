@@ -60,17 +60,6 @@ params.initFunction = function(api, next){
 actionHero.start(params, function(api){
 	api.log("Boot Sucessful!");
 
-	function prettyPrompt(api){
-		// var msg = "actionHero ";
-		// msg += api.logger.colorize(">", "red");
-		// msg += api.logger.colorize(">", "green");
-		// msg += api.logger.colorize(">", "blue");
-		// msg += " ";
-		// return msg;
-
-		return "actionHero >>> "
-	}
-
 	function eval(cmd, context, filename, callback) {
 	  callback(null, result);
 	}
@@ -93,7 +82,7 @@ actionHero.start(params, function(api){
 	repl_context._cb = _cb;
 
 	var R = repl.start({
-		prompt: prettyPrompt(repl_context.api),
+		prompt: "actionHero >>> ",
 		input: process.stdin,
 		output: process.stdout,
 		useGlobal: true,
