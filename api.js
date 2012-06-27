@@ -75,7 +75,7 @@ var createActionHero = function(){
 			
 		for(var i in initializerFolders){
 			var folder = initializerFolders[i];
-			if(api.path.existsSync(folder)){
+			if(api.fs.existsSync(folder)){
 				api.fs.readdirSync(folder).forEach( function(file) {
 					if (file != ".DS_Store"){
 						var initalizer = file.split(".")[0];

@@ -10,6 +10,7 @@
 
 - cache actions now take miliseconds like everything else.
 - you can now have non-expiring cache entires (just pass a null value for expireTimeMS)
+- there are no no default periodically-run tasks.  Look in `/examples` for the tasks that used to be there and copy them into your own project's /tasks folder.  This was done to reduce the 'magic' in the framework.  the runTask task still remains, as it was not run periodically.
 
 ## Version 2.0.2
 
