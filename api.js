@@ -45,7 +45,7 @@ var createActionHero = function(){
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
 			api.fs.existsSync = api.path.existsSync;
-			api.fs.exists = api.path.exists;
+			api.fs.exists = api.fs.exists;
 		}
 
 		if(api.fs.existsSync('./config.json')){
