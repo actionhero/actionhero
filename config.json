@@ -1,5 +1,5 @@
 { 
-    "apiVersion" : "2.0.3",
+    "apiVersion" : "2.0.4",
 	"webServerPort" : 8080,
 	"socketServerPort" : 5000,
 	"serverName" : "actionHero API",

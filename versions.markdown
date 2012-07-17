@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 2.0.4
+
+**Summary:** Redis Auth Fix
+- There was a signifigant bug when authnticating with redis.  That bug has been fixed.
+
 ## Version 2.0.3
 
 **Summary:** Bug Fixes, Examples, and REPL
