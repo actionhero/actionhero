@@ -1,8 +1,10 @@
 <script src="/public/javascript/socket.io/socket.io.js"></script>
 <script>
-  var socket = io.connect('http://localhost:8080/');
-  socket.on('welcome', function (data) {
-    console.log(data);
-    // socket.emit('my other event', { my: 'data' });
-  });
+	var socket = {};
+		socket = io.connect('http://localhost:8080/');
+		socket.on('welcome', function (data) {
+		console.log(data);
+		console.log("sending test")
+		socket.emit('test', { my: 'data' });
+	});
 </script>
