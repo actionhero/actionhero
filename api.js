@@ -41,6 +41,7 @@ var createActionHero = function(){
 		api.mime = require('mime');
 		api.redisPackage = require('redis');
 		api.cluster = require('cluster');
+		api.io = require('socket.io');
 				
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
@@ -118,19 +119,21 @@ var createActionHero = function(){
 							actionHero.initPostVariables(api, function(){
 								actionHero.initFileServer(api, function(){
 									actionHero.initWebServer(api, function(){
-										actionHero.initSocketServer(api, function(){ 
-											actionHero.initTasks(api, function(){
-												if(typeof params.initFunction == "function"){
-													params.initFunction(api, function(){
+										actionHero.initWebSockets(api, function(){
+											actionHero.initSocketServer(api, function(){ 
+												actionHero.initTasks(api, function(){
+													if(typeof params.initFunction == "function"){
+														params.initFunction(api, function(){
+															api.log(successMessage, ["green", "bold"]);
+															actionHero.running = true;
+															if(callback != null){ process.nextTick(function() { callback(api); }); }
+														})
+													}else{
 														api.log(successMessage, ["green", "bold"]);
 														actionHero.running = true;
 														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													})
-												}else{
-													api.log(successMessage, ["green", "bold"]);
-													actionHero.running = true;
-													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												}
+													}
+												});
 											});
 										});
 									});

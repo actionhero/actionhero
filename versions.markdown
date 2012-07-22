@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 2.0.4
+
+- default file route changed from 'file' to 'public'
+
 ## Version 2.0.3
 
 **Summary:** Bug Fixes, Examples, and REPL
