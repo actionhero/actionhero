@@ -98,22 +98,45 @@ var initWebSockets = function(api, next)
 	    	connection.on('quit', function(data){ connection.disconnect(); });
 	    	connection.on('close', function(data){ connection.disconnect(); });
 	    	
-	    	connection.on('test', function(data){
-	    		console.log(data)
-	    	});
 	    	connection.on('roomView', function(data){});
 	    	connection.on('roomChange', function(data){});
 	    	connection.on('say', function(data){});
-	    	connection.on('action', function(data){});
+	    	connection.on('action', function(data){
+	    		connection.params = data;
+	    		connection.error = false;
+				connection.actionStartTime = new Date().getTime();
+				connection.response = {};
+				connection.response.context = "response";
+				api.processAction(api, connection, connection.messageCount, function(connection, cont){
+					var delta = new Date().getTime() - connection.actionStartTime;
+					if (connection.response.error == null){ connection.response.error = connection.error; }
+					if(api.configData.logRequests){api.log(" > webSocket request from " + connection.remoteIP + " | "+ JSON.stringify(data) + " | responded in "+delta+"ms" , "grey");}
+					api.webSockets.respondToWebSocketClient(connection, cont);
+				});
+	    	});
 
 			connection.on('disconnect', function(){
-				// TODO: This never gets called?
 				api.log("webSocket connection "+connection.remoteIP+" | disconnected");
 				api.stats.incrament(api, "numberOfActiveWebSocketClients", -1);
-			})
+			});
 		});
+	}
 
-
+	api.webSockets.respondToWebSocketClient = function(connection, cont){
+		if(cont != false){
+			if(connection.error == false){
+				connection.response.error = connection.error;
+				if(connection.response == {}){
+					connection.response = {status: "OK"};
+				}
+				connection.emit(connection.response.context, connection.response);
+			}else{
+				if(connection.response.error == null){
+					connection.response.error = connection.error;
+				}
+				connection.emit(connection.response.context, connection.response);
+			}
+		}
 	}
 
 	next();
