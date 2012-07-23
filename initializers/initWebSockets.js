@@ -100,7 +100,8 @@ var initWebSockets = function(api, next)
 	    	
 	    	connection.on('roomView', function(data){});
 	    	connection.on('roomChange', function(data){});
-	    	connection.on('say', function(data){});
+	    	connection.on('say', function(data){}); 
+
 	    	connection.on('action', function(data){
 	    		connection.params = data;
 	    		connection.error = false;
