@@ -49,21 +49,16 @@ var createActionHero = function(){
 			api.fs.exists = api.path.exists;
 		}
 
-		if(api.fs.existsSync('./config.json')){
-			try{
-				api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
-			}catch(e){
-				console.log("Problem reading ./config.JSON");
-				process.exit();
-			}
+		if(api.fs.existsSync('./config.js')){
+			api.configData = require('./config.js').configData;
 		}else{
-			var defualtConfigFile = "./node_modules/actionHero/config.json";
+			var defualtConfigFile = "./node_modules/actionHero/config.js";
 			if(params.configChanges == null){
 				console.log(' >> no local config.json found nor no provided configChanges; using default from '+defualtConfigFile);
 			}else{
 				console.log(" >> using configChanges as overrides to default template");
 			}
-			api.configData = JSON.parse(api.fs.readFileSync(defualtConfigFile,'utf8'));
+			api.configData = require(defualtConfigFile).configData;
 		}
 
 		// overide config.js with params.configChanges if exists 

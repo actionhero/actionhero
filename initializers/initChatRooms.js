@@ -65,7 +65,7 @@ var initChatRooms = function(api, next){
 				});
 			});
 		}else{
-			if(api.socketServer.rooms[room] != null){
+			if(api.chatRoom.rooms[room] != null){
 				next({
 					members: api.chatRoom.rooms[room],
 					membersCount: api.chatRoom.rooms[room].length
