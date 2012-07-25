@@ -92,17 +92,12 @@ var createActionHero = function(){
 			console.log("Error fetching this host's external IP address; setting to random string")
 			externalIP = api.utils.randomString(128);
 		}
-		api.id = externalIP + ":" + api.configData.webServerPort + "&" + api.configData.socketServerPort;
+		api.id = externalIP + ":" + api.configData.httpServer.port + "&" + api.configData.httpsServer.port;
 		if(api.cluster.isWorker){
 			api.id += ":" + process.pid;
 		}
 
-		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
-		if(api.configData.secureWebServer.enable){
-			successMessage += " & secure web port " + api.configData.secureWebServer.port;
-		}
-		successMessage += " & TCP port " + api.configData.socketServerPort + " ***";
-
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime();
 		api.bootTime = new Date().getTime();
 			
 		actionHero.initLog(api, function(){
@@ -145,7 +140,7 @@ var createActionHero = function(){
 
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
-			actionHero.api.log("Shutting down open servers (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+") and pausing tasks", "bold");
+			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
 			clearTimeout(actionHero.api.tasks.processTimer);
 			
 			// remove from the list of hosts
@@ -164,8 +159,10 @@ var createActionHero = function(){
 
 			function cont(){
 				var closed = 0;
-				var neededClosed = 2;
-				if(actionHero.api.configData.secureWebServer.enable){ neededClosed++; }
+				var neededClosed = 0;
+				if(actionHero.api.configData.httpServer.enable){ neededClosed++; }
+				if(actionHero.api.configData.httpsServer.enable){ neededClosed++; }
+				if(actionHero.api.configData.tcpServer.enable){ neededClosed++; }
 				var checkForDone = function(){
 					if(closed == neededClosed){
 						closed = -1;
@@ -182,33 +179,37 @@ var createActionHero = function(){
 					actionHero.api.socketServer.connections[i].destroy();
 				}
 
-				actionHero.api.socketServer.server.on("close", function(){
-					actionHero.api.log("Closed socket-server");
-					closed++;
-					checkForDone();
-				});
+				if(actionHero.api.configData.httpServer.enable){
+					actionHero.api.webServer.webApp.on("close", function(){
+						actionHero.api.log("Closed http server");
+						closed++;
+						checkForDone();
+					});
+					actionHero.api.webServer.webApp.close();
+				}
 
-				actionHero.api.webServer.webApp.on("close", function(){
-					actionHero.api.log("Closed web-server");
-					closed++;
-					checkForDone();
-				});
-
-				if(actionHero.api.configData.secureWebServer.enable){
+				if(actionHero.api.configData.httpsServer.enable){
 					actionHero.api.webServer.secureWebApp.on("close", function(){
 						actionHero.api.log("Closed secure web-server");
 						closed++;
 						checkForDone();
 					});
+					actionHero.api.webServer.secureWebApp.close();
 				}
 
-				actionHero.api.socketServer.server.close();
-				actionHero.api.webServer.webApp.close();
-				if(actionHero.api.configData.secureWebServer.enable){ actionHero.api.webServer.secureWebApp.close(); }
+				if(actionHero.api.configData.tcpServer.enable){
+					actionHero.api.socketServer.server.on("close", function(){
+						actionHero.api.log("Closed socket-server");
+						closed++;
+						checkForDone();
+					});
+					actionHero.api.socketServer.server.close();
+				}
+				//
 				checkForDone(closed);
 			}
 		}else{
-			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
+			actionHero.api.log("Cannot shut down (not running any servers)");
 			next(false);
 		}
 	};

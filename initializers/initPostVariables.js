@@ -3,7 +3,7 @@
 
 var initPostVariables = function(api, next)
 {
-	// special params we will accept
+	// special params we will always accept
 	api.postVariables = [
 		"callback",
 		"action",

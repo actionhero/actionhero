@@ -26,7 +26,7 @@ var initChatRooms = function(api, next){
 		}
 		else{
 			if(connection == null){
-				var messagePayload = {message: message, from: api.configData.serverName, context: "user"};
+				var messagePayload = {message: message, from: api.configData.general.serverName, context: "user"};
 			}else{
 				var messagePayload = {message: message, from: connection.public.id, context: "user"};
 			}

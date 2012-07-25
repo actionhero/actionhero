@@ -132,7 +132,7 @@ You can also access actionHero's methods via a persistent socket connection rath
 * paramDelete - deletes a single param.  IE: 'deleteParam screenName'
 * paramsView - returns a JSON object of all the params set to this connection
 * paramsDelete - deletes all params set to this session
-* roomChange - change the `room` you are connected to.  By default all socket connections are in the `api.configData.defaultSocketRoom` room.   
+* roomChange - change the `room` you are connected to.  By default all socket connections are in the `api.configData.defaultChatRoom` room.   
 * roomView - show you the room you are connected to, and information about the members currently in that room.
 * say [message]
 
@@ -425,7 +425,7 @@ Create a config.json file in the root of your project.  Here is the default conf
 		"webServerPort" : 8080,
 		"socketServerPort" : 5000,
 		"serverName" : "actionHero API",
-		"socketServerWelcomeMessage" : "Hello! Welcome to the actionHero api",
+		"welcomeMessage" : "Hello! Welcome to the actionHero api",
 		"apiBaseDir" : "./node_modules/actionHero/",
 		
 		"secureWebServer" : {
@@ -461,7 +461,7 @@ Create a config.json file in the root of your project.  Here is the default conf
 		"flatFileNotFoundMessage" : "Sorry, that file is not found :(",
 		"flatFileIndexPageNotFoundMessage" : "Sorry, there is no index page for this folder :(",
 	
-		"defaultSocketRoom": "defaultRoom",
+		"defaultChatRoom": "defaultRoom",
 
 		"defaultLimit" : 100,
 		"defaultOffset" : 0

@@ -124,7 +124,7 @@ suite.addBatch({
 suite.addBatch({
 	"clients start in the default room": {
 		topic: function(){ makeSocketRequest(client, this.callback, "roomView"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.room, apiObj.configData.defaultSocketRoom); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.room, apiObj.configData.defaultChatRoom); }
 	}
 });
 

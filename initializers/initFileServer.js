@@ -26,7 +26,7 @@ var initFileServer = function(api, next){
 			fileName = connection.params.fileName;
 		}
 		if(connection.error == false){
-			fileName = api.configData.flatFileDirectory + fileName;
+			fileName = api.configData.general.flatFileDirectory + fileName;
 			api.fs.exists(fileName, function(exists) {
 				if(exists){
 					var isPath = false
@@ -73,7 +73,7 @@ var initFileServer = function(api, next){
 		if(connection.req != null){
 			connection.responseHeaders['Content-Type'] = 'text/html';
 			connection.res.writeHead(404, connection.responseHeaders);
-			connection.res.end(api.configData.flatFileNotFoundMessage);
+			connection.res.end(api.configData.general.flatFileNotFoundMessage);
 			next(connection, false);
 		}else{
 			if(connection.error == false){
