@@ -29,7 +29,7 @@ var initWebSockets = function(api, next)
 		if(api.configData.webSockets.bind == "http"){
 			var io_http = api.io.listen(api.webServer.webApp, { 'log level': 0 });
 			IOs.push(io_http);
-		}else if(api.configData.webSockets.bind == "http"){
+		}else if(api.configData.webSockets.bind == "https"){
 			var io_https = api.io.listen(api.webServer.secureWebApp, { 'log level': 0 });
 			IOs.push(io_https);
 		}else{
@@ -93,6 +93,7 @@ var initWebSockets = function(api, next)
 				connection.messageCount = 0;
 				connection.public = {};
 				connection.public.id = connection.id;
+				api.chatRoom.roomAddMember(api, connection);
 
 				api.stats.incrament(api, "numberOfActiveWebSocketClients");
 		    	api.log("webSocket connection "+connection.remoteIP+" | connected");

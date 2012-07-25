@@ -97,7 +97,7 @@ var createActionHero = function(){
 			api.id += ":" + process.pid;
 		}
 
-		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime();
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " ***";
 		api.bootTime = new Date().getTime();
 			
 		actionHero.initLog(api, function(){

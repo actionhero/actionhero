@@ -109,6 +109,7 @@ configData.tcpServer = {
 /////////////////
 
 configData.webSockets = {
+	// You must have either the http or https server enabled for websockets
 	"enable": true,
 	// which web interface to bind the websockets to (http or https)
 	"bind" : "http"
@@ -116,4 +117,4 @@ configData.webSockets = {
 
 //////////////////////////////////
 
-exports.configData = configData
+exports.configData = configData;

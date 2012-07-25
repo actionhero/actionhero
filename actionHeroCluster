@@ -24,7 +24,9 @@ if (cluster.isMaster) {
 
 	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 	params.configChanges = {
-		"flatFileDirectory" : "./public/",
+		general: {
+			flatFileDirectory: "./public/"
+		}
 	}
 
   	// start the server!
