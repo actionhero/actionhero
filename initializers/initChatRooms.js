@@ -40,7 +40,7 @@ var initChatRooms = function(api, next){
 				}
 			}
 			// WebSocket clients
-			for(var i in api.webSockets.clients){
+			for(var i in api.webSockets.connections){
 				var thisConnection = api.webSockets.connections[i];
 				if(thisConnection.room == connection.room){
 					if(connection == null || thisConnection.public.id != connection.public.id){

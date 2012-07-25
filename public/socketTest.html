@@ -11,4 +11,9 @@
 	socket.on('response', function(data){
 		console.log(data);
 	});
+
+	// responses to chatRoom
+	socket.on('say', function(data){
+		console.log(data);
+	})
 </script>

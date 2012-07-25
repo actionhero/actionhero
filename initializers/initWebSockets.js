@@ -106,7 +106,7 @@ var initWebSockets = function(api, next)
 				});
 	    	});
 	    	connection.on('roomChange', function(data){
-	    		api.socketServer.roomRemoveMember(api, connection, function(){
+	    		api.chatRoom.roomRemoveMember(api, connection, function(){
 					connection.room = data.room;
 					api.chatRoom.roomAddMember(api, connection);
 					connection.emit("response", {context: "response", status: "OK", room: connection.room});

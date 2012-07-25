@@ -31,7 +31,7 @@ var initSocketServer = function(api, next){
 	  	connection.on("connect", function () {
 	  		api.stats.incrament(api, "numberOfActiveSocketClients");
 	    	api.log("socket connection "+connection.remoteIP+" | connected");
-			api.socketServer.roomAddMember(api, connection);
+			api.chatRoom.roomAddMember(api, connection);
 			process.nextTick(function(){
 				api.socketServer.sendSocketMessage(connection, {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"});
 			})
@@ -82,7 +82,7 @@ var initSocketServer = function(api, next){
 						api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
 						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 					}else if(words[0] == "roomChange"){
-						api.socketServer.roomRemoveMember(api, connection, function(){
+						api.chatRoom.roomRemoveMember(api, connection, function(){
 							connection.room = words[1];
 							api.chatRoom.roomAddMember(api, connection);
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
@@ -115,7 +115,7 @@ var initSocketServer = function(api, next){
 	  	});
 		
 	  	connection.on("end", function () {
-	  		api.socketServer.roomRemoveMember(api, connection, function(){
+	  		api.chatRoom.roomRemoveMember(api, connection, function(){
 	  			api.stats.incrament(api, "numberOfActiveSocketClients", -1);
 				for(var i in api.socketServer.connections){
 					if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
