@@ -6,10 +6,11 @@ var actionHero = require(__dirname + "../../../api.js").actionHero; // normally 
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
 params.configChanges = {
-	"flatFileDirectory" : "../public/",
-
-	"redis" : {
-		"enable": false,
+	general: {
+		flatFileDirectory: "./public/"
+	},
+	redis : {
+		enable: false,
 	},
 }
 
