@@ -8,5 +8,6 @@ branches:
   only:
     - master
     - develop
+    - socket-io
 before_script:
 # redis is already there on localhost

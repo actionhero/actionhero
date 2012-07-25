@@ -4,16 +4,16 @@
 	
 	socket.on('welcome', function(data){
 		console.log("connected!")
-		console.log(data);
+		console.log(JSON.stringify(data));
 	});
 
 	// responses to action
 	socket.on('response', function(data){
-		console.log(data);
+		console.log(JSON.stringify(data));
 	});
 
 	// responses to chatRoom
 	socket.on('say', function(data){
-		console.log(data);
+		console.log(JSON.stringify(data));
 	})
 </script>

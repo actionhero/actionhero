@@ -106,7 +106,7 @@ var createActionHero = function(){
 		if(api.configData.secureWebServer.enable){
 			successMessage += " & secure web port " + api.configData.secureWebServer.port;
 		}
-		successMessage += " & socket port " + api.configData.socketServerPort + " ***";
+		successMessage += " & TCP port " + api.configData.socketServerPort + " ***";
 
 		api.bootTime = new Date().getTime();
 			

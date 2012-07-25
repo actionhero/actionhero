@@ -22,18 +22,18 @@ var initWebSockets = function(api, next)
 		}
 	};
 
-	var io_http = api.io.listen(api.webServer.webApp);
+	var io_http = api.io.listen(api.webServer.webApp, { 'log level': 0 });
 	IOs.push(io_http);
 	// TODO: Having 2 of these open at the same time crashes when redis is in use
 	// if(api.configData.secureWebServer.enable){
-	// 	var io_https = api.io.listen(api.webServer.secureWebApp);
+	// 	var io_https = api.io.listen(api.webServer.secureWebApp, { 'log level': 0 });
 	// 	IOs.push(io_https);
 	// }
 
 	for(var i in IOs){
 		var io = IOs[i];
 
-		io.set('log level', 0);
+		io.set('log level', 1);
 		io.enable('browser client minification'); 
 		io.enable('browser client etag');
 		io.enable('browser client gzip');
