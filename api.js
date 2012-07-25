@@ -121,18 +121,20 @@ var createActionHero = function(){
 									actionHero.initWebServer(api, function(){
 										actionHero.initWebSockets(api, function(){
 											actionHero.initSocketServer(api, function(){ 
-												actionHero.initTasks(api, function(){
-													if(typeof params.initFunction == "function"){
-														params.initFunction(api, function(){
+												actionHero.initChatRooms(api, function(){ 
+													actionHero.initTasks(api, function(){
+														if(typeof params.initFunction == "function"){
+															params.initFunction(api, function(){
+																api.log(successMessage, ["green", "bold"]);
+																actionHero.running = true;
+																if(callback != null){ process.nextTick(function() { callback(api); }); }
+															})
+														}else{
 															api.log(successMessage, ["green", "bold"]);
 															actionHero.running = true;
 															if(callback != null){ process.nextTick(function() { callback(api); }); }
-														})
-													}else{
-														api.log(successMessage, ["green", "bold"]);
-														actionHero.running = true;
-														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													}
+														}
+													});
 												});
 											});
 										});

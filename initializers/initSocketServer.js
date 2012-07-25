@@ -6,12 +6,6 @@ var initSocketServer = function(api, next){
 	api.socketServer.connections = [];
 	api.socketServer.socketDataString = "";
 	api.socketServer.numberOfLocalSocketRequests = 0;
-
-	if(api.redis.enable === false){
-		api.socketServer.rooms = {};
-	}else{
-		api.socketServer.redisRoomPrefix = "actionHero::roomMembers::";
-	}
 	
 	////////////////////////////////////////////////////////////////////////////
 	// server
@@ -90,18 +84,18 @@ var initSocketServer = function(api, next){
 					}else if(words[0] == "roomChange"){
 						api.socketServer.roomRemoveMember(api, connection, function(){
 							connection.room = words[1];
-							api.socketServer.roomAddMember(api, connection);
+							api.chatRoom.roomAddMember(api, connection);
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
 							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 						});
 					}else if(words[0] == "roomView"){
-						api.socketServer.socketRoomStatus(api, connection.room, function(roomStatus){
+						api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
 							if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 						});				
 					}else if(words[0] == "say"){
 						var message = line.substr(4);
-						api.socketServer.socketRoomBroadcast(api, connection, message);
+						api.chatRoom.socketRoomBroadcast(api, connection, message);
 						api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
 						if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
 					}else{
@@ -138,108 +132,6 @@ var initSocketServer = function(api, next){
 			connection.end();
 		});
 	});
-	
-	////////////////////////////////////////////////////////////////////////////
-	// broadcast a message to all connections in a room
-	api.socketServer.socketRoomBroadcast = function(api, connection, message, fromQueue){
-		if(fromQueue == null){fromQueue = false;}
-		if(api.redis.enable === true && fromQueue == false){ 
-			var payload = {
-				message: message,
-				connection: {
-					room: connection.room,
-					public: {
-						id: connection.public.id
-					}
-				}
-			};
-			api.redis.client.publish("actionHero::say", JSON.stringify(payload));
-		}
-		else{
-			for(var i in api.socketServer.connections){
-				var thisConnection = api.socketServer.connections[i];
-				if(thisConnection.room == connection.room){
-					if(connection == null){
-						api.socketServer.sendSocketMessage(thisConnection, {message: message, from: api.configData.serverName, context: "user"});
-					}else{
-						if(thisConnection.public.id != connection.public.id){
-							api.socketServer.sendSocketMessage(thisConnection, {message: message, from: connection.public.id, context: "user"});
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	////////////////////////////////////////////////////////////////////////////
-	// status for a room
-	api.socketServer.socketRoomStatus = function(api, room, next){
-		if(api.redis.enable === true){
-			var key = api.socketServer.redisRoomPrefix + room;
-			api.redis.client.llen(key, function(err, length){
-				api.redis.client.lrange(key, 0, length, function(err, members){
-					next({
-						members: members,
-						membersCount: length
-					});
-				});
-			});
-		}else{
-			if(api.socketServer.rooms[room] != null){
-				next({
-					members: api.socketServer.rooms[room],
-					membersCount: api.socketServer.rooms[room].length
-				});
-			}else{
-				next({
-					members: null,
-					membersCount: 0
-				});
-			}
-		}
-	}
-
-	api.socketServer.roomAddMember = function(api, connection, next){
-		var room = connection.room;
-		var name = connection.public.id;
-		if(api.redis.enable === true){
-			var key = api.socketServer.redisRoomPrefix + connection.room;
-			api.redis.client.rpush(key, name, function(){
-				if(typeof next == "function"){ next(true) }
-			});
-		}else{
-			if(api.socketServer.rooms[room] == null){
-				api.socketServer.rooms[room] = [];
-			}
-			api.socketServer.rooms[room].push(name);
-			if(typeof next == "function"){ next(true) }
-		}
-	}
-
-	api.socketServer.roomRemoveMember = function(api, connection, next){
-		var room = connection.room;
-		var name = connection.public.id;
-		if(api.redis.enable === true){
-			var key = api.socketServer.redisRoomPrefix + connection.room;
-			api.redis.client.lrem(key, 1, name, function(){
-				if(typeof next == "function"){ next(true) }
-			});
-		}else{
-			for(var i in api.socketServer.rooms){
-				if(i == room){
-					var rList = api.socketServer.rooms[i];
-					for(var j in rList){
-						if(rList[j] == name){
-							rList.splice(j,1);
-							break;
-						}
-					}
-					break;
-				}
-			}
-			if(typeof next == "function"){ next(true) }
-		}
-	}
 	
 	////////////////////////////////////////////////////////////////////////////
 	// action response helper
@@ -284,14 +176,6 @@ var initSocketServer = function(api, next){
 		api.log(e);
 		process.exit();
 	});
-
-	// register for messages
-	if(api.redis.enable === true){
-		api.redis.registerChannel(api, "actionHero::say", function(channel, message){
-			message = JSON.parse(message);
-			api.socketServer.socketRoomBroadcast(api, message.connection, message.message, true);
-		});
-	}
 	
 	api.socketServer.server.listen(api.configData.socketServerPort, "0.0.0.0", function(){
 		next();

@@ -4,7 +4,7 @@
 var initWebSockets = function(api, next)
 {
 	api.webSockets = {};
-	api.webSockets.clients = [];
+	api.webSockets.connections = [];
 	var IOs = [];
 
 	var logger = {
@@ -75,7 +75,6 @@ var initWebSockets = function(api, next)
 		}
 
 		io.sockets.on('connection', function(connection){
-			api.webSockets.clients.push(connection);
 			api.stats.incrament(api, "numberOfWebSocketRequests");
 			api.socketServer.numberOfLocalWebSocketRequests++;
 			// console.log(connection)
@@ -91,6 +90,8 @@ var initWebSockets = function(api, next)
 			api.stats.incrament(api, "numberOfActiveWebSocketClients");
 	    	api.log("webSocket connection "+connection.remoteIP+" | connected");
 
+	    	api.webSockets.connections.push(connection);
+
 			var welcomeMessage = {welcome: api.configData.socketServerWelcomeMessage, room: connection.room, context: "api"};
 	    	connection.emit('welcome', welcomeMessage);
 
@@ -98,9 +99,26 @@ var initWebSockets = function(api, next)
 	    	connection.on('quit', function(data){ connection.disconnect(); });
 	    	connection.on('close', function(data){ connection.disconnect(); });
 	    	
-	    	connection.on('roomView', function(data){});
-	    	connection.on('roomChange', function(data){});
-	    	connection.on('say', function(data){}); 
+	    	connection.on('roomView', function(data){
+	    		api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
+					connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
+					if(api.configData.logRequests){api.log(" > webSocket request from " + connection.remoteIP);}
+				});
+	    	});
+	    	connection.on('roomChange', function(data){
+	    		api.socketServer.roomRemoveMember(api, connection, function(){
+					connection.room = data.room;
+					api.chatRoom.roomAddMember(api, connection);
+					connection.emit("response", {context: "response", status: "OK", room: connection.room});
+					if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP);}
+				});
+	    	});
+	    	connection.on('say', function(data){
+	    		var message = data.message;
+				api.chatRoom.socketRoomBroadcast(api, connection, message);
+				connection.emit("response", {context: "response", status: "OK"});
+				if(api.configData.logRequests){api.log(" > socket request from " + connection.remoteIP);}
+	    	}); 
 
 	    	connection.on('action', function(data){
 	    		connection.params = data;
