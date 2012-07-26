@@ -61,9 +61,14 @@ var createActionHero = function(){
 			api.configData = require(defualtConfigFile).configData;
 		}
 
-		// overide config.js with params.configChanges if exists 
-		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
-	
+		// overide config.js with params.configChanges if exists (second depth hashes)
+		for (var i in params.configChanges){ 
+			var collection = params.configChanges[i];
+			for (var j in collection){
+				api.configData[i][j] = collection[j];
+			}
+		}
+
 		var initializerFolders = [ 
 			process.cwd() + "/initializers/", 
 			process.cwd() + "/node_modules/actionHero/initializers/"
@@ -100,6 +105,7 @@ var createActionHero = function(){
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " ***";
 		api.bootTime = new Date().getTime();
 			
+		// Loading pyrimid of doom.
 		actionHero.initLog(api, function(){
 			api.log("server ID: " + api.id);
 			actionHero.initRedis(api, function(){
@@ -217,7 +223,6 @@ var createActionHero = function(){
 	actionHero.restart = function(next){
 		if(actionHero.running == true){
 			actionHero.stop(function(){
-				console.log("HERE")
 				actionHero.start(actionHero.startngParams, function(){
 					if(typeof next == "function"){ next(true); } 
 				});

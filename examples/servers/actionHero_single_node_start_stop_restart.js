@@ -1,4 +1,4 @@
-process.chdir("../../");
+// ! Run me from the root of actionHero, IE: `node examples/servers/actionHero_single_node.js`
 
 // load in the actionHero class
 var actionHero = require(__dirname + "../../../api.js").actionHero; // normally if installed by npm: var actionHero = require("actionHero").actionHero;
@@ -9,7 +9,7 @@ params.configChanges = {
 	general: {
 		flatFileDirectory: "./public/"
 	},
-	redis : {
+	redis: {
 		enable: false,
 	},
 }
