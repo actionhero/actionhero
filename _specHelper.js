@@ -14,107 +14,86 @@ specHelper.params = [];
 var baseActionHero = require(__dirname + "/api.js").createActionHero;
 
 specHelper.params[0] = {
-	"flatFileDirectory":"./public/",
-	"webServerPort" : 9000,
-	"socketServerPort" : 7000,
-	"logging":showLogs,
-	"cache" : {
-		"cacheFile" : "test_cache_1.cache",
-		"defaultExpireTimeSeconds" : 3600,
-		"cacheFolder" : "./cache/",
-		"maxMemoryBytes" : 524288000
+	general: {
+		flatFileDirectory: "./public/"
 	},
-	"actionCluster": {
-		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 1000,
-		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 1000,
-		"nodeDuplication" : 2,
-		"StartingPeer" : {
-			"host": null,
-			"port": null
-		}
+	log: {
+		logging: showLogs,
+		logFile: "api_peer_1.log",
 	},
-	"secureWebServer" : {
-		"enable": false
+	httpServer: {
+		enable: true,
+		port: 9000,
 	},
-	"redis" : {
-		"enable": true,
-		"host": "127.0.0.1",
-		"port": 6379,
-		"password": null,
-		"options": null,
-		"DB": 2
+	httpsServer: {
+		enable: false,
+	},
+	tcpServer: {
+		enable: true,
+		port: 7000,
+	},
+	webSockets: {
+		enable: false
+	},
+	redis : {
+		enable: true,
+		DB: 2,
 	},
 };
 
 specHelper.params[1] = {
-	"flatFileDirectory":"./public/",
-	"webServerPort" : 9001,
-	"socketServerPort" : 7001,
-	"logging":showLogs,
-	"cache" : {
-		"cacheFile" : "test_cache_2.cache",
-		"defaultExpireTimeSeconds" : 3600,
-		"cacheFolder" : "./cache/",
-		"maxMemoryBytes" : 524288000
+	general: {
+		flatFileDirectory: "./public/"
 	},
-	"actionCluster": {
-		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 1000,
-		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 1000,
-		"nodeDuplication" : 2,
-		"StartingPeer" : {
-			"host": specHelper.url,
-			"port": specHelper.params[0].socketServerPort
-		}
+	log: {
+		logging: showLogs,
+		logFile: "api_peer_2.log",
 	},
-	"secureWebServer" : {
-		"enable": false
+	httpServer: {
+		enable: true,
+		port: 9001,
 	},
-	"redis" : {
-		"enable": true,
-		"host": "127.0.0.1",
-		"port": 6379,
-		"password": null,
-		"options": null,
-		"DB": 2
+	httpsServer: {
+		enable: false,
+	},
+	tcpServer: {
+		enable: true,
+		port: 7001,
+	},
+	webSockets: {
+		enable: false
+	},
+	redis : {
+		enable: true,
+		DB: 2,
 	},
 };
 
 specHelper.params[2] = {
-	"flatFileDirectory":"./public/",
-	"webServerPort" : 9002,
-	"socketServerPort" : 7002,
-	"logging":showLogs,
-	"cache" : {
-		"cacheFile" : "test_cache_3.cache",
-		"defaultExpireTimeSeconds" : 3600,
-		"cacheFolder" : "./cache/",
-		"maxMemoryBytes" : 524288000
+	general: {
+		flatFileDirectory: "./public/"
 	},
-	"actionCluster": {
-		"Key" : "4ijhaijhm43yjnawhja43jaj",
-		"ReConnectToLostPeersMS" : 1000,
-		"CycleCheckTimeMS" : 100,
-		"remoteTimeoutWaitMS" : 1000,
-		"nodeDuplication" : 2,
-		"StartingPeer" : {
-			"host": specHelper.url,
-			"port": specHelper.params[0].socketServerPort
-		}
+	log: {
+		logging: showLogs,
+		logFile: "api_peer_3.log",
 	},
-	"secureWebServer" : {
-		"enable": false
+	httpServer: {
+		enable: true,
+		port: 9002,
 	},
-	"redis" : {
-		"enable": true,
-		"host": "127.0.0.1",
-		"port": 6379,
-		"password": null,
-		"options": null,
-		"DB": 2
+	httpsServer: {
+		enable: false,
+	},
+	tcpServer: {
+		enable: true,
+		port: 7002,
+	},
+	webSockets: {
+		enable: false
+	},
+	redis : {
+		enable: true,
+		DB: 2,
 	},
 };
 
@@ -132,13 +111,12 @@ specHelper.prepare = function(serverID, next){
 // Start Test Server
 specHelper.startServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	var conn = specHelper.net.createConnection(specHelper.params[serverID].webServerPort, host=specHelper.url, function(){
+	var conn = specHelper.net.createConnection(specHelper.params[serverID].httpServer.port, host=specHelper.url, function(){
 		next(specHelper.apis[serverID]);
 		conn.destroy();
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
-			// console.log(" >> starting test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
 			specHelper.actionHeroes[serverID] = new baseActionHero;
 			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(api){
 				specHelper.apis[serverID] = api;
@@ -154,7 +132,6 @@ specHelper.startServer = function(serverID, next){
 
 specHelper.stopServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	// console.log(" << stopping test actionHero server on ports "+specHelper.params[serverID].webServerPort+" (webServerPort) and "+specHelper.params[serverID].socketServerPort+" (socketServerPort)");
 	specHelper.actionHeroes[serverID].stop(function(resp){
 		next(resp);
 	});
@@ -175,9 +152,9 @@ specHelper.apiTest = {
   	var params = {}
   	params.method = method;
 	if(url.indexOf("?") > -1){
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].webServerPort + (url||'');
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'');
 	}else{
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].webServerPort + (url||'') + "?";
+		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'') + "?";
 	  	for(var i in data){
 	  		params.url += i + "=" + data[i] + "&";
 	  	}
