@@ -98,9 +98,9 @@ var createActionHero = function(){
 			externalIP = api.utils.randomString(128);
 		}
 		api.id = externalIP;
-		if(actionHero.api.configData.httpServer.enable){ api.id + ":" + api.configData.httpServer.port }
-		if(actionHero.api.configData.httpsServer.enable){ api.id + ":" + api.configData.httpsServer.port }
-		if(actionHero.api.configData.tcpServer.enable){ api.id + ":" + api.configData.tcpServer.port }
+		if(actionHero.api.configData.httpServer.enable){ api.id += ":" + api.configData.httpServer.port }
+		if(actionHero.api.configData.httpsServer.enable){ api.id += ":" + api.configData.httpsServer.port }
+		if(actionHero.api.configData.tcpServer.enable){ api.id += ":" + api.configData.tcpServer.port }
 		if(api.cluster.isWorker){ api.id += ":" + process.pid; }
 
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " ***";
