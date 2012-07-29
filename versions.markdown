@@ -1,8 +1,12 @@
 # Action Hero API Versions
 
-## Version 2.0.4
+## Version 3.0.0
 
-- default file route changed from 'file' to 'public'
+** WebSockets and a better configuration system **
+
+
+** Notes **
+- default file route changed from '/file' to '/public'; /file is the "action" called file which is provided as an example
 
 ## Version 2.0.3
 

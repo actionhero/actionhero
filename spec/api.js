@@ -28,7 +28,7 @@ suite.addBatch({
     },
     'should have details': function(api){
       specHelper.assert.equal(api.actions.randomNumber.name, "randomNumber");
-      specHelper.assert.equal(api.actions.randomNumber.description, "I am an API method which will generate a random number");
+      specHelper.assert.equal(api.actions.randomNumber.description, "I am an API method which will generate a random number.  Different HTTP verbs will multiply the answer");
       specHelper.assert.equal(api.actions.randomNumber.outputExample.randomNumber, 123);
     },
     'should have functions as run': function(api){
