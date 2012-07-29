@@ -60,10 +60,12 @@ var initActions = function(api, next)
 			if(api.actions[connection.action] != undefined){
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
 				if(connection.error == false){
-					process.nextTick(function() { api.actions[connection.action].run(api, connection, function(connection, toRender){
-						connection.respondingTo = messageID;
-						next(connection, toRender);
-					}); });
+					process.nextTick(function() { 
+						api.actions[connection.action].run(api, connection, function(connection, toRender){
+							connection.respondingTo = messageID;
+							next(connection, toRender);
+						}); 
+					});
 				}else{
 					process.nextTick(function() { 
 						connection.respondingTo = messageID;

@@ -30,13 +30,14 @@ var initWebServer = function(api, next)
 			api.webServer.numberOfLocalWebRequests++;
 			
 			var connection = {};
-				
+
 			connection.type = "web";
 			connection.timer = {};
 			connection.timer.startTime = new Date().getTime();
 			connection.req = req;
 			connection.res = res;
 			connection.params = {}; 
+			connection.method = req.method;
 			connection.response = {}; // the data returned from the API
 			connection.error = false; 	// errors and requst state
 			connection.remoteIP = connection.req.connection.remoteAddress;
@@ -85,7 +86,12 @@ var initWebServer = function(api, next)
 				// parse POST variables
 				if (connection.req.method.toLowerCase() == 'post') {
 					if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
-						connection.error = "content-type is a required header for processing this form.";
+						// if no form content-type, treat like GET
+						fillParamsFromWebRequest(api, connection, parsedURL.query);
+						if(connection.params.action === undefined){ 
+							if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
+							else{ connection.params.action = pathParts[1]; }
+						}
 						process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
 					}else{
 						var form = new api.formidable.IncomingForm();
