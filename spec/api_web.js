@@ -66,5 +66,45 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  "HTTP Verbs should work: GET": {
+    topic: function(){ specHelper.apiTest.get('/randomNumber', 0, {} ,this.callback ); },
+    'bounds of response' : function(res, b){ 
+      specHelper.assert.equal(res.body.randomNumber >= 0, true); 
+      specHelper.assert.equal(res.body.randomNumber <= 1, true); 
+    },
+  }
+});
+
+suite.addBatch({
+  "HTTP Verbs should work: PUT": {
+    topic: function(){ specHelper.apiTest.put('/randomNumber', 0, {} ,this.callback ); },
+    'bounds of response' : function(res, b){ 
+      specHelper.assert.equal(res.body.randomNumber >= 0, true); 
+      specHelper.assert.equal(res.body.randomNumber <= 10, true); 
+    },
+  }
+});
+
+suite.addBatch({
+  "HTTP Verbs should work: POST": {
+    topic: function(){ specHelper.apiTest.post('/randomNumber', 0, {} ,this.callback ); },
+    'bounds of response' : function(res, b){ 
+      specHelper.assert.equal(res.body.randomNumber >= 0, true); 
+      specHelper.assert.equal(res.body.randomNumber <= 100, true); 
+    },
+  }
+});
+
+suite.addBatch({
+  "HTTP Verbs should work: DELETE": {
+    topic: function(){ specHelper.apiTest.del('/randomNumber', 0, {} ,this.callback ); },
+    'bounds of response' : function(res, b){ 
+      specHelper.assert.equal(res.body.randomNumber >= 0, true); 
+      specHelper.assert.equal(res.body.randomNumber <= 1000, true); 
+    },
+  }
+});
+
 // export
 suite.export(module);

@@ -1,7 +1,7 @@
 var specHelper = require('../_specHelper.js').specHelper;
 var suite = specHelper.vows.describe('api: actionCluster');
 var apis = [];
-var timeoutToWaitForFirstServerStart = 1;
+var timeoutToWaitForFirstServerStart = 100;
 
 ////////////////////////////////////////////////////////////////////////////
 // Basic setup and joining cluster
@@ -9,43 +9,45 @@ suite.addBatch({
   'actionCluster.prepare - 0':{
     topic: function(){ 
 		var cb = this.callback; specHelper.prepare(0, function(api){ 
-		apis[0] = api; 
-		setTimeout(cb, timeoutToWaitForFirstServerStart);
+			apis[0] = api; 
+			setTimeout(cb, timeoutToWaitForFirstServerStart);
 	}) },
-    'api object should exist - 0': function(){ specHelper.assert.isObject(apis[0]); } }
+    'api object should exist - 0': function(){ 
+    	specHelper.assert.isObject(apis[0]); 
+    } }
 });
 
 suite.addBatch({
   'actionCluster.prepare - 1':{
     topic: function(){ 
 		var cb = this.callback; specHelper.prepare(1, function(api){ 
-		apis[1] = api; 
-		setTimeout(cb, timeoutToWaitForFirstServerStart);
+			apis[1] = api; 
+			setTimeout(cb, timeoutToWaitForFirstServerStart);
 	}) },
-    'api object should exist - 1': function(){ specHelper.assert.isObject(apis[1]); } }
+    'api object should exist - 1': function(){
+    	specHelper.assert.isObject(apis[1]); 
+    } }
 });
 
 suite.addBatch({
   'actionCluster.prepare - 2':{
     topic: function(){ 
 		var cb = this.callback; specHelper.prepare(2, function(api){ 
-		apis[2] = api;
-		setTimeout(cb, timeoutToWaitForFirstServerStart);
+			apis[2] = api;
+			setTimeout(cb, timeoutToWaitForFirstServerStart);
 	}) },
-    'api object should exist - 2': function(){ specHelper.assert.isObject(apis[2]); } }
+    'api object should exist - 2': function(){ 
+    	specHelper.assert.isObject(apis[2]); 
+    } }
 });
 
 suite.addBatch({
   'api inspection':{
     topic: apis,
     'check for defaults': function(apis){ 
-		specHelper.assert.equal(apis[0].configData.webServerPort, 9000); 
-		specHelper.assert.equal(apis[1].configData.webServerPort, 9001); 
-		specHelper.assert.equal(apis[2].configData.webServerPort, 9002); 
-		
-		specHelper.assert.equal(apis[0].configData.socketServerPort, 7000); 
-		specHelper.assert.equal(apis[1].configData.socketServerPort, 7001); 
-		specHelper.assert.equal(apis[2].configData.socketServerPort, 7002); 
+		specHelper.assert.equal(apis[0].id, externalIP + ":9000:7000"); 
+		specHelper.assert.equal(apis[1].id, externalIP + ":9001:7001"); 
+		specHelper.assert.equal(apis[2].id, externalIP + ":9002:7002"); 
 	} }
 });
 
@@ -62,9 +64,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
 	} }
 });
 suite.addBatch({
@@ -79,9 +81,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
 	} }
 });
 suite.addBatch({
@@ -96,9 +98,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
 	} }
 });
 
@@ -129,7 +131,7 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 1);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
 	} }
 });
 
@@ -157,9 +159,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000&7000",  externalIP+":9001&7001",  externalIP+":9002&7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
 	} }
 });
 
@@ -187,13 +189,13 @@ suite.addBatch({
     topic: function(){
       var cb = this.callback;
 	  var connectedSockets = {};
-	  client1 = net.connect(specHelper.params[0].socketServerPort);
+	  client1 = net.connect(specHelper.params[0].tcpServer.port);
 	  client1.setEncoding('utf8');
 	  client1.on("data", function(){ connectedSockets[0] = true ;})
-	  client2 = net.connect(specHelper.params[1].socketServerPort);
+	  client2 = net.connect(specHelper.params[1].tcpServer.port);
 	  client2.setEncoding('utf8');
 	  client2.on("data", function(){ connectedSockets[1] = true ;})
-	  client3 = net.connect(specHelper.params[2].socketServerPort);
+	  client3 = net.connect(specHelper.params[2].tcpServer.port);
 	  client3.setEncoding('utf8');	  
 	  client3.on("data", function(){ connectedSockets[2] = true ;})
 	  
@@ -201,7 +203,7 @@ suite.addBatch({
 	  	if(specHelper.utils.hashLength(connectedSockets) != expectedCount){
 	  		setTimeout(checkForSocketConnections, 100, connectedSockets, expectedCount, cb)
 	  	}else{
-	  		setTimeout(cb, (apis[0].configData.actionCluster.ReConnectToLostPeersMS * 2));
+	  		setTimeout(cb, (500));
 	  	}
 	  }
 	  

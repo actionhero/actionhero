@@ -22,11 +22,11 @@ suite.addBatch({
     topic: function(){
       var cb = this.callback;
       specHelper.prepare(0, function(api){
-		  client = net.connect(specHelper.params[0].socketServerPort, function(){
+		  client = net.connect(specHelper.params[0].tcpServer.port, function(){
 			  client.setEncoding('utf8');
-			  client2 = net.connect(specHelper.params[0].socketServerPort, function(){
+			  client2 = net.connect(specHelper.params[0].tcpServer.port, function(){
 				  client2.setEncoding('utf8');
-				  client3 = net.connect(specHelper.params[0].socketServerPort, function(){
+				  client3 = net.connect(specHelper.params[0].tcpServer.port, function(){
 					  client3.setEncoding('utf8');
 					  apiObj = specHelper.cleanAPIObject(api);
 					  cb();
@@ -124,7 +124,7 @@ suite.addBatch({
 suite.addBatch({
 	"clients start in the default room": {
 		topic: function(){ makeSocketRequest(client, this.callback, "roomView"); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.room, apiObj.configData.defaultSocketRoom); }
+		'works' : function(resp, d){ specHelper.assert.equal(d.room, apiObj.configData.general.defaultChatRoom); }
 	}
 });
 

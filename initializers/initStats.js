@@ -42,53 +42,65 @@ var initStats = function(api, next){
 		stats.uptimeSeconds = (now - api.bootTime) / 1000;
 		api.cache.size(api, function(numberOfCacheObjects){
 			api.stats.get(api, "numberOfSocketRequests", function(numberOfSocketRequests){
-				api.stats.get(api, "numberOfActiveSocketClients", function(numberOfActiveSocketClients){
-					api.stats.get(api, "numberOfWebRequests", function(numberOfWebRequests){
-						api.stats.get(api, "numberOfPeers", function(numberOfPeers){
-							api.tasks.queueLength(api, api.tasks.redisQueue, function(queueLength){ // api.tasks.redisQueue will be null if not set
+				api.stats.get(api, "numberOfWebSocketRequests", function(numberOfWebSocketRequests){
+					api.stats.get(api, "numberOfActiveSocketClients", function(numberOfActiveSocketClients){
+						api.stats.get(api, "numberOfActiveWebSocketClients", function(numberOfActiveWebSocketClients){
+							api.stats.get(api, "numberOfWebRequests", function(numberOfWebRequests){
+								api.stats.get(api, "numberOfPeers", function(numberOfPeers){
+									api.tasks.queueLength(api, api.tasks.redisQueue, function(queueLength){ // api.tasks.redisQueue will be null if not set
 
-								if(numberOfCacheObjects == null){numberOfCacheObjects = 0;}
-								if(numberOfSocketRequests == null){numberOfSocketRequests = 0;}
-								if(numberOfActiveSocketClients == null){numberOfActiveSocketClients = 0;}
-								if(numberOfWebRequests == null){numberOfWebRequests = 0;}
-								if(numberOfPeers == null){numberOfPeers = 0;}
+										if(numberOfCacheObjects == null){numberOfCacheObjects = 0;}
+										if(numberOfSocketRequests == null){numberOfSocketRequests = 0;}
+										if(numberOfWebSocketRequests == null){numberOfWebSocketRequests = 0;}
+										if(numberOfActiveSocketClients == null){numberOfActiveSocketClients = 0;}
+										if(numberOfActiveWebSocketClients == null){numberOfActiveWebSocketClients = 0;}
+										if(numberOfWebRequests == null){numberOfWebRequests = 0;}
+										if(numberOfPeers == null){numberOfPeers = 0;}
 
-								numberOfCacheObjects = parseInt(numberOfCacheObjects);
-								numberOfSocketRequests = parseInt(numberOfSocketRequests);
-								numberOfActiveSocketClients = parseInt(numberOfActiveSocketClients);
-								numberOfWebRequests = parseInt(numberOfWebRequests);
-								numberOfPeers = parseInt(numberOfPeers);
-								
-								stats.memoryConsumption = process.memoryUsage().heapUsed;
-								stats.cache = {
-									numberOfObjects: numberOfCacheObjects
-								};
-								stats.socketServer = {
-									numberOfGlobalSocketRequests: numberOfSocketRequests,
-									numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
-									numberOfLocalActiveSocketClients: api.socketServer.connections.length
-								};
-								stats.webServer = {
-									numberOfGlobalWebRequests: numberOfWebRequests,
-									numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
-								};
-								sleepingTasks = [];
-								for (var i in api.tasks.timers){ sleepingTasks.push(i); }
-								stats.queue = {
-									queueLength: queueLength,
-									sleepingTasks: sleepingTasks
-								};
+										numberOfCacheObjects = parseInt(numberOfCacheObjects);
+										numberOfSocketRequests = parseInt(numberOfSocketRequests);
+										numberOfWebSocketRequests = parseInt(numberOfWebSocketRequests);
+										numberOfActiveWebSocketClients = parseInt(numberOfActiveWebSocketClients);
+										numberOfActiveSocketClients = parseInt(numberOfActiveSocketClients);
+										numberOfWebRequests = parseInt(numberOfWebRequests);
+										numberOfPeers = parseInt(numberOfPeers);
+										
+										stats.memoryConsumption = process.memoryUsage().heapUsed;
+										stats.cache = {
+											numberOfObjects: numberOfCacheObjects
+										};
+										stats.socketServer = {
+											numberOfGlobalSocketRequests: numberOfSocketRequests,
+											numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
+											numberOfLocalActiveSocketClients: api.socketServer.connections.length
+										};
+										stats.webSocketServer = {
+											numberOfGlobalWebSocketRequests: numberOfWebSocketRequests,
+											numberOfLocalActiveWebSocketClients: numberOfActiveWebSocketClients
+										};
+										stats.webServer = {
+											numberOfGlobalWebRequests: numberOfWebRequests,
+											numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
+										};
+										sleepingTasks = [];
+										for (var i in api.tasks.timers){ sleepingTasks.push(i); }
+										stats.queue = {
+											queueLength: queueLength,
+											sleepingTasks: sleepingTasks
+										};
 
-								if(api.redis.enable){
-									api.redis.client.llen("actionHero::peers", function(err, length){
-										api.redis.client.lrange("actionHero::peers", 0, length, function(err, peers){
-											stats.peers = peers;
+										if(api.redis.enable){
+											api.redis.client.llen("actionHero::peers", function(err, length){
+												api.redis.client.lrange("actionHero::peers", 0, length, function(err, peers){
+													stats.peers = peers;
+													if(typeof next == "function"){ next(stats); }
+												});
+											});
+										}else{
 											if(typeof next == "function"){ next(stats); }
-										});
+										}
 									});
-								}else{
-									if(typeof next == "function"){ next(stats); }
-								}
+								});
 							});
 						});
 					});

@@ -51,19 +51,21 @@ var initActions = function(api, next)
 	});
 	
 	api.processAction = function(api, connection, messageID, next){	
-		if(connection.params.limit == null){ connection.params.limit = api.configData.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
-		if(connection.params.offset == null){ connection.params.offset = api.configData.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
-		if(api.configData.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
+		if(connection.params.limit == null){ connection.params.limit = api.configData.general.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
+		if(connection.params.offset == null){ connection.params.offset = api.configData.general.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
+		if(api.configData.log.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
 		
 		if (connection.error === false){
 			connection.action = connection.params["action"];
 			if(api.actions[connection.action] != undefined){
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
 				if(connection.error == false){
-					process.nextTick(function() { api.actions[connection.action].run(api, connection, function(connection, toRender){
-						connection.respondingTo = messageID;
-						next(connection, toRender);
-					}); });
+					process.nextTick(function() { 
+						api.actions[connection.action].run(api, connection, function(connection, toRender){
+							connection.respondingTo = messageID;
+							next(connection, toRender);
+						}); 
+					});
 				}else{
 					process.nextTick(function() { 
 						connection.respondingTo = messageID;

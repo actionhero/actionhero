@@ -41,6 +41,7 @@ var createActionHero = function(){
 		api.mime = require('mime');
 		api.redisPackage = require('redis');
 		api.cluster = require('cluster');
+		api.io = require('socket.io');
 				
 		// backwards compatibility for old node versions
 		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
@@ -48,26 +49,26 @@ var createActionHero = function(){
 			api.fs.exists = api.path.exists;
 		}
 
-		if(api.fs.existsSync('./config.json')){
-			try{
-				api.configData = JSON.parse(api.fs.readFileSync('./config.json','utf8'));
-			}catch(e){
-				console.log("Problem reading ./config.JSON");
-				process.exit();
-			}
+		if(api.fs.existsSync('./config.js')){
+			api.configData = require('./config.js').configData;
 		}else{
-			var defualtConfigFile = "./node_modules/actionHero/config.json";
+			var defualtConfigFile = "./node_modules/actionHero/config.js";
 			if(params.configChanges == null){
 				console.log(' >> no local config.json found nor no provided configChanges; using default from '+defualtConfigFile);
 			}else{
 				console.log(" >> using configChanges as overrides to default template");
 			}
-			api.configData = JSON.parse(api.fs.readFileSync(defualtConfigFile,'utf8'));
+			api.configData = require(defualtConfigFile).configData;
 		}
 
-		// overide config.js with params.configChanges if exists 
-		for (var i in params.configChanges){ api.configData[i] = params.configChanges[i];}
-	
+		// overide config.js with params.configChanges if exists (second depth hashes)
+		for (var i in params.configChanges){ 
+			var collection = params.configChanges[i];
+			for (var j in collection){
+				api.configData[i][j] = collection[j];
+			}
+		}
+
 		var initializerFolders = [ 
 			process.cwd() + "/initializers/", 
 			process.cwd() + "/node_modules/actionHero/initializers/"
@@ -96,19 +97,16 @@ var createActionHero = function(){
 			console.log("Error fetching this host's external IP address; setting to random string")
 			externalIP = api.utils.randomString(128);
 		}
-		api.id = externalIP + ":" + api.configData.webServerPort + "&" + api.configData.socketServerPort;
-		if(api.cluster.isWorker){
-			api.id += ":" + process.pid;
-		}
+		api.id = externalIP;
+		if(actionHero.api.configData.httpServer.enable){ api.id += ":" + api.configData.httpServer.port }
+		if(actionHero.api.configData.httpsServer.enable){ api.id += ":" + api.configData.httpsServer.port }
+		if(actionHero.api.configData.tcpServer.enable){ api.id += ":" + api.configData.tcpServer.port }
+		if(api.cluster.isWorker){ api.id += ":" + process.pid; }
 
-		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " @ web port " + api.configData.webServerPort;
-		if(api.configData.secureWebServer.enable){
-			successMessage += " & secure web port " + api.configData.secureWebServer.port;
-		}
-		successMessage += " & socket port " + api.configData.socketServerPort + " ***";
-
+		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " ***";
 		api.bootTime = new Date().getTime();
 			
+		// Loading pyrimid of doom.
 		actionHero.initLog(api, function(){
 			api.log("server ID: " + api.id);
 			actionHero.initRedis(api, function(){
@@ -118,19 +116,23 @@ var createActionHero = function(){
 							actionHero.initPostVariables(api, function(){
 								actionHero.initFileServer(api, function(){
 									actionHero.initWebServer(api, function(){
-										actionHero.initSocketServer(api, function(){ 
-											actionHero.initTasks(api, function(){
-												if(typeof params.initFunction == "function"){
-													params.initFunction(api, function(){
-														api.log(successMessage, ["green", "bold"]);
-														actionHero.running = true;
-														if(callback != null){ process.nextTick(function() { callback(api); }); }
-													})
-												}else{
-													api.log(successMessage, ["green", "bold"]);
-													actionHero.running = true;
-													if(callback != null){ process.nextTick(function() { callback(api); }); }
-												}
+										actionHero.initWebSockets(api, function(){
+											actionHero.initSocketServer(api, function(){ 
+												actionHero.initChatRooms(api, function(){ 
+													actionHero.initTasks(api, function(){
+														if(typeof params.initFunction == "function"){
+															params.initFunction(api, function(){
+																api.log(successMessage, ["green", "bold"]);
+																actionHero.running = true;
+																if(callback != null){ process.nextTick(function() { callback(api); }); }
+															})
+														}else{
+															api.log(successMessage, ["green", "bold"]);
+															actionHero.running = true;
+															if(callback != null){ process.nextTick(function() { callback(api); }); }
+														}
+													});
+												});
 											});
 										});
 									});
@@ -145,7 +147,7 @@ var createActionHero = function(){
 
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
-			actionHero.api.log("Shutting down open servers (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+") and pausing tasks", "bold");
+			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
 			clearTimeout(actionHero.api.tasks.processTimer);
 			
 			// remove from the list of hosts
@@ -164,8 +166,10 @@ var createActionHero = function(){
 
 			function cont(){
 				var closed = 0;
-				var neededClosed = 2;
-				if(actionHero.api.configData.secureWebServer.enable){ neededClosed++; }
+				var neededClosed = 0;
+				if(actionHero.api.configData.httpServer.enable){ neededClosed++; }
+				if(actionHero.api.configData.httpsServer.enable){ neededClosed++; }
+				if(actionHero.api.configData.tcpServer.enable){ neededClosed++; }
 				var checkForDone = function(){
 					if(closed == neededClosed){
 						closed = -1;
@@ -182,33 +186,37 @@ var createActionHero = function(){
 					actionHero.api.socketServer.connections[i].destroy();
 				}
 
-				actionHero.api.socketServer.server.on("close", function(){
-					actionHero.api.log("Closed socket-server");
-					closed++;
-					checkForDone();
-				});
+				if(actionHero.api.configData.httpServer.enable){
+					actionHero.api.webServer.webApp.on("close", function(){
+						actionHero.api.log("Closed http server");
+						closed++;
+						checkForDone();
+					});
+					actionHero.api.webServer.webApp.close();
+				}
 
-				actionHero.api.webServer.webApp.on("close", function(){
-					actionHero.api.log("Closed web-server");
-					closed++;
-					checkForDone();
-				});
-
-				if(actionHero.api.configData.secureWebServer.enable){
+				if(actionHero.api.configData.httpsServer.enable){
 					actionHero.api.webServer.secureWebApp.on("close", function(){
 						actionHero.api.log("Closed secure web-server");
 						closed++;
 						checkForDone();
 					});
+					actionHero.api.webServer.secureWebApp.close();
 				}
 
-				actionHero.api.socketServer.server.close();
-				actionHero.api.webServer.webApp.close();
-				if(actionHero.api.configData.secureWebServer.enable){ actionHero.api.webServer.secureWebApp.close(); }
+				if(actionHero.api.configData.tcpServer.enable){
+					actionHero.api.socketServer.server.on("close", function(){
+						actionHero.api.log("Closed socket-server");
+						closed++;
+						checkForDone();
+					});
+					actionHero.api.socketServer.server.close();
+				}
+				//
 				checkForDone(closed);
 			}
 		}else{
-			actionHero.api.log("Cannot shut down, as I'm not running @ (:"+actionHero.api.configData.webServerPort+", :"+actionHero.api.configData.socketServerPort+")");
+			actionHero.api.log("Cannot shut down (not running any servers)");
 			next(false);
 		}
 	};
@@ -216,7 +224,6 @@ var createActionHero = function(){
 	actionHero.restart = function(next){
 		if(actionHero.running == true){
 			actionHero.stop(function(){
-				console.log("HERE")
 				actionHero.start(actionHero.startngParams, function(){
 					if(typeof next == "function"){ next(true); } 
 				});

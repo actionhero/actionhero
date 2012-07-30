@@ -3,7 +3,7 @@
 
 var initLog = function(api, next){
 	
-	try { api.fs.mkdirSync(api.configData.logFolder, "777") } catch(e) {}; 
+	try { api.fs.mkdirSync(api.configData.log.logFolder, "777") } catch(e) {}; 
 
 	api.logger = {};
 	
@@ -35,7 +35,7 @@ var initLog = function(api, next){
 	}
 	
 	api.log = function(original_message, styles){	
-		if(api.configData != null && api.configData.logging == true)
+		if(api.configData != null && api.configData.log.logging == true)
 		{
 			if(api.utils != undefined){
 				var time_string = api.utils.sqlDateTime();
@@ -50,7 +50,7 @@ var initLog = function(api, next){
 			console.log(console_message);
 			var file_message = time_string + " | " + original_message;
 			if (api.logWriter == null){
-				api.logWriter = api.fs.createWriteStream((api.configData.logFolder + "/" + api.configData.logFile), {flags:"a"});
+				api.logWriter = api.fs.createWriteStream((api.configData.log.logFolder + "/" + api.configData.log.logFile), {flags:"a"});
 			}
 			process.nextTick(function() { 
 				try{

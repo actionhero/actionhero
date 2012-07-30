@@ -1,0 +1,46 @@
+<script src="/public/javascript/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect('http://localhost:8080/');
+	
+	socket.on('welcome', function(data){
+		console.log("connected!")
+		console.log(JSON.stringify(data));
+	});
+
+	// responses to action or chat room function
+	socket.on('response', function(data){
+		console.log(JSON.stringify(data));
+	});
+
+	// responses to chatRoom
+	socket.on('say', function(data){
+		console.log(JSON.stringify(data));
+	})
+
+	// call an action
+	function action = function(action, params){
+		// params = {key1: 'value_1', key2: 'value2'}
+		if (params == null){ params = {}; )
+		params['action'] = action;
+		socket.emit("action", params);
+	}
+
+	// chat room functions
+	function say = function(message){
+		// message = "hello world"
+		socket.emit("say", {message: message});
+	}
+	function roomView = function(){
+		socket.emit("roomView");
+	}
+	function roomChange = function(room){
+		// room = "newRoomName"
+		socket.emit("roomChange", {room: room});
+	}
+
+	// disconnect
+	function quit = function(){
+		socket.emit("quit");
+	}
+
+</script>

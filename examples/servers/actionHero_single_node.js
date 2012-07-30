@@ -1,4 +1,4 @@
-process.chdir("../../");
+// ! Run me from the root of actionHero, IE: `node examples/servers/actionHero_single_node.js`
 
 // load in the actionHero class
 var actionHero = require(__dirname + "../../../api.js").actionHero; // normally if installed by npm: var actionHero = require("actionHero").actionHero;
@@ -6,10 +6,11 @@ var actionHero = require(__dirname + "../../../api.js").actionHero; // normally 
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
 params.configChanges = {
-	"flatFileDirectory" : "../public/",
-
-	"redis" : {
-		"enable": false,
+	general: {
+		flatFileDirectory: "./public/"
+	},
+	redis: {
+		enable: false,
 	},
 }
 
