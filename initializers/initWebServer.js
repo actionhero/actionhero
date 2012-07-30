@@ -66,16 +66,16 @@ var initWebServer = function(api, next)
 			connection.directModeAccess = false;
 			if(pathParts.length > 0){
 				if(pathParts[1] == api.configData.commonWeb.urlPathForActions){ 
-					connection.requestMode = "api"; 
+					connection.requestMode = api.configData.commonWeb.urlPathForActions; 
 					connection.directModeAccess = true;
 				}
 				else if(pathParts[1] == api.configData.commonWeb.urlPathForFiles){ 
-					connection.requestMode = "file"; 
+					connection.requestMode = api.configData.commonWeb.urlPathForFiles; 
 					connection.directModeAccess = true;
 				}
 			}
 			
-			if(connection.requestMode == "api"){
+			if(connection.requestMode == api.configData.commonWeb.urlPathForActions){
 				// parse GET (URL) variables
 				fillParamsFromWebRequest(api, connection, parsedURL.query);
 				if(connection.params.action === undefined){ 
@@ -112,7 +112,7 @@ var initWebServer = function(api, next)
 				}
 			}
 			
-			if(connection.requestMode == "file"){
+			if(connection.requestMode == api.configData.commonWeb.urlPathForFiles){
 				fillParamsFromWebRequest(api, connection, parsedURL.query);
 				connection.params.action = "file";
 				process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
