@@ -49,8 +49,8 @@ var createActionHero = function(){
 			api.fs.exists = api.path.exists;
 		}
 
-		if(api.fs.existsSync('./config.js')){
-			api.configData = require('./config.js').configData;
+		if(api.fs.existsSync(process.cwd() + '/config.js')){
+			api.configData = require(process.cwd() + '/config.js').configData;
 		}else{
 			var defualtConfigFile = "./node_modules/actionHero/config.js";
 			if(params.configChanges == null){
