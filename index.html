@@ -50,12 +50,13 @@
 	<!-- HEADER -->
 	<div id="header" class="box">
 
-		<p id="logo"><a href="./" title="[Go to homepage]"><img src="logo/actionHeroWordsWhite.png" width="120" alt="" /></a></p>
+		<p id="logo"><a href="./" title="[Go to homepage]"><img src="logo/v1/actionHeroWordsWhite.png" width="120" alt="" /></a></p>
 
 		<!-- NAVIGATION -->
 		<ul id="nav">
 			<li class="current"><a href="#"><span>Homepage</span></a></li>
 			<li><a href="https://github.com/evantahler/actionHero"><span>GitHub</span></a></li>
+			<li><a href="https://github.com/evantahler/actionHero/blob/master/versions.markdown"><span>Chage Log</span></a></li>
 			<li><a href="http://search.npmjs.org/#/actionHero"><span>NPM</span></a></li>
 			<li><a href="http://demo.actionherojs.com/"><span>Demo Server (:80, :5000)</span></a></li>
 		</ul>		
@@ -65,11 +66,10 @@
 	<!-- WELCOME -->
 	<div id="welcome" class="box">
 		<div id="welcome-inner">
-			<h2>actionHero is a node.js API framework for both tcp sockets and http clients</h2>
-			<p>The goals of actionHero are to create an easy-to-use toolkit to get started making combination http and socket APIs as quickly as possible. An actionHero can work as a stand-alone server or in concert with other actionHero servers in a cluster to handle larger load.</p>
+			<h2>actionHero is a node.js API framework for tcp sockets, web sockets, and http clients.</h2>
+			<p>actionHero is a node.js API framework for both tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable, scalable, and polygot APIs.  actionHero provides cluster support, shared cache, integrated delayed processing, and more.</p>
 		</div> <!-- /welcome-inner -->
-		<!-- TWITTER -->
-		<div id="twitter" class="box">
+		<div id="smallInset" class="box">
 			<ul>
 				<li>actionHero is for the node.js server.  Learn more here <a href="http://nodejs.org/">http://nodejs.org/</a></li>
 				<li>actionHero is available in the NPM (node package manager).  Learn more <a href="http://search.npmjs.org/#/actionHero">here</a></li>
@@ -77,25 +77,137 @@
 			<br />
 			<br />
 			<br />
-		</div> <!-- /twitter -->
+		</div>
 		<div id="imac">
-			<img src="logo/actionHero.png" height="330" alt="ActionHero">
+			<img src="logo/v2/actionHero.png" height="330" alt="ActionHero">
 		</div> <!-- /imac -->
 	</div> <!-- /welcome -->
 	
+
+	<div id="section" class="box">
+		<div id="breaking_news">
+			<h2>News:</h2>
+			<p>actionHero V3.0.0 released!</p>
+			<p><strong>This is a major release.  Sections of older actionHero projects will be incompatible with this release.</strong></p>
+			<p>This release adds web socket support to the project, and abstracts the chat room system to be available generically to all types of persistently-connected clients.<br>This release also updates the configuration system to allow developers to use any/all/none of the connection methods.<br>This should make it easier to add more and more communication protocols to the project.</p>
+		</div>
+	</div>
+
 	<!-- COLUMNS -->
 	<div id="section" class="box">
 		<!-- CONTENT -->
-		<div id="content">
-			loading..
+		<div id="content_full_width">
+			<div id="logical_section">
+				<h1>actionHero: A Framework for APIs</h1>
+				<p>actionHero is a node.js API framework for both tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable, scalable, and polygot APIs.</p>
+				<p>actionHero servers can process both requests and tasks (delayed actions like send e-mail or other background jobs). actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.</p>
+				<p>The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistent connection via TCP or web sockets. You define Actions which handle input and response, such as “userAdd” or “geoLocate”. HTTP, HTTPS, and TCP clients can all use these actions. The actionHero API is not inherently “RESTful” (which is meaningless for persistent socket connections) but can be extended to be so if you with.</p>
+				<p>actionHero will also serve static files for you, but actionHero is not a server-side website host (like express or rails).</p>
+			</div>
+			<div id="logical_section">
+				<h1>actionHero Speaks Many Protocols</h1>
+				<p>One of the goals of actionHero is to be able to speak to as many client types as possible.  Currently implamented is: ['http', 'https', 'tcp', 'web socket'].</p>
+				<p>Say you wanted to ask the server for a list of all the actions it can respond to `actionsView`.  Here are examples using a number of protocols:</p>
+
+				<table class="table">
+					<tr>
+						<th>cURL</th>
+						<th>jQuery</th>
+						<th>TCP</th>
+						<th>Web Socket</th>
+					</tr>
+					<tr>
+						<td>
+							<pre>
+curl "http://127.0.0.1:8080/api/" -d "action=actionsView"
+							</pre>
+						</td>
+						<td>
+							<pre>
+$.ajax({
+	url: "http://127.0.0.1:8080/api/,
+	data: {
+		action: "actionsView"
+	},
+	type: "POST",
+	dataType: "jsonp",
+	jsonp : "callback",
+	jsonpCallback: function(data){
+		if(data.error != "OK"){
+			console.log(data.actions)
+		}
+	},
+});
+							</pre>
+						</td>
+						<td>
+							<pre>> telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+{"welcome":"Hello! Welcome to the actionHero api}
+> actionsView
+							</pre>
+						</td>
+						<td>
+							<pre>
+var socket = io.connect('http://localhost:8080/');
+
+socket.on('welcome', function(data){
+    console.log("connected!")
+    console.log(JSON.stringify(data));
+    socket.emit("action", {action: "actionsView"});
+});
+
+socket.on('response', function(data){
+    console.log(JSON.stringify(data));
+});
+							</pre>
+						</td>
+					</tr>
+				</table>
+				You can also talk to an actionHero server from other node.js applications via the <a href="https://github.com/evantahler/actionHeroNodeClient">actionHero client</a>
+			</div>
+			<div id="logical_section">
+				<h1>actionHero is Made for Scale: actionCluster</h1>
+				<p>actionHero can be run either as a stand-alone server or as part of a cluster. The goal of actionCluster is to allow you to create a group of servers which will share memory state and all be able to handle requets and run tasks. You can also add and remove nodes from the cluster without fear of data loss or task duplication. You can run many instances of actionHero using node.js' cluster methods.</p>
+				<p>Using a redis backend, actionHero nodes can now share memory objects and have a common queue for tasks. Philosophically, we have changed from a mesh network (actionHero versions prior to v2) to a queue-based network (action hero after version 2).</p>
+				<p>When working within an actionCluster the api.cache methods described above switch from using an in-process memory store, to using a common one based on redis. This means that all peers will have access to all data stored in the cache. The task system described below also becomes a common queue which all peers will work on draining. There should be no changes needed to your use of the api to use the benefits of cluster deployment and synchronization. Using a redis-based backend works for both a cluster hosted on many physically separate hosts or if you set using the node.js cluster module on one host, or both at the same time.</p>
+			</div>
+			<div id="logical_section">
+				<h1>Integrated Delayed Processing</h1>
+				<p>Tasks are background jobs meant to be run asynchronously from a request.  With actionHero, there is no need to run a separate job processing/queuing process.  Using the node.js event loop, background tasks can be processed in-line with web requests in a non-blocking way.  Tasks are built like actions, but they can be run as called or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided</p>
+				<pre class="brush: js">
+var task = {};
+
+/////////////////////////////////////////////////////////////////////
+// metadata
+task.name = "sayHello";
+task.description = "I am a demo task which will be run only on one peer";
+task.scope = "any";
+task.frequency = 1000;
+
+/////////////////////////////////////////////////////////////////////
+// functional
+task.run = function(api, params, next){
+    api.log("----- Hi There! ----", "green");
+    next(true);
+};
+
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.task = task;
+				</pre>
+			</div>
+			<div id="logical_section">
+				<h1>You should be developing API-first already</h1>
+				<a href="http://api-first.com/">API-first.com</a>
+			</div>
+			<div id="logical_section">
+				<h1>Want to learn more?</h1>
+				<a href="https://github.com/evantahler/actionHero/blob/master/readme.markdown">Learn More on Github</a>
+			</div>
 		</div> <!-- /content -->
-		<!-- SIDEBAR -->
-		<div id="aside">
-			<h2 class="nom">Updates:</h2>
-			<ul class="articles">
-				<li> Loading... </li>
-			</ul>
-		</div> <!-- /aside -->
 	</div> <!-- /section -->	
 
 	<!-- CONTACT -->
