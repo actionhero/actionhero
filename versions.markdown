@@ -4,9 +4,46 @@
 
 ** WebSockets and a better configuration system **
 
+*This is a major release.  Sections of older actionHero projects will be incompatible with this release.*
+
+This release adds web socket support to the project, and abstracts the chat room system to be available generically to all types of persistently-connected clients.  This release also updates the configuration system to allow developers to use any/all/none of the connection methods.  This should make it easier to add more and more communication protocols to the project.
 
 ** Notes **
+
+General
+
 - default file route changed from '/file' to '/public'; /file is the "action" called file which is provided as an example
+- new configuration system.  Check `config.js` for updated structure
+- all transports can be enabler or disabled based on `config.js`
+- api.id now reflects protocols in use
+- you can now specify which IPs actionHero will listen on for each protocol.  Use "0.0.0.0" for "all""
+
+Actions
+
+- randomNumber action update to show how to inspect different HTTP verbs to create different responses
+
+Chat
+
+- new initializer to make chat availalbe to all persistant-socket clients
+- new `api.chatRoom` namespace for chat functions (IE: `api.socketServer.socketRoomBroadcast` => `api.chatRoom.socketRoomBroadcast`)
+
+Web Sockets
+
+- socket.io a dependancy of the project
+- socket.io client JS symlikned to /public
+- websocket example created
+- status counts for webSockets
+- websockets can be bound to http or https
+
+Tests
+
+- Spec Helper & Tests updated to reflect new configuration system
+
+Examples
+
+- updated to reflect new configuration system
+
+
 
 ## Version 2.0.3
 
