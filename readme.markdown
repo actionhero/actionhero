@@ -6,7 +6,7 @@ actionHero is a [node.js](http://nodejs.org) **API framework** for both **tcp so
 
 actionHero servers can process both requests and tasks (delayed actions like `send e-mail` or other background jobs).  actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.
 
-The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistant connection via TCP or web sockets. You define **Actions** which handle input and response, such as "userAdd" or "geoLocate". HTTP, HTTPS, and TCP clients can all use these actions.  The actionHero API is not inherently "RESTful" (which is meaningless for persistent socket connections) but can be extended to be so if you with.
+The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistent connection via TCP or web sockets. You define **Actions** which handle input and response, such as "userAdd" or "geoLocate". HTTP, HTTPS, and TCP clients can all use these actions.  The actionHero API is not inherently "RESTful" (which is meaningless for persistent socket connections) but can be extended to be so if you with.
 
 actionHero will also serve static files for you, but actionHero is not a server-side website host (like express or rails).
 
@@ -327,12 +327,12 @@ actionHero can be run either as a stand-alone server or as part of a cluster.  T
 
 Using a [redis](http://redis.io/) backend, actionHero nodes can now share memory objects and have a common queue for tasks.  Philosophically, we have changed from a mesh network (actionHero versions prior to v2) to a queue-based network (action hero after version 2).
 
-When working within an actionCluster the `api.cache` methods described above switch from using an in-process memory store, to using a common one based on redis.  This means that all peers will have access to all data stored in the cache.  The task system described below also becomes a common queue which all peers will work on draining.  There should be no changes needed to your use of the api to use the benefits of cluster deployment and synchronization.  Using a redid-based backend works for both a cluster hosted on many physically separate hosts or if you set using the [node.js cluster module](https://github.com/evantahler/actionHero/blob/master/actionHeroCluster) on one host, or both at the same time.
+When working within an actionCluster the `api.cache` methods described above switch from using an in-process memory store, to using a common one based on redis.  This means that all peers will have access to all data stored in the cache.  The task system described below also becomes a common queue which all peers will work on draining.  There should be no changes needed to your use of the api to use the benefits of cluster deployment and synchronization.  Using a redis-based backend works for both a cluster hosted on many physically separate hosts or if you set using the [node.js cluster module](https://github.com/evantahler/actionHero/blob/master/actionHeroCluster) on one host, or both at the same time.
 
 *There have recently been significant changes to the cluster system since v1.x, please checkout the change-log if you are upgrading from an older version.*
 
 ## Tasks
-Tasks are background jobs meant to be run asynchronously from a request.  Tasks are built like actions, but they can be run as called or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided:
+Tasks are background jobs meant to be run asynchronously from a request.  With actionHero, there is no need to run a separate job processing/queuing process.  Using the node.js event loop, background tasks can be processed in-line with web requests in a non-blocking way.  Tasks are built like actions, but they can be run as called or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided:
 
 * cleanLogFiles (all)
 	* removes all files in `./log/` if they are larger than `api.configData.general.maxLogFileSize`
