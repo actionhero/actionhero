@@ -118,6 +118,8 @@ OTHERS
 .input-text {padding:5px;}
 .input-submit {padding:3px;}
 
+.wide-table{ overflow: scroll;}
+
 code {
     background-color: #fee9cc;
     color: rgba(0, 0, 0, 0.75);
