@@ -43,9 +43,6 @@ Examples
 
 - updated to reflect new configuration system
 
-
->>>>>>> v3
-
 ## Version 2.0.3
 
 **Summary:** Bug Fixes, Examples, and REPL
