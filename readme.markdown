@@ -251,7 +251,7 @@ Just like the additional actions added for TCP connection, web socket connection
 		})
 	
 		// call an action
-		function action = function(action, params){
+		var action = function(action, params){
 			// params = {key1: 'value_1', key2: 'value2'}
 			if (params == null){ params = {}; )
 			params['action'] = action;
@@ -259,20 +259,20 @@ Just like the additional actions added for TCP connection, web socket connection
 		}
 	
 		// chat room functions
-		function say = function(message){
+		var say = function(message){
 			// message = "hello world"
 			socket.emit("say", {message: message});
 		}
-		function roomView = function(){
+		var roomView = function(){
 			socket.emit("roomView");
 		}
-		function roomChange = function(room){
+		var roomChange = function(room){
 			// room = "newRoomName"
 			socket.emit("roomChange", {room: room});
 		}
 	
 		// disconnect
-		function quit = function(){
+		var quit = function(){
 			socket.emit("quit");
 		}
 	
