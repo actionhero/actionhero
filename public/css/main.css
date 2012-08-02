@@ -42,7 +42,7 @@ LAYOUT
 #header #nav-icons {position:absolute; top:58px; right:0; margin:0;}
 #header #nav-icons a {margin-left:7px;}
 #title {margin:0; padding:25px 25px 45px 25px; background:url("../design/section.png") 0 100% no-repeat;}
-#section {overflow:hidden; margin:0 0 30px 0; padding:5px 25px 0 25px; background:url("../design/hp-section.png") 575px 0 repeat-y;}
+#section {overflow:hidden; margin:0 0 30px 0; padding:5px 25px 0 25px; }
 #content {float:left; width:525px; overflow:hidden; text-align:justify;}
 #aside {float:right; width:330px; overflow:hidden;}
 #contact {padding:15px 0; text-align: center;}
@@ -55,7 +55,7 @@ LAYOUT
 PAGE: HOMEPAGE (body#hp)
 -------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-#hp #section {margin:30px 0; padding:0; background:url("../design/hp-section.png") 700px 0 repeat-y;}
+#hp #section {margin:30px 0; padding:0; }
 #hp #content {float:left; width:670px; overflow:hidden;}
 #hp #aside {float:right; width:230px; overflow:hidden;}
 #welcome {position:relative; height:380px; overflow:hidden; background:url("../design/welcome.png") 0 0 no-repeat;}
