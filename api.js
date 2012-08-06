@@ -105,43 +105,43 @@ var createActionHero = function(){
 
 		var successMessage = "*** Server Started @ " + api.utils.sqlDateTime() + " ***";
 		api.bootTime = new Date().getTime();
-			
-		// Loading pyrimid of doom.
-		actionHero.initLog(api, function(){
-			api.log("server ID: " + api.id);
-			actionHero.initRedis(api, function(){
-				actionHero.initCache(api, function(){
-					actionHero.initStats(api, function(){
-						actionHero.initActions(api, function(){
-							actionHero.initPostVariables(api, function(){
-								actionHero.initFileServer(api, function(){
-									actionHero.initWebServer(api, function(){
-										actionHero.initWebSockets(api, function(){
-											actionHero.initSocketServer(api, function(){ 
-												actionHero.initChatRooms(api, function(){ 
-													actionHero.initTasks(api, function(){
-														if(typeof params.initFunction == "function"){
-															params.initFunction(api, function(){
-																api.log(successMessage, ["green", "bold"]);
-																actionHero.running = true;
-																if(callback != null){ process.nextTick(function() { callback(api); }); }
-															})
-														}else{
-															api.log(successMessage, ["green", "bold"]);
-															actionHero.running = true;
-															if(callback != null){ process.nextTick(function() { callback(api); }); }
-														}
-													});
-												});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
-			});
+
+		// run the initializers
+		api.async.series({
+			initLog: function(next){ actionHero.initLog(api, next); },
+			initRedis: function(next){ actionHero.initRedis(api, next); },
+			initCache: function(next){ actionHero.initCache(api, next); },
+			initStats: function(next){ actionHero.initStats(api, next); },
+			initActions: function(next){ actionHero.initActions(api, next); },
+			initPostVariables: function(next){ actionHero.initPostVariables(api, next); },
+			initFileServer: function(next){ actionHero.initFileServer(api, next); },
+			initWebServer: function(next){ actionHero.initWebServer(api, next); },
+			initWebSockets: function(next){ actionHero.initWebSockets(api, next); },
+			initSocketServer: function(next){ actionHero.initSocketServer(api, next); },
+			initChatRooms: function(next){ actionHero.initChatRooms(api, next); },
+			initTasks: function(next){ actionHero.initTasks(api, next); },
+			_user_init: function(next){
+				api.log("server ID: " + api.id);
+				if(typeof params.initFunction == "function"){
+					params.initFunction(api, function(){
+						api.log(successMessage, ["green", "bold"]);
+						actionHero.running = true;
+						next();
+					})
+				}else{
+					api.log(successMessage, ["green", "bold"]);
+					actionHero.running = true;
+					next();
+				}
+			},
+			_complete: function(next){
+				if(callback != null){ 
+					callback(api); 
+					next();
+				}else{
+					next();
+				}
+			},
 		});
 	};
 
