@@ -1,5 +1,8 @@
 # node.js actionHero API Framework
+
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
+
+[![Endore Me](http://api.coderwall.com/evantahler/endorsecount.png)](http://coderwall.com/evantahler)
 
 ## Who is the actionHero?
 actionHero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionHero are to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.
