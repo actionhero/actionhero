@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-	"apiVersion": "3.0.0",
+	"apiVersion": "3.0.1",
 	"serverName": "actionHero API",
 	// The welcome message seen by TCP and webSocket clients upon connection
 	"welcomeMessage" : "Hello! Welcome to the actionHero api",
@@ -115,7 +115,13 @@ configData.webSockets = {
 	// You must have either the http or https server enabled for websockets
 	"enable": true,
 	// which web interface to bind the websockets to (http or https)
-	"bind" : "http"
+	"bind" : "http",
+	"logLevel" : 1,
+	"settings" : [
+		"browser client minification",
+		"browser client etag",
+		"browser client gzip"
+	]
 };
 
 //////////////////////////////////

@@ -40,10 +40,17 @@ var initWebSockets = function(api, next)
 		for(var i in IOs){
 			var io = IOs[i];
 
-			io.set('log level', 1);
-			io.enable('browser client minification'); 
-			io.enable('browser client etag');
-			io.enable('browser client gzip');
+			if(api.configData.webSockets.logLevel != null){
+				io.set('log level', configData.webSockets.logLevel);
+			}else{
+				io.set('log level', 1);
+			}
+
+			if(typeof api.configData.webSockets.settings == "Array" && api.configData.webSockets.settings.length > 0){
+				for (var i in api.configData.webSockets.settings){
+					io.enable(api.configData.webSockets.settings[i]); 
+				}
+			}
 
 			var c = api.configData.redis;
 			if(c.enable == true){

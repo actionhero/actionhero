@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.0.1
+
+This release adds more configurations options to webSockets in the form of `api.configData.webSockets.logLevel` (integer) and `configData.webSockets.settings` (which is an array strings which will be applied to socketIO's 'set' command)
+
 ## Version 3.0.0
 
 ** WebSockets and a better configuration system **
