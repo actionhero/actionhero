@@ -41,7 +41,7 @@ var initWebSockets = function(api, next)
 			var io = IOs[i];
 
 			if(api.configData.webSockets.logLevel != null){
-				io.set('log level', configData.webSockets.logLevel);
+				io.set('log level', api.configData.webSockets.logLevel);
 			}else{
 				io.set('log level', 1);
 			}
