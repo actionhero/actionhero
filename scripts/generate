@@ -68,7 +68,7 @@ var prettify_path = function(full_path){
 	}
 	var resp = "";
 	for(var i in good_parts){
-		if(resp.length > 0){ resp + "/"; }
+		if(resp.length > 0){ resp = resp + "/"; }
 		resp = resp + good_parts[i];
 	}
 	return resp;
