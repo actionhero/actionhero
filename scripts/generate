@@ -61,7 +61,7 @@ var prettify_path = function(full_path){
 	for(var i in parts){
 		var curr = parts[i];
 		if(curr == ".."){
-			good_parts.pop;
+			good_parts.pop();
 		}else{
 			good_parts.push(curr);
 		}
