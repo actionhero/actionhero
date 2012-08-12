@@ -160,6 +160,12 @@ documents.package_json = "{\r\n\
 }\r\n\
 ";
 
+documents.index_html = "
+<h1>Hello from actionHero!</h1>
+<p>If you are reading this, your actionHero project is working.</p>
+<p><strong>Good Job!</strong></p>
+";
+
 //////// LOGIC ////////
 
 console.log("\r\n**********\r\n");
