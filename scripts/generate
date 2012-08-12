@@ -38,21 +38,39 @@ var file_exists = function(file, success_function, fail_function){
 var create_dir_safely = function(dir){
 	var full_dir = project_root + dir;
 	dir_exists(dir, function(){
-		console.log(" - `"+full_dir+"` already exists, skipping");
+		console.log(" - `"+prettify_path(full_dir)+"` already exists, skipping");
 	}, function(){
-		console.log(" - creating directory `"+full_dir+"`");
+		console.log(" - creating directory `"+prettify_path(full_dir)+"`");
 		fs.mkdirSync(full_dir , 0766);
 	});
 }
 
 var create_file_safely = function(file, data){
 	var full_file = project_root + file;
-	dir_exists(dir, function(){
-		console.log(" - `"+full_file+"` already exists, skipping");
+	file_exists(full_file, function(){
+		console.log(" - `"+prettify_path(full_file)+"` already exists, skipping");
 	}, function(){
-		console.log(" - writing file `"+full_file+"`");
+		console.log(" - writing file `"+prettify_path(full_file)+"`");
 		fs.writeFileSync(full_file);
 	});
+}
+
+var prettify_path = function(full_path){
+	var parts = full_path.split("/");
+	var good_parts = [];
+	for(var i in parts){
+		var curr = parts[i];
+		if(curr == ".."){
+			good_parts.pop;
+		}else{
+			good_parts.push(curr);
+		}
+	}
+	var resp = "";
+	for(var i in good_parts){
+		resp = resp + "/" + good_parts[i];
+	}
+	return resp;
 }
 
 //////// DOCUMENTS ////////
