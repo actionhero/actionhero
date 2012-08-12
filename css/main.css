@@ -46,6 +46,7 @@ LAYOUT
 #section {overflow:hidden; margin:0 0 30px 0; padding:5px 25px 0 25px;}
 #content_full_width {float:left; width:960px; overflow:hidden; text-align:justify;}
 #breaking_news {float:left; width:960px; overflow:hidden; text-align:justify; padding: 20px; background-color:#DEE5F9;}
+#get_started {float:left; width:960px; overflow:hidden; text-align:justify; padding: 20px; background-color:#005BB6;}
 #content {float:left; width:525px; overflow:hidden; text-align:justify;}
 #aside {float:right; width:330px; overflow:hidden;}
 #contact {padding:15px 0; text-align: center;}
