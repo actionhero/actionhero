@@ -47,7 +47,7 @@ var create_dir_safely = function(dir){
 
 var create_file_safely = function(file, data){
 	var full_file = project_root + file;
-	file_exists(full_file, function(){
+	file_exists(file, function(){
 		console.log(" - `"+prettify_path(full_file)+"` already exists, skipping");
 	}, function(){
 		console.log(" - writing file `"+prettify_path(full_file)+"`");
