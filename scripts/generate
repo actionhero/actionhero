@@ -160,10 +160,9 @@ documents.package_json = "{\r\n\
 }\r\n\
 ";
 
-documents.index_html = "
-<h1>Hello from actionHero!</h1>
-<p>If you are reading this, your actionHero project is working.</p>
-<p><strong>Good Job!</strong></p>
+documents.index_html = "<h1>Hello from actionHero!</h1>\r\n\
+<p>If you are reading this, your actionHero project is working.</p>\r\n\
+<p><strong>Good Job!</strong></p>\r\n\
 ";
 
 //////// LOGIC ////////
