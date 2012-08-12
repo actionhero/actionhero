@@ -24,7 +24,7 @@ var dir_exists = function(dir, success_function, fail_function){
 
 var file_exists = function(file, success_function, fail_function){
 	try{
-		var stats = fs.lstatSync(project_root + dir);
+		var stats = fs.lstatSync(project_root + file);
 		if(stats.isFile() || stats.isSymbolicLink()){
 			if(typeof success_function == 'function'){ success_function(); }
 		}else{
