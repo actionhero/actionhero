@@ -1,5 +1,5 @@
-var specHelper = require('../_specHelper.js').specHelper;
-var utils = require('../utils.js').utils;
+var specHelper = require('../helpers/_specHelper.js').specHelper;
+var utils = require('../helpers/utils.js').utils;
 var suite = specHelper.vows.describe('API global Utils');
 
 suite.addBatch({

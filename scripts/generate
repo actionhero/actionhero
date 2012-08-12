@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+console.log("**********");
+console.log("Generating a new actionHero project...");
+console.log("**********");

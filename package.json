@@ -29,7 +29,9 @@
     "vows":"0.x.x"
   },
   "scripts": {
-	  "start": "./actionHero",
-	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix"
+    "start": "./scripts/actionHero",
+	  "install": "./scripts/install",
+	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix",
+    "generate" : "./scripts/actionHeroGenerator"
   }
 }

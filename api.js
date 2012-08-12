@@ -89,7 +89,7 @@ var createActionHero = function(){
 			}
 		}
 			
-		api.utils = require(__dirname + '/utils.js').utils;
+		api.utils = require(__dirname + '/helpers/utils.js').utils;
 
 		// determine my unique ID
 		var externalIP = api.utils.getExternalIPAddress();
