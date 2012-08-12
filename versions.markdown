@@ -5,6 +5,7 @@
 - This release adds more configurations options to webSockets in the form of `api.configData.webSockets.logLevel` (integer) and `configData.webSockets.settings` (which is an array strings which will be applied to socketIO's 'set' command)
 - Generators!
 - Project reoginzation
+- remove hredis: This makes the project have less complex C dependanices.  You should add it to your project if you want fast redis communication, but it isn't *required*
 
 ## Version 3.0.0
 
