@@ -1,5 +1,89 @@
 #!/usr/bin/env node
 
-console.log("**********");
+//////// REQUIRES ////////
+
+var fs = require('fs');
+var colors = require('colors');
+
+//////// HELPERS ////////
+
+var dir_exists = function(dir, success_function, fail_function){
+	try{
+		if(fs.lstatSync("./"+dir).isDirectory()){
+			if(typeof success_function == 'function'){ success_function(); }
+		}else{
+			if(typeof fail_function == 'function'){ fail_function(); }
+		}
+	}catch(e){
+		if(typeof fail_function == 'function'){ fail_function(); }
+	}
+}
+
+var create_dir_safely = function(dir){
+	dir_exists(dir, function(){
+		console.log(" - `"+dir+"` already exists, skipping");
+	}, function(){
+		console.log(" - creating directory `"+dir+"`");
+		fs.mkdirSync("./"+dir , 0766);
+	});
+}
+
+//////// DOCUMENTS ////////
+
+var documetns = {};
+documetns.projectMap = "\r\n\
+/\r\n\
+|- actions\r\n\
+|-- (your actions)\r\n\
+|\r\n\
+|- certs\r\n\
+|-- (your https certs for your domain)\r\n\
+|\r\n\
+|- initializers\r\n\
+|-- (any additional initializers you want)\r\n\
+|\r\n\
+|- log\r\n\
+|-- (default location for logs)\r\n\
+|\r\n\
+|- node_modules\r\n\
+|-- (your modules, actionHero should be npm installed in here)\r\n\
+|\r\n\
+|- public\r\n\
+|-- (your static assets to be served by /file)\r\n\
+|\r\n\
+|- tasks\r\n\
+|-- (your tasks)\r\n\
+|\r\n\
+| app.js\r\n\
+| config.js\r\n\
+| package.json (be sure to include 'actionHero':'x')\r\n\
+"
+
+//////// LOGIC ////////
+
+console.log("\r\n**********\r\n");
 console.log("Generating a new actionHero project...");
-console.log("**********");
+
+// test that actionHero is installed
+dir_exists("node_modules", null, function(){
+	console.log(" ! node_modules doesn't exist.  `npm install actionHero` first".red);
+	process.exit();
+});
+dir_exists("node_modules/actionHero", null, function(){
+	console.log(" ! node_modules/actionHero doesn't exist.  `npm install actionHero` first".red);
+	process.exit();
+});
+
+// make directories
+create_dir_safely("actions");
+create_dir_safely("certs");
+create_dir_safely("initializers");
+create_dir_safely("log");
+create_dir_safely("public");
+create_dir_safely("tasks");
+
+console.log("");
+console.log("Generation Complete.  Your project directory should look like this:");
+console.log(documetns.projectMap.blue)
+
+console.log("\r\n**********\r\n");
