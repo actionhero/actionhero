@@ -2,10 +2,12 @@
 
 ## Version 3.0.1
 
-- This release adds more configurations options to webSockets in the form of `api.configData.webSockets.logLevel` (integer) and `configData.webSockets.settings` (which is an array strings which will be applied to socketIO's 'set' command)
-- Generators!
+- A project Generator!
+-- You can start up a new project in an empty directory with `npm install actionHero && npm run-script actionHero generate`.  This will create project structure and copy in some default actions and tasks.
+- Only tasks present in your project will be loaded (like actions).  Now that there is a genrator which will copy in some defauly actions, loading tasks withing actionHero is not needed.
 - Project reoginzation
 - remove hredis: This makes the project have less complex C dependanices.  You should add it to your project if you want fast redis communication, but it isn't *required*
+- This release adds more configurations options to webSockets in the form of `api.configData.webSockets.logLevel` (integer) and `configData.webSockets.settings` (which is an array strings which will be applied to socketIO's 'set' command)
 
 ## Version 3.0.0
 

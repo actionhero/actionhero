@@ -317,7 +317,6 @@ var initTasks = function(api, next)
 	
 	var taskFolders = [ 
 		process.cwd() + "/tasks/", 
-		process.cwd() + "/node_modules/actionHero/tasks/"
 	]
 	
 	for(var i in taskFolders){
