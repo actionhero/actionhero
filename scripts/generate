@@ -18,7 +18,7 @@ var dir_exists = function(dir, success_function, fail_function){
 			if(typeof fail_function == 'function'){ fail_function(); }
 		}
 	}catch(e){
-		// console.log(e)
+		console.log(e)
 		if(typeof fail_function == 'function'){ fail_function(); }
 	}
 }
@@ -32,7 +32,7 @@ var file_exists = function(file, success_function, fail_function){
 			if(typeof fail_function == 'function'){ fail_function(); }
 		}
 	}catch(e){
-		// console.log(e)
+		console.log(e)
 		if(typeof fail_function == 'function'){ fail_function(); }
 	}
 }
