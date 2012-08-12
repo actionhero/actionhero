@@ -3,3 +3,4 @@ node_modules
 log/*
 cache/*
 npm-debug.log
+dump.rdb
