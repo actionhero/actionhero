@@ -392,10 +392,14 @@ This task will be run every ~1 second on the first peer to be free after that on
 * redis (for actionCluster)
 
 ## Install & Quickstart
-* Checkout actionHero in a new directory `mkdir ~/project && cd ~/project && npm install actionHero`
+
+**tl;dr: `mkdir ~/project; cd ~/project && cd ~/project; npm install actionHero; npm run-script actionHero generate; npm start`**
+
+* Create a new directory `mkdir ~/project && cd ~/project`
+* Checkout the actionHero source `npm install actionHero`
 * Use the generator to create a template project `npm run-script actionHero generate`
 * Create a new file called `index.js`
-* Start up the server: `nom start`
+* Start up the server: `npm start`
 
 Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
@@ -427,46 +431,7 @@ You can programmatically control an actionHero server with `actionHero.start(par
 	
 ## Application Structure
 
-The actionCluster module contains no native code and is arranged like this:
-
-	/
-	|- actions
-	|-- (the base actions)
-	|
-	|- certs
-	|-- (example certs for the https server, keyed for 'localhost')
-	|
-	|- examples
-	|-- (some common examples of using actionHero in the actionCluster)
-	|
-	|- initializers
-	|-- (the common initializers for he web and socket servers, actions, logging, etc)
-	|
-	|- node_modules
-	|-- (actionHero dependancies get installed here)
-	|
-	|- public
-	|-- (default location for public assets served by /file path)
-	|
-	|- spec
-	|-- (tests)
-	|
-	|- tasks
-	|-- (default tasks)
-	|
-	_specHelper.js
-	actionHero
-	api.js
-	config.js
-	license.txt
-	package.json
-	readme.markdown
-	utils.js
-	versions.markdown
-	
-Your application structure should look similar.  
-
-actions in /actions will be loaded in automatically, along /initializers and /tasks. /public will become your applicaiton's default static asset location.  You can make your own config.json in your application root with only the partial changes you want to use over the default settings.
+Actions in /actions will be loaded in automatically, along /initializers and /tasks. /public will become your applicaiton's default static asset location.  You can make your own config.json in your application root with only the partial changes you want to use over the default settings.
 
 	/
 	|- actions
@@ -623,7 +588,13 @@ Create a `config.js` file in the root of your project.  Here is the default conf
 		// You must have either the http or https server enabled for websockets
 		"enable": true,
 		// which web interface to bind the websockets to (http or https)
-		"bind" : "http"
+		"bind" : "http",
+		"logLevel" : 1,
+		"settings" : [
+			"browser client minification",
+			"browser client etag",
+			"browser client gzip"
+		]
 	};
 	
 	//////////////////////////////////
