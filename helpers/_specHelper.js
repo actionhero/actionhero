@@ -14,9 +14,7 @@ specHelper.params = [];
 var baseActionHero = require(__dirname + "/../api.js").createActionHero;
 
 specHelper.params[0] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_1.log",
@@ -42,9 +40,7 @@ specHelper.params[0] = {
 };
 
 specHelper.params[1] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_2.log",
@@ -70,9 +66,7 @@ specHelper.params[1] = {
 };
 
 specHelper.params[2] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_3.log",

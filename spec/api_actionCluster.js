@@ -1,5 +1,5 @@
 var specHelper = require('../helpers/_specHelper.js').specHelper;
-var suite = specHelper.vows.describe('api: actionCluster');
+var suite = specHelper.vows.describe('API actionCluster');
 var apis = [];
 var timeoutToWaitForFirstServerStart = 100;
 

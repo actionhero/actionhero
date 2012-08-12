@@ -7,9 +7,7 @@ var actionHero = require(__dirname + "../../../api.js").actionHero; // normally 
 var params = {};
 
 params.configChanges = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logFile: "api_peer_3.log",
 	},
