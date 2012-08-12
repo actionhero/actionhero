@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+var colors = require('colors');
+
+console.log("\r\n**********\r\n");
+console.log("You have installed actionHero!  Hooray!".green);
+console.log("You can use the command:");
+console.log("  npm run-script actionHero generate".bold)
+console.log("to generate a template project in an empty directoy");
+console.log("");
+console.log("Documentation and more can be found @ " + "http://actionherojs.com".bold.blue);
+console.log("\r\n**********\r\n");

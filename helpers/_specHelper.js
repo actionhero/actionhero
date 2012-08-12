@@ -5,18 +5,16 @@ specHelper.vows = require('vows');
 specHelper.net = require('net');
 specHelper.assert = require('assert');
 specHelper.request = require('request');
-specHelper.utils = require('./utils.js').utils;
+specHelper.utils = require(__dirname + '/../helpers/utils.js').utils;
 specHelper.apis = [];
 specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 
-var baseActionHero = require(__dirname + "/api.js").createActionHero;
+var baseActionHero = require(__dirname + "/../api.js").createActionHero;
 
 specHelper.params[0] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_1.log",
@@ -42,9 +40,7 @@ specHelper.params[0] = {
 };
 
 specHelper.params[1] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_2.log",
@@ -70,9 +66,7 @@ specHelper.params[1] = {
 };
 
 specHelper.params[2] = {
-	general: {
-		flatFileDirectory: "./public/"
-	},
+	general: {},
 	log: {
 		logging: showLogs,
 		logFile: "api_peer_3.log",

@@ -16,7 +16,7 @@ configData.general = {
 	// The location of this package relative to your project
 	"apiBaseDir": "./node_modules/actionHero/",
 	// The directory which will be the root for the /public route
-	"flatFileDirectory": "./node_modules/actionHero/public/",
+	"flatFileDirectory": "./public/",
 	// The body message to acompany 404 (file not found) errors regading flat files
  	"flatFileNotFoundMessage": "Sorry, that file is not found :(",
  	// The body message to acompany 404 (file not found) errors regading directories

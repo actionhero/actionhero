@@ -21,7 +21,6 @@
     "colors":"0.x.x",
     "data2xml":"x",
     "mime":"1.x.x",
-    "hiredis":"0.x.x",
     "redis":"x",
     "socket.io":"0.9.x"
 	},
@@ -29,7 +28,9 @@
     "vows":"0.x.x"
   },
   "scripts": {
-	  "start": "./actionHero",
-	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix"
+    "start": "./scripts/actionHero",
+	  "install": "./scripts/install",
+	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix",
+    "generate" : "./scripts/generate"
   }
 }
