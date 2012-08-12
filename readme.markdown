@@ -392,36 +392,19 @@ This task will be run every ~1 second on the first peer to be free after that on
 * redis (for actionCluster)
 
 ## Install & Quickstart
-* `npm install actionHero`
+* Checkout actionHero in a new directory `mkdir ~/project && cd ~/project && npm install actionHero`
+* Use the generator to create a template project `npm run-script actionHero generate`
 * Create a new file called `index.js`
+* Start up the server: `nom start`
 
-The contents of `index.js` should look something like this:
+Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
-	// load in the actionHero class
-	var actionHero = require("actionHero").actionHero;
-	
-	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
-	var params = {};
-	var params = {};
-	params.configChanges = {
-		general: {
-			flatFileDirectory: "./public/"
-		}
-	}
-	
-	// start the server!
-	actionHero.start(params);
-
-* Start up the server: `node index.js`
-
-You will notice that you will be getting warning messages about how actionHero is using default files contained within the NPM package.  This is normal until you replace those files with your own versions.  Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
-
-You can programatically control an actionHero server with `actionHero.start(params, callback)`, `actionHero.stop(callback)` and `actionHero.restart(callback)`
+You can programmatically control an actionHero server with `actionHero.start(params, callback)`, `actionHero.stop(callback)` and `actionHero.restart(callback)`
 
 	var timer = 5000;
 	actionHero.start(params, function(api){
 		
-		api.log(" >> Boot Sucessful!");
+		api.log(" >> Boot Successful!");
 		setTimeout(function(){
 			
 			api.log(" >> restarting server...");
@@ -678,7 +661,7 @@ Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This 
 The `api.log()` method is available to you throughout the application.  `api.log()` will both write these log messages to file, but also display them on the console.  There are formatting options you can pass to `api.log(yourMessage, options=[])`.  The options array can be many colors and formatting types, IE: `['blue','bold']`.  Check out `/initializers/initLog.js` to see the options.
 
 ## Versions of this API
-see `[versions.markdown](https://github.com/evantahler/actionHero/blob/master/versions.markdown)` to see what's new in each version
+see [versions.markdown](https://github.com/evantahler/actionHero/blob/master/versions.markdown) to see what's new in each version
 
 ## Who?
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com)
