@@ -199,6 +199,7 @@ create_file_safely('/actions/file.js', documents.action_file);
 create_file_safely('/actions/randomNumber.js', documents.action_random_number);
 create_file_safely('/actions/status.js', documents.action_status);
 create_file_safely('/tasks/runAction.js', documents.task_runAction);
+create_file_safely('/public/index.html', documents.index_html);
 
 console.log("");
 console.log("Generation Complete.  Your project directory should look like this:");
