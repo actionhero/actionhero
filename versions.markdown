@@ -2,6 +2,8 @@
 
 ## Version 3.0.1
 
+**Project Generator**
+
 - A project Generator!
   - You can start up a new project in an empty directory with `npm install actionHero && npm run-script actionHero generate`.  This will create project structure and copy in some default actions and tasks.  
 - Only tasks present in your project will be loaded (like actions).  Now that there is a generator which will copy in some default actions, loading tasks within actionHero is not needed.
@@ -12,13 +14,13 @@
 
 ## Version 3.0.0
 
-** WebSockets and a better configuration system **
+**WebSockets and a better configuration system**
 
 *This is a major release.  Sections of older actionHero projects will be incompatible with this release.*
 
 This release adds web socket support to the project, and abstracts the chat room system to be available generically to all types of persistently-connected clients.  This release also updates the configuration system to allow developers to use any/all/none of the connection methods.  This should make it easier to add more and more communication protocols to the project.
 
-** Notes **
+**Notes**
 
 General
 
@@ -60,7 +62,7 @@ Examples
 - actionHero now has a REPL! You can use the command line to use all the api-namespaced functions and define your own.  Great for debugging or checking on the status of the cluster.  
 - Checkout the /examples folder for how to use the actionHeroClient package, browser javascript, and curl to interface with actionHero.  More languages coming soon.
 
-** Notes **
+**Notes**
 
 - cache actions now take milliseconds like everything else.
 - you can now have non-expiring cache entires (just pass a null value for expireTimeMS)
@@ -73,10 +75,10 @@ Examples
 
 **Summary:** Bug Fixes & Examples
 
-** Details **
+**Details**
 Check the notes for the bug fixes.  There are now also more examples in the project, showing off how you can connect from various environments.  This also coincides with the release of the [actionHeroClient](https://github.com/evantahler/actionHeroNodeClient) NPM package.  More coming soon.  
 
-** Notes **
+**Notes**
 
 - Updates to how socket client requests are tracked to enforce proper message IDs.  If you directly used `api.processAction` before, the interface has changed.
 - running the test suite will now use a separate redis db.  You can also set this in `config.json` for your app.
@@ -90,7 +92,7 @@ Bug Fixes
 
 ** Redis-powered Cluster & major refactor **
 
-** Details **
+**Details**
 
 This version realizes the dream of a true cluster for actionHero.  There is no longer a need for a master process, and every node in the cluster can work alone or in a group.  This release also enables using the node.js cluster module to make the most of your server(s).  
 
@@ -116,7 +118,7 @@ There are new requirements to `config.json` to configure redis.  Here is an exam
 
 All methods under the `api.actionCluster` namespace have been removed for simplicity.  Just use the normal cache methods, and if you are in a cluster, you will operate in a shared memory space.
 
-** Notes **
+**Notes**
 
 - all peers now share the same `api.cache` data
 - api.tasks.enqueue is now `api.tasks.enqueue(api, taskName, runAtTime, params)`  Set runAtTime to 0 to run the task as soon as possible
@@ -132,7 +134,7 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 
 ** Optional Headers **
 
-** Details **
+**Details**
 
 - You can now define custom host-headers in `config.json` which will be sent with every http/https response
 - bug fixes introduced with task sharing (v 1.0.1)
@@ -141,7 +143,7 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 
 ** Task Sharing **
 
-** Details **
+**Details**
 
 - The master process will now delegate tasks in his queue to other peers in the cluster.
 - Minor bug fixes
@@ -150,7 +152,7 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 
 ** SSL / HTTPS web server **
 
-** Details **
+**Details**
 
 * You can now spin up a secure https server along with you http server in action hero.  It will work exactly the same as the http server, and you can have both on at the same time with no overhead.
     * There are new configuration settings in `config.json` for this below
