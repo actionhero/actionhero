@@ -21,7 +21,6 @@
     "colors":"0.x.x",
     "data2xml":"x",
     "mime":"1.x.x",
-    "hiredis":"0.x.x",
     "redis":"x",
     "socket.io":"0.9.x"
 	},
