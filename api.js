@@ -44,10 +44,8 @@ var createActionHero = function(){
 		api.io = require('socket.io');
 				
 		// backwards compatibility for old node versions
-		if(process.version.split(".")[0] == "v0" && process.version.split(".")[1] <= "6"){
-			api.fs.existsSync = api.path.existsSync;
-			api.fs.exists = api.path.exists;
-		}
+		api.fs.existsSync || (api.fs.existsSync = api.path.existsSync);
+		api.fs.exists || (api.fs.exists = api.path.exists);
 
 		if(api.fs.existsSync(process.cwd() + '/config.js')){
 			api.configData = require(process.cwd() + '/config.js').configData;
