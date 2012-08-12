@@ -7,7 +7,7 @@ var colors = require('colors');
 
 //////// HELPERS ////////
 
-var project_root = __dirname + "/../../../../" // assumes node_modules/acionHero/scripts/generate
+var project_root = __dirname + "/../../../" // assumes node_modules/acionHero/scripts/generate
 
 var dir_exists = function(dir, success_function, fail_function){
 	try{
