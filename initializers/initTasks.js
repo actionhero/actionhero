@@ -202,9 +202,13 @@ var initTasks = function(api, next)
 					if(api.redis.enable === true){
 						// remove the task from the processing queue
 						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
-							api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+							if(api.tasks.tasks[task.taskName].frequency > 0){
+								api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+								});
+							}else{
 								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
-							});
+							}
 						});
 					}else{
 						api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
