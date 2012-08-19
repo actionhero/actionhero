@@ -48,7 +48,7 @@ var generateFile = function(){
 	templateLines.push('task.run = function(api, params, next){')
 	templateLines.push('	if(params == null){prams = {};}')
 	templateLines.push('	// your logic here')
-	templateLines.push('	next(true, connection);')
+	templateLines.push('	next(true);')
 	templateLines.push('};')
 	templateLines.push('')
 	templateLines.push('/////////////////////////////////////////////////////////////////////')
