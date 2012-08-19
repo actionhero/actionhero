@@ -261,41 +261,44 @@ var initTasks = function(api, next)
 		}		
 	}
 
-	api.tasks.clearSuckClaimedTasks = function(api, next){
+	api.tasks.clearStuckClaimedTasks = function(api, next){
+		if(api.redis.enable === true){
+			function done(started){
+				started--;
+				if(started == 0){ next(); }
+				else{ return started }
+			}
 
-		function done(started){
-			started--;
-			if(started == 0){ next(); }
-			else{ return started }
-		}
-
-		var started = 0;
-		if(api.tasks.tasks.length == 0){
-			started = done(started)
-		}else{
-			for(var i in api.tasks.tasks){
-				var task = api.tasks.tasks[i];
-				started++;
-				if(task.frequency > 0 && task.scope == "any"){
-					api.redis.client.hget(api.tasks.redisProcessingQueue, task.name, function (err, taskProcessing){
-						if(taskProcessing){
-							var redisTask = JSON.parse(taskProcessing);
-							if(redisTask.server == api.id){
-								api.log(" > clearing a stuck task `"+redisTask.taskName+"` which was previously registered by this server", ["yellow", "bold"]);
-								api.redis.client.hdel(api.tasks.redisProcessingQueue, redisTask.taskName, function(){
+			var started = 0;
+			if(api.tasks.tasks.length == 0){
+				started = done(started)
+			}else{
+				for(var i in api.tasks.tasks){
+					var task = api.tasks.tasks[i];
+					started++;
+					if(task.frequency > 0 && task.scope == "any"){
+						api.redis.client.hget(api.tasks.redisProcessingQueue, task.name, function (err, taskProcessing){
+							if(taskProcessing){
+								var redisTask = JSON.parse(taskProcessing);
+								if(redisTask.server == api.id){
+									api.log(" > clearing a stuck task `"+redisTask.taskName+"` which was previously registered by this server", ["yellow", "bold"]);
+									api.redis.client.hdel(api.tasks.redisProcessingQueue, redisTask.taskName, function(){
+										started = done(started)
+									});
+								}else{
 									started = done(started)
-								});
+								}
 							}else{
 								started = done(started)
 							}
-						}else{
-							started = done(started)
-						}
-					});
-				}else{
-					started = done(started)
+						});
+					}else{
+						started = done(started)
+					}
 				}
 			}
+		}else{
+			next();
 		}
 	}
 	
@@ -341,7 +344,7 @@ var initTasks = function(api, next)
 		}
 	}
 	
-	api.tasks.clearSuckClaimedTasks(api, function(){
+	api.tasks.clearStuckClaimedTasks(api, function(){
 		api.tasks.startPeriodicTasks(api, function(){
 			setTimeout(api.tasks.process, 5000, api); // pause to ensure the rest of init
 			next();	
