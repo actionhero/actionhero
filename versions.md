@@ -6,8 +6,8 @@
 
 - Configuration to set how many task workers each actionHero node has.  You now are **requried** to set `api.configData.general.workers`
 - Added generators for actions and tasks
-  - `npm run-script actionHero generate_action`
-  - `npm run-script actionHero generate_task`
+  - `npm run-script actionHero generateAction`
+  - `npm run-script actionHero generateTask`
 
 ## Version 3.0.2
 
