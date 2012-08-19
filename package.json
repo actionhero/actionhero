@@ -31,6 +31,8 @@
     "start": "./scripts/actionHero",
 	  "install": "./scripts/install",
 	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix",
-    "generate" : "./scripts/generate"
+    "generate" : "./scripts/generate",
+    "generateAction" : "./scripts/generateAction",
+    "generateTask" : "./scripts/generateTask"
   }
 }

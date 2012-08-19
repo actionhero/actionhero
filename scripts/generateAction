@@ -1,0 +1,120 @@
+#!/usr/bin/env node
+// npm run-script actionHero generateAction
+
+var fs = require('fs');
+var colors = require('colors');
+var async = require('async');
+
+String.prototype.trim=function(){return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');}
+
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (text) {
+	if(typeof waitingInput == "function"){
+		waitingInput(text.trim());
+	}
+});
+
+var data = {};
+data['actionName'] = null;
+data['actionDescription'] = null;
+data['actionInputsRequired'] = null;
+data['actionInputsOptional'] = null;
+
+var waitingInput = null;
+
+var stringifyArray = function(arr){
+	var s = "";
+	for(var i in arr){
+		if(i > 0){ s+= ", ";}
+		s += '"' + arr[i] + '"';
+	}
+	return s;
+}
+
+var generateFile = function(){
+	var templateLines = [];
+	templateLines.push('var action = {};')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// metadata')
+	templateLines.push('action.name = "'+data['actionName']+'";')
+	templateLines.push('action.description = "'+data['actionDescription']+'";')
+	templateLines.push('action.inputs = {')
+	templateLines.push('	"required" : ['+stringifyArray(data['actionInputsRequired'])+'],')
+	templateLines.push('	"optional" : ['+stringifyArray(data['actionInputsOptional'])+']')
+	templateLines.push('};')
+	templateLines.push('action.outputExample = {}')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// functional')
+	templateLines.push('action.run = function(api, connection, next){')
+	templateLines.push('	// your logic here')
+	templateLines.push('	next(connection, true);')
+	templateLines.push('}')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// exports')
+	templateLines.push('exports.action = action;')
+
+	var filename = process.cwd() + "/../../actions/" + data['actionName'] + ".js";
+	for(var i in templateLines){
+		fs.appendFileSync(filename, templateLines[i]);
+		fs.appendFileSync(filename, "\r\n");
+	}
+
+	console.log((" > Action file created @ " + filename).green);
+}
+
+var captureInput = function(prompt, variable, next){
+	console.log(prompt);
+	waitingInput = function(input){
+		data[variable] = input;
+		process.stdin.pause();
+		next();
+	};
+	process.stdin.resume();
+}
+
+async.series({
+	welcome: function(next){ 
+		console.log("Generate an actionHero Action".bold);
+		console.log("");
+		next();
+	},
+	getActionName: function(next){ 
+		captureInput(" > Name of the action (no spaces) ?", "actionName", next);
+	},
+	getActionDescription: function(next){ 
+		captureInput(" > Description of the action?", "actionDescription", next);
+	},
+	getActionInputsRequired: function(next){ 
+		captureInput(" > Required imputs (seperate with commas & no spaces in param names)", "actionInputsRequired", function(){
+			var term = "actionInputsRequired";
+			data[term] = data[term].split(",");
+			for(var i in data[term]){
+				data[term][i] = data[term][i].trim();
+			}
+			next();
+		});
+	},
+	gatActionInputsOptional: function(next){ 
+		captureInput(" > Optional imputs (seperate with commas (no spaces in param names)", "actionInputsOptional", function(){
+			var term = "actionInputsOptional";
+			data[term] = data[term].split(",");
+			for(var i in data[term]){
+				data[term][i] = data[term][i].trim();
+			}
+			next();
+		});
+	},
+	noteAboutOtherActions: function(next){ 
+		console.log(" > You can set other settings for this action (like output examples) in the file.  Generating...");
+		next();
+	},
+	write: function(next){ 
+		generateFile();
+		next();
+	},
+});
+

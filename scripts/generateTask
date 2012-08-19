@@ -1,0 +1,104 @@
+#!/usr/bin/env node
+// npm run-script actionHero generateTask
+
+var fs = require('fs');
+var colors = require('colors');
+var async = require('async');
+
+String.prototype.trim=function(){return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');}
+
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (text) {
+	if(typeof waitingInput == "function"){
+		waitingInput(text.trim());
+	}
+});
+
+var data = {};
+data['name'] = null;
+data['description'] = null;
+data['scope'] = null;
+data['frequency'] = null;
+
+var waitingInput = null;
+
+var stringifyArray = function(arr){
+	var s = "";
+	for(var i in arr){
+		if(i > 0){ s+= ", ";}
+		s += '"' + arr[i] + '"';
+	}
+	return s;
+}
+
+var generateFile = function(){
+	var templateLines = [];
+	templateLines.push('var task = {};')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// metadata')
+	templateLines.push('task.name = "'+data['name']+'";')
+	templateLines.push('task.description = "'+data['description']+'";')
+	templateLines.push('task.scope = "'+data['scope']+'";')
+	templateLines.push('task.frequency = '+data['frequency']+';')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// functional')
+	templateLines.push('task.run = function(api, params, next){')
+	templateLines.push('	if(params == null){prams = {};}')
+	templateLines.push('	// your logic here')
+	templateLines.push('	next(true, connection);')
+	templateLines.push('};')
+	templateLines.push('')
+	templateLines.push('/////////////////////////////////////////////////////////////////////')
+	templateLines.push('// exports')
+	templateLines.push('exports.task = task;')
+
+	var filename = process.cwd() + "/../../tasks/" + data['name'] + ".js";
+	for(var i in templateLines){
+		fs.appendFileSync(filename, templateLines[i]);
+		fs.appendFileSync(filename, "\r\n");
+	}
+
+	console.log((" > Task file created @ " + filename).green);
+}
+
+var captureInput = function(prompt, variable, next){
+	console.log(prompt);
+	waitingInput = function(input){
+		data[variable] = input;
+		process.stdin.pause();
+		next();
+	};
+	process.stdin.resume();
+}
+
+async.series({
+	welcome: function(next){ 
+		console.log("Generate an actionHero Task".bold);
+		console.log("");
+		next();
+	},
+	getActionName: function(next){ 
+		captureInput(" > Name of the task (no spaces) ?", "name", next);
+	},
+	getActionDescription: function(next){ 
+		captureInput(" > Description of the task?", "description", next);
+	},
+	getActionInputsRequired: function(next){ 
+		captureInput(" > Task scope (any/all)?", "scope", next);
+	},
+	gatActionInputsOptional: function(next){ 
+		captureInput(" > Task frequency (integer in ms)?", "frequency", next);
+	},
+	noteAboutOtherActions: function(next){ 
+		console.log(" > Generating...");
+		next();
+	},
+	write: function(next){ 
+		generateFile();
+		next();
+	},
+});
+
