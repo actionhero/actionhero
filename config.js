@@ -27,6 +27,9 @@ configData.general = {
 	// These params will always be appended to any request as "limit" and "offest" unless set by the client
 	"defaultLimit": 100,
 	"defaultOffset": 0,
+	// The number of internal "workers" this node will have.
+	// Remember these are logical timers (not threads) so they will block if they are computationally intense
+	"workers" : 3,
 };
 
 /////////////

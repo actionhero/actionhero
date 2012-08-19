@@ -5,9 +5,9 @@ var initTasks = function(api, next)
 	api.tasks = {};
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
-	api.tasks.cycleTimeMS = 50;
+	api.tasks.cycleTimeMS = 100;
 	api.tasks.reloadPeriodicsTime = 1000 * 60 * 60; // once an hour
-	api.tasks.processTimer = null;
+	api.tasks.processTimers = [];
 
 	if(api.redis.enable === true){
 		api.tasks.redisQueue = "actionHero::tasks";
@@ -15,6 +15,12 @@ var initTasks = function(api, next)
 		api.tasks.redisProcessingQueue = "actionHero::tasksClaimed";
 	}else{
 		api.tasks.queue = [];
+	}
+
+	// catch for old AH config files
+	// 0 is allowed, but null is not
+	if(api.configData.general.workers == null){
+		api.configData.general.workers = 1;
 	}
 	
 	api.tasks.enqueue = function(api, taskName, runAtTime, params, next){
@@ -187,36 +193,36 @@ var initTasks = function(api, next)
 		})
 	};
 	
-	api.tasks.process = function(api){		
-		clearTimeout(api.tasks.processTimer);
+	api.tasks.process = function(api, worker_id){	
+		clearTimeout(api.tasks.processTimers[worker_id]);
 		api.tasks.getNextTask(api, function(task){
 			if(task == null){
-				api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+				api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 			}else{
 				api.tasks.run(api, task.taskName, task.params, function(run){
 					if(run){
-						api.log("ran task: "+task.taskName, "yellow");
+						api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
 					}else{
-						api.log("task failed to run: "+JSON.stringify(task), "red")
+						api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
 					}
 					if(api.redis.enable === true){
-						// remove the task from the processing queue
+						// remove the task from the processing queue (redis only)
 						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
 							if(api.tasks.tasks[task.taskName].frequency > 0){
 								api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
-									api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+									api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 								});
 							}else{
-								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+								api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 							}
 						});
 					}else{
 						if(api.tasks.tasks[task.taskName].frequency > 0){
 							api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
-								api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+								api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 							});
 						}else{
-							api.tasks.processTimer = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api);
+							api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 						}
 					}
 				});
@@ -350,7 +356,12 @@ var initTasks = function(api, next)
 	
 	api.tasks.clearStuckClaimedTasks(api, function(){
 		api.tasks.startPeriodicTasks(api, function(){
-			setTimeout(api.tasks.process, 5000, api); // pause to ensure the rest of init
+			var i = 0;
+			api.log("starting "+api.configData.general.workers+" task timers", "yellow")
+			while(i < api.configData.general.workers){
+				api.tasks.process(api, i);
+				i++;
+			}
 			next();	
 		});
 	});

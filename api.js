@@ -117,7 +117,6 @@ var createActionHero = function(){
 			initWebSockets: function(next){ actionHero.initWebSockets(api, next); },
 			initSocketServer: function(next){ actionHero.initSocketServer(api, next); },
 			initChatRooms: function(next){ actionHero.initChatRooms(api, next); },
-			initTasks: function(next){ actionHero.initTasks(api, next); },
 			_user_init: function(next){
 				api.log("server ID: " + api.id);
 				if(typeof params.initFunction == "function"){
@@ -132,6 +131,8 @@ var createActionHero = function(){
 					next();
 				}
 			},
+			// tasks after user init, as DBs will be loaded here
+			initTasks: function(next){ actionHero.initTasks(api, next); },
 			_complete: function(next){
 				if(callback != null){ 
 					callback(api); 
