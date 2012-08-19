@@ -393,7 +393,7 @@ This task will be run every ~1 second on the first peer to be free after that on
 
 ## Install & Quickstart
 
-**tl;dr: `mkdir ~/project; cd ~/project && cd ~/project; npm install actionHero; npm run-script actionHero generate; npm start`**
+**tl;dr: `mkdir ~/project && cd ~/project; npm install actionHero; npm run-script actionHero generate; npm start`**
 
 * Create a new directory `mkdir ~/project && cd ~/project`
 * Checkout the actionHero source `npm install actionHero`

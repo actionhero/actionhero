@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.0.2
+
+**General Bug Fixes**
+
 ## Version 3.0.1
 
 **Project Generator**

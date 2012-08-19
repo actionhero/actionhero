@@ -135,9 +135,9 @@ var createActionHero = function(){
 			_complete: function(next){
 				if(callback != null){ 
 					callback(api); 
-					next();
+					// next();
 				}else{
-					next();
+					// next();
 				}
 			},
 		});
