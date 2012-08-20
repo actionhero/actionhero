@@ -234,7 +234,7 @@ var initTasks = function(api, next)
 		if(task.frequency > 0){
 			var runAtTime = new Date().getTime() + task.frequency;
 			api.tasks.enqueue(api, task.name, runAtTime, null, function(){
-				next();
+				if(typeof next == "function"){ next(); }
 			});
 		}
 	}
@@ -242,33 +242,14 @@ var initTasks = function(api, next)
 	api.tasks.startPeriodicTasks = function(api, next){
 		api.log("setting up periodic tasks...", "yellow")
 		clearTimeout(api.tasks.periodicTaskReloader);
-		if(api.tasks.tasks.length == 0){
-			api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
-			if(typeof next == "function"){ next(); }
-		}else{
-			var started = 0;
-			for(var i in api.tasks.tasks){
-				started++;
-				var task = api.tasks.tasks[i];
-				if(task.frequency > 0){
-					api.tasks.enqueuePeriodicTask(api, task, function(){
-						started--;
-						if(started == 0){
-							api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
-							if(typeof next == "function"){ next(); }
-						}
-					});
-				}else{
-					process.nextTick(function (){
-						started--;
-						if(started == 0){
-							api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
-							if(typeof next == "function"){ next(); }
-						}
-					})
-				}
+		for(var i in api.tasks.tasks){
+			var task = api.tasks.tasks[i];
+			if(task.frequency > 0){
+				api.tasks.enqueuePeriodicTask(api, task);
 			}
-		}		
+		}
+		api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+		if(typeof next == "function"){ next(); }
 	}
 
 	api.tasks.clearStuckClaimedTasks = function(api, next){
