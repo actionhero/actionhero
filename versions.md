@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 3.0.4
+
+**General Bug Fixes**
+
+- fixed bugs regearding load order of initializers and user-added initializers
+- fixed a bug introduced in the previous version which may double-enqueue tasks 
+
 ## Version 3.0.3
 
 **Notes**
