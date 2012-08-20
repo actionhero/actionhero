@@ -112,28 +112,28 @@ var createActionHero = function(){
 			initActions: function(next){ actionHero.initActions(api, next); },
 			initPostVariables: function(next){ actionHero.initPostVariables(api, next); },
 			initFileServer: function(next){ actionHero.initFileServer(api, next); },
+			initStats: function(next){ actionHero.initStats(api, next); },
 			initWebServer: function(next){ actionHero.initWebServer(api, next); },
 			initWebSockets: function(next){ actionHero.initWebSockets(api, next); },
 			initSocketServer: function(next){ actionHero.initSocketServer(api, next); },
 			initChatRooms: function(next){ actionHero.initChatRooms(api, next); },
+			initTasks: function(next){ actionHero.initTasks(api, next); },
 			_user_init: function(next){
-				api.log("server ID: " + api.id);
 				if(typeof params.initFunction == "function"){
 					params.initFunction(api, function(){
-						api.log(successMessage, ["green", "bold"]);
-						actionHero.running = true;
 						next();
 					})
 				}else{
-					api.log(successMessage, ["green", "bold"]);
-					actionHero.running = true;
 					next();
 				}
 			},
-			// tasks after user init, as DBs will be loaded here
-			initTasks: function(next){ actionHero.initTasks(api, next); },
-			initStats: function(next){ actionHero.initStats(api, next); },
+			startTaskProcessing: function(next){ 
+				api.tasks.startTaskProcessing(api, next);
+			},
 			_complete: function(next){
+				api.log("server ID: " + api.id);
+				api.log(successMessage, ["green", "bold"]);
+				actionHero.running = true;
 				if(callback != null){ 
 					callback(api); 
 					// next();
