@@ -109,7 +109,6 @@ var createActionHero = function(){
 			initLog: function(next){ actionHero.initLog(api, next); },
 			initRedis: function(next){ actionHero.initRedis(api, next); },
 			initCache: function(next){ actionHero.initCache(api, next); },
-			initStats: function(next){ actionHero.initStats(api, next); },
 			initActions: function(next){ actionHero.initActions(api, next); },
 			initPostVariables: function(next){ actionHero.initPostVariables(api, next); },
 			initFileServer: function(next){ actionHero.initFileServer(api, next); },
@@ -133,6 +132,7 @@ var createActionHero = function(){
 			},
 			// tasks after user init, as DBs will be loaded here
 			initTasks: function(next){ actionHero.initTasks(api, next); },
+			initStats: function(next){ actionHero.initStats(api, next); },
 			_complete: function(next){
 				if(callback != null){ 
 					callback(api); 
