@@ -30,7 +30,7 @@ specHelper.params[0] = {
 	},
 	tcpServer: {
 		enable: true,
-		port: 7000,
+		port: 8000,
 	},
 	webSockets: {
 		enable: false
@@ -58,7 +58,7 @@ specHelper.params[1] = {
 	},
 	tcpServer: {
 		enable: true,
-		port: 7001,
+		port: 8001,
 	},
 	webSockets: {
 		enable: false
@@ -86,7 +86,7 @@ specHelper.params[2] = {
 	},
 	tcpServer: {
 		enable: true,
-		port: 7002,
+		port: 8002,
 	},
 	webSockets: {
 		enable: false

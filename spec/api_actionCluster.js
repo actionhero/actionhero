@@ -45,9 +45,9 @@ suite.addBatch({
   'api inspection':{
     topic: apis,
     'check for defaults': function(apis){ 
-		specHelper.assert.equal(apis[0].id, externalIP + ":9000:7000"); 
-		specHelper.assert.equal(apis[1].id, externalIP + ":9001:7001"); 
-		specHelper.assert.equal(apis[2].id, externalIP + ":9002:7002"); 
+		specHelper.assert.equal(apis[0].id, externalIP + ":9000:8000"); 
+		specHelper.assert.equal(apis[1].id, externalIP + ":9001:8001"); 
+		specHelper.assert.equal(apis[2].id, externalIP + ":9002:8002"); 
 	} }
 });
 
@@ -64,9 +64,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[2]);
 	} }
 });
 suite.addBatch({
@@ -81,9 +81,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[2]);
 	} }
 });
 suite.addBatch({
@@ -98,9 +98,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[2]);
 	} }
 });
 
@@ -131,7 +131,7 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 1);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[0]);
 	} }
 });
 
@@ -159,9 +159,9 @@ suite.addBatch({
     },
     'peers should be there': function(peers, err){ 
 		specHelper.assert.equal(peers.length, 3);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[0]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[1]);
-		specHelper.assert.include([ externalIP+":9000:7000",  externalIP+":9001:7001",  externalIP+":9002:7002" ], peers[2]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[0]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[1]);
+		specHelper.assert.include([ externalIP+":9000:8000",  externalIP+":9001:8001",  externalIP+":9002:8002" ], peers[2]);
 	} }
 });
 
