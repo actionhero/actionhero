@@ -50,7 +50,7 @@ var createActionHero = function(){
 		if(api.fs.existsSync(process.cwd() + '/config.js')){
 			api.configData = require(process.cwd() + '/config.js').configData;
 		}else{
-			var defualtConfigFile = "./node_modules/actionHero/config.js";
+			var defualtConfigFile = __dirname + "/config.js";
 			if(params.configChanges == null){
 				console.log(' >> no local config.json found nor no provided configChanges; using default from '+defualtConfigFile);
 			}else{
