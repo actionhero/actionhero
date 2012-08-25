@@ -26,25 +26,30 @@ var initChatRooms = function(api, next){
 		}
 		else{
 			if(connection == null){
+				connection = {room: api.configData.general.defaultChatRoom, public: {id: 0}}
 				var messagePayload = {message: message, from: api.configData.general.serverName, context: "user"};
 			}else{
 				var messagePayload = {message: message, from: connection.public.id, context: "user"};
 			}
 			// TCP clients
-			for(var i in api.socketServer.connections){
-				var thisConnection = api.socketServer.connections[i];
-				if(thisConnection.room == connection.room){
-					if(connection == null || thisConnection.public.id != connection.public.id){
-						api.socketServer.sendSocketMessage(thisConnection, messagePayload);
+			if(api.socketServer != null){
+				for(var i in api.socketServer.connections){
+					var thisConnection = api.socketServer.connections[i];
+					if(thisConnection.room == connection.room){
+						if(connection == null || thisConnection.public.id != connection.public.id){
+							api.socketServer.sendSocketMessage(thisConnection, messagePayload);
+						}
 					}
 				}
 			}
 			// WebSocket clients
-			for(var i in api.webSockets.connections){
-				var thisConnection = api.webSockets.connections[i];
-				if(thisConnection.room == connection.room){
-					if(connection == null || thisConnection.public.id != connection.public.id){
-						thisConnection.emit("say", messagePayload);
+			if(api.webSockets != null){
+				for(var i in api.webSockets.connections){
+					var thisConnection = api.webSockets.connections[i];
+					if(thisConnection.room == connection.room){
+						if(connection == null || thisConnection.public.id != connection.public.id){
+							thisConnection.emit("say", messagePayload);
+						}
 					}
 				}
 			}
