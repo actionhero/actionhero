@@ -33,7 +33,12 @@ var initSocketServer = function(api, next){
 		
 		  	connection.on("connect", function () {
 		  		api.stats.incrament(api, "numberOfActiveSocketClients");
-		    	api.log("socket connection "+connection.remoteIP+" | connected");
+		    	if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "connect @ socket",
+						to: connection.remoteIP,
+					});
+				}
 				api.chatRoom.roomAddMember(api, connection);
 				process.nextTick(function(){
 					api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
@@ -54,7 +59,12 @@ var initSocketServer = function(api, next){
 						if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
 				    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
 							try{ 
-								if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | requesting disconnect", "white");}
+								if(api.configData.log.logRequests){
+									api.logJSON({
+										label: "quit @ socket",
+										to: connection.remoteIP,
+									});
+								}
 								api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response"}); 
 								connection.end();
 							}catch(e){ }
@@ -66,41 +76,89 @@ var initSocketServer = function(api, next){
 							}else{
 								api.socketServer.sendSocketMessage(connection, {status: "Cannot set null", context: "response"});
 							}
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "paramAdd @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "paramDelete"){
 							connection.params[words[1]] = null;
 							api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "paramDelete @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "paramView"){
 							var q = words[1];
 							var params = {}
 							params[q] = connection.params[q];
 							api.socketServer.sendSocketMessage(connection, {context: "response", params: params});
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "paramView @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "paramsView"){
 							api.socketServer.sendSocketMessage(connection, {context: "response", params: connection.params});
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "paramsView @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "paramsDelete"){
 							connection.params = {};
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "paramsDelete @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "roomChange"){
 							api.chatRoom.roomRemoveMember(api, connection, function(){
 								connection.room = words[1];
 								api.chatRoom.roomAddMember(api, connection);
 								api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
-								if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+								if(api.configData.log.logRequests){
+									api.logJSON({
+										label: "roomChange @ socket",
+										to: connection.remoteIP,
+										params: JSON.stringify(words),
+									}, "grey");
+								}
 							});
 						}else if(words[0] == "roomView"){
 							api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
 								api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
-								if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+								if(api.configData.log.logRequests){
+									api.logJSON({
+										label: "roomView @ socket",
+										to: connection.remoteIP,
+										params: JSON.stringify(words),
+									}, "grey");
+								}
 							});				
 						}else if(words[0] == "say"){
 							var message = line.substr(4);
 							api.chatRoom.socketRoomBroadcast(api, connection, message);
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
-							if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line, "grey");}
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "say @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else{
 							connection.error = false;
 							connection.actionStartTime = new Date().getTime();
@@ -109,7 +167,15 @@ var initSocketServer = function(api, next){
 							connection.params["action"] = words[0];
 							api.processAction(api, connection, connection.messageCount, function(connection, cont){
 								var delta = new Date().getTime() - connection.actionStartTime;
-								if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP + " | "+line + " | responded in "+delta+"ms" , "grey");}
+								if(api.configData.log.logRequests && connection.action != "file"){
+									api.logJSON({
+										label: "action @ socket",
+										to: connection.remoteIP,
+										action: connection.action,
+										params: JSON.stringify(connection.params),
+										duration: delta,
+									});
+								}
 								api.socketServer.respondToSocketClient(connection, cont);
 							});
 						}
@@ -126,7 +192,13 @@ var initSocketServer = function(api, next){
 					try{ connection.end(); }catch(e){
 						//
 					}
-					if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
+					// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
+					if(api.configData.log.logRequests){
+						api.logJSON({
+							label: "disconnect @ socket",
+							to: connection.remoteIP,
+						});
+					}
 		  		});
 		  	});
 			

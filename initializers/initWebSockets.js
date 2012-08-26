@@ -103,7 +103,12 @@ var initWebSockets = function(api, next)
 				api.chatRoom.roomAddMember(api, connection);
 
 				api.stats.incrament(api, "numberOfActiveWebSocketClients");
-		    	api.log("webSocket connection "+connection.remoteIP+" | connected");
+		    	if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "connect @ webSocket",
+						to: connection.remoteIP,
+					});
+				}
 
 		    	api.webSockets.connections.push(connection);
 
@@ -117,7 +122,13 @@ var initWebSockets = function(api, next)
 		    	connection.on('roomView', function(data){
 		    		api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
 						connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
-						if(api.configData.log.logRequests){api.log(" > webSocket request from " + connection.remoteIP);}
+						if(api.configData.log.logRequests){
+							api.logJSON({
+								label: "roomView @ webSocket",
+								to: connection.remoteIP,
+								params: JSON.stringify(data),
+							}, "grey");
+						}
 					});
 		    	});
 		    	connection.on('roomChange', function(data){
@@ -125,14 +136,26 @@ var initWebSockets = function(api, next)
 						connection.room = data.room;
 						api.chatRoom.roomAddMember(api, connection);
 						connection.emit("response", {context: "response", status: "OK", room: connection.room});
-						if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP);}
+						if(api.configData.log.logRequests){
+							api.logJSON({
+								label: "roomChange @ webSocket",
+								to: connection.remoteIP,
+								params: JSON.stringify(data),
+							}, "grey");
+						}
 					});
 		    	});
 		    	connection.on('say', function(data){
 		    		var message = data.message;
 					api.chatRoom.socketRoomBroadcast(api, connection, message);
 					connection.emit("response", {context: "response", status: "OK"});
-					if(api.configData.log.logRequests){api.log(" > socket request from " + connection.remoteIP);}
+					if(api.configData.log.logRequests){
+						api.logJSON({
+							label: "say @ webSocket",
+							to: connection.remoteIP,
+							params: JSON.stringify(data),
+						}, "grey");
+					}
 		    	}); 
 
 		    	connection.on('action', function(data){
@@ -144,7 +167,15 @@ var initWebSockets = function(api, next)
 					api.processAction(api, connection, connection.messageCount, function(connection, cont){
 						var delta = new Date().getTime() - connection.actionStartTime;
 						if (connection.response.error == null){ connection.response.error = connection.error; }
-						if(api.configData.log.logRequests){api.log(" > webSocket request from " + connection.remoteIP + " | "+ JSON.stringify(data) + " | responded in "+delta+"ms" , "grey");}
+						if(api.configData.log.logRequests){
+							api.logJSON({
+								label: "action @ webSocket",
+								to: connection.remoteIP,
+								action: connection.action,
+								params: JSON.stringify(data),
+								duration: delta,
+							});
+						}
 						api.webSockets.respondToWebSocketClient(connection, cont);
 					});
 		    	});

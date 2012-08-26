@@ -61,6 +61,23 @@ var initLog = function(api, next){
 			});
 		}
 	};
+
+	api.logJSON = function(J, color){
+		var str = "";
+		if(J.label != null){
+			str += "[" + J.label + "] ";
+			delete J.label;
+		}
+		var need_bar = false;
+		for (var i in J){
+			if(need_bar == true){
+				str += " | "
+			}
+			str += i + ": " + J[i];
+			need_bar = true;
+		}
+		api.log(str, color);
+	}
 	
 	next();
 }

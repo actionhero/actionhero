@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 3.0.5
+
+**Better Logging**
+- seperation between file and action logging
+- better shared syntax for all types of connections
+- files log the path they were accessed from and duration
+
+**General Bug Fixes**
+- better logic for including base config.json when you don't provide one
+- updates for travis.ci
+
 ## Version 3.0.4
 
 **General Bug Fixes**

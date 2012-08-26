@@ -64,6 +64,28 @@ var initFileServer = function(api, next){
 						connection.messageCount++;
 					}catch(e){}
 				}
+				if(api.configData.log.logRequests){
+					var full_url = null;
+					var duration = null;
+					var type = null;
+					if(connection.req != null && connection.req.headers != null){
+						full_url = connection.req.headers.host + connection.req.url
+						duration = new Date().getTime() - connection.timer.startTime;
+						type = "web";
+					}else{
+						type = "socket";
+						full_url = type;
+						duration = type;
+					}
+					api.logJSON({
+						label: "file @ " + type,
+						to: connection.remoteIP,
+						file: file,
+						request: full_url,
+						size: data.length,
+						duration: duration
+					}, "grey");
+				}
 			}
 			process.nextTick(function() { next(connection, false); });
 		});

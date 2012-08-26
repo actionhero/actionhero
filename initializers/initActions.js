@@ -53,7 +53,6 @@ var initActions = function(api, next)
 	api.processAction = function(api, connection, messageID, next){	
 		if(connection.params.limit == null){ connection.params.limit = api.configData.general.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
 		if(connection.params.offset == null){ connection.params.offset = api.configData.general.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
-		if(api.configData.log.logRequests){api.log("action @ " + connection.remoteIP + " | params: " + JSON.stringify(connection.params));}
 		
 		if (connection.error === false){
 			connection.action = connection.params["action"];

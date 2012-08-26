@@ -176,7 +176,19 @@ var initWebServer = function(api, next)
 					connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
 					connection.res.end(stringResponse);
 				}
-				if(api.configData.log.logRequests){api.log(" > web request from " + connection.remoteIP + " | responded in : " + connection.response.serverInformation.requestDuration + "ms", "grey");}
+				if(api.configData.log.logRequests){
+					var full_url = connection.req.headers.host + connection.req.url;
+					if(connection.action != null && connection.action != "file"){
+						api.logJSON({
+							label: "action @ web",
+							to: connection.remoteIP,
+							action: connection.action,
+							request: full_url,
+							params: JSON.stringify(connection.params),
+							duration: connection.response.serverInformation.requestDuration
+						});
+					}
+				}
 			});
 		};
 		
