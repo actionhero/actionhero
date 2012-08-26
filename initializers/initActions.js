@@ -35,18 +35,32 @@ var initActions = function(api, next)
 	  	api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow");
 		  actionsPath = defaultActionsPath;
 		}
-		api.fs.readdirSync(actionsPath).forEach( function(file) {
-			if (file != ".DS_Store"){
-				var actionName = file.split(".")[0];
-				var thisAction = require(actionsPath + file)["action"];
-				if(require.cache[actionsPath + file] != null){
-					delete require.cache[actionsPath + file];
+
+		function loadFolder(path){
+			api.fs.readdirSync(path).forEach( function(file) {
+				if(path[path.length - 1] != "/"){ path += "/"; } 
+				var fullfFilePath = path + file;
+				if (file[0] != "."){
+					stats = api.fs.statSync(fullfFilePath);
+					if(stats.isDirectory()){
+						loadFolder(fullfFilePath);
+					}else if(stats.isSymbolicLink()){
+						var realPath = readlinkSync(fullfFilePath);
+						loadFolder(realPath);
+					}else if(stats.isFile()){
+						var actionName = file.split(".")[0];
+						api.actions[actionName] = require(path + file).action;
+						validateAction(api, api.actions[actionName]);
+						api.log("action loaded: " + actionName + ", " + fullfFilePath, "blue");
+					}else{
+						api.log(file+" is a type of file I cannot read", "red")
+					}
 				}
-				api.actions[thisAction.name] = require(actionsPath + file).action;
-				validateAction(api, api.actions[thisAction.name]);
-				api.log("action loaded: " + actionName, "blue");
-			}
-		});
+			});
+		}
+
+		loadFolder(actionsPath);
+		
 		next();
 	});
 	

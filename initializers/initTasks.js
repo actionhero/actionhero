@@ -313,26 +313,35 @@ var initTasks = function(api, next)
 		}
 	}
 	
+	function loadFolder(path){
+		api.fs.readdirSync(path).forEach( function(file) {
+			if(path[path.length - 1] != "/"){ path += "/"; } 
+			var fullfFilePath = path + file;
+			if (file[0] != "."){
+				stats = api.fs.statSync(fullfFilePath);
+				if(stats.isDirectory()){
+					loadFolder(fullfFilePath);
+				}else if(stats.isSymbolicLink()){
+					var realPath = readlinkSync(fullfFilePath);
+					loadFolder(realPath);
+				}else if(stats.isFile()){
+					var taskName = file.split(".")[0];
+					api.tasks.tasks[taskName] = require(path + file).task;
+					validateTask(api, api.tasks.tasks[taskName]);
+					api.log("task loaded: " + taskName + ", " + fullfFilePath, "yellow");
+				}else{
+					api.log(file+" is a type of file I cannot read", "red")
+				}
+			}
+		});
+	}
+
 	var taskFolders = [ 
 		process.cwd() + "/tasks/", 
 	]
-	
+
 	for(var i in taskFolders){
-		var folder = taskFolders[i];
-		if(api.fs.existsSync(folder)){
-			api.fs.readdirSync(folder).forEach( function(file) {
-				if (file != ".DS_Store"){
-					var taskName = file.split(".")[0];
-					if(require.cache[folder + file] != null){
-						delete require.cache[folder + file];
-					}
-					var thisTask = require(folder + file)["task"];
-					api.tasks.tasks[thisTask.name] = require(folder + file).task;
-					validateTask(api, api.tasks.tasks[thisTask.name]);
-					api.log("task loaded: " + taskName, "yellow");
-				}
-			});
-		}
+		loadFolder(taskFolders[i]);
 	}
 
 	// I should be started in api.js, after everything has loaded
