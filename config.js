@@ -73,6 +73,10 @@ configData.commonWeb = {
 	// when visiting the root URL, should visitors see "api" or "public"?
 	// visitors can always visit /api and /public as normal
 	"rootEndpointType" : "api",
+	// the default filetype to server when a user requests a directory
+	"directoryFileType" : "index.html",
+	// the header which will be returend for all flat file served from /public.  I am defiend in seconds
+	"flatFileCacheDuration" : 60,
 };
 
 /////////////////

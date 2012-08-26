@@ -2,12 +2,27 @@
 
 ## Version 3.0.5
 
+**File Server**
+
+- Files will now be served with a default cache-duration of 0 seconds.  Setting added to configure this
+- Default files for directories is still "index.html", but this is now configurable.
+- accessing directories works without the trailing slash (IE: http://localhost:8080/public resolves the same as http://localhost:8080/public/)
+- the `Cache-Controll` is returned along with `Expires` header
+
 **Better Logging**
-- seperation between file and action logging
+
+- separation between file and action logging
 - better shared syntax for all types of connections
 - files log the path they were accessed from and duration
 
+**Project Organization**
+
+- You can now orginize your tasks and actions in sub-folders
+- You can now symlink actions/taks into your project
+- You can now symlink files in /public
+
 **General Bug Fixes**
+
 - better logic for including base config.json when you don't provide one
 - updates for travis.ci
 

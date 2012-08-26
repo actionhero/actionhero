@@ -2,9 +2,15 @@
 // cache
 
 var initFileServer = function(api, next){
-	
+
+	if(api.configData.commonWeb.flatFileCacheDuration == null){
+		api.configData.commonWeb.flatFileCacheDuration = 0;
+	}
+	if(api.configData.commonWeb.directoryFileType == null){
+		api.configData.commonWeb.directoryFileType = "index.html";
+	}
+
 	api.sendFile = function(api, connection, next){
-		
 		var fileName = "";
 		if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 			var parsedURL = api.url.parse(connection.req.url);
@@ -27,26 +33,34 @@ var initFileServer = function(api, next){
 		}
 		if(connection.error == false){
 			fileName = api.configData.general.flatFileDirectory + fileName;
-			api.fs.exists(fileName, function(exists) {
-				if(exists){
-					var isPath = false
-					if (api.path.extname(fileName) == "" || api.path.extname(fileName).indexOf("/") > -1){
-						isPath = true;
-					}
-					if(isPath){
-						var indexPage = fileName + "index.html";
-				  		api.fs.exists(indexPage, function(indexExists) {
-				  			if(indexExists){ sendFile(api, indexPage, connection, next); }
-							else{ sendFileNotFound(api, connection, next); }
-				  		});
-					} else{ sendFile(api, fileName, connection, next); }
-				}
-				else{ sendFileNotFound(api, connection, next); }
-			});
-		}else{
-			sendFileNotFound(api, connection, next); 
+			followFileToServe(api, fileName, connection, next);
 		}
 	};
+
+	var followFileToServe = function(api, fileName, connection, next){
+		api.fs.stat(fileName, function(err, stats){
+			if(err != null){
+				sendFileNotFound(api, connection, next);
+			}else{
+				if(stats.isDirectory()){
+					if(fileName[fileName.length - 1] != "/"){ fileName += "/"; }
+					followFileToServe(api, fileName + api.configData.commonWeb.directoryFileType, connection, next);
+				}else if(stats.isSymbolicLink()){
+					api.fs.readLink(fileName, function(err, truePath){
+						if(err != null){
+							sendFileNotFound(api, connection, next);
+						}else{
+							followFileToServe(api, truePath, connection, next);
+						}
+					});
+				}else if(stats.isFile()){
+					sendFile(api, fileName, connection, next);
+				}else{
+					sendFileNotFound(api, connection, next);
+				}
+			}
+		});
+	}
 
 	var sendFile = function(api, file, connection, next){
 		api.fs.readFile(file, function (err, data) {
@@ -55,7 +69,8 @@ var initFileServer = function(api, next){
 			}else{
 				if(connection.req != null){
 					connection.responseHeaders['Content-Type'] = api.mime.lookup(file);
-					connection.responseHeaders['Cache-Control'] = "max-age=600, must-revalidate";
+					connection.responseHeaders['Expires'] = new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString();
+					connection.responseHeaders['Cache-Control'] = "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate";
 					connection.res.writeHead(200, connection.responseHeaders);
 					connection.res.end(data);
 				}else{
