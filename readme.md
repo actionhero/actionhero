@@ -634,7 +634,7 @@ Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This 
 The `api.log()` method is available to you throughout the application.  `api.log()` will both write these log messages to file, but also display them on the console.  There are formatting options you can pass to `api.log(yourMessage, options=[])`.  The options array can be many colors and formatting types, IE: `['blue','bold']`.  Check out `/initializers/initLog.js` to see the options.
 
 ## Versions of this API
-see [versions.markdown](https://github.com/evantahler/actionHero/blob/master/versions.markdown) to see what's new in each version
+see [versions.md](https://github.com/evantahler/actionHero/blob/master/versions.md) to see what's new in each version
 
 ## Who?
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com)
