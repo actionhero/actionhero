@@ -100,6 +100,7 @@ var initWebSockets = function(api, next)
 				connection.messageCount = 0;
 				connection.public = {};
 				connection.public.id = connection.id;
+				connection.public.connectedAt = new Date().getTime();
 				api.chatRoom.roomAddMember(api, connection);
 
 				api.stats.incrament(api, "numberOfActiveWebSocketClients");
@@ -157,6 +158,19 @@ var initWebSockets = function(api, next)
 						}, "grey");
 					}
 		    	}); 
+		    	connection.on('detailsView', function(data){
+		    		details = {};
+					details.params = connection.params;
+					details.public = connection.public;
+					connection.emit("response", {context: "response", status: "OK", details: details});
+					if(api.configData.log.logRequests){
+						api.logJSON({
+							label: "detailsView @ webSocket",
+							to: connection.remoteIP,
+							params: JSON.stringify(data),
+						}, "grey");
+					}
+		    	});
 
 		    	connection.on('action', function(data){
 		    		connection.params = data;

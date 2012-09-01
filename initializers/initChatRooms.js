@@ -85,6 +85,7 @@ var initChatRooms = function(api, next){
 	}
 
 	api.chatRoom.roomAddMember = function(api, connection, next){
+		api.chatRoom.announceMember(api, connection, true);
 		var room = connection.room;
 		var name = connection.public.id;
 		if(api.redis.enable === true){
@@ -102,6 +103,7 @@ var initChatRooms = function(api, next){
 	}
 
 	api.chatRoom.roomRemoveMember = function(api, connection, next){
+		api.chatRoom.announceMember(api, connection, false);
 		var room = connection.room;
 		var name = connection.public.id;
 		if(api.redis.enable === true){
@@ -124,6 +126,17 @@ var initChatRooms = function(api, next){
 			}
 			if(typeof next == "function"){ next(true) }
 		}
+	}
+
+	api.chatRoom.announceMember = function(api, connection, direction){
+		// var message = connection.public.id;
+		var message = "I";
+		if(direction == true){
+			message += " have entered the room";
+		}else{
+			message += " have left the room";
+		}
+		api.chatRoom.socketRoomBroadcast(api, connection, message);
 	}
 
 	////////////////////////////////////////////////////////////////////////////

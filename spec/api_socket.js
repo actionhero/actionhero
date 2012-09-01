@@ -29,7 +29,9 @@ suite.addBatch({
 				  client3 = net.connect(specHelper.params[0].tcpServer.port, function(){
 					  client3.setEncoding('utf8');
 					  apiObj = specHelper.cleanAPIObject(api);
-					  cb();
+					  setTimeout(function(){ // This timeout is to wait-out all the "joned room messages"
+					  	cb();
+					  }, 1000);
 				  }); 
 			  }); 
 		  });
@@ -57,6 +59,20 @@ suite.addBatch({
 		}, 'works' : function(resp, d){
 			specHelper.assert.isObject(d.stats);
 			specHelper.assert.equal(d.stats.socketServer.numberOfLocalSocketRequests, 3);
+		}
+	}
+});
+
+var client_details = {};
+suite.addBatch({
+	"I can get my details": {
+		topic: function(){ makeSocketRequest(client, this.callback, "detailsView"); }, 
+		'works' : function(resp, d){ 
+			specHelper.assert.equal(d.status, "OK"); 
+			specHelper.assert.isObject(d.details.params);
+			specHelper.assert.isObject(d.details.public);
+
+			client_details = d.details; // save for later tests
 		}
 	}
 });
@@ -186,14 +202,50 @@ suite.addBatch({
 				cb(true, 'no data');
 			}
 			client.on('data', rsp);
-			client3.write("say hello?");
+			client3.write("say hello?" + "\r\n");
 			setTimeout(noDataRsp, 1000);
 		}, 
 		'works' : function(resp, d){ specHelper.assert.equal(d, "no data"); }
 	}
 });
 
+suite.addBatch({
+	"Folks are notified when I join a room": {
+		topic: function(){ 
+			var cb = this.callback;
+			var rsp = function(d){ 
+				parsed = JSON.parse(d);
+				client.removeListener('data', rsp); 
+				cb(true, parsed); 
+			};
+			client.on('data', rsp);
+			client2.write("roomChange otherRoom" + "\r\n");
+		}, 
+		'works' : function(resp, d){ 
+			specHelper.assert.equal(d.message, "I have entered the room");
+			specHelper.assert.notEqual(d.from, client_details.id);
+		}
+	}
+});
 
+suite.addBatch({
+	"Folks are notified when I leave a room": {
+		topic: function(){ 
+			var cb = this.callback;
+			var rsp = function(d){ 
+				parsed = JSON.parse(d);
+				client.removeListener('data', rsp); 
+				cb(true, parsed); 
+			};
+			client.on('data', rsp);
+			client2.write("roomChange " + apiObj.configData.general.defaultChatRoom + "\r\n");
+		}, 
+		'works' : function(resp, d){ 
+			specHelper.assert.equal(d.message, "I have left the room");
+			specHelper.assert.notEqual(d.from, client_details.id);
+		}
+	}
+});
 
 // export
 suite.export(module);

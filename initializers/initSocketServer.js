@@ -28,6 +28,7 @@ var initSocketServer = function(api, next){
 			connection.id = md5.digest('hex');
 			connection.public = {};
 			connection.public.id = connection.id;
+			connection.public.connectedAt = new Date().getTime();
 			
 			api.socketServer.connections.push(connection);
 		
@@ -147,7 +148,19 @@ var initSocketServer = function(api, next){
 										params: JSON.stringify(words),
 									}, "grey");
 								}
-							});				
+							});		
+						}else if(words[0] == "detailsView"){
+							details = {};
+							details.params = connection.params;
+							details.public = connection.public;
+							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", details: details});
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "detailsView @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "say"){
 							var message = line.substr(4);
 							api.chatRoom.socketRoomBroadcast(api, connection, message);
