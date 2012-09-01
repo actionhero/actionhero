@@ -69,19 +69,25 @@ var initStats = function(api, next){
 										stats.cache = {
 											numberOfObjects: numberOfCacheObjects
 										};
-										stats.socketServer = {
-											numberOfGlobalSocketRequests: numberOfSocketRequests,
-											numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
-											numberOfLocalActiveSocketClients: api.socketServer.connections.length
-										};
-										stats.webSocketServer = {
-											numberOfGlobalWebSocketRequests: numberOfWebSocketRequests,
-											numberOfLocalActiveWebSocketClients: numberOfActiveWebSocketClients
-										};
-										stats.webServer = {
-											numberOfGlobalWebRequests: numberOfWebRequests,
-											numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
-										};
+										if(api.socketServer != null){
+											stats.socketServer = {
+												numberOfGlobalSocketRequests: numberOfSocketRequests,
+												numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
+												numberOfLocalActiveSocketClients: api.socketServer.connections.length
+											};
+										}
+										if(api.webSockets != null){
+											stats.webSocketServer = {
+												numberOfGlobalWebSocketRequests: numberOfWebSocketRequests,
+												numberOfLocalActiveWebSocketClients: numberOfActiveWebSocketClients
+											};
+										}
+										if(api.webServer != null){
+											stats.webServer = {
+												numberOfGlobalWebRequests: numberOfWebRequests,
+												numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
+											};
+										}
 										sleepingTasks = [];
 										for (var i in api.tasks.timers){ sleepingTasks.push(i); }
 										stats.queue = {
