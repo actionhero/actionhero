@@ -1,5 +1,15 @@
 # Action Hero API Versions
 
+## Version 3.0.6
+
+**Chat Rooms**
+
+- Events Emitted when folks enter/leave the room you are in
+
+**Socket / WebSocket Clients**
+
+- New Method `detailsView` to retrieve information about yourself (including your public ID)
+
 ## Version 3.0.5
 
 **File Server**

@@ -189,6 +189,7 @@ You can also access actionHero's methods via a persistent socket connection rath
 * `paramsDelete` - deletes all params set to this session
 * `roomChange` - change the `room` you are connected to.  By default all socket connections are in the `api.configData.defaultChatRoom` room.   
 * `roomView` - show you the room you are connected to, and information about the members currently in that room.
+* `detailsView` - show you details about your connection, including your public ID.
 * `say` [message]
 
 Please note that any params set using the above method will be 'sticky' to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.
@@ -261,6 +262,11 @@ Just like the additional actions added for TCP connection, web socket connection
 			if (params == null){ params = {}; )
 			params['action'] = action;
 			socket.emit("action", params);
+		}
+
+		// get my details
+		var getDetails = function(){
+			socket.emit("detailsView");
 		}
 	
 		// chat room functions
@@ -603,7 +609,7 @@ Create a `config.js` file in the root of your project.  Here is the default conf
 	
 	exports.configData = configData;
 
-## Default Content
+## Example Content
 __Actions__:
 
 * cacheTest - a test of the DB-based key-value cache system

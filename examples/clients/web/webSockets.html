@@ -17,6 +17,11 @@
 		console.log(JSON.stringify(data));
 	})
 
+	// get my details
+	var getDetails = function(){
+		socket.emit("detailsView");
+	}
+
 	// call an action
 	var action = function(action, params){
 		// params = {key1: 'value_1', key2: 'value2'}
