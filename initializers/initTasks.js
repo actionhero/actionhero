@@ -10,9 +10,9 @@ var initTasks = function(api, next)
 	api.tasks.processTimers = [];
 
 	if(api.redis.enable === true){
-		api.tasks.redisQueue = "actionHero::tasks";
-		api.tasks.redisQueueLocal = "actionHero::tasks::" + api.id;
-		api.tasks.redisProcessingQueue = "actionHero::tasksClaimed";
+		api.tasks.redisQueue = "actionHero:tasks";
+		api.tasks.redisQueueLocal = "actionHero:tasks::" + api.id;
+		api.tasks.redisProcessingQueue = "actionHero:tasksClaimed";
 	}else{
 		api.tasks.queue = [];
 	}

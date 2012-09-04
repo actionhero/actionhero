@@ -5,7 +5,7 @@ var initChatRooms = function(api, next){
 	if(api.redis.enable === false){
 		api.chatRoom.rooms = {};
 	}else{
-		api.chatRoom.redisRoomPrefix = "actionHero::roomMembers::";
+		api.chatRoom.redisRoomPrefix = "actionHero:roomMembers::";
 	}
 
 	////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ var initChatRooms = function(api, next){
 					}
 				}
 			};
-			api.redis.client.publish("actionHero::say", JSON.stringify(payload));
+			api.redis.client.publish("actionHero:say", JSON.stringify(payload));
 		}
 		else{
 			if(connection == null){
@@ -142,7 +142,7 @@ var initChatRooms = function(api, next){
 	////////////////////////////////////////////////////////////////////////////
 	// register for messages
 	if(api.redis.enable === true){
-		api.redis.registerChannel(api, "actionHero::say", function(channel, message){
+		api.redis.registerChannel(api, "actionHero:say", function(channel, message){
 			message = JSON.parse(message);
 			api.chatRoom.socketRoomBroadcast(api, message.connection, message.message, true);
 		});

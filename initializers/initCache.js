@@ -8,7 +8,7 @@ var initCache = function(api, next){
 	if(api.redis.enable !== true){
 		api.cache.data = {};
 	}
-	var redisCacheKey = "actionHero::cache";
+	var redisCacheKey = "actionHero:cache";
 
 	api.cache.size = function(api, next){
 		if(api.redis.enable === true){

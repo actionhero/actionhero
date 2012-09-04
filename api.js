@@ -151,9 +151,9 @@ var createActionHero = function(){
 			
 			// remove from the list of hosts
 			if(actionHero.api.redis.enable){
-				actionHero.api.redis.client.llen("actionHero::peers", function(err, length){
-					actionHero.api.redis.client.lrange("actionHero::peers", 0, length, function(err, peers){
-						actionHero.api.redis.client.lrem("actionHero::peers", 1, actionHero.api.id, function(err, count){
+				actionHero.api.redis.client.llen("actionHero:peers", function(err, length){
+					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
 							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
 							cont();
 						});

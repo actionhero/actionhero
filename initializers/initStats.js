@@ -3,7 +3,7 @@
 
 var initStats = function(api, next){
 	api.stats = {};
-	// actionHero::stats redis stats object
+	// actionHero:stats redis stats object
 
 	if(api.redis.enable !== true){
 		api.stats.data = {};
@@ -13,7 +13,7 @@ var initStats = function(api, next){
 		if(count == null){ count = 1; }
 		count = parseFloat(count);
 		if(api.redis.enable === true){
-			api.redis.client.hincrby("actionHero::stats", key, count, function(){
+			api.redis.client.hincrby("actionHero:stats", key, count, function(){
 				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
 			});
 		}else{
@@ -27,7 +27,7 @@ var initStats = function(api, next){
 
 	api.stats.get = function(api, key, next){
 		if(api.redis.enable === true){
-			api.redis.client.hget("actionHero::stats", key, function (err, cacheObj){
+			api.redis.client.hget("actionHero:stats", key, function (err, cacheObj){
 				next(cacheObj);
 			});
 		}else{
@@ -96,8 +96,8 @@ var initStats = function(api, next){
 										};
 
 										if(api.redis.enable){
-											api.redis.client.llen("actionHero::peers", function(err, length){
-												api.redis.client.lrange("actionHero::peers", 0, length, function(err, peers){
+											api.redis.client.llen("actionHero:peers", function(err, length){
+												api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 													stats.peers = peers;
 													if(typeof next == "function"){ next(stats); }
 												});

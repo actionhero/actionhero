@@ -97,6 +97,11 @@ specHelper.params[2] = {
 	},
 };
 
+specHelper.initFunction = function(api, next){
+	api.redis.lostPeerCheckTime = 500;
+	next();
+}
+
 // tables to truncate each round of testing
 specHelper.tables = [ "Logs" ];
 
@@ -118,7 +123,7 @@ specHelper.startServer = function(serverID, next){
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
 			specHelper.actionHeroes[serverID] = new baseActionHero;
-			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(api){
+			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
 				specHelper.apis[serverID] = api;
 				conn.destroy();
 				next(specHelper.apis[serverID]);

@@ -2,8 +2,13 @@
 
 ## Version 3.0.7
 
+**Action Cluster**
+- a new global hash, actionHero:peerPings, will store the last pings from each peer.  They should ping every ~500ms.  This can be used to detect when peers disapear
+- disconnected peers are removed from the global list, and any tasks they were working on are re-enqueued
+
 **Bugs**
 - fixed a bug where using the generator to create a new action with no inputs would generate invalid syntax
+- refactor redis namespace to be `actionHero:` rather than `actionHero:`
 
 ## Version 3.0.6
 
@@ -169,7 +174,7 @@ Using a [redis](http://redis.io/) backend, actionHero nodes can now share memory
 
 The task system also has undergone some major refactoring.  All tasks are now stored in a shared queue within redis.  All peers will periodically check the queue for unfilled tasks, and drain the queue one at a time.  In this manner, you can add more task capacity by spinning up more actionHero nodes which may or may not also handle web/socket traffic.  This also means that tasks will not get lost if a node crashes as they will remain in the redis queue until drained.  Each peer also has a 'personal' task queue for "all" actions.
 
-For periodic tasks ("any" and "all"), the peer which most recently completed the task while hold the semaphore for that task (in a `actionHero::tasksClaimed` shared list) until the proper amount of time has elapsed, then they will re-enqueue the task.  This does not mean that a specific node will always preform tasks of the same type.
+For periodic tasks ("any" and "all"), the peer which most recently completed the task while hold the semaphore for that task (in a `actionHero:tasksClaimed` shared list) until the proper amount of time has elapsed, then they will re-enqueue the task.  This does not mean that a specific node will always preform tasks of the same type.
 
 There are new requirements to `config.json` to configure redis.  Here is an example:
 
