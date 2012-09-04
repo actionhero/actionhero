@@ -41,8 +41,18 @@ var generateFile = function(){
 	templateLines.push('action.name = "'+data['actionName']+'";')
 	templateLines.push('action.description = "'+data['actionDescription']+'";')
 	templateLines.push('action.inputs = {')
-	templateLines.push('	"required" : ['+stringifyArray(data['actionInputsRequired'])+'],')
-	templateLines.push('	"optional" : ['+stringifyArray(data['actionInputsOptional'])+']')
+	var req = stringifyArray(data['actionInputsRequired']);
+	if (req.length > 0){
+		templateLines.push('	"required" : ['+req+'],')
+	}else{
+		templateLines.push('	"required" : [],')
+	}
+	var optional = stringifyArray(data['actionInputsOptional'])
+	if (req.optional > 0){
+		templateLines.push('	"optional" : ['+optional+']')
+	}else{
+		templateLines.push('	"optional" : []')
+	}
 	templateLines.push('};')
 	templateLines.push('action.outputExample = {}')
 	templateLines.push('')
