@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 3.0.7
+
+**Bugs**
+- fixed a bug where using the generator to create a new action with no inputs would generate invalid syntax
+
 ## Version 3.0.6
 
 **Chat Rooms**
