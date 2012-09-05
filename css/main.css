@@ -122,6 +122,11 @@ OTHERS
 
 .wide-table{ overflow: scroll;}
 
+.boldWhite{
+    color: white;
+    font-style: bold;
+}
+
 code {
     background-color: #fee9cc;
     color: rgba(0, 0, 0, 0.75);
