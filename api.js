@@ -148,6 +148,10 @@ var createActionHero = function(){
 		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
 			clearTimeout(actionHero.api.tasks.processTimer);
+			if(actionHero.api.redis.enable){
+				clearTimeout(actionHero.api.redis.pingTimer);
+    			clearTimeout(actionHero.api.redis.lostPeerTimer);
+    		}
 			
 			// remove from the list of hosts
 			if(actionHero.api.redis.enable){
@@ -224,12 +228,12 @@ var createActionHero = function(){
 		if(actionHero.running == true){
 			actionHero.stop(function(){
 				actionHero.start(actionHero.startngParams, function(){
-					if(typeof next == "function"){ next(true); } 
+					if(typeof next == "function"){ next(true, actionHero.api); } 
 				});
 			});
 		}else{
 			actionHero.start(actionHero.startngParams, function(){
-				if(typeof next == "function"){ next(true); } 
+				if(typeof next == "function"){ next(true, actionHero.api); } 
 			});
 		}
 	};
