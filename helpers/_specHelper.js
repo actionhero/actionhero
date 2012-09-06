@@ -11,6 +11,15 @@ specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 
+var redisConfig = {
+	"enable": true,
+	"host": "127.0.0.1",
+	"port": 6379,
+	"password": null,
+	"options": null,
+	"DB": 2
+}
+
 var baseActionHero = require(__dirname + "/../api.js").createActionHero;
 
 specHelper.params[0] = {
@@ -35,10 +44,7 @@ specHelper.params[0] = {
 	webSockets: {
 		enable: false
 	},
-	redis : {
-		enable: true,
-		DB: 2,
-	},
+	redis : redisConfig,
 };
 
 specHelper.params[1] = {
@@ -63,10 +69,7 @@ specHelper.params[1] = {
 	webSockets: {
 		enable: false
 	},
-	redis : {
-		enable: true,
-		DB: 2,
-	},
+	redis : redisConfig,
 };
 
 specHelper.params[2] = {
@@ -91,15 +94,29 @@ specHelper.params[2] = {
 	webSockets: {
 		enable: false
 	},
-	redis : {
-		enable: true,
-		DB: 2,
-	},
+	redis : redisConfig,
 };
 
 specHelper.initFunction = function(api, next){
 	api.redis.lostPeerCheckTime = 500;
 	next();
+}
+
+specHelper.clearRedis = function(next){
+	var redis = require('redis');
+	var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+	client.on("ready", function (err) {
+    	client.select(redisConfig.DB, function(){
+    		client.flushdb(function(){
+    			process.stdout.write("[ test redis emptied ] ");
+    			next();
+    		});
+    	});
+    });
+    client.on("error", function (err) {
+        process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
+        process.exit();  // redis is really important...
+    });
 }
 
 // tables to truncate each round of testing
@@ -123,11 +140,21 @@ specHelper.startServer = function(serverID, next){
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
 			specHelper.actionHeroes[serverID] = new baseActionHero;
-			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
-				specHelper.apis[serverID] = api;
-				conn.destroy();
-				next(specHelper.apis[serverID]);
-			});
+			if(serverID == 0){
+				specHelper.clearRedis(function(){
+					specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
+						specHelper.apis[serverID] = api;
+						conn.destroy();
+						next(specHelper.apis[serverID]);
+					});
+				});
+			}else{
+				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
+					specHelper.apis[serverID] = api;
+					conn.destroy();
+					next(specHelper.apis[serverID]);
+				});
+			}
 		}else{
 			conn.destroy();
 			next(specHelper.apis[serverID]);
@@ -152,28 +179,28 @@ specHelper.restartServer = function(serverID, next){
 ////////////////////////////////////////////////////////////////////////////
 // API request
 specHelper.apiTest = {
-  general: function(method, serverID, url, data, cb){
-	if(serverID == null){serverID = 0};
-  	var params = {}
-  	params.method = method;
-	if(url.indexOf("?") > -1){
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'');
-	}else{
-		params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'') + "?";
-	  	for(var i in data){
-	  		params.url += i + "=" + data[i] + "&";
-	  	}
-	}
-  
-    specHelper.request(params,function(req, res){
-        try{ res.body = JSON.parse(res.body); }catch(e){};
-        cb( res );
-      })
-  },
-  get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
-  post: function( url, serverID, data, cb ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
-  put: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb    )  },
-  del: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  }
+	general: function(method, serverID, url, data, cb){
+		if(serverID == null){serverID = 0};
+		var params = {}
+		params.method = method;
+		if(url.indexOf("?") > -1){
+			params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'');
+		}else{
+			params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'') + "?";
+			for(var i in data){
+				params.url += i + "=" + data[i] + "&";
+			}
+		}
+
+		specHelper.request(params,function(req, res){
+			try{ res.body = JSON.parse(res.body); }catch(e){};
+			cb( res );
+		})
+	},
+	get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
+	post: function( url, serverID, data, cb ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
+	put: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb    )  },
+	del: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  }
 }
 
 ////////////////////////////////////////////////////////////////////////////
