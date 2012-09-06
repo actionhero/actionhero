@@ -194,9 +194,8 @@ var initPingAndCheck = function(api, next){
 
 	// start timers
 	api.redis.ping(api, function(){
-		api.redis.checkForDroppedPeers(api, function(){
-			next();
-		});
+		api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+		next();
 	});
 
 }
