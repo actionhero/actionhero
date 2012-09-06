@@ -205,21 +205,23 @@ Socket Example:
 	Connected to localhost.
 	Escape character is '^]'.
 	{"welcome":"Hello! Welcome to the actionHero api","room":"defaultRoom","context":"api","messageCount":0}
+	detailsView
+	{"context":"response","status":"OK","details":{"params":{},"public":{"id":"86b43f5a32e6addb08d7cacd8773325e","connectedAt":1346909099674}},"messageCount":1}
 	randomNumber
-	{"context":"response","randomNumber":0.6138995781075209,"messageCount":1}
+	{"context":"response","randomNumber":0.6138995781075209,"messageCount":2}
 	cacheTest
-	{"context":"response","error":"key is a required parameter for this action","messageCount":2}
+	{"context":"response","error":"key is a required parameter for this action","messageCount":3}
 	paramAdd key=myKey
-	{"status":"OK","context":"response","messageCount":3}
-	paramAdd value=myValue
 	{"status":"OK","context":"response","messageCount":4}
+	paramAdd value=myValue
+	{"status":"OK","context":"response","messageCount":5}
 	paramsView
-	{"context":"response","params":{"action":"cacheTest","limit":100,"offset":0,"key":"myKey","value":"myValue"},"messageCount":5}
+	{"context":"response","params":{"action":"cacheTest","limit":100,"offset":0,"key":"myKey","value":"myValue"},"messageCount":6}
 	cacheTest
-	{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"new record","loadResp":"myValue","deleteResp":true},"messageCount":6}
+	{"cacheTestResults":{"key":"myKey","value":"myValue","saveResp":"new record","loadResp":"myValue","deleteResp":true},"messageCount":7}
 	say hooray!
-	{"context":"response","status":"OK","messageCount":7}
-	{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":8}
+	{"context":"response","status":"OK","messageCount":8}
+	{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":9}
 	
 In your actions, you can send a message directly to a TCP client (without relying on chat rooms) like this:`api.sendSocketMessage(api, connection, message)`
 
