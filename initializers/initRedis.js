@@ -135,7 +135,7 @@ var initPingAndCheck = function(api, next){
 	api.redis.ping = function(api, next){
 		clearTimeout(api.redis.pingTimer);
 		api.redis.client.hset("actionHero:peerPings", api.id, new Date().getTime(), function(){
-			setTimeout(api.redis.ping, api.redis.pingTime, api);
+			api.redis.pingTimer = setTimeout(api.redis.ping, api.redis.pingTime, api);
 			if (typeof next == "function"){ next(); }
 		});
 	}
@@ -192,9 +192,11 @@ var initPingAndCheck = function(api, next){
 		});
 	}
 
+	// start timers
 	api.redis.ping(api, function(){
-		api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-		next();
+		api.redis.checkForDroppedPeers(api, function(){
+			next();
+		});
 	});
 
 }
