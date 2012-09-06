@@ -110,7 +110,7 @@ suite.addBatch({
 suite.addBatch({
   'actionCluster.stopForReconnect - 2':{
     topic: function(){ specHelper.stopServer(2, this.callback); },
-    'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
+    'actionHero should be stopped - 2': function(resp){ specHelper.assert.equal(resp, true); } }
 });
 
 suite.addBatch({
@@ -136,15 +136,31 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'actionCluster.reStartForReconnect - 2':{
-    topic: function(){ specHelper.restartServer(2, this.callback); },
-    'actionHero should be restarted - 2': function(resp){ specHelper.assert.equal(resp, true); } }
+  'actionCluster.reStartForReconnect - 1':{
+    topic: function(){ 
+    	var cb = this.callback;
+    	specHelper.restartServer(1, function(resp, api){
+    		apis[1] = api;
+    		cb(true,{restart_resp: resp});
+    	}); 
+    },
+    'actionHero should be restarted - 1': function(err, obj){ 
+    	specHelper.assert.equal(obj.restart_resp, true); 
+    } }
 });
 
 suite.addBatch({
-  'actionCluster.reStartForReconnect - 1':{
-    topic: function(){ specHelper.restartServer(1, this.callback); },
-    'actionHero should be restarted - 1': function(resp){ specHelper.assert.equal(resp, true); } }
+  'actionCluster.reStartForReconnect - 2':{
+    topic: function(){ 
+    	var cb = this.callback;
+    	specHelper.restartServer(2, function(resp, api){
+    		apis[2] = api;
+    		cb(true,{restart_resp: resp});
+    	}); 
+    },
+    'actionHero should be restarted - 2': function(err, obj){ 
+    	specHelper.assert.equal(obj.restart_resp, true); 
+    } }
 });
 
 suite.addBatch({
@@ -297,25 +313,35 @@ suite.addBatch({
 ////////////////////////////////////////////////////////////////////////////
 // If a peer goes away, it should be removed from the list of peers (ping)
 
-// TODO: FIX
-// suite.addBatch({
-//   'A server stops responding':{
-//     topic: function(){ 
-//     	var cb = this.callback;
-//     	clearTimeout(apis[2].redis.pingTimer);
-//     	setTimeout(function(){
-//     		apis[0].redis.checkForDroppedPeers(apis[0], function(){
-// 	    		apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-// 	    			cb(true, peerPings)
-// 	    		});
-//     		});
-//     	}, apis[2].redis.lostPeerCheckTime * 3 + 1);
-//     },
-//     'peer should be gone': function(resp, peerPings){ 
-//     	console.log(peerPings)
-//     	specHelper.assert.equal(peerPings.length, 2); 
-//     }}
-// });
+suite.addBatch({
+  'A server stops responding':{
+    topic: function(){ 
+    	var cb = this.callback;
+    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
+    	apis[2].redis.pingTime = sleepTime * 2; //block from happening again in this test
+    	clearTimeout(apis[2].redis.pingTimer);
+    	clearTimeout(apis[2].redis.lostPeerTimer);
+    	setTimeout(function(){
+    		apis[0].redis.checkForDroppedPeers(apis[0], function(){
+	    		apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
+	    			apis[0].redis.client.llen("actionHero:peers", function(err, length){
+						apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+							cb(true, {peerPings: peerPings, peers: peers})
+						});
+					});
+	    		});
+    		});
+    	}, sleepTime );
+    },
+    'peer should be gone': function(resp, data){ 
+    	var count = 0;
+    	for (var i in data.peerPings){
+    		count++;
+    	}
+    	specHelper.assert.equal(count, 2); 
+    	specHelper.assert.equal(data.peers.length, 2); 
+    }}
+});
 
 ////////////////////////////////////////////////////////////////////////////
 // stop the servers when done so the other tests can use a single instance

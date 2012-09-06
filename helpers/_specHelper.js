@@ -171,8 +171,8 @@ specHelper.stopServer = function(serverID, next){
 
 specHelper.restartServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	specHelper.actionHeroes[serverID].restart(function(resp){
-		next(resp);
+	specHelper.actionHeroes[serverID].restart(function(resp, api){
+		next(resp, api);
 	});
 };
 

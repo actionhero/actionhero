@@ -9,6 +9,7 @@
 **Bugs**
 - fixed a bug where using the generator to create a new action with no inputs would generate invalid syntax
 - refactor redis namespace to be `actionHero:` rather than `actionHero:`
+- actionHero.restart now returns the api object on success `actionHero.restart(true, api)`
 
 ## Version 3.0.6
 
