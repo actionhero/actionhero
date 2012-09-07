@@ -1,5 +1,13 @@
 # Action Hero API Versions
 
+## Version 3.0.8
+
+**CLUSTER**
+
+**Bugs**
+- Stopping an actionHero will removehimself from `actionHero:peerPings`
+- Cleaned up the colorizer within the logger
+
 ## Version 3.0.7
 
 **Action Cluster**

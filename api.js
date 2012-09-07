@@ -187,7 +187,7 @@ var createActionHero = function(){
 				}
 
 				for(var i in actionHero.api.socketServer.connections){
-					actionHero.api.socketServer.connections[i].end("Server going down NOW");
+					actionHero.api.socketServer.connections[i].end("Server going down NOW\r\n");
 					actionHero.api.socketServer.connections[i].destroy();
 				}
 
