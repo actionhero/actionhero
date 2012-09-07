@@ -159,7 +159,9 @@ var createActionHero = function(){
 					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
 							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
-							cont();
+							actionHero.api.redis.client.hdel("actionHero:peerPings", actionHero.api.id, function(){
+								cont();
+							});
 						});
 					});
 				});
