@@ -32,7 +32,6 @@
 
 var fs = require('fs');
 var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
 var colors = require('colors');
 
 // load in the actionHero class
@@ -44,11 +43,11 @@ var actionHero = require(__dirname + "./../api.js").actionHero;
 ////////////
 
 var config = {
-	// workers: (numCPUs - 1),
+	// workers: (require('os').cpus().length - 1),
 	workers: 2,
 	log: process.cwd() + "/log/cluster.log",
-	title: "actionHero Cluster Manager",
-	workerTitlePrefix: " [actionHero worker]",
+	title: "actionHero-master",
+	workerTitlePrefix: " actionHero-worker",
 	silent: true, // don't pass stdout/err to the master
 };
 
