@@ -106,7 +106,35 @@
 		<div id="content_full_width">
 			<div class="logical_section">
 				<h1>actionHero: A Framework for APIs</h1>
-				<p>actionHero is a node.js API framework for both tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable and scalable APIs.</p>
+				<p>actionHero is a node.js API framework for both tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable and scalable APIs.  You write one action, and all your clients can consume it:</p>
+
+				<pre class="brush: js">
+var action = {};
+
+/////////////////////////////////////////////////////////////////////
+// metadata
+action.name = "randomNumber";
+action.description = "I am an API method which will generate a random number";
+action.inputs = {
+    "required" : [],
+    "optional" : []
+};
+action.outputExample = {
+    randomNumber: 123
+}
+
+/////////////////////////////////////////////////////////////////////
+// functional
+action.run = function(api, connection, next){
+    connection.response.randomNumber = Math.random();
+    next(connection, true);
+};
+
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.action = action;
+				</pre>
+
 				<p>actionHero servers can process both requests and tasks (delayed actions like send e-mail or other background jobs). actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.</p>
 				<p>The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistent connection via TCP or web sockets. You define Actions which handle input and response, such as “userAdd” or “geoLocate”. HTTP, HTTPS, and TCP clients can all use these actions. The actionHero API is not inherently “RESTful” (which is meaningless for persistent socket connections) but can be extended to be so if you with.</p>
 				<p>actionHero will also serve static files for you, but actionHero is not a server-side website host (like express or rails).</p>
@@ -182,13 +210,13 @@ socket.on('response', function(data){
 			</div>
 			<div class="logical_section">
 				<h1>actionHero is Made for Scale: actionCluster</h1>
-				<p>actionHero can be run either as a stand-alone server or as part of a cluster. The goal of actionCluster is to allow you to create a group of servers which will share memory state and all be able to handle requets and run tasks. You can also add and remove nodes from the cluster without fear of data loss or task duplication. You can run many instances of actionHero using node.js' cluster methods.</p>
+				<p>actionHero can be run either as a stand-alone server or as part of a cluster. The goal of actionCluster is to allow you to create a group of servers which will share memory state and all be able to handle requets and run tasks. You can also add and remove nodes from the cluster without fear of data loss or task duplication. You can run many instances of actionHero using node.js' <a href="https://github.com/evantahler/actionHero/blob/master/scripts/actionHeroCluster">cluster methods</a>.</p>
 				<p>Using a redis backend, actionHero nodes can now share memory objects and have a common queue for tasks. Philosophically, we have changed from a mesh network (actionHero versions prior to v2) to a queue-based network (action hero after version 2).</p>
 				<p>When working within an actionCluster the api.cache methods described above switch from using an in-process memory store, to using a common one based on redis. This means that all peers will have access to all data stored in the cache. The task system described below also becomes a common queue which all peers will work on draining. There should be no changes needed to your use of the api to use the benefits of cluster deployment and synchronization. Using a redis-based backend works for both a cluster hosted on many physically separate hosts or if you set using the node.js cluster module on one host, or both at the same time.</p>
 			</div>
 			<div class="logical_section">
 				<h1>Integrated Delayed Processing</h1>
-				<p>Tasks are background jobs meant to be run asynchronously from a request.  With actionHero, there is no need to run a separate job processing/queuing process.  Using the node.js event loop, background tasks can be processed in-line with web requests in a non-blocking way.  Tasks are built like actions, but they can be run as called or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided</p>
+				<p>Tasks are background jobs meant to be run asynchronously from a request.  With actionHero, there is no need to run a separate job processing/queuing process.  Using the node.js event loop, background tasks can be processed in-line with web requests in a non-blocking way.  Tasks are built like actions, but they can be queued to run once later or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided</p>
 				<pre class="brush: js">
 var task = {};
 
@@ -213,7 +241,7 @@ exports.task = task;
 			</div>
 			<div id="logical_section">
 				<h1>You should be developing API-first already</h1>
-				<a href="http://api-first.com/">API-first.com</a>
+				<h3><a href="http://api-first.com/">API-first.com</a></h3>
 			</div>
 			<div id="logical_section">
 				<h1>Want to learn more?</h1>
