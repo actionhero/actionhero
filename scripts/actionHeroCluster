@@ -2,8 +2,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-// TO START IN CONSOLE: ./scripts/actionHeroCluster
-// TO DAMEONIZE: XXX 
+// TO START IN CONSOLE: `./scripts/actionHeroCluster`
+// TO DAMEONIZE: `forever scripts/actionHeroCluster` 
 // 
 // ** Producton-ready actionHero cluster example **
 // - workers which die will be restarted
@@ -14,6 +14,7 @@
 // - WINCH to stop all workers
 // - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
+//   -- Lazy Dameon: `nohup ./scripts/actionHeroCluster &`
 //   -- you may want to explore `forever` as a dameonizing option
 //
 // * Setting process titles does not work on windows or OSX
@@ -24,8 +25,6 @@
 
 // TODO: On Quit, the workers die instantly, not gracefully
 // TODO: Can we pass open TCP connections to antother worker?
-// TODO: Handle erronious worker crashes and restart them
-// TODO: Daemonize
 
 //////////////
 // Includes //
