@@ -2,6 +2,7 @@
 
 // load in the actionHero class
 var actionHero = require(__dirname + "/../api.js").actionHero; // normally if installed by npm: var actionHero = require("actionHero").actionHero;
+var cluster = require('cluster');
 
 // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges
 var params = {};
@@ -13,6 +14,46 @@ params.initFunction = function(api, next){
 }
 
 // start the server!
-actionHero.start(params, function(api){
-	api.log("Boot Sucessful!");
+var startServer = function(next){
+	if(cluster.isWorker){ process.send("starting"); }
+	actionHero.start(params, function(api_from_callback){
+		api = api_from_callback;
+		api.log("Boot Sucessful @ worker #" + process.pid, "green");
+		if(typeof next == "function"){
+			if(cluster.isWorder){ process.send("started"); }
+			next(api);
+		}
+	});
+}
+
+// handle signals from master if running in cluster
+if(cluster.isWorker){
+	process.on('message', function(msg) {
+		if(msg == "start"){
+			process.send("starting");
+			startServer(function(){
+				process.send("started");
+			});
+		}
+		if(msg == "stop"){
+			process.send("stopping");
+			actionHero.stop(function(){
+				api = null;
+				process.send("stopped");
+				process.exit();
+			});
+		}
+		if(msg == "restart"){
+			process.send("restarting");
+			actionHero.restart(function(success, api_from_callback){
+				api = api_from_callback;
+				process.send("restarted");
+			});
+		}
+	});
+}
+
+// start the server!
+startServer(function(api){
+	api.log("Successfully Booted!", ["green", "bold"]);
 });

@@ -23,9 +23,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: On Quit, the workers die instantly, not gracefully
-// TODO: Can we pass open TCP connections to antother worker?
-
 //////////////
 // Includes //
 //////////////
@@ -43,12 +40,14 @@ var actionHero = require(__dirname + "./../api.js").actionHero;
 ////////////
 
 var config = {
+	// script for workers to run
+	exec: __dirname + "/actionHero", 
 	// workers: (require('os').cpus().length - 1),
 	workers: 2,
 	log: process.cwd() + "/log/cluster.log",
 	title: "actionHero-master",
 	workerTitlePrefix: " actionHero-worker",
-	silent: true, // don't pass stdout/err to the master
+	silent: false, // don't pass stdout/err to the master
 };
 
 
@@ -86,216 +85,138 @@ var log = function(msg, col){
 	console.log(msg);
 }
 
-////////////////////
-// Start a worker //
-////////////////////
-
-var startWorker = function(workerCounter, config, next){
-
-	process.title = config.workerTitlePrefix + " " + workerCounter;
-	workerCounter++;
-
-	var params = {};
-	var api = null;
-
-	// any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction 
-	// the api object will be availalbe.
-	params.initFunction = function(api, next){
-		next();
-	}
-
-	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params
-	// you can overwrite them with params.configChanges
-	params.configChanges = {
-		general: {
-			flatFileDirectory: "./public/"
-		}
-	}
-
-  	// start the server!
-  	var startServer = function(next){
-  		actionHero.start(params, function(api_from_callback){
-  			api = api_from_callback;
-  			api.log("Boot Sucessful @ worker #" + process.pid, "green");
-  			if(typeof next == "function"){
-  				next(api);
-  			}
-  		});
-  	}
-
-  	// handle signals from master
-  	process.on('message', function(msg) {
-  		if(msg == "start"){
-  			process.send("starting");
-  			startServer(function(){
-		  		process.send("started");
-		  	});
-  		}
-  		if(msg == "stop"){
-  			process.send("stopping");
-			actionHero.stop(function(){
-				api = null;
-				process.send("stopped");
-				process.exit();
-			});
-  		}
-  		if(msg == "restart"){
-  			process.send("restarting");
-  			actionHero.restart(function(success, api_from_callback){
-  				api = api_from_callback;
-  				process.send("restarted");
-  			});
-  		}
-  	});
-
-  	// ignore signals passed down from master which might kill me
-  	process.stdin.resume();
-
-  	process.send("starting");
-  	startServer(function(){
-  		process.send("started");
-  	});
-}
-
 //////////
 // Main //
 //////////
+log(" - STARTING CLUSTER -", ["bold", "green"]);
 
-if (cluster.isMaster) {
+process.stdin.resume();
+process.title = config.title;
+var workerRestartArray = []; // used to trask rolling restarts of workers
+var workersExpected = 0;
 
-	log(" - STARTING CLUSTER -", ["bold", "green"]);
-
-	process.stdin.resume();
-	process.title = config.title;
-	var workerRestartArray = []; // used to trask rolling restarts of workers
-	var workersExpected = 0;
-
-	// signals
-	process.on('SIGINT', function(){
-		log("Signal: SIGINT");
-		workersExpected = 0;
-		setupShutdown();
-	});
-	process.on('SIGTERM', function(){
-		log("Signal: SIGTERM");
-		workersExpected = 0;
-		setupShutdown();
-	});
-	process.on('SIGKILL', function(){
-		log("Signal: SIGKILL");
-		workersExpected = 0;
-		setupShutdown();
-	});
-	process.on('SIGUSR2', function(){
-		log("Signal: SIGUSR2");
-		log("swap out new workers one-by-one");
-		workerRestartArray = [];
-		for(var i in cluster.workers){
-			workerRestartArray.push(cluster.workers[i]);
-		}
-		reloadAWorker();
-	});
-	process.on('SIGHUP', function(){
-		log("Signal: SIGHUP");
-		log("reload all workers now");
-		for (var i in cluster.workers){
-			var worker = cluster.workers[i];
-			worker.send("restart");
-		}
-	});
-	process.on('SIGWINCH', function(){
-		log("Signal: SIGWINCH");
-		log("stop all workers");
-		workersExpected = 0;
-		for (var i in cluster.workers){
-			var worker = cluster.workers[i];
-			worker.send("stop");
-		}
-	});
-	process.on('SIGTTIN', function(){
-		log("Signal: SIGTTIN");
-		log("add a worker");
-		workersExpected++;
-		startAWorker();
-	});
-	process.on('SIGTTOU', function(){
-		log("Signal: SIGTTOU");
-		log("remove a worker");
-		workersExpected--;
-		for (var i in cluster.workers){
-			var worker = cluster.workers[i];
-			worker.send("stop");
-			break;
-		}
-	});
-	process.on("exit", function(){
-		workersExpected = 0;
-		log("Bye!")
-	});
-
-	// signal helpers
-	var startAWorker = function(){
-		worker = cluster.fork();
-		log("starting worker #" + worker.id);
-		worker.on('message', function(message){
-			if(worker.state != "none"){
-				log("Message ["+worker.process.pid+"]: " + message);
-			}
-		});
+// signals
+process.on('SIGINT', function(){
+	log("Signal: SIGINT");
+	workersExpected = 0;
+	setupShutdown();
+});
+process.on('SIGTERM', function(){
+	log("Signal: SIGTERM");
+	workersExpected = 0;
+	setupShutdown();
+});
+process.on('SIGKILL', function(){
+	log("Signal: SIGKILL");
+	workersExpected = 0;
+	setupShutdown();
+});
+process.on('SIGUSR2', function(){
+	log("Signal: SIGUSR2");
+	log("swap out new workers one-by-one");
+	workerRestartArray = [];
+	for(var i in cluster.workers){
+		workerRestartArray.push(cluster.workers[i]);
 	}
-
-	var setupShutdown = function(){
-		log("Cluster manager quitting", "red");
-		log("Stopping each worker...");
-		for(var i in cluster.workers){
-			cluster.workers[i].send('stop');
-		}
-		setTimeout(loopUntilNoWorkers, 1000);
+	reloadAWorker();
+});
+process.on('SIGHUP', function(){
+	log("Signal: SIGHUP");
+	log("reload all workers now");
+	for (var i in cluster.workers){
+		var worker = cluster.workers[i];
+		worker.send("restart");
 	}
-
-	var loopUntilNoWorkers = function(){
-		if(cluster.workers.length > 0){
-			log("there are still " + cluster.workers.length + " workers...");
-			setTimeout(loopUntilNoWorkers, 1000);
-		}else{
-			log("all workers gone");
-			process.exit();
-		}
+});
+process.on('SIGWINCH', function(){
+	log("Signal: SIGWINCH");
+	log("stop all workers");
+	workersExpected = 0;
+	for (var i in cluster.workers){
+		var worker = cluster.workers[i];
+		worker.send("stop");
 	}
-
-	var reloadAWorker = function(next){
-		var count = 0;
-		for (var i in cluster.workers){ count++; }
-		if(workersExpected > count){
-			startAWorker();
-		}
-		if(workerRestartArray.length > 0){
-			var worker = workerRestartArray.pop();
-			worker.send("stop");
-		}
+});
+process.on('SIGTTIN', function(){
+	log("Signal: SIGTTIN");
+	log("add a worker");
+	workersExpected++;
+	startAWorker();
+});
+process.on('SIGTTOU', function(){
+	log("Signal: SIGTTOU");
+	log("remove a worker");
+	workersExpected--;
+	for (var i in cluster.workers){
+		var worker = cluster.workers[i];
+		worker.send("stop");
+		break;
 	}
+});
+process.on("exit", function(){
+	workersExpected = 0;
+	log("Bye!")
+});
 
-	// Fork it.
-	cluster.setupMaster({
-		exec : __filename,
-		args : process.argv.slice(2),
-		silent : config.silent
+// signal helpers
+var startAWorker = function(){
+	worker = cluster.fork();
+	log("starting worker #" + worker.id);
+	worker.on('message', function(message){
+		if(worker.state != "none"){
+			log("Message ["+worker.process.pid+"]: " + message);
+		}
 	});
-	for (var i = 0; i < config.workers; i++) {
-		workersExpected++;
-		startAWorker();
-	}
-	cluster.on('fork', function(worker) {
-		log("worker " + worker.process.pid + " (#"+worker.id+") has spawned");
-	});
-	cluster.on('listening', function(worker, address) {
-		
-	});
-	cluster.on('exit', function(worker, code, signal) {
-		log("worker " + worker.process.pid + " (#"+worker.id+") has exited");
-		setTimeout(reloadAWorker, 1000) // to prevent CPU-splsions if crashing too fast
-	});
-}else{
-	var workerCounter = 0;
-	startWorker(workerCounter, config);
 }
+
+var setupShutdown = function(){
+	log("Cluster manager quitting", "red");
+	log("Stopping each worker...");
+	for(var i in cluster.workers){
+		cluster.workers[i].send('stop');
+	}
+	setTimeout(loopUntilNoWorkers, 1000);
+}
+
+var loopUntilNoWorkers = function(){
+	if(cluster.workers.length > 0){
+		log("there are still " + cluster.workers.length + " workers...");
+		setTimeout(loopUntilNoWorkers, 1000);
+	}else{
+		log("all workers gone");
+		process.exit();
+	}
+}
+
+var reloadAWorker = function(next){
+	var count = 0;
+	for (var i in cluster.workers){ count++; }
+	if(workersExpected > count){
+		startAWorker();
+	}
+	if(workerRestartArray.length > 0){
+		var worker = workerRestartArray.pop();
+		worker.send("stop");
+	}
+}
+
+// Fork it.
+cluster.setupMaster({
+	exec : config.exec,
+	args : process.argv.slice(2),
+	silent : config.silent
+});
+for (var i = 0; i < config.workers; i++) {
+	workersExpected++;
+	startAWorker();
+}
+cluster.on('fork', function(worker) {
+	log("worker " + worker.process.pid + " (#"+worker.id+") has spawned");
+});
+cluster.on('listening', function(worker, address) {
+	
+});
+cluster.on('exit', function(worker, code, signal) {
+	log("worker " + worker.process.pid + " (#"+worker.id+") has exited");
+	setTimeout(reloadAWorker, 1000) // to prevent CPU-splsions if crashing too fast
+});

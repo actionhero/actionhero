@@ -3,6 +3,7 @@
 ## Version 3.0.8
 
 **CLUSTER**
+- A new, production-ready cluster example (complete with unix signal handling and 0-down time reloads on code-change)
 
 **Bugs**
 - Stopping an actionHero will removehimself from `actionHero:peerPings`

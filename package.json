@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "./scripts/actionHero",
+    "startCluster": "./scripts/actionHeroCluster",
 	  "install": "./scripts/install",
 	  "test": "./node_modules/.bin/vows spec/* -v --dot-matrix",
     "generate" : "./scripts/generate",
