@@ -47,7 +47,7 @@ var config = {
 	log: process.cwd() + "/log/cluster.log",
 	title: "actionHero-master",
 	workerTitlePrefix: " actionHero-worker",
-	silent: false, // don't pass stdout/err to the master
+	silent: true, // don't pass stdout/err to the master
 };
 
 
