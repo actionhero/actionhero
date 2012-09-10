@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // TO START IN CONSOLE: `./scripts/actionHeroCluster`
-// TO DAMEONIZE: `forever scripts/actionHeroCluster` 
+// TO DAMEONIZE: `forever start scripts/actionHeroCluster` 
 // 
 // ** Producton-ready actionHero cluster example **
 // - workers which die will be restarted
