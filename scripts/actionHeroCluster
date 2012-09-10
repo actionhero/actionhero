@@ -33,6 +33,10 @@ var fs = require('fs');
 var cluster = require('cluster');
 var colors = require('colors');
 
+var numCPUs = require('os').cpus().length
+var numWorkers = numCPUs - 2;
+if (numWorkers < 2){ numWorkers = 2};
+
 // load in the actionHero class
 // normally if installed by npm: var actionHero = require("actionHero").actionHero;
 var actionHero = require(__dirname + "./../api.js").actionHero; 
@@ -44,13 +48,12 @@ var actionHero = require(__dirname + "./../api.js").actionHero;
 var config = {
 	// script for workers to run
 	exec: __dirname + "/actionHero", 
-	// workers: (require('os').cpus().length - 1),
-	workers: 2,
+	workers: numWorkers,
 	pidfile: "./cluster_pidfile",
 	log: process.cwd() + "/log/cluster.log",
 	title: "actionHero-master",
 	workerTitlePrefix: " actionHero-worker",
-	silent: false, // don't pass stdout/err to the master
+	silent: true, // don't pass stdout/err to the master
 };
 
 
