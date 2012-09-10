@@ -147,11 +147,11 @@ var createActionHero = function(){
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
-			for(var worker_id in api.tasks.processTimers){
-				clearTimeout(api.tasks.processTimers[worker_id]);
+			for(var worker_id in actionHero.api.tasks.processTimers){
+				clearTimeout(actionHero.api.tasks.processTimers[worker_id]);
 			}
 			// allow running timers to finish, but do no work on next cycle.
-			api.tasks.process = function(api, worker_id){ }
+			actionHero.api.tasks.process = function(api, worker_id){ }
 			
 			// remove from the list of hosts
 			if(actionHero.api.redis.enable){
@@ -208,7 +208,7 @@ var createActionHero = function(){
 				}
 
 				if(actionHero.api.configData.tcpServer.enable){
-					api.socketServer.gracefulShutdown(api, function(){
+					actionHero.api.socketServer.gracefulShutdown(actionHero.api, function(){
 						closed++;
 						checkForDone("tcpServer");
 					});

@@ -273,7 +273,7 @@ var initSocketServer = function(api, next){
 			for(var i in api.socketServer.connections){
 				var connection = api.socketServer.connections[i];
 				if (connection.responsesWaitingCount == 0){
-					api.socketServer.connections[i].end("Server going down NOW\r\ngoodbye\r\n");
+					api.socketServer.connections[i].end("Server going down NOW\r\nBye!\r\n");
 				}
 			}
 			if(api.socketServer.connections.length != 0){
