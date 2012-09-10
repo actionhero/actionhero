@@ -177,6 +177,7 @@ var initWebServer = function(api, next)
 					connection.res.end(stringResponse);
 				}
 				if(api.configData.log.logRequests){
+					if(connection.req.headers.host == null){ connection.req.headers.host = "localhost"; }
 					var full_url = connection.req.headers.host + connection.req.url;
 					if(connection.action != null && connection.action != "file"){
 						api.logJSON({
