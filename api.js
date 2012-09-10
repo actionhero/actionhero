@@ -147,14 +147,16 @@ var createActionHero = function(){
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
-			clearTimeout(actionHero.api.tasks.processTimer);
-			if(actionHero.api.redis.enable){
-				clearTimeout(actionHero.api.redis.pingTimer);
-    			clearTimeout(actionHero.api.redis.lostPeerTimer);
-    		}
+			for(var worker_id in api.tasks.processTimers){
+				clearTimeout(api.tasks.processTimers[worker_id]);
+			}
+			// allow running timers to finish, but do no work on next cycle.
+			api.tasks.process = function(api, worker_id){ }
 			
 			// remove from the list of hosts
 			if(actionHero.api.redis.enable){
+				clearTimeout(actionHero.api.redis.pingTimer);
+    			clearTimeout(actionHero.api.redis.lostPeerTimer);
 				actionHero.api.redis.client.llen("actionHero:peers", function(err, length){
 					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
@@ -175,54 +177,48 @@ var createActionHero = function(){
 				if(actionHero.api.configData.httpServer.enable){ neededClosed++; }
 				if(actionHero.api.configData.httpsServer.enable){ neededClosed++; }
 				if(actionHero.api.configData.tcpServer.enable){ neededClosed++; }
-				var checkForDone = function(){
+				
+				var checkForDone = function(serverType){
 					if(closed == neededClosed){
 						closed = -1;
 						actionHero.running = false;
 						actionHero.api.log("The actionHero has been stopped", "bold");
 						next(true);
 					}else{
-						// actionHero.api.log("waiting for open ports to close...");
+						if(serverType != null){
+							actionHero.api.log("The " + serverType + " server has ended its connections and closed");
+						}
 					}
-				}
-
-				for(var i in actionHero.api.socketServer.connections){
-					actionHero.api.socketServer.connections[i].end("Server going down NOW\r\n");
-					actionHero.api.socketServer.connections[i].destroy();
 				}
 
 				if(actionHero.api.configData.httpServer.enable){
 					actionHero.api.webServer.webApp.on("close", function(){
-						actionHero.api.log("Closed http server");
 						closed++;
-						checkForDone();
+						checkForDone("http");
 					});
 					actionHero.api.webServer.webApp.close();
 				}
 
 				if(actionHero.api.configData.httpsServer.enable){
 					actionHero.api.webServer.secureWebApp.on("close", function(){
-						actionHero.api.log("Closed secure web-server");
 						closed++;
-						checkForDone();
+						checkForDone("https");
 					});
 					actionHero.api.webServer.secureWebApp.close();
 				}
 
 				if(actionHero.api.configData.tcpServer.enable){
-					actionHero.api.socketServer.server.on("close", function(){
-						actionHero.api.log("Closed socket-server");
+					api.socketServer.gracefulShutdown(api, function(){
 						closed++;
-						checkForDone();
+						checkForDone("tcpServer");
 					});
-					actionHero.api.socketServer.server.close();
 				}
 				//
-				checkForDone(closed);
+				checkForDone();
 			}
 		}else{
 			actionHero.api.log("Cannot shut down (not running any servers)");
-			next(false);
+			next(true);
 		}
 	};
 

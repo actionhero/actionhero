@@ -8,6 +8,7 @@
 **Bugs**
 - Stopping an actionHero will removehimself from `actionHero:peerPings`
 - Cleaned up the colorizer within the logger
+- Shuttting down the actionHero when no servers returns true on `actionHero.stop()`
 
 ## Version 3.0.7
 

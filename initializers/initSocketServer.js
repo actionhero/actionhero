@@ -22,6 +22,7 @@ var initSocketServer = function(api, next){
 			connection.remoteIP = connection.remoteAddress;
 			connection.room = api.configData.general.defaultChatRoom;
 			connection.messageCount = 0;
+			connection.responsesWaitingCount = 0;
 			var md5 = api.crypto.createHash('md5');
 			var hashBuff = new Buffer(connection.remotePort + connection.remoteAddress + Math.random()).toString('base64');
 			md5.update(hashBuff);
@@ -178,7 +179,9 @@ var initSocketServer = function(api, next){
 							connection.response = {};
 							connection.response.context = "response";
 							connection.params["action"] = words[0];
+							connection.responsesWaitingCount++;
 							api.processAction(api, connection, connection.messageCount, function(connection, cont){
+								connection.responsesWaitingCount--;
 								var delta = new Date().getTime() - connection.actionStartTime;
 								if(api.configData.log.logRequests && connection.action != "file"){
 									api.logJSON({
@@ -202,7 +205,9 @@ var initSocketServer = function(api, next){
 					for(var i in api.socketServer.connections){
 						if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
 					}
-					try{ connection.end(); }catch(e){
+					try{ 
+						connection.end(); 
+					}catch(e){
 						//
 					}
 					// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
@@ -254,6 +259,30 @@ var initSocketServer = function(api, next){
 				connection.write(JSON.stringify(message) + "\r\n"); 
 			}catch(e){
 				api.log("socket write error: "+e, "red");
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+		//shutdown helpers
+		api.socketServer.gracefulShutdown = function(api, next, alreadyShutdown){
+			if(alreadyShutdown == null){alreadyShutdown = false;}
+			if(alreadyShutdown == false){
+				api.socketServer.server.close();
+				alreadyShutdown = true;
+			}
+			for(var i in api.socketServer.connections){
+				var connection = api.socketServer.connections[i];
+				if (connection.responsesWaitingCount == 0){
+					api.socketServer.connections[i].end("Server going down NOW\r\ngoodbye\r\n");
+				}
+			}
+			if(api.socketServer.connections.length != 0){
+				api.log("[socket] waiting on shutdown, there are still " + api.socketServer.connections.length + " connected clients waiting on a response");
+				setTimeout(function(){
+					api.socketServer.gracefulShutdown(api, next, alreadyShutdown);
+				}, 3000);
+			}else{
+				next();
 			}
 		}
 		
