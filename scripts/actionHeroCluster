@@ -8,8 +8,10 @@
 // ** Producton-ready actionHero cluster example **
 // - workers which die will be restarted
 // - maser/manager specific logging
+// - pidfile for master
 // - USR2 restarts (graceful reload of workers while handling requets)
-//   -- Note, socket clients will be disconnected, but there will always be a worker to handle them
+//   -- Note, socket/websocket clients will be disconnected, but there will always be a worker to handle them
+//   -- HTTP, HTTPS, and TCP clients will be allowed to finish the action they are working on before the server goes down
 // - TTOU and TTIN signals to subtract/add workers
 // - WINCH to stop all workers
 // - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
