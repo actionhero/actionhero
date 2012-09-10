@@ -44,10 +44,11 @@ var config = {
 	exec: __dirname + "/actionHero", 
 	// workers: (require('os').cpus().length - 1),
 	workers: 2,
+	pidfile: "./cluster_pidfile",
 	log: process.cwd() + "/log/cluster.log",
 	title: "actionHero-master",
 	workerTitlePrefix: " actionHero-worker",
-	silent: true, // don't pass stdout/err to the master
+	silent: false, // don't pass stdout/err to the master
 };
 
 
@@ -89,6 +90,11 @@ var log = function(msg, col){
 // Main //
 //////////
 log(" - STARTING CLUSTER -", ["bold", "green"]);
+
+// set pidFile
+if(config.pidfile != null){
+	fs.writeFileSync(config.pidfile, process.pid.toString(), 'ascii');
+}
 
 process.stdin.resume();
 process.title = config.title;
@@ -184,6 +190,9 @@ var loopUntilNoWorkers = function(){
 		setTimeout(loopUntilNoWorkers, 1000);
 	}else{
 		log("all workers gone");
+		if(config.pidfile != null){
+			fs.unlinkSync(config.pidfile);
+		}
 		process.exit();
 	}
 }
