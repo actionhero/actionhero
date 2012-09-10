@@ -20,7 +20,7 @@ var startServer = function(next){
 		api = api_from_callback;
 		api.log("Boot Sucessful @ worker #" + process.pid, "green");
 		if(typeof next == "function"){
-			if(cluster.isWorder){ process.send("started"); }
+			if(cluster.isWorker){ process.send("started"); }
 			next(api);
 		}
 	});

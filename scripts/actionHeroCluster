@@ -37,16 +37,12 @@ var numCPUs = require('os').cpus().length
 var numWorkers = numCPUs - 2;
 if (numWorkers < 2){ numWorkers = 2};
 
-// load in the actionHero class
-// normally if installed by npm: var actionHero = require("actionHero").actionHero;
-var actionHero = require(__dirname + "./../api.js").actionHero; 
-
 ////////////
 // config //
 ////////////
 
 var config = {
-	// script for workers to run
+	// script for workers to run (You probably will be changing this)
 	exec: __dirname + "/actionHero", 
 	workers: numWorkers,
 	pidfile: "./cluster_pidfile",
@@ -55,7 +51,6 @@ var config = {
 	workerTitlePrefix: " actionHero-worker",
 	silent: true, // don't pass stdout/err to the master
 };
-
 
 /////////
 // Log //
