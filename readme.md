@@ -49,7 +49,6 @@ Here's an example of a simple action which will return a random number to the cl
 	/////////////////////////////////////////////////////////////////////
 	// exports
 	exports.action = action;
-	
 ```
 
 Notes:
@@ -66,6 +65,8 @@ Notes:
 You can visit the API in a browser, Curl, etc.  `{url}?action` or `{url}/{action}` is how you would access an action.  For example, using the default ports in `config.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`  The only action which doesn't return the default JSON format would be `file`, as it should return files with the appropriate headers if they are found, and a 404 error if they are not.
 
 HTTP responses follow the format:
+
+```javascript
 
 	{
 		hello: "world"
@@ -85,8 +86,11 @@ HTTP responses follow the format:
 		},
 		error: "OK"
 	}
+```
 
 HTTP Example: 
+
+```javascript
 
 	> curl 'localhost:8080/api/status' -v | python -mjson.tool
 	* About to connect() to localhost port 8080 (#0)
@@ -154,6 +158,7 @@ HTTP Example:
 	        }
 	    }
 	}
+```
 
 * you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  
 * unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).  These are defined in `config.js`
@@ -162,6 +167,8 @@ HTTP Example:
 
 You may also enable a HTTPS server with actionHero.  It works exactly the same as the http server, and you can have both running with little overhead.  The following information should be enabled in your `config.js` file:
 
+```javascript
+
 	configData.httpsServer = {
 		"enable": true,
 		"port": 4443,
@@ -169,6 +176,7 @@ You may also enable a HTTPS server with actionHero.  It works exactly the same a
 		"certFile": "./certs/server-cert.pem",
 		"bindIP": "0.0.0.0"
 	};
+```
 
 
 #### Files and Routes for http and https clients
@@ -206,6 +214,8 @@ To help sort out the potential stream of messages a socket user may receive, it 
 
 Socket Example:
 
+```javascript
+
 	> telnet localhost 5000
 	Trying 127.0.0.1...
 	Connected to localhost.
@@ -228,6 +238,7 @@ Socket Example:
 	say hooray!
 	{"context":"response","status":"OK","messageCount":8}
 	{"context":"api","status":"keep-alive","serverTime":"2012-01-03T19:48:40.136Z","messageCount":9}
+```
 	
 In your actions, you can send a message directly to a TCP client (without relying on chat rooms) like this:`api.sendSocketMessage(api, connection, message)`
 
@@ -244,6 +255,8 @@ Connections over socket can also use the file action.  There is no 'route' for f
 actionHero uses [socket.io](http://socket.io/) for web sockets.  Within actionHero, web sockets are bound to either the http or https server (only one can be used at this time).  Also, if you are using a redis backend store (which is required to use actionHero in a cluster), socket.io will be configured to use this store automatically.
 
 Just like the additional actions added for TCP connection, web socket connections have access to the chat room methods.  A template which exposes them is available in examples and looks like this:
+
+```javascript
 
 	<script src="/public/javascript/socket.io/socket.io.js"></script>
 	<script>
@@ -296,6 +309,7 @@ Just like the additional actions added for TCP connection, web socket connection
 		}
 	
 	</script>
+```
 
 
 ## Chat Rooms
@@ -380,6 +394,8 @@ As stated above, any task can also be called programmatically with `api.tasks.ru
 
 An example Task:
 
+```javascript
+
 	var task = {};
 	
 	/////////////////////////////////////////////////////////////////////
@@ -399,6 +415,7 @@ An example Task:
 	/////////////////////////////////////////////////////////////////////
 	// exports
 	exports.task = task;
+```
 	
 This task will be run every ~1 second on the first peer to be free after that one second has elapsed.  It is important to note that the `runAt` time is setting the when the task is 'allowed' to be run, not explicitly when it will be run.  Due to this, it is highly likely that your task will be run slightly after the set runAt time.
 
@@ -420,6 +437,8 @@ This task will be run every ~1 second on the first peer to be free after that on
 Visit `http://127.0.0.1:8080` in your browser and telnet to `telnet localhost 5000` to see the actionHero in action!
 
 You can programmatically control an actionHero server with `actionHero.start(params, callback)`, `actionHero.stop(callback)` and `actionHero.restart(callback)`
+
+```javascript
 
 	var timer = 5000;
 	actionHero.start(params, function(api){
@@ -444,6 +463,7 @@ You can programmatically control an actionHero server with `actionHero.start(par
 			})
 		}, timer);
 	});
+```
 	
 ## Application Structure
 
@@ -477,6 +497,8 @@ Actions in /actions will be loaded in automatically, along /initializers and /ta
 
 ## Extending actionHero
 The first thing to do is to make your own ./actions and ./tasks folder.  If you like the default actions, feel free to copy them in.  A common practice to extend the API is to add new classes which are not actions, but useful to the rest of the api.  The api variable is globally accessible to all actions within the API, so if you want to define something everyone can use, add it to the api object.  In the quickstart example, if we wanted to create a method to generate a random number, we could do the following:
+
+```javascript
 	
 	function initFunction(api, next){
 		api.utils.randomNumber = function(){
@@ -488,11 +510,14 @@ The first thing to do is to make your own ./actions and ./tasks folder.  If you 
 	actionHero.start({initFunction: initFunction}, function(api){
 		api.log("Loading complete!", ['green', 'bold']);
 	});
+```
 
 Now `api.utils.randomNumber()` is available for any action to use!  It is important to define extra methods in a setter function which is passed to the API on boot via `params.initFunction`. Even though the api object is returned to you, setting globally-available functions after initialization may not propagate to the parts of actionHero.
 
 ## Configuration
 Create a `config.js` file in the root of your project.  Here is the default configuration.  Any top-level values you do not set will be assumed from the default.
+
+```javascript
 
 	var configData = {};
 	
@@ -616,6 +641,8 @@ Create a `config.js` file in the root of your project.  Here is the default conf
 	//////////////////////////////////
 	
 	exports.configData = configData;
+	
+```
 
 ## Example Content
 __Actions__:
@@ -635,6 +662,9 @@ There are also some static files (index.html and associate files for a test) inc
 
 ### Safe Params
 Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist.  Variables defined in your actions by `action.inputs.required` and `action.inputs.optional` will be aded to your whitelist.  Special params which the api will always accept are: 
+
+```javascript
+
 	[
 		"callback",
 		"action",
@@ -642,6 +672,8 @@ Params provided by the user (GET, POST, etc for http and https servers, setParam
 		"offset",
 		"outputType"
 	];
+```
+	
 Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in you initializers. 
 
 ### Logging
