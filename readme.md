@@ -6,6 +6,8 @@
 
 Links: [NPM](https://npmjs.org/package/actionHero) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Client](https://github.com/evantahler/actionhero_client)
 
+<img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="300"/>
+
 ## Who is the actionHero?
 actionHero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionHero are to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.
 
