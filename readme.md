@@ -23,6 +23,8 @@ The core of actionHero is the Action framework, **actions** are the basic units 
 
 Here's an example of a simple action which will return a random number to the client:
 
+```javascript
+
 	var action = {};
 	
 	/////////////////////////////////////////////////////////////////////
@@ -47,6 +49,8 @@ Here's an example of a simple action which will return a random number to the cl
 	/////////////////////////////////////////////////////////////////////
 	// exports
 	exports.action = action;
+	
+```
 
 Notes:
 
