@@ -5,7 +5,10 @@
 **Development Mode**
 
 - actionHero now has a development mode! files in `/actions` and `/tasks` will be watched for changes, and reloaded on the fly.  
+- this uses fs.watch() and doesn't work on all OSs / file systems.
 - Don't use this in production! 
+
+**Bugs**
 
 ## Version 3.0.8
 
