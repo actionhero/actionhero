@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-	"apiVersion": "3.0.8",
+	"apiVersion": "3.0.9",
 	"serverName": "actionHero API",
 	// The welcome message seen by TCP and webSocket clients upon connection
 	"welcomeMessage" : "Hello! Welcome to the actionHero api",
@@ -30,6 +30,8 @@ configData.general = {
 	// The number of internal "workers" this node will have.
 	// Remember these are logical timers (not threads) so they will block if they are computationally intense
 	"workers" : 3,
+	// watch for changes in actions and tasks, and reload them on the fly
+	"developmnetMode": false,
 };
 
 /////////////

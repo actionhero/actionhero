@@ -541,6 +541,11 @@ Create a `config.js` file in the root of your project.  Here is the default conf
 		// These params will always be appended to any request as "limit" and "offest" unless set by the client
 		"defaultLimit": 100,
 		"defaultOffset": 0,
+		// The number of internal "workers" this node will have.
+		// Remember these are logical timers (not threads) so they will block if they are computationally intense
+		"workers" : 3,
+		// watch for changes in actions and tasks, and reload them on the fly
+		"developmnetMode": false,
 	};
 	
 	/////////////

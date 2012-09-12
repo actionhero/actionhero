@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionHero",
   "description": "actionHero is a node.js API framework for both tcp sockets, web sockets, and http clients.  The goal of actionHero are to create an easy-to-use toolkit for making reusable & scalable APIs",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
