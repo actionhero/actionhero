@@ -61,8 +61,10 @@ var initActions = function(api, next)
 			var parts = fullfFilePath.split("/");
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
-			console.log(String(api.fs.readFileSync(fullfFilePath)));
 			api.actions[actionName] = require(fullfFilePath).action;
+			console.log("---")
+			console.log(actionName)
+			console.log(api.actions[actionName])
 			validateAction(api, api.actions[actionName]);
 			if(reload){
 				api.log("action (re)loaded: " + actionName + ", " + fullfFilePath, "blue");
