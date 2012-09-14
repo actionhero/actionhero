@@ -48,15 +48,37 @@ var initActions = function(api, next)
 						var realPath = readlinkSync(fullfFilePath);
 						loadFolder(realPath);
 					}else if(stats.isFile()){
-						var actionName = file.split(".")[0];
-						api.actions[actionName] = require(path + file).action;
-						validateAction(api, api.actions[actionName]);
-						api.log("action loaded: " + actionName + ", " + fullfFilePath, "blue");
+						actionLoader(api, fullfFilePath);
 					}else{
 						api.log(file+" is a type of file I cannot read", "red")
 					}
 				}
 			});
+		}
+
+		function actionLoader(api, fullfFilePath, reload){
+			if(reload == null){ reload = false; }
+			var parts = fullfFilePath.split("/");
+			var file = parts[(parts.length - 1)];
+			var actionName = file.split(".")[0];
+			api.actions[actionName] = require(fullfFilePath).action;
+			validateAction(api, api.actions[actionName]);
+			if(reload){
+				api.log("action (re)loaded: " + actionName + ", " + fullfFilePath, "blue");
+			}else{
+				api.log("action loaded: " + actionName + ", " + fullfFilePath, "blue");
+				if(api.configData.general.developmentMode == true){
+					(function() {
+						var f = fullfFilePath;
+						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
+							if(curr.mtime > prev.mtime){
+								delete require.cache[f]
+								actionLoader(api, f, true);
+							}
+						});
+					})();
+				}
+			}
 		}
 
 		loadFolder(actionsPath);

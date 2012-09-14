@@ -325,15 +325,37 @@ var initTasks = function(api, next)
 					var realPath = readlinkSync(fullfFilePath);
 					loadFolder(realPath);
 				}else if(stats.isFile()){
-					var taskName = file.split(".")[0];
-					api.tasks.tasks[taskName] = require(path + file).task;
-					validateTask(api, api.tasks.tasks[taskName]);
-					api.log("task loaded: " + taskName + ", " + fullfFilePath, "yellow");
+					taskLoader(api, fullfFilePath)
 				}else{
 					api.log(file+" is a type of file I cannot read", "red")
 				}
 			}
 		});
+	}
+
+	function taskLoader(api, fullfFilePath, reload){
+		if(reload == null){ reload = false; }
+		var parts = fullfFilePath.split("/");
+		var file = parts[(parts.length - 1)];
+		var taskName = file.split(".")[0];
+		api.tasks.tasks[taskName] = require(fullfFilePath).task;
+		validateTask(api, api.tasks.tasks[taskName]);
+		if(reload){
+			api.log("task (re)loaded: " + taskName + ", " + fullfFilePath, "yellow");
+		}else{
+			api.log("task loaded: " + taskName + ", " + fullfFilePath, "yellow");
+			if(api.configData.general.developmentMode == true){
+				(function() {
+					var f = fullfFilePath;
+					api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
+						if(curr.mtime > prev.mtime){
+							delete require.cache[f]
+							taskLoader(api, f, true);
+						}
+					});
+				})();
+			}
+		}
 	}
 
 	var taskFolders = [ 

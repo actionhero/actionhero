@@ -24,7 +24,8 @@ var baseActionHero = require(__dirname + "/../api.js").createActionHero;
 
 specHelper.params[0] = {
 	general: {
-		workers: 1
+		workers: 1,
+		"developmentMode": true,
 	},
 	log: {
 		logging: showLogs,
@@ -49,7 +50,8 @@ specHelper.params[0] = {
 
 specHelper.params[1] = {
 	general: {
-		workers: 1
+		workers: 1,
+		"developmentMode": false,
 	},
 	log: {
 		logging: showLogs,
@@ -74,7 +76,8 @@ specHelper.params[1] = {
 
 specHelper.params[2] = {
 	general: {
-		workers: 1
+		workers: 1,
+		"developmentMode": false,
 	},
 	log: {
 		logging: showLogs,

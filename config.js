@@ -31,7 +31,8 @@ configData.general = {
 	// Remember these are logical timers (not threads) so they will block if they are computationally intense
 	"workers" : 3,
 	// watch for changes in actions and tasks, and reload them on the fly
-	"developmnetMode": false,
+	// This will not work in all operating systems [ http://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener ] 
+	"developmentMode": false,
 };
 
 /////////////
@@ -51,7 +52,7 @@ configData.log = {
 ///////////
 
 configData.redis = {
-	"enable": true,
+	"enable": false,
 	"host": "127.0.0.1",
 	"port": 6379,
 	"password": null,
