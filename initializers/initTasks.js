@@ -349,7 +349,8 @@ var initTasks = function(api, next)
 					var f = fullfFilePath;
 					api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
 						if(curr.mtime > prev.mtime && api.fs.readFileSync(fullfFilePath).length > 0){
-							delete require.cache[f]
+							var name = require.resolve(f);
+							delete require.cache[name]
 							taskLoader(api, f, true);
 						}
 					});
