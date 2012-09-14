@@ -57,6 +57,7 @@ var initActions = function(api, next)
 		}
 
 		function actionLoader(api, fullfFilePath, reload){
+			console.log("fullfFilePath: " + fullfFilePath);
 			if(reload == null){ reload = false; }
 			var parts = fullfFilePath.split("/");
 			var file = parts[(parts.length - 1)];
