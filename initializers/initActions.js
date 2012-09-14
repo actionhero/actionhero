@@ -57,11 +57,11 @@ var initActions = function(api, next)
 		}
 
 		function actionLoader(api, fullfFilePath, reload){
-			console.log("fullfFilePath: " + fullfFilePath);
 			if(reload == null){ reload = false; }
 			var parts = fullfFilePath.split("/");
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
+			console.log(specHelper.fs.readFileSync(fullfFilePath));
 			api.actions[actionName] = require(fullfFilePath).action;
 			validateAction(api, api.actions[actionName]);
 			if(reload){
