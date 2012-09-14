@@ -71,7 +71,7 @@ var initActions = function(api, next)
 					(function() {
 						var f = fullfFilePath;
 						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-							if(curr.mtime > prev.mtime && specHelper.fs.readFileSync(fullfFilePath).length > 0){
+							if(curr.mtime > prev.mtime && api.fs.readFileSync(fullfFilePath).length > 0){
 								delete require.cache[f]
 								actionLoader(api, f, true);
 							}
