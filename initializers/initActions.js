@@ -62,9 +62,6 @@ var initActions = function(api, next)
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
 			api.actions[actionName] = require(fullfFilePath).action;
-			console.log("---")
-			console.log(actionName)
-			console.log(api.actions[actionName])
 			validateAction(api, api.actions[actionName]);
 			if(reload){
 				api.log("action (re)loaded: " + actionName + ", " + fullfFilePath, "blue");
@@ -74,7 +71,7 @@ var initActions = function(api, next)
 					(function() {
 						var f = fullfFilePath;
 						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-							if(curr.mtime > prev.mtime){
+							if(curr.mtime > prev.mtime && specHelper.fs.readFileSync(fullfFilePath).length > 0){
 								delete require.cache[f]
 								actionLoader(api, f, true);
 							}
