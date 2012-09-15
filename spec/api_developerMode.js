@@ -12,10 +12,10 @@ suite.addBatch({
   "random numbers": {
     topic: function(){ specHelper.apiTest.get('/randomNumber', 0, {} ,this.callback ); },
     error: function(res, b){ 
-      randomNumber = res.body.randomNumber;
+      var randomNumber = res.body.randomNumber;
       specHelper.assert.equal("OK", res.body.error); 
+      specHelper.assert.isNumber(randomNumber); 
     },
-    randomNumber_num: function(res, b){ specHelper.assert.isNumber(randomNumber); },
   }
 });
 
@@ -60,7 +60,7 @@ suite.addBatch({
       });
     },
     changed_content: function(res, b){ 
-      randomNumber = res.body.randomNumber;
+      var randomNumber = res.body.randomNumber;
       specHelper.assert.equal(randomNumber, "not a number!");
     },
   }
@@ -92,12 +92,12 @@ suite.addBatch({
       });
     },
     error: function(res, b){ 
-      randomNumber = res.body.randomNumber;
+      var randomNumber = res.body.randomNumber;
       specHelper.assert.equal("OK", res.body.error); 
+      specHelper.assert.isNumber(randomNumber);
+      specHelper.assert.isTrue(randomNumber < 1);
+      specHelper.assert.isTrue(randomNumber > 0);
     },
-    randomNumber_num: function(res, b){ specHelper.assert.isNumber(randomNumber); },
-    randomNumber_greater: function(res, b){ specHelper.assert.isTrue(randomNumber < 1); },
-    randomNumber_less: function(res, b){ specHelper.assert.isTrue(randomNumber > 0); },
   }
 });
 
