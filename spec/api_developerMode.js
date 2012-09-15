@@ -61,6 +61,7 @@ suite.addBatch({
     },
     changed_content: function(res, b){ 
       var randomNumber = res.body.randomNumber;
+      specHelper.assert.equal(apiObj.actions.randomNumber.description, "HACK");
       specHelper.assert.equal(randomNumber, "not a number!");
     },
   }
