@@ -71,10 +71,13 @@ var initActions = function(api, next)
 					(function() {
 						var f = fullfFilePath;
 						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-							if(curr.mtime > prev.mtime && api.fs.readFileSync(fullfFilePath).length > 0){
-								var name = require.resolve(f);
-								delete require.cache[name]
-								actionLoader(api, f, true);
+							if(curr.mtime > prev.mtime){
+								process.nextTick(function(){
+									if(api.fs.readFileSync(fullfFilePath).length > 0){
+										delete require.cache[f]
+										actionLoader(api, f, true);
+									}
+								});
 							}
 						});
 					})();
