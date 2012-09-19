@@ -159,7 +159,7 @@ suite.addBatch({
 				key: 'some other value'
 			}
 		})); }, 
-		'works' : function(resp, d){ specHelper.assert.equal(d.error, "value is a required parameter for this action"); }
+		'does not persist' : function(resp, d){ specHelper.assert.equal(d.error, "value is a required parameter for this action"); }
 	}
 });
 

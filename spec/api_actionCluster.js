@@ -6,6 +6,12 @@ var timeoutToWaitForFirstServerStart = 100;
 ////////////////////////////////////////////////////////////////////////////
 // Basic setup and joining cluster
 suite.addBatch({
+  'actionCluster.stop - begining to ensure a fresh redis boot':{
+    topic: function(){ specHelper.stopServer(0, this.callback); },
+    'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
+});
+
+suite.addBatch({
   'actionCluster.prepare - 0':{
     topic: function(){ 
 		var cb = this.callback; specHelper.prepare(0, function(api){ 

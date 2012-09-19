@@ -105,21 +105,25 @@ specHelper.initFunction = function(api, next){
 	next();
 }
 
-specHelper.clearRedis = function(next){
-	var redis = require('redis');
-	var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
-	client.on("ready", function (err) {
-    	client.select(redisConfig.DB, function(){
-    		client.flushdb(function(){
-    			process.stdout.write("[ test redis emptied ] ");
-    			next();
-    		});
-    	});
-    });
-    client.on("error", function (err) {
-        process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
-        process.exit();  // redis is really important...
-    });
+specHelper.clearRedis = function(serverID, next){
+	if(serverID != 0){
+		next();
+	}else{
+		var redis = require('redis');
+		var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+		client.on("ready", function (err) {
+	    client.select(redisConfig.DB, function(){
+	    		client.flushdb(function(){
+	    			// process.stdout.write("[ test redis emptied ] ");
+	    			next();
+	    		});
+	  	});
+	  });
+	  client.on("error", function (err) {
+	      process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
+	      process.exit();  // redis is really important...
+	  });
+  }
 }
 
 // tables to truncate each round of testing
@@ -127,8 +131,10 @@ specHelper.tables = [ "Logs" ];
 
 specHelper.prepare = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	specHelper.startServer(serverID, function(api){
-		next(api);
+	specHelper.clearRedis(serverID, function(){
+		specHelper.startServer(serverID, function(api){
+			next(api);
+		});
 	});
 }
 
@@ -144,12 +150,10 @@ specHelper.startServer = function(serverID, next){
 		if(err.code == "ECONNREFUSED"){
 			specHelper.actionHeroes[serverID] = new baseActionHero;
 			if(serverID == 0){
-				specHelper.clearRedis(function(){
-					specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
-						specHelper.apis[serverID] = api;
-						conn.destroy();
-						next(specHelper.apis[serverID]);
-					});
+				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
+					specHelper.apis[serverID] = api;
+					conn.destroy();
+					next(specHelper.apis[serverID]);
 				});
 			}else{
 				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
