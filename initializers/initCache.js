@@ -54,7 +54,14 @@ var initCache = function(api, next){
 	api.cache.load = function(api, key, next){
 		if(api.redis.enable === true){
 			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
-				cacheObj = JSON.parse(cacheObj);
+				try{
+					cacheObj = JSON.parse(cacheObj);
+				}catch(e){
+					api.log(e, ["red", "bold"]);
+					if(typeof next == "function"){ 
+						process.nextTick(function() { next(null, null, null, null); });
+					}
+				}
 				if(cacheObj != null && ( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null )) {
 					cacheObj.readAt = new Date().getTime();
 					api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){

@@ -91,8 +91,17 @@ var initActions = function(api, next)
 	});
 	
 	api.processAction = function(api, connection, messageID, next){	
-		if(connection.params.limit == null){ connection.params.limit = api.configData.general.defaultLimit; }else{ connection.params.limit = parseFloat(connection.params.limit); }
-		if(connection.params.offset == null){ connection.params.offset = api.configData.general.defaultOffset; }else{ connection.params.offset = parseFloat(connection.params.offset); }
+		if(connection.params.limit == null){ 
+			connection.params.limit = api.configData.general.defaultLimit; 
+		}else{ 
+			connection.params.limit = parseFloat(connection.params.limit); 
+		}
+
+		if(connection.params.offset == null){ 
+			connection.params.offset = api.configData.general.defaultOffset; 
+		}else{ 
+			connection.params.offset = parseFloat(connection.params.offset); 
+		}
 		
 		if (connection.error === false){
 			connection.action = connection.params["action"];
@@ -112,7 +121,7 @@ var initActions = function(api, next)
 					});
 				}
 			}else{
-				if(connection.action == "" || connection.action == null){connection.action = "{no action}";}
+				if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
 				connection.error = connection.action + " is not a known action.";
 				process.nextTick(function(){ 
 					connection.respondingTo = messageID;

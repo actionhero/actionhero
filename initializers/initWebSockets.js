@@ -175,23 +175,38 @@ var initWebSockets = function(api, next)
 		    	connection.on('action', function(data){
 		    		connection.params = data;
 		    		connection.error = false;
-					connection.actionStartTime = new Date().getTime();
-					connection.response = {};
-					connection.response.context = "response";
-					api.processAction(api, connection, connection.messageCount, function(connection, cont){
-						var delta = new Date().getTime() - connection.actionStartTime;
-						if (connection.response.error == null){ connection.response.error = connection.error; }
-						if(api.configData.log.logRequests){
-							api.logJSON({
-								label: "action @ webSocket",
-								to: connection.remoteIP,
-								action: connection.action,
-								params: JSON.stringify(data),
-								duration: delta,
-							});
+						connection.actionStartTime = new Date().getTime();
+						connection.response = {};
+						connection.response.context = "response";
+
+						// actions should be run using params set at the begining of excecution
+						// build a proxy connection so that param changes during execution will not break this
+						var proxy_connection = {
+							_original_connection: connection,
 						}
-						api.webSockets.respondToWebSocketClient(connection, cont);
-					});
+						for (var i in connection) {
+							if (connection.hasOwnProperty(i)) {
+								proxy_connection[i] = connection[i];
+							}
+						}
+
+						api.processAction(api, proxy_connection, connection.messageCount, function(proxy_connection, cont){
+							connection = proxy_connection._original_connection;
+							connection.response = proxy_connection.response;
+							connection.error = proxy_connection.error;
+							var delta = new Date().getTime() - connection.actionStartTime;
+							if (connection.response.error == null){ connection.response.error = connection.error; }
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "action @ webSocket",
+									to: connection.remoteIP,
+									action: connection.action,
+									params: JSON.stringify(data),
+									duration: delta,
+								});
+							}
+							api.webSockets.respondToWebSocketClient(connection, cont);
+						});
 		    	});
 
 				connection.on('disconnect', function(){

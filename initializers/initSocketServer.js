@@ -16,8 +16,8 @@ var initSocketServer = function(api, next){
 			api.stats.incrament(api, "numberOfSocketRequests");
 			api.socketServer.numberOfLocalSocketRequests++;
 			
-		  	connection.setEncoding("utf8");
-		  	connection.type = "socket";
+			connection.setEncoding("utf8");
+			connection.type = "socket";
 			connection.params = {};
 			connection.remoteIP = connection.remoteAddress;
 			connection.room = api.configData.general.defaultChatRoom;
@@ -32,10 +32,10 @@ var initSocketServer = function(api, next){
 			connection.public.connectedAt = new Date().getTime();
 			
 			api.socketServer.connections.push(connection);
-		
-		  	connection.on("connect", function () {
-		  		api.stats.incrament(api, "numberOfActiveSocketClients");
-		    	if(api.configData.log.logRequests){
+
+			connection.on("connect", function () {
+				api.stats.incrament(api, "numberOfActiveSocketClients");
+				if(api.configData.log.logRequests){
 					api.logJSON({
 						label: "connect @ socket",
 						to: connection.remoteIP,
@@ -45,9 +45,9 @@ var initSocketServer = function(api, next){
 				process.nextTick(function(){
 					api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
 				})
-		  	});
+			});
 			
-		  	connection.on("data", function (chunk) {
+			connection.on("data", function (chunk) {
 				api.socketServer.socketDataString += chunk.toString('utf8');
 				var index, line;
 				while((index = api.socketServer.socketDataString.indexOf('\r\n')) > -1) {
@@ -59,7 +59,7 @@ var initSocketServer = function(api, next){
 						var line = line.replace(/(\r\n|\n|\r)/gm,"");
 						var words = line.split(" ");
 						if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
-				    	else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
+						else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
 							try{ 
 								if(api.configData.log.logRequests){
 									api.logJSON({
@@ -190,7 +190,22 @@ var initSocketServer = function(api, next){
 								connection.params["action"] = words[0];
 							}
 							connection.responsesWaitingCount++;
-							api.processAction(api, connection, connection.messageCount, function(connection, cont){
+
+							// actions should be run using params set at the begining of excecution
+							// build a proxy connection so that param changes during execution will not break this
+							var proxy_connection = {
+								_original_connection: connection,
+							}
+							for (var i in connection) {
+								if (connection.hasOwnProperty(i)) {
+									proxy_connection[i] = connection[i];
+								}
+							}
+
+							api.processAction(api, proxy_connection, connection.messageCount, function(proxy_connection, cont){
+								connection = proxy_connection._original_connection;
+								connection.response = proxy_connection.response;
+								connection.error = proxy_connection.error;
 								connection.responsesWaitingCount--;
 								var delta = new Date().getTime() - connection.actionStartTime;
 								if(api.configData.log.logRequests && connection.action != "file"){
@@ -207,17 +222,17 @@ var initSocketServer = function(api, next){
 						}
 					}
 				}
-		  	});
-			
-		  	connection.on("end", function () {
-		  		api.chatRoom.roomRemoveMember(api, connection, function(){
-		  			api.stats.incrament(api, "numberOfActiveSocketClients", -1);
-					for(var i in api.socketServer.connections){
-						if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
-					}
-					try{ 
-						connection.end(); 
-					}catch(e){
+			});
+
+connection.on("end", function () {
+	api.chatRoom.roomRemoveMember(api, connection, function(){
+		api.stats.incrament(api, "numberOfActiveSocketClients", -1);
+		for(var i in api.socketServer.connections){
+			if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
+		}
+		try{ 
+			connection.end(); 
+		}catch(e){
 						//
 					}
 					// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
@@ -227,15 +242,15 @@ var initSocketServer = function(api, next){
 							to: connection.remoteIP,
 						});
 					}
-		  		});
-		  	});
+				});
+});
 
-			connection.on("error", function(e){
-				api.log("socket error: " + e, "red");
-				connection.end();
-			});
-		});
-		
+connection.on("error", function(e){
+	api.log("socket error: " + e, "red");
+	connection.end();
+});
+});
+
 		////////////////////////////////////////////////////////////////////////////
 		// action response helper
 		api.socketServer.respondToSocketClient = function(connection, cont){
