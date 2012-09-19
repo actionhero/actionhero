@@ -179,12 +179,13 @@ var initSocketServer = function(api, next){
 							connection.response = {};
 							connection.response.context = "response";
 							try{
+								var local_params = {};
 								var request_hash = JSON.parse(line);
 								if(request_hash["params"] != null){
-									connection.params = request_hash["params"];
+									local_params = request_hash["params"];
 								}
 								if(request_hash["action"] != null){
-									connection.params["action"] = request_hash["action"];
+									local_params["action"] = request_hash["action"];
 								}
 							}catch(e){
 								connection.params["action"] = words[0];
@@ -200,6 +201,9 @@ var initSocketServer = function(api, next){
 								if (connection.hasOwnProperty(i)) {
 									proxy_connection[i] = connection[i];
 								}
+							}
+							if(local_params != null && api.utils.hashLength(local_params) > 0){
+								proxy_connection.params = local_params;
 							}
 
 							api.processAction(api, proxy_connection, connection.messageCount, function(proxy_connection, cont){

@@ -1,5 +1,5 @@
 var specHelper = require('../helpers/_specHelper.js').specHelper;
-var suite = specHelper.vows.describe('API general functions');
+var suite = specHelper.vows.describe('Web general functions');
 var apiObj = {};
 
 suite.addBatch({

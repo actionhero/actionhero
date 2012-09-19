@@ -1,5 +1,5 @@
 var specHelper = require('../helpers/_specHelper.js').specHelper;
-var suite = specHelper.vows.describe('API general functions');
+var suite = specHelper.vows.describe('API socket functions');
 var apiObj = {};
 var net = require('net');
 
@@ -148,6 +148,25 @@ suite.addBatch({
 	"updated parms persist": {
 		topic: function(){ makeSocketRequest(client, this.callback, "paramsView"); }, 
 		'works' : function(resp, d){ specHelper.assert.equal(d.params.limit, 50); }
+	}
+});
+
+suite.addBatch({
+	"only params sent in a JSON block are used": {
+		topic: function(){ makeSocketRequest(client, this.callback, JSON.stringify({
+			action: "cacheTest",
+			params: {
+				key: 'some other value'
+			}
+		})); }, 
+		'works' : function(resp, d){ specHelper.assert.equal(d.error, "value is a required parameter for this action"); }
+	}
+});
+
+suite.addBatch({
+	"params sent in a JSON do not stick": {
+		topic: function(){ makeSocketRequest(client, this.callback, "paramsView"); }, 
+		'works' : function(resp, d){ specHelper.assert.equal(d.params.key, "socketTestKey"); }
 	}
 });
 
