@@ -1,3 +1,6 @@
+notifications:
+  email:
+    - evantahler@gmail.com
 language: node_js
 node_js:
   - 0.6
