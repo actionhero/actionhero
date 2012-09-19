@@ -178,7 +178,17 @@ var initSocketServer = function(api, next){
 							connection.actionStartTime = new Date().getTime();
 							connection.response = {};
 							connection.response.context = "response";
-							connection.params["action"] = words[0];
+							try{
+								var request_hash = JSON.parse(line);
+								if(request_hash["params"] != null){
+									connection.params = request_hash["params"];
+								}
+								if(request_hash["action"] != null){
+									connection.params["action"] = request_hash["action"];
+								}
+							}catch(e){
+								connection.params["action"] = words[0];
+							}
 							connection.responsesWaitingCount++;
 							api.processAction(api, connection, connection.messageCount, function(connection, cont){
 								connection.responsesWaitingCount--;
@@ -219,7 +229,7 @@ var initSocketServer = function(api, next){
 					}
 		  		});
 		  	});
-			
+
 			connection.on("error", function(e){
 				api.log("socket error: " + e, "red");
 				connection.end();

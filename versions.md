@@ -1,5 +1,17 @@
 # Action Hero API Versions
 
+## Version 3.0.10
+
+**Socket Communiaction**
+
+You can now pass a stringified-JSON message over TCP sockets to request an action to be preformed.
+
+- `{"action": "myAction", "params": {"key": "value"}}` is now a valid request over TCP
+- params passed within an action's hash will NOT be 'sticky' to the connection, unlike paramAdd which remains 'sticky'
+- general refactoring to the TCP codebase which will ensure that the state of params at the time of the action will be used when computing an action, and changes to the connection's state will not effect the action's excecution
+- these changes do not break the previous API, and sending single-line 'action' still works!  
+
+
 ## Version 3.0.9
 
 **Development Mode**
