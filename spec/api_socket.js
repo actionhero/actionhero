@@ -63,6 +63,20 @@ suite.addBatch({
 	}
 });
 
+suite.addBatch({
+	"stringified JSON can also be sent as actions": {
+		topic: function(){ 
+			makeSocketRequest(client, this.callback, JSON.stringify({
+				action: 'status',
+				params: {something: 'else'}
+			}));
+		}, 'works' : function(resp, d){
+			specHelper.assert.isObject(d.stats);
+			specHelper.assert.equal(d.stats.socketServer.numberOfLocalSocketRequests, 3);
+		}
+	}
+});
+
 var client_details = {};
 suite.addBatch({
 	"I can get my details": {
@@ -89,7 +103,7 @@ suite.addBatch({
 });
 
 suite.addBatch({
-	"default parms can be updated": {
+	"default params can be updated": {
 		topic: function(){ makeSocketRequest(client, this.callback, "paramAdd limit=50"); }, 
 		'works' : function(resp, d){ specHelper.assert.equal(d.status, "OK"); }
 	}
