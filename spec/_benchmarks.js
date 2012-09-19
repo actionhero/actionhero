@@ -130,7 +130,12 @@ suite.addBatch({
 
 suite.addBatch({
   'actionCluster.stop - 0':{
-    topic: function(){ specHelper.stopServer(0, this.callback); },
+    topic: function(){ 
+      var cb = this.callback
+      makeSocketRequest("exit", function(){
+        specHelper.stopServer(0, cb); 
+      });
+    },
     'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
 });
 
