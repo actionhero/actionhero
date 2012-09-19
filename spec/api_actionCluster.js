@@ -323,7 +323,7 @@ suite.addBatch({
   'A server stops responding':{
     topic: function(){ 
     	var cb = this.callback;
-    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
+    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 6) + 1;
     	apis[2].redis.pingTime = sleepTime * 2; //block from happening again in this test
     	clearTimeout(apis[2].redis.pingTimer);
     	clearTimeout(apis[2].redis.lostPeerTimer);
