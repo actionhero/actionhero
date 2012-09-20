@@ -40,7 +40,7 @@ suite.addBatch({
       var cb = this.callback;
       setTimeout(function(){
         cb();
-      }, 1001); //file read timer is 1 second; let it have time to get one read in first
+      }, 1001 * 2); //file read timer is 1 second; let it have time to get one read in first
     },
     file_is_real: function(){ 
       stats = specHelper.fs.lstatSync(original_file);
@@ -56,7 +56,7 @@ suite.addBatch({
       specHelper.fs.writeFile(original_file, new_file_content, function(err) {
         setTimeout(function(){
           specHelper.apiTest.get('/randomNumber', 0, {} , cb );
-        }, 3000); //file read timer is 1 second; time to notice the change + time to reaload API
+        }, 3000 * 2); //file read timer is 1 second; time to notice the change + time to reaload API
       });
     },
     changed_content: function(res, b){ 
@@ -73,7 +73,7 @@ suite.addBatch({
       var cb = this.callback;
       setTimeout(function(){
         cb();
-      }, 1001); //file read timer is 1 second; let it have time to get one read in first
+      }, 1001 * 2); //file read timer is 1 second; let it have time to get one read in first
     },
     file_is_still_real: function(){ 
       stats = specHelper.fs.lstatSync(original_file);
@@ -89,7 +89,7 @@ suite.addBatch({
       specHelper.fs.writeFile(original_file, original_content, function(err){
         setTimeout(function(){
           specHelper.apiTest.get('/randomNumber', 0, {} , cb );
-        }, 3000); //file read timer is 1 second; time to notice the change + time to reaload API
+        }, 3000 * 2); //file read timer is 1 second; time to notice the change + time to reaload API
       });
     },
     error: function(res, b){ 
