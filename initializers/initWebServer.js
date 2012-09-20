@@ -60,8 +60,8 @@ var initWebServer = function(api, next)
 			}
 			
 			// determine API or FILE
-			var parsedURL = api.url.parse(connection.req.url, true);
-			var pathParts = parsedURL.pathname.split("/");
+			connection.parsedURL = api.url.parse(connection.req.url, true);
+			var pathParts = connection.parsedURL.pathname.split("/");
 			connection.requestMode = api.configData.commonWeb.rootEndpointType; // api or file
 			connection.directModeAccess = false;
 			if(pathParts.length > 0){
@@ -77,7 +77,7 @@ var initWebServer = function(api, next)
 			
 			if(connection.requestMode == api.configData.commonWeb.urlPathForActions){
 				// parse GET (URL) variables
-				fillParamsFromWebRequest(api, connection, parsedURL.query);
+				fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 				if(connection.params.action === undefined){ 
 					if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
 					else{ connection.params.action = pathParts[1]; }
@@ -87,7 +87,7 @@ var initWebServer = function(api, next)
 				if (connection.req.method.toLowerCase() == 'post') {
 					if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
 						// if no form content-type, treat like GET
-						fillParamsFromWebRequest(api, connection, parsedURL.query);
+						fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 						if(connection.params.action === undefined){ 
 							if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
 							else{ connection.params.action = pathParts[1]; }
@@ -113,11 +113,10 @@ var initWebServer = function(api, next)
 			}
 			
 			if(connection.requestMode == api.configData.commonWeb.urlPathForFiles){
-				fillParamsFromWebRequest(api, connection, parsedURL.query);
+				fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 				connection.params.action = "file";
 				process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
-			}
-			
+			}	
 		}
 		
 		var fillParamsFromWebRequest = function(api, connection, varsHash){
