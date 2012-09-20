@@ -28,13 +28,17 @@ function makeSocketRequest(message, next){
   });
 }
 
-function loopingTest(message, count, next){
+function makeHTTPRequest(path, data, next){
+  specHelper.apiTest.get(path, 0, data, next ); 
+}
+
+function loopingTest(path, data, count, next){
   var counter = 0;
   var responses = 0;
   while(counter <= count){
     counter++;
     process.nextTick(function(){
-      makeSocketRequest(message, function(response){
+        makeHTTPRequest(path, data, function(response){
         responses++
         if(responses == count){
           next(false, response);
@@ -65,25 +69,25 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'say 10000 times':{
+  'say 1000 times':{
     topic: function(){
       var cb = this.callback;
       startTime = new Date().getTime();
-      loopingTest("say hello there, I am test!", 10000, cb)
+      loopingTest("/say", {room: 'defaultRoom', message: "hello there! I am a test."}, 1000, cb)
     },
     'how long?': function(err, lastResponse){
       var delta = new Date().getTime() - startTime
-      console.log("Benchmark: say 10000 times: " + delta + "ms");
+      console.log("Benchmark: say 1000 times: " + delta + "ms");
     },
   }
 });
 
 suite.addBatch({
-  'ask for status 10000 times':{
+  'ask for status 1000 times':{
     topic: function(){
       var cb = this.callback;
       startTime = new Date().getTime();
-      loopingTest("status", 10000, cb)
+      loopingTest("/status", {}, 1000, cb)
     },
     'how long?': function(err, lastResponse){
       var delta = new Date().getTime() - startTime
@@ -93,13 +97,11 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'actionsView 10000 times':{
+  'actionsView 1000 times':{
     topic: function(){
       var cb = this.callback;
       startTime = new Date().getTime();
-      loopingTest(JSON.stringify({
-        action: 'actionsView',
-      }), 10000, cb)
+      loopingTest("/", {action: 'actionsView'}, 1000, cb)
     },
     'how long?': function(err, lastResponse){
       var delta = new Date().getTime() - startTime
@@ -109,17 +111,11 @@ suite.addBatch({
 });
 
 suite.addBatch({
-  'cacheTest 10000 times':{
+  'cacheTest 1000 times':{
     topic: function(){
       var cb = this.callback;
       startTime = new Date().getTime();
-      loopingTest(JSON.stringify({
-        action: 'cacheTest',
-        params: {
-          key: 'testKey',
-          value: 'testValue',
-        },
-      }), 10000, cb)
+      loopingTest('/cacheTest', {key: 'testKey', value: 'testValue'}, 1000, cb)
     },
     'how long?': function(err, lastResponse){
       var delta = new Date().getTime() - startTime
