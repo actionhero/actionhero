@@ -11,7 +11,7 @@ var initCache = function(api, next){
 	var redisCacheKey = "actionHero:cache";
 
 	api.cache.size = function(api, next){
-		if(api.redis.enable === true){
+		if(api.redis && api.redis.enable === true){
 			api.redis.client.hlen(redisCacheKey, function(err, count){
 				next(count);
 			});
@@ -36,7 +36,7 @@ var initCache = function(api, next){
 			createdAt: new Date().getTime(),
 			readAt: null
 		}
-		if(api.redis.enable === true){
+		if(api.redis && api.redis.enable === true){
 			api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
 				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
 			});
@@ -52,16 +52,9 @@ var initCache = function(api, next){
 	};
 
 	api.cache.load = function(api, key, next){
-		if(api.redis.enable === true){
+		if(api.redis && api.redis.enable === true){
 			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
-				try{
-					cacheObj = JSON.parse(cacheObj);
-				}catch(e){
-					api.log(e, ["red", "bold"]);
-					if(typeof next == "function"){ 
-						process.nextTick(function() { next(null, null, null, null); });
-					}
-				}
+				cacheObj = JSON.parse(cacheObj);
 				if(cacheObj != null && ( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null )) {
 					cacheObj.readAt = new Date().getTime();
 					api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
@@ -95,7 +88,7 @@ var initCache = function(api, next){
 	};
 
 	api.cache.destroy = function(api, key, next){
-		if(api.redis.enable === true){
+		if(api.redis && api.redis.enable === true){
 			api.redis.client.hdel(redisCacheKey, key, function(err, count){
 				var resp = true;
 				if(count != 1){ resp = false; }
