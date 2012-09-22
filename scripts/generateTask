@@ -25,9 +25,13 @@ var waitingInput = null;
 
 var stringifyArray = function(arr){
 	var s = "";
+	var used = 0;
 	for(var i in arr){
-		if(i > 0){ s+= ", ";}
-		s += '"' + arr[i] + '"';
+		if(used > 0){ s+= ", ";}
+		if(arr[i].length > 0){
+			s += '"' + arr[i] + '"';
+			used++;
+		}
 	}
 	return s;
 }

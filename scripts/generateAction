@@ -25,9 +25,13 @@ var waitingInput = null;
 
 var stringifyArray = function(arr){
 	var s = "";
+	var used = 0;
 	for(var i in arr){
-		if(i > 0){ s+= ", ";}
-		s += '"' + arr[i] + '"';
+		if(used > 0){ s+= ", ";}
+		if(arr[i].length > 0){
+			s += '"' + arr[i] + '"';
+			used++;
+		}
 	}
 	return s;
 }
@@ -42,17 +46,9 @@ var generateFile = function(){
 	templateLines.push('action.description = "'+data['actionDescription']+'";')
 	templateLines.push('action.inputs = {')
 	var req = stringifyArray(data['actionInputsRequired']);
-	if (req.length > 0){
-		templateLines.push('	"required" : ['+req+'],')
-	}else{
-		templateLines.push('	"required" : [],')
-	}
+	templateLines.push('	"required" : ['+req+'],')
 	var optional = stringifyArray(data['actionInputsOptional'])
-	if (req.optional > 0){
-		templateLines.push('	"optional" : ['+optional+']')
-	}else{
-		templateLines.push('	"optional" : []')
-	}
+	templateLines.push('	"optional" : ['+optional+']')
 	templateLines.push('};')
 	templateLines.push('action.outputExample = {}')
 	templateLines.push('')
