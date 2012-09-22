@@ -14,18 +14,18 @@
     "node": ">=0.6.0"
   },
   "dependencies": {
-    "async":"0.x.x", 
-    "request":"2.x.x",
-    "validator":"0.x.x",
-    "formidable":"1.x.x",
-    "colors":"0.x.x",
-    "data2xml":"x",
-    "mime":"1.x.x",
-    "redis":"x",
+    "async":"0.1.x", 
+    "request":"2.11.x",
+    "validator":"0.4.x",
+    "formidable":"1.0.x",
+    "colors":"0.6.x",
+    "data2xml":"0.5.x",
+    "mime":"1.2.x",
+    "redis":"0.8.x",
     "socket.io":"0.9.x"
 	},
   "devDependencies": {
-    "vows":"0.x.x"
+    "vows":"0.6.x"
   },
   "scripts": {
     "start": "./scripts/actionHero",
