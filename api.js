@@ -179,15 +179,14 @@ var createActionHero = function(){
 				if(actionHero.api.configData.tcpServer.enable){ neededClosed++; }
 				
 				var checkForDone = function(serverType){
+					if(serverType != null){
+						actionHero.api.log("The " + serverType + " server has ended its connections and closed");
+					}
 					if(closed == neededClosed){
 						closed = -1;
 						actionHero.running = false;
 						actionHero.api.log("The actionHero has been stopped", "bold");
 						next(true);
-					}else{
-						if(serverType != null){
-							actionHero.api.log("The " + serverType + " server has ended its connections and closed");
-						}
 					}
 				}
 
@@ -196,7 +195,13 @@ var createActionHero = function(){
 						closed++;
 						checkForDone("http");
 					});
-					actionHero.api.webServer.webApp.close();
+					if(actionHero.api.configData.webSockets.enable && actionHero.api.configData.webSockets.bind == "http"){
+						actionHero.api.webSockets.disconnectAll(actionHero.api, function(){
+							actionHero.api.webServer.webApp.close();
+						});
+					}else{
+						actionHero.api.webServer.webApp.close();
+					}
 				}
 
 				if(actionHero.api.configData.httpsServer.enable){
@@ -204,7 +209,13 @@ var createActionHero = function(){
 						closed++;
 						checkForDone("https");
 					});
-					actionHero.api.webServer.secureWebApp.close();
+					if(actionHero.api.configData.webSockets.enable && actionHero.api.configData.webSockets.bind == "https"){
+						actionHero.api.webSockets.disconnectAll(actionHero.api, function(){
+							actionHero.api.webServer.secureWebApp.close();
+						});
+					}else{
+						actionHero.api.webServer.secureWebApp.close();
+					}
 				}
 
 				if(actionHero.api.configData.tcpServer.enable){
