@@ -27,6 +27,9 @@ You can now pass a stringified-JSON message over TCP sockets to request an actio
 - general refactoring to the TCP codebase which will ensure that the state of params at the time of the action will be used when computing an action, and changes to the connection's state will not effect the action's execution
 - these changes do not break the previous API, and sending single-line 'action' still works!  
 
+**Bugs**
+
+- Fixed default room assignment for webSocket clients
 
 ## Version 3.0.9
 
