@@ -43,7 +43,7 @@ specHelper.params[0] = {
 		port: 8000,
 	},
 	webSockets: {
-		enable: false
+		enable: true
 	},
 	redis : redisConfig,
 };
@@ -69,7 +69,7 @@ specHelper.params[1] = {
 		port: 8001,
 	},
 	webSockets: {
-		enable: false
+		enable: true
 	},
 	redis : redisConfig,
 };
@@ -95,7 +95,7 @@ specHelper.params[2] = {
 		port: 8002,
 	},
 	webSockets: {
-		enable: false
+		enable: true
 	},
 	redis : redisConfig,
 };

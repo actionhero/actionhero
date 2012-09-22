@@ -18,7 +18,7 @@ params.initFunction = function(api, next){
 }
 
 // start the server!
-var timer = 2000;
+var timer = 5000;
 actionHero.start(params, function(api){
 	
 	api.log(" >> Boot Sucessful!");

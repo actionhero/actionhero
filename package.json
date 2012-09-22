@@ -25,7 +25,8 @@
     "socket.io":"0.9.x"
 	},
   "devDependencies": {
-    "vows":"0.6.x"
+    "vows":"0.6.x",
+    "socket.io-client":"0.9.x"
   },
   "scripts": {
     "start": "./scripts/actionHero",

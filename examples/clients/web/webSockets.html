@@ -1,6 +1,6 @@
 <script src="/public/javascript/socket.io/socket.io.js"></script>
 <script>
-	var socket = io.connect('http://localhost:8080/');
+	var socket = io.connect('http://localhost:9000/');
 	
 	socket.on('welcome', function(data){
 		console.log("connected!")
@@ -25,7 +25,7 @@
 	// call an action
 	var action = function(action, params){
 		// params = {key1: 'value_1', key2: 'value2'}
-		if (params == null){ params = {}; )
+		if (params == null){ params = {}; }
 		params['action'] = action;
 		socket.emit("action", params);
 	}

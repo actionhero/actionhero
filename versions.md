@@ -29,7 +29,10 @@ You can now pass a stringified-JSON message over TCP sockets to request an actio
 
 **Bugs**
 
+- there is a known bug where websockets will not work after a server reboot
 - Fixed default room assignment for webSocket clients
+- tests for webSockets finally writen and passing
+- added connection idle timeout to aid with HTTP(s) server shutdown
 
 ## Version 3.0.9
 

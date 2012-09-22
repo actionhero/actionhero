@@ -154,6 +154,7 @@ var initSocketServer = function(api, next){
 							details = {};
 							details.params = connection.params;
 							details.public = connection.public;
+							details.room = connection.room;
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", details: details});
 							if(api.configData.log.logRequests){
 								api.logJSON({
