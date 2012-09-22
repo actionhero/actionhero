@@ -204,6 +204,7 @@ var initWebServer = function(api, next)
 			});
 			serversToStart++;
 			api.webServer.webApp.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
+				api.webServer.webApp.addListener("connection",function(stream) { stream.setTimeout(10000); });
 				api.log("http server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
 				serversToStart--;
 				if(serversToStart == 0){ next(); }
@@ -218,6 +219,7 @@ var initWebServer = function(api, next)
 			});
 			serversToStart++;
 			api.webServer.secureWebApp.listen(api.configData.httpsServer.port, api.configData.httpsServer.bindIP, function(){
+				api.webServer.secureWebApp.addListener("connection",function(stream) { stream.setTimeout(10000); });
 				api.log("https server listening on " + api.configData.httpsServer.bindIP + ":" + api.configData.httpsServer.port, "green");
 				serversToStart--;
 				if(serversToStart == 0){ next(); }
