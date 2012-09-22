@@ -33,6 +33,7 @@ You can now pass a stringified-JSON message over TCP sockets to request an actio
 - Fixed default room assignment for webSocket clients
 - tests for webSockets finally writen and passing
 - added connection idle timeout to aid with HTTP(s) server shutdown
+- fixed a bug where action generators with 0 params wold generate invalid js
 
 ## Version 3.0.9
 
