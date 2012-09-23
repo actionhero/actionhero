@@ -25,7 +25,6 @@ var initWebSockets = function(api, next){
 			}
 		};
 
-		// TODO: Right now, redis doesn't like it if you have more than one bind (works ok if the store is local)...
 		if(api.configData.webSockets.bind == "http"){
 			var io_http = api.io.listen(api.webServer.webApp, { 'log level': 0 });
 			IOs.push(io_http);
