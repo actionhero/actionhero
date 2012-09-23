@@ -3,6 +3,8 @@
 
 var initFileServer = function(api, next){
 
+	api.fileServer = {}
+
 	if(api.configData.commonWeb.flatFileCacheDuration == null){
 		api.configData.commonWeb.flatFileCacheDuration = 0;
 	}
@@ -33,36 +35,36 @@ var initFileServer = function(api, next){
 		}
 		if(connection.error == false){
 			fileName = api.configData.general.flatFileDirectory + fileName;
-			followFileToServe(api, fileName, connection, next);
+			api.fileServer.followFileToServe(api, fileName, connection, next);
 		}
 	};
 
-	var followFileToServe = function(api, fileName, connection, next){
+	api.fileServer.followFileToServe = function(api, fileName, connection, next){
 		api.fs.stat(fileName, function(err, stats){
 			if(err != null){
-				sendFileNotFound(api, connection, next);
+				api.fileServer.sendFileNotFound(api, connection, next);
 			}else{
 				if(stats.isDirectory()){
 					if(fileName[fileName.length - 1] != "/"){ fileName += "/"; }
-					followFileToServe(api, fileName + api.configData.commonWeb.directoryFileType, connection, next);
+					api.fileServer.followFileToServe(api, fileName + api.configData.commonWeb.directoryFileType, connection, next);
 				}else if(stats.isSymbolicLink()){
 					api.fs.readLink(fileName, function(err, truePath){
 						if(err != null){
-							sendFileNotFound(api, connection, next);
+							api.fileServer.sendFileNotFound(api, connection, next);
 						}else{
-							followFileToServe(api, truePath, connection, next);
+							api.fileServer.followFileToServe(api, truePath, connection, next);
 						}
 					});
 				}else if(stats.isFile()){
-					sendFile(api, fileName, connection, next);
+					api.fileServer.sendFile(api, fileName, connection, next);
 				}else{
-					sendFileNotFound(api, connection, next);
+					api.fileServer.sendFileNotFound(api, connection, next);
 				}
 			}
 		});
 	}
 
-	var sendFile = function(api, file, connection, next){
+	api.fileServer.sendFile = function(api, file, connection, next){
 		api.fs.readFile(file, function (err, data) {
 			if(err){
 				api.log("error reading: "+file, "red");
@@ -106,7 +108,7 @@ var initFileServer = function(api, next){
 		});
 	}
 
-	var sendFileNotFound = function(api, connection, next){
+	api.fileServer.sendFileNotFound = function(api, connection, next){
 		if(connection.req != null){
 			connection.responseHeaders['Content-Type'] = 'text/html';
 			connection.res.writeHead(404, connection.responseHeaders);

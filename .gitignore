@@ -1,3 +1,4 @@
+tmp/*
 log/*
 cache/*
 node_modules/*
