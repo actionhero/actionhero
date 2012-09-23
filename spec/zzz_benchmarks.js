@@ -38,7 +38,14 @@ function loopingTest(path, data, count, next){
   while(counter <= count){
     counter++;
     process.nextTick(function(){
-        makeHTTPRequest(path, data, function(response){
+        var thisData = {}
+        for(var i in data){
+          thisData[i] = data[i];
+          if(typeof thisData[i] == "function"){
+            thisData[i] = thisData[i]();
+          }
+        }
+        makeHTTPRequest(path, thisData, function(response){
         responses++
         if(responses == count){
           next(false, response);
@@ -115,7 +122,11 @@ suite.addBatch({
     topic: function(){
       var cb = this.callback;
       startTime = new Date().getTime();
-      loopingTest('/cacheTest', {key: 'testKey', value: 'testValue'}, 1000, cb)
+      loopingTest('/cacheTest', { key: function(){ 
+        return apiObj.utils.randomString(99); 
+      }, value: function(){ 
+        return apiObj.utils.randomString(99); 
+      } }, 1000, cb)
     },
     'how long?': function(err, lastResponse){
       var delta = new Date().getTime() - startTime
