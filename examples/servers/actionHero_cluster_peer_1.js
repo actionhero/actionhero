@@ -8,7 +8,7 @@ var params = {};
 params.configChanges = {
 	general: {},
 	log: {
-		logFile: "api_peer_3.log",
+		logFile: "api_peer_1.log",
 	},
 	httpServer: {
 		port: 8080,
