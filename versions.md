@@ -29,7 +29,7 @@ You can now pass a stringified-JSON message over TCP sockets to request an actio
 
 **Bugs**
 
-- there is a known bug where websockets will not work after a server reboot
+- fixed bug where websocket clients would not return after a actionHero reboot; also allows for more than one socket.io binding point
 - Fixed default room assignment for webSocket clients
 - tests for webSockets finally writen and passing
 - added connection idle timeout to aid with HTTP(s) server shutdown
