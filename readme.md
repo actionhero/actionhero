@@ -15,7 +15,7 @@ actionHero servers can process both requests and tasks (delayed actions like `se
 
 The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistent connection via TCP or web sockets. You define **Actions** which handle input and response, such as "userAdd" or "geoLocate". HTTP, HTTPS, and TCP clients can all use these actions.  The actionHero API is not inherently "RESTful" (which is meaningless for persistent socket connections) but can be extended to be so if you wish.
 
-actionHero will also serve static files for you, but actionHero is not a server-side website host (like express or rails).
+actionHero will also serve static files for you, but actionHero is not meant to be a 'rendering' server (like express or rails).
 
 
 ## Actions
