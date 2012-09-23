@@ -55,7 +55,7 @@ var initSocketServer = function(api, next){
 					connection.lastLine = line;
 					api.socketServer.socketDataString = api.socketServer.socketDataString.slice(index + 2);
 					if(line.length > 0) {
-						connection.messageCount++; // incrament at the start of the requset so that responses can be caught in order on the client
+						connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
 						var line = line.replace(/(\r\n|\n|\r)/gm,"");
 						var words = line.split(" ");
 						if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
@@ -229,17 +229,15 @@ var initSocketServer = function(api, next){
 				}
 			});
 
-connection.on("end", function () {
-	api.chatRoom.roomRemoveMember(api, connection, function(){
-		api.stats.incrament(api, "numberOfActiveSocketClients", -1);
-		for(var i in api.socketServer.connections){
-			if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
-		}
-		try{ 
-			connection.end(); 
-		}catch(e){
-						//
+			connection.on("end", function () {
+				api.chatRoom.roomRemoveMember(api, connection, function(){
+					api.stats.incrament(api, "numberOfActiveSocketClients", -1);
+					for(var i in api.socketServer.connections){
+						if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
 					}
+					try{ 
+						connection.end(); 
+					}catch(e){ }
 					// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
 					if(api.configData.log.logRequests){
 						api.logJSON({
@@ -248,13 +246,14 @@ connection.on("end", function () {
 						});
 					}
 				});
-});
+			});
 
-connection.on("error", function(e){
-	api.log("socket error: " + e, "red");
-	connection.end();
-});
-});
+			connection.on("error", function(e){
+				api.log("socket error: " + e, "red");
+				connection.end();
+			});
+
+		});
 
 		////////////////////////////////////////////////////////////////////////////
 		// action response helper
@@ -283,7 +282,7 @@ connection.on("error", function(e){
 				if(connection.respondingTo != null){
 					message.messageCount = connection.respondingTo;
 					connection.respondingTo = null;
-				}else{
+				}else if(message.context == "response"){
 					message.messageCount = connection.messageCount;
 				}
 				connection.write(JSON.stringify(message) + "\r\n"); 

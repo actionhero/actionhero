@@ -31,6 +31,7 @@ You can now pass a stringified-JSON message over TCP sockets to request an actio
 
 - fixed bug where websocket clients would not return after a actionHero reboot; also allows for more than one socket.io binding point
 - Fixed default room assignment for webSocket clients
+- only respond with messageCount to TCP/webSocket clients when it is in response to a request they made
 - tests for webSockets finally writen and passing
 - added connection idle timeout to aid with HTTP(s) server shutdown
 - fixed a bug where action generators with 0 params wold generate invalid js

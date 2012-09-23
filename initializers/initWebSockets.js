@@ -98,7 +98,8 @@ var initWebSockets = function(api, next){
 				connection.on('roomView', function(data){
 					if(data == null){ data = {}; }
 					api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
-						connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
+						connection.messageCount++; 
+						connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
 						if(api.configData.log.logRequests){
 							api.logJSON({
 								label: "roomView @ webSocket",
@@ -114,7 +115,8 @@ var initWebSockets = function(api, next){
 					api.chatRoom.roomRemoveMember(api, connection, function(){
 						connection.room = data.room;
 						api.chatRoom.roomAddMember(api, connection);
-						connection.emit("response", {context: "response", status: "OK", room: connection.room});
+						connection.messageCount++; 
+						connection.emit("response", {context: "response", status: "OK", room: connection.room, messageCount: connection.messageCount});
 						if(api.configData.log.logRequests){
 							api.logJSON({
 								label: "roomChange @ webSocket",
@@ -129,7 +131,8 @@ var initWebSockets = function(api, next){
 					if(data == null){ data = {}; }
 					var message = data.message;
 					api.chatRoom.socketRoomBroadcast(api, connection, message);
-					connection.emit("response", {context: "response", status: "OK"});
+					connection.messageCount++; 
+					connection.emit("response", {context: "response", status: "OK", messageCount: connection.messageCount});
 					if(api.configData.log.logRequests){
 						api.logJSON({
 							label: "say @ webSocket",
@@ -145,7 +148,8 @@ var initWebSockets = function(api, next){
 					details.params = connection.params;
 					details.public = connection.public;
 					details.room = connection.room;
-					connection.emit("response", {context: "response", status: "OK", details: details});
+					connection.messageCount++; 
+					connection.emit("response", {context: "response", status: "OK", details: details, messageCount: connection.messageCount});
 					if(api.configData.log.logRequests){
 						api.logJSON({
 							label: "detailsView @ webSocket",
@@ -189,6 +193,7 @@ var initWebSockets = function(api, next){
 								duration: delta,
 							});
 						}
+						connection.messageCount++; 
 						api.webSockets.respondToWebSocketClient(connection, cont);
 					});
 				});
@@ -211,6 +216,9 @@ var initWebSockets = function(api, next){
 
 		api.webSockets.respondToWebSocketClient = function(connection, cont){
 			if(cont != false){
+				if(connection.response.context == "response"){
+					connection.response.messageCount = connection.messageCount;
+				}
 				if(connection.error == false){
 					connection.response.error = connection.error;
 					if(connection.response == {}){
