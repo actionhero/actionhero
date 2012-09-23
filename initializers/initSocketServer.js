@@ -207,7 +207,7 @@ var initSocketServer = function(api, next){
 								proxy_connection.params = local_params;
 							}
 
-							api.processAction(api, proxy_connection, connection.messageCount, function(proxy_connection, cont){
+							api.processAction(api, proxy_connection, proxy_connection.messageCount, function(proxy_connection, cont){
 								connection = proxy_connection._original_connection;
 								connection.response = proxy_connection.response;
 								connection.error = proxy_connection.error;

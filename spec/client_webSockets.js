@@ -34,6 +34,25 @@ suite.addBatch({
 });
 
 suite.addBatch({
+  'actionCluster.stop - 0':{
+    topic: function(){ specHelper.stopServer(0, this.callback); },
+    'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
+});
+
+suite.addBatch({
+  'specHelper.prepare AGAIN':{
+    topic: function(){
+      var cb = this.callback;
+      specHelper.prepare(0, function(api){
+        apiObj = specHelper.cleanAPIObject(api);
+        cb();
+      })
+    },
+    'api object should exist': function(){ specHelper.assert.isObject(apiObj); },
+  }
+});
+
+suite.addBatch({
   'socket client connections should work: client 1':{
     topic: function(){
       var cb = this.callback;

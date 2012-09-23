@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////
 // Web Sockets via Socket.IO
 
-var initWebSockets = function(api, next)
-{
+var initWebSockets = function(api, next){
+
 	if(api.configData.webSockets.enable != true){
 		next()
 	}else{
@@ -26,7 +26,6 @@ var initWebSockets = function(api, next)
 		};
 
 		// TODO: Right now, redis doesn't like it if you have more than one bind (works ok if the store is local)...
-		// looks like this allso confuses the test suite when the server comes back up
 		if(api.configData.webSockets.bind == "http"){
 			var io_http = api.io.listen(api.webServer.webApp, { 'log level': 0 });
 			IOs.push(io_http);
@@ -56,49 +55,21 @@ var initWebSockets = function(api, next)
 			var c = api.configData.redis;
 			if(c.enable == true){
 				var RedisStore = require('socket.io/lib/stores/redis');
-				var pub    = api.redisPackage.createClient(c.port, c.host, c.options);
-				var sub    = api.redisPackage.createClient(c.port, c.host, c.options);
-				var client = api.redisPackage.createClient(c.port, c.host, c.options);
 
-				io.redisConnections = {
-					pub: pub,
-					sub: sub,
-					client: client,
+				function completeRedisInit(){
+					if(c.enable == true){
+						io.set('store', new RedisStore({
+							redisPub : api.redis.client,
+							redisSub : api.redis.clientSubscriber,
+							redisClient : api.redis.client
+						}));
+					}
 				}
-
-				pub.on("error", function(msg){ logger.error(msg); })
-				sub.on("error", function(msg){ logger.error(msg); })
-				client.on("error", function(msg){ logger.error(msg); })
-
-				if(c.password != null){ 
-					pub.auth(c.password, function(){
-						pub.select(c.DB, function(err,res){});
-					}); 
-					sub.auth(c.password, function(){
-						sub.select(c.DB, function(err,res){});
-					}); 
-					client.auth(c.password, function(){
-						client.select(c.DB, function(err,res){});
-					}); 
-				}else{
-					pub.select(c.DB, function(err,res){});
-					sub.select(c.DB, function(err,res){});
-					client.select(c.DB, function(err,res){});
-				}
-			}
-
-			if(c.enable == true){
-				io.set('store', new RedisStore({
-					redisPub : pub,
-					redisSub : sub,
-					redisClient : client
-				}));
 			}
 
 			io.sockets.on('connection', function(connection){
 				api.stats.incrament(api, "numberOfWebSocketRequests");
 				api.socketServer.numberOfLocalWebSocketRequests++;
-				// console.log(connection)
 
 				connection.type = "webSocket";
 				connection.params = {};
@@ -204,7 +175,7 @@ var initWebSockets = function(api, next)
 						}
 					}
 
-					api.processAction(api, proxy_connection, connection.messageCount, function(proxy_connection, cont){
+					api.processAction(api, proxy_connection, proxy_connection.messageCount, function(proxy_connection, cont){
 						connection = proxy_connection._original_connection;
 						connection.response = proxy_connection.response;
 						connection.error = proxy_connection.error;
@@ -260,12 +231,6 @@ var initWebSockets = function(api, next)
 			for( var i in api.webSockets.connections ){
 				api.webSockets.connections[i].disconnect();
 				delete api.webSockets.connections[i];
-			}
-			for(var i in IOs){
-				var io = IOs[i];
-				for(var j in io.redisConnections){
-					io.redisConnections[j].quit();
-				}
 			}
 			if(typeof next == "function"){ next(); }
 		}
