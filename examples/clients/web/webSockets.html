@@ -1,6 +1,8 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
-	var socket = io.connect('http://localhost:8080/');
+	var port = window.location.port
+	if(port == "" || port == null){ port = "80"; }
+	var socket = io.connect('http://localhost:'+port+'/');
 	
 	socket.on('welcome', function(data){
 		console.log("connected!")
