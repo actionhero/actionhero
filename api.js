@@ -46,6 +46,7 @@ var createActionHero = function(){
 		// backwards compatibility for old node versions
 		api.fs.existsSync || (api.fs.existsSync = api.path.existsSync);
 		api.fs.exists || (api.fs.exists = api.path.exists);
+		try{ api.domain = require("domain"); }catch(e){ }
 
 		if(api.fs.existsSync(process.cwd() + '/config.js')){
 			api.configData = require(process.cwd() + '/config.js').configData;
@@ -107,6 +108,7 @@ var createActionHero = function(){
 		// run the initializers
 		api.async.series({
 			initLog: function(next){ actionHero.initLog(api, next); },
+			initExceptions: function(next){ actionHero.initExceptions(api, next); },
 			initRedis: function(next){ actionHero.initRedis(api, next); },
 			initCache: function(next){ actionHero.initCache(api, next); },
 			initActions: function(next){ actionHero.initActions(api, next); },
@@ -135,7 +137,7 @@ var createActionHero = function(){
 				api.log(successMessage, ["green", "bold"]);
 				actionHero.running = true;
 				if(callback != null){ 
-					callback(api); 
+					callback(api);
 					// next();
 				}else{
 					// next();
@@ -185,6 +187,7 @@ var createActionHero = function(){
 					if(closed == neededClosed){
 						closed = -1;
 						actionHero.running = false;
+						if(api.domain != null){ actionHero.domain.dispose(); }
 						actionHero.api.log("The actionHero has been stopped", "bold");
 						next(true);
 					}

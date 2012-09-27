@@ -185,12 +185,25 @@ var initTasks = function(api, next)
 				next(null);
 			}
 		}
-	}
+	};
 	
 	api.tasks.run = function(api, taskName, params, next){
-		api.tasks.tasks[taskName].run(api, params, function(resp){
-			if(typeof next == "function"){ next(true); }
-		})
+		if(api.domain != null){
+			var taskDomain = api.domain.create();
+			taskDomain.on("error", function(err){
+				api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[taskName], next);
+			});
+			taskDomain.run(function(){
+				api.tasks.tasks[taskName].run(api, params, function(resp){
+					taskDomain.dispose();
+					if(typeof next == "function"){ next(true); }
+				});
+			})
+		}else{
+			api.tasks.tasks[taskName].run(api, params, function(resp){
+				if(typeof next == "function"){ next(true); }
+			});
+		}
 	};
 	
 	api.tasks.process = function(api, worker_id){	

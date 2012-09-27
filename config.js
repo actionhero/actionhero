@@ -21,6 +21,8 @@ configData.general = {
  	"flatFileNotFoundMessage": "Sorry, that file is not found :(",
  	// The body message to acompany 404 (file not found) errors regading directories
 	"flatFileIndexPageNotFoundMessage": "Sorry, there is no index page for this folder :(",
+	// The message to acompany 500 errors (internal server errors)
+	"serverErrorMessage": "The server experienced an internal error",
 	// the chatRoom that TCP and webSocket clients are joined to when the connect
 	"defaultChatRoom": "defaultRoom",
 	// defaultLimit & defaultOffset are useful for limiting the length of response lists.  

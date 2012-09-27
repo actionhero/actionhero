@@ -109,10 +109,24 @@ var initActions = function(api, next)
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
 				if(connection.error == false){
 					process.nextTick(function() { 
-						api.actions[connection.action].run(api, connection, function(connection, toRender){
-							connection.respondingTo = messageID;
-							next(connection, toRender);
-						}); 
+						if(api.domain != null){
+							var actionDomain = api.domain.create();
+							actionDomain.on("error", function(err){
+								api.exceptionHandlers.action(taskDomain, err, connection, next);
+							});
+							actionDomain.run(function(){
+								api.actions[connection.action].run(api, connection, function(connection, toRender){
+									connection.respondingTo = messageID;
+									actionDomain.dispose();
+									next(connection, toRender);
+								}); 
+							})
+						}else{
+							api.actions[connection.action].run(api, connection, function(connection, toRender){
+								connection.respondingTo = messageID;
+								next(connection, toRender);
+							}); 
+						}
 					});
 				}else{
 					process.nextTick(function() { 

@@ -2,6 +2,18 @@
 
 ## Version 3.0.10 
 
+**non-breaking Exceptions (node >= v0.8.0 only)**
+
+Thanks to node.js `domains`, exceptions in Actions and Tasks will no longer crash the application.  
+
+- Exceptions within actions will be logged, and a new `api.configData.general.serverErrorMessage` will be rendered to clients within an action
+  - web clients will be sent the 500 (server error) header
+- Exceptions created in tasks will also be logged, and the task will return
+- If the Exception occured within a periodic task, the task will be re-enqueud.
+- keep in mind that any applicaton-wide settings which may have been modified in this erronious action/task will not be rolled-back
+
+## Version 3.0.10 
+
 **Route parsing**
 
 You can now extract prams per HTTP(s) request from the route requested by the user via an included utility.
