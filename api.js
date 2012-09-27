@@ -187,7 +187,6 @@ var createActionHero = function(){
 					if(closed == neededClosed){
 						closed = -1;
 						actionHero.running = false;
-						if(api.domain != null){ actionHero.domain.dispose(); }
 						actionHero.api.log("The actionHero has been stopped", "bold");
 						next(true);
 					}
