@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-## Version 3.0.10 
+## Version 3.0.11
 
 **non-breaking Exceptions (node >= v0.8.0 only)**
 
