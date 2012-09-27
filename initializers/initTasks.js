@@ -195,7 +195,7 @@ var initTasks = function(api, next)
 			});
 			taskDomain.run(function(){
 				api.tasks.tasks[taskName].run(api, params, function(resp){
-					taskDomain.dispose();
+					// taskDomain.dispose();
 					if(typeof next == "function"){ next(true); }
 				});
 			})

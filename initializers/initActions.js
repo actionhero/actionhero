@@ -117,7 +117,7 @@ var initActions = function(api, next)
 							actionDomain.run(function(){
 								api.actions[connection.action].run(api, connection, function(connection, toRender){
 									connection.respondingTo = messageID;
-									actionDomain.dispose();
+									// actionDomain.dispose();
 									next(connection, toRender);
 								}); 
 							})
