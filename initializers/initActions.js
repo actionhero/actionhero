@@ -112,7 +112,7 @@ var initActions = function(api, next)
 						if(api.domain != null){
 							var actionDomain = api.domain.create();
 							actionDomain.on("error", function(err){
-								api.exceptionHandlers.action(taskDomain, err, connection, next);
+								api.exceptionHandlers.action(actionDomain, err, connection, next);
 							});
 							actionDomain.run(function(){
 								api.actions[connection.action].run(api, connection, function(connection, toRender){

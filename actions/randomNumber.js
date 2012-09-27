@@ -15,6 +15,7 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
+	console.log(bad)
 	if(connection.method == "GET" || connection.method == null){
 		connection.response.randomNumber = Math.random();
 	}

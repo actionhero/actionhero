@@ -14,13 +14,13 @@ var initExceptions = function(api, next){
 			if(connection.type == "web"){
 				connection.responseHttpCode = 500;
 			}
-			domain.dispose();
+			// domain.dispose();
 			next(connection, true);
 		};
 		api.exceptionHandlers.task = function(domain, err, task, next){
 			api.log("! uncaught error from task: " + task.name, ["red","bold"]);
 			api.exceptionHandlers.renderError(err);
-			domain.dispose();
+			// domain.dispose();
 			if(typeof next == "function"){ next(false); }
 		};
 		///
