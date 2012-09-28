@@ -2,6 +2,11 @@
 
 ## Version 3.0.11
 
+**chat & redis**
+
+- The redis pub/sub channel used for interclient communiaction is now suffiexed by your redis DB
+- This means that differenet actionHero clusters using the same redis instance will no longer intercept eachother's messages
+
 **non-breaking Exceptions (node >= v0.8.0 only)**
 
 Thanks to node.js `domains`, exceptions in Actions and Tasks will no longer crash the application.  

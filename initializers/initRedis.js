@@ -13,8 +13,7 @@ Data and what they do:
 - actionHero:roomMembers-{roomName} [] a list of the folks in a given socket room
 
 Channels and what they do:
-- actionHero:say a channel for saying stuff to everyone
-- actionHero:tasks a channel for saying stuff to everyone
+- actionHero:say:[db] a channel for saying stuff to everyone
 */
 
 var c = {};
