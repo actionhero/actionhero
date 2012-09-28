@@ -5,7 +5,7 @@ var initChatRooms = function(api, next){
 	if(api.redis.enable === false){
 		api.chatRoom.rooms = {};
 	}else{
-		api.chatRoom.redisRoomPrefix = "actionHero:roomMembers::";
+		api.chatRoom.redisRoomPrefix = "actionHero:roomMembers:";
 		api.chatRoom.chatChannel = "actionHero:say:" + api.configData.redis.DB;
 	}
 
