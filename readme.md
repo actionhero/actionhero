@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
 
-Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/evantahler/actionHero/wiki) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Client](https://github.com/evantahler/actionhero_client)
+**Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/evantahler/actionHero/wiki) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Client](https://github.com/evantahler/actionhero_client)**
 
 <img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="250"/>
 
@@ -24,8 +24,8 @@ actionHero will also serve static files for you, but actionHero is not meant to 
 
 ## Want more?
 
-- ### [Read the documentation on the wiki](https://github.com/evantahler/actionHero/wiki)
-- ### [Check out the project history](https://github.com/evantahler/actionHero/blob/master/versions.md)
+- [Read the documentation on the wiki](https://github.com/evantahler/actionHero/wiki)
+- [Check out the project history](https://github.com/evantahler/actionHero/blob/master/versions.md)
 
 ## Who?
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com)
