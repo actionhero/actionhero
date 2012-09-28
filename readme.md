@@ -7,7 +7,7 @@ Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/e
 <img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="250"/>
 
 ## Who is the actionHero?
-actionHero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionHero are to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can **consume the api**, **be servers static content**, and **communicate with each other**.
+actionHero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionHero are to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can **consume the api**, **consume static content**, and **communicate with each other**.
 
 actionHero servers can process both requests and tasks (delayed actions like `send e-mail` or other background jobs).  actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.
 
