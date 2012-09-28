@@ -17,6 +17,10 @@ Thanks to node.js `domains`, exceptions in Actions and Tasks will no longer cras
 - If the Exception occured within a periodic task, the task will be re-enqueud.
 - keep in mind that any applicaton-wide settings which may have been modified in this erronious action/task will not be rolled-back
 
+**Readme and Wiki**
+
+- The `readme.md` was gettting really long and hard to searh, [so we started a github wiki!](https://github.com/evantahler/actionHero/wiki)
+
 ## Version 3.0.10 
 
 **Route parsing**
