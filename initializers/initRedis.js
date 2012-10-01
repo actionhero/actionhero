@@ -2,19 +2,26 @@
 // Connnect to Redis and setup channels
 
 /*
-Data and what they do:
-- actionHero:peers [] a list of all the peers in the action cluster.  New members add themselves to it
-- actionHero:peerPings {} a hash of the last ping time of each peer member.  Useful to check if a peer has gone away
-- actionHero:tasks [] a list of tasks to be completed.  Any memeber can push to the queue; all workers will pull one at a time from the queue
-- actionHero:tasks::{serverID} [] a list of tasks to be completed by only this node.  This queue will be drained at a lower priority than the regular task queue
-- actionHero:tasksClaimed [] a list of tasks being either worked on or sleeping by a node.
-- actionHero:cache [] the common shared cache object
-- actionHero:stats [] the common shared stats object
-- actionHero:roomMembers-{roomName} [] a list of the folks in a given socket room
 
-Channels and what they do:
-- actionHero:say:[db] a channel for saying stuff to everyone
+actionHero will create the following stores within your redis database:
+
+** Keys **
+
+- `actionHero:peers` [] a list of all the peers in the action cluster.  New members add themselves to it
+- `actionHero:peerPings` {} a hash of the last ping time of each peer member.  Useful to check if a peer has gone away
+- `actionHero:tasks` [] a list of tasks to be completed.  Any memeber can push to the queue; all workers will pull one at a time from the queue
+- `actionHero:tasks:{serverID}` [] a list of tasks to be completed by only this node.  This queue will be drained at a lower priority than the regular task queue
+- `actionHero:tasksClaimed` [] a list of tasks being either worked on or sleeping by a node.
+- `actionHero:cache` [] the common shared cache object
+- `actionHero:stats` [] the common shared stats object
+- `actionHero:roomMembers-{roomName}` [] a list of the folks in a given socket room
+
+** Channels **
+
+- `actionHero:say:[db]` the pub/sub channel used for the chat sub-system
+
 */
+
 
 var c = {};
 
