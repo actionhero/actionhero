@@ -21,6 +21,10 @@ Thanks to node.js `domains`, exceptions in Actions and Tasks will no longer cras
 
 - The `readme.md` was gettting really long and hard to searh, [so we started a github wiki!](https://github.com/evantahler/actionHero/wiki)
 
+**Other**
+
+- Documentation and Tests for XML output
+
 ## Version 3.0.10 
 
 **Route parsing**

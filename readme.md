@@ -29,6 +29,7 @@ actionHero will also serve static files for you, but actionHero is not meant to 
 
 ## Who?
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com)
+* Logo by [Ali Spagnola](http://alispagnola.com/)
 * If you want to contribute to actionHero, contribute to the conversation on [github](https://github.com/evantahler/actionHero)
 
 ###
