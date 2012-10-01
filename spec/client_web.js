@@ -29,6 +29,15 @@ suite.addBatch({
     'requestorInformation' : function(res, b){ specHelper.assert.isObject(res.body.requestorInformation); },
   },
 
+  "But I can get XML if I want": {
+    topic: function(){ specHelper.apiTest.get('/', 0, {outputType: "xml"} ,this.callback ); },
+    'should be XML' : function(res, b){ specHelper.assert.isString(res.body); },
+    'has header' : function(res, b){ specHelper.assert.include(res.body, '<?xml version="1.0" encoding="utf-8"?>'); },
+    'has base container' : function(res, b){ specHelper.assert.include(res.body, '<XML>'); },
+    'has server info' : function(res, b){ specHelper.assert.include(res.body, '<apiVersion>3.0.11</apiVersion>'); },
+    'has error' : function(res, b){ specHelper.assert.include(res.body, '<error>{no action} is not a known action.</error>'); },
+  },
+
   "params work": {
     topic: function(){ specHelper.apiTest.get('/testAction/', 0, {},this.callback ); },
     'limit' : function(res, b){ specHelper.assert.equal(res.body.requestorInformation.recievedParams.action, "testAction"); },
