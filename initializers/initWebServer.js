@@ -79,8 +79,11 @@ var initWebServer = function(api, next)
 				// parse GET (URL) variables
 				fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 				if(connection.params.action === undefined){ 
+					connection.actionSetBy = "url";
 					if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
 					else{ connection.params.action = pathParts[1]; }
+				}else{
+					connection.actionSetBy = "queryParam";
 				}
 			
 				// parse POST variables
@@ -89,6 +92,7 @@ var initWebServer = function(api, next)
 						// if no form content-type, treat like GET
 						fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 						if(connection.params.action === undefined){ 
+							connection.actionSetBy = "url";
 							if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
 							else{ connection.params.action = pathParts[1]; }
 						}

@@ -81,44 +81,5 @@ suite.addBatch({
     }
 });
 
-suite.addBatch({
-   'utils.mapParamsFromURL: action in url': {
-        topic: function(){ 
-            connection = {
-                action: "checkGamae",
-                parsedURL: {
-                    path: "/checkGamae/game-10/user-13/something_else"
-                }
-            }
-            var map = ["gameID", "userID", "data"]
-            var urlParams = utils.mapParamsFromURL(connection, map)
-            return(urlParams)
-        },
-        'it Should Work': function (urlParams) { 
-            specHelper.assert.equal(urlParams.gameID, 'game-10'); 
-            specHelper.assert.equal(urlParams.userID, 'user-13'); 
-            specHelper.assert.equal(urlParams.data, 'something_else'); 
-        },
-    },
-    'utils.mapParamsFromURL: action as GET variable': {
-        topic: function(){ 
-            connection = {
-                action: "checkGamae",
-                parsedURL: {
-                    path: "/game-10/user-13/something_else"
-                }
-            }
-            var map = ["gameID", "userID", "data"]
-            var urlParams = utils.mapParamsFromURL(connection, map)
-            return(urlParams)
-        },
-        'it Should Work': function (urlParams) { 
-            specHelper.assert.equal(urlParams.gameID, 'game-10'); 
-            specHelper.assert.equal(urlParams.userID, 'user-13'); 
-            specHelper.assert.equal(urlParams.data, 'something_else'); 
-        },
-    }
-});
-
 // export
 suite.export(module);

@@ -125,6 +125,7 @@ actionHero.start(params, function(api){\r\n\
 ";
 
 documents.config_js = fs.readFileSync(project_root + "node_modules/actionHero/config.js");
+documents.routes_js = fs.readFileSync(project_root + "node_modules/actionHero/routes.js");
 
 documents.cert_pem = fs.readFileSync(project_root + "node_modules/actionHero/certs/server-cert.pem");
 documents.key_pem = fs.readFileSync(project_root + "node_modules/actionHero/certs/server-key.pem");
@@ -192,6 +193,7 @@ create_dir_safely("tasks");
 // make files
 create_file_safely('app.js', documents.app_js);
 create_file_safely('config.js', documents.config_js);
+create_file_safely('routes.js', documents.routes_js);
 create_file_safely('package.json', documents.package_json);
 create_file_safely('/certs/server-cert.pem', documents.cert_pem);
 create_file_safely('/certs/server-key.pem', documents.key_pem);

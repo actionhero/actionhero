@@ -104,6 +104,7 @@ var initActions = function(api, next)
 		}
 		
 		if (connection.error === false){
+			if(connection.type == "web"){ api.utils.processRoute(api, connection); }
 			connection.action = connection.params["action"];
 			if(api.actions[connection.action] != undefined){
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);

@@ -2,6 +2,49 @@
 
 ## Version 3.0.11
 
+**RESTful Routes**
+
+- Building off of `api.utils.mapParamsFromURL`, you can now define named routes to your actionHero projects to help out http and https clients
+- routes remain optional
+- actions defiend in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will always override RESTful routing 
+- the hierarchy of the routes object is prefix --> REST verb -> data
+- data contains the 'action' to map to, and then an optional urlMap (api.utils.mapParamsFromURL)
+- only single depth routes are supported at this time
+- generating a new project will create a template `routes.js`, but it will contain no content
+
+An example `routes.js`
+
+```javascript
+	exports.routes = {
+		
+		users: {
+			get: {
+				action: "usersList", // (GET) /api/users
+			}
+		},
+
+		user : {
+			get: {
+				action: "userAdd",
+				urlMap: ["userID"], // (GET) /api/user/123
+			},
+			post: {
+				action: "userEdit",
+				urlMap: ["userID"] // (POST) /api/user/123
+			},
+			put: {
+				action: "userAdd",
+				urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
+			},
+			delete: {
+				action: "userDelete",
+				urlMap: ["userID"] // (DELETE) /api/user/123
+			}
+		}
+
+	};
+```
+
 **chat & redis**
 
 - The redis pub/sub channel used for interclient communiaction is now suffiexed by your redis DB

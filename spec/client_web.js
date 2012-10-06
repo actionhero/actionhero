@@ -1,12 +1,14 @@
 var specHelper = require('../helpers/_specHelper.js').specHelper;
 var suite = specHelper.vows.describe('Web general functions');
 var apiObj = {};
+var rawApi = {};
 
 suite.addBatch({
   'specHelper.prepare':{
     topic: function(){
       var cb = this.callback;
       specHelper.prepare(0, function(api){
+        rawApi = api;
         apiObj = specHelper.cleanAPIObject(api);
         cb();
       })
@@ -111,6 +113,168 @@ suite.addBatch({
     'bounds of response' : function(res, b){ 
       specHelper.assert.equal(res.body.randomNumber >= 0, true); 
       specHelper.assert.equal(res.body.randomNumber <= 1000, true); 
+    },
+  }
+});
+
+suite.addBatch({
+   'utils.mapParamsFromURL: action in url': {
+        topic: function(){ 
+            connection = {
+                action: "checkGamae",
+                parsedURL: {
+                    path: "/checkGamae/game-10/user-13/something_else"
+                }
+            }
+            var map = ["gameID", "userID", "data"]
+            var urlParams = apiObj.utils.mapParamsFromURL(connection, map)
+            return(urlParams)
+        },
+        'it Should Work': function (urlParams) { 
+            specHelper.assert.equal(urlParams.gameID, 'game-10'); 
+            specHelper.assert.equal(urlParams.userID, 'user-13'); 
+            specHelper.assert.equal(urlParams.data, 'something_else'); 
+        },
+    },
+    'utils.mapParamsFromURL: action as GET variable': {
+        topic: function(){ 
+            connection = {
+                action: "checkGamae",
+                parsedURL: {
+                    path: "/game-10/user-13/something_else"
+                }
+            }
+            var map = ["gameID", "userID", "data"]
+            var urlParams = apiObj.utils.mapParamsFromURL(connection, map)
+            return(urlParams)
+        },
+        'it Should Work': function (urlParams) { 
+            specHelper.assert.equal(urlParams.gameID, 'game-10'); 
+            specHelper.assert.equal(urlParams.userID, 'user-13'); 
+            specHelper.assert.equal(urlParams.data, 'something_else'); 
+        },
+    }
+});
+
+suite.addBatch({
+  "I can overload routes": {
+    topic: function(){ 
+      rawApi.routes = {
+          users: {
+            get: {
+              action: "usersList", // (GET) /api/users
+            }
+          },
+          user : {
+            get: {
+              action: "userAdd",
+              urlMap: ["userID"], // (GET) /api/user/123
+            },
+            post: {
+              action: "userEdit",
+              urlMap: ["userID"] // (POST) /api/user/123
+            },
+            put: {
+              action: "userAdd",
+              urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
+            },
+            delete: {
+              action: "userDelete",
+              urlMap: ["userID"] // (DELETE) /api/user/123
+            }
+          }
+        };
+      this.callback(false, rawApi.routes); 
+    },
+    'yep, it\'s an object' : function(res, routes){ 
+      specHelper.assert.isObject(routes); 
+      specHelper.assert.isObject(routes.users); 
+      specHelper.assert.isObject(routes.user); 
+    },
+  }
+});
+
+suite.addBatch({
+  "unknwon actions are still unknwon": {
+    topic: function(){ 
+      specHelper.apiTest.get('/a_crazy_action', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.requestorInformation.recievedParams.action, 'a_crazy_action');
+      specHelper.assert.equal(resp.body.error, 'a_crazy_action is not a known action.');
+    },
+  },
+  "explicit action declarations still override routed actions": {
+    topic: function(){ 
+      specHelper.apiTest.get('/user/123?action=theRealAction', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.requestorInformation.recievedParams.action, 'theRealAction');
+      specHelper.assert.equal(resp.body.error, 'theRealAction is not a known action.');
+    },
+  },
+  "Routes should be mapped for GET (simple)": {
+    topic: function(){ 
+      specHelper.apiTest.get('/users', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'usersList');
+    },
+  },
+  "Routes should be mapped for GET (complex)": {
+    topic: function(){ 
+      specHelper.apiTest.get('/user/1234', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'userAdd');
+      specHelper.assert.equal(params.userID, '1234');
+    },
+  },
+  "Routes should be mapped for POST": {
+    topic: function(){ 
+      specHelper.apiTest.post('/user/1234?key=value', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'userEdit');
+      specHelper.assert.equal(params.userID, '1234');
+      specHelper.assert.equal(params.key, 'value');
+    },
+  },
+  "Routes should be mapped for PUT": {
+    topic: function(){ 
+      specHelper.apiTest.put('/user/theType/theScreenName', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'userAdd');
+      specHelper.assert.equal(params.type, 'theType');
+      specHelper.assert.equal(params.screenName, 'theScreenName');
+    },
+  },
+  "Routes should be mapped for DELETE": {
+    topic: function(){ 
+      specHelper.apiTest.del('/user/1234', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'userDelete');
+      specHelper.assert.equal(params.userID, '1234');
+    },
+  },
+});
+
+suite.addBatch({
+  "I can reset routes": {
+    topic: function(){ 
+      rawApi.routes = {};
+      this.callback(falase, rawApi.routes);
+    },
+    'back to nothing' : function(res, b){ 
+      specHelper.assert.equal(rawApi.routes.users, null); 
+      specHelper.assert.equal(rawApi.routes.user, null); 
     },
   }
 });

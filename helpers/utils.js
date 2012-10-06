@@ -134,28 +134,5 @@ utils.getExternalIPAddress = function(){
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// parse a connections's URL and build params based on RESTful map
-// map is an array of the param's keys in order (ie: /:action/:userID/:email/:gameID => ['userID', 'email', 'gameID'])
-// the action itself will be ommited from consideration in the mapping
-// these are equvilent: [ localhost:8080/a/path/and/stuff?action=randomNumber ] && [ localhost:8080/randomNumber/a/path/and/stuff ]
-utils.mapParamsFromURL = function(connection, map){
-  if(connection.parsedURL != null && connection.parsedURL.path != null){
-    var urlParts = connection.parsedURL.path.split("/");
-    var urlParams = {};
-    var mapCounter = 0;
-    for (var i in urlParts){
-      var part = urlParts[i];
-      if(part != "" && part != connection.action && map[mapCounter] != null){
-        urlParams[map[mapCounter]] = part;
-        mapCounter++;
-      }
-    }
-    return urlParams;
-  }else{
-    return null;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////
 // EXPORT
 exports.utils = utils;
