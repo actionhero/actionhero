@@ -176,7 +176,7 @@ suite.addBatch({
             },
             put: {
               action: "userAdd",
-              urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
+              urlMap: ["type", "screenName", "key", "value"] // (PUT) /api/user/admin/handle123
             },
             delete: {
               action: "userDelete",
@@ -262,6 +262,18 @@ suite.addBatch({
       var params = resp.body.requestorInformation.recievedParams;
       specHelper.assert.equal(params.action, 'userDelete');
       specHelper.assert.equal(params.userID, '1234');
+    },
+  },
+  "explicit params win over route params": {
+    topic: function(){ 
+      specHelper.apiTest.put('/user/theType/theScreenName/badKey?key=goodKey', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){ 
+      var params = resp.body.requestorInformation.recievedParams;
+      specHelper.assert.equal(params.action, 'userAdd');
+      specHelper.assert.equal(params.type, 'theType');
+      specHelper.assert.equal(params.screenName, 'theScreenName');
+      specHelper.assert.equal(params.key, 'goodKey');
     },
   },
 });

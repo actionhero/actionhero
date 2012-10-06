@@ -7,6 +7,7 @@ If the client doesn't specify and action in a param, and the base route isn't a 
 - routes remain optional
 - actions defiend in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will always override RESTful routing 
 - the hierarchy of the routes object is prefix --> REST verb -> data
+- you can mix explicitly defined params with route-defined params.  If there is an overlap, the explicitly defined params win
 - data contains the 'action' to map to, and then an optional urlMap (api.utils.mapParamsFromURL)
 - only single depth routes are supported at this time
 
