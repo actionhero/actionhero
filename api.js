@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // actionHero Framweork in node.js
 // evan@evantahler.com 
@@ -173,7 +175,7 @@ var createActionHero = function(){
 				cont();
 			}
 
-			function cont(){
+			var cont = function(){
 				var closed = 0;
 				var neededClosed = 0;
 				if(actionHero.api.configData.httpServer.enable){ neededClosed++; }

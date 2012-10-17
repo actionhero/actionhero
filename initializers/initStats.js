@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // initStats
 
@@ -88,7 +90,7 @@ var initStats = function(api, next){
 												numberOfLocalWebRequests: api.webServer.numberOfLocalWebRequests
 											};
 										}
-										sleepingTasks = [];
+										var sleepingTasks = [];
 										for (var i in api.tasks.timers){ sleepingTasks.push(i); }
 										stats.queue = {
 											queueLength: queueLength,

@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // Socket Request Processing
 
@@ -151,7 +153,7 @@ var initSocketServer = function(api, next){
 								}
 							});		
 						}else if(words[0] == "detailsView"){
-							details = {};
+							var details = {};
 							details.params = connection.params;
 							details.public = connection.public;
 							details.room = connection.room;

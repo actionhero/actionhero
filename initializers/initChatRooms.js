@@ -1,3 +1,5 @@
+"use strict"
+
 var initChatRooms = function(api, next){
 
 	api.chatRoom = {};

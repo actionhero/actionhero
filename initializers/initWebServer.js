@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // Web Request Processing
 
@@ -25,7 +27,7 @@ var initWebServer = function(api, next)
 			});
 		}
 		
-		function handleRequest(req, res){
+		var handleRequest = function(req, res){
 			api.stats.incrament(api, "numberOfWebRequests");
 			api.webServer.numberOfLocalWebRequests++;
 			

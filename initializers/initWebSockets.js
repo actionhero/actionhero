@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // Web Sockets via Socket.IO
 
@@ -55,7 +57,7 @@ var initWebSockets = function(api, next){
 			if(c.enable == true){
 				var RedisStore = require('socket.io/lib/stores/redis');
 
-				function completeRedisInit(){
+				var completeRedisInit = function(){
 					if(c.enable == true){
 						io.set('store', new RedisStore({
 							redisPub : api.redis.client,
@@ -144,7 +146,7 @@ var initWebSockets = function(api, next){
 
 				connection.on('detailsView', function(data){
 					if(data == null){ data = {}; }
-					details = {};
+					var details = {};
 					details.params = connection.params;
 					details.public = connection.public;
 					details.room = connection.room;

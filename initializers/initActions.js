@@ -1,3 +1,5 @@
+"use strict"
+
 ////////////////////////////////////////////////////////////////////////////
 // populate actions
 
@@ -41,7 +43,7 @@ var initActions = function(api, next)
 				if(path[path.length - 1] != "/"){ path += "/"; } 
 				var fullfFilePath = path + file;
 				if (file[0] != "."){
-					stats = api.fs.statSync(fullfFilePath);
+					var stats = api.fs.statSync(fullfFilePath);
 					if(stats.isDirectory()){
 						loadFolder(fullfFilePath);
 					}else if(stats.isSymbolicLink()){

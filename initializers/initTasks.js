@@ -1,3 +1,5 @@
+"use strict"
+
 // tasks!
 
 var initTasks = function(api, next)
@@ -267,7 +269,7 @@ var initTasks = function(api, next)
 
 	api.tasks.clearStuckClaimedTasks = function(api, next){
 		if(api.redis.enable === true){
-			function done(started){
+			var done = function(started){
 				started--;
 				if(started == 0){ next(); }
 				else{ return started }
@@ -331,7 +333,7 @@ var initTasks = function(api, next)
 			if(path[path.length - 1] != "/"){ path += "/"; } 
 			var fullfFilePath = path + file;
 			if (file[0] != "."){
-				stats = api.fs.statSync(fullfFilePath);
+				var stats = api.fs.statSync(fullfFilePath);
 				if(stats.isDirectory()){
 					loadFolder(fullfFilePath);
 				}else if(stats.isSymbolicLink()){

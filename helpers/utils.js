@@ -1,3 +1,5 @@
+"use strict"
+
 var utils = {};
 
 ////////////////////////////////////////////////////////////////////////////
@@ -66,7 +68,7 @@ utils.sleepSync = function(naptime){
 	var startingMSeconds = now.getTime();
 	while(sleeping){
 	    alarm = new Date();
-	    alarmMSeconds = alarm.getTime();
+	    var alarmMSeconds = alarm.getTime();
 	    if(alarmMSeconds - startingMSeconds > naptime){ sleeping = false; }
 	}        
 }
