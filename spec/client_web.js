@@ -36,7 +36,7 @@ suite.addBatch({
     'should be XML' : function(res, b){ specHelper.assert.isString(res.body); },
     'has header' : function(res, b){ specHelper.assert.include(res.body, '<?xml version="1.0" encoding="utf-8"?>'); },
     'has base container' : function(res, b){ specHelper.assert.include(res.body, '<XML>'); },
-    'has server info' : function(res, b){ specHelper.assert.include(res.body, '<apiVersion>3.0.11</apiVersion>'); },
+    'has server info' : function(res, b){ specHelper.assert.include(res.body, '<apiVersion>'+apiObj.configData.general.apiVersion+'</apiVersion>'); },
     'has error' : function(res, b){ specHelper.assert.include(res.body, '<error>{no action} is not a known action.</error>'); },
   },
 
