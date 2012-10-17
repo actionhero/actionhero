@@ -26,12 +26,11 @@ var initChatRooms = function(api, next){
 			api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
 		}
 		else{
-			if(connection == null){
-				connection = {room: api.configData.general.defaultChatRoom, public: {id: 0}}
-				var messagePayload = {message: message, from: api.configData.general.serverName, context: "user"};
-			}else{
-				var messagePayload = {message: message, from: connection.public.id, context: "user"};
-			}
+			if(connection == null){ connection = {}; }
+			if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
+			if(connection.public == null){ connection.public = {}; }
+			if(connection.public.id == null){ connection.public.id = 0; }
+			var messagePayload = {message: message, from: connection.public.id, context: "user"};
 			// TCP clients
 			if(api.socketServer != null){
 				for(var i in api.socketServer.connections){
