@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-	"apiVersion": "3.0.11",
+	"apiVersion": "3.0.12",
 	"serverName": "actionHero API",
 	// The welcome message seen by TCP and webSocket clients upon connection
 	"welcomeMessage" : "Hello! Welcome to the actionHero api",

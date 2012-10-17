@@ -1,5 +1,15 @@
 # Action Hero API Versions
 
+## Version 3.0.12
+
+**Strict Mode**
+
+- actionHero now conforms to strict JS mode.
+
+**Bugs**
+
+- Relaxed the necesity to provide public information to mock connections when using socketRoomBroadcast progamatically. 
+
 ## Version 3.0.11
 
 **RESTful Routes**
