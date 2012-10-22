@@ -1,5 +1,3 @@
-"use strict"
-
 // tasks!
 
 var initTasks = function(api, next)

@@ -1,5 +1,3 @@
-"use strict"
-
 ////////////////////////////////////////////////////////////////////////////
 // error handling for unCaught exceptions from tasks and actions
 // I make use of node.js domains, so I am only availalbe for node v0.8.0 and higher
