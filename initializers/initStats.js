@@ -73,7 +73,7 @@ var initStats = function(api, next){
 											stats.socketServer = {
 												numberOfGlobalSocketRequests: numberOfSocketRequests,
 												numberOfLocalSocketRequests: api.socketServer.numberOfLocalSocketRequests,
-												numberOfLocalActiveSocketClients: api.socketServer.connections.length
+												numberOfLocalActiveSocketClients: numberOfActiveSocketClients
 											};
 										}
 										if(api.webSockets != null){

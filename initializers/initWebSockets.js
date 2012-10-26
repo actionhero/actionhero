@@ -7,7 +7,6 @@ var initWebSockets = function(api, next){
 		next()
 	}else{
 		api.webSockets = {};
-		api.webSockets.connections = [];
 		var IOs = [];
 
 		var logger = {
@@ -201,15 +200,15 @@ var initWebSockets = function(api, next){
 				connection.on('disconnect', function(){
 					api.log("webSocket connection "+connection.remoteIP+" | disconnected");
 					api.stats.incrament(api, "numberOfActiveWebSocketClients", -1);
-					for(var i in api.webSockets.connections){
-						if(connection.id == api.webSockets.connections[i].id){
-							delete api.webSockets.connections[i].id
+					for(var i in api.connections){
+						if(api.connections[i].type == "webSocket" && connection.id == api.connections[i].id){
+							delete api.connections[i].id
 							break;
 						}
 					}
 				});
 
-				api.webSockets.connections.push(connection);
+				api.connections.push(connection);
 
 			});
 		}
@@ -235,9 +234,11 @@ var initWebSockets = function(api, next){
 		}
 
 		api.webSockets.disconnectAll = function(api, next){
-			for( var i in api.webSockets.connections ){
-				api.webSockets.connections[i].disconnect();
-				delete api.webSockets.connections[i];
+			for( var i in api.connections ){
+				if(api.connections[i].type == "webSocket"){
+					api.connections[i].disconnect();
+					delete api.connections[i];
+				}
 			}
 			if(typeof next == "function"){ next(); }
 		}

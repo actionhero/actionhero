@@ -6,7 +6,6 @@ var initSocketServer = function(api, next){
 		next()
 	}else{
 		api.socketServer = {};
-		api.socketServer.connections = [];
 		api.socketServer.socketDataString = "";
 		api.socketServer.numberOfLocalSocketRequests = 0;
 		
@@ -31,7 +30,7 @@ var initSocketServer = function(api, next){
 			connection.public.id = connection.id;
 			connection.public.connectedAt = new Date().getTime();
 			
-			api.socketServer.connections.push(connection);
+			api.connections.push(connection);
 
 			connection.on("connect", function () {
 				api.stats.incrament(api, "numberOfActiveSocketClients");
@@ -232,8 +231,10 @@ var initSocketServer = function(api, next){
 			connection.on("end", function () {
 				api.chatRoom.roomRemoveMember(api, connection, function(){
 					api.stats.incrament(api, "numberOfActiveSocketClients", -1);
-					for(var i in api.socketServer.connections){
-						if(api.socketServer.connections[i].id == connection.id){ api.socketServer.connections.splice(i,1); }
+					for(var i in api.connections){
+						if(api.connections[i].type == "socket"){
+							if(api.connections[i].id == connection.id){ api.connections.splice(i,1); }
+						}
 					}
 					try{ 
 						connection.end(); 
@@ -299,14 +300,19 @@ var initSocketServer = function(api, next){
 				api.socketServer.server.close();
 				alreadyShutdown = true;
 			}
-			for(var i in api.socketServer.connections){
-				var connection = api.socketServer.connections[i];
-				if (connection.responsesWaitingCount == 0){
-					api.socketServer.connections[i].end("Server going down NOW\r\nBye!\r\n");
+			var pendingConnections = 0;
+			for(var i in api.connections){
+				var connection = api.connections[i];
+				if(connection.type == "socket"){
+					if (connection.responsesWaitingCount == 0){
+						api.connections[i].end("Server going down NOW\r\nBye!\r\n");
+					}else{
+						pendingConnections++;
+					}
 				}
 			}
-			if(api.socketServer.connections.length != 0){
-				api.log("[socket] waiting on shutdown, there are still " + api.socketServer.connections.length + " connected clients waiting on a response");
+			if(pendingConnections > 0){
+				api.log("[socket] waiting on shutdown, there are still " + pendingConnections + " connected clients waiting on a response");
 				setTimeout(function(){
 					api.socketServer.gracefulShutdown(api, next, alreadyShutdown);
 				}, 3000);

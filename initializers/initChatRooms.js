@@ -31,25 +31,13 @@ var initChatRooms = function(api, next){
 			if(connection.public == null){ connection.public = {}; }
 			if(connection.public.id == null){ connection.public.id = 0; }
 			var messagePayload = {message: message, from: connection.public.id, context: "user"};
-			// TCP clients
-			if(api.socketServer != null){
-				for(var i in api.socketServer.connections){
-					var thisConnection = api.socketServer.connections[i];
-					if(thisConnection.room == connection.room){
-						if(connection == null || thisConnection.public.id != connection.public.id){
-							api.socketServer.sendSocketMessage(thisConnection, messagePayload);
-						}
-					}
-				}
-			}
-			// WebSocket clients
-			if(api.webSockets != null){
-				for(var i in api.webSockets.connections){
-					var thisConnection = api.webSockets.connections[i];
-					if(thisConnection.room == connection.room){
-						if(connection == null || thisConnection.public.id != connection.public.id){
-							thisConnection.emit("say", messagePayload);
-						}
+			for(var i in api.connections){
+				var thisConnection = api.connections[i];
+				if(thisConnection.room == connection.room){
+					if(connection == null || thisConnection.public.id != connection.public.id){
+						if(thisConnection.type == "web"){}
+						else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
+						else if(thisConnection.type == "webSocket"){ thisConnection.emit("say", messagePayload); }
 					}
 				}
 			}
