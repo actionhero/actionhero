@@ -134,6 +134,19 @@ utils.getExternalIPAddress = function(){
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// cookie parse from headers of http(s) requests
+utils.parseCookies = function(req){
+	var cookies = {};
+	if(req.headers.cookie != null){
+		req.headers.cookie.split(';').forEach(function( cookie ) {
+			var parts = cookie.split('=');
+			cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
+		});
+	}
+	return cookies;
+};
+
+////////////////////////////////////////////////////////////////////////////
 // helpers for setting up and destroyign connections
 utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	if(connection == null){ connection = {}; }
@@ -144,7 +157,7 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	connection.errror = false;
 	connection.remotePort = remotePort;
 	connection.remoteIP = remoteIP;
-	connection.room = api.configData.general.defaultChatRoom;
+	if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
 	connection.messageCount = 0;
 	connection.connectedAt = new Date().getTime();
 	if(connection.id == null){
@@ -158,13 +171,15 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 		connectedAt: connection.connectedAt
 	};
 	if(api.connections[connection.public.id] == null){
-		api.connections[connection.public.id] = connection;
 		api.chatRoom.roomAddMember(api, connection);
 	}
+	api.connections[connection.public.id] = connection;
 	return connection;
 }
 
 utils.destroyConnection = function(api, connection){
+	console.log("destroy")
+	console.log(connection.room)
 	api.chatRoom.roomRemoveMember(api, connection, function(){
 		delete api.connections[connection.public.id]
 		delete connection;
