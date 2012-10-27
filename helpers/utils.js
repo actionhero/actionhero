@@ -178,8 +178,6 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 }
 
 utils.destroyConnection = function(api, connection){
-	console.log("destroy")
-	console.log(connection.room)
 	api.chatRoom.roomRemoveMember(api, connection, function(){
 		delete api.connections[connection.public.id]
 		delete connection;
