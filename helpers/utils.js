@@ -157,8 +157,17 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 		id: connection.id, 
 		connectedAt: connection.connectedAt
 	};
-	api.connections.push(connection);
-	api.chatRoom.roomAddMember(api, connection);
+	var found = false;
+	for(var i in api.connections){
+		if(api.connections[i].type == connection.type && api.connections[i].public.id == connection.public.id){
+			found = true;
+			break;
+		}
+	}
+	if(found == false){
+		api.connections.push(connection);
+		api.chatRoom.roomAddMember(api, connection);
+	}
 	return connection;
 }
 

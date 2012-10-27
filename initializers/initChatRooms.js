@@ -30,12 +30,12 @@ var initChatRooms = function(api, next){
 			if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
 			if(connection.public == null){ connection.public = {}; }
 			if(connection.public.id == null){ connection.public.id = 0; }
-			var messagePayload = {message: message, from: connection.public.id, context: "user"};
+			var messagePayload = {message: message, room: connection.room, from: connection.public.id, context: "user", sentAt: new Date().getTime() };
 			for(var i in api.connections){
 				var thisConnection = api.connections[i];
 				if(thisConnection.room == connection.room){
 					if(connection == null || thisConnection.public.id != connection.public.id){
-						if(thisConnection.type == "web"){}
+						if(thisConnection.type == "web"){ api.webServer.storeWebChatMessage(api, thisConnection, messagePayload); }
 						else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
 						else if(thisConnection.type == "webSocket"){ thisConnection.emit("say", messagePayload); }
 					}
@@ -73,21 +73,31 @@ var initChatRooms = function(api, next){
 	}
 
 	api.chatRoom.roomAddMember = function(api, connection, next){
-		api.chatRoom.announceMember(api, connection, true);
 		var room = connection.room;
 		var name = connection.public.id;
-		if(api.redis.enable === true){
-			var key = api.chatRoom.redisRoomPrefix + connection.room;
-			api.redis.client.rpush(key, name, function(){
-				if(typeof next == "function"){ next(true) }
-			});
-		}else{
-			if(api.chatRoom.rooms[room] == null){
-				api.chatRoom.rooms[room] = [];
+		api.chatRoom.socketRoomStatus(api, room, function(roomStatus){
+			var found = false
+			for(var i in roomStatus.members){
+				if (name == roomStatus.members[i]){ found = true; break; }
 			}
-			api.chatRoom.rooms[room].push(name);
-			if(typeof next == "function"){ next(true) }
-		}
+			if(found == false){
+				api.chatRoom.announceMember(api, connection, true);
+				if(api.redis.enable === true){
+					var key = api.chatRoom.redisRoomPrefix + connection.room;
+					api.redis.client.rpush(key, name, function(){
+						if(typeof next == "function"){ next(true) }
+					});
+				}else{
+					if(api.chatRoom.rooms[room] == null){
+						api.chatRoom.rooms[room] = [];
+					}
+					api.chatRoom.rooms[room].push(name);
+					if(typeof next == "function"){ next(true) }
+				}
+			}else{
+				if(typeof next == "function"){ next(false) }
+			}
+		});
 	}
 
 	api.chatRoom.roomRemoveMember = function(api, connection, next){

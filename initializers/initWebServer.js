@@ -8,6 +8,8 @@ var initWebServer = function(api, next)
 	}else{
 		api.webServer = {};
 		api.webServer.numberOfLocalWebRequests = 0;
+		api.webServer.clientClearTimers = [];
+		if(api.redis.enable != true){ api.webServer.webChatMessages = {}; }
 		
 		////////////////////////////////////////////////////////////////////////////
 		// server
@@ -193,9 +195,71 @@ var initWebServer = function(api, next)
 						});
 					}
 				}
-				api.utils.destroyConnection(api, connection);
+				if(api.webServer.clientClearTimers[connection.public.id] != null){
+					clearTimeout(api.webServer.clientClearTimers[connection.public.id]);
+				}
+				api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
+					api.utils.destroyConnection(api, connection);
+				}, api.configData.commonWeb.httpClientMessageTTL, connection)
 			});
 		};
+
+		////////////////////////////////////////////////////////////////////////////
+		// Helpers to expand chat functionality to http(s) clients
+
+		api.webServer.storeWebChatMessage = function(api, connection, messagePayload, next){
+			if(api.redis.enable === true){
+				var rediskey = 'actionHero:webMessages:' + connection.public.id;
+				api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
+					api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
+						if(typeof next == "function"){ next(); }
+					});
+				});
+			}else{
+				// add message
+				if(api.webServer.webChatMessages[connection.public.id] == null){ api.webServer.webChatMessages[connection.public.id] = []; }
+				var store = api.webServer.webChatMessages[connection.public.id];
+				store.push({
+					messagePayload: messagePayload,
+					expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL, 
+				});
+				// check for expired messages
+				for(var i in api.webServer.webChatMessages){
+					var store = api.webServer.webChatMessages[i];
+					for(var j in store){
+						var message = store[j];
+						if(message.expiresAt < new Date().getTime()){
+							store.splice(j,1);
+						}
+					}
+					if(store.length == 0){
+						delete api.webServer.webChatMessages[i];
+					}
+				}
+				if(typeof next == "function"){ next(); }
+			}
+		}
+
+		api.webServer.getWebChatMessage = function(api, connection, next){
+			if(api.redis.enable === true){
+				var rediskey = 'actionHero:webMessages:' + connection.public.id;
+				api.redis.client.lpop(rediskey, function(err, message){
+					if(message != null){
+						next(JSON.parse(message));
+					}else{
+						next(null);
+					}
+				});
+			}else{
+				var store = api.webServer.webChatMessages[connection.public.id];
+				if(store == null){
+					next(null);
+				}else{
+					var message = store.splice(0,1);
+					next(message);
+				}
+			}
+		}
 		
 		////////////////////////////////////////////////////////////////////////////
 		// Go servers!

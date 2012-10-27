@@ -15,6 +15,7 @@ actionHero will create the following stores within your redis database:
 - `actionHero:cache` [] the common shared cache object
 - `actionHero:stats` [] the common shared stats object
 - `actionHero:roomMembers-{roomName}` [] a list of the folks in a given socket room
+- `actionHero:webMessages:{client.id}` [] an array of messages for a http(s) client (expires)
 
 ** Channels **
 
