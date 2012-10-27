@@ -138,6 +138,7 @@ utils.getExternalIPAddress = function(){
 utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	if(connection == null){ connection = {}; }
 	connection.type = type;
+	connection.error = false;
 	connection.params = {};
 	connection.response = {};
 	connection.errror = false;

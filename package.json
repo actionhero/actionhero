@@ -14,6 +14,7 @@
     "node": ">=0.6.0"
   },
   "dependencies": {
+    "browser_fingerprint":"x",
     "async":"0.1.x", 
     "request":"2.11.x",
     "validator":"0.4.x",

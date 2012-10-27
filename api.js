@@ -42,6 +42,7 @@ var createActionHero = function(){
 		api.redisPackage = require('redis');
 		api.cluster = require('cluster');
 		api.io = require('socket.io');
+		api.bf = require('browser_fingerprint');
 				
 		// backwards compatibility for old node versions
 		api.fs.existsSync || (api.fs.existsSync = api.path.existsSync);

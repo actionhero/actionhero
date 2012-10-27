@@ -83,7 +83,13 @@ configData.commonWeb = {
 	// the header which will be returend for all flat file served from /public.  I am defiend in seconds
 	"flatFileCacheDuration" : 60,
 	// how often to prune pending messages for http clients
-	"httpClientMessagePruneTimer" : 10000
+	"httpClientMessagePruneTimer" : 10000,
+	// settings for determining the id of an http(s) requset (browser-fingerprint)
+	"fingerprintOptions" : {
+		cookieKey: "__browser_fingerprint",
+		toSetCookie: true,
+		onlyStaticElements: false,
+	},
 };
 
 /////////////////
