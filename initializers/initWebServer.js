@@ -210,6 +210,7 @@ var initWebServer = function(api, next)
 				api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
 					api.utils.destroyConnection(api, connection);
 					delete api.webServer.clientClearTimers[connection.public.id];
+					delete api.webServer.webChatMessages[connection.public.id]
 				}, api.configData.commonWeb.httpClientMessageTTL, connection)
 			});
 		};
@@ -233,19 +234,6 @@ var initWebServer = function(api, next)
 					messagePayload: messagePayload,
 					expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL, 
 				});
-				// check for expired messages
-				for(var i in api.webServer.webChatMessages){
-					var store = api.webServer.webChatMessages[i];
-					for(var j in store){
-						var message = store[j];
-						if(message.expiresAt < new Date().getTime()){
-							store.splice(j,1);
-						}
-					}
-					if(store.length == 0){
-						delete api.webServer.webChatMessages[i];
-					}
-				}
 				if(typeof next == "function"){ next(); }
 			}
 		}
