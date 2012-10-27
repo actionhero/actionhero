@@ -8,6 +8,7 @@ var initWebServer = function(api, next)
 	}else{
 		api.webServer = {};
 		api.webServer.numberOfLocalWebRequests = 0;
+		api.webServer.roomCookieKey = "__room";
 		api.webServer.clientClearTimers = [];
 		if(api.redis.enable != true){ api.webServer.webChatMessages = {}; }
 		
@@ -32,9 +33,12 @@ var initWebServer = function(api, next)
 			api.webServer.numberOfLocalWebRequests++;
 
 			api.bf.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
-				var responseHeaders = cookieHash;
-				responseHeaders['Content-Type'] = "application/json";
-				responseHeaders['X-Powered-By'] = api.configData.general.serverName;
+				var responseHeaders = [];
+				for(var i in cookieHash){
+					responseHeaders.push([i, cookieHash[i]]);
+				}
+				responseHeaders.push(['Content-Type', "application/json"]);
+				responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
 				var connection = {
 					id: fingerprint,
 					params: {},
@@ -44,12 +48,17 @@ var initWebServer = function(api, next)
 					method: req.method,
 					responseHeaders: responseHeaders,
 					responseHttpCode: 200,
+					cookies: api.utils.parseCookies(req),
+				}
+
+				if(connection.cookies[api.webServer.roomCookieKey] != null){
+					connection.room = connection.cookies[api.webServer.roomCookieKey];
 				}
 				api.utils.setupConnection(api, connection, "web", req.connection.remotePort, req.connection.remoteAddress);
 
 				if(typeof(api.configData.commonWeb.httpHeaders) != 'undefined'){
 					for(var i in api.configData.commonWeb.httpHeaders){
-						connection.responseHeaders[i] = api.configData.commonWeb.httpHeaders[i];
+						connection.responseHeaders.push([i, api.configData.commonWeb.httpHeaders[i]]);
 					}
 				}
 		                
@@ -174,10 +183,10 @@ var initWebServer = function(api, next)
 					}
 				
 					if(connection.params.callback != null){
-						connection.responseHeaders['Content-Type'] = "application/javascript";
+						connection.responseHeaders.push(['Content-Type', "application/javascript"]);
 						stringResponse = connection.params.callback + "(" + stringResponse + ");";
 					}
-				
+
 					connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
 					connection.res.end(stringResponse);
 				}
@@ -238,6 +247,22 @@ var initWebServer = function(api, next)
 					}
 				}
 				if(typeof next == "function"){ next(); }
+			}
+		}
+
+		api.webServer.changeChatRoom = function(api, connection, next){
+			if(connection.params.room != null){
+				connection.room = connection.params.room;
+				api.chatRoom.roomRemoveMember(api, connection, function(){
+					api.chatRoom.roomAddMember(api, connection, function(){
+						connection.responseHeaders.push(['Set-Cookie', api.webServer.roomCookieKey + "=" + connection.params.room]);
+						connection.response.room = connection.room;
+						if(typeof next == "function"){ next() };
+					});
+				});
+			}else{
+				connection.error = "room is required to use the roomChange method";
+				if(typeof next == "function"){ next() };
 			}
 		}
 
