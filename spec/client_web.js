@@ -7,6 +7,7 @@ suite.addBatch({
   'specHelper.prepare':{
     topic: function(){
       var cb = this.callback;
+      specHelper.resetCookieJar();
       specHelper.prepare(0, function(api){
         rawApi = api;
         apiObj = specHelper.cleanAPIObject(api);
@@ -290,6 +291,76 @@ suite.addBatch({
     },
   }
 });
+
+var clientID = null;
+suite.addBatch({
+  "I can my chat details": {
+    topic: function(){ 
+      specHelper.apiTest.get('/chat/?method=detailsView', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.error, 'OK');
+      clientID = resp.body.details.public.id
+    },
+  },
+  "I can my see room details": {
+    topic: function(){ 
+      specHelper.apiTest.get('/chat/?method=roomView', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.roomStatus.room, "defaultRoom");
+    },
+  },
+  "clientID's stick (cookies)": {
+    topic: function(){ 
+      specHelper.apiTest.get('/chat/?method=detailsView', 0, {} ,this.callback ); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.details.public.id, clientID);
+    },
+  },
+  "I can change rooms": {
+    topic: function(){ 
+      cb = this.callback
+      specHelper.apiTest.get('/chat/?method=roomChange&room=anotherRoom', 0, {}, function(){
+        specHelper.apiTest.get('/chat/?method=roomView', 0, {}, cb ); 
+      }); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.roomStatus.room, "anotherRoom");
+    },
+  },
+});
+
+suite.addBatch({
+  "I can change back": {
+    topic: function(){ 
+      cb = this.callback
+      specHelper.apiTest.get('/chat/?method=roomChange&room=defaultRoom', 0, {}, function(){
+        specHelper.apiTest.get('/chat/?method=roomView', 0, {}, cb ); 
+      }); 
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.roomStatus.room, "defaultRoom");
+    },
+  },
+});
+
+suite.addBatch({
+  "I should get messages": {
+    topic: function(){ 
+      cb = this.callback
+      rawApi.chatRoom.socketRoomBroadcast(rawApi, {room: 'defaultRoom'}, "TEST");
+      setTimeout(function(){
+        specHelper.apiTest.get('/chat/?method=messages', 0, {}, cb); 
+      }, 1000)
+    },
+    'should work' : function(resp, b){
+      specHelper.assert.equal(resp.body.message.message, "TEST");
+    },
+  },
+});
+
 
 // export
 suite.export(module);

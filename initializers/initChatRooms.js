@@ -13,6 +13,10 @@ var initChatRooms = function(api, next){
 	// broadcast a message to all connections in a room
 	api.chatRoom.socketRoomBroadcast = function(api, connection, message, fromQueue){
 		if(fromQueue == null){fromQueue = false;}
+		if(connection == null){ connection = {}; }
+		if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
+		if(connection.public == null){ connection.public = {}; }
+		if(connection.public.id == null){ connection.public.id = 0; }
 		if(api.redis.enable === true && fromQueue == false){ 
 			var payload = {
 				message: message,
@@ -26,10 +30,6 @@ var initChatRooms = function(api, next){
 			api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
 		}
 		else{
-			if(connection == null){ connection = {}; }
-			if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
-			if(connection.public == null){ connection.public = {}; }
-			if(connection.public.id == null){ connection.public.id = 0; }
 			var messagePayload = {message: message, room: connection.room, from: connection.public.id, context: "user", sentAt: new Date().getTime() };
 			for(var i in api.connections){
 				var thisConnection = api.connections[i];
@@ -52,6 +52,7 @@ var initChatRooms = function(api, next){
 			api.redis.client.llen(key, function(err, length){
 				api.redis.client.lrange(key, 0, length, function(err, members){
 					next({
+						room: room,
 						members: members,
 						membersCount: length
 					});
@@ -60,11 +61,13 @@ var initChatRooms = function(api, next){
 		}else{
 			if(api.chatRoom.rooms[room] != null){
 				next({
+					room: room,
 					members: api.chatRoom.rooms[room],
 					membersCount: api.chatRoom.rooms[room].length
 				});
 			}else{
 				next({
+					room: room,
 					members: null,
 					membersCount: 0
 				});
