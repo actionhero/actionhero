@@ -200,6 +200,7 @@ var initWebServer = function(api, next)
 				}
 				api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
 					api.utils.destroyConnection(api, connection);
+					delete api.webServer.clientClearTimers[connection.public.id];
 				}, api.configData.commonWeb.httpClientMessageTTL, connection)
 			});
 		};

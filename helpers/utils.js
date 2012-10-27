@@ -157,29 +157,18 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 		id: connection.id, 
 		connectedAt: connection.connectedAt
 	};
-	var found = false;
-	for(var i in api.connections){
-		if(api.connections[i].type == connection.type && api.connections[i].public.id == connection.public.id){
-			found = true;
-			break;
-		}
-	}
-	if(found == false){
-		api.connections.push(connection);
+	if(api.connections[connection.public.id] == null){
+		api.connections[connection.public.id] = connection;
 		api.chatRoom.roomAddMember(api, connection);
 	}
 	return connection;
 }
 
 utils.destroyConnection = function(api, connection){
-	for(var i in api.connections){
-		if(api.connections[i].public.id == connection.public.id && connection.type == api.connections[i].type){
-			api.connections.splice(i,1);
-			api.chatRoom.roomRemoveMember(api, connection, function(){
-				delete connection;
-			});			
-		}
-	}
+	api.chatRoom.roomRemoveMember(api, connection, function(){
+		delete api.connections[connection.public.id]
+		delete connection;
+	});	
 }
 
 ////////////////////////////////////////////////////////////////////////////

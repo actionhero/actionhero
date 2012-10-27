@@ -91,7 +91,7 @@ var createActionHero = function(){
 			
 		api.utils = require(__dirname + '/helpers/utils.js').utils;
 
-		api.connections = []; // container for future client connections
+		api.connections = {}; // container for future client connections
 
 		// determine my unique ID
 		var externalIP = api.utils.getExternalIPAddress();
@@ -197,6 +197,7 @@ var createActionHero = function(){
 
 				if(actionHero.api.configData.httpServer.enable){
 					actionHero.api.webServer.webApp.on("close", function(){
+						for(var i in actionHero.api.webServer.clientClearTimers){ clearTimeout(actionHero.api.webServer.clientClearTimers[i]); }
 						closed++;
 						checkForDone("http");
 					});
@@ -211,6 +212,7 @@ var createActionHero = function(){
 
 				if(actionHero.api.configData.httpsServer.enable){
 					actionHero.api.webServer.secureWebApp.on("close", function(){
+						for(var i in actionHero.api.webServer.clientClearTimers){ clearTimeout(actionHero.api.webServer.clientClearTimers[i]); }
 						closed++;
 						checkForDone("https");
 					});

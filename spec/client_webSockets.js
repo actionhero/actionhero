@@ -1,4 +1,5 @@
 var specHelper = require('../helpers/_specHelper.js').specHelper;
+var utils = require('../helpers/utils.js').utils;
 var suite = specHelper.vows.describe('API websockets');
 var io = require('socket.io-client');
 var apiObj = {};
@@ -190,7 +191,7 @@ suite.addBatch({
       }, 1000);
     },
     'bye': function(err, data){ 
-      specHelper.assert.equal(apiObj.connections.length, 0)
+      specHelper.assert.equal(utils.hashLength(apiObj.connections), 0)
     },
   }
 });
