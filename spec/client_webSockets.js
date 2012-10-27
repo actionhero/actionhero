@@ -161,5 +161,21 @@ suite.addBatch({
   }
 });
 
+suite.addBatch({
+  'I can disconnect the web sockets':{
+    topic: function(){
+      var cb = this.callback;
+      client_1.disconnect();
+      client_2.disconnect();
+      setTimeout(function(){
+        cb(false, {})
+      }, 1000);
+    },
+    'bye': function(err, data){ 
+      specHelper.assert.equal(apiObj.connections.length, 0)
+    },
+  }
+});
+
 // export
 suite.export(module);

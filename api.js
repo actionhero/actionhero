@@ -91,21 +91,6 @@ var createActionHero = function(){
 		api.utils = require(__dirname + '/helpers/utils.js').utils;
 
 		api.connections = []; // container for future client connections
-		api.prototypes = {};
-		api.prototypes.connection = function(api, type, remotePort, remoteIP, otherParams){
-			this.type = type;
-			this.params = {};
-			this.response = {};
-			this.errror = false;
-			var md5 = api.crypto.createHash('md5');
-			var hashBuff = new Buffer(remotePort+ remoteIP + Math.random() + new Date().getTime()).toString('base64');
-			md5.update(hashBuff);
-			this.id = md5.digest('hex');
-			for(var i in otherParams){
-				this[i] = otherParams[i];
-			}
-			api.connections.push(this);
-		}
 
 		// determine my unique ID
 		var externalIP = api.utils.getExternalIPAddress();

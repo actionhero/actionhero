@@ -134,5 +134,43 @@ utils.getExternalIPAddress = function(){
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// helpers for setting up and destroyign connections
+utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
+	if(connection == null){ connection = {}; }
+	connection.type = type;
+	connection.params = {};
+	connection.response = {};
+	connection.errror = false;
+	connection.remotePort = remotePort;
+	connection.remoteIP = remoteIP;
+	connection.room = api.configData.general.defaultChatRoom;
+	connection.messageCount = 0;
+	connection.connectedAt = new Date().getTime();
+	if(connection.id == null){
+		var md5 = api.crypto.createHash('md5');
+		var hashBuff = new Buffer(remotePort+ remoteIP + Math.random() + connection.connectedAt).toString('base64');
+		md5.update(hashBuff);
+		connection.id = md5.digest('hex');
+	}
+	connection.public = {
+		id: connection.id, 
+		connectedAt: connection.connectedAt
+	};
+	api.connections.push(connection);
+	api.chatRoom.roomAddMember(api, connection);
+	return connection;
+}
+
+utils.destroyConnection = function(api, connection){
+	for(var i in api.connections){
+		if(api.connections[i].public.id == connection.public.id && connection.type == api.connections[i].type){
+			api.connections.splice(i,1);
+			delete connection;
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
 // EXPORT
 exports.utils = utils;

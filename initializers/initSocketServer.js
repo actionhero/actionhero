@@ -14,23 +14,10 @@ var initSocketServer = function(api, next){
 		api.socketServer.server = api.net.createServer(function (connection) {
 			api.stats.incrament(api, "numberOfSocketRequests");
 			api.socketServer.numberOfLocalSocketRequests++;
-			
+
+			api.utils.setupConnection(api, connection, "socket", connection.remotePort, connection.remoteAddress);
 			connection.setEncoding("utf8");
-			connection.type = "socket";
-			connection.params = {};
-			connection.remoteIP = connection.remoteAddress;
-			connection.room = api.configData.general.defaultChatRoom;
-			connection.messageCount = 0;
 			connection.responsesWaitingCount = 0;
-			var md5 = api.crypto.createHash('md5');
-			var hashBuff = new Buffer(connection.remotePort + connection.remoteAddress + Math.random()).toString('base64');
-			md5.update(hashBuff);
-			connection.id = md5.digest('hex');
-			connection.public = {};
-			connection.public.id = connection.id;
-			connection.public.connectedAt = new Date().getTime();
-			
-			api.connections.push(connection);
 
 			connection.on("connect", function () {
 				api.stats.incrament(api, "numberOfActiveSocketClients");
@@ -40,7 +27,6 @@ var initSocketServer = function(api, next){
 						to: connection.remoteIP,
 					});
 				}
-				api.chatRoom.roomAddMember(api, connection);
 				process.nextTick(function(){
 					api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
 				})
@@ -231,11 +217,7 @@ var initSocketServer = function(api, next){
 			connection.on("end", function () {
 				api.chatRoom.roomRemoveMember(api, connection, function(){
 					api.stats.incrament(api, "numberOfActiveSocketClients", -1);
-					for(var i in api.connections){
-						if(api.connections[i].type == "socket"){
-							if(api.connections[i].id == connection.id){ api.connections.splice(i,1); }
-						}
-					}
+					api.utils.destroyConnection(api, connection);
 					try{ 
 						connection.end(); 
 					}catch(e){ }

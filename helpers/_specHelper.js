@@ -221,6 +221,7 @@ specHelper.cleanAPIObject = function(api){
 	cleanAPI["stats"] = api["stats"];
 	cleanAPI["cache"] = api["cache"];
 	cleanAPI["postVariables"] = api["postVariables"];
+	cleanAPI["connections"] = api["connections"];
 	return cleanAPI
 }
 

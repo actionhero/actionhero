@@ -29,9 +29,7 @@ var initWebServer = function(api, next)
 			api.stats.incrament(api, "numberOfWebRequests");
 			api.webServer.numberOfLocalWebRequests++;
 			
-			var connection = {};
-
-			connection.type = "web";
+			var connection = api.utils.setupConnection(api, null, "web", req.connection.remotePort, req.connection.remoteAddress);
 			connection.timer = {};
 			connection.timer.startTime = new Date().getTime();
 			connection.req = req;
@@ -40,7 +38,6 @@ var initWebServer = function(api, next)
 			connection.method = req.method;
 			connection.response = {}; // the data returned from the API
 			connection.error = false; 	// errors and requst state
-			connection.remoteIP = connection.req.connection.remoteAddress;
 			connection.responseHeaders = {
 				'Content-Type': "application/json",
 				"X-Powered-By": api.configData.general.serverName
@@ -143,6 +140,7 @@ var initWebServer = function(api, next)
 					
 			// requestorInformation
 			connection.response.requestorInformation = {};
+			connection.response.requestorInformation.id = connection.public.id;
 			connection.response.requestorInformation.remoteAddress = connection.remoteIP;
 			connection.response.requestorInformation.recievedParams = {};
 			for(var k in connection.params){
@@ -193,6 +191,7 @@ var initWebServer = function(api, next)
 						});
 					}
 				}
+				api.utils.destroyConnection(api, connection);
 			});
 		};
 		

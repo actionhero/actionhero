@@ -5,9 +5,10 @@
 ** Connections ** 
 
 - Connections have been refactored to all live within `api.connections`, and matain an type refering to thier connection method (web, websocket, tcp)
-- web clients can now also be sent messages.  Web clients can retrieve pending messages with the `messages` api action
-- all connections (including web clients) will be assigned an ID to facilitate the above.  Note that web clients will get a new id for each web request, so your application should save the first ID for web clients some how (cookie, session, etc)
-- http client's messages will be pruned every so often as determined by `api.configData.commonWeb.httpClientMessagePruneTimer`
+X - web clients can now also be sent messages.  Web clients can retrieve pending messages with the `messages` api action
+- all connections (including web clients) will be assigned a `connection.public.id` to facilitate the above.  Note that web clients will get a new id for each web request, so your application should save the first ID for web clients some how (cookie, session, etc)
+X - http client's messages will be pruned every so often as determined by `api.configData.commonWeb.httpClientMessagePruneTimer`
+X - actions to view/change/get status of chat rooms have been made global actions
 
 **Strict Mode**
 

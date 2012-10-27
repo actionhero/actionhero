@@ -67,19 +67,11 @@ var initWebSockets = function(api, next){
 
 			io.sockets.on('connection', function(connection){
 				api.stats.incrament(api, "numberOfWebSocketRequests");
+				api.stats.incrament(api, "numberOfActiveWebSocketClients");
 				api.socketServer.numberOfLocalWebSocketRequests++;
 
-				connection.type = "webSocket";
-				connection.params = {};
-				connection.remoteIP = connection.handshake.address.address;
-				connection.room = api.configData.general.defaultChatRoom;
-				connection.messageCount = 0;
-				connection.public = {};
-				connection.public.id = connection.id;
-				connection.public.connectedAt = new Date().getTime();
-				api.chatRoom.roomAddMember(api, connection);
-
-				api.stats.incrament(api, "numberOfActiveWebSocketClients");
+				api.utils.setupConnection(api, connection, "webSocket", connection.handshake.address.port, connection.handshake.address.address);
+				
 				if(api.configData.log.logRequests){
 					api.logJSON({
 						label: "connect @ webSocket",
@@ -87,7 +79,7 @@ var initWebSockets = function(api, next){
 					});
 				}
 
-				var welcomeMessage = {welcome: api.configData.welcomeMessage, room: connection.room, context: "api"};
+				var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
 				connection.emit('welcome', welcomeMessage);
 
 				connection.on('exit', function(data){ connection.disconnect(); });
@@ -200,16 +192,8 @@ var initWebSockets = function(api, next){
 				connection.on('disconnect', function(){
 					api.log("webSocket connection "+connection.remoteIP+" | disconnected");
 					api.stats.incrament(api, "numberOfActiveWebSocketClients", -1);
-					for(var i in api.connections){
-						if(api.connections[i].type == "webSocket" && connection.id == api.connections[i].id){
-							delete api.connections[i].id
-							break;
-						}
-					}
+					api.utils.destroyConnection(api, connection);
 				});
-
-				api.connections.push(connection);
-
 			});
 		}
 
