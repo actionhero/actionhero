@@ -18,6 +18,9 @@ params.configChanges = {
 	},
 	tcpServer: {
 		port: 5000
+	},
+	redis: {
+		enable: true,
 	}
 }
 
