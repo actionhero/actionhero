@@ -210,6 +210,11 @@ specHelper.apiTest = {
 	del: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  }
 }
 
+specHelper.resetCookieJar = function(){
+	var j = specHelper.request.jar()
+	specHelper.request = specHelper.request.defaults({jar:j})
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // API object cleanup
 specHelper.cleanAPIObject = function(api){
