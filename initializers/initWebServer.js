@@ -245,7 +245,9 @@ var initWebServer = function(api, next)
 				var rediskey = 'actionHero:webMessages:' + connection.public.id;
 				api.redis.client.lpop(rediskey, function(err, message){
 					if(message != null){
-						next(JSON.parse(message));
+						var parsedMessage = JSON.parse(message);
+						if(parsedMessage == []){ parsedMessage = null; }
+						next(parsedMessage);
 					}else{
 						next(null);
 					}

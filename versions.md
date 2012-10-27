@@ -5,10 +5,9 @@
 ** Connections ** 
 
 - Connections have been refactored to all live within `api.connections`, and matain an type refering to thier connection method (web, websocket, tcp)
-X - web clients can now also be sent messages.  Web clients can retrieve pending messages with the `messages` api action
+- web clients can now also be sent messages.  Web clients can retrieve pending messages with the `chat` api action and the method `messages`.  The old `say` action has been merged into this example action.
 - all connections (including web clients) will be assigned a `connection.public.id` to facilitate the above.  actionHero will attempt to save this id within in a cookie.  Options can be set in `api.configData.commmonWeb.fingerprintOptions`
-X - http client's messages will be pruned every so often as determined by `api.configData.commonWeb.httpClientMessageTTL`
-X - actions to view/change/get status of chat rooms have been made global actions
+- http client's messages will be pruned every so often as determined by `api.configData.commonWeb.httpClientMessageTTL`
 
 **Strict Mode**
 

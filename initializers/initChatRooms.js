@@ -101,12 +101,12 @@ var initChatRooms = function(api, next){
 	}
 
 	api.chatRoom.roomRemoveMember = function(api, connection, next){
-		api.chatRoom.announceMember(api, connection, false);
 		var room = connection.room;
 		var name = connection.public.id;
 		if(api.redis.enable === true){
 			var key = api.chatRoom.redisRoomPrefix + connection.room;
 			api.redis.client.lrem(key, 1, name, function(){
+				api.chatRoom.announceMember(api, connection, false);
 				if(typeof next == "function"){ next(true) }
 			});
 		}else{
@@ -116,6 +116,7 @@ var initChatRooms = function(api, next){
 					for(var j in rList){
 						if(rList[j] == name){
 							rList.splice(j,1);
+							api.chatRoom.announceMember(api, connection, false);
 							break;
 						}
 					}

@@ -214,21 +214,19 @@ var initSocketServer = function(api, next){
 				}
 			});
 
-			connection.on("end", function () {
-				api.chatRoom.roomRemoveMember(api, connection, function(){
-					api.stats.incrament(api, "numberOfActiveSocketClients", -1);
-					api.utils.destroyConnection(api, connection);
-					try{ 
-						connection.end(); 
-					}catch(e){ }
-					// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
-					if(api.configData.log.logRequests){
-						api.logJSON({
-							label: "disconnect @ socket",
-							to: connection.remoteIP,
-						});
-					}
-				});
+			connection.on("end", function () {				
+				api.stats.incrament(api, "numberOfActiveSocketClients", -1);
+				api.utils.destroyConnection(api, connection);
+				try{ 
+					connection.end(); 
+				}catch(e){ }
+				// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
+				if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "disconnect @ socket",
+						to: connection.remoteIP,
+					});
+				}
 			});
 
 			connection.on("error", function(e){

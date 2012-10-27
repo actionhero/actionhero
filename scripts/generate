@@ -134,6 +134,7 @@ documents.action_actions_view = fs.readFileSync(project_root + "node_modules/act
 documents.action_file = fs.readFileSync(project_root + "node_modules/actionHero/actions/file.js");
 documents.action_random_number = fs.readFileSync(project_root + "node_modules/actionHero/actions/randomNumber.js");
 documents.action_status = fs.readFileSync(project_root + "node_modules/actionHero/actions/status.js");
+documents.action_chat = fs.readFileSync(project_root + "node_modules/actionHero/actions/chat.js");
 
 documents.task_runAction = fs.readFileSync(project_root + "node_modules/actionHero/tasks/runAction.js");
 
@@ -201,6 +202,7 @@ create_file_safely('/actions/actionsView.js', documents.action_actions_view);
 create_file_safely('/actions/file.js', documents.action_file);
 create_file_safely('/actions/randomNumber.js', documents.action_random_number);
 create_file_safely('/actions/status.js', documents.action_status);
+create_file_safely('/actions/chat.js', documents.action_chat);
 create_file_safely('/tasks/runAction.js', documents.task_runAction);
 create_file_safely('/public/index.html', documents.index_html);
 

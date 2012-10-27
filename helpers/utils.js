@@ -175,8 +175,9 @@ utils.destroyConnection = function(api, connection){
 	for(var i in api.connections){
 		if(api.connections[i].public.id == connection.public.id && connection.type == api.connections[i].type){
 			api.connections.splice(i,1);
-			delete connection;
-			break;
+			api.chatRoom.roomRemoveMember(api, connection, function(){
+				delete connection;
+			});			
 		}
 	}
 }
