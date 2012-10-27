@@ -87,6 +87,24 @@ suite.addBatch({
 });
 
 suite.addBatch({
+  'Other clients should have been told abou people entering the room':{
+    topic: function(){
+      var cb = this.callback;
+      var rsp = function(d){ 
+        client_1.removeListener('say', rsp); 
+        cb(true, d); 
+      };
+      client_1.on('say', rsp);
+    },
+    'enter?': function(err, data){ 
+      specHelper.assert.isObject(data); 
+      specHelper.assert.equal(data.context, "user");
+      specHelper.assert.equal(data.message, "I have entered the room");
+    },
+  }
+});
+
+suite.addBatch({
   'I can get my connection details':{
     topic: function(){
       var cb = this.callback;

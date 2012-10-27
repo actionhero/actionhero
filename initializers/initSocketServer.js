@@ -202,7 +202,7 @@ var initSocketServer = function(api, next){
 									api.logJSON({
 										label: "action @ socket",
 										to: connection.remoteIP,
-										action: connection.action,
+										action: proxy_connection.action,
 										params: JSON.stringify(connection.params),
 										duration: delta,
 									});

@@ -179,7 +179,7 @@ var initWebSockets = function(api, next){
 							api.logJSON({
 								label: "action @ webSocket",
 								to: connection.remoteIP,
-								action: connection.action,
+								action: proxy_connection.action,
 								params: JSON.stringify(data),
 								duration: delta,
 							});
