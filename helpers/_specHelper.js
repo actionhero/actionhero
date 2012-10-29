@@ -1,9 +1,8 @@
 var specHelper = {}
 var showLogs = false;
 specHelper.fs = require('fs');
-specHelper.vows = require('vows');
 specHelper.net = require('net');
-specHelper.assert = require('assert');
+specHelper.should = require('should');
 specHelper.request = require('request');
 specHelper.utils = require(__dirname + '/../helpers/utils.js').utils;
 specHelper.apis = [];
@@ -142,7 +141,7 @@ specHelper.prepare = function(serverID, next){
 // Start Test Server
 specHelper.startServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	var conn = specHelper.net.createConnection(specHelper.params[serverID].httpServer.port, host=specHelper.url, function(){
+	var conn = specHelper.net.createConnection(specHelper.params[serverID].httpServer.port, specHelper.url, function(){
 		next(specHelper.apis[serverID]);
 		conn.destroy();
 	});
@@ -171,9 +170,13 @@ specHelper.startServer = function(serverID, next){
 
 specHelper.stopServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	specHelper.actionHeroes[serverID].stop(function(resp){
-		next(resp);
-	});
+	if(specHelper.actionHeroes[serverID] != null){
+		specHelper.actionHeroes[serverID].stop(function(resp){
+			next(resp);
+		});
+	}else{
+		next(false);
+	}
 };
 
 specHelper.restartServer = function(serverID, next){
@@ -225,8 +228,10 @@ specHelper.cleanAPIObject = function(api){
 	cleanAPI["configData"] = api["configData"];
 	cleanAPI["stats"] = api["stats"];
 	cleanAPI["cache"] = api["cache"];
+	cleanAPI["redis"] = api["redis"];
 	cleanAPI["postVariables"] = api["postVariables"];
 	cleanAPI["connections"] = api["connections"];
+	cleanAPI["chatRoom"] = api["chatRoom"];
 	return cleanAPI
 }
 

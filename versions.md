@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.0.13
+
+Cleanup and changing our test suite to mocha
+
 ## Version 3.0.12
 
 ** Connections ** 

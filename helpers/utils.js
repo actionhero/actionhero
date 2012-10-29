@@ -72,23 +72,6 @@ utils.sleepSync = function(naptime){
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// sort an array of hashes by a key
-utils.sort_by = function(field, reverse, primer){
-   reverse = (reverse) ? -1 : 1;
-   return function(a,b){
-       a = a[field];
-       b = b[field];
-       if (typeof(primer) != 'undefined'){
-           a = primer(a);
-           b = primer(b);
-       }
-       if (a<b) return reverse * -1;
-       if (a>b) return reverse * 1;
-       return 0;
-   }
-}
-
-////////////////////////////////////////////////////////////////////////////
 // randomly sort an array
 utils.randomArraySort = function(a,b) {
     return( parseInt( Math.random()*10 ) %2 );
