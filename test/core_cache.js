@@ -68,7 +68,7 @@ describe('Core: Cache', function(){
 		  		should.equal(null, load_resp);
 		  		done();
 		  	});
-	  	}, 11);
+	  	}, 20);
   	});
   });
 
