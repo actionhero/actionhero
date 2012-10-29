@@ -63,6 +63,7 @@ describe('~~ Benchmarks', function(){
   });
 
   it('say 1000 times', function(done){
+  	this.timeout(10000)
   	startTime = new Date().getTime();
 	loopingTest("/say", {room: 'defaultRoom', message: "hello there! I am a test."}, 1000, function(){
 		var delta = new Date().getTime() - startTime
@@ -71,6 +72,7 @@ describe('~~ Benchmarks', function(){
   });
 
   it('ask for status 1000 times', function(done){
+  	this.timeout(10000)
   	startTime = new Date().getTime();
 	loopingTest("/status", {}, 1000, function(){
 		var delta = new Date().getTime() - startTime
@@ -79,6 +81,7 @@ describe('~~ Benchmarks', function(){
   });
 
   it('actionsView 1000 times', function(done){
+  	this.timeout(10000)
   	startTime = new Date().getTime();
 	loopingTest("/", {action: 'actionsView'}, 1000, function(){
 		var delta = new Date().getTime() - startTime
@@ -87,6 +90,7 @@ describe('~~ Benchmarks', function(){
   });
 
   it('cacheTest 1000 times', function(done){
+  	this.timeout(10000)
   	startTime = new Date().getTime();
 	loopingTest('/cacheTest', { key: function(){ 
         return apiObj.utils.randomString(99); 
