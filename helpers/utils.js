@@ -154,17 +154,26 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 		connectedAt: connection.connectedAt
 	};
 	if(api.connections[connection.public.id] == null){
-		api.chatRoom.roomAddMember(api, connection);
+		if(connection.type != "web" || (connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL > 0 )){
+			api.chatRoom.roomAddMember(api, connection);
+		}
 	}
 	api.connections[connection.public.id] = connection;
 	return connection;
 }
 
-utils.destroyConnection = function(api, connection){
-	api.chatRoom.roomRemoveMember(api, connection, function(){
+utils.destroyConnection = function(api, connection, next){
+	if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
 		delete api.connections[connection.public.id]
 		delete connection;
-	});	
+		if(typeof next == "function"){ next(); }
+	}else{
+		api.chatRoom.roomRemoveMember(api, connection, function(){
+			delete api.connections[connection.public.id];
+			delete connection;
+			if(typeof next == "function"){ next(); }
+		});	
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////

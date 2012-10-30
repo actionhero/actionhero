@@ -204,14 +204,20 @@ var initWebServer = function(api, next)
 						});
 					}
 				}
-				if(api.webServer.clientClearTimers[connection.public.id] != null){
-					clearTimeout(api.webServer.clientClearTimers[connection.public.id]);
-				}
-				api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
+				if(api.configData.commonWeb.httpClientMessageTTL == null){
 					api.utils.destroyConnection(api, connection);
-					delete api.webServer.clientClearTimers[connection.public.id];
-					delete api.webServer.webChatMessages[connection.public.id]
-				}, api.configData.commonWeb.httpClientMessageTTL, connection)
+					if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
+				}else{
+					// if enabled, persist the connection object for message queueing
+					if(api.webServer.clientClearTimers[connection.public.id] != null){
+						clearTimeout(api.webServer.clientClearTimers[connection.public.id]);
+					}
+					api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
+						api.utils.destroyConnection(api, connection);
+						delete api.webServer.clientClearTimers[connection.public.id];
+						if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
+					}, api.configData.commonWeb.httpClientMessageTTL, connection);
+				}
 			});
 		};
 
