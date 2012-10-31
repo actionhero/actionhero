@@ -9,6 +9,10 @@ Cleanup and changing our test suite to mocha
 - Version 3.0.12 introduced http(s) message queues, but this created a lot of overhead for each request.  We have changed this feature to "opt-in" if you want to use it.  
 - `api.configData.commonWeb.httpClientMessageTTL` will default to null (disable http client http(s) message queues).  Setting it an integer (ms) will enable it again.
 
+** Bugs **
+
+- Fixed a header issue with mime times on flat files
+
 ## Version 3.0.12
 
 ** Connections ** 
