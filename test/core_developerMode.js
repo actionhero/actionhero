@@ -1,8 +1,8 @@
 var versionParts = process.version.split('.');
-versionParts[0] = versionParts[0].replace('v');
+versionParts[0] = versionParts[0].replace('v', '');
 for(var i in versionParts){ versionParts[i] = parseInt(versionParts[i]); }
 
-if(versionParts[0] >= 0 && versionParts[0] >= 7){
+if(versionParts[0] >= 0 && versionParts[1] >= 7){
     describe('Core: Developer Mode', function(){
 
         var specHelper = require('../helpers/_specHelper.js').specHelper;
