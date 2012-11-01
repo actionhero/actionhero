@@ -12,6 +12,7 @@ Cleanup and changing our test suite to mocha
 ** Bugs **
 
 - Fixed a header issue with mime times on flat files
+- Added a helper which will ensure no duplicate headers are sent to http clients (like mime/type) except for setting cookies
 
 ## Version 3.0.12
 
