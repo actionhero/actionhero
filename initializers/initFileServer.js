@@ -111,7 +111,7 @@ var initFileServer = function(api, next){
 
 	api.fileServer.sendFileNotFound = function(api, connection, next){
 		if(connection.req != null){
-			connection.responseHeaders.push('Content-Type', 'text/html');
+			connection.responseHeaders.push(['Content-Type', 'text/html']);
 			api.webServer.cleanHeaders(api, connection);
 			connection.res.writeHead(404, connection.responseHeaders);
 			connection.res.end(api.configData.general.flatFileNotFoundMessage);
