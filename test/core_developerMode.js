@@ -66,5 +66,5 @@ if(versionParts[0] >= 0 && versionParts[0] >= 7){
 
     });
 }else{
-    //
+    console.log("\r\n\r\n ** the developer mode test can only run for node >= v0.7.0; skipping ** \r\n\r\n");
 }
