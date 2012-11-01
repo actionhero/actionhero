@@ -70,10 +70,11 @@ var initFileServer = function(api, next){
 				api.log("error reading: "+file, "red");
 			}else{
 				if(connection.req != null){
-                                        connection.responseHeaders.push(['Content-Type', api.mime.lookup(file)]);
+          connection.responseHeaders.push(['Content-Type', api.mime.lookup(file)]);
 					connection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
 					connection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
-                                        connection.res.writeHead(200, connection.responseHeaders);
+					api.webServer.cleanHeaders(api, connection);
+          connection.res.writeHead(200, connection.responseHeaders);
 					connection.res.end(data);
 				}else{
 					try { 
@@ -110,7 +111,8 @@ var initFileServer = function(api, next){
 
 	api.fileServer.sendFileNotFound = function(api, connection, next){
 		if(connection.req != null){
-			connection.responseHeaders['Content-Type'] = 'text/html';
+			connection.responseHeaders.push('Content-Type', 'text/html');
+			api.webServer.cleanHeaders(api, connection);
 			connection.res.writeHead(404, connection.responseHeaders);
 			connection.res.end(api.configData.general.flatFileNotFoundMessage);
 			next(connection, false);

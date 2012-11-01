@@ -62,8 +62,7 @@ var initWebServer = function(api, next)
 					}
 				}
 		                
-				if(connection.req.headers['x-forwarded-for'] != null)
-				{
+				if(connection.req.headers['x-forwarded-for'] != null){
 					var IPs = connection.req.headers['x-forwarded-for'].split(",");
 					connection.remoteIP = IPs[0];	
 				}
@@ -186,7 +185,7 @@ var initWebServer = function(api, next)
 						connection.responseHeaders.push(['Content-Type', "application/javascript"]);
 						stringResponse = connection.params.callback + "(" + stringResponse + ");";
 					}
-
+					api.webServer.cleanHeaders(api, connection);
 					connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
 					connection.res.end(stringResponse);
 				}
@@ -220,6 +219,22 @@ var initWebServer = function(api, next)
 				}
 			});
 		};
+
+		////////////////////////////////////////////////////////////////////////////
+		// Helpers to ensure uniqueness on response headers
+		api.webServer.cleanHeaders = function(api, connection){
+			connection.responseHeaders = connection.responseHeaders.reverse();
+			var foundHeaders = [];
+			for (var i in connection.responseHeaders){
+				var key = connection.responseHeaders[i][0];
+				var value = connection.responseHeaders[i][1];
+				if(foundHeaders.indexOf(key) > 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
+					connection.responseHeaders.splice(i,1) // delete, it's a duplicate
+				}else{
+					foundHeaders.push(key);
+				}
+			}
+		}
 
 		////////////////////////////////////////////////////////////////////////////
 		// Helpers to expand chat functionality to http(s) clients
