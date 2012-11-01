@@ -14,6 +14,15 @@ utils.sqlDateTime = function(time){
 	return dateStr;
 };
 
+utils.sqlDate = function(time){
+	if(time == null){ time = new Date(); }
+	var dateStr = 
+		this.padDateDoubleStr(time.getFullYear()) +
+		"-" + this.padDateDoubleStr(1 + time.getMonth()) +
+		"-" + this.padDateDoubleStr(time.getDate());
+	return dateStr;
+};
+
 utils.padDateDoubleStr = function(i){
     return (i < 10) ? "0" + i : "" + i;
 };
