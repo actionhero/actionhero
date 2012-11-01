@@ -13,6 +13,7 @@ Cleanup and changing our test suite to mocha
 
 - Fixed a header issue with mime times on flat files
 - Added a helper which will ensure no duplicate headers are sent to http clients (like mime/type) except for setting cookies
+- ignore the developer mode test in node < 0.7.0
 
 ## Version 3.0.12
 
