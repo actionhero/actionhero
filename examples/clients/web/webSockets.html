@@ -2,7 +2,7 @@
 <script>
 	var port = window.location.port
 	if(port == "" || port == null){ port = "80"; }
-	var socket = io.connect('http://localhost:'+port+'/');
+	var socket = io.connect(window.location.protocol + '//localhost:'+port+'/');
 	
 	socket.on('welcome', function(data){
 		console.log("connected!")

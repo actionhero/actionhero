@@ -93,27 +93,16 @@ configData.commonWeb = {
 };
 
 /////////////////
-// HTTP Server //
+// Web Server //
 /////////////////
 
 configData.httpServer = {
 	"enable": true,
+	"secure": false,
 	"port": 8080,
-	// which IP to listen on (use 0.0.0.0 for all)
-	"bindIP": "0.0.0.0"
-};
-
-//////////////////
-// HTTPS Server //
-//////////////////
-
-configData.httpsServer = {
-	"enable": true,
-	"port": 4443,
-	"keyFile": "./certs/server-key.pem",
-	"certFile": "./certs/server-cert.pem",
-	// which IP to listen on (use 0.0.0.0 for all)
-	"bindIP": "0.0.0.0"
+	"bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+	"keyFile": "./certs/server-key.pem", // only for secure = true
+	"certFile": "./certs/server-cert.pem", // only for secure = true
 };
 
 ////////////////
@@ -122,9 +111,11 @@ configData.httpsServer = {
 
 configData.tcpServer = {
 	"enable": true,
+	"secure": false,
 	"port": 5000,
-	// which IP to listen on (use 0.0.0.0 for all)
-	"bindIP": "0.0.0.0"
+	"bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+	"keyFile": "./certs/server-key.pem", // only for secure = true
+	"certFile": "./certs/server-cert.pem", // only for secure = true
 };
 
 /////////////////
@@ -132,10 +123,8 @@ configData.tcpServer = {
 /////////////////
 
 configData.webSockets = {
-	// You must have either the http or https server enabled for websockets
+	// You must have the web server enabled as well
 	"enable": true,
-	// which web interface to bind the websockets to (http or https)
-	"bind" : "http",
 	"logLevel" : 1,
 	"settings" : [
 		"browser client minification",

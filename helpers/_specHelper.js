@@ -32,12 +32,11 @@ specHelper.params[0] = {
 	},
 	httpServer: {
 		enable: true,
+		secure: false,
 		port: 9000,
 	},
-	httpsServer: {
-		enable: false,
-	},
 	tcpServer: {
+		secure: false,
 		enable: true,
 		port: 8000,
 	},
@@ -57,13 +56,12 @@ specHelper.params[1] = {
 		logFile: "api_peer_2.log",
 	},
 	httpServer: {
+		secure: false,
 		enable: true,
 		port: 9001,
 	},
-	httpsServer: {
-		enable: false,
-	},
 	tcpServer: {
+		secure: false,
 		enable: true,
 		port: 8001,
 	},
@@ -83,13 +81,12 @@ specHelper.params[2] = {
 		logFile: "api_peer_3.log",
 	},
 	httpServer: {
+		secure: false,
 		enable: true,
 		port: 9002,
 	},
-	httpsServer: {
-		enable: false,
-	},
 	tcpServer: {
+		secure: false,
 		enable: true,
 		port: 8002,
 	},

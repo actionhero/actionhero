@@ -14,9 +14,6 @@ params.configChanges = {
 	httpServer: {
 		port: 8082,
 	},
-	httpsServer: {
-		port: 4445,
-	},
 	tcpServer: {
 		port: 5002
 	},

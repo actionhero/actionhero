@@ -1,5 +1,13 @@
 # Action Hero API Versions
 
+## Version 3.0.14
+
+Refactor of servers
+
+- Rather than having both a HTTP and HTTPS server, you now configure both the web server and socket server if you want them to be secure (tls, https) or not (tcp, http)
+- the TCP server can now be upgraded to a TLS server, similar to how the https server can be enabled
+- as there is now only one http server, webSockets will be bound apporpriatly if enabled
+
 ## Version 3.0.13
 
 Cleanup and changing our test suite to mocha
@@ -10,6 +18,7 @@ Cleanup and changing our test suite to mocha
 - `api.configData.commonWeb.httpClientMessageTTL` will default to null (disable http client http(s) message queues).  Setting it an integer (ms) will enable it again.
 
 ** Other **
+
 - routes.js will now be reloaded when in development mode as the file changes
 
 ** Bugs **

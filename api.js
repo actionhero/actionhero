@@ -26,6 +26,7 @@ var createActionHero = function(){
 		api.exec = require('child_process').exec;
 		api.fork = require('child_process').fork;
 		api.net = require("net");
+		api.tls = require("tls");
 		api.http = require("http");
 		api.https = require("https");
 		api.url = require("url");
@@ -101,7 +102,6 @@ var createActionHero = function(){
 		}
 		api.id = externalIP;
 		if(actionHero.api.configData.httpServer.enable){ api.id += ":" + api.configData.httpServer.port }
-		if(actionHero.api.configData.httpsServer.enable){ api.id += ":" + api.configData.httpsServer.port }
 		if(actionHero.api.configData.tcpServer.enable){ api.id += ":" + api.configData.tcpServer.port }
 		if(api.cluster.isWorker){ api.id += ":" + process.pid; }
 
@@ -180,7 +180,6 @@ var createActionHero = function(){
 				var closed = 0;
 				var neededClosed = 0;
 				if(actionHero.api.configData.httpServer.enable){ neededClosed++; }
-				if(actionHero.api.configData.httpsServer.enable){ neededClosed++; }
 				if(actionHero.api.configData.tcpServer.enable){ neededClosed++; }
 				
 				var checkForDone = function(serverType){
@@ -196,32 +195,17 @@ var createActionHero = function(){
 				}
 
 				if(actionHero.api.configData.httpServer.enable){
-					actionHero.api.webServer.webApp.on("close", function(){
+					actionHero.api.webServer.server.on("close", function(){
 						for(var i in actionHero.api.webServer.clientClearTimers){ clearTimeout(actionHero.api.webServer.clientClearTimers[i]); }
 						closed++;
 						checkForDone("http");
 					});
 					if(actionHero.api.configData.webSockets.enable && actionHero.api.configData.webSockets.bind == "http"){
 						actionHero.api.webSockets.disconnectAll(actionHero.api, function(){
-							actionHero.api.webServer.webApp.close();
+							actionHero.api.webServer.server.close();
 						});
 					}else{
-						actionHero.api.webServer.webApp.close();
-					}
-				}
-
-				if(actionHero.api.configData.httpsServer.enable){
-					actionHero.api.webServer.secureWebApp.on("close", function(){
-						for(var i in actionHero.api.webServer.clientClearTimers){ clearTimeout(actionHero.api.webServer.clientClearTimers[i]); }
-						closed++;
-						checkForDone("https");
-					});
-					if(actionHero.api.configData.webSockets.enable && actionHero.api.configData.webSockets.bind == "https"){
-						actionHero.api.webSockets.disconnectAll(actionHero.api, function(){
-							actionHero.api.webServer.secureWebApp.close();
-						});
-					}else{
-						actionHero.api.webServer.secureWebApp.close();
+						actionHero.api.webServer.server.close();
 					}
 				}
 

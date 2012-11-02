@@ -11,37 +11,48 @@ var initSocketServer = function(api, next){
 		
 		////////////////////////////////////////////////////////////////////////////
 		// server
-		api.socketServer.server = api.net.createServer(function (connection) {
-			api.stats.incrament(api, "numberOfSocketRequests");
+		if(api.configData.tcpServer.secure == false){
+			api.socketServer.server = api.net.createServer(function(connection){
+				handleConnection(connection);
+			});
+		}else{
+			var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
+			var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
+			api.socketServer.server = api.tls.createServer({key: key, cert: cert}, function(connection){
+				handleConnection(connection);
+			});
+		}
+
+		var handleConnection = function(connection){
 			api.socketServer.numberOfLocalSocketRequests++;
 
 			api.utils.setupConnection(api, connection, "socket", connection.remotePort, connection.remoteAddress);
 			connection.setEncoding("utf8");
 			connection.responsesWaitingCount = 0;
 
-			connection.on("connect", function () {
-				api.stats.incrament(api, "numberOfActiveSocketClients");
-				if(api.configData.log.logRequests){
-					api.logJSON({
-						label: "connect @ socket",
-						to: connection.remoteIP,
-					});
-				}
-				process.nextTick(function(){
-					api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
-				})
+			api.stats.incrament(api, "numberOfActiveSocketClients");
+			if(api.configData.log.logRequests){
+				api.logJSON({
+					label: "connect @ socket",
+					to: connection.remoteIP,
+				});
+			}
+			process.nextTick(function(){
+				api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
 			});
 			
 			connection.on("data", function (chunk) {
 				api.socketServer.socketDataString += chunk.toString('utf8');
+				api.socketServer.socketDataString = api.socketServer.socketDataString.replace(/\r/g, "\n");
 				var index, line;
-				while((index = api.socketServer.socketDataString.indexOf('\r\n')) > -1) {
+				while((index = api.socketServer.socketDataString.indexOf('\n')) > -1) {
 					var line = api.socketServer.socketDataString.slice(0, index);
 					connection.lastLine = line;
 					api.socketServer.socketDataString = api.socketServer.socketDataString.slice(index + 2);
 					if(line.length > 0) {
+						api.stats.incrament(api, "numberOfSocketRequests");
 						connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
-						var line = line.replace(/(\r\n|\n|\r)/gm,"");
+						var line = line.replace("\n","");
 						var words = line.split(" ");
 						if(line.indexOf("\u0004") > -1){ } // trap for break chars; do nothing
 						else if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
@@ -234,7 +245,7 @@ var initSocketServer = function(api, next){
 				connection.end();
 			});
 
-		});
+		};
 
 		////////////////////////////////////////////////////////////////////////////
 		// action response helper

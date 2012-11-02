@@ -3,7 +3,7 @@
 
 var initWebServer = function(api, next)
 {
-	if(api.configData.httpServer.enable != true && api.configData.httpsServer.enable != true){
+	if(api.configData.httpServer.enable != true){
 		next();
 	}else{
 		api.webServer = {};
@@ -14,16 +14,14 @@ var initWebServer = function(api, next)
 		
 		////////////////////////////////////////////////////////////////////////////
 		// server
-		if(api.configData.httpServer.enable == true){
-			api.webServer.webApp = api.http.createServer(function (req, res) {
+		if(api.configData.httpServer.secure == false){
+			api.webServer.server = api.http.createServer(function (req, res) {
 				handleRequest(req, res);
 			});
-		}
-		
-		if(api.configData.httpsServer.enable == true){
-			var key = api.fs.readFileSync(api.configData.httpsServer.keyFile);
-			var cert = api.fs.readFileSync(api.configData.httpsServer.certFile);
-			api.webServer.secureWebApp = api.https.createServer({key: key, cert: cert}, function (req, res) {
+		}else{
+			var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
+			var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
+			api.webServer.server = api.https.createServer({key: key, cert: cert}, function (req, res) {
 				handleRequest(req, res);
 			});
 		}
@@ -299,38 +297,18 @@ var initWebServer = function(api, next)
 		}
 		
 		////////////////////////////////////////////////////////////////////////////
-		// Go servers!
-		var serversToStart = 0;
+		// Go server!
+		api.webServer.server.on("error", function(e){
+			api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.webServerPort + "; Exiting.", ["red", "bold"]);
+			api.log(e, "red");
+			process.exit();
+		});
+		api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
+			api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
+			api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
+			next();
+		});
 
-		if(api.configData.httpServer.enable){
-			api.webServer.webApp.on("error", function(e){
-				api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.webServerPort + "; Exiting.", ["red", "bold"]);
-				api.log(e, "red");
-				process.exit();
-			});
-			serversToStart++;
-			api.webServer.webApp.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
-				api.webServer.webApp.addListener("connection",function(stream) { stream.setTimeout(10000); });
-				api.log("http server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
-				serversToStart--;
-				if(serversToStart == 0){ next(); }
-			});
-		}
-		
-		if(api.configData.httpsServer.enable){
-			api.webServer.secureWebApp.on("error", function(e){
-				api.log("Cannot start secure web server @ " + api.configData.httpsServer.bindIP + ":" + api.configData.secureWebServer.port + "; Exiting.", ["red", "bold"]);
-				api.log(e, "red");
-				process.exit();
-			});
-			serversToStart++;
-			api.webServer.secureWebApp.listen(api.configData.httpsServer.port, api.configData.httpsServer.bindIP, function(){
-				api.webServer.secureWebApp.addListener("connection",function(stream) { stream.setTimeout(10000); });
-				api.log("https server listening on " + api.configData.httpsServer.bindIP + ":" + api.configData.httpsServer.port, "green");
-				serversToStart--;
-				if(serversToStart == 0){ next(); }
-			});
-		}
 	}
 }
 
