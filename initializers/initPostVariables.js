@@ -126,21 +126,39 @@ var initPostVariables = function(api, next)
 	}
 
 	// load in the routes file
-	api.routes = {};
-	var routesFile = process.cwd() + '/routes.js';
-	if(api.fs.existsSync(routesFile)){
-		api.routes = require(routesFile).routes;
-		for(var i in api.routes){
-			for(var j in api.routes[i]){
-				var tmp = api.routes[i][j];
-				delete api.routes[i][j];
-				api.routes[i][j.toLowerCase()] = tmp;
+	var loadRoutes = function(){
+		api.routes = {};
+		var routesFile = process.cwd() + '/routes.js';
+		if(api.fs.existsSync(routesFile)){
+			delete require.cache[routesFile];
+			api.routes = require(routesFile).routes;
+			for(var i in api.routes){
+				for(var j in api.routes[i]){
+					var tmp = api.routes[i][j];
+					delete api.routes[i][j];
+					api.routes[i][j.toLowerCase()] = tmp;
+				}
 			}
+			api.log(api.utils.hashLength(api.routes) + " routes loaded from " + routesFile, "green");
+		}else{
+			api.log("no routes file found, skipping");
 		}
-		api.log(api.utils.hashLength(api.routes) + " routes loaded from " + routesFile, "green");
-	}else{
-		api.log("no routes file found, skipping");
-	}
+	};
+
+	if(api.configData.general.developmentMode == true){
+		var routesFile = process.cwd() + '/routes.js';
+		api.fs.watchFile(routesFile, {interval:1000}, function(curr, prev){
+			if(curr.mtime > prev.mtime){
+				process.nextTick(function(){
+					if(api.fs.readFileSync(routesFile).length > 0){
+						loadRoutes();
+					}
+				});
+			}
+		});
+	};
+
+	loadRoutes();
 
 	next();
 }
