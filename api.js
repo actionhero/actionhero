@@ -60,7 +60,7 @@ var createActionHero = function(){
 		}
 		api.configData = require(configFile).configData;
 		if(params.configChanges != null){
-			console.log(" >> using configChanges as overrides to default template: " + JSON.stringify(params.configChanges));
+			// console.log(" >> using configChanges as overrides to default template: " + JSON.stringify(params.configChanges));
 			for (var i in params.configChanges){ 
 				var collection = params.configChanges[i];
 				for (var j in collection){
