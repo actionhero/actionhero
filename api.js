@@ -50,24 +50,35 @@ var createActionHero = function(){
 		api.fs.exists || (api.fs.exists = api.path.exists);
 		try{ api.domain = require("domain"); }catch(e){ }
 
-		if(api.fs.existsSync(process.cwd() + '/config.js')){
-			api.configData = require(process.cwd() + '/config.js').configData;
-		}else{
-			var defualtConfigFile = __dirname + "/config.js";
-			if(params.configChanges == null){
-				console.log(' >> no local config.json found nor no provided configChanges; using default from '+defualtConfigFile);
-			}else{
-				console.log(" >> using configChanges as overrides to default template");
-			}
-			api.configData = require(defualtConfigFile).configData;
-		}
+		api.watchedFiles = [];
 
-		// overide config.js with params.configChanges if exists (second depth hashes)
-		for (var i in params.configChanges){ 
-			var collection = params.configChanges[i];
-			for (var j in collection){
-				api.configData[i][j] = collection[j];
+		if(api.fs.existsSync(process.cwd() + '/config.js')){
+			var configFile = process.cwd() + '/config.js';
+		}else{
+			var configFile = __dirname + "/config.js";
+			console.log(' >> no local config.json, using default from '+configFile);
+		}
+		api.configData = require(configFile).configData;
+		if(params.configChanges != null){
+			console.log(" >> using configChanges as overrides to default template: " + JSON.stringify(params.configChanges));
+			for (var i in params.configChanges){ 
+				var collection = params.configChanges[i];
+				for (var j in collection){
+					api.configData[i][j] = collection[j];
+				}
 			}
+		}
+		if(api.configData.general.developmentMode == true){
+			api.watchedFiles.push(configFile);
+			(function() {
+				api.fs.watchFile(configFile, {interval:1000}, function(curr, prev){
+					if(curr.mtime > prev.mtime){
+						console.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n");
+						delete require.cache[configFile];
+						actionHero.restart();
+					}
+				});
+			})();
 		}
 
 		var initializerFolders = [ 
@@ -152,29 +163,14 @@ var createActionHero = function(){
 	actionHero.stop = function(next){	
 		if(actionHero.running == true){
 			actionHero.api.log("Shutting down open servers and pausing tasks", "bold");
+			for(var i in actionHero.api.watchedFiles){
+				actionHero.api.fs.unwatchFile(actionHero.api.watchedFiles[i]);
+			}
 			for(var worker_id in actionHero.api.tasks.processTimers){
 				clearTimeout(actionHero.api.tasks.processTimers[worker_id]);
 			}
 			// allow running timers to finish, but do no work on next cycle.
 			actionHero.api.tasks.process = function(api, worker_id){ }
-			
-			// remove from the list of hosts
-			if(actionHero.api.redis.enable){
-				clearTimeout(actionHero.api.redis.pingTimer);
-    			clearTimeout(actionHero.api.redis.lostPeerTimer);
-				actionHero.api.redis.client.llen("actionHero:peers", function(err, length){
-					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
-							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
-							actionHero.api.redis.client.hdel("actionHero:peerPings", actionHero.api.id, function(){
-								cont();
-							});
-						});
-					});
-				});
-			}else{
-				cont();
-			}
 
 			var cont = function(){
 				var closed = 0;
@@ -200,7 +196,7 @@ var createActionHero = function(){
 						closed++;
 						checkForDone("http");
 					});
-					if(actionHero.api.configData.webSockets.enable && actionHero.api.configData.webSockets.bind == "http"){
+					if(actionHero.api.configData.webSockets.enable){
 						actionHero.api.webSockets.disconnectAll(actionHero.api, function(){
 							actionHero.api.webServer.server.close();
 						});
@@ -217,6 +213,24 @@ var createActionHero = function(){
 				}
 				//
 				checkForDone();
+			}
+			
+			// remove from the list of hosts
+			if(actionHero.api.redis.enable){
+				clearTimeout(actionHero.api.redis.pingTimer);
+    			clearTimeout(actionHero.api.redis.lostPeerTimer);
+				actionHero.api.redis.client.llen("actionHero:peers", function(err, length){
+					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
+							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
+							actionHero.api.redis.client.hdel("actionHero:peerPings", actionHero.api.id, function(){
+								cont();
+							});
+						});
+					});
+				});
+			}else{
+				cont();
 			}
 		}else{
 			actionHero.api.log("Cannot shut down (not running any servers)");

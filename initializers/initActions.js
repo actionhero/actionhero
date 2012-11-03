@@ -61,27 +61,33 @@ var initActions = function(api, next)
 			var parts = fullfFilePath.split("/");
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
-			api.actions[actionName] = require(fullfFilePath).action;
-			validateAction(api, api.actions[actionName]);
+			var loadMessage = "action loaded: " + actionName + ", " + fullfFilePath;
 			if(reload){
-				api.log("action (re)loaded: " + actionName + ", " + fullfFilePath, "blue");
+				loadMessage = "action (re)loaded: " + actionName + ", " + fullfFilePath;
 			}else{
-				api.log("action loaded: " + actionName + ", " + fullfFilePath, "blue");
 				if(api.configData.general.developmentMode == true){
+					api.watchedFiles.push(fullfFilePath);
 					(function() {
-						var f = fullfFilePath;
 						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
 							if(curr.mtime > prev.mtime){
 								process.nextTick(function(){
 									if(api.fs.readFileSync(fullfFilePath).length > 0){
-										delete require.cache[f]
-										actionLoader(api, f, true);
+										delete require.cache[fullfFilePath];
+										delete api.actions[actionName];
+										actionLoader(api, fullfFilePath, true);
 									}
 								});
 							}
 						});
 					})();
 				}
+			}
+			try{
+				api.actions[actionName] = require(fullfFilePath).action;
+				validateAction(api, api.actions[actionName]);
+				api.log(loadMessage, "blue");
+			}catch(err){
+				api.exceptionHandlers.loader(fullfFilePath, err);
 			}
 		}
 

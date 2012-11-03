@@ -2,11 +2,22 @@
 
 ## Version 3.0.14
 
-Refactor of servers
+** Refactor of servers **
 
 - Rather than having both a HTTP and HTTPS server, you now configure both the web server and socket server if you want them to be secure (tls, https) or not (tcp, http)
 - the TCP server can now be upgraded to a TLS server, similar to how the https server can be enabled
 - as there is now only one http server, webSockets will be bound apporpriatly if enabled
+
+** Other **
+
+- changing your config.js file in development mode will now reboot the server
+
+** Bugs **
+
+- reloading of tasks in development mode crashed before... now it doesn't!
+- providing both a custom config.js and `params.configChanges` when botting actionHero didn't work (only config.js was used).  Fixed
+- in development mode, causing a parser error in a task or action will no longer crash the program.  The action will be ignored until you fix it.
+
 
 ## Version 3.0.13
 

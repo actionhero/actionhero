@@ -4,6 +4,20 @@
 
 var initExceptions = function(api, next){
 	api.exceptionHandlers = {};
+
+	api.exceptionHandlers.renderError = function(err){
+		var lines = err.stack.split("\n");
+		lines.forEach(function(line){
+			api.log("! " + line, "red");
+		});
+		api.log("*", "red");
+	};
+
+	api.exceptionHandlers.loader = function(fullfFilePath, err){
+		api.log("! Failed to load " + fullfFilePath, ["red", "bold"]);
+		api.exceptionHandlers.renderError(err);
+	};
+
 	if(api.domain != null){
 		api.exceptionHandlers.action = function(domain, err, connection, next){
 			api.log("! uncaught error from action: " + connection.action, ["red","bold"]);
@@ -33,13 +47,7 @@ var initExceptions = function(api, next){
 				}
 			}
 		}
-		api.exceptionHandlers.renderError = function(err){
-			var lines = err.stack.split("\n");
-			lines.forEach(function(line){
-				api.log("! " + line, "red");
-			});
-			api.log("*", "red");
-		}
+
 	}
 	next();
 

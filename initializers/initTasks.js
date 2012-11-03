@@ -351,27 +351,33 @@ var initTasks = function(api, next)
 		var parts = fullfFilePath.split("/");
 		var file = parts[(parts.length - 1)];
 		var taskName = file.split(".")[0];
-		api.tasks.tasks[taskName] = require(fullfFilePath).task;
-		validateTask(api, api.tasks.tasks[taskName]);
+		var loadMessage = "task loaded: " + taskName + ", " + fullfFilePath;
 		if(reload){
-			api.log("task (re)loaded: " + taskName + ", " + fullfFilePath, "yellow");
+			loadMessage = "task (re)loaded: " + taskName + ", " + fullfFilePath;
 		}else{
-			api.log("task loaded: " + taskName + ", " + fullfFilePath, "yellow");
 			if(api.configData.general.developmentMode == true){
+				api.watchedFiles.push(fullfFilePath);
 				(function() {
-					var f = fullfFilePath;
 					api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
 						if(curr.mtime > prev.mtime){
 							process.nextTick(function(){
 								if(api.fs.readFileSync(fullfFilePath).length > 0){
-									delete require.cache[f]
-									taskLoader(api, f, true);
+									delete require.cache[fullfFilePath];
+									delete api.tasks.tasks[taskName];
+									taskLoader(api, fullfFilePath, true);
 								}
 							});
 						}
 					});
 				})();
 			}
+		}
+		try{
+			api.tasks.tasks[taskName] = require(fullfFilePath).task;
+			validateTask(api, api.tasks.tasks[taskName]);
+			api.log(loadMessage, "yellow")
+		}catch(err){
+			api.exceptionHandlers.loader(fullfFilePath, err);
 		}
 	}
 
