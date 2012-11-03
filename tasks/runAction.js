@@ -5,10 +5,11 @@ var task = {};
 task.name = "runAction";
 task.description = "I will run an action and return the connection object";
 task.scope = "any";
-task.frequency = 1000;
+task.frequency = 0;
 
 /////////////////////////////////////////////////////////////////////
-// functional
+// functional 
+
 task.run = function(api, params, next){
 	if(params == null){params = {};}
 
