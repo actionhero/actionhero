@@ -154,7 +154,7 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	connection.connectedAt = new Date().getTime();
 	if(connection.id == null){
 		var md5 = api.crypto.createHash('md5');
-		var hashBuff = new Buffer(remotePort+ remoteIP + Math.random() + connection.connectedAt).toString('base64');
+		var hashBuff = new Buffer(String(remotePort+ remoteIP + Math.random() + connection.connectedAt)).toString('base64');
 		md5.update(hashBuff);
 		connection.id = md5.digest('hex');
 	}
