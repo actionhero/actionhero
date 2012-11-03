@@ -177,9 +177,14 @@ var initWebSockets = function(api, next){
 			});
 
 			connection.on('disconnect', function(){
-				api.log("webSocket connection "+connection.remoteIP+" | disconnected");
 				api.stats.incrament(api, "numberOfActiveWebSocketClients", -1);
 				api.utils.destroyConnection(api, connection);
+				if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "disconnect @ webSocket",
+						to: connection.remoteIP,
+					});
+				}
 			});
 		});
 
