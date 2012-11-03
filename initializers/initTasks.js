@@ -365,7 +365,7 @@ var initTasks = function(api, next)
 							process.nextTick(function(){
 								if(api.fs.readFileSync(fullfFilePath).length > 0){
 									delete require.cache[f]
-									actionLoader(api, f, true);
+									taskLoader(api, f, true);
 								}
 							});
 						}
