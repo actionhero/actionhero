@@ -1,5 +1,5 @@
 // actionHero Config File
-// For use in version 3.0.0 or greater
+// For use in version 3.1.0 or greater
 // I will be loded into api.configData
 
 var configData = {};
@@ -86,7 +86,7 @@ configData.commonWeb = {
 	"httpClientMessageTTL" : null,
 	// settings for determining the id of an http(s) requset (browser-fingerprint)
 	"fingerprintOptions" : {
-		cookieKey: "__browser_fingerprint",
+		cookieKey: "sessionID",
 		toSetCookie: true,
 		onlyStaticElements: false,
 	},

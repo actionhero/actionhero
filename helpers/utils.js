@@ -174,12 +174,12 @@ utils.destroyConnection = function(api, connection, next){
 	if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
 		delete api.connections[connection.public.id]
 		delete connection;
-		if(typeof next == "function"){ next(); }
+		if(typeof next == "function"){ next(null. null); }
 	}else{
 		api.chatRoom.roomRemoveMember(api, connection, function(){
 			delete api.connections[connection.public.id];
 			delete connection;
-			if(typeof next == "function"){ next(); }
+			if(typeof next == "function"){ next(null, null); }
 		});	
 	}
 }
