@@ -125,7 +125,7 @@ var initTasks = function(api, next)
 	}
 
 	api.tasks.inspect = function(api, next){
-		tasks = [];
+		var tasks = [];
 		for(var i in api.tasks.currentTasks){
 			var parsedTask = JSON.parse(api.tasks.currentTasks[i]);
 			parsedTask.queue = "processing";
