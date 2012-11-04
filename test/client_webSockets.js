@@ -44,7 +44,9 @@ describe('Client: Web Sockets', function(){
 			data.should.be.an.instanceOf(Object);
 			data.context.should.equal("api");
 			data.room.should.equal("defaultRoom");
-			done();
+            setTimeout(function(){
+    			done();
+            }, 1000);
 		});
     });
 
@@ -54,7 +56,9 @@ describe('Client: Web Sockets', function(){
 			data.should.be.an.instanceOf(Object);
 			data.context.should.equal("api");
 			data.room.should.equal("defaultRoom");
-			done();
+			setTimeout(function(){
+                done();
+            }, 1000);
 		});
     });
 
