@@ -143,10 +143,9 @@ utils.parseCookies = function(req){
 utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	if(connection == null){ connection = {}; }
 	connection.type = type;
-	connection.error = false;
+	connection.error = null;
 	connection.params = {};
 	connection.response = {};
-	connection.errror = false;
 	connection.remotePort = remotePort;
 	connection.remoteIP = remoteIP;
 	if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }

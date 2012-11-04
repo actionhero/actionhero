@@ -171,7 +171,7 @@ var initSocketServer = function(api, next){
 								}, "grey");
 							}
 						}else{
-							connection.error = false;
+							connection.error = null;
 							connection.actionStartTime = new Date().getTime();
 							connection.response = {};
 							connection.response.context = "response";
@@ -231,7 +231,6 @@ var initSocketServer = function(api, next){
 				try{ 
 					connection.end(); 
 				}catch(e){ }
-				// if(api.configData.log.logRequests){api.log(" > socket connection " + connection.remoteIP + " disconnected", "white");}
 				if(api.configData.log.logRequests){
 					api.logJSON({
 						label: "disconnect @ socket",
@@ -250,20 +249,13 @@ var initSocketServer = function(api, next){
 		////////////////////////////////////////////////////////////////////////////
 		// action response helper
 		api.socketServer.respondToSocketClient = function(connection, cont){
-			if(cont != false)
-			{
-				if(connection.error == false){
-					connection.response.error = connection.error;
-					if(connection.response == {}){
-						connection.response = {status: "OK"};
-					}
-					api.socketServer.sendSocketMessage(connection, connection.response);
-				}else{
+			if(cont != false){
+				if(connection.error != null){ 
 					if(connection.response.error == null){
-						connection.response.error = connection.error;
+						connection.response.error = String(connection.error);
 					}
-					api.socketServer.sendSocketMessage(connection, connection.response);
 				}
+				api.socketServer.sendSocketMessage(connection, connection.response);
 			}
 		}
 		

@@ -93,7 +93,7 @@ describe('Client: Web Sockets', function(){
     it('can run actions with errors', function(done){
     	makeSocketRequest(client_1, "action", {action: "cacheTest"}, function(response){
     		response.should.be.an.instanceOf(Object);
-    		response.error.should.equal("key is a required parameter for this action");
+    		response.error.should.equal("Error: key is a required parameter for this action");
     		done();
     	});
     });
@@ -101,7 +101,7 @@ describe('Client: Web Sockets', function(){
     it('can run actions', function(done){
     	makeSocketRequest(client_1, "action", {action: "cacheTest", key: "test key", value: "test value"}, function(response){
     		response.should.be.an.instanceOf(Object);
-    		response.error.should.equal(false);
+            should.not.exist(response.error);
     		done();
     	});
     });
@@ -110,7 +110,7 @@ describe('Client: Web Sockets', function(){
     	 client_1.emit("roomChange", {room: "otherRoom"});
     	 makeSocketRequest(client_1, "roomView", {}, function(response){
     	 	response.should.be.an.instanceOf(Object);
-    	 	response.status.should.equal("OK")
+    	 	should.not.exist(response.error);
     	 	response.room.should.equal("otherRoom")
     	 	done();
     	 });

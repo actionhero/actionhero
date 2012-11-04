@@ -49,13 +49,11 @@ var initChatRooms = function(api, next){
 	api.chatRoom.socketRoomStatus = function(api, room, next){
 		if(api.redis.enable === true){
 			var key = api.chatRoom.redisRoomPrefix + room;
-			api.redis.client.llen(key, function(err, length){
-				api.redis.client.lrange(key, 0, length, function(err, members){
-					next({
-						room: room,
-						members: members,
-						membersCount: length
-					});
+			api.redis.client.lrange(key, 0, -1, function(err, members){
+				next({
+					room: room,
+					members: members,
+					membersCount: members.length
 				});
 			});
 		}else{

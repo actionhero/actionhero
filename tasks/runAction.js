@@ -27,7 +27,7 @@ task.run = function(api, params, next){
 				}, "grey");
 			}
 		}
-		next(true, connection);
+		next(connection, true);
 	})
 };
 

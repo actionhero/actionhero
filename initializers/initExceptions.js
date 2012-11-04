@@ -23,7 +23,7 @@ var initExceptions = function(api, next){
 			api.log("! uncaught error from action: " + connection.action, ["red","bold"]);
 			api.exceptionHandlers.renderConnection(connection);
 			api.exceptionHandlers.renderError(err);
-			connection.error = api.configData.general.serverErrorMessage;
+			connection.error = new Error(api.configData.general.serverErrorMessage);
 			connection.response = {}; // no partial responses
 			if(connection.type == "web"){
 				connection.responseHttpCode = 500;

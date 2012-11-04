@@ -96,11 +96,9 @@ var initStats = function(api, next){
 										};
 
 										if(api.redis.enable){
-											api.redis.client.llen("actionHero:peers", function(err, length){
-												api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-													stats.peers = peers;
-													if(typeof next == "function"){ next(stats); }
-												});
+											api.redis.client.lrange("actionHero:peers", 0, -1, function(err, peers){
+												stats.peers = peers;
+												if(typeof next == "function"){ next(stats); }
 											});
 										}else{
 											if(typeof next == "function"){ next(stats); }

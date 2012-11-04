@@ -16,12 +16,17 @@ params.initFunction = function(api, next){
 // start the server!
 var startServer = function(next){
 	if(cluster.isWorker){ process.send("starting"); }
-	actionHero.start(params, function(api_from_callback){
-		api = api_from_callback;
-		api.log("Boot Sucessful @ worker #" + process.pid, "green");
-		if(typeof next == "function"){
-			if(cluster.isWorker){ process.send("started"); }
-			next(api);
+	actionHero.start(params, function(err, api_from_callback){
+		if(err){
+			console.log(err);
+			process.exit();
+		}else{
+			api = api_from_callback;
+			api.log("Boot Sucessful @ worker #" + process.pid, "green");
+			if(typeof next == "function"){
+				if(cluster.isWorker){ process.send("started"); }
+				next(api);
+			}
 		}
 	});
 }
@@ -37,7 +42,7 @@ if(cluster.isWorker){
 		}
 		if(msg == "stop"){
 			process.send("stopping");
-			actionHero.stop(function(){
+			actionHero.stop(function(err, api_from_callback){
 				api = null;
 				process.send("stopped");
 				process.exit();
@@ -45,7 +50,7 @@ if(cluster.isWorker){
 		}
 		if(msg == "restart"){
 			process.send("restarting");
-			actionHero.restart(function(success, api_from_callback){
+			actionHero.restart(function(err, api_from_callback){
 				api = api_from_callback;
 				process.send("restarted");
 			});

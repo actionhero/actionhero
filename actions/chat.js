@@ -42,7 +42,7 @@ action.run = function(api, connection, next){
 			if(connection.params.message != null){
 				api.chatRoom.socketRoomBroadcast(api, connection, connection.params.message);
 			}else{
-				connection.error = "message is required to use the say method";
+				connection.error = new Error("message is required to use the say method");
 			}
 			next(connection, true);
 		}else if(connection.params.method == "messages"){
@@ -51,11 +51,11 @@ action.run = function(api, connection, next){
 				next(connection, true);
 			});
 		}else{
-			connection.error = connection.params.method + " is not a known chat method";
+			connection.error = new Error(connection.params.method + " is not a known chat method");
 			next(connection, true);
 		}
 	}else{
-		connection.error = "this action is only for web clients; use your proticol's native methods";
+		connection.error = new Error("this action is only for web clients; use your proticol's native methods");
 		next(connection, true);
 	}
 };

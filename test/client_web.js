@@ -33,7 +33,7 @@ describe('Client: Web', function(){
     		response.body.should.be.a('string');
     		response.body.should.include('<?xml version="1.0" encoding="utf-8"?>');
     		response.body.should.include('<XML>');
-    		response.body.should.include('<error>{no action} is not a known action.</error>');
+    		response.body.should.include('<error>Error: {no action} is not a known action.</error>');
     		response.body.should.include('<apiVersion>'+apiObj.configData.general.apiVersion+'</apiVersion>');
     		done();
     	});
@@ -64,21 +64,21 @@ describe('Client: Web', function(){
 
     it('gibberish actions have the right response', function(done){
     	specHelper.apiTest.get('/IAMNOTANACTION', 0, {}, function(response){
-    		response.body.error.should.equal('IAMNOTANACTION is not a known action.')
+    		response.body.error.should.equal('Error: IAMNOTANACTION is not a known action.')
     		done();
     	});
     });
 
-    it('real actions respons with OK', function(done){
+    it('real actions do not have an error response', function(done){
     	specHelper.apiTest.get('/actionsView', 0, {}, function(response){
-    		response.body.error.should.equal('OK')
+    		// response.body.error.should.equal('OK')
+    		should.not.exist(response.body.error);
     		done();
     	});
     });
 
     it('HTTP Verbs should work: GET', function(done){
     	specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-    		response.body.error.should.equal('OK')
     		response.body.randomNumber.should.be.within(0,1)
     		done();
     	});
@@ -86,7 +86,6 @@ describe('Client: Web', function(){
 
     it('HTTP Verbs should work: PUT', function(done){
     	specHelper.apiTest.put('/randomNumber', 0, {}, function(response){
-    		response.body.error.should.equal('OK')
     		response.body.randomNumber.should.be.within(0,10)
     		done();
     	});
@@ -94,7 +93,6 @@ describe('Client: Web', function(){
 
     it('HTTP Verbs should work: POST', function(done){
     	specHelper.apiTest.post('/randomNumber', 0, {}, function(response){
-    		response.body.error.should.equal('OK')
     		response.body.randomNumber.should.be.within(0,100)
     		done();
     	});
@@ -102,7 +100,6 @@ describe('Client: Web', function(){
 
     it('HTTP Verbs should work: DELETE', function(done){
     	specHelper.apiTest.del('/randomNumber', 0, {}, function(response){
-    		response.body.error.should.equal('OK')
     		response.body.randomNumber.should.be.within(0,1000)
     		done();
     	});
@@ -182,7 +179,7 @@ describe('Client: Web', function(){
 	    it('unknwon actions are still unknwon', function(done){
 	    	specHelper.apiTest.get('/a_crazy_action', 0, {}, function(response){
 	    		response.body.requestorInformation.recievedParams.action.should.equal('a_crazy_action')
-	    		response.body.error.should.equal('a_crazy_action is not a known action.')
+	    		response.body.error.should.equal('Error: a_crazy_action is not a known action.')
 	    		done();
 	    	});
 	    });
@@ -190,7 +187,7 @@ describe('Client: Web', function(){
 	    it('explicit action declarations still override routed actions', function(done){
 	    	specHelper.apiTest.get('/user/123?action=theRealAction', 0, {}, function(response){
 	    		response.body.requestorInformation.recievedParams.action.should.equal('theRealAction')
-	    		response.body.error.should.equal('theRealAction is not a known action.')
+	    		response.body.error.should.equal('Error: theRealAction is not a known action.')
 	    		done();
 	    	});
 	    });

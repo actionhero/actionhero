@@ -108,7 +108,7 @@ var initWebServer = function(api, next)
 						    form.parse(connection.req, function(err, fields, files) {
 								if(err){
 									api.log(err, "red");
-									connection.error = "There was an error processign this form."
+									connection.error = new Error("There was an error processign this form.");
 									process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
 								}else{
 							  		fillParamsFromWebRequest(api, connection, files);
@@ -163,8 +163,7 @@ var initWebServer = function(api, next)
 			connection.response.serverInformation.currentTime = connection.timer.stopTime;
 						
 			// errors
-			if(connection.error == false){ connection.response.error = "OK"; }
-			else{ connection.response.error = connection.error; }
+			if(connection.error != null){ connection.response.error = String(connection.error); }
 			
 			process.nextTick(function() {
 				if(cont != false){
@@ -268,7 +267,7 @@ var initWebServer = function(api, next)
 					});
 				});
 			}else{
-				connection.error = "room is required to use the roomChange method";
+				connection.error = new Error("room is required to use the roomChange method");
 				if(typeof next == "function"){ next() };
 			}
 		}

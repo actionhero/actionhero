@@ -18,6 +18,6 @@ params.initFunction = function(api, next){
 }
 
 // start the server!
-actionHero.start(params, function(api){
+actionHero.start(params, function(err, api){
 	api.log("Boot Sucessful!");
 });

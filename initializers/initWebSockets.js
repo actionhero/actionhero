@@ -40,7 +40,6 @@ var initWebSockets = function(api, next){
 		var c = api.configData.redis;
 		if(c.enable == true){
 			var RedisStore = require('socket.io/lib/stores/redis');
-
 			var completeRedisInit = function(){
 				if(c.enable == true){
 					io.set('store', new RedisStore({
@@ -140,7 +139,7 @@ var initWebSockets = function(api, next){
 			connection.on('action', function(data){
 				if(data == null){ data = {}; }
 				connection.params = data;
-				connection.error = false;
+				connection.error = null;
 				connection.actionStartTime = new Date().getTime();
 				connection.response = {};
 				connection.response.context = "response";
@@ -161,7 +160,6 @@ var initWebSockets = function(api, next){
 					connection.response = proxy_connection.response;
 					connection.error = proxy_connection.error;
 					var delta = new Date().getTime() - connection.actionStartTime;
-					if (connection.response.error == null){ connection.response.error = connection.error; }
 					if(api.configData.log.logRequests){
 						api.logJSON({
 							label: "action @ webSocket",
@@ -193,18 +191,12 @@ var initWebSockets = function(api, next){
 				if(connection.response.context == "response"){
 					connection.response.messageCount = connection.messageCount;
 				}
-				if(connection.error == false){
-					connection.response.error = connection.error;
-					if(connection.response == {}){
-						connection.response = {status: "OK"};
-					}
-					connection.emit(connection.response.context, connection.response);
-				}else{
+				if(connection.error != null){ 
 					if(connection.response.error == null){
-						connection.response.error = connection.error;
+						connection.response.error = String(connection.error);
 					}
-					connection.emit(connection.response.context, connection.response);
 				}
+				connection.emit(connection.response.context, connection.response);
 			}
 		}
 

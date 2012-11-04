@@ -29,11 +29,11 @@ var initFileServer = function(api, next){
 		}else if(connection.req == null){
 			// socket connection
 			api.utils.requiredParamChecker(api, connection, ["fileName"]);
-			if(connection.error == false){ fileName = connection.params.fileName; }
+			if(connection.error === null){ fileName = connection.params.fileName; }
 		}else{
 			fileName = connection.params.fileName;
 		}
-		if(connection.error == false){
+		if(connection.error === null){
 			fileName = api.configData.general.flatFileDirectory + fileName;
 			api.fileServer.followFileToServe(api, fileName, connection, next);
 		}
@@ -117,8 +117,8 @@ var initFileServer = function(api, next){
 			connection.res.end(api.configData.general.flatFileNotFoundMessage);
 			next(connection, false);
 		}else{
-			if(connection.error == false){
-				connection.error = "The file, "+connection.params.fileName+", is not found.";
+			if(connection.error === null){
+				connection.error = new Error("The file, "+connection.params.fileName+", is not found.");
 			}
 			next(connection, true);
 		}

@@ -19,7 +19,7 @@ params.initFunction = function(api, next){
 
 // start the server!
 var timer = 5000;
-actionHero.start(params, function(api){
+actionHero.start(params, function(err, api){
 	
 	api.log(" >> Boot Sucessful!");
 	setTimeout(function(){

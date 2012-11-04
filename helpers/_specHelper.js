@@ -146,13 +146,13 @@ specHelper.startServer = function(serverID, next){
 		if(err.code == "ECONNREFUSED"){
 			specHelper.actionHeroes[serverID] = new baseActionHero;
 			if(serverID == 0){
-				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
+				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(err, api){
 					specHelper.apis[serverID] = api;
 					conn.destroy();
 					next(specHelper.apis[serverID]);
 				});
 			}else{
-				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(api){
+				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(err, api){
 					specHelper.apis[serverID] = api;
 					conn.destroy();
 					next(specHelper.apis[serverID]);
@@ -168,8 +168,8 @@ specHelper.startServer = function(serverID, next){
 specHelper.stopServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
 	if(specHelper.actionHeroes[serverID] != null){
-		specHelper.actionHeroes[serverID].stop(function(resp){
-			next(resp);
+		specHelper.actionHeroes[serverID].stop(function(err, api){
+			next(err, api);
 		});
 	}else{
 		next(false);
@@ -178,8 +178,8 @@ specHelper.stopServer = function(serverID, next){
 
 specHelper.restartServer = function(serverID, next){
 	if(serverID == null){serverID = 0};
-	specHelper.actionHeroes[serverID].restart(function(resp, api){
-		next(resp, api);
+	specHelper.actionHeroes[serverID].restart(function(err, api){
+		next(err, api);
 	});
 };
 

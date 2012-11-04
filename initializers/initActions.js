@@ -109,12 +109,12 @@ var initActions = function(api, next)
 			connection.params.offset = parseFloat(connection.params.offset); 
 		}
 		
-		if (connection.error === false){
+		if (connection.error === null){
 			if(connection.type == "web"){ api.utils.processRoute(api, connection); }
 			connection.action = connection.params["action"];
 			if(api.actions[connection.action] != undefined){
 				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
-				if(connection.error == false){
+				if(connection.error === null){
 					process.nextTick(function() { 
 						if(api.domain != null){
 							var actionDomain = api.domain.create();
@@ -143,7 +143,7 @@ var initActions = function(api, next)
 				}
 			}else{
 				if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
-				connection.error = connection.action + " is not a known action.";
+				connection.error = new Error(connection.action + " is not a known action.");
 				process.nextTick(function(){ 
 					connection.respondingTo = messageID;
 					next(connection, true); 

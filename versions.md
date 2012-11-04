@@ -1,5 +1,19 @@
 # Action Hero API Versions
 
+## Version 3.1.0
+
+** Patterns **
+
+- actionHero.start, actionHero.stop, and actionHero.restart's callbacks now all return (error, api)
+- Actions now have a default error of 'null' rather than 'false' and actions will not return an error object unless there is an error
+- Tasks should now `callback(data, toContinue)` where 'to continue' is a boolean indicating if the task ran sucessuflly, and are able to be run again
+- the extra methods for socket/webSocket connections (say, roomView, etc) have been removed from the `actionsView` action, as they aren't really actions
+
+** Tasks ** 
+
+- `api.tasks.inspect` can be used to inspect all the tasks in the queue
+- `api.tasks.enqueue` no has a callback(err, enqueued) propperly
+
 ## Version 3.0.14
 
 ** Refactor of servers **

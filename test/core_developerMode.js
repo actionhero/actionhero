@@ -45,7 +45,7 @@ if(versionParts[0] >= 0 && versionParts[1] >= 7){
 
         it('random numbers work initially', function(done){
             specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-                response.body.error.should.equal("OK");
+                should.not.exist(response.body.error);
                 response.body.randomNumber.should.be.within(0,1);
                 done();
             });

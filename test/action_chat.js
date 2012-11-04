@@ -21,7 +21,6 @@ describe('Action: chat', function(){
   describe('basics', function(){
     it('I can my chat details', function(done){
       specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        response.body.error.should.equal("OK");
         clientID = response.body.details.public.id
         done();
       });
@@ -49,7 +48,6 @@ describe('Action: chat', function(){
 
     it('I can my room details', function(done){
       specHelper.apiTest.get('/chat/?method=roomView', 0, {}, function(response){
-        response.body.error.should.equal("OK");
         response.body.roomStatus.room.should.equal('defaultRoom')
         done();
       });
@@ -57,7 +55,6 @@ describe('Action: chat', function(){
 
     it('clientID sticks (cookies)', function(done){
       specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        response.body.error.should.equal("OK");
         clientID.should.equal(response.body.details.public.id);
         done();
       });

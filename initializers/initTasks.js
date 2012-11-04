@@ -36,61 +36,57 @@ var initTasks = function(api, next)
 				//
 				if(api.tasks.tasks[taskName].scope == "all"){
 					if(api.tasks.tasks[taskName].frequency > 0){
-						api.tasks.queueLength(api, api.tasks.redisQueueLocal, function(length){
-							api.redis.client.lrange(api.tasks.redisQueueLocal, 0, length, function(err, enquedTasks){
-								for(var i in enquedTasks){
-									var t = JSON.parse(enquedTasks[i]);
-									if(t.taskName == taskName){
-										toEnqueue = false;
-										api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
-										break;
-									}
+						api.redis.client.lrange(api.tasks.redisQueueLocal, 0, -1, function(err, enquedTasks){
+							for(var i in enquedTasks){
+								var t = JSON.parse(enquedTasks[i]);
+								if(t.taskName == taskName){
+									toEnqueue = false;
+									api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
+									break;
 								}
-								if(toEnqueue){
-									api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
-										if(typeof next == "function"){ next(true); }
-									});
-								}else{
-									if(typeof next == "function"){ next(false); }
-								}
-							});
+							}
+							if(toEnqueue){
+								api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
+									if(typeof next == "function"){ next(null, true); }
+								});
+							}else{
+								if(typeof next == "function"){ next(null, false); }
+							}
 						});
 					}else{
 						api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
-							if(typeof next == "function"){ next(true); }
+							if(typeof next == "function"){ next(null, true); }
 						});
 					}
 				}else{
 					if(api.tasks.tasks[taskName].frequency > 0){
-						api.tasks.queueLength(api, api.tasks.redisQueue, function(length){
-							api.redis.client.lrange(api.tasks.redisQueue, 0, length, function(err, enquedTasks){
-								for(var i in enquedTasks){
-									var t = JSON.parse(enquedTasks[i]);
-									if(t.taskName == taskName){
-										toEnqueue = false;
-										api.log(" > not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
-										break;
+						api.redis.client.lrange(api.tasks.redisQueue, 0, -1, function(err, enquedTasks){
+							for(var i in enquedTasks){
+								var t = JSON.parse(enquedTasks[i]);
+								if(t.taskName == taskName){
+									toEnqueue = false;
+									api.log(" > not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
+									break;
+								}
+							}
+							if(toEnqueue){
+								api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
+									if(taskProcessing != null){
+										api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
+										if(typeof next == "function"){ next(null, false); }
+									}else{
+										api.redis.client.rpush(api.tasks.redisQueue, msg, function(){
+											if(typeof next == "function"){ next(null, true); }
+										});
 									}
-								}
-								if(toEnqueue){
-									api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
-										if(taskProcessing != null){
-											api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
-											if(typeof next == "function"){ next(false); }
-										}else{
-											api.redis.client.rpush(api.tasks.redisQueue, msg, function(){
-												if(typeof next == "function"){ next(true); }
-											});
-										}
-									});							
-								}else{
-									if(typeof next == "function"){ next(true); }
-								}
-							});
+								});							
+							}else{
+								if(typeof next == "function"){ next(null, true); }
+							}
 						});
 					}else{
 						api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
-						if(typeof next == "function"){ next(true); }
+						if(typeof next == "function"){ next(null, true); }
 					}
 				}
 			}else{
@@ -107,16 +103,20 @@ var initTasks = function(api, next)
 				}
 				if(toEnqueue){
 					api.tasks.queue.push(msg);
-					if(typeof next == "function"){ next(true); }
+					if(typeof next == "function"){ next(null, true); }
 				}else{
-					if(typeof next == "function"){ next(false); }
+					if(typeof next == "function"){ next(null, false); }
 				}
 			}
 		}else{
 			api.log(taskName + " is not a known task", "red");
-			if(typeof next == "function"){ next(false); }
+			if(typeof next == "function"){ next(new Error("not a known task"), null); }
 		}
 	};
+
+	api.tasks.inspect = function(api, next){
+
+	}
 
 	api.tasks.queueLength = function(api, queue, next){
 		if(api.redis.enable === true){
@@ -147,7 +147,7 @@ var initTasks = function(api, next)
 							return
 						});
 					}else{
-						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
 							next(null);
 						});
 					}
@@ -160,7 +160,7 @@ var initTasks = function(api, next)
 							if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 								next(parsedTask);
 							}else{
-								api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+								api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
 									next(null);
 								});
 							}
@@ -177,7 +177,7 @@ var initTasks = function(api, next)
 				if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 					next(parsedTask);
 				}else{
-					api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(){
+					api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
 						next(null);
 					});
 				}
@@ -194,14 +194,16 @@ var initTasks = function(api, next)
 				api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[taskName], next);
 			});
 			taskDomain.run(function(){
-				api.tasks.tasks[taskName].run(api, params, function(resp){
+				api.tasks.tasks[taskName].run(api, params, function(data, cont){
 					// taskDomain.dispose();
-					if(typeof next == "function"){ next(true); }
+					if(cont == null){cont = true;}
+					if(typeof next == "function"){ next(cont); }
 				});
 			})
 		}else{
-			api.tasks.tasks[taskName].run(api, params, function(resp){
-				if(typeof next == "function"){ next(true); }
+			api.tasks.tasks[taskName].run(api, params, function(data, cont){
+				if(cont == null){cont = true;}
+				if(typeof next == "function"){ next(cont); }
 			});
 		}
 	};
@@ -246,7 +248,7 @@ var initTasks = function(api, next)
 	api.tasks.enqueuePeriodicTask = function(api, task, next){
 		if(task.frequency > 0){
 			var runAtTime = new Date().getTime() + task.frequency;
-			api.tasks.enqueue(api, task.name, runAtTime, null, function(){
+			api.tasks.enqueue(api, task.name, runAtTime, null, function(err, enqueued){
 				if(typeof next == "function"){ next(); }
 			});
 		}

@@ -49,7 +49,7 @@ describe('Client: Socket', function(){
   it('socket connections should be able to connect and get JSON', function(done){
   	makeSocketRequest(client, "hello", function(response){
   		response.should.be.an.instanceOf(Object)
-  		response.error.should.equal("hello is not a known action.");
+  		response.error.should.equal("Error: hello is not a known action.");
   		done();
   	});
   });
@@ -101,7 +101,7 @@ describe('Client: Socket', function(){
 
   it('actions will fail without proper parmas set to the connection', function(done){
   	makeSocketRequest(client, "cacheTest", function(response){
-  		response.error.should.equal('key is a required parameter for this action')
+  		response.error.should.equal('Error: key is a required parameter for this action')
   		done();
   	});
   });
@@ -137,7 +137,7 @@ describe('Client: Socket', function(){
 
   it('only params sent in a JSON block are used', function(done){
   	makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), function(response){
-  		response.error.should.equal("value is a required parameter for this action")
+  		response.error.should.equal("Error: value is a required parameter for this action")
   		done();
   	});
   });

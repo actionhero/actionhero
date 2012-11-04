@@ -38,7 +38,7 @@ describe('Core: Exceptions', function(){
 
   	it('other actions still work', function(done){
   		specHelper.apiTest.get('/randomNumber', 0, {} , function(response){
-  			response.body.error.should.equal("OK");
+  			should.not.exist(response.body.error);
   			done();
 		});
   	});

@@ -73,8 +73,8 @@ var initPostVariables = function(api, next)
 		if(mode == null){mode = "all";}
 		if(mode == "all"){
 			required_params.forEach(function(param){
-				if(connection.error == false && (connection.params[param] === undefined || connection.params[param].length == 0)){
-					connection.error = param + " is a required parameter for this action";
+				if(connection.error === null && (connection.params[param] === undefined || connection.params[param].length == 0)){
+					connection.error = new Error(param + " is a required parameter for this action");
 				}
 			});
 		}
@@ -90,7 +90,7 @@ var initPostVariables = function(api, next)
 			});
 			if(found == false)
 			{
-				connection.error = "none of the required params for this action were provided.  Any of the following are required: " + paramString;
+				connection.error = new Error("none of the required params for this action were provided.  Any of the following are required: " + paramString);
 			}
 		}
 	}

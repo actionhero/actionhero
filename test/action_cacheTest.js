@@ -12,28 +12,28 @@ describe('Action: cacheTest', function(){
 
   it('cacheTest: no params', function(done){
     specHelper.apiTest.get("/cacheTest", 0, {}, function(response){
-      response.body.error.should.be.equal("key is a required parameter for this action");
+      response.body.error.should.be.equal("Error: key is a required parameter for this action");
       done();
     });
   });
 
   it('cacheTest: just key', function(done){
     specHelper.apiTest.get("/cacheTest", 0, {key: "test key"}, function(response){
-      response.body.error.should.be.equal("value is a required parameter for this action");
+      response.body.error.should.be.equal("Error: value is a required parameter for this action");
       done();
     });
   });
 
   it('cacheTest: just value', function(done){
     specHelper.apiTest.get("/cacheTest", 0, {value: 'abc123'}, function(response){
-      response.body.error.should.be.equal("key is a required parameter for this action");
+      response.body.error.should.be.equal("Error: key is a required parameter for this action");
       done();
     });
   });
 
   it('cacheTest: gibberish param', function(done){
     specHelper.apiTest.get("/cacheTest", 0, {thingy: "abc123"}, function(response){
-      response.body.error.should.be.equal("key is a required parameter for this action");
+      response.body.error.should.be.equal("Error: key is a required parameter for this action");
       should.not.exist(response.body.requestorInformation.recievedParams['thingy']);
       done();
     });

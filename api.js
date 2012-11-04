@@ -8,7 +8,7 @@ var createActionHero = function(){
 	var actionHero = new Object;
 	actionHero.running = false;
 	
-	actionHero.start = function(params, callback){
+	actionHero.start = function(params, next){
 				
 		if (params == null){params = {};}
 		actionHero.startngParams = params;
@@ -146,12 +146,12 @@ var createActionHero = function(){
 			startTaskProcessing: function(next){ 
 				api.tasks.startTaskProcessing(api, next);
 			},
-			_complete: function(next){
+			_complete: function(){
 				api.log("server ID: " + api.id);
 				api.log(successMessage, ["green", "bold"]);
 				actionHero.running = true;
-				if(callback != null){ 
-					callback(api);
+				if(next != null){ 
+					next(null, api);
 					// next();
 				}else{
 					// next();
@@ -186,7 +186,7 @@ var createActionHero = function(){
 						closed = -1;
 						actionHero.running = false;
 						actionHero.api.log("The actionHero has been stopped", "bold");
-						next(true);
+						next(null, actionHero.api);
 					}
 				}
 
@@ -219,14 +219,10 @@ var createActionHero = function(){
 			if(actionHero.api.redis.enable){
 				clearTimeout(actionHero.api.redis.pingTimer);
     			clearTimeout(actionHero.api.redis.lostPeerTimer);
-				actionHero.api.redis.client.llen("actionHero:peers", function(err, length){
-					actionHero.api.redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-						actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
-							if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
-							actionHero.api.redis.client.hdel("actionHero:peerPings", actionHero.api.id, function(){
-								cont();
-							});
-						});
+				actionHero.api.redis.client.lrem("actionHero:peers", 1, actionHero.api.id, function(err, count){
+					if(count != 1){ actionHero.api.log("Error removing myself from the peers list", "red"); }
+					actionHero.api.redis.client.hdel("actionHero:peerPings", actionHero.api.id, function(){
+						cont();
 					});
 				});
 			}else{
@@ -242,12 +238,12 @@ var createActionHero = function(){
 		if(actionHero.running == true){
 			actionHero.stop(function(){
 				actionHero.start(actionHero.startngParams, function(){
-					if(typeof next == "function"){ next(true, actionHero.api); } 
+					if(typeof next == "function"){ next(null, actionHero.api); } 
 				});
 			});
 		}else{
 			actionHero.start(actionHero.startngParams, function(){
-				if(typeof next == "function"){ next(true, actionHero.api); } 
+				if(typeof next == "function"){ next(null, actionHero.api); } 
 			});
 		}
 	};
