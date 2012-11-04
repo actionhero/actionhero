@@ -169,23 +169,20 @@ var initPingAndCheck = function(api, next){
 									tasksClaimed.map(function(t){
 										var task = JSON.parse(t);
 										if(task.server == peerID){
+											tasksCleaned++;
 											api.redis.client.hdel("actionHero:tasksClaimed", task.taskName, function(){
 												api.tasks.enqueue(api, task.taskName, new Date().getTime(), task.params);
-												tasksCleaned = tasksCleaned - 1;
+												tasksCleaned--;
 												if(tasksCleaned == 0){
-													api.tasks.startPeriodicTasks(api, function(){
-														api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-														if (typeof next == "function"){ next(); }
-													});
+													api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+													if (typeof next == "function"){ next(); }
 												}
 											});
 										}
 									});
 								}else{
-									api.tasks.startPeriodicTasks(api, function(){
-										api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-										if (typeof next == "function"){ next(); }
-									});
+									api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+									if (typeof next == "function"){ next(); }
 								}
 							});
 						});
@@ -201,8 +198,9 @@ var initPingAndCheck = function(api, next){
 
 	// start timers
 	api.redis.ping(api, function(){
-		api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-		next();
+		api.redis.checkForDroppedPeers(api, function(){
+			next();
+		});
 	});
 
 }

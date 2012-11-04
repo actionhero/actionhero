@@ -6,8 +6,9 @@ var initTasks = function(api, next)
 	api.tasks.tasks = {};
 	api.tasks.timers = {};
 	api.tasks.cycleTimeMS = 100;
-	api.tasks.reloadPeriodicsTime = 1000 * 60 * 60; // once an hour
+	api.tasks.reloadPeriodicsTime = 1000 * 60 * 10; // every 10 minutes
 	api.tasks.processTimers = [];
+	api.tasks.enqueLock = false;
 
 	if(api.redis.enable === true){
 		api.tasks.redisQueue = "actionHero:tasks";
@@ -23,99 +24,114 @@ var initTasks = function(api, next)
 		api.configData.general.workers = 1;
 	}
 	
-	api.tasks.enqueue = function(api, taskName, runAtTime, params, next){
-		if(typeof api.tasks.tasks[taskName] === "object"){
-			var msg = {
-				taskName: taskName,
-				runAtTime: runAtTime,
-				params: params
-			};
-			msg = JSON.stringify(msg);
-			if(api.redis.enable === true){
-				var toEnqueue = true;
-				//
-				if(api.tasks.tasks[taskName].scope == "all"){
-					if(api.tasks.tasks[taskName].frequency > 0){
-						api.redis.client.lrange(api.tasks.redisQueueLocal, 0, -1, function(err, enquedTasks){
-							for(var i in enquedTasks){
-								var t = JSON.parse(enquedTasks[i]);
-								if(t.taskName == taskName){
-									toEnqueue = false;
-									api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
-									break;
-								}
-							}
-							if(toEnqueue){
-								api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
-									if(typeof next == "function"){ next(null, true); }
-								});
-							}else{
-								if(typeof next == "function"){ next(null, false); }
-							}
-						});
-					}else{
-						api.redis.client.rpush(api.tasks.redisQueueLocal, msg, function(){
-							if(typeof next == "function"){ next(null, true); }
-						});
-					}
-				}else{
-					if(api.tasks.tasks[taskName].frequency > 0){
-						api.redis.client.lrange(api.tasks.redisQueue, 0, -1, function(err, enquedTasks){
-							for(var i in enquedTasks){
-								var t = JSON.parse(enquedTasks[i]);
-								if(t.taskName == taskName){
-									toEnqueue = false;
-									api.log(" > not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
-									break;
-								}
-							}
-							if(toEnqueue){
-								api.redis.client.hget(api.tasks.redisProcessingQueue, taskName, function (err, taskProcessing){
-									if(taskProcessing != null){
-										api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on", "yellow")
-										if(typeof next == "function"){ next(null, false); }
-									}else{
-										api.redis.client.rpush(api.tasks.redisQueue, msg, function(){
-											if(typeof next == "function"){ next(null, true); }
-										});
-									}
-								});							
-							}else{
-								if(typeof next == "function"){ next(null, true); }
-							}
-						});
-					}else{
-						api.redis.client.rpush(api.tasks.redisQueue, msg, function(){ });
-						if(typeof next == "function"){ next(null, true); }
-					}
-				}
-			}else{
-				var toEnqueue = true;
-				if(api.tasks.tasks[taskName].frequency > 0){
-					for(var i in api.tasks.queue){
-						var t = JSON.parse(api.tasks.queue[i]);
-						if(t.taskName == taskName){
-							toEnqueue = false;
-							api.log(" > not enqueing "+taskName+" (periodic) as it is already in the queue", "yellow");
+	api.tasks.enqueue = function(api, taskName, runAtTime, params, next, toAnnounce){
+		if(toAnnounce == null){ toAnnounce = true; }
+		if(typeof api.tasks.tasks[taskName] != "object"){
+			api.log(taskName + " is not a known task", "red");
+			if(typeof next == "function"){ next(new Error("not a known task"), null); }
+		}else if(api.tasks.enqueLock == true){
+				setTimeout(function(){
+					api.tasks.enqueue(api, taskName, runAtTime, params, next, toAnnounce);
+				}, api.tasks.cycleTimeMS / 2);
+		}else{
+			api.tasks.enqueLock = true;
+			var toEnqueue = false;
+			var found = false;
+			api.tasks.inspect(api, function(err, enquedTasks){
+				if(api.tasks.tasks[taskName].frequency > 0 && api.tasks.tasks[taskName].scope == "all"){
+					var queue = api.tasks.redisQueueLocal;
+					for(var i in enquedTasks){
+						if(enquedTasks[i].taskName == taskName && enquedTasks[i].queue == 'local'){
+							api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
+							found = true;
 							break;
 						}
 					}
+					if(found == false){ toEnqueue = true; }
+				}else if(api.tasks.tasks[taskName].frequency > 0 && api.tasks.tasks[taskName].scope == "any"){
+					var queue = api.tasks.redisQueue;
+					for(var i in enquedTasks){
+						if(enquedTasks[i].taskName == taskName && enquedTasks[i].queue == 'global'){
+							api.log(" > not enqueing "+taskName+" (periodic) as it is already in the global queue", "yellow");
+							found = true;
+							break;
+						}
+						if(enquedTasks[i].taskName == taskName && enquedTasks[i].queue == 'processing'){
+							api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on by " + enquedTasks[i].server, "yellow");
+							found = true;
+							break;
+						}
+					}
+					if(found == false){ toEnqueue = true; }
+				}else if(api.tasks.tasks[taskName].frequency == 0 && api.tasks.tasks[taskName].scope == "all"){
+					var queue = api.tasks.redisQueueLocal;
+					toEnqueue = true;
+				}else if(api.tasks.tasks[taskName].frequency == 0 && api.tasks.tasks[taskName].scope == "any"){
+					var queue = api.tasks.redisQueue;
+					toEnqueue = true;
 				}
+				//
 				if(toEnqueue){
-					api.tasks.queue.push(msg);
-					if(typeof next == "function"){ next(null, true); }
+					var msg = JSON.stringify({ taskName: taskName, runAtTime: runAtTime, params: params });
+					if(toAnnounce){ api.log(" > enqueued task: "+taskName, "yellow"); }
+					if(api.redis.enable === true){
+						api.redis.client.rpush(queue, msg, function(err){
+							api.tasks.enqueLock = false;
+							if(typeof next == "function"){ next(err, true); }
+						});
+					}else{
+						api.tasks.queue.push(msg);
+						api.tasks.enqueLock = false;
+						if(typeof next == "function"){ next(null, true); }
+					}
 				}else{
+					api.tasks.enqueLock = false;
 					if(typeof next == "function"){ next(null, false); }
 				}
-			}
-		}else{
-			api.log(taskName + " is not a known task", "red");
-			if(typeof next == "function"){ next(new Error("not a known task"), null); }
+			});
 		}
-	};
+	}
 
 	api.tasks.inspect = function(api, next){
-
+		tasks = [];
+		if(api.redis.enable === true){
+			api.redis.client.lrange(api.tasks.redisQueue, 0, -1, function(err, globalTasks){
+				api.redis.client.lrange(api.tasks.redisQueueLocal, 0, -1, function(err, localTasks){
+					api.redis.client.hgetall(api.tasks.redisProcessingQueue, function(err, processingTasks){
+						for(var i in globalTasks){
+							var parsedTask = JSON.parse(globalTasks[i]);
+							parsedTask.queue = "global";
+							tasks.push(parsedTask);
+						}
+						for(var i in localTasks){
+							var parsedTask = JSON.parse(localTasks[i]);
+							parsedTask.queue = "local";
+							tasks.push(parsedTask);
+						}
+						for(var i in processingTasks){
+							var data = JSON.parse(processingTasks[i])
+							var parsedTask = {
+								queue: "processing",
+								taskName: data.taskName,
+								server: data.server,
+								params: data.params
+							}
+							tasks.push(parsedTask);
+						}
+						next(null, tasks);
+					});
+				});
+			});
+		}else{
+			for(var i in api.tasks.queue){
+				var parsedTask = JSON.parse(api.tasks.queue[i]);
+				parsedTask.queue = "global";
+				tasks.push(parsedTask);
+				parsedTask.queue = "local";
+				tasks.push(parsedTask);
+			}
+			next(null, tasks);
+		}
 	}
 
 	api.tasks.queueLength = function(api, queue, next){
@@ -128,46 +144,45 @@ var initTasks = function(api, next)
 		}
 	}
 
-	api.tasks.getNextTask = function(api, next){
+	api.tasks.getNextTask = function(api, next, queue){
 		var now = new Date().getTime();
 		if(api.redis.enable === true){
-			// get a global task
-			var now = new Date().getTime();
-			api.redis.client.lpop(api.tasks.redisQueue, function(err, task){
+			if(queue == null){ queue = api.tasks.redisQueue; }
+			api.redis.client.lpop(queue, function(err, task){
 				if(task != null){
 					parsedTask = JSON.parse(task);
 					if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
 						var data = {
 							taskName: parsedTask.taskName,
 							params: parsedTask.params,
-							server: api.id
+							server: api.id,
+							startedAt: new Date().getTime()
 						}
-						api.redis.client.hset(api.tasks.redisProcessingQueue, parsedTask.taskName, JSON.stringify(data), function(){
-							next(parsedTask);
-							return
-						});
+						if(queue == api.tasks.redisQueue){
+							// only mark global tasks as locked to this server
+							api.redis.client.hset(api.tasks.redisProcessingQueue, parsedTask.taskName, JSON.stringify(data), function(){
+								next(null, parsedTask);
+							});
+						}else{
+							next(null, parsedTask);
+						}
 					}else{
 						api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
-							next(null);
-						});
-					}
-				}
-				if(task == null){
-					// get a local task
-					api.redis.client.lpop(api.tasks.redisQueueLocal, function(err, task){
-						if(task != null){
-							parsedTask = JSON.parse(task);
-							if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
-								next(parsedTask);
+							if(queue == api.tasks.redisQueue){
+								// try a local task
+								api.tasks.getNextTask(api, next, api.tasks.redisQueueLocal);
 							}else{
-								api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
-									next(null);
-								});
+								next(null, null);
 							}
-						}else{
-							
-						}
-					});
+						}, false);
+					}
+				}else{
+					if(queue == api.tasks.redisQueue){
+						// try a local task
+						api.tasks.getNextTask(api, next, api.tasks.redisQueueLocal);
+					}else{
+						next(null, null);
+					}
 				}
 			});
 		}else{
@@ -175,14 +190,14 @@ var initTasks = function(api, next)
 				var task = api.tasks.queue.shift();
 				var parsedTask = JSON.parse(task);
 				if(parsedTask.runAtTime == null || now > parsedTask.runAtTime){
-					next(parsedTask);
+					next(null, parsedTask);
 				}else{
 					api.tasks.enqueue(api, parsedTask.taskName, parsedTask.runAtTime, parsedTask.params, function(err, enqueued){
-						next(null);
-					});
+						next(null, null);
+					}, false);
 				}
 			}else{
-				next(null);
+				next(null, null);
 			}
 		}
 	};
@@ -210,102 +225,93 @@ var initTasks = function(api, next)
 	
 	api.tasks.process = function(api, worker_id){	
 		clearTimeout(api.tasks.processTimers[worker_id]);
-		api.tasks.getNextTask(api, function(task){
-			if(task == null){
-				api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-			}else{
-				api.tasks.run(api, task.taskName, task.params, function(run){
-					if(run){
-						api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
-					}else{
-						api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
-					}
-					if(api.redis.enable === true){
-						// remove the task from the processing queue (redis only)
-						api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
+		if(api.tasks.enqueLock == true){
+			api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+		}else{
+			api.tasks.getNextTask(api, function(err, task){
+				if(task == null){
+					api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+				}else{
+					api.tasks.run(api, task.taskName, task.params, function(run){
+						if(run){
+							api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
+						}else{
+							api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
+						}
+						if(api.redis.enable === true){
+							// remove the task from the processing queue (redis only)
+							api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
+								if(api.tasks.tasks[task.taskName].frequency > 0){
+									api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+										api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+									}, false);
+								}else{
+									api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+								}
+							});
+						}else{
 							if(api.tasks.tasks[task.taskName].frequency > 0){
 								api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
 									api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-								});
+								}, false);
 							}else{
 								api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 							}
-						});
-					}else{
-						if(api.tasks.tasks[task.taskName].frequency > 0){
-							api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
-								api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-							});
-						}else{
-							api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 	};
 
-	api.tasks.enqueuePeriodicTask = function(api, task, next){
+	api.tasks.enqueuePeriodicTask = function(api, task, next, toAnnounce){
+		if(toAnnounce == null){ toAnnounce = true; }
 		if(task.frequency > 0){
 			var runAtTime = new Date().getTime() + task.frequency;
 			api.tasks.enqueue(api, task.name, runAtTime, null, function(err, enqueued){
 				if(typeof next == "function"){ next(); }
-			});
+			}, toAnnounce);
 		}
 	}
 	
 	api.tasks.startPeriodicTasks = function(api, next){
 		api.log("setting up periodic tasks...", "yellow")
 		clearTimeout(api.tasks.periodicTaskReloader);
+		var started = 0;
 		for(var i in api.tasks.tasks){
 			var task = api.tasks.tasks[i];
 			if(task.frequency > 0){
-				api.tasks.enqueuePeriodicTask(api, task);
+				started++;
+				api.tasks.enqueuePeriodicTask(api, task, function(){
+					started--;
+					if(started == 0){ 
+						api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+						if(typeof next == "function"){ next(); }; 
+					}
+				});
 			}
 		}
-		api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
-		if(typeof next == "function"){ next(); }
+		if(started == 0){ 
+			api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+			if(typeof next == "function"){ next(); }; 
+		}
 	}
 
 	api.tasks.clearStuckClaimedTasks = function(api, next){
-		if(api.redis.enable === true){
-			var done = function(started){
-				started--;
-				if(started == 0){ next(); }
-				else{ return started }
-			}
-
+		api.tasks.inspect(api, function(err, enqueuedTasks){
 			var started = 0;
-			if(api.tasks.tasks.length == 0){
-				started = done(started)
-			}else{
-				for(var i in api.tasks.tasks){
-					var task = api.tasks.tasks[i];
+			for(var i in enqueuedTasks){
+				if(enqueuedTasks[i].queue == 'processing' && enqueuedTasks[i].server == api.id){
+					api.log(" > clearing a stuck task `"+enqueuedTasks[i].taskName+"` which was previously registered by this server", ["yellow", "bold"]);
 					started++;
-					if(task.frequency > 0 && task.scope == "any"){
-						api.redis.client.hget(api.tasks.redisProcessingQueue, task.name, function (err, taskProcessing){
-							if(taskProcessing){
-								var redisTask = JSON.parse(taskProcessing);
-								if(redisTask.server == api.id){
-									api.log(" > clearing a stuck task `"+redisTask.taskName+"` which was previously registered by this server", ["yellow", "bold"]);
-									api.redis.client.hdel(api.tasks.redisProcessingQueue, redisTask.taskName, function(){
-										started = done(started)
-									});
-								}else{
-									started = done(started)
-								}
-							}else{
-								started = done(started)
-							}
-						});
-					}else{
-						started = done(started)
-					}
+					api.redis.client.hdel(api.tasks.redisProcessingQueue, enqueuedTasks[i].taskName, function(err){
+						started--;
+						if(started == 0){ next(); }
+					});
 				}
 			}
-		}else{
-			next();
-		}
+			if(started == 0){ next(); }
+		});
 	}
 	
 	// init
@@ -314,7 +320,6 @@ var initTasks = function(api, next)
 			api.log(msg + "; exiting.", ['red', 'bold']);
 			process.exit();
 		}
-
 		if(typeof task.name != "string" && task.name.length < 1){
 			fail("a task is missing `task.name`");
 		}else if(typeof task.description != "string" && task.name.description < 1){
@@ -328,7 +333,7 @@ var initTasks = function(api, next)
 		}
 	}
 	
-	function loadFolder(path){
+	var loadFolder = function(path){
 		api.fs.readdirSync(path).forEach( function(file) {
 			if(path[path.length - 1] != "/"){ path += "/"; } 
 			var fullfFilePath = path + file;
@@ -348,7 +353,7 @@ var initTasks = function(api, next)
 		});
 	}
 
-	function taskLoader(api, fullfFilePath, reload){
+	var taskLoader = function(api, fullfFilePath, reload){
 		if(reload == null){ reload = false; }
 		var parts = fullfFilePath.split("/");
 		var file = parts[(parts.length - 1)];
