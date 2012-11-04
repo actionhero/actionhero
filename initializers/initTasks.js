@@ -38,6 +38,7 @@ var initTasks = function(api, next)
 			api.tasks.enqueLock = true;
 			var toEnqueue = false;
 			var found = false;
+			var msg = JSON.stringify({ taskName: taskName, runAtTime: runAtTime, params: params });
 			api.tasks.inspect(api, function(err, enquedTasks){
 				if(api.tasks.tasks[taskName].frequency > 0 && api.tasks.tasks[taskName].scope == "all"){
 					var queue = api.tasks.redisQueueLocal;
@@ -71,6 +72,7 @@ var initTasks = function(api, next)
 					if(found == false){ toEnqueue = true; }
 				}else if(api.tasks.tasks[taskName].frequency == 0 && api.tasks.tasks[taskName].scope == "all"){
 					var queue = api.tasks.redisQueueLocal;
+					api.tasks.enqueForOtherPeers(api, msg); // this can be done async
 					toEnqueue = true;
 				}else if(api.tasks.tasks[taskName].frequency == 0 && api.tasks.tasks[taskName].scope == "any"){
 					var queue = api.tasks.redisQueue;
@@ -78,7 +80,6 @@ var initTasks = function(api, next)
 				}
 				//
 				if(toEnqueue){
-					var msg = JSON.stringify({ taskName: taskName, runAtTime: runAtTime, params: params });
 					if(toAnnounce){ api.log(" > enqueued task: "+taskName, "yellow"); }
 					if(api.redis.enable === true){
 						api.redis.client.rpush(queue, msg, function(err){
@@ -99,6 +100,27 @@ var initTasks = function(api, next)
 					});
 				}
 			});
+		}
+	}
+
+	api.tasks.enqueForOtherPeers = function(api, msg, next){
+		if(api.redis.enable === true){
+			api.redis.client.lrange("actionHero:peers",0,-1,function(err,peers){
+				var started = 0;
+				peers.forEach(function(peer){
+					if(peer != api.id){
+						started++;
+						var queue = "actionHero:tasks::" + peer;
+						api.redis.client.rpush(queue, msg, function(err){
+							started--;
+							if(started == 0 && typeof next == "function"){ next(null, null); }
+						});
+					}
+				});
+				if(started == 0 && typeof next == "function"){ next(null, null); }
+			});
+		}else{
+			if(typeof next == "function"){ next(null, null); }
 		}
 	}
 
