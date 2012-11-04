@@ -9,7 +9,8 @@ describe('Client: Web Sockets', function(){
 	  'force new connection': true
 	};
 	var client_1 = {};
-	var client_2 = {};
+    var client_2 = {};
+	var client_3 = {};
 
 	function makeSocketRequest(thisClient, type, data, cb){
 	  var listener = function(response){ 
@@ -57,15 +58,19 @@ describe('Client: Web Sockets', function(){
 		});
     });
 
-    it('Other clients should have been told abou people entering the room', function(done){
+    it('Other clients should have been told about people entering the room', function(done){
     	var listener = function(response){
     		client_1.removeListener('say', listener);
     		response.should.be.an.instanceOf(Object);
     		response.context.should.equal('user');
     		response.message.should.equal('I have entered the room');
-    		done();
+            setTimeout(function(){
+                client_3.disconnect();
+                done();    
+            }, 1000);
     	}
     	client_1.on('say', listener);
+        client_3 = io.connect(socketURL, io_options);
     });
 
     it('I can get my connection details', function(done){
