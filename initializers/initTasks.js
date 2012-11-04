@@ -80,13 +80,17 @@ var initTasks = function(api, next)
 							if(typeof next == "function"){ next(err, true); }
 						});
 					}else{
-						api.tasks.queue.push(msg);
-						api.tasks.enqueLock = false;
-						if(typeof next == "function"){ next(null, true); }
+						process.nextTick(function(){
+							api.tasks.queue.push(msg);
+							api.tasks.enqueLock = false;
+							if(typeof next == "function"){ next(null, true); }
+						});
 					}
 				}else{
-					api.tasks.enqueLock = false;
-					if(typeof next == "function"){ next(null, false); }
+					process.nextTick(function(){
+						api.tasks.enqueLock = false;
+						if(typeof next == "function"){ next(null, false); }
+					});
 				}
 			});
 		}
