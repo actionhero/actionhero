@@ -63,6 +63,7 @@ describe('Client: Web Sockets', function(){
     });
 
     it('Other clients should have been told about people entering the room', function(done){
+        this.timeout(3000)
     	var listener = function(response){
     		client_1.removeListener('say', listener);
     		response.should.be.an.instanceOf(Object);
@@ -70,7 +71,9 @@ describe('Client: Web Sockets', function(){
     		response.message.should.equal('I have entered the room');
             setTimeout(function(){
                 client_3.disconnect();
-                done();    
+                setTimeout(function(){
+                    done();
+                }, 1000);  
             }, 1000);
     	}
     	client_1.on('say', listener);
