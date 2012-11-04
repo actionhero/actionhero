@@ -8,6 +8,8 @@
 - Actions now have a default error of 'null' rather than 'false' and actions will not return an error object unless there is an error
 - Tasks should now `callback(data, toContinue)` where 'to continue' is a boolean indicating if the task ran sucessuflly, and are able to be run again
 - the extra methods for socket/webSocket connections (say, roomView, etc) have been removed from the `actionsView` action, as they aren't really actions
+- default session ID renambed from "__browser_fingerprint" to "sessionID"
+- you can now pass "x-sessionID" headers as well as cookies to continue a web session with the same ID
 
 ** Tasks ** 
 
