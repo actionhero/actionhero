@@ -8,6 +8,7 @@ var initTasks = function(api, next)
 	api.tasks.cycleTimeMS = 100;
 	api.tasks.reloadPeriodicsTime = 1000 * 60 * 10; // every 10 minutes
 	api.tasks.processTimers = [];
+	api.tasks.currentTasks = {};
 	api.tasks.enqueLock = false;
 
 	if(api.redis.enable === true){
@@ -43,6 +44,11 @@ var initTasks = function(api, next)
 					for(var i in enquedTasks){
 						if(enquedTasks[i].taskName == taskName && enquedTasks[i].queue == 'local'){
 							api.log(" > not enqueing "+taskName+" (periodic) as it is already in the local queue", "yellow");
+							found = true;
+							break;
+						}
+						if(enquedTasks[i].taskName == taskName && enquedTasks[i].queue == 'processing'){
+							api.log(" > not enqueing "+taskName+" (periodic) as it is already being worked on by " + enquedTasks[i].server, "yellow");
 							found = true;
 							break;
 						}
@@ -98,6 +104,12 @@ var initTasks = function(api, next)
 
 	api.tasks.inspect = function(api, next){
 		tasks = [];
+		for(var i in api.tasks.currentTasks){
+			var parsedTask = JSON.parse(api.tasks.currentTasks[i]);
+			parsedTask.queue = "processing";
+			parsedTask.server = "local worker " + i,
+			tasks.push(parsedTask);
+		}
 		if(api.redis.enable === true){
 			api.redis.client.lrange(api.tasks.redisQueue, 0, -1, function(err, globalTasks){
 				api.redis.client.lrange(api.tasks.redisQueueLocal, 0, -1, function(err, localTasks){
@@ -129,10 +141,12 @@ var initTasks = function(api, next)
 		}else{
 			for(var i in api.tasks.queue){
 				var parsedTask = JSON.parse(api.tasks.queue[i]);
-				parsedTask.queue = "global";
-				tasks.push(parsedTask);
-				parsedTask.queue = "local";
-				tasks.push(parsedTask);
+				var localParsedTask = api.utils.objClone(parsedTask);
+				var globalParsedTask = api.utils.objClone(parsedTask);
+				localParsedTask.queue = "global";
+				globalParsedTask.queue = "local";
+				tasks.push(localParsedTask);
+				tasks.push(globalParsedTask);
 			}
 			next(null, tasks);
 		}
@@ -236,12 +250,14 @@ var initTasks = function(api, next)
 				if(task == null){
 					api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 				}else{
+					api.tasks.currentTasks[worker_id] = JSON.stringify(task);
 					api.tasks.run(api, task.taskName, task.params, function(run){
 						if(run){
 							api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
 						}else{
 							api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
 						}
+						delete api.tasks.currentTasks[worker_id];
 						if(api.redis.enable === true){
 							// remove the task from the processing queue (redis only)
 							api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
