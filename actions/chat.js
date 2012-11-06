@@ -25,7 +25,7 @@ action.outputExample = {
 action.run = function(api, connection, next){
 	if(connection.type == "web"){
 		if (connection.params.method == "roomView"){
-			api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
+			api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
 				connection.response.roomStatus = roomStatus;
 				next(connection, true);
 			});

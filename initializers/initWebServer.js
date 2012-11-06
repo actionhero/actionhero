@@ -259,8 +259,8 @@ var initWebServer = function(api, next)
 		api.webServer.changeChatRoom = function(api, connection, next){
 			if(connection.params.room != null){
 				connection.room = connection.params.room;
-				api.chatRoom.roomRemoveMember(api, connection, function(){
-					api.chatRoom.roomAddMember(api, connection, function(){
+				api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
+					api.chatRoom.roomAddMember(api, connection, function(err, wasAdded){
 						connection.responseHeaders.push(['Set-Cookie', api.webServer.roomCookieKey + "=" + connection.params.room]);
 						connection.response.room = connection.room;
 						if(typeof next == "function"){ next() };

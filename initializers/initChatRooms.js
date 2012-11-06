@@ -50,7 +50,7 @@ var initChatRooms = function(api, next){
 		if(api.redis.enable === true){
 			var key = api.chatRoom.redisRoomPrefix + room;
 			api.redis.client.lrange(key, 0, -1, function(err, members){
-				next({
+				next(null, {
 					room: room,
 					members: members,
 					membersCount: members.length
@@ -58,13 +58,13 @@ var initChatRooms = function(api, next){
 			});
 		}else{
 			if(api.chatRoom.rooms[room] != null){
-				next({
+				next(null, {
 					room: room,
 					members: api.chatRoom.rooms[room],
 					membersCount: api.chatRoom.rooms[room].length
 				});
 			}else{
-				next({
+				next(null, {
 					room: room,
 					members: null,
 					membersCount: 0
@@ -76,7 +76,7 @@ var initChatRooms = function(api, next){
 	api.chatRoom.roomAddMember = function(api, connection, next){
 		var room = connection.room;
 		var name = connection.public.id;
-		api.chatRoom.socketRoomStatus(api, room, function(roomStatus){
+		api.chatRoom.socketRoomStatus(api, room, function(err, roomStatus){
 			var found = false
 			for(var i in roomStatus.members){
 				if (name == roomStatus.members[i]){ found = true; break; }
@@ -86,17 +86,17 @@ var initChatRooms = function(api, next){
 				if(api.redis.enable === true){
 					var key = api.chatRoom.redisRoomPrefix + connection.room;
 					api.redis.client.rpush(key, name, function(){
-						if(typeof next == "function"){ next(true) }
+						if(typeof next == "function"){ next(null, true) }
 					});
 				}else{
 					if(api.chatRoom.rooms[room] == null){
 						api.chatRoom.rooms[room] = [];
 					}
 					api.chatRoom.rooms[room].push(name);
-					if(typeof next == "function"){ next(true) }
+					if(typeof next == "function"){ next(null, true) }
 				}
 			}else{
-				if(typeof next == "function"){ next(false) }
+				if(typeof next == "function"){ next(new Error("Connection already in this room"), false) }
 			}
 		});
 	}
@@ -108,7 +108,7 @@ var initChatRooms = function(api, next){
 			var key = api.chatRoom.redisRoomPrefix + connection.room;
 			api.redis.client.lrem(key, 1, name, function(){
 				api.chatRoom.announceMember(api, connection, false);
-				if(typeof next == "function"){ next(true) }
+				if(typeof next == "function"){ next(null, true) }
 			});
 		}else{
 			for(var i in api.chatRoom.rooms){
@@ -124,7 +124,7 @@ var initChatRooms = function(api, next){
 					break;
 				}
 			}
-			if(typeof next == "function"){ next(true) }
+			if(typeof next == "function"){ next(null, true) }
 		}
 	}
 

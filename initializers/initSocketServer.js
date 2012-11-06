@@ -123,7 +123,7 @@ var initSocketServer = function(api, next){
 								}, "grey");
 							}
 						}else if(words[0] == "roomChange"){
-							api.chatRoom.roomRemoveMember(api, connection, function(){
+							api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
 								connection.room = words[1];
 								api.chatRoom.roomAddMember(api, connection);
 								api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
@@ -136,7 +136,7 @@ var initSocketServer = function(api, next){
 								}
 							});
 						}else if(words[0] == "roomView"){
-							api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
+							api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
 								api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
 								if(api.configData.log.logRequests){
 									api.logJSON({

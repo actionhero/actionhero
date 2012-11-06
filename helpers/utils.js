@@ -189,7 +189,7 @@ utils.destroyConnection = function(api, connection, next){
 		delete connection;
 		if(typeof next == "function"){ next(null. null); }
 	}else{
-		api.chatRoom.roomRemoveMember(api, connection, function(){
+		api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
 			delete api.connections[connection.public.id];
 			delete connection;
 			if(typeof next == "function"){ next(null, null); }

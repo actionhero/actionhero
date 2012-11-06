@@ -11,6 +11,7 @@
 - default session ID renambed from "__browser_fingerprint" to "sessionID"
 - you can now pass "x-sessionID" headers as well as cookies to continue a web session with the same ID
 - api.cache.save and api.cache.destroy now return with callback(error, didSave) and callback(error, didDestroy).  api.cache.load now responds with next(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt)
+- a number of other functions have also been updated to properly follow the (err, data) pattern.  Check them out in the "internal methods" wiki page
 
 ** Tasks ** 
 

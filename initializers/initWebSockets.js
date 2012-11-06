@@ -74,7 +74,7 @@ var initWebSockets = function(api, next){
 			
 			connection.on('roomView', function(data){
 				if(data == null){ data = {}; }
-				api.chatRoom.socketRoomStatus(api, connection.room, function(roomStatus){
+				api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
 					connection.messageCount++; 
 					connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
 					if(api.configData.log.logRequests){
@@ -89,7 +89,7 @@ var initWebSockets = function(api, next){
 
 			connection.on('roomChange', function(data){
 				if(data == null){ data = {}; }
-				api.chatRoom.roomRemoveMember(api, connection, function(){
+				api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
 					connection.room = data.room;
 					api.chatRoom.roomAddMember(api, connection);
 					connection.messageCount++; 
