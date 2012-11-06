@@ -87,6 +87,19 @@ utils.randomArraySort = function(a,b) {
 }
 
 ////////////////////////////////////////////////////////////////////////////
+// in the array?
+utils.inArray = function(haystack, needle) {
+    var found = false;
+    for(var i in haystack){
+    	if(haystack[i] === needle){
+    		found = true;
+    		break;
+    	}
+    }
+    return found;
+}
+
+////////////////////////////////////////////////////////////////////////////
 // shellExec
 utils.shellExec = function(api, command, next){
 	var response = {};

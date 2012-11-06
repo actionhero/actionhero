@@ -43,9 +43,9 @@ describe('Core: Utils', function(){
 
   it('utils.sleepSync', function(done){
   	var start = new Date();
-	specHelper.utils.sleepSync(.1) 
-	var end = new Date();
-	(end - start).should.be.within(100, 200);
+	  specHelper.utils.sleepSync(.1) 
+	  var end = new Date();
+	  (end - start).should.be.within(100, 200);
   	done();
   });
 
@@ -53,6 +53,13 @@ describe('Core: Utils', function(){
   	var a = [1,2,3,3,4,4,4,5,5,5]
   	specHelper.utils.arrayUniqueify(a).should.eql([1,2,3,4,5]);
   	done();
+  });
+
+  it('utils.inArray', function(done){
+    specHelper.utils.inArray([1,2,3], 1).should.eql(true);
+    specHelper.utils.inArray([1,2,3], 4).should.eql(false);
+    specHelper.utils.inArray([1,2,3], null).should.eql(false);
+    done();
   });
 
   it('utils.objClone', function(done){

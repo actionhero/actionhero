@@ -4,9 +4,9 @@
 
 ** Patterns **
 
-- actionHero.start, actionHero.stop, and actionHero.restart's callbacks now all return (error, api)
-- Actions now have a default error of 'null' rather than 'false' and actions will not return an error object unless there is an error
-- Tasks should now `callback(data, toContinue)` where 'to continue' is a boolean indicating if the task ran sucessuflly, and are able to be run again
+- actionHero.start, actionHero.stop, and actionHero.restart's callbacks now all callback with (error, api) rather than just (api)
+- Actions now have a default error of 'null' rather than 'false' and actions will not return an error object unless there is an error.  Client-side checks should now look for errors with `if(error != null)`, which makes more sense
+- Tasks should now `callback(data, toContinue)` where 'toContinue' is a boolean indicating if the task ran sucessuflly, and is able to be run again
 - the extra methods for socket/webSocket connections (say, roomView, etc) have been removed from the `actionsView` action, as they aren't really actions
 - default session ID renambed from "__browser_fingerprint" to "sessionID"
 - you can now pass "x-sessionID" headers as well as cookies to continue a web session with the same ID
@@ -14,7 +14,8 @@
 ** Tasks ** 
 
 - `api.tasks.inspect` can be used to inspect all the tasks in the queue
-- `api.tasks.enqueue` no has a callback(err, enqueued) propperly
+- `api.tasks.enqueue` now has a callback(err, enqueued) which can be used to check if there were any errors adding your task to the queue
+- anquing a non-periodic "all" task now will be sent to all servers in the actionCluster properly
 
 ## Version 3.0.14
 
