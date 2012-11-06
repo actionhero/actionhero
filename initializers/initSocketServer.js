@@ -30,7 +30,7 @@ var initSocketServer = function(api, next){
 			connection.setEncoding("utf8");
 			connection.responsesWaitingCount = 0;
 
-			api.stats.incrament(api, "numberOfActiveSocketClients");
+			api.stats.increment(api, "numberOfActiveSocketClients");
 			if(api.configData.log.logRequests){
 				api.logJSON({
 					label: "connect @ socket",
@@ -50,7 +50,7 @@ var initSocketServer = function(api, next){
 					connection.lastLine = line;
 					api.socketServer.socketDataString = api.socketServer.socketDataString.slice(index + 2);
 					if(line.length > 0) {
-						api.stats.incrament(api, "numberOfSocketRequests");
+						api.stats.increment(api, "numberOfSocketRequests");
 						connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
 						var line = line.replace("\n","");
 						var words = line.split(" ");
@@ -226,7 +226,7 @@ var initSocketServer = function(api, next){
 			});
 
 			connection.on("end", function () {				
-				api.stats.incrament(api, "numberOfActiveSocketClients", -1);
+				api.stats.increment(api, "numberOfActiveSocketClients", -1);
 				api.utils.destroyConnection(api, connection);
 				try{ 
 					connection.end(); 

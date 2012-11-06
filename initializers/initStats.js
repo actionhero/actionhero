@@ -9,29 +9,29 @@ var initStats = function(api, next){
 		api.stats.data = {};
 	}
 
-	api.stats.incrament = function(api, key, count, next){
+	api.stats.increment = function(api, key, count, next){
 		if(count == null){ count = 1; }
 		count = parseFloat(count);
 		if(api.redis.enable === true){
 			api.redis.client.hincrby("actionHero:stats", key, count, function(){
-				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
+				if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
 			});
 		}else{
 			if(api.stats.data[key] == null){
 				api.stats.data[key] = 0;
 			}
 			api.stats.data[key] = api.stats.data[key] + count;
-			if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
+			if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
 		}
 	}
 
 	api.stats.get = function(api, key, next){
 		if(api.redis.enable === true){
-			api.redis.client.hget("actionHero:stats", key, function (err, cacheObj){
-				next(cacheObj);
+			api.redis.client.hget("actionHero:stats", key, function(err, cacheObj){
+				next(err, cacheObj);
 			});
 		}else{
-			next(api.stats.data[key]);
+			next(null, api.stats.data[key]);
 		}
 	}
 	
@@ -41,12 +41,12 @@ var initStats = function(api, next){
 		stats.id = api.id;
 		stats.uptimeSeconds = (now - api.bootTime) / 1000;
 		api.cache.size(api, function(numberOfCacheObjects){
-			api.stats.get(api, "numberOfSocketRequests", function(numberOfSocketRequests){
-				api.stats.get(api, "numberOfWebSocketRequests", function(numberOfWebSocketRequests){
-					api.stats.get(api, "numberOfActiveSocketClients", function(numberOfActiveSocketClients){
-						api.stats.get(api, "numberOfActiveWebSocketClients", function(numberOfActiveWebSocketClients){
-							api.stats.get(api, "numberOfWebRequests", function(numberOfWebRequests){
-								api.stats.get(api, "numberOfPeers", function(numberOfPeers){
+			api.stats.get(api, "numberOfSocketRequests", function(err, numberOfSocketRequests){
+				api.stats.get(api, "numberOfWebSocketRequests", function(err, numberOfWebSocketRequests){
+					api.stats.get(api, "numberOfActiveSocketClients", function(err, numberOfActiveSocketClients){
+						api.stats.get(api, "numberOfActiveWebSocketClients", function(err, numberOfActiveWebSocketClients){
+							api.stats.get(api, "numberOfWebRequests", function(err, numberOfWebRequests){
+								api.stats.get(api, "numberOfPeers", function(err, numberOfPeers){
 									api.tasks.queueLength(api, api.tasks.redisQueue, function(queueLength){ // api.tasks.redisQueue will be null if not set
 
 										if(numberOfCacheObjects == null){numberOfCacheObjects = 0;}
@@ -98,10 +98,10 @@ var initStats = function(api, next){
 										if(api.redis.enable){
 											api.redis.client.lrange("actionHero:peers", 0, -1, function(err, peers){
 												stats.peers = peers;
-												if(typeof next == "function"){ next(stats); }
+												if(typeof next == "function"){ next(null, stats); }
 											});
 										}else{
-											if(typeof next == "function"){ next(stats); }
+											if(typeof next == "function"){ next(null, stats); }
 										}
 									});
 								});
