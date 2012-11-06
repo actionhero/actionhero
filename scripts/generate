@@ -119,8 +119,8 @@ params.initFunction = function(api, next){\r\n\
 }\r\n\
 \r\n\
 // start the server!\r\n\
-actionHero.start(params, function(api){\r\n\
-	api.log('Boot Sucessful!');\r\n\
+actionHero.start(params, function(error, api){\r\n\
+	if(error == null){ api.log('Boot Sucessful!'); }\r\n\
 });\r\n\
 ";
 
