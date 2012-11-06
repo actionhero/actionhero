@@ -278,8 +278,8 @@ describe('Core: actionCluster', function(){
 	describe('shared cache', function(){
 
 		it("peer 1 writes and peer 2 should read", function(done){
-			apis[0].cache.save(apis[0], "test_key", "yay", null, function(save_resp){
-				apis[1].cache.load(apis[1], "test_key", function(value){
+			apis[0].cache.save(apis[0], "test_key", "yay", null, function(err, save_resp){
+				apis[1].cache.load(apis[1], "test_key", function(err, value){
 					value.should.equal('yay');
 					done();
 				})
@@ -287,8 +287,8 @@ describe('Core: actionCluster', function(){
 		});	
 
 		it("peer 3 deletes and peer 1 cannot read any more", function(done){
-			apis[2].cache.destroy(apis[2], "test_key", function(del_resp){
-				apis[0].cache.load(apis[0], "test_key", function(value){
+			apis[2].cache.destroy(apis[2], "test_key", function(err, del_resp){
+				apis[0].cache.load(apis[0], "test_key", function(err, value){
 					should.not.exist(value);
 					done();
 				})

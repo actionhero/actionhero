@@ -10,6 +10,7 @@
 - the extra methods for socket/webSocket connections (say, roomView, etc) have been removed from the `actionsView` action, as they aren't really actions
 - default session ID renambed from "__browser_fingerprint" to "sessionID"
 - you can now pass "x-sessionID" headers as well as cookies to continue a web session with the same ID
+- api.cache.save and api.cache.destroy now return with callback(error, didSave) and callback(error, didDestroy).  api.cache.load now responds with next(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt)
 
 ** Tasks ** 
 

@@ -20,16 +20,20 @@ var initCache = function(api, next){
 			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
 				if(err != null){ api.log(err, red); }
 				cacheObj = JSON.parse(cacheObj);
-				if(cacheObj != null && ( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null )) {
+				if(cacheObj == null){
+					if(typeof next == "function"){ 
+						process.nextTick(function() { next(new Error("Object not found"), null, null, null, null); });
+					}
+				}else if( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null ){
 					cacheObj.readAt = new Date().getTime();
 					api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
 						if(typeof next == "function"){  
-							process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+							process.nextTick(function() { next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
 						}
 					});
 				}else{
 					if(typeof next == "function"){ 
-						process.nextTick(function() { next(null, null, null, null); });
+						process.nextTick(function() { next(new Error("Object expired"), null, null, null, null); });
 					}
 				}
 			});
@@ -40,7 +44,7 @@ var initCache = function(api, next){
 				if(err != null){ api.log(err, red); }
 				var resp = true;
 				if(count != 1){ resp = false; }
-				if(typeof next == "function"){  process.nextTick(function() { next(resp); }); }
+				if(typeof next == "function"){  process.nextTick(function() { next(null, resp); }); }
 			});
 		};
 
@@ -55,16 +59,16 @@ var initCache = function(api, next){
 		api.cache.load = function(api, key, next){
 			var cacheObj = api.cache.data[key];
 			if(cacheObj == null){
-				process.nextTick(function() { next(null, null, null, null); });
+				process.nextTick(function() { next(new Error("Object not found"), null, null, null, null); });
 			}else{
 				if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null ){
 					api.cache.data[key].readAt = new Date().getTime();
 					if(typeof next == "function"){  
-						process.nextTick(function() { next(cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+						process.nextTick(function() { next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
 					}
 				}else{
 					if(typeof next == "function"){ 
-						process.nextTick(function() { next(null, null, null, null); });
+						process.nextTick(function() { next(new Error("Object expired"), null, null, null, null); });
 					}
 				}
 			}
@@ -73,10 +77,10 @@ var initCache = function(api, next){
 		api.cache.destroy = function(api, key, next){
 			var cacheObj = api.cache.data[key];
 			if(typeof cacheObj == "undefined"){
-				if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
+				if(typeof next == "function"){  process.nextTick(function() { next(null, false); }); }
 			}else{
 				delete api.cache.data[key];
-				if(typeof next == "function"){  process.nextTick(function() { next(true); }); }
+				if(typeof next == "function"){  process.nextTick(function() { next(null, true); }); }
 			}
 		};
 	}
@@ -99,15 +103,15 @@ var initCache = function(api, next){
 		}
 		if(api.redis && api.redis.enable === true){
 			api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), function(){
-				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
+				if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
 			});
 		}else{
 			try{
 				api.cache.data[key] = cacheObj;
-				if(typeof next == "function"){ process.nextTick(function() { next(true); }); }
+				if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
 			}catch(e){
 				console.log(e);
-				if(typeof next == "function"){  process.nextTick(function() { next(false); }); }
+				if(typeof next == "function"){  process.nextTick(function() { next(null, false); }); }
 			}
 		}
 	};
