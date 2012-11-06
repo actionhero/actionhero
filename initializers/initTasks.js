@@ -177,10 +177,10 @@ var initTasks = function(api, next)
 	api.tasks.queueLength = function(api, queue, next){
 		if(api.redis.enable === true){
 			api.redis.client.llen(queue, function(err, length){
-				next(length);
+				next(err, length);
 			})
 		}else{
-			next(api.tasks.queue.length);
+			next(null, api.tasks.queue.length);
 		}
 	}
 

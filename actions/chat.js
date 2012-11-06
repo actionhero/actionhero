@@ -46,7 +46,7 @@ action.run = function(api, connection, next){
 			}
 			next(connection, true);
 		}else if(connection.params.method == "messages"){
-			api.webServer.getWebChatMessage(api, connection, function(message){
+			api.webServer.getWebChatMessage(api, connection, function(err, message){
 				connection.response.message = message;
 				next(connection, true);
 			});

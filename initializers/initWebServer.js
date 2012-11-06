@@ -140,7 +140,7 @@ var initWebServer = function(api, next)
 		
 		////////////////////////////////////////////////////////////////////////////
 		// Response Prety-maker
-		api.webServer.respondToWebClient = function(connection, cont){
+		api.webServer.respondToWebClient = function(connection, toRender){
 			connection.response = connection.response || {};
 						
 			// serverInformation information
@@ -166,7 +166,7 @@ var initWebServer = function(api, next)
 			if(connection.error != null){ connection.response.error = String(connection.error); }
 			
 			process.nextTick(function() {
-				if(cont != false){
+				if(toRender != false){
 					var stringResponse = "";
 					if(typeof connection.params.outputType == "string"){
 						if(connection.params.outputType.toLowerCase() == "xml"){
@@ -279,18 +279,18 @@ var initWebServer = function(api, next)
 					if(message != null){
 						var parsedMessage = JSON.parse(message);
 						if(parsedMessage == []){ parsedMessage = null; }
-						next(parsedMessage);
+						next(null, parsedMessage);
 					}else{
-						next(null);
+						next(null, null);
 					}
 				});
 			}else{
 				var store = api.webServer.webChatMessages[connection.public.id];
 				if(store == null){
-					next(null);
+					next(null, null);
 				}else{
 					var message = store.splice(0,1);
-					next(message);
+					next(null, message);
 				}
 			}
 		}
