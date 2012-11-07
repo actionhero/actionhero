@@ -24,6 +24,7 @@ actionHero will also serve static files for you, but actionHero is not meant to 
 
 ## Want more?
 
+- [Getting Started](https://github.com/evantahler/actionHero/wiki/Getting-Started)
 - [Read the documentation on the wiki](https://github.com/evantahler/actionHero/wiki)
 - [Check out the project history](https://github.com/evantahler/actionHero/blob/master/versions.md)
 
