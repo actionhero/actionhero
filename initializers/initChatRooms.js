@@ -17,11 +17,15 @@ var initChatRooms = function(api, next){
 		if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
 		if(connection.public == null){ connection.public = {}; }
 		if(connection.public.id == null){ connection.public.id = 0; }
+		if(connection.params != null && connection.params.roomMatchKey != null){ connection.roomMatchKey = connection.params.roomMatchKey; }
+		if(connection.params != null && connection.params.roomMatchValue != null){ connection.roomMatchValue = connection.params.roomMatchValue; }
 		if(api.redis.enable === true && fromQueue == false){ 
 			var payload = {
 				message: message,
 				connection: {
 					room: connection.room,
+					roomMatchKey: connection.roomMatchKey,
+					roomMatchValue: connection.roomMatchValue,
 					public: {
 						id: connection.public.id
 					}
@@ -35,9 +39,17 @@ var initChatRooms = function(api, next){
 				var thisConnection = api.connections[i];
 				if(thisConnection.room == connection.room){
 					if(connection == null || thisConnection.public.id != connection.public.id){
-						if(thisConnection.type == "web"){ api.webServer.storeWebChatMessage(api, thisConnection, messagePayload); }
-						else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
-						else if(thisConnection.type == "webSocket"){ thisConnection.emit("say", messagePayload); }
+						var matched = false;
+						if(connection.roomMatchKey == null){
+							matched = true;
+						}else if(thisConnection[connection.roomMatchKey] == connection.roomMatchValue){
+								matched = true;
+						}
+						if(matched == true){
+							if(thisConnection.type == "web"){ api.webServer.storeWebChatMessage(api, thisConnection, messagePayload); }
+							else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
+							else if(thisConnection.type == "webSocket"){ thisConnection.emit("say", messagePayload); }
+						}
 					}
 				}
 			}

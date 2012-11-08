@@ -4,6 +4,7 @@ describe('Client: Socket', function(){
   var apiObj = {};
   var rawAPI = {};
   var should = require("should");
+  var client_details = {};
   var client_2_details = {};
 
   var client = {};
@@ -26,6 +27,13 @@ describe('Client: Socket', function(){
       apiObj = specHelper.cleanAPIObject(api);
       done();
     })
+  });
+
+  after(function(done){
+    client.write("quit\r\n")
+    client2.write("quit\r\n")
+    client3.write("quit\r\n")
+    done();
   });
 
   it('should connect all 3 clients', function(done){
@@ -227,6 +235,56 @@ describe('Client: Socket', function(){
 	}
 	client.on('data', listener);
 	client2.write("roomChange " + apiObj.configData.general.defaultChatRoo + "\r\n");
+  });
+
+  it('I can get my id', function(done){
+    var listener = function(response){
+      client.removeListener('data',listener);
+      client_details = JSON.parse(response).details;
+      done();
+    }
+    client.on('data', listener);
+    client.write("detailsView\r\n");
+  });
+
+  it('can send auth\'d messages', function(done){
+    rawAPI.connections[client_details.public.id].auth = 'true';
+    client2.write("paramAdd roomMatchKey=auth\r\n");
+    client2.write("paramAdd roomMatchValue=true\r\n");
+    client2.write("roomChange secretRoom\r\n");
+    client.write("roomChange secretRoom\r\n");
+    setTimeout(function(){
+      var listener = function(response){
+        client.removeListener('data',listener);
+        response = JSON.parse(response);
+        response.message.should.equal("secretAuthTest");
+        response.from.should.equal(client_2_details.public.id);
+        done();
+      }
+      client.on('data', listener);
+      client2.write("say secretAuthTest\r\n");
+    },500) 
+  });
+
+  it('doesn\'t send messages to people who are not authed', function(done){
+    rawAPI.connections[client_details.public.id].auth = 'false';
+    client2.write("paramAdd roomMatchKey=auth\r\n");
+    client2.write("paramAdd roomMatchValue=true\r\n");
+    client2.write("roomChange secretRoom\r\n");
+    client.write("roomChange secretRoom\r\n");
+    setTimeout(function(){
+      var listener = function(response){
+        client.removeListener('data',listener);
+        throw new Error("should not get the message");
+        done();
+      }
+      client.on('data', listener);
+      client2.write("say secretAuthTest\r\n");
+      setTimeout(function(){
+        client.removeListener('data',listener);
+        done(); // should just timeout
+      }, 1000)
+    },500) 
   });
 
 });

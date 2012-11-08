@@ -9,7 +9,9 @@ var initPostVariables = function(api, next)
 		"action",
 		"limit",
 		"offset",
-		"outputType"
+		"outputType",
+		"roomMatchKey",
+		"roomMatchValue"
 	];
 	for(var i in api.actions){
 		var action = api.actions[i];

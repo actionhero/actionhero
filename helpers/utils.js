@@ -161,6 +161,8 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	connection.response = {};
 	connection.remotePort = remotePort;
 	connection.remoteIP = remoteIP;
+  if(connection.roomMatchKey == null){ connection.roomMatchKey = null; }
+  if(connection.roomMatchValue == null){ connection.roomMatchValue = null; }
 	if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
 	connection.messageCount = 0;
 	connection.connectedAt = new Date().getTime();
