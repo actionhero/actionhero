@@ -1,12 +1,15 @@
 # Action Hero API Versions
 
+## Version 3.1.2
+
+- fix a bug with web socket sequencing for responses
+
 ## Version 3.1.1
 
 custom matchers on `api.chatRoom.socketRoomBroadcast`
 
 - `api.chatRoom.socketRoomBroadcast()` can now send messges to only some clients that match certain params, IE: {auth: true} or {id: 123}.  This will let you segment the users in your rooms who hear you broadcasts.  
 - `connection.params.roomMatchKey` and `connection.params.roomMatchVale` are set by the broadcaster to determine who they wish to message, along with the room.
-- fix a bug with web socket sequencing for responses
 
 ## Version 3.1.0
 
