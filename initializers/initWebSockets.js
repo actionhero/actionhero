@@ -143,6 +143,7 @@ var initWebSockets = function(api, next){
 				connection.actionStartTime = new Date().getTime();
 				connection.response = {};
 				connection.response.context = "response";
+				connection.messageCount++; 
 
 				// actions should be run using params set at the begining of excecution
 				// build a proxy connection so that param changes during execution will not break this
@@ -159,7 +160,8 @@ var initWebSockets = function(api, next){
 					connection = proxy_connection._original_connection;
 					connection.response = proxy_connection.response;
 					connection.error = proxy_connection.error;
-					var delta = new Date().getTime() - connection.actionStartTime;
+					var delta = new Date().getTime() - connection.actionStartTime;					
+					api.webSockets.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
 					if(api.configData.log.logRequests){
 						api.logJSON({
 							label: "action @ webSocket",
@@ -169,8 +171,6 @@ var initWebSockets = function(api, next){
 							duration: delta,
 						});
 					}
-					connection.messageCount++; 
-					api.webSockets.respondToWebSocketClient(connection, cont);
 				});
 			});
 
@@ -186,10 +186,14 @@ var initWebSockets = function(api, next){
 			});
 		});
 
-		api.webSockets.respondToWebSocketClient = function(connection, cont){
+		api.webSockets.respondToWebSocketClient = function(connection, cont, respondingTo){
 			if(cont != false){
 				if(connection.response.context == "response"){
-					connection.response.messageCount = connection.messageCount;
+					if(respondingTo != null){
+						connection.response.messageCount = respondingTo;
+					}else{
+						connection.response.messageCount = connection.messageCount;
+					}
 				}
 				if(connection.error != null){ 
 					if(connection.response.error == null){
