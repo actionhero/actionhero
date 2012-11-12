@@ -185,6 +185,16 @@ Escape character is '^]'.
 							</pre>
 						</td>
 						<td>
+							<pre>> openssl s_client -connect 127.0.0.1:5000
+... 
+SSL handshake has read 4619 bytes and written 456 bytes
+New, TLSv1/SSLv3, Cipher is AES256-SHA
+...
+{"welcome":"Hello! Welcome to the actionHero api}
+> actionsView
+							</pre>
+						</td>
+						<td>
 							<pre>
 var socket = io.connect('http://localhost:8080/');
 
