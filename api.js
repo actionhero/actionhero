@@ -150,12 +150,7 @@ var createActionHero = function(){
 				api.log("server ID: " + api.id);
 				api.log(successMessage, ["green", "bold"]);
 				actionHero.running = true;
-				if(next != null){ 
-					next(null, api);
-					// next();
-				}else{
-					// next();
-				}
+				if(next != null){ next(null, api); }
 			},
 		});
 	};

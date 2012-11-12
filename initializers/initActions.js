@@ -37,23 +37,27 @@ var initActions = function(api, next)
 		}
 
 		function loadFolder(path){
-			api.fs.readdirSync(path).forEach( function(file) {
-				if(path[path.length - 1] != "/"){ path += "/"; } 
-				var fullfFilePath = path + file;
-				if (file[0] != "."){
-					var stats = api.fs.statSync(fullfFilePath);
-					if(stats.isDirectory()){
-						loadFolder(fullfFilePath);
-					}else if(stats.isSymbolicLink()){
-						var realPath = readlinkSync(fullfFilePath);
-						loadFolder(realPath);
-					}else if(stats.isFile()){
-						actionLoader(api, fullfFilePath);
-					}else{
-						api.log(file+" is a type of file I cannot read", "red")
+			if(api.fs.existsSync(path)){
+				api.fs.readdirSync(path).forEach( function(file) {
+					if(path[path.length - 1] != "/"){ path += "/"; } 
+					var fullfFilePath = path + file;
+					if (file[0] != "."){
+						var stats = api.fs.statSync(fullfFilePath);
+						if(stats.isDirectory()){
+							loadFolder(fullfFilePath);
+						}else if(stats.isSymbolicLink()){
+							var realPath = readlinkSync(fullfFilePath);
+							loadFolder(realPath);
+						}else if(stats.isFile()){
+							actionLoader(api, fullfFilePath);
+						}else{
+							api.log(file+" is a type of file I cannot read", "red")
+						}
 					}
-				}
-			});
+				});
+			}else{
+				api.log("No actions folder found, skipping...");
+			}
 		}
 
 		function actionLoader(api, fullfFilePath, reload){
