@@ -1,53 +1,93 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
-	var port = window.location.port
-	if(port == "" || port == null){ port = "80"; }
-	var socket = io.connect(window.location.protocol + '//localhost:'+port+'/');
-	
-	socket.on('welcome', function(data){
-		console.log("connected!")
-		console.log(JSON.stringify(data));
-	});
 
-	// responses to action or chat room function
-	socket.on('response', function(data){
-		console.log(JSON.stringify(data));
-	});
+  // Example Use:
+  //
+  // s = new AHsocket
+	// s.action("cacheTest", {key: "key", value: "value"}, function(err, response, dela){
+	// 	 console.log(response);
+	// });
+	// s.on('say', function(message){
+	// 	console.log(message);
+	// });
 
-	// responses to chatRoom
-	socket.on('say', function(data){
-		console.log(JSON.stringify(data));
-	})
+	var AHsocket = function(connectCallback){
+		var self = this;
+		var e = new io.EventEmitter();
+		for(var i in e){ self[i] = e[i]; }
+		if(connectCallback != null){ self.connectCallback = connectCallback;}		
+		self.messageCount = 1;
+		self.responseTimeout = 30000;
+  	self.responseHandlers = {};
+  	self.startingTimeStamps = {};
+		self.responseTimesouts = {};
+		self.details = {};
+		
+		self.ws = io.connect('/');
 
-	// get my details
-	var getDetails = function(){
-		socket.emit("detailsView");
+  	self.ws.on('error', function(response){
+  		self.emit('error', "web socket error", response);
+  	});
+
+  	self.ws.on('say', function(response){
+  		self.emit('say', response);
+  	});
+
+  	self.ws.on('welcome', function(response){
+  		self.registerCallback('detailsView', {}, function(err, response, delta){
+	      self.details = response.details;
+	      self.emit("connected", self.details);
+	      if(typeof self.connectCallback == 'function'){
+	      	connectCallback(self.details);
+	      }
+	    });
+  	});
+
+  	self.ws.on('response', function(response){
+	    if(typeof self.responseHandlers[response.messageCount] == 'function'){
+	    	var delta = new Date().getTime() - self.startingTimeStamps[response.messageCount];
+	      self.responseHandlers[response.messageCount](response.error, response, delta);
+	      delete self.responseTimesouts[response.messageCount];
+	      delete self.startingTimeStamps[response.messageCount];
+	      delete self.responseHandlers[response.messageCount];
+	    }
+  	});  	
 	}
 
-	// call an action
-	var action = function(action, params){
-		// params = {key1: 'value_1', key2: 'value2'}
-		if (params == null){ params = {}; }
-		params['action'] = action;
-		socket.emit("action", params);
-	}
+	AHsocket.prototype.registerCallback = function(event, params, next){
+		var self = this;
+    if (params == null){ params = {}; }
+    if(typeof next == 'function'){
+      self.responseHandlers[self.messageCount] = next;
+      self.startingTimeStamps[self.messageCount] = new Date().getTime();
+      self.responseTimesouts[self.messageCount] = setTimeout(function(){
+      	self.emit('timeout', event, params, next);
+      }, self.responseTimeout, event, params, next);
+    }
+    self.messageCount++;
+    self.ws.emit(event, params);
+  }
 
-	// chat room functions
-	var say = function(message){
-		// message = "hello world"
-		socket.emit("say", {message: message});
-	}
-	var roomView = function(){
-		socket.emit("roomView");
-	}
-	var roomChange = function(room){
-		// room = "newRoomName"
-		socket.emit("roomChange", {room: room});
-	}
+	AHsocket.prototype.action = function(action, params, next){
+    if (params == null){ params = {}; }
+    params['action'] = action;
+    this.registerCallback('action', params, next);
+  }
 
-	// disconnect
-	var quit = function(){
-		socket.emit("quit");
-	}
+  AHsocket.prototype.say = function(message, next){
+    this.registerCallback('say', {message: message}, next);
+  }
+
+  AHsocket.prototype.roomView = function(next){
+    this.registerCallback('roomView', {}, next);
+  }
+
+  AHsocket.prototype.roomChange = function(room, next){
+    this.registerCallback('roomChange', {room: room}, next);
+  }
+
+  AHsocket.prototype.quit = function(){
+    this.ws.emit("quit");
+  }
 
 </script>
