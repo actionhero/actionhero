@@ -140,6 +140,7 @@ var createActionHero = function(){
 		initializerMethods.forEach(function(method){
 			if(typeof orderedInitializers[method] != "function"){
 				orderedInitializers[method] = function(next){ 
+					api.log("running custom initalizer: " + method);
 					actionHero[method](api, next) 
 				};
 			}
