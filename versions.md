@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.1.3
+
+- enable you to add custom initilizers in your project
+
 ## Version 3.1.2
 
 - fix a bug with web socket sequencing for responses

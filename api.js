@@ -86,6 +86,7 @@ var createActionHero = function(){
 			process.cwd() + "/node_modules/actionHero/initializers/"
 		]
 			
+		var initializerMethods = [];
 		for(var i in initializerFolders){
 			var folder = initializerFolders[i];
 			if(api.fs.existsSync(folder)){
@@ -95,6 +96,7 @@ var createActionHero = function(){
 						if(require.cache[initializerFolders[i] + file] != null){
 							delete require.cache[initializerFolders[i] + file];
 						}
+						initializerMethods.push(initalizer);
 						actionHero[initalizer] = require(initializerFolders[i] + file)[initalizer];
 					}
 				});
@@ -120,39 +122,51 @@ var createActionHero = function(){
 		api.bootTime = new Date().getTime();
 
 		// run the initializers
-		api.async.series({
-			initLog: function(next){ actionHero.initLog(api, next); },
-			initExceptions: function(next){ actionHero.initExceptions(api, next); },
-			initRedis: function(next){ actionHero.initRedis(api, next); },
-			initCache: function(next){ actionHero.initCache(api, next); },
-			initActions: function(next){ actionHero.initActions(api, next); },
-			initPostVariables: function(next){ actionHero.initPostVariables(api, next); },
-			initFileServer: function(next){ actionHero.initFileServer(api, next); },
-			initStats: function(next){ actionHero.initStats(api, next); },
-			initWebServer: function(next){ actionHero.initWebServer(api, next); },
-			initWebSockets: function(next){ actionHero.initWebSockets(api, next); },
-			initSocketServer: function(next){ actionHero.initSocketServer(api, next); },
-			initChatRooms: function(next){ actionHero.initChatRooms(api, next); },
-			initTasks: function(next){ actionHero.initTasks(api, next); },
-			_user_init: function(next){
-				if(typeof params.initFunction == "function"){
-					params.initFunction(api, function(){
-						next();
-					})
-				}else{
-					next();
-				}
-			},
-			startTaskProcessing: function(next){ 
-				api.tasks.startTaskProcessing(api, next);
-			},
-			_complete: function(){
-				api.log("server ID: " + api.id);
-				api.log(successMessage, ["green", "bold"]);
-				actionHero.running = true;
-				if(next != null){ next(null, api); }
-			},
+		var orderedInitializers = {}
+		orderedInitializers['initLog'] = function(next){ actionHero.initLog(api, next) };
+		orderedInitializers['initExceptions'] = function(next){ actionHero.initExceptions(api, next) };
+		orderedInitializers['initRedis'] = function(next){ actionHero.initRedis(api, next) };
+		orderedInitializers['initCache'] = function(next){ actionHero.initCache(api, next) };
+		orderedInitializers['initActions'] = function(next){ actionHero.initActions(api, next) };
+		orderedInitializers['initPostVariables'] = function(next){ actionHero.initPostVariables(api, next) };
+		orderedInitializers['initFileServer'] = function(next){ actionHero.initFileServer(api, next) };
+		orderedInitializers['initStats'] = function(next){ actionHero.initStats(api, next) };
+		orderedInitializers['initWebServer'] = function(next){ actionHero.initWebServer(api, next) };
+		orderedInitializers['initWebSockets'] = function(next){ actionHero.initWebSockets(api, next) };
+		orderedInitializers['initSocketServer'] = function(next){ actionHero.initSocketServer(api, next) };
+		orderedInitializers['initChatRooms'] = function(next){ actionHero.initChatRooms(api, next) };
+		orderedInitializers['initTasks'] = function(next){ actionHero.initTasks(api, next) };
+
+		initializerMethods.forEach(function(method){
+			if(typeof orderedInitializers[method] != "function"){
+				orderedInitializers[method] = function(next){ 
+					actionHero[method](api, next) 
+				};
+			}
 		});
+
+		orderedInitializers['_user_init'] = function(next){ 
+			if(typeof params.initFunction == "function"){
+				params.initFunction(api, function(){
+					next();
+				})
+			}else{
+				next();
+			} 
+		};
+
+		orderedInitializers['startTaskProcessing'] = function(next){ api.tasks.startTaskProcessing(api, next) };
+		
+		orderedInitializers['_complete'] = function(){ 
+			api.log("server ID: " + api.id);
+			api.log(successMessage, ["green", "bold"]);
+			actionHero.running = true;
+			if(next != null){ 
+				next(null, api);
+			}
+		};
+
+		api.async.series(orderedInitializers);
 	};
 
 	actionHero.stop = function(next){	
