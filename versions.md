@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.1.4
+
+- explicit call of `node` in package.json to wnable project to run on windows
+
 ## Version 3.1.3
 
 - enable you to add custom initilizers in your project
