@@ -3,10 +3,12 @@
 ## Version 3.1.4
 
 - explicit call of `node` in package.json to wnable project to run on windows
+- added a generator for initializers @ `npm run-script actionHero generateInitializer` 
+- create a template readme file when generating a new project
 
 ## Version 3.1.3
 
-- enable you to add custom initilizers in your project
+- enable you to add custom initializers in your project
 
 ## Version 3.1.2
 
