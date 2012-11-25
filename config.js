@@ -130,7 +130,8 @@ configData.webSockets = {
 		"browser client minification",
 		"browser client etag",
 		"browser client gzip"
-	]
+	],
+	"options" : {},
 };
 
 //////////////////////////////////
