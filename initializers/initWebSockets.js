@@ -31,9 +31,15 @@ var initWebSockets = function(api, next){
 			io.set('log level', 1);
 		}
 
-		if(typeof api.configData.webSockets.settings == "Array" && api.configData.webSockets.settings.length > 0){
+		if(api.configData.webSockets.settings != null){
 			for (var i in api.configData.webSockets.settings){
 				io.enable(api.configData.webSockets.settings[i]); 
+			}
+		}
+
+		if(api.configData.webSockets.options != null){
+			for (var i in api.configData.webSockets.options){
+				io.set(i, api.configData.webSockets.options[i]); 
 			}
 		}
 
