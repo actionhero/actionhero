@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 4.0.0
+
+- actionHero will now manage the starting/stopping of your applicaiton for you
+- this means that there is no more 'main' or 'app.js' file for your projects
+
+- refactor of `scripts` into a general `actionHero` executable  
+- allows you to start your server with `actionHero start [nameOfFile]` and `actionHero startCluster [nameOfFile]`
+- you can learn more about the new CLI with `actionHero help`
+
+- params.initFunction no longer exists.  Please use a propper initializer instead
+
 ## Version 3.1.5
 
 - allow for `api.configData.webSockets.options` to contain a hash of settings to be bound to the websocket initalizer (along with .settings which remains an array)

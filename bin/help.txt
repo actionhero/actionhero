@@ -1,0 +1,67 @@
+actionHero - a node.js API framework for both tcp sockets, web sockets, and http clients.
+
+Binary options:
+* help (default)
+* helpSmall
+* generate
+* generateAction
+* generateTask
+* generateInitializer
+* actionHeroServer
+* actionHeroCluster
+
+Descriptions:
+
+* actionHero help
+  will display this document
+
+* actionHero helpSmall
+  will display a short (and colored) message
+  this shows upon `npm install of actionHero`
+
+* actionHero generate
+  will prepare an empty directory with a template actionHero project
+
+* actionHero generateAction --name=[name] --description=[description] --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional] 
+  will generate a new action in `actions`
+  [name] (required)
+  [description] (required) should be wrapped in quotes if it contains spaces
+  [inputsRequired] (optional) should be a comma-sepperated list IE: "userName,password"
+  [inputsOptional] (optional) should be a comma-sepperated list IE: "userName,password"
+
+* actionHero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
+  will generate a new task in `tasks`
+  [name] (required)
+  [description] (required) should be wrapped in quotes if it contains spaces
+  [scope] (optional) can be "any" or "all"
+  [frequency] (optional)
+
+* actionHero generateInitializer --name=[name]
+  will generate a new initializer in `initializers`
+  [name] (required)
+
+* actionHero actionHeroServer
+  will start a template actionHero server
+  this is the respondant to `npm start`
+  this command will use the command defiend in your project's package.json for `npm start` to boot the server
+
+* actionHero actionHeroCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --silent=[silent] --title=[clusterTitle] --workerTitlePrefix=[prefix] --args=[argsArray]
+  will launch a template actionHero cluster (using node's cluster module)
+  will attempt to use the `app.js` file described in your package.json
+  this command will use the command defiend in your project's package.json for `npm start` to boot the workers
+  [exec] (optional) command for the custer-master to run to stat the workers
+  [workers] (optional) number of workers (defaults to # CPUs - 1)
+  [pidfile] (optional) pidfile localtion (defaults to process.cwd() + /pids)
+  [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
+  [silent] (optional) should worker stdout be sent to cluster master (default false)
+  [title] (optional) default actionHero-master
+  [workerTitlePrefix] (optional) default actionHero-worker
+  [args] (optional) the args to pass to [exec]  defaults to [start]
+
+* actionHero start
+  --> actionHeroServer
+
+* actionHero startCluster
+  --> actionHeroCluster
+
+More Help & the actionHero wiki can be found @ http://actionherojs.com

@@ -146,16 +146,6 @@ var createActionHero = function(){
 			}
 		});
 
-		orderedInitializers['_user_init'] = function(next){ 
-			if(typeof params.initFunction == "function"){
-				params.initFunction(api, function(){
-					next();
-				})
-			}else{
-				next();
-			} 
-		};
-
 		orderedInitializers['startTaskProcessing'] = function(next){ api.tasks.startTaskProcessing(api, next) };
 		
 		orderedInitializers['_complete'] = function(){ 

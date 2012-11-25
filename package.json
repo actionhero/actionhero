@@ -23,21 +23,26 @@
     "data2xml":"0.5.x",
     "mime":"1.2.x",
     "redis":"0.8.x",
-    "socket.io":"0.9.x"
+    "socket.io":"0.9.x",
+    "optimist":"0.3.x"
 	},
   "devDependencies": {
     "mocha":"1.6.x",
     "should":"1.2.x",
     "socket.io-client":"0.9.x"
   },
+  "bin": {
+    "actionHero": "./bin/actionHero"
+  },
   "scripts": {
-    "start": "node ./scripts/actionHero",
-    "startCluster": "node ./scripts/actionHeroCluster",
-	  "install": "node ./scripts/install",
-	  "test": "node ./node_modules/.bin/mocha --reporter spec",
-    "generate" : "node ./scripts/generate",
-    "generateAction" : "node ./scripts/generateAction",
-    "generateTask" : "node ./scripts/generateTask",
-    "generateInitializer" : "node ./scripts/generateInitializer"
+    "start": "node ./bin/actionHero actionHeroServer",
+    "startCluster": "node ./bin/actionHero actionHeroCluster",
+    "install": "node ./bin/actionHero helpSmall",
+    "test": "node ./node_modules/.bin/mocha --reporter spec",
+    "generateAction" : "node ./bin/actionHero generateAction",
+    "generateTask" : "node ./bin/actionHero generateTask",
+    "generateInitializer" : "node ./bin/actionHero generateInitializer",
+	  
+    "generate" : "node ./scripts/generate"
   }
 }

@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+
+var binary = {};
+
+binary.useColors = true;
+binary.project_root = process.cwd();
+
+binary.utils = require(__dirname + './../helpers/utils.js').utils;
+binary.consoleColors = require('colors');
+binary.fs = require('fs');
+binary.argv = require('optimist').argv;
+
+///////////////
+// utilities //
+///////////////
+
+binary.log = function(message, styles){
+  if(binary.useColors == true){
+    if (styles == null){styles = ["white"];}
+    if (typeof styles == "string"){styles = [styles];}
+    for(var i in styles){
+      if(binary.consoleColors[styles[i]] != null){
+        message = binary.consoleColors[styles[i]](message);
+      }
+    }
+  }else{
+    // TODO: strip ansi color codes
+    // message = message.replace(new RegExp('\033\\[91m', 'g'), '')
+  }
+  console.log(message);
+}
+
+binary.hardError = function(err){
+  binary.log(err, ['red', 'bold']);
+  process.exit(1);
+}
+
+binary.utils.stringifyInputList = function(list){
+  var s = "";
+  if(list == null){ return s; }
+  arr = list.split(",");
+  var used = 0;
+  for(var i in arr){
+    if(used > 0){ s+= ", ";}
+    if(arr[i].length > 0){
+      s += '"' + arr[i] + '"';
+      used++;
+    }
+  }
+  return s;
+}
+
+binary.utils.dir_exists = function(dir, success_function, fail_function){
+  try{
+    var stats = binary.fs.lstatSync(binary.project_root + dir);
+    if(stats.isDirectory() || stats.isSymbolicLink()){
+      if(typeof success_function == 'function'){ success_function(); }
+    }else{
+      if(typeof fail_function == 'function'){ fail_function(); }
+    }
+  }catch(e){
+    if(typeof fail_function == 'function'){ fail_function(); }
+  }
+}
+
+binary.utils.file_exists = function(file, success_function, fail_function){
+  try{
+    var stats = binary.fs.lstatSync(binary.project_root + "/" + file);
+    if(stats.isFile() || stats.isSymbolicLink()){
+      if(typeof success_function == 'function'){ success_function(); }
+    }else{
+      if(typeof fail_function == 'function'){ fail_function(); }
+    }
+  }catch(e){
+    if(typeof fail_function == 'function'){ fail_function(); }
+  }
+}
+
+binary.utils.create_dir_safely = function(dir){
+  var full_dir = binary.project_root + dir;
+  dir_exists(dir, function(){
+    binary.log(" - directory `"+binary.utils.prettify_path(full_dir)+"` already exists, skipping", "yellow");
+  }, function(){
+    binary.log(" - creating directory `"+binary.utils.prettify_path(full_dir)+"`", "green");
+    binary.fs.mkdirSync(full_dir , 0766);
+  });
+}
+
+binary.utils.create_file_safely = function(file, data){
+  var full_file = binary.project_root + "/" + file;
+  binary.utils.file_exists(file, function(){
+    binary.log(" - file `"+binary.utils.prettify_path(full_file)+"` already exists, skipping", "yellow");
+  }, function(){
+    binary.log(" - wrote file `"+binary.utils.prettify_path(full_file)+"`", "green");
+    binary.fs.writeFileSync(full_file, data);
+  });
+}
+
+binary.utils.prettify_path = function(full_path){
+  var parts = full_path.split("/");
+  var good_parts = [];
+  for(var i in parts){
+    var curr = parts[i];
+    if(curr == ".."){
+      good_parts.pop();
+    }else{
+      good_parts.push(curr);
+    }
+  }
+  var resp = "";
+  for(var i in good_parts){
+    if(resp.length > 0){ resp = resp + "/"; }
+    resp = resp + good_parts[i];
+  }
+  return resp;
+}
+
+//////////
+// Load //
+//////////
+
+binary.actions = {};
+var actions = ["unknownInput", "help", "helpSmall", "generateAction", "generateTask", "generateInitializer", "actionHeroServer", "actionHeroCluster"];
+
+for(var i in actions){
+  var action = actions[i];
+  binary.actions[action] = require("./include/" + action + ".js")[action];
+}
+
+// symlinks
+binary.actions['start'] = binary.actions['actionHeroServer'];
+binary.actions['startCluster'] = binary.actions['actionHeroCluster'];
+
+binary.mainAction = binary.argv["_"][0];
+if(binary.mainAction == null){ binary.mainAction = "help"; }
+
+if(binary.actions[binary.mainAction] != null){
+  binary.actions[binary.mainAction](binary, function(){});
+}else{
+  binary.actions['unknownInput'](binary, function(){});
+}

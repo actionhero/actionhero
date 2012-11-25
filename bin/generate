@@ -95,33 +95,17 @@ documents.projectMap = "/\r\n\
 |- node_modules\r\n\
 |-- (your modules, actionHero should be npm installed in here)\r\n\
 |\r\n\
+|- initializers\r\n\
+|-- (your initializers, to be loaded in before the project boots)\r\n\
+|\r\n\
 |- public\r\n\
 |-- (your static assets to be served by /file)\r\n\
 |\r\n\
 |- tasks\r\n\
 |-- (your tasks)\r\n\
 |\r\n\
-| app.js\r\n\
 | config.js\r\n\
 | package.json (be sure to include 'actionHero':'x')\r\n\
-";
-
-documents.app_js = "// load in the actionHero class\r\n\
-var actionHero = require('actionHero').actionHero;\r\n\
-\r\n\
-var params = {};\r\n\
-// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.  You can overwrite them with params.configChanges\r\n\
-params.configChanges = {}\r\n\
-\r\n\
-// any additional functions you might wish to define to be globally accessable can be added as part of params.initFunction.  The api object will be availalbe.\r\n\
-params.initFunction = function(api, next){\r\n\
-	next();\r\n\
-}\r\n\
-\r\n\
-// start the server!\r\n\
-actionHero.start(params, function(error, api){\r\n\
-	if(error == null){ api.log('Boot Sucessful!'); }\r\n\
-});\r\n\
 ";
 
 documents.config_js = fs.readFileSync(project_root + "node_modules/actionHero/config.js");
@@ -158,7 +142,7 @@ documents.package_json = "{\r\n\
   },\r\n\
   \"devDependencies\": {},\r\n\
   \"scripts\": {\r\n\
-    \"start\": \"node app.js\"\r\n\
+    \"start\": \"./node_modules/.bin/actionHero start\"\r\n\
   }\r\n\
 }\r\n\
 ";
@@ -194,7 +178,6 @@ create_dir_safely("public");
 create_dir_safely("tasks");
 
 // make files
-create_file_safely('app.js', documents.app_js);
 create_file_safely('config.js', documents.config_js);
 create_file_safely('routes.js', documents.routes_js);
 create_file_safely('package.json', documents.package_json);
@@ -212,5 +195,9 @@ create_file_safely('/readme.md', documents.readme_md);
 console.log("");
 console.log("Generation Complete.  Your project directory should look like this:");
 console.log(documents.projectMap.blue)
+
+console.log("");
+
+console.log("run `npm start` to start your server");
 
 console.log("\r\n**********\r\n");
