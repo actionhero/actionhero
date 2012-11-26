@@ -41,23 +41,23 @@ describe('Client: Web', function(){
 
     it('params work', function(done){
     	specHelper.apiTest.get('/testAction/', 0, {}, function(response){
-    		response.body.requestorInformation.recievedParams.action.should.equal('testAction')
+    		response.body.requestorInformation.receivedParams.action.should.equal('testAction')
     		done();
     	});
     });
 
 	it('params are ignored unless they are in the whitelist', function(done){
     	specHelper.apiTest.get('/testAction/?crazyParam123=something', 0, {}, function(response){
-    		response.body.requestorInformation.recievedParams.action.should.equal('testAction');
-    		should.not.exist(response.body.requestorInformation.recievedParams['crazyParam123']);
+    		response.body.requestorInformation.receivedParams.action.should.equal('testAction');
+    		should.not.exist(response.body.requestorInformation.receivedParams['crazyParam123']);
     		done();
     	});
     });
 
     it('limit and offset should have defaults', function(done){
     	specHelper.apiTest.get('/', 0, {}, function(response){
-    		response.body.requestorInformation.recievedParams.limit.should.equal(100)
-    		response.body.requestorInformation.recievedParams.offset.should.equal(0)
+    		response.body.requestorInformation.receivedParams.limit.should.equal(100)
+    		response.body.requestorInformation.receivedParams.offset.should.equal(0)
     		done();
     	});
     });
@@ -178,7 +178,7 @@ describe('Client: Web', function(){
 		
 	    it('unknwon actions are still unknwon', function(done){
 	    	specHelper.apiTest.get('/a_crazy_action', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('a_crazy_action')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('a_crazy_action')
 	    		response.body.error.should.equal('Error: a_crazy_action is not a known action.')
 	    		done();
 	    	});
@@ -186,7 +186,7 @@ describe('Client: Web', function(){
 
 	    it('explicit action declarations still override routed actions', function(done){
 	    	specHelper.apiTest.get('/user/123?action=theRealAction', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('theRealAction')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('theRealAction')
 	    		response.body.error.should.equal('Error: theRealAction is not a known action.')
 	    		done();
 	    	});
@@ -194,51 +194,51 @@ describe('Client: Web', function(){
 
 	    it('Routes should be mapped for GET (simple)', function(done){
 	    	specHelper.apiTest.get('/users', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('usersList')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('usersList')
 	    		done();
 	    	});
 	    });
 
 	    it('Routes should be mapped for GET (complex)', function(done){
 	    	specHelper.apiTest.get('/user/1234', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('userAdd')
-	    		response.body.requestorInformation.recievedParams.userID.should.equal('1234')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('userAdd')
+	    		response.body.requestorInformation.receivedParams.userID.should.equal('1234')
 	    		done();
 	    	});
 	    });
 
 	    it('Routes should be mapped for POST', function(done){
 	    	specHelper.apiTest.post('/user/1234?key=value', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('userEdit')
-	    		response.body.requestorInformation.recievedParams.userID.should.equal('1234')
-	    		response.body.requestorInformation.recievedParams.key.should.equal('value')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('userEdit')
+	    		response.body.requestorInformation.receivedParams.userID.should.equal('1234')
+	    		response.body.requestorInformation.receivedParams.key.should.equal('value')
 	    		done();
 	    	});
 	    });
 
 	    it('Routes should be mapped for PUT', function(done){
 	    	specHelper.apiTest.put('/user/theType/theScreenName', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('userAdd')
-	    		response.body.requestorInformation.recievedParams.type.should.equal('theType')
-	    		response.body.requestorInformation.recievedParams.screenName.should.equal('theScreenName')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('userAdd')
+	    		response.body.requestorInformation.receivedParams.type.should.equal('theType')
+	    		response.body.requestorInformation.receivedParams.screenName.should.equal('theScreenName')
 	    		done();
 	    	});
 	    });
 
 	    it('Routes should be mapped for DELETE', function(done){
 	    	specHelper.apiTest.del('/user/1234', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('userDelete')
-	    		response.body.requestorInformation.recievedParams.userID.should.equal('1234')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('userDelete')
+	    		response.body.requestorInformation.receivedParams.userID.should.equal('1234')
 	    		done();
 	    	});
 	    });
 
 	    it('explicit params win over route params', function(done){
 	    	specHelper.apiTest.put('/user/theType/theScreenName/badKey?key=goodKey', 0, {}, function(response){
-	    		response.body.requestorInformation.recievedParams.action.should.equal('userAdd')
-	    		response.body.requestorInformation.recievedParams.type.should.equal('theType')
-	    		response.body.requestorInformation.recievedParams.screenName.should.equal('theScreenName')
-	    		response.body.requestorInformation.recievedParams.key.should.equal('goodKey')
+	    		response.body.requestorInformation.receivedParams.action.should.equal('userAdd')
+	    		response.body.requestorInformation.receivedParams.type.should.equal('theType')
+	    		response.body.requestorInformation.receivedParams.screenName.should.equal('theScreenName')
+	    		response.body.requestorInformation.receivedParams.key.should.equal('goodKey')
 	    		done();
 	    	});
 	    });
