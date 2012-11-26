@@ -6,7 +6,9 @@ var initPids = function(api, next){
     api.configData.general.pidFileFirectory = process.cwd() + "/pids/";
   }
 
-  if(process.env["title"] != null){
+  if(api.argv["title"] != null){
+    api.pids.title = api.argv["title"];
+  }else if(process.env["title"] != null){
     api.pids.title = process.env["title"];
   }else if(api.cluster.isMaster){
     api.pids.title = "actionHero-" + api.id.replace(new RegExp(':', 'g'), '-');

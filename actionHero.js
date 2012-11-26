@@ -35,6 +35,7 @@ var actionHero = function(){
 	self.api.cluster = require('cluster');
 	self.api.io = require('socket.io');
 	self.api.bf = require('browser_fingerprint');
+	self.api.argv = require('optimist').argv;
 
 	// backwards compatibility for old node versions
 	self.api.fs.existsSync || (self.api.fs.existsSync = self.api.path.existsSync);
@@ -57,16 +58,21 @@ actionHero.prototype.start = function(params, next){
 			
 	self.api.watchedFiles = [];
 
-	if(process.env["config"] != null){
-		var configFile = process.env["config"];
+	if(self.api.argv["config"] != null){
+		var configFile = self.api.argv["config"];
 	}else if(self.api.fs.existsSync(process.cwd() + '/config.js')){
 		var configFile = process.cwd() + '/config.js';
 	}else{
 		var configFile = __dirname + "/config.js";
 		console.log(' >> no local config.json, using default from '+configFile);
 	}
-	self.api.configData = require(configFile).configData;
-
+	try{
+		self.api.configData = require(configFile).configData;
+	}catch(e){
+		console.log(" ! " + configFile + " is not a valid config.js-style file");
+		throw e;
+	}
+	
 	if(params.configChanges != null){
 		// console.log(" >> using configChanges as overrides to default template: " + JSON.stringify(params.configChanges));
 		for (var i in params.configChanges){ 

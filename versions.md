@@ -2,11 +2,17 @@
 
 ## Version 4.0.0
 
+** Boot **
+
 - actionHero will now manage the starting/stopping of your applicaiton for you
 - this means that there is no more 'main' or 'app.js' file for your projects
+- you can still include and start an actionHero server programatically, and actionHero is now a prototypical object 
 
-- refactor of `scripts` into a general `actionHero` executable  
-- allows you to start your server with `actionHero start [nameOfFile]` and `actionHero startCluster [nameOfFile]`
+** actionHero Binary **
+
+- refactor of `scripts` into a general `actionHero` executable which can be found in `./node_modules/actionHero/bin/actionHero` and `./node_modules/.bin/actionHero` after `npm install actionHero`
+- allows you to start your server with `actionHero start` and `actionHero startCluster` from your project's root
+- actionHero start can be passed many options, including `--config=[file]` which will allow you to specify other config.json(s) (IE: for development/staging envrionments)
 - you can learn more about the new CLI with `actionHero help`
 
 ** core API ** 

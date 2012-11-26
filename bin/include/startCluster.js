@@ -200,7 +200,7 @@ exports['startCluster'] = function(binary, next){
 		}else{
 			binary.log("all workers gone");
 			if(config.pidfile != null){
-				binary.fs.unlinkSync(config.pidfile);
+				try{ binary.fs.unlinkSync(config.pidfile); }catch(e){ }
 			}
 			process.exit();
 		}
