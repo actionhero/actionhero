@@ -152,9 +152,9 @@ var initWebServer = function(api, next)
 			connection.response.requestorInformation = {};
 			connection.response.requestorInformation.id = connection.public.id;
 			connection.response.requestorInformation.remoteAddress = connection.remoteIP;
-			connection.response.requestorInformation.recievedParams = {};
+			connection.response.requestorInformation.receivedParams = {};
 			for(var k in connection.params){
-				connection.response.requestorInformation.recievedParams[k] = connection.params[k] ;
+				connection.response.requestorInformation.receivedParams[k] = connection.params[k] ;
 			};
 					
 			// request timer
