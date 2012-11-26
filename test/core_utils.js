@@ -26,11 +26,11 @@ describe('Core: Utils', function(){
   	var randomString = specHelper.utils.randomString(100);
   	randomString.should.be.a('string');
   	randomString.length.should.equal(17);
-	var i = 0;
-	while(i < 1000){
-	    randomString.should.not.equal(specHelper.utils.randomString(100));
-	    i++;
-	}
+  	var i = 0;
+  	while(i < 1000){
+  	  randomString.should.not.equal(specHelper.utils.randomString(100));
+  	  i++;
+  	}
   	done();
   });
 

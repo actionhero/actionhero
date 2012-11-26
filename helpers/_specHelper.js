@@ -96,11 +96,6 @@ specHelper.params[2] = {
 	redis : redisConfig,
 };
 
-specHelper.initFunction = function(api, next){
-	api.redis.lostPeerCheckTime = 500;
-	next();
-}
-
 specHelper.clearRedis = function(serverID, next){
 	if(serverID != 0){
 		next();
@@ -145,19 +140,11 @@ specHelper.startServer = function(serverID, next){
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
 			specHelper.actionHeroes[serverID] = new actionHeroPrototype();
-			if(serverID == 0){
-				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(err, api){
-					specHelper.apis[serverID] = api;
-					conn.destroy();
-					next(specHelper.apis[serverID]);
-				});
-			}else{
-				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(err, api){
-					specHelper.apis[serverID] = api;
-					conn.destroy();
-					next(specHelper.apis[serverID]);
-				});
-			}
+			specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(err, api){
+				specHelper.apis[serverID] = api;
+				conn.destroy();
+				next(specHelper.apis[serverID]);
+			});
 		}else{
 			conn.destroy();
 			next(specHelper.apis[serverID]);

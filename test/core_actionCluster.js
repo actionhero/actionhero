@@ -1,134 +1,138 @@
 describe('Core: actionCluster', function(){
-    var specHelper = require('../helpers/_specHelper.js').specHelper;
-    var apis = [];
-    var should = require("should");
-    var externalIP = specHelper.utils.getExternalIPAddress();
+  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var apis = [];
+  var should = require("should");
+  var externalIP = specHelper.utils.getExternalIPAddress();
+  if(externalIP === false){ externalIP = 'actionHero'; }
 
-    var stopAllServers = function(done){
-    	specHelper.stopServer(0, function(){
-	        specHelper.stopServer(1, function(){
-		        specHelper.stopServer(2, function(){
-		        	done();
-		        });
-		    });
+  var stopAllServers = function(done){
+  	specHelper.stopServer(0, function(){
+        specHelper.stopServer(1, function(){
+	        specHelper.stopServer(2, function(){
+	        	done();
+	        });
 	    });
-    }
+    });
+  }
 
-     var restartAllServers = function(done){
-    	specHelper.restartServer(0, function(resp, api){
+   var restartAllServers = function(done){
+  	specHelper.restartServer(0, function(resp, api){
+  		apis[0] = api;
+        specHelper.restartServer(1, function(resp, api){
+        	apis[1] = api;
+	        specHelper.restartServer(2, function(resp, api){
+	        	apis[2] = api;
+	        	done();
+	        });
+	    });
+    });
+  }
+
+  before(function(done){
+  	stopAllServers(done);
+  });
+
+  after(function(done){
+  	stopAllServers(done);
+  });
+
+  describe('general actionCluster', function(){
+
+    it('Start cluster server #1', function(done){
+    	specHelper.prepare(0, function(api){ 
+    		api.should.be.an.instanceOf(Object);
+    		api.id.should.be.a('string');
+    		api.id.should.equal(externalIP + ":9000:8000");
+    		api.redis.lostPeerCheckTime = 500;
     		apis[0] = api;
-	        specHelper.restartServer(1, function(resp, api){
-	        	apis[1] = api;
-		        specHelper.restartServer(2, function(resp, api){
-		        	apis[2] = api;
-		        	done();
-		        });
-		    });
-	    });
-    }
-
-    before(function(done){
-    	stopAllServers(done);
-    });
-
-    after(function(done){
-    	stopAllServers(done);
-    });
-
-    describe('general actionCluster', function(){
-
-	    it('Start cluster server #1', function(done){
-	    	specHelper.prepare(0, function(api){ 
-	    		api.should.be.an.instanceOf(Object);
-	    		api.id.should.be.a('string');
-	    		api.id.should.equal(externalIP + ":9000:8000");
-	    		apis[0] = api;
-	    		done();
-	    	});
-	    });
-
-	    it('Start cluster server #2', function(done){
-	    	specHelper.prepare(1, function(api){ 
-	    		api.should.be.an.instanceOf(Object);
-	    		api.id.should.be.a('string');
-	    		api.id.should.equal(externalIP + ":9001:8001");
-	    		apis[1] = api;
-	    		done();
-	    	});
-	    });
-
-	    it('Start cluster server #3', function(done){
-	    	specHelper.prepare(2, function(api){ 
-	    		api.should.be.an.instanceOf(Object);
-	    		api.id.should.be.a('string');
-	    		api.id.should.equal(externalIP + ":9002:8002");
-	    		apis[2] = api;
-	    		done();
-	    	});
-	    });
-
-	    it("Peer #1 can see all other peers in the cluster", function(done){
-			apis[0].redis.client.llen("actionHero:peers", function(err, length){
-				apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-					peers.should.include(externalIP+":9000:8000");
-					peers.should.include(externalIP+":9001:8001");
-					peers.should.include(externalIP+":9002:8002");
-					done();
-				});
-			});
-	    });
-
-	    it("Peer #2 can see all other peers in the cluster", function(done){
-			apis[1].redis.client.llen("actionHero:peers", function(err, length){
-				apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-					peers.should.include(externalIP+":9000:8000");
-					peers.should.include(externalIP+":9001:8001");
-					peers.should.include(externalIP+":9002:8002");
-					done();
-				});
-			});
-	    });
-
-	    it("Peer #3 can see all other peers in the cluster", function(done){
-			apis[2].redis.client.llen("actionHero:peers", function(err, length){
-				apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-					peers.should.include(externalIP+":9000:8000");
-					peers.should.include(externalIP+":9001:8001");
-					peers.should.include(externalIP+":9002:8002");
-					done();
-				});
-			});
-	    });
-    
-    });
-
-    describe("reconnection and peers", function(){
-
-    	after(function(done){
-	    	restartAllServers(done);
-	    });
-
-    	it("cluster members notice when a peer goes away", function(done){
-    		specHelper.stopServer(1, function(){
-    			specHelper.stopServer(2, function(){
-    				apis[0].redis.client.llen("actionHero:peers", function(err, length){
-						apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-							peers.length.should.equal(1);
-							peers.should.include(externalIP+":9000:8000");
-							peers.should.not.include(externalIP+":9001:8001");
-							peers.should.not.include(externalIP+":9002:8002");
-							done();
-						});
-					});
-    			});
-    		});
+    		done();
     	});
+    });
 
-    	it("Peer #1 can see all other peers in the cluster again", function(done){
-    		specHelper.restartServer(1, function(resp, api){
-    			apis[1] = api;
-    			specHelper.restartServer(2, function(resp, api){
-    				apis[2] = api;
+    it('Start cluster server #2', function(done){
+    	specHelper.prepare(1, function(api){ 
+    		api.should.be.an.instanceOf(Object);
+    		api.id.should.be.a('string');
+    		api.id.should.equal(externalIP + ":9001:8001");
+    		api.redis.lostPeerCheckTime = 500;
+    		apis[1] = api;
+    		done();
+    	});
+    });
+
+    it('Start cluster server #3', function(done){
+    	specHelper.prepare(2, function(api){ 
+    		api.should.be.an.instanceOf(Object);
+    		api.id.should.be.a('string');
+    		api.id.should.equal(externalIP + ":9002:8002");
+    		api.redis.lostPeerCheckTime = 500;
+    		apis[2] = api;
+    		done();
+    	});
+    });
+
+    it("Peer #1 can see all other peers in the cluster", function(done){
+		apis[0].redis.client.llen("actionHero:peers", function(err, length){
+			apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+				peers.should.include(externalIP+":9000:8000");
+				peers.should.include(externalIP+":9001:8001");
+				peers.should.include(externalIP+":9002:8002");
+				done();
+			});
+		});
+    });
+
+    it("Peer #2 can see all other peers in the cluster", function(done){
+		apis[1].redis.client.llen("actionHero:peers", function(err, length){
+			apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+				peers.should.include(externalIP+":9000:8000");
+				peers.should.include(externalIP+":9001:8001");
+				peers.should.include(externalIP+":9002:8002");
+				done();
+			});
+		});
+    });
+
+    it("Peer #3 can see all other peers in the cluster", function(done){
+		apis[2].redis.client.llen("actionHero:peers", function(err, length){
+			apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+				peers.should.include(externalIP+":9000:8000");
+				peers.should.include(externalIP+":9001:8001");
+				peers.should.include(externalIP+":9002:8002");
+				done();
+			});
+		});
+    });
+  
+  });
+
+  describe("reconnection and peers", function(){
+
+  	after(function(done){
+    	restartAllServers(done);
+    });
+
+  	it("cluster members notice when a peer goes away", function(done){
+  		specHelper.stopServer(1, function(){
+  			specHelper.stopServer(2, function(){
+  				apis[0].redis.client.llen("actionHero:peers", function(err, length){
+					apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+						peers.length.should.equal(1);
+						peers.should.include(externalIP+":9000:8000");
+						peers.should.not.include(externalIP+":9001:8001");
+						peers.should.not.include(externalIP+":9002:8002");
+						done();
+					});
+				});
+  			});
+  		});
+  	});
+
+  	it("Peer #1 can see all other peers in the cluster again", function(done){
+  		specHelper.restartServer(1, function(resp, api){
+  			apis[1] = api;
+  			specHelper.restartServer(2, function(resp, api){
+  				apis[2] = api;
 					apis[0].redis.client.llen("actionHero:peers", function(err, length){
 						apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 							peers.should.include(externalIP+":9000:8000");
@@ -139,9 +143,9 @@ describe('Core: actionCluster', function(){
 					});
 				});
 			});
-	    });
+    });
 
-	    it("Peer #2 can see all other peers in the cluster again", function(done){
+    it("Peer #2 can see all other peers in the cluster again", function(done){
 			apis[1].redis.client.llen("actionHero:peers", function(err, length){
 				apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 					peers.should.include(externalIP+":9000:8000");
@@ -150,9 +154,9 @@ describe('Core: actionCluster', function(){
 					done();
 				});
 			});
-	    });
+    });
 
-	    it("Peer #3 can see all other peers in the cluster again", function(done){
+    it("Peer #3 can see all other peers in the cluster again", function(done){
 			apis[2].redis.client.llen("actionHero:peers", function(err, length){
 				apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
 					peers.should.include(externalIP+":9000:8000");
@@ -161,19 +165,19 @@ describe('Core: actionCluster', function(){
 					done();
 				});
 			});
-	    });
+    });
 
-	    describe('destructive stop', function(){
+    describe('destructive stop', function(){
 
-	    	before(function(done){
-	    		clearTimeout(apis[2].redis.pingTimer);
-	    		apis[2].redis.ping = null;
-	    		done();
-	    	});
+    	before(function(done){
+    		clearTimeout(apis[2].redis.pingTimer);
+    		apis[2].redis.ping = null;
+    		done();
+    	});
 
-	    	it("If a peer goes away, it should be removed from the list of peers (ping)", function(done){
-		    	this.timeout(0);
-		    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
+    	it("If a peer goes away, it should be removed from the list of peers (ping)", function(done){
+	    	this.timeout(0);
+	    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
 				setTimeout(function(){
 					apis[0].redis.checkForDroppedPeers(apis[0], function(){
 						apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
@@ -191,10 +195,11 @@ describe('Core: actionCluster', function(){
 						});
 					});
 				}, sleepTime );
-		    });
 	    });
 
     });
+
+  });
 
 	describe('say and clients on seperate peers', function(){
 		var client1 = {};
@@ -204,7 +209,16 @@ describe('Core: actionCluster', function(){
 
 		function makeSocketRequest(thisClient, message, cb){
 			var rsp = function(d){ 
-				var parsed = JSON.parse(d);
+				d = d.split("\r\n")[0]
+				try{
+					var parsed = JSON.parse(d);
+				}catch(e){
+					console.log("Error Parsing:")
+					console.log(d)
+					console.log(typeof d)
+					console.log(e)
+					process.exit()
+				}
 				thisClient.removeListener('data', rsp); 
 				cb(parsed); 
 			};
