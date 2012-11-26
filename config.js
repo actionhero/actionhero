@@ -35,6 +35,8 @@ configData.general = {
 	// watch for changes in actions and tasks, and reload them on the fly
 	// This will not work in all operating systems [ http://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener ] 
 	"developmentMode": false,
+	// the location of the directory to keep pidfiles
+	"pidFileFirectory": process.cwd() + "/pids/",
 };
 
 /////////////
