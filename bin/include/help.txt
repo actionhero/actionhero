@@ -40,12 +40,14 @@ Descriptions:
   will generate a new initializer in `initializers`
   [name] (required)
 
-* actionHero actionHeroServer
+* actionHero actionHeroServer --config=[/path/to/config.js] --title=[processTitle]
   will start a template actionHero server
   this is the respondant to `npm start`
   this command will use the command defiend in your project's package.json for `npm start` to boot the server
+  [config] (optional) path to config.js, defaults to `process.cwd() + "/" + config.js`
+  [title] (optional) process title to use for ps and pidFile defaults to (actionHero)
 
-* actionHero actionHeroCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --silent=[silent] --title=[clusterTitle] --workerTitlePrefix=[prefix] --args=[argsArray]
+* actionHero actionHeroCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --silent=[silent] --title=[clusterTitle] --workerTitlePrefix=[prefix] --args=[argsArray] --config=[/path/to/config.js]
   will launch a template actionHero cluster (using node's cluster module)
   will attempt to use the `app.js` file described in your package.json
   this command will use the command defiend in your project's package.json for `npm start` to boot the workers
@@ -56,7 +58,7 @@ Descriptions:
   [silent] (optional) should worker stdout be sent to cluster master (default false)
   [title] (optional) default actionHero-master
   [workerTitlePrefix] (optional) default actionHero-worker
-  [args] (optional) the args to pass to [exec]  defaults to [start]
+  [args] (optional) the args to pass to [exec]  defaults to [start] and [--title=#]
 
 * actionHero start
   --> actionHeroServer
