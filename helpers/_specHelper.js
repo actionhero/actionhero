@@ -19,7 +19,7 @@ var redisConfig = {
 	"DB": 2
 }
 
-var baseActionHero = require(__dirname + "/../api.js").createActionHero;
+var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
 
 specHelper.params[0] = {
 	general: {
@@ -144,7 +144,7 @@ specHelper.startServer = function(serverID, next){
 	});
 	conn.on('error', function(err) { 
 		if(err.code == "ECONNREFUSED"){
-			specHelper.actionHeroes[serverID] = new baseActionHero;
+			specHelper.actionHeroes[serverID] = new actionHeroPrototype();
 			if(serverID == 0){
 				specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID], initFunction: specHelper.initFunction}, function(err, api){
 					specHelper.apis[serverID] = api;

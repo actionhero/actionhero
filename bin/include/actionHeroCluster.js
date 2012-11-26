@@ -2,10 +2,11 @@ exports['actionHeroCluster'] = function(binary, next){
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 
-	// TO START IN CONSOLE: `./bin/actionHero startClister`
-	// TO DAMEONIZE: `forever ./bin/actionHero startClister` 
+	// TO START IN CONSOLE: `./bin/actionHero startCluster`
+	// TO DAMEONIZE: `forever ./bin/actionHero startCluster` 
 	// 
 	// ** Producton-ready actionHero cluster example **
+	// - be sure to enable redis so that workers can share state
 	// - workers which die will be restarted
 	// - maser/manager specific logging
 	// - pidfile for master
@@ -16,7 +17,7 @@ exports['actionHeroCluster'] = function(binary, next){
 	// - WINCH to stop all workers
 	// - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
 	// - Can be run as a daemon or in-console
-	//   -- Lazy Dameon: `nohup ./scripts/actionHeroCluster &`
+	//   -- Lazy Dameon: `nohup ./bin/actionHero startCluster &`
 	//   -- you may want to explore `forever` as a dameonizing option
 	//
 	// * Setting process titles does not work on windows or OSX
@@ -36,10 +37,10 @@ exports['actionHeroCluster'] = function(binary, next){
 	if (numWorkers < 2){ numWorkers = 2};
 
 	try{
-		var actionHero = require("actionHero").actionHero;
+		var actionHeroPrototype = require("actionHero").actionHeroPrototype;
 		var execCMD = process.cwd() + "/node_modules/actionHero/bin/actionHero";
 	}catch(e){
-		var actionHero = require("../../api.js").actionHero;
+		var actionHeroPrototype = require("../../actionHero.js").actionHeroPrototype;
 		var execCMD = process.cwd() + "/bin/actionHero";
 	}
 
@@ -64,7 +65,7 @@ exports['actionHeroCluster'] = function(binary, next){
 		pidfile: pidPath + "/cluster_pidfile",
 		log: process.cwd() + "/log/cluster.log",
 		title: "actionHero-master",
-		workerTitlePrefix: " actionHero-worker",
+		workerTitlePrefix: "actionHero-worker",
 		silent: true, // don't pass stdout/err to the master
 	};
 
@@ -172,7 +173,9 @@ exports['actionHeroCluster'] = function(binary, next){
 
 	// signal helpers
 	var startAWorker = function(){
-		var worker = cluster.fork();
+		var worker = cluster.fork({
+			title: config.workerTitlePrefix + (binary.utils.hashLength(cluster.workers) + 1)
+		});
 		binary.log("starting worker #" + worker.id);
 		worker.on('message', function(message){
 			if(worker.state != "none"){
@@ -192,7 +195,7 @@ exports['actionHeroCluster'] = function(binary, next){
 
 	var loopUntilNoWorkers = function(){
 		if(cluster.workers.length > 0){
-			binary.log("there are still " + cluster.workers.length + " workers...");
+			binary.log("there are still " + binary.utils.hashLength(cluster.workers) + " workers...");
 			setTimeout(loopUntilNoWorkers, 1000);
 		}else{
 			binary.log("all workers gone");
@@ -200,6 +203,13 @@ exports['actionHeroCluster'] = function(binary, next){
 				binary.fs.unlinkSync(config.pidfile);
 			}
 			process.exit();
+		}
+	}
+
+	var loopUntilAllWorkers = function(){
+		if(binary.utils.hashLength(cluster.workers) < workersExpected){
+			startAWorker();
+			setTimeout(loopUntilAllWorkers, 1000);
 		}
 	}
 
@@ -221,19 +231,23 @@ exports['actionHeroCluster'] = function(binary, next){
 		args: config.args,
 		silent : config.silent
 	});
+
+	process.title = config.title;
+
 	for (var i = 0; i < config.workers; i++) {
 		workersExpected++;
-		startAWorker();
 	}
 	cluster.on('fork', function(worker) {
 		binary.log("worker " + worker.process.pid + " (#"+worker.id+") has spawned", "green");
 	});
 	cluster.on('listening', function(worker, address) {
-		
+		//
 	});
 	cluster.on('exit', function(worker, code, signal) {
 		binary.log("worker " + worker.process.pid + " (#"+worker.id+") has exited", "yellow");
 		setTimeout(reloadAWorker, 1000) // to prevent CPU-splsions if crashing too fast
 	});
+
+	loopUntilAllWorkers();
 
 }

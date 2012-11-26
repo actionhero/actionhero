@@ -1,11 +1,13 @@
 exports['actionHeroServer'] = function(binary, next){
 	try{
-		var actionHero = require("actionHero").actionHero;
+		var actionHeroPrototype = require("actionHero").actionHeroPrototype;
 	}catch(e){
-		var actionHero = require("../../api.js").actionHero;
+		var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
 	}
 
-	var cluster = require('cluster');
+	var actionHero = new actionHeroPrototype();
+
+	var title = process.title;
 
 	// if there is no config.js file in the application's root, then actionHero will load in a collection of default params.
 	// You can overwrite them with params.configChanges
@@ -14,16 +16,17 @@ exports['actionHeroServer'] = function(binary, next){
 
 	// start the server!
 	var startServer = function(next){
-		if(cluster.isWorker){ process.send("starting"); }
+		if(binary.cluster.isWorker){ process.send("starting"); }
+
 		actionHero.start(params, function(err, api_from_callback){
 			if(err){
 				console.log(err);
 				process.exit();
 			}else{
 				api = api_from_callback;
-				api.log("Boot Sucessful @ worker #" + process.pid, "green");
+				api.log("Boot Sucessful @ pid #" + process.pid, "green");
 				if(typeof next == "function"){
-					if(cluster.isWorker){ process.send("started"); }
+					if(binary.cluster.isWorker){ process.send("started"); }
 					next(api);
 				}
 			}
@@ -31,7 +34,7 @@ exports['actionHeroServer'] = function(binary, next){
 	}
 
 	// handle signals from master if running in cluster
-	if(cluster.isWorker){
+	if(binary.cluster.isWorker){
 		process.on('message', function(msg) {
 			if(msg == "start"){
 				process.send("starting");
@@ -39,7 +42,7 @@ exports['actionHeroServer'] = function(binary, next){
 					process.send("started");
 				});
 			}
-			if(msg == "stop"){
+			else if(msg == "stop"){
 				process.send("stopping");
 				actionHero.stop(function(err, api_from_callback){
 					api = null;
@@ -47,7 +50,7 @@ exports['actionHeroServer'] = function(binary, next){
 					process.exit();
 				});
 			}
-			if(msg == "restart"){
+			else if(msg == "restart"){
 				process.send("restarting");
 				actionHero.restart(function(err, api_from_callback){
 					api = api_from_callback;
@@ -56,6 +59,16 @@ exports['actionHeroServer'] = function(binary, next){
 			}
 		});
 	}
+
+	// always try to shutdown politely
+	process.on('exit', function(){
+		try{
+			console.log("HERE")
+			actionHero.stop(function(){});
+		}catch(e){
+			console.log(e)
+		}
+	});
 
 	// start the server!
 	startServer(function(api){
