@@ -46,55 +46,9 @@ var actionHero = function(){
 	
 actionHero.prototype.start = function(params, next){
 	var self = this;
-			
+
 	if (params == null){params = {};}
-	self.startngParams = params;
-
-	if(params.api != null){
-		for(var i in params.api){
-			self.api[i] = params.api[i];
-		}
-	}
-			
-	self.api.watchedFiles = [];
-
-	if(self.api.argv["config"] != null){
-		var configFile = self.api.argv["config"];
-	}else if(self.api.fs.existsSync(process.cwd() + '/config.js')){
-		var configFile = process.cwd() + '/config.js';
-	}else{
-		var configFile = __dirname + "/config.js";
-		console.log(' >> no local config.json, using default from '+configFile);
-	}
-	try{
-		self.api.configData = require(configFile).configData;
-	}catch(e){
-		console.log(" ! " + configFile + " is not a valid config.js-style file");
-		throw e;
-	}
-	
-	if(params.configChanges != null){
-		// console.log(" >> using configChanges as overrides to default template: " + JSON.stringify(params.configChanges));
-		for (var i in params.configChanges){ 
-			var collection = params.configChanges[i];
-			for (var j in collection){
-				self.api.configData[i][j] = collection[j];
-			}
-		}
-	}
-
-	if(self.api.configData.general.developmentMode == true){
-		self.api.watchedFiles.push(configFile);
-		(function() {
-			self.api.fs.watchFile(configFile, {interval:1000}, function(curr, prev){
-				if(curr.mtime > prev.mtime){
-					self.api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n");
-					delete require.cache[configFile];
-					actionHero.restart();
-				}
-			});
-		})();
-	}
+	self.startingParams = params;
 
 	var initializerFolders = [ 
 		process.cwd() + "/initializers/", 
@@ -122,6 +76,7 @@ actionHero.prototype.start = function(params, next){
 
 	// run the initializers
 	var orderedInitializers = {}
+	orderedInitializers['initConfig'] = function(next){ self.initalizers.initConfig(self.api, self.startingParams, next) };
 	orderedInitializers['initLog'] = function(next){ self.initalizers.initLog(self.api, next) };
 	orderedInitializers['initID'] = function(next){ self.initalizers.initID(self.api, next) };
 	orderedInitializers['initPids'] = function(next){ self.initalizers.initPids(self.api, next) };
@@ -132,9 +87,6 @@ actionHero.prototype.start = function(params, next){
 	orderedInitializers['initPostVariables'] = function(next){ self.initalizers.initPostVariables(self.api, next) };
 	orderedInitializers['initFileServer'] = function(next){ self.initalizers.initFileServer(self.api, next) };
 	orderedInitializers['initStats'] = function(next){ self.initalizers.initStats(self.api, next) };
-	orderedInitializers['initWebServer'] = function(next){ self.initalizers.initWebServer(self.api, next) };
-	orderedInitializers['initWebSockets'] = function(next){ self.initalizers.initWebSockets(self.api, next) };
-	orderedInitializers['initSocketServer'] = function(next){ self.initalizers.initSocketServer(self.api, next) };
 	orderedInitializers['initChatRooms'] = function(next){ self.initalizers.initChatRooms(self.api, next) };
 	orderedInitializers['initTasks'] = function(next){ self.initalizers.initTasks(self.api, next) };
 
@@ -147,6 +99,9 @@ actionHero.prototype.start = function(params, next){
 		}
 	});
 
+	orderedInitializers['initWebServer'] = function(next){ self.initalizers.initWebServer(self.api, next) };
+	orderedInitializers['initWebSockets'] = function(next){ self.initalizers.initWebSockets(self.api, next) };
+	orderedInitializers['initSocketServer'] = function(next){ self.initalizers.initSocketServer(self.api, next) };
 	orderedInitializers['startProcessing'] = function(next){ self.api.tasks.startTaskProcessing(self.api, next) };
 	
 	orderedInitializers['_complete'] = function(){ 
@@ -218,7 +173,6 @@ actionHero.prototype.stop = function(next){
 					checkForDone("tcpServer");
 				});
 			}
-			//
 			checkForDone();
 		}
 		
@@ -246,12 +200,12 @@ actionHero.prototype.restart = function(next){
 
 	if(self.running == true){
 		self.stop(function(){
-			self.start(self.startngParams, function(){
+			self.start(self.startingParams, function(){
 				if(typeof next == "function"){ next(null, self.api); } 
 			});
 		});
 	}else{
-		self.start(self.startngParams, function(){
+		self.start(self.startingParams, function(){
 			if(typeof next == "function"){ next(null, self.api); } 
 		});
 	}
