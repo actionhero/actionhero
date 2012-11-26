@@ -35,14 +35,16 @@
     "actionHero": "./bin/actionHero"
   },
   "scripts": {
-    "start": "node ./bin/actionHero actionHeroServer",
-    "startCluster": "node ./bin/actionHero actionHeroCluster",
-    "install": "node ./bin/actionHero helpSmall",
+    "install": "node ./bin/actionHero intro",
+    "help": "node ./bin/actionHero help",
     "test": "node ./node_modules/.bin/mocha --reporter spec",
+
+    "start": "node ./bin/actionHero start",
+    "startCluster": "node ./bin/actionHero startCluster",
+
     "generateAction" : "node ./bin/actionHero generateAction",
     "generateTask" : "node ./bin/actionHero generateTask",
     "generateInitializer" : "node ./bin/actionHero generateInitializer",
-	  
-    "generate" : "node ./scripts/generate"
+    "generate" : "node ./bin/actionHero generate"
   }
 }

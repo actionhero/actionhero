@@ -1,4 +1,4 @@
-exports['generateTask'] = function(api, next){
+exports['generateTask'] = function(binary, next){
 
 	if(binary.argv.name == null){ binary.hardError("name is a required input"); }
 	if(binary.argv.description == null){ binary.hardError("description is a required input"); }

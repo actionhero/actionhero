@@ -1,4 +1,4 @@
-exports['helpSmall'] = function(api, next){
+exports['intro'] = function(binary, next){
   binary.log("\r\n**********\r\n");
   binary.log("You have installed actionHero!  Hooray!".green);
   binary.log("You can use the command:");

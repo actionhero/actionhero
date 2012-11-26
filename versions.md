@@ -9,7 +9,16 @@
 - allows you to start your server with `actionHero start [nameOfFile]` and `actionHero startCluster [nameOfFile]`
 - you can learn more about the new CLI with `actionHero help`
 
-- params.initFunction no longer exists.  Please use a propper initializer instead
+** core API ** 
+
+- (breaking) actionHero itself is now a prototypical object to facilitate multiple servers in one app (testing)
+- if an external IP cannot be determined, 'actionHero' will be the api.id base name
+- actionHero will now set pidFiles for each server, and attempt to delete them on shutdown
+- (breaking) params.initFunction no longer exists.  Please use a propper initializer instead
+
+** websockets **
+
+- moved websocket client to it's own includable js file (for browsers).  look for it in `examples/clients/web/actionHeroWebSocket.js`
 
 ## Version 3.1.5
 

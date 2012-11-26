@@ -8,7 +8,9 @@ binary.project_root = process.cwd();
 binary.utils = require(__dirname + './../helpers/utils.js').utils;
 binary.consoleColors = require('colors');
 binary.fs = require('fs');
+binary.cluster = require('cluster');
 binary.argv = require('optimist').argv;
+binary.spawn = require('child_process').spawn
 
 ///////////////
 // utilities //
@@ -27,7 +29,8 @@ binary.log = function(message, styles){
     // TODO: strip ansi color codes
     // message = message.replace(new RegExp('\033\\[91m', 'g'), '')
   }
-  console.log(message);
+  var time_string = binary.consoleColors.grey(binary.utils.sqlDateTime() + " | ");
+  console.log(time_string + message);
 }
 
 binary.hardError = function(err){
@@ -52,7 +55,7 @@ binary.utils.stringifyInputList = function(list){
 
 binary.utils.dir_exists = function(dir, success_function, fail_function){
   try{
-    var stats = binary.fs.lstatSync(binary.project_root + dir);
+    var stats = binary.fs.lstatSync(binary.project_root + "/" + dir);
     if(stats.isDirectory() || stats.isSymbolicLink()){
       if(typeof success_function == 'function'){ success_function(); }
     }else{
@@ -77,7 +80,7 @@ binary.utils.file_exists = function(file, success_function, fail_function){
 }
 
 binary.utils.create_dir_safely = function(dir){
-  var full_dir = binary.project_root + dir;
+  var full_dir = binary.project_root + "/" + dir;
   dir_exists(dir, function(){
     binary.log(" - directory `"+binary.utils.prettify_path(full_dir)+"` already exists, skipping", "yellow");
   }, function(){
@@ -120,19 +123,28 @@ binary.utils.prettify_path = function(full_path){
 //////////
 
 binary.actions = {};
-var actions = ["unknownInput", "help", "helpSmall", "generateAction", "generateTask", "generateInitializer", "actionHeroServer", "actionHeroCluster"];
+
+var actions = [
+  "unknownInput",
+  "help",
+  "intro",
+  "generateAction",
+  "generateTask",
+  "generateInitializer",
+  "start",
+  "startCluster",
+  "generate"
+];
 
 for(var i in actions){
   var action = actions[i];
-  binary.actions[action] = require("./include/" + action + ".js")[action];
+  binary.actions[action] = require(__dirname + "/include/" + action + ".js")[action];
 }
-
-// symlinks
-binary.actions['start'] = binary.actions['actionHeroServer'];
-binary.actions['startCluster'] = binary.actions['actionHeroCluster'];
 
 binary.mainAction = binary.argv["_"][0];
 if(binary.mainAction == null){ binary.mainAction = "help"; }
+
+binary.log("actionHero >> " + binary.mainAction);
 
 if(binary.actions[binary.mainAction] != null){
   binary.actions[binary.mainAction](binary, function(){});

@@ -1,4 +1,4 @@
-exports['generateInitializer'] = function(api, next){
+exports['generateInitializer'] = function(binary, next){
 
   if(binary.argv.name == null){ binary.hardError("name is a required input"); }
 

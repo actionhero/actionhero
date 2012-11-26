@@ -1,4 +1,5 @@
-exports['actionHeroServer'] = function(binary, next){
+exports['start'] = function(binary, next){
+
 	try{
 		var actionHeroPrototype = require("actionHero").actionHeroPrototype;
 	}catch(e){
