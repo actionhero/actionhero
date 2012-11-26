@@ -2,15 +2,15 @@
 
 var binary = {};
 
-binary.useColors = true;
-binary.project_root = process.cwd();
-
-binary.utils = require(__dirname + './../helpers/utils.js').utils;
 binary.consoleColors = require('colors');
 binary.fs = require('fs');
 binary.cluster = require('cluster');
 binary.argv = require('optimist').argv;
 binary.spawn = require('child_process').spawn
+
+binary.utils = {};
+
+binary.useColors = true;
 
 ///////////////
 // utilities //
@@ -81,7 +81,7 @@ binary.utils.file_exists = function(file, success_function, fail_function){
 
 binary.utils.create_dir_safely = function(dir){
   var full_dir = binary.project_root + "/" + dir;
-  dir_exists(dir, function(){
+  binary.utils.dir_exists(dir, function(){
     binary.log(" - directory `"+binary.utils.prettify_path(full_dir)+"` already exists, skipping", "yellow");
   }, function(){
     binary.log(" - creating directory `"+binary.utils.prettify_path(full_dir)+"`", "green");
@@ -122,6 +122,65 @@ binary.utils.prettify_path = function(full_path){
 // Load //
 //////////
 
+binary.project_root = process.cwd();
+binary.utils.dir_exists("../../node_modules", function(){
+  setupProject()
+}, function(){
+  binary.utils.dir_exists("node_modules/actionHero", function(){
+    setupProject()
+  }, function(){
+    setupCore()
+  });
+});
+
+function setupCore(){
+  console.log("CORE")
+  binary.include_root = binary.project_root + "/bin/include";
+  var loadedUtils = require(binary.project_root + '/helpers/utils.js').utils;
+  for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
+}
+
+function setupProject(){
+  console.log("PROJECT")
+  var pathParts = process.cwd().split("/");
+  binary.project_root = "";
+  for(var i in pathParts){
+    if(pathParts[i] == "node_modules"){
+      break;
+    }else if(pathParts[i].length > 0){
+      binary.project_root += "/" + pathParts[i];
+    }
+  }
+  binary.include_root = binary.project_root + "/node_modules/actionHero/bin/include";
+  var loadedUtils = require(binary.project_root + '/node_modules/actionHero/helpers/utils.js').utils;
+  for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
+}
+
+// try{
+//   var actionHeroPrototype = require(process.cwd() + "/actionHero.js").actionHeroPrototype;
+//   // in actionHero core
+//   binary.project_root = process.cwd();
+//   binary.include_root = binary.project_root + "/bin/include";
+//   var loadedUtils = require(binary.project_root + '/helpers/utils.js').utils;
+//   for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
+//   console.log("CORE")
+// }catch(e){
+//   console.log("PROJECT")
+//   // in a project
+//   var pathParts = process.cwd().split("/");
+//   binary.project_root = "";
+//   for(var i in pathParts){
+//     if(pathParts[i] == "node_modules"){
+//       console.log("HERE")
+//       break;
+//     }else if(pathParts[i].length > 0){
+//       binary.project_root += "/" + pathParts[i];
+//     }
+//   }
+//   binary.include_root = binary.project_root + "/node_modules/actionHero/bin/include";
+//   var loadedUtils = require(binary.project_root + '/node_modules/actionHero/helpers/utils.js').utils;
+// }
+
 binary.actions = {};
 
 var actions = [
@@ -138,13 +197,14 @@ var actions = [
 
 for(var i in actions){
   var action = actions[i];
-  binary.actions[action] = require(__dirname + "/include/" + action + ".js")[action];
+  binary.actions[action] = require(binary.include_root + "/" + action + ".js")[action];
 }
 
 binary.mainAction = binary.argv["_"][0];
 if(binary.mainAction == null){ binary.mainAction = "help"; }
 
 binary.log("actionHero >> " + binary.mainAction);
+binary.log("root >> " + binary.project_root)
 
 if(binary.actions[binary.mainAction] != null){
   binary.actions[binary.mainAction](binary, function(){});
