@@ -2,10 +2,8 @@
 
 var binary = {};
 
-binary.consoleColors = require('colors');
 binary.fs = require('fs');
 binary.cluster = require('cluster');
-binary.argv = require('optimist').argv;
 binary.spawn = require('child_process').spawn
 
 binary.utils = {};
@@ -137,6 +135,8 @@ function setupCore(){
   binary.include_root = binary.project_root + "/bin/include";
   var loadedUtils = require(binary.project_root + '/helpers/utils.js').utils;
   for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
+  binary.consoleColors = require('colors');
+  binary.argv = require('optimist').argv;
 }
 
 function setupProject(){
@@ -152,6 +152,8 @@ function setupProject(){
   binary.include_root = binary.project_root + "/node_modules/actionHero/bin/include";
   var loadedUtils = require(binary.project_root + '/node_modules/actionHero/helpers/utils.js').utils;
   for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
+  binary.consoleColors = require(binary.project_root + '/node_modules/actionHero/node_modules/colors');
+  binary.argv = require(binary.project_root + '/node_modules/actionHero/node_modules/optimist').argv;
 }
 
 binary.actions = {};
