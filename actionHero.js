@@ -114,21 +114,10 @@ actionHero.prototype.start = function(params, next){
 		
 	self.api.utils = require(__dirname + '/helpers/utils.js').utils;
 
-	// determine my unique ID
-	var externalIP = self.api.utils.getExternalIPAddress();
-	if(externalIP == false){
-		console.log(" * Error fetching this host's external IP address; setting id base to 'actionHero'")
-		externalIP = 'actionHero';
-	}
-
-	self.api.id = externalIP;
-	if(self.api.configData.httpServer.enable){ self.api.id += ":" + self.api.configData.httpServer.port }
-	if(self.api.configData.tcpServer.enable){ self.api.id += ":" + self.api.configData.tcpServer.port }
-	if(self.api.cluster.isWorker){ self.api.id += ":" + process.pid; }
-
 	// run the initializers
 	var orderedInitializers = {}
 	orderedInitializers['initLog'] = function(next){ self.initalizers.initLog(self.api, next) };
+	orderedInitializers['initID'] = function(next){ self.initalizers.initID(self.api, next) };
 	orderedInitializers['initPids'] = function(next){ self.initalizers.initPids(self.api, next) };
 	orderedInitializers['initExceptions'] = function(next){ self.initalizers.initExceptions(self.api, next) };
 	orderedInitializers['initRedis'] = function(next){ self.initalizers.initRedis(self.api, next) };
