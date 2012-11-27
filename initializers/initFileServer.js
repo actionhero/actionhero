@@ -13,7 +13,9 @@ var initFileServer = function(api, next){
 	}
 
 	api.sendFile = function(api, connection, next){
-		var fileName = "";
+		var fileName = ""
+			,	path = require('path')
+			;
 		if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 			var parsedURL = api.url.parse(connection.req.url);
 			var parts = parsedURL.pathname.split("/");
@@ -33,10 +35,13 @@ var initFileServer = function(api, next){
 		}else{
 			fileName = connection.params.fileName;
 		}
-		if(connection.error === null){
-			fileName = api.configData.general.flatFileDirectory + fileName;
-			api.fileServer.followFileToServe(api, fileName, connection, next);
-		}
+		// verify the access is public
+		fileName = path.normalize(api.configData.general.flatFileDirectory + fileName);
+		if(fileName.indexOf(path.normalize(api.configData.general.flatFileDirectory))===0){
+			if(connection.error === null){
+				api.fileServer.followFileToServe(api, fileName, connection, next);
+			}
+		} else api.fileServer.sendFileNotFound(api, connection, next);
 	};
 
 	api.fileServer.followFileToServe = function(api, fileName, connection, next){
