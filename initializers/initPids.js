@@ -16,6 +16,8 @@ var initPids = function(api, next){
     api.pids.title = "actionHeroWorker-" + new Date().getTime();
   }
 
+  try { api.fs.mkdirSync(api.configData.general.pidFileFirectory, "777") } catch(e) {};
+
   api.pids.setTitle = function(){
     process.title = api.pids.title;
   }
