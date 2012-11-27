@@ -90,7 +90,7 @@ var createActionHero = function(){
 		for(var i in initializerFolders){
 			var folder = initializerFolders[i];
 			if(api.fs.existsSync(folder)){
-				api.fs.readdirSync(folder).forEach( function(file) {
+				api.fs.readdirSync(folder).sort().forEach( function(file) {
 					if (file[0] != "."){
 						var initalizer = file.split(".")[0];
 						if(require.cache[initializerFolders[i] + file] != null){
