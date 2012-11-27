@@ -25,7 +25,6 @@ describe('Core: Utils', function(){
   it('utils.randomString', function(done){
   	var randomString = specHelper.utils.randomString(100);
   	randomString.should.be.a('string');
-  	randomString.length.should.equal(17);
   	var i = 0;
   	while(i < 1000){
   	  randomString.should.not.equal(specHelper.utils.randomString(100));

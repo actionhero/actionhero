@@ -26,6 +26,10 @@
 
 - moved websocket client to it's own includable js file (for browsers).  look for it in `examples/clients/web/actionHeroWebSocket.js`
 
+** Other **
+
+- ensure that the file action / public path cannot be used to server files outsite of /public
+
 ## Version 3.1.6
 
 - bug fixes and spelling mistakes corrected
