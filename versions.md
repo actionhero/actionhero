@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 3.1.6
+
+- bug fixes and spelling mistakes corrected
+
 ## Version 3.1.5
 
 - allow for `api.configData.webSockets.options` to contain a hash of settings to be bound to the websocket initalizer (along with .settings which remains an array)
