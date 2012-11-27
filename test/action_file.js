@@ -40,6 +40,14 @@ describe('Action: file', function(){
     });
   });
 
+  it('I should not see files outsite of the public dir', function(done){
+    specHelper.apiTest.get("/file/" + "?fileName=../config.json", 0, {}, function(response){
+      response.statusCode.should.equal(404);
+      response.body.should.equal(apiObj.configData.general.flatFileNotFoundMessage);
+      done();
+    });
+  });
+
   it('file: index page should be served when requesting a path', function(done){
     specHelper.apiTest.get("/file/", 0, {}, function(response){
       response.statusCode.should.equal(200);
