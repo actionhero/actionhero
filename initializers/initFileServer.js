@@ -13,7 +13,8 @@ var initFileServer = function(api, next){
 	}
 
 	api.sendFile = function(api, connection, next){
-		var fileName = "";
+		var fileName = ""
+
 		if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.req != null){
 			var parsedURL = api.url.parse(connection.req.url);
 			var parts = parsedURL.pathname.split("/");
@@ -33,9 +34,13 @@ var initFileServer = function(api, next){
 		}else{
 			fileName = connection.params.fileName;
 		}
-		if(connection.error === null){
-			fileName = api.configData.general.flatFileDirectory + fileName;
+
+		// verify the access is public
+		fileName = api.path.normalize(api.configData.general.flatFileDirectory + fileName);
+		if(fileName.indexOf(api.path.normalize(api.configData.general.flatFileDirectory)) === 0 && connection.error == null){
 			api.fileServer.followFileToServe(api, fileName, connection, next);
+		}else{
+			api.fileServer.sendFileNotFound(api, connection, next);
 		}
 	};
 
@@ -70,17 +75,22 @@ var initFileServer = function(api, next){
 				api.log("error reading: "+file, "red");
 			}else{
 				if(connection.req != null){
-          connection.responseHeaders.push(['Content-Type', api.mime.lookup(file)]);
+					connection.responseHeaders.push(['Content-Type', api.mime.lookup(file)]);
 					connection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
 					connection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
 					api.webServer.cleanHeaders(api, connection);
-          connection.res.writeHead(200, connection.responseHeaders);
+					connection.res.writeHead(200, connection.responseHeaders);
 					connection.res.end(data);
 				}else{
 					try { 
-						connection.write(data + "\r\n"); 
-						connection.messageCount++;
-					}catch(e){}
+						connection._original_connection.write(data + "\r\n"); 
+					}catch(e){
+						try{
+							connection.write(data + "\r\n"); 
+						}catch(e){
+							api.log(e, "red");
+						}
+					}
 				}
 				if(api.configData.log.logRequests){
 					var full_url = null;
