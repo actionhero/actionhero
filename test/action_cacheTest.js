@@ -34,7 +34,7 @@ describe('Action: cacheTest', function(){
   it('cacheTest: gibberish param', function(done){
     specHelper.apiTest.get("/cacheTest", 0, {thingy: "abc123"}, function(response){
       response.body.error.should.be.equal("Error: key is a required parameter for this action");
-      should.not.exist(response.body.requestorInformation.recievedParams['thingy']);
+      should.not.exist(response.body.requestorInformation.receivedParams['thingy']);
       done();
     });
   });

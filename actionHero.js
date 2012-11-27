@@ -59,7 +59,7 @@ actionHero.prototype.start = function(params, next){
 	for(var i in initializerFolders){
 		var folder = initializerFolders[i];
 		if(self.api.fs.existsSync(folder)){
-			self.api.fs.readdirSync(folder).forEach( function(file) {
+			self.api.fs.readdirSync(folder).sort().forEach( function(file) {
 				if (file[0] != "."){
 					var initalizer = file.split(".")[0];
 					if(require.cache[initializerFolders[i] + file] != null){
@@ -99,11 +99,12 @@ actionHero.prototype.start = function(params, next){
 		}
 	});
 
-	orderedInitializers['initWebServer'] = function(next){ self.initalizers.initWebServer(self.api, next) };
-	orderedInitializers['initWebSockets'] = function(next){ self.initalizers.initWebSockets(self.api, next) };
-	orderedInitializers['initSocketServer'] = function(next){ self.initalizers.initSocketServer(self.api, next) };
+	['initWebServer', 'initWebSockets', 'initSocketServer'].forEach(function(finalInitializer){
+		delete orderedInitializers[finalInitializer];
+		orderedInitializers[finalInitializer] = function(next){ self.initalizers[finalInitializer](self.api, next) };
+	});
+
 	orderedInitializers['startProcessing'] = function(next){ self.api.tasks.startTaskProcessing(self.api, next) };
-	
 	orderedInitializers['_complete'] = function(){ 
 		self.api.pids.writePidFile();
 		var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";

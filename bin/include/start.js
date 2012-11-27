@@ -64,7 +64,6 @@ exports['start'] = function(binary, next){
 	// always try to shutdown politely
 	process.on('exit', function(){
 		try{
-			console.log("HERE")
 			actionHero.stop(function(){});
 		}catch(e){
 			console.log(e)
