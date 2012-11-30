@@ -123,12 +123,16 @@ binary.utils.prettify_path = function(full_path){
 
 binary.project_root = process.cwd();
 binary.utils.dir_exists("../../node_modules", function(){
-  setupProject()
+  setupProject('local');
 }, function(){
   binary.utils.dir_exists("node_modules/actionHero", function(){
-    setupProject()
+    setupProject('local');
   }, function(){
-    setupCore()
+    binary.utils.dir_exists("actions", function(){
+      setupCore();
+    }, function(){
+      setupProject('global');
+    });
   });
 });
 
@@ -140,7 +144,7 @@ function setupCore(){
   binary.argv = require('optimist').argv;
 }
 
-function setupProject(){
+function setupProject(mode){
   var pathParts = process.cwd().split("/");
   binary.project_root = "";
   for(var i in pathParts){
@@ -150,11 +154,20 @@ function setupProject(){
       binary.project_root += "/" + pathParts[i];
     }
   }
-  binary.include_root = binary.project_root + "/node_modules/actionHero/bin/include";
-  var loadedUtils = require(binary.project_root + '/node_modules/actionHero/helpers/utils.js').utils;
+
+  if(mode == "local"){
+    binary.include_root = binary.project_root + "/node_modules/actionHero/bin/include";
+    var loadedUtils = require(binary.project_root + '/node_modules/actionHero/helpers/utils.js').utils;
+    binary.consoleColors = require(binary.project_root + '/node_modules/actionHero/node_modules/colors');
+    binary.argv = require(binary.project_root + '/node_modules/actionHero/node_modules/optimist').argv;
+  }else{
+    binary.globally = true;
+    binary.include_root = __dirname + "/include";
+    var loadedUtils = require(__dirname + '/../helpers/utils.js').utils;
+    binary.consoleColors = require(__dirname + '/../node_modules/colors');
+    binary.argv = require(__dirname + '/../node_modules/optimist').argv;
+  }
   for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
-  binary.consoleColors = require(binary.project_root + '/node_modules/actionHero/node_modules/colors');
-  binary.argv = require(binary.project_root + '/node_modules/actionHero/node_modules/optimist').argv;
 }
 
 binary.actions = {};

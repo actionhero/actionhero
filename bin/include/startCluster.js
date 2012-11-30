@@ -38,7 +38,11 @@ exports['startCluster'] = function(binary, next){
 				binary.execCMD = binary.project_root + "/node_modules/actionHero/bin/actionHero";
 				next();
 			}, function(){
-				binary.execCMD = binary.project_root + "/bin/actionHero";
+				if(binary.globally){
+					binary.execCMD = __dirname + "/../actionHero";
+				}else{
+					binary.execCMD = binary.project_root + "/bin/actionHero";
+				}
 				next();
 			});
 		},

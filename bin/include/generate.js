@@ -38,20 +38,49 @@
   | package.json (be sure to include 'actionHero':'x')\r\n\
   ";
 
-  documents.config_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/config.js");
-  documents.routes_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/routes.js");
+  if(binary.globally != true){
 
-  documents.cert_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-cert.pem");
-  documents.key_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-key.pem");
+    // test that actionHero is installed
+    binary.utils.dir_exists("node_modules", null, function(){
+      binary.log(" ! node_modules doesn't exist.  `npm install actionHero` first".red);
+      process.exit();
+    });
+    binary.utils.dir_exists("node_modules/actionHero", null, function(){
+      binary.log(" ! node_modules/actionHero doesn't exist.  `npm install actionHero` first".red);
+      process.exit();
+    });
 
-  documents.action_actions_view = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/actionsView.js");
-  documents.action_file = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/file.js");
-  documents.action_status = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/status.js");
-  documents.action_chat = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/chat.js");
-
-  documents.task_runAction = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/tasks/runAction.js");
-
-  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/public/javascripts/actionHeroWebSocket.js");
+    documents.config_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/config.js");
+    documents.routes_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/routes.js");
+    documents.cert_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-cert.pem");
+    documents.key_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-key.pem");
+    documents.action_actions_view = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/actionsView.js");
+    documents.action_file = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/file.js");
+    documents.action_status = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/status.js");
+    documents.action_chat = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/chat.js");
+    documents.task_runAction = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/tasks/runAction.js");
+    documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/public/javascripts/actionHeroWebSocket.js");
+  }else{
+    var modules_path = process.cwd() + "/node_modules";
+    try{
+      stats = binary.fs.lstatSync(modules_path);
+      if(!stats.isDirectory()){
+        binary.fs.mkdirSync(modules_path);
+      }
+    }catch(e){
+      binary.fs.mkdirSync(modules_path);
+    }
+    documents.config_js = binary.fs.readFileSync(__dirname + "/../../config.js");
+    documents.routes_js = binary.fs.readFileSync(__dirname + "/../../routes.js");
+    documents.cert_pem = binary.fs.readFileSync(__dirname + "/../../certs/server-cert.pem");
+    documents.key_pem = binary.fs.readFileSync(__dirname + "/../../certs/server-key.pem");
+    documents.action_actions_view = binary.fs.readFileSync(__dirname + "/../../actions/actionsView.js");
+    documents.action_file = binary.fs.readFileSync(__dirname + "/../../actions/file.js");
+    documents.action_status = binary.fs.readFileSync(__dirname + "/../../actions/status.js");
+    documents.action_chat = binary.fs.readFileSync(__dirname + "/../../actions/chat.js");
+    documents.task_runAction = binary.fs.readFileSync(__dirname + "/../../tasks/runAction.js");
+    documents.public_actionHeroWebSocket = binary.fs.readFileSync(__dirname + "/../../public/javascripts/actionHeroWebSocket.js");
+  }
 
   documents.package_json = "{\r\n\
     \"author\": \"YOU <YOU@example.com>\",\r\n\
@@ -60,8 +89,8 @@
     \"version\": \"0.0.1\",\r\n\
     \"homepage\": \"\",\r\n\
     \"repository\": {\r\n\
-    	\"type\": \"\",\r\n\
-    	\"url\": \"\"\r\n\
+      \"type\": \"\",\r\n\
+      \"url\": \"\"\r\n\
     },\r\n\
     \"main\": \"app.js\",\r\n\
     \"keywords\": \"\",\r\n\
@@ -90,16 +119,6 @@
   //////// LOGIC ////////
 
   binary.log("Generating a new actionHero project...");
-
-  // test that actionHero is installed
-  binary.utils.dir_exists("node_modules", null, function(){
-  	binary.log(" ! node_modules doesn't exist.  `npm install actionHero` first".red);
-  	process.exit();
-  });
-  binary.utils.dir_exists("node_modules/actionHero", null, function(){
-  	binary.log(" ! node_modules/actionHero doesn't exist.  `npm install actionHero` first".red);
-  	process.exit();
-  });
 
   // make directories
   binary.utils.create_dir_safely("actions");
