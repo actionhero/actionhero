@@ -21,6 +21,7 @@
 - if an external IP cannot be determined, 'actionHero' will be the api.id base name
 - actionHero will now set pidFiles for each server, and attempt to delete them on shutdown
 - (breaking) params.initFunction no longer exists.  Please use a propper initializer instead
+- better creation of pid files for running servers
 
 ** clients **
 
