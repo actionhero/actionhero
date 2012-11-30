@@ -19,7 +19,7 @@ actionHero will also serve static files for you, but actionHero is not meant to 
 
 	mkdir ~/my-action-hero-project && cd ~/my-action-hero-project
 	npm install actionHero
-	npm run-script actionHero generate
+	./node_modules/.bin/actionHero generate
 	npm start
 
 ## Want more?
