@@ -35,11 +35,9 @@ exports['startCluster'] = function(binary, next){
 			if (binary.numWorkers < 2){ binary.numWorkers = 2};
 
 			binary.utils.dir_exists("node_modules/actionHero/", function(){
-				console.log("A")
 				binary.execCMD = binary.project_root + "/node_modules/actionHero/bin/actionHero";
 				next();
 			}, function(){
-				console.log("B")
 				binary.execCMD = binary.project_root + "/bin/actionHero";
 				next();
 			});
