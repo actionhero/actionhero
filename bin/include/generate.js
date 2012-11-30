@@ -148,7 +148,7 @@
   binary.log("");
   binary.log("Generation Complete.  Your project directory should look like this:\r\n" + documents.projectMap.blue);
   binary.log("");
-  binary.log("run `npm start` to start your server");
+  binary.log("run `./node_modules/.bin/actionHero start` to start your server");
 
   next();
 
