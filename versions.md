@@ -22,8 +22,9 @@
 - actionHero will now set pidFiles for each server, and attempt to delete them on shutdown
 - (breaking) params.initFunction no longer exists.  Please use a propper initializer instead
 
-** websockets **
+** clients **
 
+- a better client example for the browser (ajax/jsonp)
 - moved websocket client to it's own includable js file (for browsers).  look for it in `examples/clients/web/actionHeroWebSocket.js`
 
 ** Other **
