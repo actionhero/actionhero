@@ -170,7 +170,7 @@ var initWebServer = function(api, next)
 					var stringResponse = "";
 					if(typeof connection.params.outputType == "string"){
 						if(connection.params.outputType.toLowerCase() == "xml"){
-							stringResponse = api.data2xml('XML', connection.response);
+							stringResponse = api.data2xml()('XML', connection.response);
 						}else{
 							stringResponse = JSON.stringify(connection.response);	
 						}

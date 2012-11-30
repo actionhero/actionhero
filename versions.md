@@ -30,6 +30,7 @@
 ** Other **
 
 - ensure that the file action / public path cannot be used to server files outsite of /public
+- dependency updates
 
 ## Version 3.1.6
 
