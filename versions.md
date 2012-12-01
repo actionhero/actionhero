@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 4.0.1
+
+** Binary **
+
+- better support for runnign the actionHero binary globally
+- `actionHero` generate will create a `_project.js` initializer
+
 ## Version 4.0.0
 
 ** Boot **

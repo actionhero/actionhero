@@ -109,6 +109,14 @@
   }\r\n\
   ";
 
+  documents._project_js = "exports._project = function(api, next){\r\n\
+  // modify / append the api global variable\r\n\
+  // I will be run as part of actionHero\'s boot process\r\n\
+\r\n\
+  next();\r\n\
+}\
+";
+
   documents.readme_md = "# My actionHero Project\r\nreadme"; 
 
   documents.index_html = "<h1>Hello from actionHero!</h1>\r\n\
@@ -141,6 +149,7 @@
   binary.utils.create_file_safely('actions/status.js', documents.action_status);
   binary.utils.create_file_safely('actions/chat.js', documents.action_chat);
   binary.utils.create_file_safely('tasks/runAction.js', documents.task_runAction);
+  binary.utils.create_file_safely('initializers/_project.js', documents._project_js);
   binary.utils.create_file_safely('public/index.html', documents.index_html);
   binary.utils.create_file_safely('public/javascripts/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
   binary.utils.create_file_safely('readme.md', documents.readme_md);
