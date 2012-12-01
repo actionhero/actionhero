@@ -51,6 +51,7 @@
     });
 
     documents.config_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/config.js");
+    documents.package_json = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/package.json");
     documents.routes_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/routes.js");
     documents.cert_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-cert.pem");
     documents.key_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-key.pem");
@@ -82,6 +83,8 @@
     documents.public_actionHeroWebSocket = binary.fs.readFileSync(__dirname + "/../../public/javascripts/actionHeroWebSocket.js");
   }
 
+  var AHversionNumber = JSON.parse(documents.package_json).version;
+
   documents.package_json = "{\r\n\
     \"author\": \"YOU <YOU@example.com>\",\r\n\
     \"name\": \"my_actionHero_project\",\r\n\
@@ -98,7 +101,7 @@
       \"node\": \">=0.6.0\"\r\n\
     },\r\n\
     \"dependencies\": {\r\n\
-      \"actionHero\": \"x\"\r\n\
+      \"actionHero\": \""+AHversionNumber+"\"\r\n\
     },\r\n\
     \"devDependencies\": {},\r\n\
     \"scripts\": {\r\n\

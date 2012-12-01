@@ -7,13 +7,13 @@ binary.cluster = require('cluster');
 binary.async = require('async');
 binary.spawn = require('child_process').spawn
 
-binary.utils = {};
-
 binary.useColors = true;
 
 ///////////////
 // utilities //
 ///////////////
+
+binary.utils = {};
 
 binary.log = function(message, styles){
   if(binary.useColors == true){
