@@ -33,18 +33,8 @@ exports['startCluster'] = function(binary, next){
 			binary.numCPUs = require('os').cpus().length
 			binary.numWorkers = binary.numCPUs - 2;
 			if (binary.numWorkers < 2){ binary.numWorkers = 2};
-
-			binary.utils.dir_exists("node_modules/actionHero/", function(){
-				binary.execCMD = binary.project_root + "/node_modules/actionHero/bin/actionHero";
-				next();
-			}, function(){
-				if(binary.globally){
-					binary.execCMD = __dirname + "/../actionHero";
-				}else{
-					binary.execCMD = binary.project_root + "/bin/actionHero";
-				}
-				next();
-			});
+			binary.execCMD = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+			next();
 		},
 		pids: function(next){
 			binary.pidPath = process.cwd() + "/pids";
@@ -262,10 +252,5 @@ exports['startCluster'] = function(binary, next){
 			binary.loopUntilAllWorkers();
 		}
 	});
-	// try{
-	// 	// var actionHeroPrototype = require("actionHero").actionHeroPrototype;
-	// 	var execCMD = process.cwd() + "/node_modules/actionHero/bin/actionHero";
-	// }catch(e){
-	// 	var execCMD = process.cwd() + "/bin/actionHero";
-	// }
+
 }

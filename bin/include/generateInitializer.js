@@ -15,8 +15,8 @@ exports['generateInitializer'] = function(binary, next){
   for(var i in templateLines){
     data += templateLines[i] + "\r\n";
   }
-  var partialPath = "initializers/" + binary.argv['name'] + ".js";
-  binary.utils.create_file_safely(partialPath, data);
+  var partialPath = "/initializers/" + binary.argv['name'] + ".js";
+  binary.utils.create_file_safely(binary.paths.project_root + partialPath, data);
 
   next();
 

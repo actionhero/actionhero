@@ -38,50 +38,17 @@
   | package.json (be sure to include 'actionHero':'x')\r\n\
   ";
 
-  if(binary.globally != true){
-
-    // test that actionHero is installed
-    binary.utils.dir_exists("node_modules", null, function(){
-      binary.log(" ! node_modules doesn't exist.  `npm install actionHero` first".red);
-      process.exit();
-    });
-    binary.utils.dir_exists("node_modules/actionHero", null, function(){
-      binary.log(" ! node_modules/actionHero doesn't exist.  `npm install actionHero` first".red);
-      process.exit();
-    });
-
-    documents.config_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/config.js");
-    documents.package_json = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/package.json");
-    documents.routes_js = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/routes.js");
-    documents.cert_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-cert.pem");
-    documents.key_pem = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/certs/server-key.pem");
-    documents.action_actions_view = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/actionsView.js");
-    documents.action_file = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/file.js");
-    documents.action_status = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/status.js");
-    documents.action_chat = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/actions/chat.js");
-    documents.task_runAction = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/tasks/runAction.js");
-    documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.project_root + "/node_modules/actionHero/public/javascripts/actionHeroWebSocket.js");
-  }else{
-    var modules_path = process.cwd() + "/node_modules";
-    try{
-      stats = binary.fs.lstatSync(modules_path);
-      if(!stats.isDirectory()){
-        binary.fs.mkdirSync(modules_path);
-      }
-    }catch(e){
-      binary.fs.mkdirSync(modules_path);
-    }
-    documents.config_js = binary.fs.readFileSync(__dirname + "/../../config.js");
-    documents.routes_js = binary.fs.readFileSync(__dirname + "/../../routes.js");
-    documents.cert_pem = binary.fs.readFileSync(__dirname + "/../../certs/server-cert.pem");
-    documents.key_pem = binary.fs.readFileSync(__dirname + "/../../certs/server-key.pem");
-    documents.action_actions_view = binary.fs.readFileSync(__dirname + "/../../actions/actionsView.js");
-    documents.action_file = binary.fs.readFileSync(__dirname + "/../../actions/file.js");
-    documents.action_status = binary.fs.readFileSync(__dirname + "/../../actions/status.js");
-    documents.action_chat = binary.fs.readFileSync(__dirname + "/../../actions/chat.js");
-    documents.task_runAction = binary.fs.readFileSync(__dirname + "/../../tasks/runAction.js");
-    documents.public_actionHeroWebSocket = binary.fs.readFileSync(__dirname + "/../../public/javascripts/actionHeroWebSocket.js");
-  }
+  documents.config_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/config.js");
+  documents.package_json = binary.fs.readFileSync(binary.paths.actionHero_root + "/package.json");
+  documents.routes_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/routes.js");
+  documents.cert_pem = binary.fs.readFileSync(binary.paths.actionHero_root + "/certs/server-cert.pem");
+  documents.key_pem = binary.fs.readFileSync(binary.paths.actionHero_root + "/certs/server-key.pem");
+  documents.action_actions_view = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/actionsView.js");
+  documents.action_file = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/file.js");
+  documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
+  documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
+  documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
+  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascripts/actionHeroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
@@ -132,30 +99,30 @@
   binary.log("Generating a new actionHero project...");
 
   // make directories
-  binary.utils.create_dir_safely("actions");
-  binary.utils.create_dir_safely("pids");
-  binary.utils.create_dir_safely("certs");
-  binary.utils.create_dir_safely("initializers");
-  binary.utils.create_dir_safely("log");
-  binary.utils.create_dir_safely("public");
-  binary.utils.create_dir_safely("public/javascripts");
-  binary.utils.create_dir_safely("tasks");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/actions");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/pids");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/certs");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/initializers");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/log");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascripts");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
 
   // make files
-  binary.utils.create_file_safely('config.js', documents.config_js);
-  binary.utils.create_file_safely('routes.js', documents.routes_js);
-  binary.utils.create_file_safely('package.json', documents.package_json);
-  binary.utils.create_file_safely('certs/server-cert.pem', documents.cert_pem);
-  binary.utils.create_file_safely('certs/server-key.pem', documents.key_pem);
-  binary.utils.create_file_safely('actions/actionsView.js', documents.action_actions_view);
-  binary.utils.create_file_safely('actions/file.js', documents.action_file);
-  binary.utils.create_file_safely('actions/status.js', documents.action_status);
-  binary.utils.create_file_safely('actions/chat.js', documents.action_chat);
-  binary.utils.create_file_safely('tasks/runAction.js', documents.task_runAction);
-  binary.utils.create_file_safely('initializers/_project.js', documents._project_js);
-  binary.utils.create_file_safely('public/index.html', documents.index_html);
-  binary.utils.create_file_safely('public/javascripts/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
-  binary.utils.create_file_safely('readme.md', documents.readme_md);
+  binary.utils.create_file_safely(binary.paths.project_root + '/config.js', documents.config_js);
+  binary.utils.create_file_safely(binary.paths.project_root + '/routes.js', documents.routes_js);
+  binary.utils.create_file_safely(binary.paths.project_root + '/package.json', documents.package_json);
+  binary.utils.create_file_safely(binary.paths.project_root + '/certs/server-cert.pem', documents.cert_pem);
+  binary.utils.create_file_safely(binary.paths.project_root + '/certs/server-key.pem', documents.key_pem);
+  binary.utils.create_file_safely(binary.paths.project_root + '/actions/actionsView.js', documents.action_actions_view);
+  binary.utils.create_file_safely(binary.paths.project_root + '/actions/file.js', documents.action_file);
+  binary.utils.create_file_safely(binary.paths.project_root + '/actions/status.js', documents.action_status);
+  binary.utils.create_file_safely(binary.paths.project_root + '/actions/chat.js', documents.action_chat);
+  binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
+  binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascripts/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
+  binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
 
   binary.log("");
   binary.log("Generation Complete.  Your project directory should look like this:\r\n" + documents.projectMap.blue);

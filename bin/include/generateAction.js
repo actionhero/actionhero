@@ -33,8 +33,8 @@ exports['generateAction'] = function(binary, next){
 	for(var i in templateLines){
 		data += templateLines[i] + "\r\n";
 	}
-	var partialPath = "actions/" + binary.argv['name'] + ".js";
-	binary.utils.create_file_safely(partialPath, data);
+	var partialPath = "/actions/" + binary.argv['name'] + ".js";
+	binary.utils.create_file_safely(binary.paths.project_root + partialPath, data);
 
 	next();
 }

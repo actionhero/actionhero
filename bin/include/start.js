@@ -1,11 +1,7 @@
 exports['start'] = function(binary, next){
 
-	try{
-		var actionHeroPrototype = require("actionHero").actionHeroPrototype;
-	}catch(e){
-		var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-	}
-
+	var cluster = require('cluster');
+	var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
 	var actionHero = new actionHeroPrototype();
 
 	var title = process.title;
@@ -17,7 +13,7 @@ exports['start'] = function(binary, next){
 
 	// start the server!
 	var startServer = function(next){
-		if(binary.cluster.isWorker){ process.send("starting"); }
+		if(cluster.isWorker){ process.send("starting"); }
 
 		actionHero.start(params, function(err, api_from_callback){
 			if(err){
@@ -27,7 +23,7 @@ exports['start'] = function(binary, next){
 				api = api_from_callback;
 				api.log("Boot Sucessful @ pid #" + process.pid, "green");
 				if(typeof next == "function"){
-					if(binary.cluster.isWorker){ process.send("started"); }
+					if(cluster.isWorker){ process.send("started"); }
 					next(api);
 				}
 			}
@@ -35,7 +31,7 @@ exports['start'] = function(binary, next){
 	}
 
 	// handle signals from master if running in cluster
-	if(binary.cluster.isWorker){
+	if(cluster.isWorker){
 		process.on('message', function(msg) {
 			if(msg == "start"){
 				process.send("starting");

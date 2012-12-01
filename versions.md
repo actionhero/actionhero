@@ -4,7 +4,8 @@
 
 ** Binary **
 
-- better support for runnign the actionHero binary globally
+- better support for running the actionHero binary globally
+- when generating a new project, the actionHero version will be locked
 - `actionHero` generate will create a `_project.js` initializer
 
 ## Version 4.0.0
