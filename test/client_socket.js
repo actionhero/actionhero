@@ -89,7 +89,6 @@ describe('Client: Socket', function(){
     makeSocketRequest(client, JSON.stringify(msg), function(response){
       response.cacheTestResults.loadResp.key.should.eql("cacheTest_"+msg.params.key);
       response.cacheTestResults.loadResp.value.should.eql(msg.params.value);
-      console.log(response)
       done();
     });
   });
