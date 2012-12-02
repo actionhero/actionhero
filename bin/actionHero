@@ -148,7 +148,11 @@ binary.log("project_root >> " + binary.paths.project_root)
 binary.log("actionHero_root >> " + binary.paths.actionHero_root)
 
 if(binary.actions[binary.mainAction] != null){
-  binary.actions[binary.mainAction](binary, function(){});
+  if(binary.argv['daemon'] != null){
+    console.log("HERE")
+  }else{
+    binary.actions[binary.mainAction](binary, function(){});
+  }
 }else{
   binary.actions['unknownInput'](binary, function(){});
 }
