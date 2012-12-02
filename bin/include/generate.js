@@ -72,9 +72,9 @@
     },\r\n\
     \"devDependencies\": {},\r\n\
     \"scripts\": {\r\n\
-      \"start\": \"node ./node_modules/actionHero/bin/actionHero start\",\r\n\
-      \"startCluster\": \"node ./node_modules/actionHero/bin/actionHero startCluster\",\r\n\
-      \"help\": \"node ./node_modules/actionHero/bin/actionHero help\"\r\n\
+      \"start\": \"node ./node_modules/.bin/actionHero start\",\r\n\
+      \"startCluster\": \"node ./node_modules/.bin/actionHero startCluster\",\r\n\
+      \"help\": \"node ./node_modules/.bin/actionHero help\"\r\n\
     }\r\n\
   }\r\n\
   ";

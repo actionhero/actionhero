@@ -78,6 +78,22 @@ describe('Client: Socket', function(){
   	});
   });
 
+  it('really long messages are OK', function(done){
+    var msg = {
+      action: 'cacheTest',
+      params: {
+        key: apiObj.utils.randomString(16384),
+        value: apiObj.utils.randomString(16384),
+      },
+    }
+    makeSocketRequest(client, JSON.stringify(msg), function(response){
+      response.cacheTestResults.loadResp.key.should.eql("cacheTest_"+msg.params.key);
+      response.cacheTestResults.loadResp.value.should.eql(msg.params.value);
+      console.log(response)
+      done();
+    });
+  });
+
   it('I can get my details', function(done){
   	makeSocketRequest(client2, "detailsView", function(response){
   		response.status.should.equal("OK")

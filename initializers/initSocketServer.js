@@ -185,6 +185,7 @@ var initSocketServer = function(api, next){
 									local_params["action"] = request_hash["action"];
 								}
 							}catch(e){
+								local_params = null;
 								connection.params["action"] = words[0];
 							}
 							connection.responsesWaitingCount++;

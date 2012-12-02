@@ -27,12 +27,13 @@ action.run = function(api, connection, next)
 		
 	connection.response.cacheTestResults = {};
 		
-	api.cache.save(api,key,value,null, function(err, resp){
+	api.cache.save(api, key, value, null, function(err, resp){
 		connection.response.cacheTestResults.saveResp = resp;
 		api.cache.size(api, function(err, numberOfCacheObjects){
 			connection.response.cacheTestResults.sizeResp = numberOfCacheObjects;
-			api.cache.load(api,key, function(err, resp, expireTimestamp, createdAt, readAt){
+			api.cache.load(api, key, function(err, resp, expireTimestamp, createdAt, readAt){
 				connection.response.cacheTestResults.loadResp = {
+					key: key,
 					value: resp,
 					expireTimestamp: expireTimestamp, 
 					createdAt: createdAt,
