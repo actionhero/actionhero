@@ -149,7 +149,8 @@ actionHero.prototype.stop = function(next){
 					self.running = false;
 					self.api.pids.clearPidFile();
 					self.api.log("The actionHero has been stopped", "bold");
-					next(null, self.api);
+					self.api.log("***");
+					if(typeof next == "function"){ next(null, self.api); }
 				}
 			}
 
@@ -192,7 +193,7 @@ actionHero.prototype.stop = function(next){
 		}
 	}else{
 		self.api.log("Cannot shut down (not running any servers)");
-		next(true);
+		if(typeof next == "function"){ next(null, self.api); }
 	}
 };
 
@@ -200,13 +201,15 @@ actionHero.prototype.restart = function(next){
 	var self = this;
 
 	if(self.running == true){
-		self.stop(function(){
-			self.start(self.startingParams, function(){
+		self.stop(function(err){
+			self.start(self.startingParams, function(err, api){
+				api.log('actionHero restarted', "green");
 				if(typeof next == "function"){ next(null, self.api); } 
 			});
 		});
 	}else{
-		self.start(self.startingParams, function(){
+		self.start(self.startingParams, function(err, api){
+			api.log('actionHero restarted', "green");
 			if(typeof next == "function"){ next(null, self.api); } 
 		});
 	}

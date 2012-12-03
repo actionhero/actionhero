@@ -26,6 +26,8 @@ exports['startCluster'] = function(binary, next){
 	// 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	var loopSleep = 1500;
+
 	var cluster = require('cluster');
 
 	binary.async.series({
@@ -102,13 +104,18 @@ exports['startCluster'] = function(binary, next){
 		},
 		workerMethods: function(next){
 			binary.startAWorker = function(){
+				var workerID = (binary.utils.hashLength(cluster.workers)) + 1;
+				if(binary.workerRestartArray.length > 0){
+					workerID = workerID - binary.workerRestartArray.length;
+				}
 				var worker = cluster.fork({
-					title: binary.clusterConfig.workerTitlePrefix + (binary.utils.hashLength(cluster.workers) + 1)
+					title: binary.clusterConfig.workerTitlePrefix + workerID
 				});
-				binary.log("starting worker #" + worker.id);
+				worker.workerID = workerID
+				binary.log("starting worker #" + worker.workerID);
 				worker.on('message', function(message){
 					if(worker.state != "none"){
-						binary.log("Message ["+worker.process.pid+"]: " + message);
+						binary.log("Worker #" + worker.workerID + " ["+worker.process.pid+"]: " + message);
 					}
 				});
 			}
@@ -119,13 +126,13 @@ exports['startCluster'] = function(binary, next){
 				for(var i in cluster.workers){
 					cluster.workers[i].send('stop');
 				}
-				setTimeout(binary.loopUntilNoWorkers, 1000);
+				setTimeout(binary.loopUntilNoWorkers, loopSleep);
 			}
 
 			binary.loopUntilNoWorkers = function(){
 				if(cluster.workers.length > 0){
 					binary.log("there are still " + binary.utils.hashLength(cluster.workers) + " workers...");
-					setTimeout(loopUntilNoWorkers, 1000);
+					setTimeout(loopUntilNoWorkers, loopSleep);
 				}else{
 					binary.log("all workers gone");
 					if(binary.clusterConfig.pidfile != null){
@@ -138,7 +145,7 @@ exports['startCluster'] = function(binary, next){
 			binary.loopUntilAllWorkers = function(){
 				if(binary.utils.hashLength(cluster.workers) < binary.workersExpected){
 					binary.startAWorker();
-					setTimeout(binary.loopUntilAllWorkers, 1000);
+					setTimeout(binary.loopUntilAllWorkers, loopSleep);
 				}
 			}
 
@@ -185,6 +192,7 @@ exports['startCluster'] = function(binary, next){
 				for(var i in cluster.workers){
 					binary.workerRestartArray.push(cluster.workers[i]);
 				}
+				binary.workerRestartArray.reverse();
 				binary.reloadAWorker();
 			});
 			process.on('SIGHUP', function(){
@@ -239,14 +247,14 @@ exports['startCluster'] = function(binary, next){
 				binary.workersExpected++;
 			}
 			cluster.on('fork', function(worker) {
-				binary.log("worker " + worker.process.pid + " (#"+worker.id+") has spawned", "green");
+				binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has spawned", "green");
 			});
 			cluster.on('listening', function(worker, address) {
 				//
 			});
 			cluster.on('exit', function(worker, code, signal) {
-				binary.log("worker " + worker.process.pid + " (#"+worker.id+") has exited", "yellow");
-				setTimeout(binary.reloadAWorker, 1000) // to prevent CPU-splsions if crashing too fast
+				binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has exited", "yellow");
+				setTimeout(binary.reloadAWorker, loopSleep / 2); // to prevent CPU-splsions if crashing too fast
 			});
 
 			binary.loopUntilAllWorkers();
