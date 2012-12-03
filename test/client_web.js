@@ -105,6 +105,65 @@ describe('Client: Web', function(){
     	});
     });
 
+    it('returnErrorCodes false should still have a status of 200', function(done){
+    	specHelper.apiTest.del('/', 0, {}, function(response){
+    		response.statusCode.should.eql(200);
+    		done();
+    	});
+    });
+
+    describe('http returnErrorCodes true', function(){
+
+    	before(function(done){
+    		rawApi.configData.commonWeb.returnErrorCodes = true;
+    		rawApi.actions.statusTestAction = {
+    			name: "statusTestAction",
+    			description: "I am a test",
+    			inputs: { required: [], optional: [] }, outputExample: {},
+    			run:function(api, connection, next){
+    				if(connection.params.key != 'value'){
+    					connection.error = "key != value";
+    					connection.responseHttpCode = 402;
+    				}else{
+    					connection.response.good = true;
+    				}
+    				next(connection, true);
+    			}
+    		}
+    		done();
+    	})
+
+    	it('missing actions should have a header of 400', function(done){
+	    	specHelper.apiTest.del('/', 0, {}, function(response){
+	    		response.statusCode.should.eql(400);
+	    		done();
+	    	});
+	    });
+
+	    it('status codes can be set for errrors', function(done){
+	    	specHelper.apiTest.del('/statusTestAction', 0, {}, function(response){
+	    		response.body.error.should.eql('key != value');
+	    		response.statusCode.should.eql(402);
+	    		done();
+	    	});
+	    });
+
+	    it('status code should still be 200 if everything is OK', function(done){
+	    	specHelper.apiTest.del('/statusTestAction', 0, {key: 'value'}, function(response){
+	    		response.body.good.should.eql(true);
+	    		response.statusCode.should.eql(200);
+	    		done();
+	    	});
+	    });
+
+	    after(function(done){
+    		rawApi.configData.commonWeb.returnErrorCodes = false;
+    		delete rawApi.actions['statusTestAction'];
+    		done();
+    	})
+
+    });
+
     it('utils.mapParamsFromURL: action in url', function(done){
     	var connection = {
 		    action: "checkGame",

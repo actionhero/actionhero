@@ -163,7 +163,12 @@ var initWebServer = function(api, next)
 			connection.response.serverInformation.currentTime = connection.timer.stopTime;
 						
 			// errors
-			if(connection.error != null){ connection.response.error = String(connection.error); }
+			if(connection.error != null){
+				connection.response.error = String(connection.error); 
+				if(api.configData.commonWeb.returnErrorCodes == true && connection.responseHttpCode == 200){
+					connection.responseHttpCode = 400;
+				}
+			}
 			
 			process.nextTick(function() {
 				if(toRender != false){
@@ -183,7 +188,7 @@ var initWebServer = function(api, next)
 						stringResponse = connection.params.callback + "(" + stringResponse + ");";
 					}
 					api.webServer.cleanHeaders(api, connection);
-					connection.res.writeHead(connection.responseHttpCode, connection.responseHeaders);
+					connection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
 					connection.res.end(stringResponse);
 				}
 				if(api.configData.log.logRequests){

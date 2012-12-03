@@ -1,5 +1,13 @@
 # Action Hero API Versions
 
+## Version 4.0.2
+
+** Status Codes. **
+
+- For HTTP(S) clients, you can now toggle `api.configData.commonWeb.returnErrorCodes`, which when enabled will only return the http status code `200` for truly sucessful request (`conneciton.error== null`), and an error HTTP response header when there is an error.  
+- You can now set `connection.responseHttpCode` in your actions to indicate a specific HTTP error code for each request if something goes wrong.
+- The default `connection.responseHttpCode` when `api.configData.commonWeb.returnErrorCodes` is enabled is `400` (bad request).
+
 ## Version 4.0.1
 
 ** Binary **
