@@ -46,6 +46,12 @@ var actionHero = function(){
 	
 actionHero.prototype.start = function(params, next){
 	var self = this;
+	self.api._self = self;
+	self.api._commands = {
+		start: self.start,
+		stop: self.stop,
+		restart: self.restart,
+	}
 
 	if (params == null){params = {};}
 	self.startingParams = params;

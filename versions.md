@@ -11,6 +11,38 @@
 - the actionHero server can now respond to basic unix signals (USR2 will restart, and KILL/INT will try a more graceful shutdown)
 - general cleanup for the binary commands
 
+** actions **
+
+- you can now define more than one action or task in a file, like this:
+
+	exports.userAdd = {
+		name: 'userAdd',
+		description: 'i add a user',
+		inputs: {
+			required: ['email', 'password'],
+			optional: []
+		},
+		outputExample: {},
+		run: function(api, connection, next){
+			// your code here
+			next(connection, true);
+		}
+	};
+
+	exports.userDelete = {
+		name: 'userDelete',
+		description: 'i delete a user',
+		inputs: {
+			required: ['email', 'password'],
+			optional: []
+		},
+		outputExample: {},
+		run: function(api, connection, next){
+			// your code here
+			next(connection, true);
+		}
+	}
+
 ** config **
 
 - the name of the log file is now based on the process name, to match the pidFiles

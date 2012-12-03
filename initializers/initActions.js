@@ -62,13 +62,21 @@ var initActions = function(api, next)
 
 		function actionLoader(api, fullfFilePath, reload){
 			if(reload == null){ reload = false; }
+
+			var loadMessage = function(loadedActionName){
+				if(reload){
+					loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullfFilePath;
+				}else{
+					var loadMessage = "action loaded: " + loadedActionName + ", " + fullfFilePath;
+				}
+				api.log(loadMessage, "blue");
+			}
+
 			var parts = fullfFilePath.split("/");
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
-			var loadMessage = "action loaded: " + actionName + ", " + fullfFilePath;
-			if(reload){
-				loadMessage = "action (re)loaded: " + actionName + ", " + fullfFilePath;
-			}else{
+			
+			if(!reload){
 				if(api.configData.general.developmentMode == true){
 					api.watchedFiles.push(fullfFilePath);
 					(function() {
@@ -86,12 +94,24 @@ var initActions = function(api, next)
 					})();
 				}
 			}
+
 			try{
-				api.actions[actionName] = require(fullfFilePath).action;
-				validateAction(api, api.actions[actionName]);
-				api.log(loadMessage, "blue");
+				var collection = require(fullfFilePath);
+				if(api.utils.hashLength(collection) == 1){
+					api.actions[actionName] = require(fullfFilePath).action;
+					validateAction(api, api.actions[actionName]);
+					loadMessage(actionName);
+				}else{
+					for(var i in collection){
+						var action = collection[i];
+						api.actions[action.name] = action;
+						validateAction(api, api.actions[action.name]);
+						loadMessage(action.name);
+					}
+				}				
 			}catch(err){
 				api.exceptionHandlers.loader(fullfFilePath, err);
+				delete api.actions[actionName];
 			}
 		}
 

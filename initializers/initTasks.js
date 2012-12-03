@@ -401,13 +401,20 @@ var initTasks = function(api, next)
 
 	var taskLoader = function(api, fullfFilePath, reload){
 		if(reload == null){ reload = false; }
+
+		var loadMessage = function(loadedTaskName){
+			if(reload){
+				loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullfFilePath;
+			}else{
+				var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
+			}
+			api.log(loadMessage, "yellow");
+		}
+
 		var parts = fullfFilePath.split("/");
 		var file = parts[(parts.length - 1)];
 		var taskName = file.split(".")[0];
-		var loadMessage = "task loaded: " + taskName + ", " + fullfFilePath;
-		if(reload){
-			loadMessage = "task (re)loaded: " + taskName + ", " + fullfFilePath;
-		}else{
+		if(!reload){
 			if(api.configData.general.developmentMode == true){
 				api.watchedFiles.push(fullfFilePath);
 				(function() {
@@ -426,11 +433,22 @@ var initTasks = function(api, next)
 			}
 		}
 		try{
-			api.tasks.tasks[taskName] = require(fullfFilePath).task;
-			validateTask(api, api.tasks.tasks[taskName]);
-			api.log(loadMessage, "yellow")
+			var collection = require(fullfFilePath);
+			if(api.utils.hashLength(collection) == 1){
+				api.tasks.tasks[taskName] = require(fullfFilePath).task;
+				validateTask(api, api.tasks.tasks[taskName]);
+				loadMessage(taskName);
+			}else{
+				for(var i in collection){
+					var task = collection[i];
+					api.tasks.tasks[task.name] = task;
+					validateTask(api, api.tasks.tasks[task.name]);
+					loadMessage(task.name);
+				}
+			}
 		}catch(err){
 			api.exceptionHandlers.loader(fullfFilePath, err);
+			delete api.tasks.tasks[taskName];
 		}
 	}
 

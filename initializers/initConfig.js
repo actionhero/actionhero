@@ -39,7 +39,7 @@ var initConfig = function(api, startingParams, next){
         if(curr.mtime > prev.mtime){
           api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n");
           delete require.cache[configFile];
-          actionHero.restart();
+          api._commands.restart.call(api._self);
         }
       });
     })();
