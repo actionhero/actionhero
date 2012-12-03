@@ -203,15 +203,16 @@ exports['startCluster'] = function(binary, next){
 					worker.send("restart");
 				}
 			});
-			process.on('SIGWINCH', function(){
-				binary.log("Signal: SIGWINCH");
-				binary.log("stop all workers");
-				binary.workersExpected = 0;
-				for (var i in cluster.workers){
-					var worker = cluster.workers[i];
-					worker.send("stop");
-				}
-			});
+			// TODO: Find a signal for 'kill all'
+			// process.on('SIGWINCH', function(){
+				// binary.log("Signal: SIGWINCH");
+				// binary.log("stop all workers");
+				// binary.workersExpected = 0;
+				// for (var i in cluster.workers){
+				// 	var worker = cluster.workers[i];
+				// 	worker.send("stop");
+				// }
+			// });
 			process.on('SIGTTIN', function(){
 				binary.log("Signal: SIGTTIN");
 				binary.log("add a worker");
