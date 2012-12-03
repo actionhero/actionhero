@@ -63,7 +63,7 @@ var initSocketServer = function(api, next){
 										to: connection.remoteIP,
 									});
 								}
-								api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response"}); 
+								api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response", reason: 'request'}); 
 								connection.end();
 							}catch(e){ }
 						}else if(words[0] == "paramAdd"){
@@ -289,7 +289,7 @@ var initSocketServer = function(api, next){
 				var connection = api.connections[i];
 				if(connection.type == "socket"){
 					if (connection.responsesWaitingCount == 0){
-						api.connections[i].end("Server going down NOW\r\nBye!\r\n");
+						api.connections[i].end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
 					}else{
 						pendingConnections++;
 					}

@@ -47,6 +47,10 @@
 
 - the name of the log file is now based on the process name, to match the pidFiles
 
+** general **
+
+- uppon sever shutdown, all connected TCP clinents will recieve the message: {"status":"Bye!","context":"response","reason":"server shutdown"}
+
 ## Version 4.0.0
 
 ** Boot **
