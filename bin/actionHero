@@ -153,7 +153,8 @@ if(binary.actions[binary.mainAction] != null){
     var child = binary.fork(command, args, {silent: true, detached: true});
     process.nextTick(function(){
       binary.log("spawned child process with pid "+ child.pid);
-      process.exit(0);
+      child.unref();
+      setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
     });
   }else{
     binary.actions[binary.mainAction](binary, function(){});
