@@ -168,6 +168,9 @@ var initActions = function(api, next)
 			}else{
 				if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
 				connection.error = new Error(connection.action + " is not a known action.");
+				if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
+					connection.responseHttpCode = 404;
+				}
 				process.nextTick(function(){ 
 					connection.respondingTo = messageID;
 					next(connection, true); 

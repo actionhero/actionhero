@@ -133,9 +133,9 @@ describe('Client: Web', function(){
     		done();
     	})
 
-    	it('missing actions should have a header of 400', function(done){
-	    	specHelper.apiTest.del('/', 0, {}, function(response){
-	    		response.statusCode.should.eql(400);
+	    it('actions that do not exists should return 404', function(done){
+	    	specHelper.apiTest.del('/aFakeAction', 0, {}, function(response){
+	    		response.statusCode.should.eql(404);
 	    		done();
 	    	});
 	    });
