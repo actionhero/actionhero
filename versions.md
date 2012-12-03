@@ -7,7 +7,7 @@
 - better support for running the actionHero binary globally
 - when generating a new project, the actionHero version will be locked
 - `actionHero` generate will create a `_project.js` initializer
-- you can now daemonize all of the actionHero commands (start, startCluster) with the `--daemon`.  This will background the server
+- you can now daemonize all of the actionHero commands (start, startCluster) with the `--daemon`.  This will background the server or cluster
 - the actionHero server can now respond to basic unix signals (USR2 will restart, and KILL/INT will try a more graceful shutdown)
 - general cleanup for the binary commands
 

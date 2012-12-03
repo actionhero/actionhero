@@ -74,6 +74,7 @@
     \"scripts\": {\r\n\
       \"start\": \"node ./node_modules/.bin/actionHero start\",\r\n\
       \"startCluster\": \"node ./node_modules/.bin/actionHero startCluster\",\r\n\
+      \"actionHero\": \"node ./node_modules/.bin/actionHero\",\r\n\
       \"help\": \"node ./node_modules/.bin/actionHero help\"\r\n\
     }\r\n\
   }\r\n\

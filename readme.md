@@ -17,10 +17,9 @@ actionHero will also serve static files for you, but actionHero is not meant to 
 
 ## Quick Start
 
-	mkdir ~/my-action-hero-project && cd ~/my-action-hero-project
-	npm install actionHero -g
-	actionHero generate
-	actionHero start
+	npm install actionHero
+	./node_modules/.bin/actionHero generate
+	./node_modules/.bin/actionHero start
 
 ## Want more?
 
