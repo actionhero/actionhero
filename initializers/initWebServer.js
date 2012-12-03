@@ -298,7 +298,7 @@ var initWebServer = function(api, next)
 		////////////////////////////////////////////////////////////////////////////
 		// Go server!
 		api.webServer.server.on("error", function(e){
-			api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.webServerPort + "; Exiting.", ["red", "bold"]);
+			api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
 			api.log(e, "red");
 			process.exit();
 		});

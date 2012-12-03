@@ -35,7 +35,7 @@ var initLog = function(api, next){
 			console.log(console_message);
 			var file_message = time_string + " | " + original_message;
 			if (api.logWriter == null){
-				api.logWriter = api.fs.createWriteStream((api.configData.log.logFolder + "/" + api.configData.log.logFile), {flags:"a"});
+				api.logWriter = api.fs.createWriteStream((api.configData.log.logFolder + "/" + api.pids.title + ".log"), {flags:"a"});
 			}
 			process.nextTick(function() { 
 				try{

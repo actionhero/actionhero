@@ -10,6 +10,7 @@ var initConfig = function(api, startingParams, next){
       
   if(api.argv["config"] != null){
     var configFile = api.argv["config"];
+    console.log(' >> configuration read from: ' + api.argv["config"]);
   }else if(api.fs.existsSync(process.cwd() + '/config.js')){
     var configFile = process.cwd() + '/config.js';
   }else{

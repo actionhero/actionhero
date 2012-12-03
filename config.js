@@ -46,7 +46,6 @@ configData.general = {
 configData.log = {
 	"logging" : true,
 	"logFolder" : "./log/",
-	"logFile" : "api.log",
 	// Should we log the actual requests coming in (and their params)?
 	"logRequests" : true,
 };

@@ -77,9 +77,9 @@ actionHero.prototype.start = function(params, next){
 	// run the initializers
 	var orderedInitializers = {}
 	orderedInitializers['initConfig'] = function(next){ self.initalizers.initConfig(self.api, self.startingParams, next) };
-	orderedInitializers['initLog'] = function(next){ self.initalizers.initLog(self.api, next) };
 	orderedInitializers['initID'] = function(next){ self.initalizers.initID(self.api, next) };
 	orderedInitializers['initPids'] = function(next){ self.initalizers.initPids(self.api, next) };
+	orderedInitializers['initLog'] = function(next){ self.initalizers.initLog(self.api, next) };
 	orderedInitializers['initExceptions'] = function(next){ self.initalizers.initExceptions(self.api, next) };
 	orderedInitializers['initRedis'] = function(next){ self.initalizers.initRedis(self.api, next) };
 	orderedInitializers['initCache'] = function(next){ self.initalizers.initCache(self.api, next) };

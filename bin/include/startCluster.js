@@ -61,14 +61,14 @@ exports['startCluster'] = function(binary, next){
 			};
 
 			for(var i in binary.clusterConfig){
-				if(binary.argv[i] != null){
+				if(binary.argv[i] != null && i != 'args'){
 					binary.clusterConfig[i] = binary.argv[i];
 				}
 			}
 
+			if(binary.argv["config"] != null){ binary.clusterConfig.args += " --config=" + binary.argv["config"]; }
 			if(binary.clusterConfig.silent == "false"){ binary.clusterConfig.silent = false; }
 			if(binary.clusterConfig.silent == "true"){ binary.clusterConfig.silent = true; }
-			binary.clusterConfig.args = binary.clusterConfig.args.split(",");
 
 			next();
 		},
@@ -229,7 +229,7 @@ exports['startCluster'] = function(binary, next){
 		start: function(next){
 			cluster.setupMaster({
 				exec : binary.clusterConfig.exec,
-				args: binary.clusterConfig.args,
+				args: binary.clusterConfig.args.split(" "),
 				silent : binary.clusterConfig.silent
 			});
 
