@@ -7,6 +7,8 @@
 - For HTTP(S) clients, you can now toggle `api.configData.commonWeb.returnErrorCodes`, which when enabled will only return the http status code `200` for truly sucessful request (`conneciton.error== null`), and an error HTTP response header when there is an error.  
 - You can now set `connection.responseHttpCode` in your actions to indicate a specific HTTP error code for each request if something goes wrong.
 - The default `connection.responseHttpCode` when `api.configData.commonWeb.returnErrorCodes` is enabled is `400` (bad request).
+- If you request an action that doesn't exist in the mode `404` (Bad Request).
+- If you request an action without all the required params `422` (Unprocessable Entity).
 
 ## Version 4.0.1
 
