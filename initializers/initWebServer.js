@@ -225,15 +225,14 @@ var initWebServer = function(api, next)
 		////////////////////////////////////////////////////////////////////////////
 		// Helpers to ensure uniqueness on response headers
 		api.webServer.cleanHeaders = function(api, connection){
-			connection.responseHeaders = connection.responseHeaders.reverse();
-			var foundHeaders = [];
-			for (var i in connection.responseHeaders){
-				var key = connection.responseHeaders[i][0];
+			var foundHeaders = {};
+			for (var i=connection.responseHeaders.length-1;i>=0;i--){
+				var key = connection.responseHeaders[i][0].toLowerCase();
 				var value = connection.responseHeaders[i][1];
-				if(foundHeaders.indexOf(key) > 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
-					connection.responseHeaders.splice(i,1) // delete, it's a duplicate
+				if(foundHeaders[key] && key.indexOf('set-cookie') < 0 ){
+					connection.responseHeaders.splice(i,1); // delete, it's a duplicate
 				}else{
-					foundHeaders.push(key);
+					foundHeaders[key] = true;
 				}
 			}
 		}
