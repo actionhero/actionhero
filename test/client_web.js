@@ -119,7 +119,7 @@ describe('Client: Web', function(){
     		rawApi.actions.statusTestAction = {
     			name: "statusTestAction",
     			description: "I am a test",
-    			inputs: { required: [], optional: [] }, outputExample: {},
+    			inputs: { required: ["key"], optional: [] }, outputExample: {},
     			run:function(api, connection, next){
     				if(connection.params.key != 'value'){
     					connection.error = "key != value";
@@ -140,8 +140,15 @@ describe('Client: Web', function(){
 	    	});
 	    });
 
-	    it('status codes can be set for errrors', function(done){
+	    it('missing params result in a 422', function(done){
 	    	specHelper.apiTest.del('/statusTestAction', 0, {}, function(response){
+	    		response.statusCode.should.eql(422);
+	    		done();
+	    	});
+	    });
+
+	    it('status codes can be set for errrors', function(done){
+	    	specHelper.apiTest.del('/statusTestAction', 0, {key: 'bannana'}, function(response){
 	    		response.body.error.should.eql('key != value');
 	    		response.statusCode.should.eql(402);
 	    		done();

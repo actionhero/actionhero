@@ -77,6 +77,9 @@ var initPostVariables = function(api, next)
 			required_params.forEach(function(param){
 				if(connection.error === null && (connection.params[param] === undefined || connection.params[param].length == 0)){
 					connection.error = new Error(param + " is a required parameter for this action");
+					if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
+						connection.responseHttpCode = 422;
+					}
 				}
 			});
 		}
@@ -93,6 +96,9 @@ var initPostVariables = function(api, next)
 			if(found == false)
 			{
 				connection.error = new Error("none of the required params for this action were provided.  Any of the following are required: " + paramString);
+				if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
+					connection.responseHttpCode = 422;
+				}
 			}
 		}
 	}
