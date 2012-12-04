@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 4.0.3
+
+** Bugs **
+
+- fix duplicate headers sometimes returned to http(s) clients
+
 ## Version 4.0.2
 
 ** Status Codes. **
