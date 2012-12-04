@@ -231,10 +231,10 @@ var initWebServer = function(api, next)
 			for(var i in originalHeaders){
 				var key = originalHeaders[i][0];
 				var value = originalHeaders[i][1];
-				if(foundHeaders.indexOf(key) > 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
+				if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
 					// ignore, it's a duplicate
 				}else{
-					foundHeaders.push(key);
+					foundHeaders.push(key.toLowerCase());
 					cleanedHeaders.push([key, value]);
 				}
 			}
