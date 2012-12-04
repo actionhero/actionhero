@@ -30,9 +30,12 @@ binary.log = function(message, styles){
       // TODO: strip ansi color codes
       // message = message.replace(new RegExp('\033\\[91m', 'g'), '')
     }
-    var time_string = binary.consoleColors.grey(binary.utils.sqlDateTime() + " | ");
-    console.log(time_string + message);
+    console.log(binary.consoleColors.grey(binary.generateTimeSting()) + message);
   }
+}
+
+binary.generateTimeSting = function(){
+  return binary.utils.sqlDateTime() + " | ";
 }
 
 binary.hardError = function(err){
@@ -140,15 +143,23 @@ binary.log("actionHero >> " + binary.mainAction);
 binary.log("project_root >> " + binary.path.normalize(binary.paths.project_root + "/"))
 binary.log("actionHero_root >> " + binary.path.normalize(binary.paths.actionHero_root + "/"))
 
+if(binary.argv['isDaemon'] == 'true'){
+  binary.isDaemon = true;
+}else{
+  binary.isDaemon = false;
+}
+
 if(binary.actions[binary.mainAction] != null){
   if(binary.argv['daemon'] != null){
     var args = process.argv.splice(2);
     for(var i in args){
       if(args[i].indexOf("--daemon") >= 0){
         args.splice(i,1);
+        break;
       }
     }
     args.push('--silent=true')
+    args.push('--isDaemon=true')
     var command = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
     var child = binary.fork(command, args, {silent: true, detached: true});
     process.nextTick(function(){

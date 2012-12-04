@@ -79,7 +79,7 @@ exports['startCluster'] = function(binary, next){
 
 			binary.originalLog = binary.log;
 			binary.log = function(message, styles){
-				binary.logWriter.write(message + "\r\n");
+				binary.logWriter.write(binary.generateTimeSting() + message + "\r\n");
 				binary.originalLog(message, styles);
 			}
 
@@ -87,6 +87,7 @@ exports['startCluster'] = function(binary, next){
 		},
 		displaySetup: function(next){
 			binary.log(" - STARTING CLUSTER -", ["bold", "green"]);
+			binary.log("pid: "+process.pid);
 			binary.log("options:");
 			for(var i in binary.clusterConfig){
 				binary.log(" > " + i + ": " + binary.clusterConfig[i]);
@@ -138,7 +139,7 @@ exports['startCluster'] = function(binary, next){
 					if(binary.clusterConfig.pidfile != null){
 						try{ binary.fs.unlinkSync(binary.clusterConfig.pidfile); }catch(e){ }
 					}
-					process.exit();
+					setTimeout(process.exit, 500);
 				}
 			}
 
@@ -203,16 +204,17 @@ exports['startCluster'] = function(binary, next){
 					worker.send("restart");
 				}
 			});
-			// TODO: Find a signal for 'kill all'
-			// process.on('SIGWINCH', function(){
-				// binary.log("Signal: SIGWINCH");
-				// binary.log("stop all workers");
-				// binary.workersExpected = 0;
-				// for (var i in cluster.workers){
-				// 	var worker = cluster.workers[i];
-				// 	worker.send("stop");
-				// }
-			// });
+			process.on('SIGWINCH', function(){
+				if(binary.isDaemon){
+					binary.log("Signal: SIGWINCH");
+					binary.log("stop all workers");
+					binary.workersExpected = 0;
+					for (var i in cluster.workers){
+						var worker = cluster.workers[i];
+						worker.send("stop");
+					}
+				}
+			});
 			process.on('SIGTTIN', function(){
 				binary.log("Signal: SIGTTIN");
 				binary.log("add a worker");

@@ -80,7 +80,6 @@ exports['start'] = function(binary, next){
 				process.send("stopping");
 				stopServer(function(){
 					process.send("stopped");
-					process.exit();
 				})
 			}
 			else if(msg == "restart"){

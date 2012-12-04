@@ -5,6 +5,8 @@
 ** Bugs **
 
 - fix duplicate headers sometimes returned to http(s) clients
+- fixed logging for actionCluster
+- fixed SIGWINCH so only daemonized clusters can use it
 
 ## Version 4.0.2
 
