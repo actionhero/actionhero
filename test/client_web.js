@@ -112,6 +112,51 @@ describe('Client: Web', function(){
     	});
     });
 
+    describe('http header', function(){
+
+    	before(function(done){
+    		rawApi.configData.commonWeb.returnErrorCodes = true;
+    		rawApi.actions.headerTestAction = {
+    			name: "headerTestAction",
+    			description: "I am a test",
+    			inputs: { required: [], optional: [] }, outputExample: {},
+    			run:function(api, connection, next){
+    				connection.responseHeaders.push(['thing', "A"]);
+					connection.responseHeaders.push(['thing', "B"]);
+					connection.responseHeaders.push(['thing', "C"]);
+					connection.responseHeaders.push(['set-cookie', "value 1"]);
+					connection.responseHeaders.push(['set-cookie', "value 2"]);
+    				next(connection, true);
+    			}
+    		}
+    		done();
+    	});
+
+    	it('duplicate cookies should be removed (in favor of the last set)', function(done){
+	    	specHelper.apiTest.del('/headerTestAction', 0, {}, function(response){
+	    		response.statusCode.should.eql(200);
+	    		response.headers['thing'].should.eql("C");
+	    		done();
+	    	});
+	    });
+
+	    it('but duplicate set-cookie requests should be allowed', function(done){
+	    	specHelper.apiTest.del('/headerTestAction', 0, {}, function(response){
+	    		response.statusCode.should.eql(200);
+	    		response.headers['set-cookie'].length.should.eql(2);
+	    		response.headers['set-cookie'][1].should.eql('value 1');
+	    		response.headers['set-cookie'][0].should.eql('value 2');
+	    		done();
+	    	});
+	    });
+
+    	after(function(done){
+    		delete rawApi.actions['headerTestAction'];
+    		done();
+    	})
+
+    });
+
     describe('http returnErrorCodes true', function(){
 
     	before(function(done){
