@@ -121,66 +121,71 @@ var initActions = function(api, next)
 	});
 	
 	api.processAction = function(api, connection, messageID, next){	
-		if(connection.params.limit == null){ 
-			connection.params.limit = api.configData.general.defaultLimit; 
-		}else{ 
-			connection.params.limit = parseFloat(connection.params.limit); 
-		}
+		if(api.running != true){
+			connection.error = "the server is shutting down";
+			next(connection, true);
+		}else{
+			if(connection.params.limit == null){ 
+				connection.params.limit = api.configData.general.defaultLimit; 
+			}else{ 
+				connection.params.limit = parseFloat(connection.params.limit); 
+			}
 
-		if(connection.params.offset == null){ 
-			connection.params.offset = api.configData.general.defaultOffset; 
-		}else{ 
-			connection.params.offset = parseFloat(connection.params.offset); 
-		}
-		
-		if (connection.error === null){
-			if(connection.type == "web"){ api.utils.processRoute(api, connection); }
-			connection.action = connection.params["action"];
-			if(api.actions[connection.action] != undefined){
-				api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
-				if(connection.error === null){
-					process.nextTick(function() { 
-						if(api.domain != null){
-							var actionDomain = api.domain.create();
-							actionDomain.on("error", function(err){
-								api.exceptionHandlers.action(actionDomain, err, connection, next);
-							});
-							actionDomain.run(function(){
+			if(connection.params.offset == null){ 
+				connection.params.offset = api.configData.general.defaultOffset; 
+			}else{ 
+				connection.params.offset = parseFloat(connection.params.offset); 
+			}
+			
+			if (connection.error === null){
+				if(connection.type == "web"){ api.utils.processRoute(api, connection); }
+				connection.action = connection.params["action"];
+				if(api.actions[connection.action] != undefined){
+					api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
+					if(connection.error === null){
+						process.nextTick(function() { 
+							if(api.domain != null){
+								var actionDomain = api.domain.create();
+								actionDomain.on("error", function(err){
+									api.exceptionHandlers.action(actionDomain, err, connection, next);
+								});
+								actionDomain.run(function(){
+									api.actions[connection.action].run(api, connection, function(connection, toRender){
+										connection.respondingTo = messageID;
+										// actionDomain.dispose();
+										next(connection, toRender);
+									}); 
+								})
+							}else{
 								api.actions[connection.action].run(api, connection, function(connection, toRender){
 									connection.respondingTo = messageID;
-									// actionDomain.dispose();
 									next(connection, toRender);
 								}); 
-							})
-						}else{
-							api.actions[connection.action].run(api, connection, function(connection, toRender){
-								connection.respondingTo = messageID;
-								next(connection, toRender);
-							}); 
-						}
-					});
+							}
+						});
+					}else{
+						process.nextTick(function() { 
+							connection.respondingTo = messageID;
+							next(connection, true);  
+						});
+					}
 				}else{
-					process.nextTick(function() { 
+					if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
+					connection.error = new Error(connection.action + " is not a known action.");
+					if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
+						connection.responseHttpCode = 404;
+					}
+					process.nextTick(function(){ 
 						connection.respondingTo = messageID;
-						next(connection, true);  
+						next(connection, true); 
 					});
 				}
 			}else{
-				if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
-				connection.error = new Error(connection.action + " is not a known action.");
-				if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
-					connection.responseHttpCode = 404;
-				}
 				process.nextTick(function(){ 
 					connection.respondingTo = messageID;
 					next(connection, true); 
 				});
 			}
-		}else{
-			process.nextTick(function(){ 
-				connection.respondingTo = messageID;
-				next(connection, true); 
-			});
 		}
 	}
 }

@@ -26,8 +26,7 @@ actionHero will create the following stores within your redis database:
 
 var c = {};
 
-var initRedis = function(api, next)
-{	
+var initRedis = function(api, next){	
 	c = api.configData.redis;
 	api.redis = {};
 	api.redis.enable = c.enable;
@@ -139,10 +138,27 @@ var initPubSub = function(api, c, next){
 
 var initPingAndCheck = function(api, next){
 
+	api.redis.stopTimers = function(api){
+		clearTimeout(api.redis.pingTimer);
+  		clearTimeout(api.redis.lostPeerTimer);
+	}
+
+	api.redis._teardown = function(api, next){
+		api.redis.stopTimers(api);
+		api.redis.client.lrem("actionHero:peers", 1, api.id, function(err, count){
+			if(count != 1){ api.log("Error removing myself from the peers list", "red"); }
+			api.redis.client.hdel("actionHero:peerPings", api.id, function(){
+				next();
+			});
+		});
+	}
+
 	api.redis.ping = function(api, next){
 		clearTimeout(api.redis.pingTimer);
 		api.redis.client.hset("actionHero:peerPings", api.id, new Date().getTime(), function(){
-			api.redis.pingTimer = setTimeout(api.redis.ping, api.redis.pingTime, api);
+			if(api.running){
+				api.redis.pingTimer = setTimeout(api.redis.ping, api.redis.pingTime, api);
+			}
 			if (typeof next == "function"){ next(); }
 		});
 	}
@@ -174,14 +190,18 @@ var initPingAndCheck = function(api, next){
 												api.tasks.enqueue(api, task.taskName, new Date().getTime(), task.params);
 												tasksCleaned--;
 												if(tasksCleaned == 0){
-													api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+													if(api.running){
+														api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+													}
 													if (typeof next == "function"){ next(); }
 												}
 											});
 										}
 									});
 								}else{
-									api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+									if(api.running){
+										api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+									}
 									if (typeof next == "function"){ next(); }
 								}
 							});

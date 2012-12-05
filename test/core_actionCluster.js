@@ -171,31 +171,36 @@ describe('Core: actionCluster', function(){
 
     	before(function(done){
     		clearTimeout(apis[2].redis.pingTimer);
-    		apis[2].redis.ping = null;
+    		apis[2].running = false;
     		done();
     	});
 
     	it("If a peer goes away, it should be removed from the list of peers (ping)", function(done){
 	    	this.timeout(0);
 	    	var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
-				setTimeout(function(){
-					apis[0].redis.checkForDroppedPeers(apis[0], function(){
-						apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-							apis[0].redis.client.llen("actionHero:peers", function(err, length){
-								apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-									var count = 0;
-									for (var i in peerPings){
-										count++;
-									}
-									count.should.equal(2);
-									peers.length.should.equal(2);
-									done();
-								});
+			setTimeout(function(){
+				apis[0].redis.checkForDroppedPeers(apis[0], function(){
+					apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
+						apis[0].redis.client.llen("actionHero:peers", function(err, length){
+							apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+								var count = 0;
+								for (var i in peerPings){
+									count++;
+								}
+								count.should.equal(2);
+								peers.length.should.equal(2);
+								done();
 							});
 						});
 					});
-				}, sleepTime );
+				});
+			}, sleepTime );
 	    });
+
+	    after(function(done){
+	    	apis[2].running = true;
+	    	done();
+	    })
 
     });
 

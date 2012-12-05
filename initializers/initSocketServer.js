@@ -13,17 +13,17 @@ var initSocketServer = function(api, next){
 		// server
 		if(api.configData.tcpServer.secure == false){
 			api.socketServer.server = api.net.createServer(function(connection){
-				handleConnection(connection);
+				api.socketServer.handleConnection(connection);
 			});
 		}else{
 			var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
 			var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
 			api.socketServer.server = api.tls.createServer({key: key, cert: cert}, function(connection){
-				handleConnection(connection);
+				api.socketServer.handleConnection(connection);
 			});
 		}
 
-		var handleConnection = function(connection){
+		api.socketServer.handleConnection = function(connection){
 			api.socketServer.numberOfLocalSocketRequests++;
 
 			api.utils.setupConnection(api, connection, "socket", connection.remotePort, connection.remoteAddress);
@@ -299,10 +299,14 @@ var initSocketServer = function(api, next){
 				api.log("[socket] waiting on shutdown, there are still " + pendingConnections + " connected clients waiting on a response");
 				setTimeout(function(){
 					api.socketServer.gracefulShutdown(api, next, alreadyShutdown);
-				}, 3000);
+				}, 1000);
 			}else{
-				next();
+				if(typeof next == 'function'){ next(); }
 			}
+		}
+
+		api.socketServer._teardown = function(api, next){
+			api.socketServer.gracefulShutdown(api, next);
 		}
 		
 		////////////////////////////////////////////////////////////////////////////

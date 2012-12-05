@@ -5,6 +5,17 @@
 var initCache = function(api, next){
 
 	api.cache = {};
+	api.cache.sweeperTimer = null;
+	api.cache.sweeperTimeout = 1000;
+
+	api.cache.stopTimers = function(api){
+		clearTimeout(api.cache.sweeperTimer);
+	}
+
+	api.cache._teardown = function(api, next){
+		api.cache.stopTimers(api);
+		next();
+	}
 
 	if(api.redis && api.redis.enable === true){
 		
@@ -12,14 +23,14 @@ var initCache = function(api, next){
 
 		api.cache.size = function(api, next){
 			api.redis.client.hlen(redisCacheKey, function(err, count){
-				next(count);
+				next(null, count);
 			});
 		}
 
 		api.cache.load = function(api, key, next){
-			api.redis.client.hget(redisCacheKey, key, function (err, cacheObj){
+			api.redis.client.hget(redisCacheKey, key, function(err, cacheObj){
 				if(err != null){ api.log(err, red); }
-				cacheObj = JSON.parse(cacheObj);
+				try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
 				if(cacheObj == null){
 					if(typeof next == "function"){ 
 						process.nextTick(function() { next(new Error("Object not found"), null, null, null, null); });
@@ -48,12 +59,44 @@ var initCache = function(api, next){
 			});
 		};
 
+		api.cache.sweeper = function(api, next){
+			api.redis.client.hkeys(redisCacheKey, function(err, keys){
+				var started = 0;
+				var sweepedKeys = [];
+				keys.forEach(function(key){
+					started++;
+					api.redis.client.hget(redisCacheKey, key, function(err, cacheObj){
+						if(err != null){ api.log(err, red); }
+						try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
+						if(cacheObj != null){
+							if(cacheObj.expireTimestamp < new Date().getTime()){
+								api.redis.client.hdel(redisCacheKey, key, function(err, count){
+									sweepedKeys.push(key);
+									started--;
+									if(started == 0 && typeof next == "function"){ next(err, sweepedKeys); }
+								});
+							}else{
+								started--;
+								if(started == 0 && typeof next == "function"){ next(err, sweepedKeys); }
+							}
+						}else{
+							started--;
+							if(started == 0 && typeof next == "function"){ next(err, sweepedKeys); }
+						}
+					});
+				});
+				if(keys.length == 0 && typeof next == "function"){ next(err, sweepedKeys); }
+			});
+		}
+
 	}else{
 
 		api.cache.data = {};
 
 		api.cache.size = function(api, next){
-			next(api.utils.hashLength(api.cache.data));
+			process.nextTick(function(){
+				next(null, api.utils.hashLength(api.cache.data));
+			});
 		}
 
 		api.cache.load = function(api, key, next){
@@ -83,6 +126,18 @@ var initCache = function(api, next){
 				if(typeof next == "function"){  process.nextTick(function() { next(null, true); }); }
 			}
 		};
+
+		api.cache.sweeper = function(api, next){
+			var sweepedKeys = [];
+			for (var i in api.cache.data){
+				var entry = api.cache.data[i];
+				if ( entry.expireTimestamp != null && entry.expireTimestamp < new Date().getTime() ){
+					sweepedKeys.push(i);
+					delete api.cache.data[i];
+				}
+			}
+			if(typeof next == "function"){ next(null, sweepedKeys); }
+		}
 	}
 
 	api.cache.save = function(api, key, value, expireTimeMS, next){
@@ -116,8 +171,20 @@ var initCache = function(api, next){
 		}
 	};
 
-	next();
+	api.cache.runSweeper = function(api){
+		clearTimeout(api.cache.sweeperTimer);
+		api.cache.sweeper(api, function(err, sweepedKeys){
+			if(sweepedKeys.length > 0){
+				api.log("cleaned " + sweepedKeys.length + " expired cache keys");
+			}
+			if(api.running){
+				api.cache.sweeperTimer = setTimeout(api.cache.runSweeper, api.cache.sweeperTimeout, api);
+			}
+		});
+	}
+	api.cache.runSweeper(api);
 
+	next();
 }
 
 /////////////////////////////////////////////////////////////////////

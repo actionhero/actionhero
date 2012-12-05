@@ -24,6 +24,18 @@ var initTasks = function(api, next)
 	if(api.configData.general.workers == null){
 		api.configData.general.workers = 1;
 	}
+
+	api.tasks.stopTimers = function(api){
+		clearTimeout(api.tasks.periodicTaskReloader);
+		for(var worker_id in api.tasks.processTimers){
+			clearTimeout(api.tasks.processTimers[worker_id]);
+		}
+	}
+
+	api.tasks._teardown = function(api, next){
+		api.tasks.stopTimers(api);
+		next();
+	}
 	
 	api.tasks.enqueue = function(api, taskName, runAtTime, params, next, toAnnounce){
 		if(toAnnounce == null){ toAnnounce = true; }
@@ -265,24 +277,34 @@ var initTasks = function(api, next)
 	
 	api.tasks.process = function(api, worker_id){	
 		clearTimeout(api.tasks.processTimers[worker_id]);
-		if(api.tasks.enqueLock == true){
-			api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-		}else{
-			api.tasks.getNextTask(api, function(err, task){
-				if(task == null){
-					api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-				}else{
-					api.tasks.currentTasks[worker_id] = JSON.stringify(task);
-					api.tasks.run(api, task.taskName, task.params, function(run){
-						if(run){
-							api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
-						}else{
-							api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
-						}
-						delete api.tasks.currentTasks[worker_id];
-						if(api.redis.enable === true){
-							// remove the task from the processing queue (redis only)
-							api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
+		if(api.running){
+			if(api.tasks.enqueLock == true){
+				api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+			}else{
+				api.tasks.getNextTask(api, function(err, task){
+					if(task == null){
+						api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+					}else{
+						api.tasks.currentTasks[worker_id] = JSON.stringify(task);
+						api.tasks.run(api, task.taskName, task.params, function(run){
+							if(run){
+								api.log("[timer "+worker_id+"] ran task: "+task.taskName, "yellow");
+							}else{
+								api.log("[timer "+worker_id+"] task failed to run: "+JSON.stringify(task), "red")
+							}
+							delete api.tasks.currentTasks[worker_id];
+							if(api.redis.enable === true){
+								// remove the task from the processing queue (redis only)
+								api.redis.client.hdel(api.tasks.redisProcessingQueue, task.taskName, function(){
+									if(api.tasks.tasks[task.taskName].frequency > 0){
+										api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
+											api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+										}, false);
+									}else{
+										api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
+									}
+								});
+							}else{
 								if(api.tasks.tasks[task.taskName].frequency > 0){
 									api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
 										api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
@@ -290,19 +312,11 @@ var initTasks = function(api, next)
 								}else{
 									api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 								}
-							});
-						}else{
-							if(api.tasks.tasks[task.taskName].frequency > 0){
-								api.tasks.enqueuePeriodicTask(api, api.tasks.tasks[task.taskName], function(){
-									api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
-								}, false);
-							}else{
-								api.tasks.processTimers[worker_id] = setTimeout(api.tasks.process, api.tasks.cycleTimeMS, api, worker_id);
 							}
-						}
-					});
-				}
-			});
+						});
+					}
+				});
+			}
 		}
 	};
 
@@ -327,14 +341,18 @@ var initTasks = function(api, next)
 				api.tasks.enqueuePeriodicTask(api, task, function(){
 					started--;
 					if(started == 0){ 
-						api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+						if(api.running){
+							api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+						}
 						if(typeof next == "function"){ next(); }; 
 					}
 				});
 			}
 		}
 		if(started == 0){ 
-			api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+			if(api.running){
+				api.tasks.periodicTaskReloader = setTimeout(api.tasks.startPeriodicTasks, api.tasks.reloadPeriodicsTime, api);
+			}
 			if(typeof next == "function"){ next(); }; 
 		}
 	}

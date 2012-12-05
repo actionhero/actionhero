@@ -2,11 +2,19 @@
 
 ## Version 4.0.3
 
+** initializers **
+
+- you can now define api.{module}._teardown in any api module to be called at shutdown.
+- `_teardown(api, next)` will passed to this method
+- a `_teardown` method is not required
+
 ** Bugs **
 
 - fix duplicate headers sometimes returned to http(s) clients
 - fixed logging for actionCluster
 - fixed SIGWINCH so only daemonized clusters can use it
+- added in a sweeper for api.cache, so that expired values will be deleted eventually
+- better locking out of internal timers when the cluster is off
 
 ## Version 4.0.2
 

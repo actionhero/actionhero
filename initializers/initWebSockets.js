@@ -220,6 +220,13 @@ var initWebSockets = function(api, next){
 			if(typeof next == "function"){ next(); }
 		}
 
+		api.webSockets._teardown = function(api, next){
+			api.webSockets.disconnectAll(api, function(){
+				api.webServer.server.close();
+				next();
+			});
+		}
+
 		api.webSockets.io = io;
 		api.log("webSockets bound to " + api.configData.httpServer.port, "green");
 		next();

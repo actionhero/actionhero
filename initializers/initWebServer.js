@@ -16,17 +16,17 @@ var initWebServer = function(api, next)
 		// server
 		if(api.configData.httpServer.secure == false){
 			api.webServer.server = api.http.createServer(function (req, res) {
-				handleRequest(req, res);
+				api.webServer.handleRequest(req, res);
 			});
 		}else{
 			var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
 			var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
 			api.webServer.server = api.https.createServer({key: key, cert: cert}, function (req, res) {
-				handleRequest(req, res);
+				api.webServer.handleRequest(req, res);
 			});
 		}
 
-		var handleRequest = function(req, res){
+		api.webServer.handleRequest = function(req, res){
 			api.stats.increment(api, "numberOfWebRequests");
 			api.webServer.numberOfLocalWebRequests++;
 
@@ -221,6 +221,20 @@ var initWebServer = function(api, next)
 				}
 			});
 		};
+
+		api.webServer.stopTimers = function(api){
+			for(var i in api.webServer.clientClearTimers){ 
+				clearTimeout(api.webServer.clientClearTimers[i]); 
+			}
+		}
+
+		api.webServer._teardown = function(api, next){
+			api.webServer.stopTimers(api);
+			if(api.configData.webSockets.enable != true){
+				api.webServer.server.close();
+			}
+			next();
+		}
 
 		////////////////////////////////////////////////////////////////////////////
 		// Helpers to ensure uniqueness on response headers

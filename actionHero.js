@@ -6,7 +6,6 @@
 var actionHero = function(){
 	var self = this;
 
-	self.running = false;
 	self.initalizers = {};
 	self.api = {};
 
@@ -52,6 +51,8 @@ actionHero.prototype.start = function(params, next){
 		stop: self.stop,
 		restart: self.restart,
 	}
+
+	self.api.running = true;
 
 	if (params == null){params = {};}
 	self.startingParams = params;
@@ -117,7 +118,6 @@ actionHero.prototype.start = function(params, next){
 		self.api.bootTime = new Date().getTime();
 		self.api.log("server ID: " + self.api.id);
 		self.api.log(successMessage, ["green", "bold"]);
-		self.running = true;
 		if(next != null){ 
 			next(null, self.api);
 		}
@@ -128,75 +128,38 @@ actionHero.prototype.start = function(params, next){
 
 actionHero.prototype.stop = function(next){	
 	var self = this;
-
-	if(self.running == true){
+	if(self.api.running == true){
+		self.api.running = false;
 		self.api.log("Shutting down open servers and pausing tasks", "bold");
-		for(var i in self.api.watchedFiles){
-			self.api.fs.unwatchFile(self.api.watchedFiles[i]);
-		}
-		for(var worker_id in self.api.tasks.processTimers){
-			clearTimeout(self.api.tasks.processTimers[worker_id]);
-		}
-		// allow running timers to finish, but do no work on next cycle.
-		self.api.tasks.process = function(api, worker_id){ }
 
-		var cont = function(){
-			var closed = 0;
-			var neededClosed = 0;
-			if(self.api.configData.httpServer.enable){ neededClosed++; }
-			if(self.api.configData.tcpServer.enable){ neededClosed++; }
-			
-			var checkForDone = function(serverType){
-				if(serverType != null){
-					self.api.log("The " + serverType + " server has ended its connections and closed");
-				}
-				if(closed == neededClosed){
-					closed = -1;
-					self.running = false;
-					self.api.pids.clearPidFile();
-					self.api.log("The actionHero has been stopped", "bold");
-					self.api.log("***");
-					if(typeof next == "function"){ next(null, self.api); }
-				}
+		var orderedTeardowns = {};
+		orderedTeardowns['watchedFiles'] = function(next){ 
+			self.api.log(" > teardown: watchedFiles", 'gray');
+			for(var i in self.api.watchedFiles){
+				self.api.fs.unwatchFile(self.api.watchedFiles[i]);
 			}
-
-			if(self.api.configData.httpServer.enable){
-				self.api.webServer.server.on("close", function(){
-					for(var i in self.api.webServer.clientClearTimers){ clearTimeout(self.api.webServer.clientClearTimers[i]); }
-					closed++;
-					checkForDone("http");
-				});
-				if(self.api.configData.webSockets.enable){
-					self.api.webSockets.disconnectAll(self.api, function(){
-						self.api.webServer.server.close();
-					});
-				}else{
-					self.api.webServer.server.close();
-				}
-			}
-
-			if(self.api.configData.tcpServer.enable){
-				self.api.socketServer.gracefulShutdown(self.api, function(){
-					closed++;
-					checkForDone("tcpServer");
-				});
-			}
-			checkForDone();
+			next();
 		}
-		
-		// remove from the list of hosts
-		if(self.api.redis.enable){
-			clearTimeout(self.api.redis.pingTimer);
-  			clearTimeout(self.api.redis.lostPeerTimer);
-				self.api.redis.client.lrem("actionHero:peers", 1, self.api.id, function(err, count){
-				if(count != 1){ self.api.log("Error removing myself from the peers list", "red"); }
-				self.api.redis.client.hdel("actionHero:peerPings", self.api.id, function(){
-					cont();
-				});
-			});
-		}else{
-			cont();
+
+		for(var i in self.api){
+			if(typeof self.api[i]._teardown == "function"){
+				(function(name) {
+					orderedTeardowns[name] = function(next){ 
+						self.api.log(" > teardown: " + name, 'gray');
+						self.api[name]._teardown(self.api, next); 
+					};
+				})(i)
+			}
 		}
+
+		orderedTeardowns['_complete'] = function(){ 
+			self.api.pids.clearPidFile();
+			self.api.log("The actionHero has been stopped", "bold");
+			self.api.log("***");
+			if(typeof next == "function"){ next(null, self.api); }
+		}
+
+		self.api.async.series(orderedTeardowns);
 	}else{
 		self.api.log("Cannot shut down (not running any servers)");
 		if(typeof next == "function"){ next(null, self.api); }
@@ -206,7 +169,7 @@ actionHero.prototype.stop = function(next){
 actionHero.prototype.restart = function(next){
 	var self = this;
 
-	if(self.running == true){
+	if(self.api.running == true){
 		self.stop(function(err){
 			self.start(self.startingParams, function(err, api){
 				api.log('actionHero restarted', "green");
