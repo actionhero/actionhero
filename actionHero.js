@@ -40,7 +40,7 @@ var actionHero = function(){
 	self.api.fs.existsSync || (self.api.fs.existsSync = self.api.path.existsSync);
 	self.api.fs.exists || (self.api.fs.exists = self.api.path.exists);
 	try{ self.api.domain = require("domain"); }catch(e){ }
-}
+};
 	
 	
 actionHero.prototype.start = function(params, next){
@@ -50,17 +50,17 @@ actionHero.prototype.start = function(params, next){
 		start: self.start,
 		stop: self.stop,
 		restart: self.restart,
-	}
+	};
 
 	self.api.running = true;
 
-	if (params == null){params = {};}
+	if (params === null){ params = {}; }
 	self.startingParams = params;
 
 	var initializerFolders = [ 
 		process.cwd() + "/initializers/", 
 		__dirname + "/initializers/"
-	]
+	];
 		
 	var initializerMethods = [];
 	for(var i in initializerFolders){
@@ -69,7 +69,7 @@ actionHero.prototype.start = function(params, next){
 			self.api.fs.readdirSync(folder).sort().forEach( function(file) {
 				if (file[0] != "."){
 					var initalizer = file.split(".")[0];
-					if(require.cache[initializerFolders[i] + file] != null){
+					if(require.cache[initializerFolders[i] + file] !== null){
 						delete require.cache[initializerFolders[i] + file];
 					}
 					initializerMethods.push(initalizer);
@@ -82,7 +82,7 @@ actionHero.prototype.start = function(params, next){
 	self.api.utils = require(__dirname + '/helpers/utils.js').utils;
 
 	// run the initializers
-	var orderedInitializers = {}
+	var orderedInitializers = {};
 	orderedInitializers['initConfig'] = function(next){ self.initalizers.initConfig(self.api, self.startingParams, next) };
 	orderedInitializers['initID'] = function(next){ self.initalizers.initID(self.api, next) };
 	orderedInitializers['initPids'] = function(next){ self.initalizers.initPids(self.api, next) };
@@ -101,7 +101,7 @@ actionHero.prototype.start = function(params, next){
 		if(typeof orderedInitializers[method] != "function"){
 			orderedInitializers[method] = function(next){ 
 				self.api.log("running custom initalizer: " + method);
-				self.initalizers[method](self.api, next) 
+				self.initalizers[method](self.api, next);
 			};
 		}
 	});
@@ -118,7 +118,7 @@ actionHero.prototype.start = function(params, next){
 		self.api.bootTime = new Date().getTime();
 		self.api.log("server ID: " + self.api.id);
 		self.api.log(successMessage, ["green", "bold"]);
-		if(next != null){ 
+		if(next !== null){ 
 			next(null, self.api);
 		}
 	};
@@ -128,7 +128,7 @@ actionHero.prototype.start = function(params, next){
 
 actionHero.prototype.stop = function(next){	
 	var self = this;
-	if(self.api.running == true){
+	if(self.api.running === true){
 		self.api.running = false;
 		self.api.log("Shutting down open servers and pausing tasks", "bold");
 
@@ -148,7 +148,7 @@ actionHero.prototype.stop = function(next){
 						self.api.log(" > teardown: " + name, 'gray');
 						self.api[name]._teardown(self.api, next); 
 					};
-				})(i)
+				})(i);
 			}
 		}
 
@@ -157,7 +157,7 @@ actionHero.prototype.stop = function(next){
 			self.api.log("The actionHero has been stopped", "bold");
 			self.api.log("***");
 			if(typeof next == "function"){ next(null, self.api); }
-		}
+		};
 
 		self.api.async.series(orderedTeardowns);
 	}else{
@@ -169,7 +169,7 @@ actionHero.prototype.stop = function(next){
 actionHero.prototype.restart = function(next){
 	var self = this;
 
-	if(self.api.running == true){
+	if(self.api.running === true){
 		self.stop(function(err){
 			self.start(self.startingParams, function(err, api){
 				api.log('actionHero restarted', "green");
