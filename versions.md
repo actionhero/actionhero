@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 4.0.4
+
+** Bugs **
+
+- fix a sweeper bug introduced in the previous version
+
 ## Version 4.0.3
 
 ** initializers **
