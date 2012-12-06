@@ -6,7 +6,7 @@ var initCache = function(api, next){
 
 	api.cache = {};
 	api.cache.sweeperTimer = null;
-	api.cache.sweeperTimeout = 1000;
+	api.cache.sweeperTimeout = 10 * 1000;
 
 	api.cache.stopTimers = function(api){
 		clearTimeout(api.cache.sweeperTimer);
@@ -69,7 +69,7 @@ var initCache = function(api, next){
 						if(err != null){ api.log(err, red); }
 						try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
 						if(cacheObj != null){
-							if(cacheObj.expireTimestamp < new Date().getTime()){
+							if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
 								api.redis.client.hdel(redisCacheKey, key, function(err, count){
 									sweepedKeys.push(key);
 									started--;
@@ -165,7 +165,7 @@ var initCache = function(api, next){
 				api.cache.data[key] = cacheObj;
 				if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
 			}catch(e){
-				console.log(e);
+				api.log("Cache save error: " + e, "red");
 				if(typeof next == "function"){  process.nextTick(function() { next(null, false); }); }
 			}
 		}
