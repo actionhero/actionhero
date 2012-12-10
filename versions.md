@@ -6,7 +6,7 @@
 
 - connections can regester to be notified about messages in chatRooms they are not currently in with `listenToRoom` and `silenceRoom`.  You still need to be in a room to `say` and interact with the room, but this will allow clients to register for additional events.
 - various commands have had the `room` paramite added to thier responses to allow for clarity in the above situation.
-- the rooms a connection is additionally interseted in is saved at `connection.additionalListiningRooms`
+- the rooms that a connection is (optionally) additionally interseted in is saved at `connection.additionalListiningRooms`
 - you can limit the number of actions the server will process at a time for a connection with `api.configData.general.simultaniousActions`.  Defaults to `5`
 
 ** bugs **
@@ -16,6 +16,7 @@
 - file server now uses `pipe` as to not require loading all of the file's content into ram to serve the file
 - webserver no longer requires the 'file' action to exist
 - removed the 'file' action, as it was confusing, and duplicated core functionality of the web server
+- ctrl+c and ctrl+d will now properly exit a telnet (TCP) session to an actionHero server
 
 ## Version 4.0.4
 
