@@ -118,6 +118,36 @@ describe('Client: Web Sockets', function(){
     	});
     });
 
+    it('will limit how many simultanious connections I can have', function(done){
+        this.timeout(5000)
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 500}});
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 600}});
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 700}});
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 800}});
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 900}});
+        client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 1000}});
+
+        var responses = []
+        var checkResponses = function(data){
+          responses.push(data);
+          if(responses.length == 6){
+            for(var i in responses){
+              var response = responses[i];
+              if(i == 0){
+                response.error.should.eql("you have too many pending requests");
+              }else{
+                should.not.exist(response.error)
+              }
+            }
+
+            client_1.removeListener('response', checkResponses);
+            done();
+          }
+        }
+
+        client_1.on('response', checkResponses);
+    });
+
     it('can change rooms and get room details', function(done){
     	 client_1.emit("roomChange", {room: "otherRoom"});
     	 makeSocketRequest(client_1, "roomView", {}, function(response){

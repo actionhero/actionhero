@@ -151,6 +151,8 @@ var initSocketServer = function(api, next){
 							details.params = connection.params;
 							details.public = connection.public;
 							details.room = connection.room;
+							details.totalActions = connection.totalActions;
+							details.pendingActions = connection.pendingActions;
 							api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", details: details});
 							if(api.configData.log.logRequests){
 								api.logJSON({
@@ -219,7 +221,7 @@ var initSocketServer = function(api, next){
 										duration: delta,
 									});
 								}
-								api.socketServer.respondToSocketClient(connection, cont);
+								api.socketServer.respondToSocketClient(connection, cont, proxy_connection.messageCount);
 							});
 						}
 					}
@@ -249,26 +251,30 @@ var initSocketServer = function(api, next){
 
 		////////////////////////////////////////////////////////////////////////////
 		// action response helper
-		api.socketServer.respondToSocketClient = function(connection, cont){
+		api.socketServer.respondToSocketClient = function(connection, cont, proxyMessageCount){
 			if(cont != false){
 				if(connection.error != null){ 
 					if(connection.response.error == null){
 						connection.response.error = String(connection.error);
 					}
 				}
-				api.socketServer.sendSocketMessage(connection, connection.response);
+				api.socketServer.sendSocketMessage(connection, connection.response, proxyMessageCount);
 			}
 		}
 		
 		////////////////////////////////////////////////////////////////////////////
 		//message helper
-		api.socketServer.sendSocketMessage = function(connection, message){
+		api.socketServer.sendSocketMessage = function(connection, message, proxyMessageCount){
 			try{
 				if(connection.respondingTo != null){
 					message.messageCount = connection.respondingTo;
 					connection.respondingTo = null;
 				}else if(message.context == "response"){
-					message.messageCount = connection.messageCount;
+					if(proxyMessageCount != null){
+						message.messageCount = proxyMessageCount;
+					}else{
+						message.messageCount = connection.messageCount;
+					}
 				}
 				connection.write(JSON.stringify(message) + "\r\n"); 
 			}catch(e){
@@ -289,9 +295,15 @@ var initSocketServer = function(api, next){
 				var connection = api.connections[i];
 				if(connection.type == "socket"){
 					if (connection.responsesWaitingCount == 0){
-						api.connections[i].end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
+						connection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
 					}else{
-						pendingConnections++;
+						pendingConnections++; 
+						// hard shutdown in 5 seconds
+						if(connection.shutDownTimer == null){
+							connection.shutDownTimer = setTimeout(function(){
+								connection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
+							}, 5000);
+						}
 					}
 				}
 			}

@@ -4,6 +4,10 @@
 var initActions = function(api, next)
 {
 	api.actions = {};
+
+	if(api.configData.general.simultaniousActions == null){
+		api.configData.general.simultaniousActions = 5;
+	}
 	
 	var validateAction = function(api, action){
 		var fail = function(msg){
@@ -119,10 +123,44 @@ var initActions = function(api, next)
 		
 		next();
 	});
+
+	var incramentTotalActions = function(connection, count){
+		if(count == null){ count = 1; }
+		if(connection._original_connection != null){
+			connection._original_connection.totalActions = connection._original_connection.totalActions + count;
+		}else{
+			connection.totalActions = connection.totalActions + count;
+		}
+	}
+
+	var incramentPendingActions = function(connection, count){
+		if(count == null){ count = 1; }
+		if(connection._original_connection != null){
+			connection._original_connection.pendingActions = connection._original_connection.pendingActions + count;
+		}else{
+			connection.pendingActions = connection.pendingActions + count;
+		}
+	}
+
+	var getPendingActionCount = function(connection){
+		if(connection._original_connection != null){
+			return connection._original_connection.pendingActions;
+		}else{
+			return connection.pendingActions;
+		}
+	}
 	
 	api.processAction = function(api, connection, messageID, next){	
+		incramentTotalActions(connection);
+		incramentPendingActions(connection);
+
 		if(api.running != true){
 			connection.error = "the server is shutting down";
+			next(connection, true);
+		}else if(getPendingActionCount(connection) > api.configData.general.simultaniousActions){
+			incramentTotalActions(connection, -1);
+			incramentPendingActions(connection, -1);
+			connection.error = "you have too many pending requests";
 			next(connection, true);
 		}else{
 			if(connection.params.limit == null){ 
@@ -147,18 +185,21 @@ var initActions = function(api, next)
 							if(api.domain != null){
 								var actionDomain = api.domain.create();
 								actionDomain.on("error", function(err){
+									incramentPendingActions(connection, -1);
 									api.exceptionHandlers.action(actionDomain, err, connection, next);
 								});
 								actionDomain.run(function(){
 									api.actions[connection.action].run(api, connection, function(connection, toRender){
 										connection.respondingTo = messageID;
 										// actionDomain.dispose();
+										incramentPendingActions(connection, -1);
 										next(connection, toRender);
 									}); 
 								})
 							}else{
 								api.actions[connection.action].run(api, connection, function(connection, toRender){
 									connection.respondingTo = messageID;
+									incramentPendingActions(connection, -1);
 									next(connection, toRender);
 								}); 
 							}
@@ -166,6 +207,7 @@ var initActions = function(api, next)
 					}else{
 						process.nextTick(function() { 
 							connection.respondingTo = messageID;
+							incramentPendingActions(connection, -1);
 							next(connection, true);  
 						});
 					}
@@ -177,12 +219,14 @@ var initActions = function(api, next)
 					}
 					process.nextTick(function(){ 
 						connection.respondingTo = messageID;
+						incramentPendingActions(connection, -1);
 						next(connection, true); 
 					});
 				}
 			}else{
 				process.nextTick(function(){ 
 					connection.respondingTo = messageID;
+					incramentPendingActions(connection, -1);
 					next(connection, true); 
 				});
 			}

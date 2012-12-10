@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 4.0.5
+
+** socket server & web sockets **
+
+- you can limit the number of actions the server will process at a time for a connection with `api.configData.general.simultaniousActions`.  Defaults to `5`
+
+** bugs **
+
+- when shutting down the socket-server, if a connection doesn't close withing 5 seconds (a pending action), the connection will be disconnected forcibly
+- fixed a bug where messageCount would be overwritten in proxy connections for long-lasting actions
+
 ## Version 4.0.4
 
 ** Bugs **

@@ -131,6 +131,8 @@ var initWebSockets = function(api, next){
 				details.params = connection.params;
 				details.public = connection.public;
 				details.room = connection.room;
+				details.totalActions = connection.totalActions;
+				details.pendingActions = connection.pendingActions;
 				connection.messageCount++; 
 				connection.emit("response", {context: "response", status: "OK", details: details, messageCount: connection.messageCount});
 				if(api.configData.log.logRequests){

@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-	"apiVersion": "4.0.4",
+	"apiVersion": "4.0.5",
 	"serverName": "actionHero API",
 	// The welcome message seen by TCP and webSocket clients upon connection
 	"welcomeMessage" : "Hello! Welcome to the actionHero api",
@@ -37,6 +37,8 @@ configData.general = {
 	"developmentMode": false,
 	// the location of the directory to keep pidfiles
 	"pidFileFirectory": process.cwd() + "/pids/",
+	// how many pending actions can a single connection be working on 
+	"simultaniousActions": 5,
 };
 
 /////////////

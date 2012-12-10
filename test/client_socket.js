@@ -13,7 +13,10 @@ describe('Client: Socket', function(){
 
   function makeSocketRequest(thisClient, message, cb){
 	var rsp = function(d){ 
-		var parsed = JSON.parse(d);
+    var lines = d.split("\n");
+    var lastLine = lines[(lines.length - 1)];
+    if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
+		var parsed = JSON.parse(lastLine);
 		thisClient.removeListener('data', rsp); 
 		cb(parsed); 
 	};
@@ -163,6 +166,36 @@ describe('Client: Socket', function(){
   		response.error.should.equal("Error: value is a required parameter for this action")
   		done();
   	});
+  });
+
+  it('will limit how many simultanious connections I can have', function(done){
+    this.timeout(5000)
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 500}}) + "\r\n");
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 600}}) + "\r\n");
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 700}}) + "\r\n");
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 800}}) + "\r\n");
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 900}}) + "\r\n");
+    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 1000}}) + "\r\n");
+
+    var responses = []
+    var checkResponses = function(data){
+      responses.push(JSON.parse(data));
+      if(responses.length == 6){
+        for(var i in responses){
+          var response = responses[i];
+          if(i == 0){
+            response.error.should.eql("you have too many pending requests");
+          }else{
+            should.not.exist(response.error)
+          }
+        }
+
+        client.removeListener('data', checkResponses);
+        done();
+      }
+    }
+
+    client.on('data', checkResponses);
   });
 
   it('params sent in a JSON do not stick', function(done){

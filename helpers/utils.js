@@ -158,7 +158,9 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
 	connection.type = type;
 	connection.error = null;
 	connection.params = {};
-	connection.response = {};
+  connection.response = {};
+  connection.pendingActions = 0;
+	connection.totalActions = 0;
 	connection.remotePort = remotePort;
 	connection.remoteIP = remoteIP;
   if(connection.roomMatchKey == null){ connection.roomMatchKey = null; }
