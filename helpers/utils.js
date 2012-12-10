@@ -162,7 +162,8 @@ utils.setupConnection = function(api, connection, type, remotePort, remoteIP){
   connection.pendingActions = 0;
 	connection.totalActions = 0;
 	connection.remotePort = remotePort;
-	connection.remoteIP = remoteIP;
+  connection.remoteIP = remoteIP;
+	connection.additionalListiningRooms = [];
   if(connection.roomMatchKey == null){ connection.roomMatchKey = null; }
   if(connection.roomMatchValue == null){ connection.roomMatchValue = null; }
 	if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }

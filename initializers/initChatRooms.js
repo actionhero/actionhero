@@ -37,7 +37,7 @@ var initChatRooms = function(api, next){
 			var messagePayload = {message: message, room: connection.room, from: connection.public.id, context: "user", sentAt: new Date().getTime() };
 			for(var i in api.connections){
 				var thisConnection = api.connections[i];
-				if(thisConnection.room == connection.room){
+				if(thisConnection.room == connection.room || thisConnection.additionalListiningRooms.indexOf(connection.room) > -1){
 					if(connection == null || thisConnection.public.id != connection.public.id){
 						var matched = false;
 						if(connection.roomMatchKey == null){

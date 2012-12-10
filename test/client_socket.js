@@ -285,6 +285,51 @@ describe('Client: Socket', function(){
 	client2.write("roomChange " + apiObj.configData.general.defaultChatRoo + "\r\n");
   });
 
+  it('I can register for messages from rooms I am not in', function(done){
+    this.timeout(5000);
+    makeSocketRequest(client, "roomChange room1", function(response){
+      makeSocketRequest(client2, "roomChange room2", function(response){
+        makeSocketRequest(client, "listenToRoom room2", function(response){
+          var listener = function(response){
+            client.removeListener('data',listener);
+            var message = JSON.parse(response);
+            message.message.should.eql("hello in room2")
+            done();
+          }
+          setTimeout(function(){
+            client.on('data', listener);
+            client2.write("say hello in room2\r\n");
+          }, 100);
+        });
+      });
+    });
+  });
+
+  it('I can unregister for messages from rooms I am not in', function(done){
+    this.timeout(5000);
+    makeSocketRequest(client, "roomChange room1", function(response){
+      makeSocketRequest(client2, "roomChange room2", function(response){
+        makeSocketRequest(client, "listenToRoom room2", function(response){
+          makeSocketRequest(client, "silenceRoom room2", function(response){
+            var listener = function(response){
+              client.removeListener('data',listener);
+              throw new Error("I should not have gotten this message: " + response)
+              done();
+            }
+            setTimeout(function(){
+              client.on('data', listener);
+              client2.write("say hello in room2\r\n");
+            }, 100);
+            setTimeout(function(){
+              client.removeListener('data',listener);
+              done(); // yay, I didn't get the message
+            }, 2000);
+          });
+        });
+      });
+    });
+  });
+
   it('I can get my id', function(done){
     var listener = function(response){
       client.removeListener('data',listener);

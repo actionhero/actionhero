@@ -146,6 +146,39 @@ var initSocketServer = function(api, next){
 									}, "grey");
 								}
 							});		
+						}else if(words[0] == "listenToRoom"){
+							var message = {context: "response", status: "OK", room: words[1]}
+							if(connection.additionalListiningRooms.indexOf(words[1]) > -1){
+								message.error = "you are already listening to this room";
+							}else{
+								connection.additionalListiningRooms.push(words[1]);
+								message.status = "OK"
+							}
+							api.socketServer.sendSocketMessage(connection, message);
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "listenToRoom @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
+						}else if(words[0] == "silenceRoom"){
+							var message = {context: "response", status: "OK", room: words[1]}
+							if(connection.additionalListiningRooms.indexOf(words[1]) > -1){
+								var index = connection.additionalListiningRooms.indexOf(words[1]);
+								connection.additionalListiningRooms.splice(index, 1);
+								message.status = "OK"
+							}else{
+								message.error = "you are not listening to this room";
+							}
+							api.socketServer.sendSocketMessage(connection, message);
+							if(api.configData.log.logRequests){
+								api.logJSON({
+									label: "silenceRoom @ socket",
+									to: connection.remoteIP,
+									params: JSON.stringify(words),
+								}, "grey");
+							}
 						}else if(words[0] == "detailsView"){
 							var details = {};
 							details.params = connection.params;

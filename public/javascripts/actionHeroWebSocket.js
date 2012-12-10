@@ -73,6 +73,14 @@ actionHeroWebSocket.prototype.roomChange = function(room, next){
   this.registerCallback('roomChange', {room: room}, next);
 }
 
+actionHeroWebSocket.prototype.listenToRoom = function(room, next){
+  this.registerCallback('listenToRoom', {room: room}, next);
+}
+
+actionHeroWebSocket.prototype.silenceRoom = function(room, next){
+  this.registerCallback('silenceRoom', {room: room}, next);
+}
+
 actionHeroWebSocket.prototype.quit = function(){
   this.ws.emit("quit");
 }

@@ -110,6 +110,46 @@ var initWebSockets = function(api, next){
 				});
 			});
 
+			connection.on('listenToRoom', function(data){
+				if(data == null){ data = {}; }
+				var message = {context: "response", messageCount: connection.messageCount, room: data.room}
+				if(connection.additionalListiningRooms.indexOf(data.room) > -1){
+					message.error = "you are already listening to this room";
+				}else{
+					connection.additionalListiningRooms.push(data.room);
+					message.status = "OK"
+				}
+				connection.emit("response", message);
+				if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "listenToRoom @ webSocket",
+						to: connection.remoteIP,
+						params: JSON.stringify(data),
+					}, "grey");
+				}
+			});
+
+			connection.on('silenceRoom', function(data){
+				if(data == null){ data = {}; }
+				var message = {context: "response", messageCount: connection.messageCount, room: data.room}
+				if(connection.additionalListiningRooms.indexOf(data.room) > -1){
+					var index = connection.additionalListiningRooms.indexOf(data.room);
+					connection.additionalListiningRooms.splice(index, 1);
+					message.status = "OK";
+				}else{
+					connection.additionalListiningRooms.push(data.room);
+					message.error = "you are not listening to this room";
+				}
+				connection.emit("response", message);
+				if(api.configData.log.logRequests){
+					api.logJSON({
+						label: "silenceRoom @ webSocket",
+						to: connection.remoteIP,
+						params: JSON.stringify(data),
+					}, "grey");
+				}
+			});
+
 			connection.on('say', function(data){
 				if(data == null){ data = {}; }
 				var message = data.message;

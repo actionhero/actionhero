@@ -158,6 +158,50 @@ describe('Client: Web Sockets', function(){
     	 });
     });
 
+    it('I can register for messages from rooms I am not in', function(done){
+        this.timeout(5000);
+        makeSocketRequest(client_1, "roomChange", {room: 'room1'}, function(response){
+          makeSocketRequest(client_2, "roomChange", {room: 'room2'}, function(response){
+            makeSocketRequest(client_1, "listenToRoom", {room: 'room2'}, function(response){
+              var listener = function(message){
+                client_1.removeListener('say',listener);
+                message.message.should.eql("hello in room2")
+                done();
+              }
+              setTimeout(function(){
+                client_1.on('say', listener);
+                client_2.emit('say', {message: "hello in room2"});
+              }, 100);
+            });
+          });
+        });
+    });
+
+    it('I can unregister for messages from rooms I am not in', function(done){
+        this.timeout(5000);
+        makeSocketRequest(client_1, "roomChange", {room: 'room1'}, function(response){
+          makeSocketRequest(client_2, "roomChange", {room: 'room2'}, function(response){
+            makeSocketRequest(client_1, "listenToRoom", {room: 'room2'}, function(response){
+                makeSocketRequest(client_1, "silenceRoom", {room: 'room2'}, function(response){
+                    var listener = function(response){
+                      client_1.removeListener('data',listener);
+                      throw new Error("I should not have gotten this message: " + response)
+                      done();
+                    }
+                    setTimeout(function(){
+                      client_1.on('say', listener);
+                      client_2.emit('say', {message: "hello in room2"});
+                    }, 100);
+                    setTimeout(function(){
+                      client_1.removeListener('say',listener);
+                      done(); // yay, I didn't get the message
+                    }, 2000);
+                });
+            });
+          });
+        });
+    });
+
     it('can disconnect', function(done){
     	countWebSocketConnections().should.equal(2);
     	client_1.disconnect();
