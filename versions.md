@@ -13,6 +13,9 @@
 
 - when shutting down the socket-server, if a connection doesn't close withing 5 seconds (a pending action), the connection will be disconnected forcibly
 - fixed a bug where messageCount would be overwritten in proxy connections for long-lasting actions
+- file server now uses `pipe` as to not require loading all of the file's content into ram to serve the file
+- webserver no longer requires the 'file' action to exist
+- removed the 'file' action, as it was confusing, and duplicated core functionality of the web server
 
 ## Version 4.0.4
 

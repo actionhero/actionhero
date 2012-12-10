@@ -11,6 +11,10 @@ var initWebServer = function(api, next)
 		api.webServer.roomCookieKey = "__room";
 		api.webServer.clientClearTimers = [];
 		if(api.redis.enable != true){ api.webServer.webChatMessages = {}; }
+
+		if(["api", "public"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
+			throw new Error('api.configData.commonWeb.rootEndpointType can only be "api" or "public"');
+		}
 		
 		////////////////////////////////////////////////////////////////////////////
 		// server
@@ -68,20 +72,20 @@ var initWebServer = function(api, next)
 				// determine API or FILE
 				connection.parsedURL = api.url.parse(connection.req.url, true);
 				var pathParts = connection.parsedURL.pathname.split("/");
-				connection.requestMode = api.configData.commonWeb.rootEndpointType; // api or file
+				connection.requestMode = api.configData.commonWeb.rootEndpointType; // api or public
 				connection.directModeAccess = false;
 				if(pathParts.length > 0){
 					if(pathParts[1] == api.configData.commonWeb.urlPathForActions){ 
-						connection.requestMode = api.configData.commonWeb.urlPathForActions; 
+						connection.requestMode = 'api'; 
 						connection.directModeAccess = true;
 					}
 					else if(pathParts[1] == api.configData.commonWeb.urlPathForFiles){ 
-						connection.requestMode = api.configData.commonWeb.urlPathForFiles; 
+						connection.requestMode = 'public'; 
 						connection.directModeAccess = true;
 					}
 				}
 				
-				if(connection.requestMode == api.configData.commonWeb.urlPathForActions){
+				if(connection.requestMode == 'api'){
 					// parse GET (URL) variables
 					fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
 					if(connection.params.action === undefined){ 
@@ -122,10 +126,9 @@ var initWebServer = function(api, next)
 					}
 				}
 				
-				if(connection.requestMode == api.configData.commonWeb.urlPathForFiles){
+				if(connection.requestMode == 'public'){
 					fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
-					connection.params.action = "file";
-					process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+					process.nextTick(function(){ api.sendFile(api, connection, api.webServer.respondToWebClient); })
 				}	
 			});
 		}

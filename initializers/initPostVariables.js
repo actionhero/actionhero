@@ -10,6 +10,7 @@ var initPostVariables = function(api, next)
 		"limit",
 		"offset",
 		"outputType",
+		"fileName",
 		"roomMatchKey",
 		"roomMatchValue"
 	];

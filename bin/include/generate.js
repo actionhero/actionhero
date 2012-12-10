@@ -44,7 +44,6 @@
   documents.cert_pem = binary.fs.readFileSync(binary.paths.actionHero_root + "/certs/server-cert.pem");
   documents.key_pem = binary.fs.readFileSync(binary.paths.actionHero_root + "/certs/server-key.pem");
   documents.action_actions_view = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/actionsView.js");
-  documents.action_file = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/file.js");
   documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
   documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
   documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
@@ -116,7 +115,6 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/certs/server-cert.pem', documents.cert_pem);
   binary.utils.create_file_safely(binary.paths.project_root + '/certs/server-key.pem', documents.key_pem);
   binary.utils.create_file_safely(binary.paths.project_root + '/actions/actionsView.js', documents.action_actions_view);
-  binary.utils.create_file_safely(binary.paths.project_root + '/actions/file.js', documents.action_file);
   binary.utils.create_file_safely(binary.paths.project_root + '/actions/status.js', documents.action_status);
   binary.utils.create_file_safely(binary.paths.project_root + '/actions/chat.js', documents.action_chat);
   binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
