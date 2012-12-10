@@ -15,7 +15,6 @@ describe('Core: API', function(){
       apiObj.actions,
       apiObj.actions.actionsView,
       apiObj.actions.cacheTest,
-      apiObj.actions.file,
       apiObj.actions.randomNumber,
       apiObj.actions.status,
     ].forEach(function(item){
@@ -25,7 +24,6 @@ describe('Core: API', function(){
     [
       apiObj.actions.actionsView.run,
       apiObj.actions.cacheTest.run,
-      apiObj.actions.file.run,
       apiObj.actions.randomNumber.run,
       apiObj.actions.status.run,
     ].forEach(function(item){
