@@ -24,12 +24,9 @@ var initSocketServer = function(api, next){
 
 		api.socketServer.handleConnection = function(connection){
 			api.socketServer.numberOfLocalSocketRequests++;
-
 			api.utils.setupConnection(api, connection, "socket", connection.remotePort, connection.remoteAddress);
-			connection.setEncoding("utf8");
 			connection.responsesWaitingCount = 0;
 			connection.socketDataString = "";
-
 			api.stats.increment(api, "numberOfActiveSocketClients");
 			api.socketServer.logLine(api, {label: "connect @ socket"}, connection);
 
@@ -41,9 +38,8 @@ var initSocketServer = function(api, next){
 				if(api.socketServer.checkBreakChars(chunk)){ 
 					api.socketServer.goodbye(api, connection); 
 				}else{
-					connection.socketDataString += chunk.replace(/\r/g, "\n");
+					connection.socketDataString += chunk.toString('utf-8').replace(/\r/g, "\n");
 					var index, line;
-
 					while((index = connection.socketDataString.indexOf('\n')) > -1) {
 						var line = connection.socketDataString.slice(0, index);
 						connection.socketDataString = connection.socketDataString.slice(index + 2);
@@ -208,9 +204,10 @@ var initSocketServer = function(api, next){
 		// check for break chars
 		api.socketServer.checkBreakChars = function(chunk){
 			var found = false;
-			if(chunk.toString('hex',0,chunk.length) == "fff4fffd06"){
+			var hexChunk = chunk.toString('hex',0,chunk.length);
+			if(hexChunk == "fff4fffd06"){
 				found = true // CTRL + C
-			}else if(chunk.toString('hex',0,chunk.length) == "04"){
+			}else if(hexChunk == "04"){
 				found = true // CTRL + D
 			}
 			return found
