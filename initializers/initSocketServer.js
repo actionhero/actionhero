@@ -216,9 +216,11 @@ var initSocketServer = function(api, next){
 		////////////////////////////////////////////////////////////////////////////
 		// logging
 		api.socketServer.logLine = function(api, data, connection, color){
-			if(data.to == null){ data.to = connection.remoteIP; }
 			if(api.configData.log.logRequests){
-				api.logJSON(data ,color);
+				if(data.to == null){ data.to = connection.remoteIP; }
+				if(api.configData.log.logRequests){
+					api.logJSON(data ,color);
+				}
 			}
 		}
 
