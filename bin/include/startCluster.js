@@ -46,7 +46,9 @@ exports['startCluster'] = function(binary, next){
 					binary.fs.mkdirSync(binary.pidPath);
 				}
 			}catch(e){
-				binary.fs.mkdirSync(binary.pidPath);
+				try{
+					binary.fs.mkdirSync(binary.pidPath);
+				}catch(e){ }
 			}
 			next();
 		},
