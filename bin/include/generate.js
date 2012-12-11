@@ -47,7 +47,7 @@
   documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
   documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
   documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
-  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascripts/actionHeroWebSocket.js");
+  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/examples/clients/web/actionHeroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
