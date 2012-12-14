@@ -17,11 +17,20 @@ var initCache = function(api, next){
 		next();
 	}
 
+	api.cache.bindDomain = function(callback){
+		// until the redis module handles domains, we need to force the callback to be bound properly
+		// https://github.com/mranney/node_redis/pull/310/files
+		if(callback && process.domain){
+			callback = process.domain.bind(callback);
+		}
+	}
+
 	if(api.redis && api.redis.enable === true){
 		
 		var redisCacheKey = "actionHero:cache";
 
 		api.cache.size = function(api, next){
+			api.cache.bindDomain(next);
 			api.redis.client.hlen(redisCacheKey, function(err, count){
 				next(null, count);
 			});
