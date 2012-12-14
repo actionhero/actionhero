@@ -61,11 +61,11 @@ var initRedis = function(api, next){
         api.log("connected to redis (data)")
     });
 
-      api.redis.client.on("ready", function (err) {
-        if(c.password == null){
-            init(api, c, next);
-          }
-      });
+    api.redis.client.on("ready", function (err) {
+      if(c.password == null){
+          init(api, c, next);
+        }
+    });
 
   }else{
     api.log("running without redis");
