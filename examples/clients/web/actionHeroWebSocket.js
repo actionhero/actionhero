@@ -1,4 +1,4 @@
-var actionHeroWebSocket = function(connectCallback){
+var actionHeroWebSocket = function(options, connectCallback){
   var self = this;
   var e = new io.EventEmitter();
   for(var i in e){ self[i] = e[i]; }
@@ -9,11 +9,21 @@ var actionHeroWebSocket = function(connectCallback){
   self.startingTimeStamps = {};
   self.responseTimesouts = {};
   self.details = {};
+  self.ready = false;
+  this.room = null;
+
+  if(options == null){
+    options = {};
+  }
   
-  self.ws = io.connect('/');
+  self.ws = io.connect('/', options);
 
   self.ws.on('error', function(response){
-    self.emit('error', "web socket error", response);
+    self.emit('error', response);
+  });
+
+  self.ws.on('connected', function(response){
+    // this is the socket connectiong primitive, but we should wait for actionHero's welcome message
   });
 
   self.ws.on('say', function(response){
@@ -24,8 +34,14 @@ var actionHeroWebSocket = function(connectCallback){
     self.registerCallback('detailsView', {}, function(err, response, delta){
       self.details = response.details;
       self.emit("connected", self.details);
-      if(typeof self.connectCallback == 'function'){
-        connectCallback(self.details);
+      if(self.room != null){
+        self.roomChange(self.room, function(){
+          self.ready = true;
+          if(typeof self.connectCallback == 'function'){ connectCallback(self.details); }
+        });
+      }else{
+        self.ready = true;
+        if(typeof self.connectCallback == 'function'){ connectCallback(self.details); }
       }
     });
   });
@@ -70,6 +86,7 @@ actionHeroWebSocket.prototype.roomView = function(next){
 }
 
 actionHeroWebSocket.prototype.roomChange = function(room, next){
+  this.room = room;
   this.registerCallback('roomChange', {room: room}, next);
 }
 

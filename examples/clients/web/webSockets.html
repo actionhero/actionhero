@@ -4,12 +4,19 @@
 <script>
   
   s = new actionHeroWebSocket
-	s.action("cacheTest", {key: "key", value: "value"}, function(err, response, dela){
-		 console.log(response);
-	});
-  
-	s.on('say', function(message){
-		console.log(message);
-	});
+  s.on('connected', function(){
+    console.log('websocket connected');
+    s.action("cacheTest", {key: "key", value: "value"}, function(err, response, dela){
+       console.log(response);
+    });
+
+    s.on('say', function(message){
+      console.log(message);
+    });    
+  });
+
+  s.on('error', function(message){
+    console.log("web socket error: " + message);
+  });
 
 </script>
