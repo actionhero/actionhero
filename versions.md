@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 4.0.6
+
+** Bugs **
+
+- api.cache actions now force a domain binding when used within an action or task.  This will help broken actions not to crash the server.  This is needed until the redis package is updated to support domains (Thanks @othiym23)
+
 ## Version 4.0.5
 
 ** socket server & web sockets **
