@@ -5,6 +5,7 @@
 ** Bugs **
 
 - api.cache actions now force a domain binding when used within an action or task.  This will help broken actions not to crash the server.  This is needed until the redis package is updated to support domains (Thanks @othiym23)
+- Typo corrected in `aapi.configData.general.pidFileDirectory`
 
 ## Version 4.0.5
 

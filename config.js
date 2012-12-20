@@ -36,7 +36,7 @@ configData.general = {
 	// This will not work in all operating systems [ http://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener ] 
 	"developmentMode": false,
 	// the location of the directory to keep pidfiles
-	"pidFileFirectory": process.cwd() + "/pids/",
+	"pidFileDirectory": process.cwd() + "/pids/",
 	// how many pending actions can a single connection be working on 
 	"simultaniousActions": 5,
 };

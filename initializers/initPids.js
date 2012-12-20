@@ -2,8 +2,8 @@ var initPids = function(api, next){
   api.pids = {};
   api.pids.pid = process.pid;
 
-  if(api.configData.general.pidFileFirectory == null){
-    api.configData.general.pidFileFirectory = process.cwd() + "/pids/";
+  if(api.configData.general.pidFileDirectory == null){
+    api.configData.general.pidFileDirectory = process.cwd() + "/pids/";
   }
 
   if(api.argv["title"] != null){
@@ -16,18 +16,18 @@ var initPids = function(api, next){
     api.pids.title = "actionHeroWorker-" + new Date().getTime();
   }
 
-  try { api.fs.mkdirSync(api.configData.general.pidFileFirectory, "777") } catch(e) {};
+  try { api.fs.mkdirSync(api.configData.general.pidFileDirectory, "777") } catch(e) {};
 
   api.pids.setTitle = function(){
     process.title = api.pids.title;
   }
 
   api.pids.writePidFile = function(){
-    api.fs.writeFileSync(api.configData.general.pidFileFirectory + api.pids.title, api.pids.pid.toString(), 'ascii');
+    api.fs.writeFileSync(api.configData.general.pidFileDirectory + api.pids.title, api.pids.pid.toString(), 'ascii');
   }
 
   api.pids.clearPidFile = function(){
-    api.fs.unlinkSync(api.configData.general.pidFileFirectory + api.pids.title);
+    api.fs.unlinkSync(api.configData.general.pidFileDirectory + api.pids.title);
   }
 
   //
