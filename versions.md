@@ -8,7 +8,8 @@ initializers can now have a `_start(api, callback)` method which will be invoked
 
 - `api.tasks.inspect` has been renamed `api.tasks.inspectTasks` as to work with console.log and util.inspect
 - api.cache actions now force a domain binding when used within an action or task.  This will help broken actions not to crash the server.  This is needed until the redis package is updated to support domains (Thanks @othiym23)
-- Typo corrected in `aapi.configData.general.pidFileDirectory`
+- Typo corrected in `api.configData.general.pidFileDirectory`
+- Other spelling fixes (Thanks jacobbubu)!
 
 ## Version 4.0.5
 

@@ -13,8 +13,8 @@ var initExceptions = function(api, next){
 		api.log("*", "red");
 	};
 
-	api.exceptionHandlers.loader = function(fullfFilePath, err){
-		api.log("! Failed to load " + fullfFilePath, ["red", "bold"]);
+	api.exceptionHandlers.loader = function(fullFilePath, err){
+		api.log("! Failed to load " + fullFilePath, ["red", "bold"]);
 		api.exceptionHandlers.renderError(err);
 	};
 

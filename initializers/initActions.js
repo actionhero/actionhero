@@ -44,16 +44,16 @@ var initActions = function(api, next)
 			if(api.fs.existsSync(path)){
 				api.fs.readdirSync(path).forEach( function(file) {
 					if(path[path.length - 1] != "/"){ path += "/"; } 
-					var fullfFilePath = path + file;
+					var fullFilePath = path + file;
 					if (file[0] != "."){
-						var stats = api.fs.statSync(fullfFilePath);
+						var stats = api.fs.statSync(fullFilePath);
 						if(stats.isDirectory()){
-							loadFolder(fullfFilePath);
+							loadFolder(fullFilePath);
 						}else if(stats.isSymbolicLink()){
-							var realPath = readlinkSync(fullfFilePath);
+							var realPath = readlinkSync(fullFilePath);
 							loadFolder(realPath);
 						}else if(stats.isFile()){
-							actionLoader(api, fullfFilePath);
+							actionLoader(api, fullFilePath);
 						}else{
 							api.log(file+" is a type of file I cannot read", "red")
 						}
@@ -64,33 +64,33 @@ var initActions = function(api, next)
 			}
 		}
 
-		function actionLoader(api, fullfFilePath, reload){
+		function actionLoader(api, fullFilePath, reload){
 			if(reload == null){ reload = false; }
 
 			var loadMessage = function(loadedActionName){
 				if(reload){
-					loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullfFilePath;
+					loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullFilePath;
 				}else{
-					var loadMessage = "action loaded: " + loadedActionName + ", " + fullfFilePath;
+					var loadMessage = "action loaded: " + loadedActionName + ", " + fullFilePath;
 				}
 				api.log(loadMessage, "blue");
 			}
 
-			var parts = fullfFilePath.split("/");
+			var parts = fullFilePath.split("/");
 			var file = parts[(parts.length - 1)];
 			var actionName = file.split(".")[0];
 			
 			if(!reload){
 				if(api.configData.general.developmentMode == true){
-					api.watchedFiles.push(fullfFilePath);
+					api.watchedFiles.push(fullFilePath);
 					(function() {
-						api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
+						api.fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
 							if(curr.mtime > prev.mtime){
 								process.nextTick(function(){
-									if(api.fs.readFileSync(fullfFilePath).length > 0){
-										delete require.cache[fullfFilePath];
+									if(api.fs.readFileSync(fullFilePath).length > 0){
+										delete require.cache[fullFilePath];
 										delete api.actions[actionName];
-										actionLoader(api, fullfFilePath, true);
+										actionLoader(api, fullFilePath, true);
 									}
 								});
 							}
@@ -100,9 +100,9 @@ var initActions = function(api, next)
 			}
 
 			try{
-				var collection = require(fullfFilePath);
+				var collection = require(fullFilePath);
 				if(api.utils.hashLength(collection) == 1){
-					api.actions[actionName] = require(fullfFilePath).action;
+					api.actions[actionName] = require(fullFilePath).action;
 					validateAction(api, api.actions[actionName]);
 					loadMessage(actionName);
 				}else{
@@ -114,7 +114,7 @@ var initActions = function(api, next)
 					}
 				}				
 			}catch(err){
-				api.exceptionHandlers.loader(fullfFilePath, err);
+				api.exceptionHandlers.loader(fullFilePath, err);
 				delete api.actions[actionName];
 			}
 		}
@@ -124,7 +124,7 @@ var initActions = function(api, next)
 		next();
 	});
 
-	var incramentTotalActions = function(connection, count){
+	var incrementTotalActions = function(connection, count){
 		if(count == null){ count = 1; }
 		if(connection._original_connection != null){
 			connection._original_connection.totalActions = connection._original_connection.totalActions + count;
@@ -151,14 +151,14 @@ var initActions = function(api, next)
 	}
 	
 	api.processAction = function(api, connection, messageID, next){	
-		incramentTotalActions(connection);
+		incrementTotalActions(connection);
 		incramentPendingActions(connection);
 
 		if(api.running != true){
 			connection.error = "the server is shutting down";
 			next(connection, true);
 		}else if(getPendingActionCount(connection) > api.configData.general.simultaniousActions){
-			incramentTotalActions(connection, -1);
+			incrementTotalActions(connection, -1);
 			incramentPendingActions(connection, -1);
 			connection.error = "you have too many pending requests";
 			next(connection, true);
