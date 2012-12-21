@@ -1,4 +1,9 @@
 var actionHeroWebSocket = function(options, connectCallback){
+  if(typeof options == 'function' && connectCallback == null){
+    connectCallback = options;
+    options = {};
+  }
+
   var self = this;
   var e = new io.EventEmitter();
   for(var i in e){ self[i] = e[i]; }
