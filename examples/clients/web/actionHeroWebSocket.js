@@ -22,7 +22,7 @@ var actionHeroWebSocket = function(options, connectCallback){
     self.emit('error', response);
   });
 
-  self.ws.on('connected', function(response){
+  self.ws.on('connect', function(response){
     // this is the socket connectiong primitive, but we should wait for actionHero's welcome message
   });
 
