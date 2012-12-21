@@ -51,7 +51,7 @@ var initTasks = function(api, next)
 			var toEnqueue = false;
 			var found = false;
 			var msg = JSON.stringify({ taskName: taskName, runAtTime: runAtTime, params: params });
-			api.tasks.inspect(api, function(err, enquedTasks){
+			api.tasks.inspectTasks(api, function(err, enquedTasks){
 				if(api.tasks.tasks[taskName].frequency > 0 && api.tasks.tasks[taskName].scope == "all"){
 					var queue = api.tasks.redisQueueLocal;
 					for(var i in enquedTasks){
@@ -136,7 +136,7 @@ var initTasks = function(api, next)
 		}
 	}
 
-	api.tasks.inspect = function(api, next){
+	api.tasks.inspectTasks = function(api, next){
 		var tasks = [];
 		for(var i in api.tasks.currentTasks){
 			var parsedTask = JSON.parse(api.tasks.currentTasks[i]);
@@ -358,7 +358,7 @@ var initTasks = function(api, next)
 	}
 
 	api.tasks.clearStuckClaimedTasks = function(api, next){
-		api.tasks.inspect(api, function(err, enqueuedTasks){
+		api.tasks.inspectTasks(api, function(err, enqueuedTasks){
 			var started = 0;
 			for(var i in enqueuedTasks){
 				if(enqueuedTasks[i].queue == 'processing' && enqueuedTasks[i].server == api.id){
