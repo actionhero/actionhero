@@ -2,6 +2,8 @@
 
 ## Version 4.0.6
 
+initializers can now have a `_start(api, callback)` method which will be invoked when the server boots.
+
 ** Bugs **
 
 - `api.tasks.inspect` has been renamed `api.tasks.inspectTasks` as to work with console.log and util.inspect

@@ -478,8 +478,7 @@ var initTasks = function(api, next)
 		loadFolder(taskFolders[i]);
 	}
 
-	// I should be started in api.js, after everything has loaded
-	api.tasks.startTaskProcessing = function(api, next){		
+	api.tasks._start = function(api, next){		
 		api.tasks.clearStuckClaimedTasks(api, function(){
 			api.tasks.startPeriodicTasks(api, function(){
 				var i = 0;

@@ -322,16 +322,21 @@ var initWebServer = function(api, next)
 		
 		////////////////////////////////////////////////////////////////////////////
 		// Go server!
-		api.webServer.server.on("error", function(e){
-			api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
-			api.log(e, "red");
-			process.exit();
-		});
-		api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
-			api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
-			api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
-			next();
-		});
+
+		api.webServer._start = function(api, next){	
+			api.webServer.server.on("error", function(e){
+				api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
+				api.log(e, "red");
+				process.exit();
+			});
+			api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
+				api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
+				api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
+				next();
+			});
+		}
+
+		next();
 
 	}
 }

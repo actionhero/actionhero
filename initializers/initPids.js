@@ -30,6 +30,11 @@ var initPids = function(api, next){
     api.fs.unlinkSync(api.configData.general.pidFileDirectory + api.pids.title);
   }
 
+  api.pids._start = function(api, next){
+    api.pids.writePidFile();
+    next();
+  }
+
   //
 
   api.pids.setTitle()

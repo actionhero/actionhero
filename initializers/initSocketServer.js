@@ -6,19 +6,31 @@ var initSocketServer = function(api, next){
 		next()
 	}else{
 		api.socketServer = {};
-		api.socketServer.numberOfLocalSocketRequests = 0;
-		
-		////////////////////////////////////////////////////////////////////////////
-		// server
-		if(api.configData.tcpServer.secure == false){
-			api.socketServer.server = api.net.createServer(function(connection){
-				api.socketServer.handleConnection(connection);
+
+		api.socketServer._start = function(api, next){
+			api.socketServer.numberOfLocalSocketRequests = 0;
+
+			if(api.configData.tcpServer.secure == false){
+				api.socketServer.server = api.net.createServer(function(connection){
+					api.socketServer.handleConnection(connection);
+				});
+			}else{
+				var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
+				var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
+				api.socketServer.server = api.tls.createServer({key: key, cert: cert}, function(connection){
+					api.socketServer.handleConnection(connection);
+				});
+			}
+
+			api.socketServer.server.on("error", function(e){
+				api.log("Cannot start socket server @ " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port + "; Exiting.", ["red", "bold"]);
+				api.log(e);
+				process.exit();
 			});
-		}else{
-			var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
-			var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
-			api.socketServer.server = api.tls.createServer({key: key, cert: cert}, function(connection){
-				api.socketServer.handleConnection(connection);
+			
+			api.socketServer.server.listen(api.configData.tcpServer.port, api.configData.tcpServer.bindIP, function(){
+				api.log("tcp server listening on " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port, "green");
+				next();
 			});
 		}
 
@@ -305,19 +317,9 @@ var initSocketServer = function(api, next){
 		api.socketServer._teardown = function(api, next){
 			api.socketServer.gracefulShutdown(api, next);
 		}
-		
-		////////////////////////////////////////////////////////////////////////////
-		// listen
-		api.socketServer.server.on("error", function(e){
-			api.log("Cannot start socket server @ " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port + "; Exiting.", ["red", "bold"]);
-			api.log(e);
-			process.exit();
-		});
-		
-		api.socketServer.server.listen(api.configData.tcpServer.port, api.configData.tcpServer.bindIP, function(){
-			api.log("tcp server listening on " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port, "green");
-			next();
-		});
+
+		next();
+
 	}
 }
 

@@ -83,19 +83,26 @@ actionHero.prototype.start = function(params, next){
 
 	// run the initializers
 	var orderedInitializers = {};
-	orderedInitializers['initConfig'] = function(next){ self.initalizers.initConfig(self.api, self.startingParams, next) };
-	orderedInitializers['initID'] = function(next){ self.initalizers.initID(self.api, next) };
-	orderedInitializers['initPids'] = function(next){ self.initalizers.initPids(self.api, next) };
-	orderedInitializers['initLog'] = function(next){ self.initalizers.initLog(self.api, next) };
-	orderedInitializers['initExceptions'] = function(next){ self.initalizers.initExceptions(self.api, next) };
-	orderedInitializers['initRedis'] = function(next){ self.initalizers.initRedis(self.api, next) };
-	orderedInitializers['initCache'] = function(next){ self.initalizers.initCache(self.api, next) };
-	orderedInitializers['initActions'] = function(next){ self.initalizers.initActions(self.api, next) };
-	orderedInitializers['initPostVariables'] = function(next){ self.initalizers.initPostVariables(self.api, next) };
-	orderedInitializers['initFileServer'] = function(next){ self.initalizers.initFileServer(self.api, next) };
-	orderedInitializers['initStats'] = function(next){ self.initalizers.initStats(self.api, next) };
-	orderedInitializers['initChatRooms'] = function(next){ self.initalizers.initChatRooms(self.api, next) };
-	orderedInitializers['initTasks'] = function(next){ self.initalizers.initTasks(self.api, next) };
+	orderedInitializers['initConfig'] = function(next){ self.initalizers['initConfig'](self.api, self.startingParams, next) };
+	[
+		'initID',
+		'initPids',
+		'initLog',
+		'initExceptions',
+		'initRedis',
+		'initCache',
+		'initActions',
+		'initPostVariables',
+		'initFileServer',
+		'initStats',
+		'initChatRooms',
+		'initTasks',
+		'initWebServer', 
+		'initWebSockets', 
+		'initSocketServer'
+	].forEach(function(I){
+		orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
+	});
 
 	initializerMethods.forEach(function(method){
 		if(typeof orderedInitializers[method] != "function"){
@@ -106,14 +113,19 @@ actionHero.prototype.start = function(params, next){
 		}
 	});
 
-	['initWebServer', 'initWebSockets', 'initSocketServer'].forEach(function(finalInitializer){
-		delete orderedInitializers[finalInitializer];
-		orderedInitializers[finalInitializer] = function(next){ self.initalizers[finalInitializer](self.api, next) };
-	});
-
-	orderedInitializers['startProcessing'] = function(next){ self.api.tasks.startTaskProcessing(self.api, next) };
 	orderedInitializers['_complete'] = function(){ 
-		self.api.pids.writePidFile();
+		var starters = [];
+		for(var i in self.api){
+			if(typeof self.api[i]._start == "function"){
+				starters.push(i);
+			}
+		}
+		starters.forEach(function(starter){
+			self.api[starter]._start(self.api, function(){
+				self.api.log(" > start: " + starter, 'grey');
+			});
+		});
+
 		var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
 		self.api.bootTime = new Date().getTime();
 		self.api.log("server ID: " + self.api.id);
@@ -134,7 +146,7 @@ actionHero.prototype.stop = function(next){
 
 		var orderedTeardowns = {};
 		orderedTeardowns['watchedFiles'] = function(next){ 
-			self.api.log(" > teardown: watchedFiles", 'gray');
+			self.api.log(" > teardown: watchedFiles", 'grey');
 			for(var i in self.api.watchedFiles){
 				self.api.fs.unwatchFile(self.api.watchedFiles[i]);
 			}
@@ -145,7 +157,7 @@ actionHero.prototype.stop = function(next){
 			if(typeof self.api[i]._teardown == "function"){
 				(function(name) {
 					orderedTeardowns[name] = function(next){ 
-						self.api.log(" > teardown: " + name, 'gray');
+						self.api.log(" > teardown: " + name, 'grey');
 						self.api[name]._teardown(self.api, next); 
 					};
 				})(i);
