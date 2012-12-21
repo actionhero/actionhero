@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 4.0.7
+
+updates to the actionHeroWebSocket
+
 ## Version 4.0.6
 
 initializers can now have a `_start(api, callback)` method which will be invoked when the server boots.
