@@ -59,7 +59,7 @@ var initSocketServer = function(api, next){
 							api.stats.increment(api, "numberOfSocketRequests");
 							connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
 							line = line.replace("\n","");
-							api.socketServer.parseRequset(api, connection, line);
+							api.socketServer.parseRequest(api, connection, line);
 						}
 					}
 				}
@@ -83,7 +83,7 @@ var initSocketServer = function(api, next){
 
 		////////////////////////////////////////////////////////////////////////////
 		// determine what to do
-		api.socketServer.parseRequset = function(api, connection, line){
+		api.socketServer.parseRequest = function(api, connection, line){
 			var words = line.split(" ");
 			if(words[0] == "quit" || words[0] == "exit" || words[0] == "close" ){
 				api.socketServer.goodbye(api, connection);
