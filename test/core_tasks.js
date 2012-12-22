@@ -19,7 +19,7 @@ describe('Core: Tasks', function(){
   });
 
   it('all perioduc tasks should be enqueued when the server starts', function(done){
-  	done();
+    done();
   });
 
   it('I can inspect the state of my current tasks, the local queue, and the global queue', function(done){

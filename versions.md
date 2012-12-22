@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 4.0.8
+
+** Bugs **
+
+- Typo: additionalListiningRooms -> additionalListeningRooms
+- Convert all tabs to spaces, for those of us who are OCD (me)
+
 ## Version 4.0.7
 
 updates to the actionHeroWebSocket
