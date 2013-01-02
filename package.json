@@ -29,8 +29,7 @@
   "devDependencies": {
     "mocha":"1.7.x",
     "should":"1.2.x",
-    "socket.io-client":"0.9.x",
-    "docserv" : "0.0.x"
+    "socket.io-client":"0.9.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
