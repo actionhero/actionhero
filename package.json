@@ -37,7 +37,7 @@
   },
   "main" : "actionHero.js",
   "scripts": {
-    "install": "node ./bin/actionHero intro",
+    "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
     "test": "node ./node_modules/.bin/mocha --reporter spec",
     "start": "node ./bin/actionHero start"
