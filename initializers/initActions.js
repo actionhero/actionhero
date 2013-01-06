@@ -179,37 +179,67 @@ var initActions = function(api, next)
         if(connection.type == "web"){ api.utils.processRoute(api, connection); }
         connection.action = connection.params["action"];
         if(api.actions[connection.action] != undefined){
-          api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
-          if(connection.error === null){
-            process.nextTick(function() { 
-              if(api.domain != null){
-                var actionDomain = api.domain.create();
-                actionDomain.on("error", function(err){
-                  incramentPendingActions(connection, -1);
-                  api.exceptionHandlers.action(actionDomain, err, connection, next);
-                });
-                actionDomain.run(function(){
+          var actionProtocols = api.actions[connection.action].protocols;
+          var connType = connection.type ? connection.type : '';
+          var protocolMatched = false;
+
+          if (actionProtocols != null){
+            if (actionProtocols instanceof Array)
+              for (var i = 0, l = actionProtocols.length; i < l; i++) {
+                if (connType === actionProtocols[i]){
+                  protocolMatched = true;
+                  break;
+                }
+              }
+            else
+              protocolMatched = actionProtocols === connType;
+          } else
+            protocolMatched = true;
+          
+          if (!protocolMatched){
+            connection.error = new Error(connection.action + " does not support " + connType+ " protocol.");
+            if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
+              connection.responseHttpCode = 404;
+            }
+            process.nextTick(function(){ 
+              connection.respondingTo = messageID;
+              incramentPendingActions(connection, -1);
+              next(connection, true); 
+            });            
+          }
+          else {
+            api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
+            if(connection.error === null){
+              process.nextTick(function() { 
+                if(api.domain != null){
+                  var actionDomain = api.domain.create();
+                  actionDomain.on("error", function(err){
+                    incramentPendingActions(connection, -1);
+                    api.exceptionHandlers.action(actionDomain, err, connection, next);
+                  });
+                  actionDomain.run(function(){
+                    api.actions[connection.action].run(api, connection, function(connection, toRender){
+                      connection.respondingTo = messageID;
+                      // actionDomain.dispose();
+                      incramentPendingActions(connection, -1);
+                      next(connection, toRender);
+                    }); 
+                  })
+                }else{
                   api.actions[connection.action].run(api, connection, function(connection, toRender){
                     connection.respondingTo = messageID;
-                    // actionDomain.dispose();
                     incramentPendingActions(connection, -1);
                     next(connection, toRender);
                   }); 
-                })
-              }else{
-                api.actions[connection.action].run(api, connection, function(connection, toRender){
-                  connection.respondingTo = messageID;
-                  incramentPendingActions(connection, -1);
-                  next(connection, toRender);
-                }); 
-              }
-            });
-          }else{
-            process.nextTick(function() { 
-              connection.respondingTo = messageID;
-              incramentPendingActions(connection, -1);
-              next(connection, true);  
-            });
+                }
+              });
+            }else{
+              process.nextTick(function() { 
+                connection.respondingTo = messageID;
+                incramentPendingActions(connection, -1);
+                next(connection, true);  
+              });
+            }
           }
         }else{
           if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
