@@ -35,7 +35,7 @@ var initRedis = function(api, next){
   if(c.enable == true){
 
     api.redis.pingTime = 1000;
-    api.redis.lostPeerCheckTime = 10000;
+    api.redis.lostPeerCheckTime = 5000;
 
     if(c.DB == null){ c.DB = 0; }
 

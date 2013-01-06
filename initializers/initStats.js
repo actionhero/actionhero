@@ -52,6 +52,8 @@ var initStats = function(api, next){
     if(api.redis.enable === true && api.running == true){
       api.redis.client.hgetall(api.stats.collections.global, function(err, globalStats){
         api.redis.client.hgetall(api.stats.collections.local, function(err, localStats){
+          for(var i in localStats){ localStats[i] = parseFloat(localStats[i]); }
+          for(var i in globalStats){ globalStats[i] = parseFloat(globalStats[i]); }
           next(err, {global: globalStats, local: localStats});
         });
       });

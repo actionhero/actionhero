@@ -17,10 +17,8 @@ describe('Action: status', function(){
       response.body.uptime.should.be.above(0);
       response.body.id.length.should.be.above(0);
 
-      response.body.stats.global['webServer:numberOfWebRequests'].should.be.above(0);
       response.body.stats.local['webServer:numberOfWebRequests'].should.be.above(0);
       response.body.stats.local['actions:processedActions'].should.be.above(0);
-      response.body.stats.local['redis:numberOfPeers'].should.be.above(0);
       
       done();
     });

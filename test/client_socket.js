@@ -68,7 +68,7 @@ describe('Client: Socket', function(){
   it('single string message are treated as actions', function(done){
     makeSocketRequest(client, "status", function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.socketServer.numberOfLocalSocketRequests.should.equal(3)
+      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
       done();
     });
   });
@@ -76,7 +76,7 @@ describe('Client: Socket', function(){
   it('stringified JSON can also be sent as actions', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.socketServer.numberOfLocalSocketRequests.should.equal(3)
+      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
       done();
     });
   });

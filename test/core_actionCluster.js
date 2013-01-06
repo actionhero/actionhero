@@ -43,7 +43,6 @@ describe('Core: actionCluster', function(){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal(externalIP + ":9000:8000");
-        api.redis.lostPeerCheckTime = 500;
         apis[0] = api;
         done();
       });
@@ -54,7 +53,6 @@ describe('Core: actionCluster', function(){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal(externalIP + ":9001:8001");
-        api.redis.lostPeerCheckTime = 500;
         apis[1] = api;
         done();
       });
@@ -65,7 +63,6 @@ describe('Core: actionCluster', function(){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal(externalIP + ":9002:8002");
-        api.redis.lostPeerCheckTime = 500;
         apis[2] = api;
         done();
       });
@@ -177,24 +174,24 @@ describe('Core: actionCluster', function(){
 
       it("If a peer goes away, it should be removed from the list of peers (ping)", function(done){
         this.timeout(0);
-        var sleepTime = (apis[0].redis.lostPeerCheckTime * 3) + 1;
-      setTimeout(function(){
-        apis[0].redis.checkForDroppedPeers(apis[0], function(){
-          apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-            apis[0].redis.client.llen("actionHero:peers", function(err, length){
-              apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-                var count = 0;
-                for (var i in peerPings){
-                  count++;
-                }
-                count.should.equal(2);
-                peers.length.should.equal(2);
-                done();
+        var sleepTime = (apis[0].redis.lostPeerCheckTime * 2) + 1;
+        setTimeout(function(){
+          apis[0].redis.checkForDroppedPeers(apis[0], function(){
+            apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
+              apis[0].redis.client.llen("actionHero:peers", function(err, length){
+                apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+                  var count = 0;
+                  for (var i in peerPings){
+                    count++;
+                  }
+                  count.should.equal(2);
+                  peers.length.should.equal(2);
+                  done();
+                });
               });
             });
           });
-        });
-      }, sleepTime );
+        }, sleepTime );
       });
 
       after(function(done){
