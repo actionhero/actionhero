@@ -41,7 +41,7 @@ var initTasks = function(api, next){
   }
 
   api.task.prototype.generateID = function(){
-    return api.uuid.v1() + ":" + api.id;
+    return api.uuid.v4() + ":" + api.id;
   }
 
   api.task.prototype.determineScope = function(){
@@ -204,11 +204,11 @@ var initTasks = function(api, next){
         api.tasks.queueLength(api, api.tasks.queues.localQueue, function(err, localQueueCount){
           api.tasks.queueLength(api, api.tasks.queues.delayedQueue, function(err, delayedQueueCount){
 
-            console.log({
-              globalQueueCount: globalQueueCount,
-              delayedQueueCount: delayedQueueCount,
-              localQueueCount: localQueueCount,
-            })
+            // console.log({
+            //   globalQueueCount: globalQueueCount,
+            //   delayedQueueCount: delayedQueueCount,
+            //   localQueueCount: localQueueCount,
+            // })
 
             if(localQueueCount > 0){
 
@@ -223,7 +223,7 @@ var initTasks = function(api, next){
                     self.log("starting task " + task.name);
                     task.run(function(){
                       api.tasks.removeFromQueue(api, task.id, api.tasks.queues.processingQueue, function(){
-                        self.log("completed task " + task.name);
+                        self.log("completed task " + task.name + ", " + task.id);
                         if(task.periodic == true){
                           task.enqueue(function(error){
                             if(error != null){ self.log(error); }
@@ -358,7 +358,7 @@ var initTasks = function(api, next){
       api.redis.client.lrange("actionHero:peers",0,-1,function(err,peers){
         var allLocalQueues = [];
         for(var i in peers){
-          allLocalQueues.push("actionHero:tasks:" + peers[i]);
+          allLocalQueues.push("actionHero:tasks:" + peers[i].replace(/:/g,"-"));
         }
         if(typeof callback == "function"){ callback(null, allLocalQueues); }
       });
@@ -389,6 +389,11 @@ var initTasks = function(api, next){
                 started--;
                 if(started == 0){ if(typeof callback == "function"){ callback(); } }
               }); 
+            }else{
+              process.nextTick(function(){
+                started--;
+                if(started == 0){ if(typeof callback == "function"){ callback(); } }
+              });
             }
           }
         }
