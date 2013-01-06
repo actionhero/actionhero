@@ -24,7 +24,8 @@
     "mime":"1.2.x",
     "redis":"0.8.x",
     "socket.io":"0.9.x",
-    "optimist":"0.3.x"
+    "optimist":"0.3.x",
+    "node-uuid":"1.4.x"
   },
   "devDependencies": {
     "mocha":"1.7.x",

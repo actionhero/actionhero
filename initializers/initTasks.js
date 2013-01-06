@@ -25,6 +25,7 @@ var initTasks = function(api, next){
       toAnnounce: true,
       queue: 'unknown',
       state: 'unknown',
+      ran: false
     }
     for(var i in defaults){
       this[i] = defaults[i];
@@ -36,11 +37,11 @@ var initTasks = function(api, next){
 
   api.task.prototype.validate = function(){
     if(this.name === null){ throw new Error("name is required"); }
-    if(api.tasks.tasks[this.name] == null){ throw new Error("task name not found"); }
+    if(api.tasks.tasks[this.name] == null){ throw new Error("task name, "+this.name+", not found"); }
   }
 
   api.task.prototype.generateID = function(){
-    return api.utils.uuid() + ":" + api.id;
+    return api.uuid.v1() + ":" + api.id;
   }
 
   api.task.prototype.determineScope = function(){
@@ -80,20 +81,29 @@ var initTasks = function(api, next){
   }
   
   api.task.prototype.enqueue = function(queue, callback){
-    if(callback == null && typeof queue == 'funciton'){
+    if(callback == null && typeof queue == 'function'){
       callback = queue;
       queue = null;
     }
     var self = this;
+    if(self.ran == true){
+      self.runAt = null;
+      self.ran = false;
+    }
     self.determinePeriodicEnqueability(function(toEnqueue){
       if(toEnqueue){
         if(queue == null){
           queue = api.tasks.queues.globalQueue;
         }
         self.state = 'pending';
-        if(self.runAt != null && self.runAt > new Date().getTime()){
+        if( self.runAt != null && self.runAt > new Date().getTime() ){
           queue = api.tasks.queues.delayedQueue;
           self.state = 'delayed';
+        }
+        if( self.periodic == true && self.runAt == null ){
+          queue = api.tasks.queues.delayedQueue;
+          self.state = 'delayed';
+          self.runAt = new Date().getTime() + self.frequency;
         }
         var data = {
           id: self.id, 
@@ -110,11 +120,11 @@ var initTasks = function(api, next){
         };
         api.tasks.setTaskData(api, self.id, data, function(error){
           api.tasks.placeInQueue(api, self.id, queue, function(){
-            callback(null, true);
+            if(typeof callback == "function"){ callback(null, true); }
           });
         });
       }else{
-        callback(null, new Error("not enquing as periodic task is already in the queue"));
+        if(typeof callback == "function"){ callback(new Error("not enquing periodic task "+self.name+": already in the queue"), null); }
       }
     })
   }
@@ -137,16 +147,18 @@ var initTasks = function(api, next){
     if(api.domain != null){
       var taskDomain = api.domain.create();
       taskDomain.on("error", function(err){
-        api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[taskName], callback);
+        api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[self.name], callback);
       });
       taskDomain.run(function(){
-        api.tasks.tasks[taskName].run(api, params, function(err, cont){
+        api.tasks.tasks[self.name].run(api, params, function(err, cont){
+          self.ran = true;
           if(cont == null){cont = true;}
           if(typeof callback == "function"){ callback(cont); }
         });
       })
     }else{
-      api.tasks.tasks[taskName].run(api, params, function(err, cont){
+      api.tasks.tasks[self.name].run(api, params, function(err, cont){
+        self.ran = true;
         if(cont == null){cont = true;}
         if(typeof callback == "function"){ callback(cont); }
       });
@@ -191,6 +203,13 @@ var initTasks = function(api, next){
       api.tasks.queueLength(api, api.tasks.queues.globalQueue, function(err, globalQueueCount){
         api.tasks.queueLength(api, api.tasks.queues.localQueue, function(err, localQueueCount){
           api.tasks.queueLength(api, api.tasks.queues.delayedQueue, function(err, delayedQueueCount){
+
+            console.log({
+              globalQueueCount: globalQueueCount,
+              delayedQueueCount: delayedQueueCount,
+              localQueueCount: localQueueCount,
+            })
+
             if(localQueueCount > 0){
 
               // work something from the local queue to processing, and work it off
@@ -200,12 +219,22 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{
                   self.currentTask = task;
-                  self.log("starting task " + task.name);
-                  task.run(function(){
-                    api.tasks.removeFromQueue(api, task.id, api.tasks.queues.processingQueue, function(){
-                      self.log("completed task " + task.name);
-                      self.prepareNextRun();
-                      if(typeof callback == "function"){ callback(); }
+                  api.tasks.setTaskData(api, task.id, {api_id: api.id, worker_id: self.id}, function(){
+                    self.log("starting task " + task.name);
+                    task.run(function(){
+                      api.tasks.removeFromQueue(api, task.id, api.tasks.queues.processingQueue, function(){
+                        self.log("completed task " + task.name);
+                        if(task.periodic == true){
+                          task.enqueue(function(error){
+                            if(error != null){ self.log(error); }
+                            self.prepareNextRun();
+                            if(typeof callback == "function"){ callback(); }
+                          });
+                        }else{
+                          self.prepareNextRun();
+                          if(typeof callback == "function"){ callback(); }
+                        }
+                      });
                     });
                   });
                 }
@@ -213,7 +242,7 @@ var initTasks = function(api, next){
             }else if(globalQueueCount > 0){
 
               // move something from the global queue to the local queue (and distribute if needed)
-              api.tasks.changeQueue(api, api.tasks.queues.localQueue, api.tasks.queues.processingQueue, function(err, task){
+              api.tasks.changeQueue(api, api.tasks.queues.globalQueue, api.tasks.queues.localQueue, function(err, task){
                 if(task == null){
                   self.prepareNextRun();
                   if(typeof callback == "function"){ callback(); }
@@ -231,10 +260,15 @@ var initTasks = function(api, next){
 
               // move something from the delayed queue to the global queue if ready
               api.tasks.promoteFromDelayedQueue(api, function(err, task){
-                self.currentTask = task;
-                self.log("promoted delayed task " + promotedTask.name + " to the global queue");
-                self.prepareNextRun();
-                if(typeof callback == "function"){ callback(); }
+                if(task == null){
+                  self.prepareNextRun();
+                  if(typeof callback == "function"){ callback(); }
+                }else{    
+                  self.currentTask = task;
+                  self.log("promoted delayed task " + task.name + " to the global queue");
+                  self.prepareNextRun();
+                  if(typeof callback == "function"){ callback(); }
+                }
               });
 
             }else{
@@ -283,7 +317,7 @@ var initTasks = function(api, next){
     api.tasks.queues = {
       globalQueue: 'actionHero:tasks:global',
       delayedQueue: 'actionHero:tasks:delayed',
-      localQueue: 'actionHero:tasks:' + api.id,
+      localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
       processingQueue: 'actionHero:tasks:processing',
       data: 'actionHero:tasks:data', // actually a hash
     }
@@ -300,7 +334,9 @@ var initTasks = function(api, next){
       api.tasks.taskProcessors[i] = taskProcessor;
       i++;
     }
-    next();
+    api.tasks.seedPeriodicTasks(function(){
+      next();
+    });
   }
 
   api.tasks._teardown = function(api, next){
@@ -324,7 +360,7 @@ var initTasks = function(api, next){
         for(var i in peers){
           allLocalQueues.push("actionHero:tasks:" + peers[i]);
         }
-        if(typeof next == "function"){ next(null, allLocalQueues); }
+        if(typeof callback == "function"){ callback(null, allLocalQueues); }
       });
     }else{
 
@@ -333,7 +369,7 @@ var initTasks = function(api, next){
 
   api.tasks.copyToReleventLocalQueues = function(api, task, callback){
     if(api.redis.enable === true){
-      api.tasks.getAllLocalQueues(function(err, allLocalQueues){
+      api.tasks.getAllLocalQueues(api, function(err, allLocalQueues){
         var releventLocalQueues = []
         if(task.scope == "any"){
           // already moved
@@ -369,13 +405,17 @@ var initTasks = function(api, next){
     }
     if(api.redis.enable === true){
       api.redis.client.hgetall(api.tasks.queues.data, function(err, data){
+        var parsedData = {}
+        for(var i in data){
+          parsedData[i] = JSON.parse(data[i])
+        }
         if(nameToMatch == null){
-          if(typeof callback == "function"){ callback(err, data); }
+          if(typeof callback == "function"){ callback(err, parsedData); }
         }else{
           var results = {};
-          for(var i in data){
-            if(data[i].name == nameToMatch){
-              results[i] = data[i];
+          for(var i in parsedData){
+            if(parsedData[i].name == nameToMatch){
+              results[i] = parsedData[i];
             }
           }
           if(typeof callback == "function"){ callback(err, results); }
@@ -389,6 +429,9 @@ var initTasks = function(api, next){
   api.tasks.setTaskData = function(api, taskId, data, callback){
     if(api.redis.enable === true){
       api.tasks.getTaskData(api, taskId, function(err, muxedData){
+        if(muxedData == null && err == null){
+          muxedData = {};
+        }
         for(var i in data){
           muxedData[i] = data[i];
         }
@@ -470,8 +513,15 @@ var initTasks = function(api, next){
           api.tasks.setTaskData(api, taskIdReturned, {queue: endQueue}, function(err){
             api.redis.client.rpush(endQueue, taskIdReturned, function(err){
               api.tasks.getTaskData(api, taskIdReturned, function(err, data){
-                var task = new api.task(data)
-                callback(err, task);
+                try{
+                  var task = new api.task(data)
+                  callback(err, task);
+                }catch(e){
+                  api.log(e, 'red');
+                  api.tasks.removeFromQueue(api, data.id, endQueue, function(){
+                    callback(err, null);
+                  });
+                }
               });
             });
           });
@@ -490,15 +540,22 @@ var initTasks = function(api, next){
           callback(err, null);
         }else{
           api.tasks.getTaskData(api, taskIdReturned, function(err, data){
-            if(data.runAt > new Date().getTime()){
-              api.tasks.setTaskData(api, taskIdReturned, {queue: api.tasks.queues.globalQueue}, function(err){
-                api.redis.client.rpush(api.tasks.queues.globalQueue, taskIdReturned, function(err){
-                  var task = new api.task(data)
-                  callback(err, task);
+            try{
+              var task = new api.task(data);
+              if(task.runAt < new Date().getTime()){
+                api.tasks.setTaskData(api, taskIdReturned, {queue: api.tasks.queues.globalQueue, state: 'pending'}, function(err){
+                  api.redis.client.rpush(api.tasks.queues.globalQueue, taskIdReturned, function(err){
+                    callback(err, task);
+                  });
                 });
-              });
-            }else{
-              api.redis.client.rpush(api.tasks.queues.delayedQueue, taskIdReturned, function(err){
+              }else{
+                api.redis.client.rpush(api.tasks.queues.delayedQueue, taskIdReturned, function(err){
+                  callback(err, null);
+                });
+              }
+            }catch(e){
+              api.log(e, 'red');
+              api.tasks.removeFromQueue(api, data.id, api.tasks.queues.delayedQueue, function(){
                 callback(err, null);
               });
             }
@@ -508,6 +565,35 @@ var initTasks = function(api, next){
     }else{
 
     }
+  }
+
+  api.tasks.seedPeriodicTasks = function(callback){
+    if(api.tasks.tasks.length == 0){
+      callback();
+    }else{
+      var started = 0;
+      for(var i in api.tasks.tasks){
+        started++;
+        var taskTemplate = api.tasks.tasks[i];
+        if(taskTemplate.frequency > 0){
+          var task = new api.task({name: taskTemplate.name});
+          task.enqueue(function(err, resp){
+            if(err != null){ api.log(String(err).replace('Error: ', ""), 'yellow'); }
+            started--;
+            if(started == 0){ callback(); }
+          });
+        }else{
+          process.nextTick(function(){ 
+            started--;
+            if(started == 0){ callback(); }
+          })
+        }
+      }
+    }
+  }
+
+  api.tasks.savePreviouslyCrashedTasks = function(callback){
+
   }
 
   api.tasks.load = function(api){

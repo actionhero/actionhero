@@ -27,6 +27,7 @@ var actionHero = function(){
   self.api.request = require("request");
   self.api.async = require('async');
   self.api.crypto = require("crypto");
+  self.api.uuid = require("node-uuid");
   self.api.consoleColors = require('colors');
   self.api.data2xml = require('data2xml');
   self.api.mime = require('mime');
