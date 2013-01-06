@@ -41,6 +41,11 @@ utils.randomString = function(bits){
   return ret
 }
 
+utils.uuid = function(a){
+  // https://gist.github.com/982883
+  return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,b);
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // count the number of elements in a hash
 utils.hashLength = function(obj) {

@@ -142,7 +142,7 @@ actionHero.prototype.stop = function(next){
   var self = this;
   if(self.api.running === true){
     self.api.running = false;
-    self.api.log("Shutting down open servers and pausing tasks", "bold");
+    self.api.log("Shutting down open servers and stopping task processing", "bold");
 
     var orderedTeardowns = {};
     orderedTeardowns['watchedFiles'] = function(next){ 

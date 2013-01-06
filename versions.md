@@ -1,5 +1,13 @@
 # Action Hero API Versions
 
+## Version 4.1.0
+
+** Tasks **
+
+- Tasks will no longer be 'popped' from a queue, but rather slid from queue to queue.  This makes it much harder to loose a task
+- There is no longer a need for a periodc task reloader because of the above
+- There is a new default action, tasksView, which allows you to inspect the state of you task queue
+
 ## Version 4.0.8
 
 ** Bugs **
