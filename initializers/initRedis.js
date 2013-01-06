@@ -34,7 +34,7 @@ var initRedis = function(api, next){
   api.redis.enable = c.enable;
   if(c.enable == true){
 
-    api.redis.pingTime = 500;
+    api.redis.pingTime = 1000;
     api.redis.lostPeerCheckTime = 10000;
 
     if(c.DB == null){ c.DB = 0; }
@@ -169,6 +169,7 @@ var initPingAndCheck = function(api, next){
     clearTimeout(api.redis.lostPeerTimer);
     var allowedOffset = ( api.redis.pingTime * 2 ) + 1;
     api.redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
+      api.stats.set(api, "redis:numberOfPeers", api.utils.hashLength(peerPings))
       var peerID = null;
       for(var i in peerPings){
         if( new Date().getTime() - parseInt(peerPings[i]) > allowedOffset){
@@ -180,7 +181,7 @@ var initPingAndCheck = function(api, next){
         api.log("peer: " + peerID + " has gone away", "red");
         api.redis.client.hdel("actionHero:peerPings", peerID, function(){
           api.redis.client.lrem("actionHero:peers", 1, peerID, function(){
-            api.redis.client.del("actionHero:tasks::"+peerID, function(){
+            api.redis.client.del("actionHero:tasks::"+peerID.replace(/:/g, '-'), function(){
               api.redis.client.hgetall("actionHero:tasksClaimed", function (err, tasksClaimed){
                 var tasksCleaned = 0;
                 if(tasksClaimed != null && tasksClaimed.length > 0){
@@ -219,11 +220,15 @@ var initPingAndCheck = function(api, next){
   }
 
   // start timers
-  api.redis.ping(api, function(){
-    api.redis.checkForDroppedPeers(api, function(){
-      next();
+  api.redis._start = function(){
+    api.redis.ping(api, function(){
+      api.redis.checkForDroppedPeers(api, function(){
+        next();
+      });
     });
-  });
+  }
+  
+  next();
 
 }
 

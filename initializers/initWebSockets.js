@@ -57,8 +57,8 @@ var initWebSockets = function(api, next){
       }
 
       io.sockets.on('connection', function(connection){
-        api.stats.increment(api, "numberOfWebSocketRequests");
-        api.stats.increment(api, "numberOfActiveWebSocketClients");
+        api.stats.increment(api, "webSockets:numberOfRequests");
+        api.stats.increment(api, "webSockets:numberOfActiveWebClients");
         api.socketServer.numberOfLocalWebSocketRequests++;
 
         api.utils.setupConnection(api, connection, "webSocket", connection.handshake.address.port, connection.handshake.address.address);
@@ -172,7 +172,7 @@ var initWebSockets = function(api, next){
         });
 
         connection.on('disconnect', function(){
-          api.stats.increment(api, "numberOfActiveWebSocketClients", -1);
+          api.stats.increment(api, "webSockets:numberOfActiveWebClients", -1);
           api.utils.destroyConnection(api, connection);
           api.webSockets.logLine(api, {label: "disconnect @ webSocket"}, connection);
         });

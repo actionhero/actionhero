@@ -25,7 +25,8 @@ var initTasks = function(api, next){
       toAnnounce: true,
       queue: 'unknown',
       state: 'unknown',
-      ran: false
+      ran: false,
+      isDuplicate: false,
     }
     for(var i in defaults){
       this[i] = defaults[i];
@@ -41,7 +42,7 @@ var initTasks = function(api, next){
   }
 
   api.task.prototype.generateID = function(){
-    return api.uuid.v4() + ":" + api.id;
+    return api.uuid.v4();
   }
 
   api.task.prototype.determineScope = function(){
@@ -69,7 +70,7 @@ var initTasks = function(api, next){
           callback(toEnqueue);
         }else{
           for(var i in matchedTasks){
-            if(matchedTasks[i].queue == api.tasks.queues.globalQueue){
+            if(matchedTasks[i].queue == api.tasks.queues.globalQueue || matchedTasks[i].queue == api.tasks.queues.delayedQueue){
               toEnqueue = false;
               break;
             }
@@ -117,6 +118,7 @@ var initTasks = function(api, next){
           enqueuedAt: new Date().getTime(),
           state: self.state,
           queue: queue,
+          isDuplicate: self.isDuplicate,
         };
         api.tasks.setTaskData(api, self.id, data, function(error){
           api.tasks.placeInQueue(api, self.id, queue, function(){
@@ -137,6 +139,7 @@ var initTasks = function(api, next){
       }
     }
     var newTask = new api.task(data);
+    newTask.isDuplicate = true;
     newTask.id = newTask.generateID();
     return newTask;
   }
@@ -144,6 +147,7 @@ var initTasks = function(api, next){
   api.task.prototype.run = function(callback){
     var self = this;
     var params = self.params;
+    api.stats.increment(api, "tasks:tasksRun");
     if(api.domain != null){
       var taskDomain = api.domain.create();
       taskDomain.on("error", function(err){
@@ -203,13 +207,6 @@ var initTasks = function(api, next){
       api.tasks.queueLength(api, api.tasks.queues.globalQueue, function(err, globalQueueCount){
         api.tasks.queueLength(api, api.tasks.queues.localQueue, function(err, localQueueCount){
           api.tasks.queueLength(api, api.tasks.queues.delayedQueue, function(err, delayedQueueCount){
-
-            // console.log({
-            //   globalQueueCount: globalQueueCount,
-            //   delayedQueueCount: delayedQueueCount,
-            //   localQueueCount: localQueueCount,
-            // })
-
             if(localQueueCount > 0){
 
               // work something from the local queue to processing, and work it off
@@ -219,12 +216,12 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{
                   self.currentTask = task;
-                  api.tasks.setTaskData(api, task.id, {api_id: api.id, worker_id: self.id}, function(){
+                  api.tasks.setTaskData(api, task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
                     self.log("starting task " + task.name);
                     task.run(function(){
                       api.tasks.removeFromQueue(api, task.id, api.tasks.queues.processingQueue, function(){
                         self.log("completed task " + task.name + ", " + task.id);
-                        if(task.periodic == true){
+                        if(task.periodic == true && task.isDuplicate === false){
                           task.enqueue(function(error){
                             if(error != null){ self.log(error); }
                             self.prepareNextRun();
@@ -248,7 +245,7 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{
                   self.currentTask = task;
-                  self.log("preparing task " + task.name + " to run locally");
+                  // self.log("preparing task " + task.name + " to run locally");
                   api.tasks.copyToReleventLocalQueues(api, task, function(){
                     self.prepareNextRun();
                     if(typeof callback == "function"){ callback(); }
@@ -265,7 +262,7 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{    
                   self.currentTask = task;
-                  self.log("promoted delayed task " + task.name + " to the global queue");
+                  // self.log("promoted delayed task " + task.name + " to the global queue");
                   self.prepareNextRun();
                   if(typeof callback == "function"){ callback(); }
                 }
@@ -404,7 +401,7 @@ var initTasks = function(api, next){
   }
 
   api.tasks.getAllTasks = function(api, nameToMatch, callback){
-    if(callback == null && typeof matcher == "function"){
+    if(callback == null && typeof nameToMatch == "function"){
       callback = nameToMatch;
       nameToMatch = null;
     }

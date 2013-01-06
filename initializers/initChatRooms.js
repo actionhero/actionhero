@@ -34,6 +34,7 @@ var initChatRooms = function(api, next){
       api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
     }
     else{
+      api.stats.increment(api, "chatRooom:messagesSent");
       var messagePayload = {message: message, room: connection.room, from: connection.public.id, context: "user", sentAt: new Date().getTime() };
       for(var i in api.connections){
         var thisConnection = api.connections[i];
@@ -94,6 +95,7 @@ var initChatRooms = function(api, next){
         if (name == roomStatus.members[i]){ found = true; break; }
       }
       if(found == false){
+        api.stats.increment(api, "chatRooom:roomMembers:" + connection.room);
         api.chatRoom.announceMember(api, connection, true);
         if(api.redis.enable === true){
           var key = api.chatRoom.redisRoomPrefix + connection.room;
@@ -116,6 +118,7 @@ var initChatRooms = function(api, next){
   api.chatRoom.roomRemoveMember = function(api, connection, next){
     var room = connection.room;
     var name = connection.public.id;
+    api.stats.increment(api, "chatRooom:roomMembers:" + connection.room, -1);
     if(api.redis.enable === true){
       var key = api.chatRoom.redisRoomPrefix + connection.room;
       api.redis.client.lrem(key, 1, name, function(){

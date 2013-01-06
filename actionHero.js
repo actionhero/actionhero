@@ -53,8 +53,6 @@ actionHero.prototype.start = function(params, next){
     restart: self.restart,
   };
 
-  self.api.running = true;
-
   if (params === null){ params = {}; }
   self.startingParams = params;
 
@@ -90,12 +88,12 @@ actionHero.prototype.start = function(params, next){
     'initPids',
     'initLog',
     'initExceptions',
+    'initStats',
     'initRedis',
     'initCache',
     'initActions',
     'initPostVariables',
     'initFileServer',
-    'initStats',
     'initChatRooms',
     'initTasks',
     'initWebServer', 
@@ -115,6 +113,7 @@ actionHero.prototype.start = function(params, next){
   });
 
   orderedInitializers['_complete'] = function(){ 
+    self.api.running = true;
     var starters = [];
     for(var i in self.api){
       if(typeof self.api[i]._start == "function"){

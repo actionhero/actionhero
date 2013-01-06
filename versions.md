@@ -11,7 +11,8 @@
 
 ** Stats ** 
 
-- Stats system overhal
+- Stats system overhal to have both local and global tasks kept for the cluster
+- the `status` action now reflects the global status and local status for the server queried
 - Please check the wiki for new syntax
 
 ## Version 4.0.8
