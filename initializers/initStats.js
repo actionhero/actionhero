@@ -19,6 +19,7 @@ var initStats = function(api, next){
         });
       });
     }else{
+      if(api.stats.data[key] == null){ api.stats.data[key] = 0; }
       api.stats.data[key] = api.stats.data[key] + count;
       if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
     }
