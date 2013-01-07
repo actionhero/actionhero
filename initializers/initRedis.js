@@ -196,7 +196,7 @@ var initPingAndCheck = function(api, next){
   }
 
   // start timers
-  api.redis._start = function(){
+  api.redis._start = function(api, next){
     api.redis.ping(api, function(){
       api.redis.checkForDroppedPeers(api, function(){
         next();

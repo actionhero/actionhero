@@ -1,5 +1,5 @@
 var specHelper = {}
-var showLogs = false;
+var showLogs = true;
 specHelper.fs = require('fs');
 specHelper.net = require('net');
 specHelper.should = require('should');

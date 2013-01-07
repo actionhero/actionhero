@@ -120,18 +120,34 @@ actionHero.prototype.start = function(params, next){
         starters.push(i);
       }
     }
-    starters.forEach(function(starter){
-      self.api[starter]._start(self.api, function(){
-        self.api.log(" > start: " + starter, 'grey');
-      });
-    });
 
+    var started = 0;
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
-    self.api.bootTime = new Date().getTime();
-    self.api.log("server ID: " + self.api.id);
-    self.api.log(successMessage, ["green", "bold"]);
-    if(next !== null){ 
-      next(null, self.api);
+    if(starters.length == 0){
+      self.api.bootTime = new Date().getTime();
+      self.api.log("server ID: " + self.api.id);
+      self.api.log(successMessage, ["green", "bold"]);
+      if(next !== null){ 
+        next(null, self.api);
+      }
+    }else{
+      starters.forEach(function(starter){
+        started++;
+        self.api[starter]._start(self.api, function(){
+          process.nextTick(function(){
+            self.api.log(" > start: " + starter, 'grey');
+            started--;
+            if(started == 0){
+              self.api.bootTime = new Date().getTime();
+              self.api.log("server ID: " + self.api.id);
+              self.api.log(successMessage, ["green", "bold"]);
+              if(next !== null){ 
+                next(null, self.api);
+              }
+            }
+          });
+        });
+      });
     }
   };
 

@@ -5,17 +5,77 @@ describe('Core: Tasks', function(){
   var should = require("should");
 
   before(function(done){
-    specHelper.prepare(0, function(api){ 
-      rawAPI = api;
-      apiObj = specHelper.cleanAPIObject(api);
-      done();
-    })
+    specHelper.stopServer(0, function(api){ 
+      specHelper.prepare(0, function(api){ 
+        rawAPI = api;
+        apiObj = specHelper.cleanAPIObject(api);
+
+        rawAPI.tasks.taskProcessors.forEach(function(taskProcessor){
+          taskProcessor.stop();
+        });
+
+        rawAPI.tasks.tasks['regular_any'] = {
+          name: 'regular_all',
+          description: 'task: ' + this.name,
+          scope: 'any',
+          frequency: 0,
+          run: function(api, params, next){
+            api.fs.writeFileSync(params.word);
+            next();
+          }
+        }
+
+        rawAPI.tasks.tasks['regular_all'] = {
+          name: 'regular_all',
+          description: 'task: ' + this.name,
+          scope: 'all',
+          frequency: 0,
+          run: function(api, params, next){
+            api.fs.writeFileSync(params.word);
+            next();
+          }
+        }
+
+        rawAPI.tasks.tasks['periodic_any'] = {
+          name: 'regular_all',
+          description: 'task: ' + this.name,
+          scope: 'any',
+          frequency: 1000,
+          run: function(api, params, next){
+            api.fs.writeFileSync(params.word);
+            next();
+          }
+        }
+
+        rawAPI.tasks.tasks['periodic_all'] = {
+          name: 'regular_all',
+          description: 'task: ' + this.name,
+          scope: 'all',
+          frequency: 1000,
+          run: function(api, params, next){
+            api.fs.writeFileSync(params.word);
+            next();
+          }
+        }
+
+        done();
+      });
+    });
   });
 
   after(function(done){
     specHelper.stopServer(0, function(api){ 
       done();
     })
+  });
+
+  it('setup worked', function(done){
+    rawAPI.utils.hashLength(rawAPI.tasks.tasks).should.equal(4 + 1);
+    rawAPI.tasks.taskProcessors.length.should.equal(1);
+    rawAPI.tasks.taskProcessors.forEach(function(taskProcessor){
+      taskProcessor.running.should.equal(false);
+    });
+    done();
   });
 
   it('all perioduc tasks should be enqueued when the server starts', function(done){
