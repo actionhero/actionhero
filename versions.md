@@ -7,13 +7,51 @@
 - Tasks will no longer be 'popped' from a queue, but rather slid from queue to queue.  This makes it much harder to loose a task
 - There is no longer a need for a periodc task reloader because of the above
 - Tasks can now be easily inspectd, and have been included in the `status` task
-- Please check the wiki for new syntax
+- Please check the wiki for new task syntax:
+
+		var task = new api.task({
+		  name: "myTaskName",
+		  runAt: new Date().getTime() + 30000, // run 30 seconds from now
+		  params: {email: 'evantahler@gmail.com'}, // any optional params to pass to the task
+		  toAnnounce: true // to log the run of this task or not
+		});
+		
+		task.equeue(function(err){
+		  // enqueued!
+		})
 
 ** Stats ** 
 
-- Stats system overhal to have both local and global tasks kept for the cluster
+- Stats system has been overhaled to have both local and global tasks kept for the cluster
 - the `status` action now reflects the global status and local status for the server queried
-- Please check the wiki for new syntax
+- Please check the wiki for new syntax:
+
+`api.stats.increment(api, key, count, next)`
+
+- next(err, wasSet)
+- key is a string
+- count is a signed integer
+- - this method will work on local and global stats
+
+`api.stats.set(api, key, count, next)`
+
+- next(err, wasSet)
+- key is a string
+- count is a signed integer
+- this method will only work on local stats
+
+`api.stats.get(api, key, collection, next)`
+
+- next(err, data)
+- key is a string
+- collection is either:
+  - `api.stats.collections.local`
+  - `api.stats.collections.global`
+
+`api.stats.getAll(api, next)`
+
+- next(err, stats)
+- stats is a hash of `{global: globalStats, local: localStats}`
 
 ## Version 4.0.8
 
@@ -102,33 +140,33 @@ initializers can now have a `_start(api, callback)` method which will be invoked
 
 - you can now define more than one action or task in a file, like this:
 
-	exports.userAdd = {
-		name: 'userAdd',
-		description: 'i add a user',
-		inputs: {
-			required: ['email', 'password'],
-			optional: []
-		},
-		outputExample: {},
-		run: function(api, connection, next){
-			// your code here
-			next(connection, true);
-		}
-	};
+  exports.userAdd = {
+    name: 'userAdd',
+    description: 'i add a user',
+    inputs: {
+      required: ['email', 'password'],
+      optional: []
+    },
+    outputExample: {},
+    run: function(api, connection, next){
+      // your code here
+      next(connection, true);
+    }
+  };
 
-	exports.userDelete = {
-		name: 'userDelete',
-		description: 'i delete a user',
-		inputs: {
-			required: ['email', 'password'],
-			optional: []
-		},
-		outputExample: {},
-		run: function(api, connection, next){
-			// your code here
-			next(connection, true);
-		}
-	}
+  exports.userDelete = {
+    name: 'userDelete',
+    description: 'i delete a user',
+    inputs: {
+      required: ['email', 'password'],
+      optional: []
+    },
+    outputExample: {},
+    run: function(api, connection, next){
+      // your code here
+      next(connection, true);
+    }
+  }
 
 ** config **
 
@@ -291,34 +329,34 @@ Cleanup and changing our test suite to mocha
 An example `routes.js`
 
 ```javascript
-	exports.routes = {
-		
-		users: {
-			get: {
-				action: "usersList", // (GET) /api/users
-			}
-		},
+  exports.routes = {
+    
+    users: {
+      get: {
+        action: "usersList", // (GET) /api/users
+      }
+    },
 
-		user : {
-			get: {
-				action: "userAdd",
-				urlMap: ["userID"], // (GET) /api/user/123
-			},
-			post: {
-				action: "userEdit",
-				urlMap: ["userID"] // (POST) /api/user/123
-			},
-			put: {
-				action: "userAdd",
-				urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
-			},
-			delete: {
-				action: "userDelete",
-				urlMap: ["userID"] // (DELETE) /api/user/123
-			}
-		}
+    user : {
+      get: {
+        action: "userAdd",
+        urlMap: ["userID"], // (GET) /api/user/123
+      },
+      post: {
+        action: "userEdit",
+        urlMap: ["userID"] // (POST) /api/user/123
+      },
+      put: {
+        action: "userAdd",
+        urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
+      },
+      delete: {
+        action: "userDelete",
+        urlMap: ["userID"] // (DELETE) /api/user/123
+      }
+    }
 
-	};
+  };
 ```
 
 **chat & redis**
@@ -352,8 +390,8 @@ You can now extract prams per HTTP(s) request from the route requested by the us
 URL routes remain not being a source of RESTful parameters by default, however, you can opt to parse them: 
 
 ```
-	var urlMap = ['userID', 'gameID'];
-	connection.params = api.utils.mapParamsFromURL(connection, urlMap);
+  var urlMap = ['userID', 'gameID'];
+  connection.params = api.utils.mapParamsFromURL(connection, urlMap);
 ```
 
 - this is still left up to the action as the choice of which to choose as the default: query params, post params, or RESTful params is a deeply personal mater.
@@ -589,13 +627,13 @@ For periodic tasks ("any" and "all"), the peer which most recently completed the
 
 There are new requirements to `config.json` to configure redis.  Here is an example:
 
-	"redis" : {
-		"enable": true,
-		"host": "127.0.0.1",
-		"port": 6379,
-		"password": null,
-		"options": null
-	},
+  "redis" : {
+    "enable": true,
+    "host": "127.0.0.1",
+    "port": 6379,
+    "password": null,
+    "options": null
+  },
 
 All methods under the `api.actionCluster` namespace have been removed for simplicity.  Just use the normal cache methods, and if you are in a cluster, you will operate in a shared memory space.
 
@@ -640,13 +678,13 @@ All methods under the `api.actionCluster` namespace have been removed for simpli
 
 Settings for https server:
 
-	"secureWebServer" : {
-		"port": 4443,
-		"enable": true,
-		"keyFile": "./certs/server-key.pem",
-		"certFile": "./certs/server-cert.pem"
-	},
-	
+  "secureWebServer" : {
+    "port": 4443,
+    "enable": true,
+    "keyFile": "./certs/server-key.pem",
+    "certFile": "./certs/server-cert.pem"
+  },
+  
 
 ## Version 1.0.0
 
@@ -655,8 +693,8 @@ Settings for https server:
 **Details:**
 
 * initializers
-	* you can add your own initializers to a folder called `initializers` in your project's root.  They will be loaded at boot and accessible like this:
-		* actionHero.myNewInitFunction(api, function(){ next(); });
+  * you can add your own initializers to a folder called `initializers` in your project's root.  They will be loaded at boot and accessible like this:
+    * actionHero.myNewInitFunction(api, function(){ next(); });
 * This is a cleanup and bug-fix release
 * After some refactoring, actionHero is now at v 1.0
 * The last message sent by a socket client can now be read by inspecting `connection.lastLine`
@@ -664,7 +702,7 @@ Settings for https server:
 * Cleanup of the example HTML pages
 * HTTP requests will now return serverInformation.currentTime
 * The original server (the one with no `configData.actionCluster.startingPeer` will be the only server to run 'any' tasks)
-	* Other servers will NOT assume the role of running "any" tasks, but they will keep them in memory until the master server comes back upon a crash.
+  * Other servers will NOT assume the role of running "any" tasks, but they will keep them in memory until the master server comes back upon a crash.
 * Using the node-mime module
 * Adding 10 min cache-control to flat files
 
@@ -679,24 +717,24 @@ Settings for https server:
 * tasks can now have their own specific timers
 * tasks are now scoped to be "any" or "all", to run once per actionCluster (any) or on all nodes (all)
 * Default tasks within the api are now better explained:
-	* calculateStats
-		* Polls all other members in the actionCluster to build up statistics
-		* Runs every 10 seconds
-	* cleanLogFiles
-		* removes all files in `./log/` if they are larger than `api.configData.maxLogFileSize`
-		* runs every 60 seconds
-	* cleanOldCacheObjects
-		* removes expired objects in `api.cache.data`
-		* runs every 10 seconds
-	* pingSocketClients
-		* sends a keep-alive message to all TCP socket clients
-		* runs every 60 seconds
-	* runAction
-		* a wrapper to run an action as a task
-		* will not run automatically
-	* saveCacheToDisk
-		* will save the contents of `api.cache.data` to disc
-		* runs every 60 seconds
+  * calculateStats
+    * Polls all other members in the actionCluster to build up statistics
+    * Runs every 10 seconds
+  * cleanLogFiles
+    * removes all files in `./log/` if they are larger than `api.configData.maxLogFileSize`
+    * runs every 60 seconds
+  * cleanOldCacheObjects
+    * removes expired objects in `api.cache.data`
+    * runs every 10 seconds
+  * pingSocketClients
+    * sends a keep-alive message to all TCP socket clients
+    * runs every 60 seconds
+  * runAction
+    * a wrapper to run an action as a task
+    * will not run automatically
+  * saveCacheToDisk
+    * will save the contents of `api.cache.data` to disc
+    * runs every 60 seconds
 
 ## Version 0.2.5
 
@@ -706,9 +744,9 @@ Settings for https server:
 
 * You can now use actionHero on node.js version 5 upwards (including the new v0.7)
 * In order to keep actionHero as compartmentalized as possible, we have removed databases and models.  
-	* There are tons of great ORMs and drivers for node.  When deploying actionHero in production, I expect that you will make use of them.  However, requiring database integration with actionHero is no longer a core part of the framework.  The previous DB connection support was too specific to my test implementations to be useful for everyone.  
-	* This makes previous implementations of actionHero incompatible with versions > 0.2.4.
-		* I'm sorry, but that's the price of progress!
+  * There are tons of great ORMs and drivers for node.  When deploying actionHero in production, I expect that you will make use of them.  However, requiring database integration with actionHero is no longer a core part of the framework.  The previous DB connection support was too specific to my test implementations to be useful for everyone.  
+  * This makes previous implementations of actionHero incompatible with versions > 0.2.4.
+    * I'm sorry, but that's the price of progress!
 * The location where the cache is saved and loaded from is configurable in `config.json` via `api.configData.cache.cacheFolder` and `api.configData.cache.cacheFile`
 
 ## Version 0.2.4
@@ -721,8 +759,8 @@ Settings for https server:
 * Actions will be checked for the proper variables and methods. 
 * Actions' required params will be automatically checked for existence. 
 * Removed anything to do with rate-limiting.  I don't think that anyone was using it anyway.  This really isn't a core feature and was causing trouble at the DB layer.
-	* api will no longer return details of requests remaining
-	* DBs no longer need to build the `api.rateLimitCheck` method
+  * api will no longer return details of requests remaining
+  * DBs no longer need to build the `api.rateLimitCheck` method
 * `npm start` can not be used to stat an example actionHero server
 
 ## Version 0.2.3
@@ -774,8 +812,8 @@ actionHero can be run either as a stand-alone server or as part of a cluster.  W
 * shared messaging: the `say` socket command will message all clients in the same room in all peers.  `roomView` will aggregate information for all peer's connections
 * shared or individual configuration for each peer.
 * Shared memory objects!
-	* actionHero's single-node cache,  `api.cache` is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn't hold any of the data being accessed.
-	* Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question
+  * actionHero's single-node cache,  `api.cache` is extended when operating in an actionCluster to allow for you to simply create redundant in-memory objects which can be accessed by any member of the cluster, even a peer which doesn't hold any of the data being accessed.
+  * Object duplication.  Using `api.configData.actionCluster.nodeDuplication`, you can ensure that your cached objects will be present on n peers to survive the crash of a peer.  In the event  a peer goes down, the remaining peers will reduplicate the object in question
 
 ## Version 0.1.7
 
@@ -797,10 +835,10 @@ actionHero can be run either as a stand-alone server or as part of a cluster.  W
 **Details:**
 
 * Mode Routing
-	* /file and /api are now routes which expose the 'directories' of those types.  These top level paths can be configured in `config.json` with `api.configData.urlPathForActions` and `api.configData.urlPathForFiles`.
-	* the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.configData.rootEndpointType`. Versions prior to this can be thought of as always choosing /api as the default. The default is `api`.
-	* `/file` now works for socket connections.  The raw contents of the file will be streamed back to the client upon success.  Rather than sending HTTP headers on errors, a string messages in the normal way will be sent upon error.
-	* `file` is still an action, but its logic is moved into the code API.  Socket connections will only be using /api/ as their endpoint.
+  * /file and /api are now routes which expose the 'directories' of those types.  These top level paths can be configured in `config.json` with `api.configData.urlPathForActions` and `api.configData.urlPathForFiles`.
+  * the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.configData.rootEndpointType`. Versions prior to this can be thought of as always choosing /api as the default. The default is `api`.
+  * `/file` now works for socket connections.  The raw contents of the file will be streamed back to the client upon success.  Rather than sending HTTP headers on errors, a string messages in the normal way will be sent upon error.
+  * `file` is still an action, but its logic is moved into the code API.  Socket connections will only be using /api/ as their endpoint.
 
 ## Version 0.1.5
 
@@ -809,25 +847,25 @@ actionHero can be run either as a stand-alone server or as part of a cluster.  W
 **Details:**
 
 * Contexts
-	* When connected via Socket, knowing the context of a message you receive is important.  All messages sent back to the client should include `context` in the JSON block returned.  
-	* For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent.  Messages sent by a user via the 'say' command have the context of `user` indicating they came form a user.  Every minute a ping is sent from the server to keep the TCP connection alive and send the current time.  This message has the context of `api`.  Messages resulting from data sent to the api (like an action) will have the `response` context.
-	* Be sure to set the context of anything you send!  Actions will always have the `response` context set to them by default.
+  * When connected via Socket, knowing the context of a message you receive is important.  All messages sent back to the client should include `context` in the JSON block returned.  
+  * For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent.  Messages sent by a user via the 'say' command have the context of `user` indicating they came form a user.  Every minute a ping is sent from the server to keep the TCP connection alive and send the current time.  This message has the context of `api`.  Messages resulting from data sent to the api (like an action) will have the `response` context.
+  * Be sure to set the context of anything you send!  Actions will always have the `response` context set to them by default.
 * Keep Alive
-	* A new default task now will send a 'keep alive' message to each connected socket connection.  This will help with TCP timeouts and will broadcast the server time each task cycle( default 1 min ). 
-	* Per the above, the message has the `api` context.
+  * A new default task now will send a 'keep alive' message to each connected socket connection.  This will help with TCP timeouts and will broadcast the server time each task cycle( default 1 min ). 
+  * Per the above, the message has the `api` context.
 * paramsView and paramView
-	* params are now passed back wrapped in a `params` object.
+  * params are now passed back wrapped in a `params` object.
 * Response Counts
-	* Socket connections will have every message sent to them counted, and every message sent will have the `messageCount` value set.  This will help clients keep messages in order.
+  * Socket connections will have every message sent to them counted, and every message sent will have the `messageCount` value set.  This will help clients keep messages in order.
 * Better client id hashes
-	* Every socket client has an `connection.id` set for them.  This is used by the `say` command and should be used by any other method which needs to identify one user to another.  This way, the user's IP and port can be kept secret, but you can have a unique id for each user.  Updates to how this hash is generated (now via MD5).
+  * Every socket client has an `connection.id` set for them.  This is used by the `say` command and should be used by any other method which needs to identify one user to another.  This way, the user's IP and port can be kept secret, but you can have a unique id for each user.  Updates to how this hash is generated (now via MD5).
 * Minor refactoring to the task framework to add task.log() as a method to help with formatted output.
 * The task to clean the log file will now inspect every file in ./logs/ to check if the files have gotten too large.
 * Documentation Updates
-	Every 
-	* This file!
-	* readme.markdown
-	* project website (branch gh-pages)
+  Every 
+  * This file!
+  * readme.markdown
+  * project website (branch gh-pages)
 
 ## Versions <= 0.1.4
 Sorry, I wasn't keeping good notes :(
