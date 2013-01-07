@@ -4,6 +4,11 @@ describe('Core: Tasks', function(){
   var rawAPI = {};
   var should = require("should");
   var taskOutput = [];
+  var canUseDomains = true;
+  var versionParts = process.version.split(".")
+  if(versionParts[0] == "v0" && parseFloat(versionParts[1]) < 8){
+    canUseDomains = false;
+  }
 
   before(function(done){
     specHelper.stopServer(0, function(api){ 
@@ -214,7 +219,7 @@ describe('Core: Tasks', function(){
 
   describe('busted periodic task', function(){
 
-    try{
+    if(canUseDomains){
 
       before(function(done){
         rawAPI.tasks.tasks['busted_task'] = {
@@ -237,16 +242,19 @@ describe('Core: Tasks', function(){
         done()
       });
 
-      var uncaughtExceptionHandler;
+      var uncaughtExceptionHandlers;
       beforeEach(function(done){
-        var uncaughtExceptionHandlerCollection = process.listeners("uncaughtException");
-        uncaughtExceptionHandler = uncaughtExceptionHandlerCollection[0]
-        process.removeListener("uncaughtException", uncaughtExceptionHandler); 
+        uncaughtExceptionHandlers = process.listeners("uncaughtException");
+        uncaughtExceptionHandlers.forEach(function(e){
+          process.removeListener("uncaughtException", e); 
+        });
         done();
       })
 
       afterEach(function(done){
-        process.on("uncaughtException", uncaughtExceptionHandler);
+        uncaughtExceptionHandlers.forEach(function(e){
+          process.on("uncaughtException", e);
+        });
         done();
       });
 
@@ -291,7 +299,7 @@ describe('Core: Tasks', function(){
         });
       });
 
-    }catch(e){
+    }else{
       console.log("skipping restart test as it requires domains, and node.js >= 0.8.0")
     }
 
