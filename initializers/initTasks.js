@@ -360,13 +360,6 @@ var initTasks = function(api, next){
     next();
   }
 
-  // wrapper for the old method of making tasks; this will be removed in future versions
-  api.tasks.enqueue = function(api, taskName, runAtTime, params, next, toAnnounce){
-    var Task = new api.task({name: taskName, runAt: runAtTime, params: params, toAnnounce: toAnnounce})
-    Task.enqueue();
-    process.nextTick(function(){ if(typeof next == 'function'){ next(); } });
-  }
-
   api.tasks.getAllLocalQueues = function(api, callback){
     if(api.redis.enable === true){
       api.redis.client.lrange("actionHero:peers",0,-1,function(err,peers){

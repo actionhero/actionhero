@@ -181,34 +181,10 @@ var initPingAndCheck = function(api, next){
         api.log("peer: " + peerID + " has gone away", "red");
         api.redis.client.hdel("actionHero:peerPings", peerID, function(){
           api.redis.client.lrem("actionHero:peers", 1, peerID, function(){
-            api.redis.client.del("actionHero:tasks::"+peerID.replace(/:/g, '-'), function(){
-              api.redis.client.hgetall("actionHero:tasksClaimed", function (err, tasksClaimed){
-                var tasksCleaned = 0;
-                if(tasksClaimed != null && tasksClaimed.length > 0){
-                  tasksClaimed.map(function(t){
-                    var task = JSON.parse(t);
-                    if(task.server == peerID){
-                      tasksCleaned++;
-                      api.redis.client.hdel("actionHero:tasksClaimed", task.taskName, function(){
-                        api.tasks.enqueue(api, task.taskName, new Date().getTime(), task.params);
-                        tasksCleaned--;
-                        if(tasksCleaned == 0){
-                          if(api.running){
-                            api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-                          }
-                          if (typeof next == "function"){ next(); }
-                        }
-                      });
-                    }
-                  });
-                }else{
-                  if(api.running){
-                    api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-                  }
-                  if (typeof next == "function"){ next(); }
-                }
-              });
-            });
+            if(api.running){
+              api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+            }
+            if (typeof next == "function"){ next(); }
           });
         });
       }else{
