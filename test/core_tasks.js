@@ -3,6 +3,7 @@ describe('Core: Tasks', function(){
   var apiObj = {};
   var rawAPI = {};
   var should = require("should");
+  var taskOutput = [];
 
   before(function(done){
     specHelper.stopServer(0, function(api){ 
@@ -22,7 +23,7 @@ describe('Core: Tasks', function(){
             scope: 'any',
             frequency: 0,
             run: function(api, params, next){
-              api.fs.writeFileSync(params.word);
+              taskOutput.push(params.word);
               next();
             }
           }
@@ -33,7 +34,7 @@ describe('Core: Tasks', function(){
             scope: 'all',
             frequency: 0,
             run: function(api, params, next){
-              api.fs.writeFileSync(params.word);
+              taskOutput.push(params.word);
               next();
             }
           }
@@ -44,7 +45,7 @@ describe('Core: Tasks', function(){
             scope: 'any',
             frequency: 1000,
             run: function(api, params, next){
-              api.fs.writeFileSync(params.word);
+              taskOutput.push(params.word);
               next();
             }
           }
@@ -55,7 +56,7 @@ describe('Core: Tasks', function(){
             scope: 'all',
             frequency: 1000,
             run: function(api, params, next){
-              api.fs.writeFileSync(params.word);
+              taskOutput.push(params.word);
               next();
             }
           }
@@ -211,28 +212,130 @@ describe('Core: Tasks', function(){
     });
   });
 
-  it('I cannot work on a task while one is being enqueued (I will retry shortly afterwords)', function(done){
-    done();
-  });
+  describe('busted periodic task', function(){
 
-  it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
-    done();
+    try{
+
+      before(function(done){
+        rawAPI.tasks.tasks['busted_task'] = {
+          name: 'busted_task',
+          description: 'task: ' + this.name,
+          scope: 'any',
+          frequency: 1,
+          run: function(api, params, next){
+            done = bad + thing;
+            next();
+          }
+        }
+        rawAPI.redis.client.flushdb(function(){
+          done();
+        });
+      });
+
+      after(function(done){
+        delete rawAPI.tasks.tasks['busted_task'];
+        done()
+      });
+
+      var uncaughtExceptionHandler;
+      beforeEach(function(done){
+        var uncaughtExceptionHandlerCollection = process.listeners("uncaughtException");
+        uncaughtExceptionHandler = uncaughtExceptionHandlerCollection[0]
+        process.removeListener("uncaughtException", uncaughtExceptionHandler); 
+        done();
+      })
+
+      afterEach(function(done){
+        process.on("uncaughtException", uncaughtExceptionHandler);
+        done();
+      });
+
+      it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
+        var worker = new rawAPI.taskProcessor({id: 1});
+        var task = new rawAPI.task({name: 'busted_task'});
+        task.enqueue(function(){
+          setTimeout(function(){
+            rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+              delayedCount.should.equal(1);
+              worker.process(function(){
+                // move to global
+                rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+                  globalCount.should.equal(1)
+                  worker.process(function(){
+                    // move to local
+                    rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.localQueue, function(err, localCount){
+                      localCount.should.equal(1);
+                      worker.process(function(){
+                        // move to processing and try to work it
+                        // should be back in delayed
+                        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.processingQueue, function(err, processingCount){
+                          rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+                            rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.localQueue, function(err, localCount2){
+                              rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
+                                processingCount.should.equal(0)
+                                globalCount2.should.equal(0)
+                                localCount2.should.equal(0)
+                                delayedCount2.should.equal(1)
+                                done();
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              }); 
+            });
+          }, 2);
+        });
+      });
+
+    }catch(e){
+      console.log("skipping restart test as it requires domains, and node.js >= 0.8.0")
+    }
+
   });
 
   it('enquing an "all" task will end up preformed by every server', function(done){
-    done();
-  });
-
-  it('I will periodically attempt to re-load any missing periodic tasks in the system', function(done){
-    done();
-  });
-
-  it('I can have more than 1 task worker/timer', function(done){
+    // TODO
     done();
   });
 
   it('I will not process tasks with a runAt in the future', function(done){
-    done();
+    rawAPI.redis.client.flushdb(function(){
+      var worker = new rawAPI.taskProcessor({id: 1});
+      var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 1000});
+      task.enqueue(function(){
+        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+          delayedCount.should.equal(1);
+          setTimeout(function(){
+            worker.process(function(){
+              rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+                delayedCount.should.equal(1);
+                done();
+              });
+            });
+          }, 500)
+        });
+      });
+    });
+  });
+
+  it('tasks can be passed params and taskWorkers can work on thier own', function(done){
+    taskOutput = [];
+    rawAPI.redis.client.flushdb(function(){
+      var worker = new rawAPI.taskProcessor({id: 1});
+      var task = new rawAPI.task({name: 'regular_any', params: {word: 'TEST'}});
+      task.enqueue(function(){
+        worker.start();
+        setTimeout(function(){
+          taskOutput[0].should.equal('TEST');
+          worker.stop();
+          done();
+        }, 1000)
+      });
+    });
   });
 
 });
