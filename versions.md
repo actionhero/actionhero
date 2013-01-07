@@ -1,5 +1,20 @@
 # Action Hero API Versions
 
+## Version 4.1.0
+
+** Tasks **
+
+- Tasks will no longer be 'popped' from a queue, but rather slid from queue to queue.  This makes it much harder to loose a task
+- There is no longer a need for a periodc task reloader because of the above
+- Tasks can now be easily inspectd, and have been included in the `status` task
+- Please check the wiki for new syntax
+
+** Stats ** 
+
+- Stats system overhal to have both local and global tasks kept for the cluster
+- the `status` action now reflects the global status and local status for the server queried
+- Please check the wiki for new syntax
+
 ## Version 4.0.8
 
 ** Bugs **

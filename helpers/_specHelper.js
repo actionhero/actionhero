@@ -10,6 +10,12 @@ specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 
+specHelper.canUseDomains = true;
+var versionParts = process.version.split(".")
+if(versionParts[0] == "v0" && parseFloat(versionParts[1]) < 8){
+  specHelper.canUseDomains = false;
+}
+
 var redisConfig = {
   "enable": true,
   "host": "127.0.0.1",
