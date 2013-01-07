@@ -28,7 +28,7 @@ var initWebServer = function(api, next){
     }
 
     api.webServer.handleRequest = function(req, res){
-      api.stats.increment(api, "numberOfWebRequests");
+      api.stats.increment(api, "webServer:numberOfWebRequests");
       api.webServer.numberOfLocalWebRequests++;
 
       api.bf.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){

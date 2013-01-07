@@ -5,8 +5,6 @@ var initSocketServer = function(api, next){
     api.socketServer = {};
 
     api.socketServer._start = function(api, next){
-      api.socketServer.numberOfLocalSocketRequests = 0;
-
       if(api.configData.tcpServer.secure == false){
         api.socketServer.server = api.net.createServer(function(connection){
           api.socketServer.handleConnection(connection);
@@ -32,11 +30,10 @@ var initSocketServer = function(api, next){
     }
 
     api.socketServer.handleConnection = function(connection){
-      api.socketServer.numberOfLocalSocketRequests++;
       api.utils.setupConnection(api, connection, "socket", connection.remotePort, connection.remoteAddress);
       connection.responsesWaitingCount = 0;
       connection.socketDataString = "";
-      api.stats.increment(api, "numberOfActiveSocketClients");
+      api.stats.increment(api, "socketServer:numberOfActiveClients");
       api.socketServer.logLine(api, {label: "connect @ socket"}, connection);
 
       process.nextTick(function(){
@@ -53,7 +50,7 @@ var initSocketServer = function(api, next){
             var line = connection.socketDataString.slice(0, index);
             connection.socketDataString = connection.socketDataString.slice(index + 2);
             if(line.length > 0) {
-              api.stats.increment(api, "numberOfSocketRequests");
+              api.stats.increment(api, "socketServer:numberOfRequests");
               connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
               line = line.replace("\n","");
               api.socketServer.parseRequest(api, connection, line);
@@ -63,7 +60,7 @@ var initSocketServer = function(api, next){
       });
 
       connection.on("end", function () {        
-        api.stats.increment(api, "numberOfActiveSocketClients", -1);
+        api.stats.increment(api, "socketServer:numberOfActiveClients", -1);
         api.utils.destroyConnection(api, connection);
         try{ 
           connection.end(); 

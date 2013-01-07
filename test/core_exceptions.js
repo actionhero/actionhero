@@ -3,10 +3,7 @@ describe('Core: Exceptions', function(){
   var apiObj = {};
   var should = require("should");
 
-  try{
-
-    require('domain');
-    var uncaughtExceptionHandler;
+  if(specHelper.canUseDomains){
 
     before(function(done){
       specHelper.prepare(0, function(api){ 
@@ -15,15 +12,19 @@ describe('Core: Exceptions', function(){
       })
     });
 
+    var uncaughtExceptionHandlers;
     beforeEach(function(done){
-      var uncaughtExceptionHandlerCollection = process.listeners("uncaughtException");
-      uncaughtExceptionHandler = uncaughtExceptionHandlerCollection[uncaughtExceptionHandlerCollection.length - 1]
-      process.removeListener("uncaughtException", uncaughtExceptionHandler); 
+      uncaughtExceptionHandlers = process.listeners("uncaughtException");
+      uncaughtExceptionHandlers.forEach(function(e){
+        process.removeListener("uncaughtException", e); 
+      });
       done();
     })
 
     afterEach(function(done){
-      process.on("uncaughtException", uncaughtExceptionHandler);
+      uncaughtExceptionHandlers.forEach(function(e){
+        process.on("uncaughtException", e);
+      });
       done();
     });
 
@@ -62,7 +63,7 @@ describe('Core: Exceptions', function(){
       done();
     });
 
-  }catch(e){
+  }else{
     console.log("\r\n\r\n ** the exception test can only run for node >= v0.8.0; skipping ** \r\n\r\n");
   }
 });

@@ -182,6 +182,7 @@ var initActions = function(api, next)
           api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
           if(connection.error === null){
             process.nextTick(function() { 
+              api.stats.increment(api, "actions:processedActions");
               if(api.domain != null){
                 var actionDomain = api.domain.create();
                 actionDomain.on("error", function(err){
@@ -212,6 +213,7 @@ var initActions = function(api, next)
             });
           }
         }else{
+          api.stats.increment(api, "actions:actionsNotFound");
           if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
           connection.error = new Error(connection.action + " is not a known action.");
           if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){

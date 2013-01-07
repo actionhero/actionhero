@@ -72,6 +72,7 @@ var initFileServer = function(api, next){
   }
 
   api.fileServer.sendFile = function(api, file, connection, next){
+    api.stats.increment(api, "fileServer:filesSent");
     var fileSize = 0;
     var fileStream = api.fs.createReadStream(file, {
       'flags': 'r',
@@ -105,6 +106,7 @@ var initFileServer = function(api, next){
   }
 
   api.fileServer.sendFileNotFound = function(api, connection, next){
+    api.stats.increment(api, "fileServer:failedFileRequests");
     if(connection.type == "web"){
       connection.responseHeaders.push(['Content-Type', 'text/html']);
       api.webServer.cleanHeaders(api, connection);
