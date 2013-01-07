@@ -37,10 +37,11 @@ describe('Action: status-only-web', function(){
   it('stats should be returned via web protocol', function(done){
     specHelper.apiTest.get('/status-only-web', serverID, {}, function(response){
       response.statusCode.should.equal(200);      
-      response.body.stats.webServer.numberOfGlobalWebRequests.should.be.above(0);
-      response.body.stats.socketServer.numberOfGlobalSocketRequests.should.be.above(-1);
-      response.body.stats.uptimeSeconds.should.be.above(0);
-      response.body.stats.id.length.should.be.above(0);
+      response.body.uptime.should.be.above(0);
+      response.body.id.length.should.be.above(0);
+
+      response.body.stats.local['webServer:numberOfWebRequests'].should.be.above(0);
+      response.body.stats.local['actions:processedActions'].should.be.above(0);
       done();
     });
   });

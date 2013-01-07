@@ -179,7 +179,6 @@ var initActions = function(api, next)
         if(connection.type == "web"){ api.utils.processRoute(api, connection); }
         connection.action = connection.params["action"];
         if(api.actions[connection.action] != undefined){
-<<<<<<< HEAD
           var actionProtocols = api.actions[connection.action].protocols;
           var connType = connection.type ? connection.type : '';
           var protocolMatched = false;
@@ -194,7 +193,7 @@ var initActions = function(api, next)
               }
             else
               protocolMatched = actionProtocols === connType;
-          } else
+          }else
             protocolMatched = true;
           
           if (!protocolMatched){
@@ -207,11 +206,11 @@ var initActions = function(api, next)
               incramentPendingActions(connection, -1);
               next(connection, true); 
             });            
-          }
-          else {
+          }else{
             api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
             if(connection.error === null){
               process.nextTick(function() { 
+                api.stats.increment(api, "actions:processedActions");
                 if(api.domain != null){
                   var actionDomain = api.domain.create();
                   actionDomain.on("error", function(err){
@@ -227,19 +226,6 @@ var initActions = function(api, next)
                     }); 
                   })
                 }else{
-=======
-          api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
-          if(connection.error === null){
-            process.nextTick(function() { 
-              api.stats.increment(api, "actions:processedActions");
-              if(api.domain != null){
-                var actionDomain = api.domain.create();
-                actionDomain.on("error", function(err){
-                  incramentPendingActions(connection, -1);
-                  api.exceptionHandlers.action(actionDomain, err, connection, next);
-                });
-                actionDomain.run(function(){
->>>>>>> master
                   api.actions[connection.action].run(api, connection, function(connection, toRender){
                     connection.respondingTo = messageID;
                     incramentPendingActions(connection, -1);

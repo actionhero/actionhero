@@ -18,9 +18,18 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
-  api.stats.load(api, function(err, resp){
-    connection.response.stats = resp;
-    next(connection, true);
+  connection.response.id = api.id;
+  var now = new Date().getTime();
+  connection.response.uptime = now - api.bootTime;
+  api.stats.getAll(api, function(err, stats){
+    connection.response.stats = stats;
+    connection.response.tasks = {};
+    api.tasks.getAllTasks(api, function(err, allTasks){
+      for(var i in allTasks){
+        connection.response.tasks[i] = allTasks[i];
+      }
+      next(connection, true);
+    });
   });
 };
 
