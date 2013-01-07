@@ -222,7 +222,7 @@ var initTasks = function(api, next){
                 }else{
                   self.currentTask = task;
                   api.tasks.setTaskData(api, task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
-                    self.log("starting task " + task.name);
+                    if(task.toAnnounce != false){ self.log("starting task " + task.name); }
                     task.run(function(){
                       api.tasks.removeFromQueue(api, task.id, api.tasks.queues.processingQueue, function(){
                         self.log("completed task " + task.name + ", " + task.id);
@@ -250,7 +250,7 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{
                   self.currentTask = task;
-                  // self.log("preparing task " + task.name + " to run locally");
+                  // if(task.toAnnounce != false){ self.log("preparing task " + task.name + " to run locally"); }
                   api.tasks.copyToReleventLocalQueues(api, task, function(){
                     self.prepareNextRun();
                     if(typeof callback == "function"){ callback(); }
@@ -267,7 +267,7 @@ var initTasks = function(api, next){
                   if(typeof callback == "function"){ callback(); }
                 }else{    
                   self.currentTask = task;
-                  // self.log("promoted delayed task " + task.name + " to the global queue");
+                  // if(task.toAnnounce != false){ self.log("promoted delayed task " + task.name + " to the global queue"); }
                   self.prepareNextRun();
                   if(typeof callback == "function"){ callback(); }
                 }
