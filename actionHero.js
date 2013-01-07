@@ -27,6 +27,7 @@ var actionHero = function(){
   self.api.request = require("request");
   self.api.async = require('async');
   self.api.crypto = require("crypto");
+  self.api.uuid = require("node-uuid");
   self.api.consoleColors = require('colors');
   self.api.data2xml = require('data2xml');
   self.api.mime = require('mime');
@@ -51,8 +52,6 @@ actionHero.prototype.start = function(params, next){
     stop: self.stop,
     restart: self.restart,
   };
-
-  self.api.running = true;
 
   if (params === null){ params = {}; }
   self.startingParams = params;
@@ -89,12 +88,12 @@ actionHero.prototype.start = function(params, next){
     'initPids',
     'initLog',
     'initExceptions',
+    'initStats',
     'initRedis',
     'initCache',
     'initActions',
     'initPostVariables',
     'initFileServer',
-    'initStats',
     'initChatRooms',
     'initTasks',
     'initWebServer', 
@@ -114,24 +113,41 @@ actionHero.prototype.start = function(params, next){
   });
 
   orderedInitializers['_complete'] = function(){ 
+    self.api.running = true;
     var starters = [];
     for(var i in self.api){
       if(typeof self.api[i]._start == "function"){
         starters.push(i);
       }
     }
-    starters.forEach(function(starter){
-      self.api[starter]._start(self.api, function(){
-        self.api.log(" > start: " + starter, 'grey');
-      });
-    });
 
+    var started = 0;
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
-    self.api.bootTime = new Date().getTime();
-    self.api.log("server ID: " + self.api.id);
-    self.api.log(successMessage, ["green", "bold"]);
-    if(next !== null){ 
-      next(null, self.api);
+    if(starters.length == 0){
+      self.api.bootTime = new Date().getTime();
+      self.api.log("server ID: " + self.api.id);
+      self.api.log(successMessage, ["green", "bold"]);
+      if(next !== null){ 
+        next(null, self.api);
+      }
+    }else{
+      starters.forEach(function(starter){
+        started++;
+        self.api[starter]._start(self.api, function(){
+          process.nextTick(function(){
+            self.api.log(" > start: " + starter, 'grey');
+            started--;
+            if(started == 0){
+              self.api.bootTime = new Date().getTime();
+              self.api.log("server ID: " + self.api.id);
+              self.api.log(successMessage, ["green", "bold"]);
+              if(next !== null){ 
+                next(null, self.api);
+              }
+            }
+          });
+        });
+      });
     }
   };
 
@@ -142,7 +158,7 @@ actionHero.prototype.stop = function(next){
   var self = this;
   if(self.api.running === true){
     self.api.running = false;
-    self.api.log("Shutting down open servers and pausing tasks", "bold");
+    self.api.log("Shutting down open servers and stopping task processing", "bold");
 
     var orderedTeardowns = {};
     orderedTeardowns['watchedFiles'] = function(next){ 

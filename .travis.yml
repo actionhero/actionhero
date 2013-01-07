@@ -12,3 +12,5 @@ branches:
 services:
   - redis-server
 # before_script:
+after_failure: 
+  - "cat /home/travis/builds/evantahler/actionHero/npm-debug.log"

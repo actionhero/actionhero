@@ -3,8 +3,7 @@ describe('Core: Exceptions', function(){
   var apiObj = {};
   var should = require("should");
 
-  try{
-    require('domain');
+  if(specHelper.canUseDomains){
 
     before(function(done){
       specHelper.prepare(0, function(api){ 
@@ -13,34 +12,49 @@ describe('Core: Exceptions', function(){
       })
     });
 
-    it('I can inject a bad task that breaks', function(done){
-      apiObj.actions['badAction'] = { 
-      name: 'badAction',
-      description: 'I will break',
-      inputs: { required: [], optional: [] },
-      outputExample: { },
-      run: function(api, connection, next){
-        api.log(thing); // undefined
-        next(connection, true);
-      }
-    }
-    apiObj.actions['badAction'].should.be.an.instanceOf(Object);
-    done();
+    var uncaughtExceptionHandlers;
+    beforeEach(function(done){
+      uncaughtExceptionHandlers = process.listeners("uncaughtException");
+      uncaughtExceptionHandlers.forEach(function(e){
+        process.removeListener("uncaughtException", e); 
+      });
+      done();
+    })
+
+    afterEach(function(done){
+      uncaughtExceptionHandlers.forEach(function(e){
+        process.on("uncaughtException", e);
+      });
+      done();
     });
 
-    // commenting out for now until the mocha team helps sort this out
-    //  it('the bad action should fail gracefully', function(done){
-    //    specHelper.apiTest.get('/badAction', 0, {} , function(response){
-    //      response.body.error.should.equal("The server experienced an internal error");
-    //      done();
-    // });
-    //  });
+    it('I can inject a bad task that breaks', function(done){
+      apiObj.actions['badAction'] = { 
+        name: 'badAction',
+        description: 'I will break',
+        inputs: { required: [], optional: [] },
+        outputExample: { },
+        run: function(api, connection, next){
+          api.log(thing); // undefined
+          next(connection, true);
+        }
+      }
+      apiObj.actions['badAction'].should.be.an.instanceOf(Object);
+      done();
+    });
+
+    it('the bad action should fail gracefully', function(done){
+      specHelper.apiTest.get('/badAction', 0, {} , function(response){
+        response.body.error.should.equal("Error: The server experienced an internal error");
+        done();
+      });
+    });
 
     it('other actions still work', function(done){
       specHelper.apiTest.get('/randomNumber', 0, {} , function(response){
         should.not.exist(response.body.error);
         done();
-    });
+      });
     });
 
     it('I can remove the bad action', function(done){
@@ -49,7 +63,7 @@ describe('Core: Exceptions', function(){
       done();
     });
 
-  }catch(e){
+  }else{
     console.log("\r\n\r\n ** the exception test can only run for node >= v0.8.0; skipping ** \r\n\r\n");
   }
 });
