@@ -4,11 +4,6 @@ describe('Core: Tasks', function(){
   var rawAPI = {};
   var should = require("should");
   var taskOutput = [];
-  var canUseDomains = true;
-  var versionParts = process.version.split(".")
-  if(versionParts[0] == "v0" && parseFloat(versionParts[1]) < 8){
-    canUseDomains = false;
-  }
 
   before(function(done){
     specHelper.stopServer(0, function(api){ 
@@ -219,7 +214,7 @@ describe('Core: Tasks', function(){
 
   describe('busted periodic task', function(){
 
-    if(canUseDomains){
+    if(specHelper.canUseDomains){
 
       before(function(done){
         rawAPI.tasks.tasks['busted_task'] = {
