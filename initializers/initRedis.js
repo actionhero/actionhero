@@ -32,7 +32,12 @@ var initRedis = function(api, next){
   c = api.configData.redis;
   api.redis = {};
   api.redis.enable = c.enable;
-  if(c.enable == true){
+  if(api.cluster.isWorker && api.redis.enable !== true){
+    var message = "You cannot run an actionHero cluster without redis; shutting down";
+    api.log(message, ['red', 'bold']);
+    process.send(message);
+    process.exit();
+  }else if(api.redis.enable == true){
 
     api.redis.pingTime = 1000;
     api.redis.lostPeerCheckTime = 5000;
@@ -81,7 +86,7 @@ var init = function(api, c, next){
       api.log("Error selecting DB #"+c.DB+" on redis.  exiting", ["red", "bold"]);
       process.exit();
     }else{
-          // add myself to the list
+      // add myself to the list
       api.redis.client.lrem("actionHero:peers", 1, api.id, function(){ // remove me if I already exist
         api.redis.client.rpush("actionHero:peers", api.id, function(){
 
