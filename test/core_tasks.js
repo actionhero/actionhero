@@ -6,6 +6,7 @@ describe('Core: Tasks', function(){
   var taskOutput = [];
 
   before(function(done){
+    this.timeout(10000)
     specHelper.stopServer(0, function(api){ 
       specHelper.prepare(0, function(api){ 
         rawAPI = api;
@@ -326,6 +327,7 @@ describe('Core: Tasks', function(){
   });
 
   it('tasks can be passed params and taskWorkers can work on thier own', function(done){
+    this.timeout(10000)
     taskOutput = [];
     rawAPI.redis.client.flushdb(function(){
       var worker = new rawAPI.taskProcessor({id: 1});
@@ -336,7 +338,7 @@ describe('Core: Tasks', function(){
           taskOutput[0].should.equal('TEST');
           worker.stop();
           done();
-        }, 1000)
+        }, rawAPI.tasks.cycleTimeMS * 2 + 1)
       });
     });
   });
