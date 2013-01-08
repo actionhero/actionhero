@@ -313,7 +313,7 @@ var initTasks = function(api, next){
   api.tasks = {};
   api.tasks.tasks = {};
   api.tasks.taskProcessors = [];
-  api.tasks.cycleTimeMS = 200;
+  api.tasks.cycleTimeMS = 1000;
 
   api.tasks.queues = {
     globalQueue: 'actionHero:tasks:global',
