@@ -195,7 +195,7 @@ var initSocketServer = function(api, next){
         proxy_connection.params = local_params;
       }
 
-      api.processAction(api, proxy_connection, proxy_connection.messageCount, function(proxy_connection, cont){
+      var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: function(proxy_connection, cont){
         connection = proxy_connection._original_connection;
         connection.response = proxy_connection.response;
         connection.error = proxy_connection.error;
@@ -203,7 +203,8 @@ var initSocketServer = function(api, next){
         var delta = new Date().getTime() - connection.actionStartTime;
         api.socketServer.logLine(api, {label: "action @ socket", params: JSON.stringify(words), action: proxy_connection.action, duration: delta}, connection, 'grey');
         api.socketServer.respondToSocketClient(connection, cont, proxy_connection.messageCount);
-      });
+      }});
+      actionProcessor.processAction();
     }
 
     ////////////////////////////////////////////////////////////////////////////

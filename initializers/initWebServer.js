@@ -103,7 +103,9 @@ var initWebServer = function(api, next){
                 if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
                 else{ connection.params.action = pathParts[1]; }
               }
-              process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+              // process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+              var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+              actionProcessor.processAction();
             }else{
               var form = new api.formidable.IncomingForm();
                 form.parse(connection.req, function(err, fields, files) {
@@ -119,7 +121,8 @@ var initWebServer = function(api, next){
                 });
             }
           }else{
-            process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+            var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+            actionProcessor.processAction();
           }
         }
         

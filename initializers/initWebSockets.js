@@ -161,14 +161,8 @@ var initWebSockets = function(api, next){
             }
           }
 
-          api.processAction(api, proxy_connection, proxy_connection.messageCount, function(proxy_connection, cont){
-            connection = proxy_connection._original_connection;
-            connection.response = proxy_connection.response;
-            connection.error = proxy_connection.error;
-            var delta = new Date().getTime() - connection.actionStartTime;          
-            api.webSockets.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
-            api.webSockets.logLine(api, {label: "action @ webSocket", params: JSON.stringify(data), action: proxy_connection.action, duration: delta}, connection);
-          });
+          var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSockets.handleActionResponse});
+          actionProcessor.processAction();
         });
 
         connection.on('disconnect', function(){
@@ -181,6 +175,15 @@ var initWebSockets = function(api, next){
       api.webSockets.io = io;
       api.log("webSockets bound to " + api.configData.httpServer.port, "green");
       next();
+    }
+
+    api.webSockets.handleActionResponse = function(proxy_connection, cont){
+      var connection = proxy_connection._original_connection;
+      connection.response = proxy_connection.response;
+      connection.error = proxy_connection.error;
+      var delta = new Date().getTime() - connection.actionStartTime;          
+      api.webSockets.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
+      api.webSockets.logLine(api, {label: "action @ webSocket", params: JSON.stringify(proxy_connection.params), action: proxy_connection.action, duration: delta}, connection);
     }
 
     api.webSockets.logLine = function(api, data, connection, color){

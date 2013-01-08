@@ -124,113 +124,117 @@ var initActions = function(api, next)
     next();
   });
 
-  var incrementTotalActions = function(connection, count){
+  api.actionProcessor = function(data){
+    if(data.connection == null){ throw new Error('data.connection is required'); }
+    this.connection = data.connection;
+    this.callback = data.callback;
+  }
+
+  api.actionProcessor.prototype.incrementTotalActions = function(count){
     if(count == null){ count = 1; }
-    if(connection._original_connection != null){
-      connection._original_connection.totalActions = connection._original_connection.totalActions + count;
+    if(this.connection._original_connection != null){
+      this.connection._original_connection.totalActions = this.connection._original_connection.totalActions + count;
     }else{
-      connection.totalActions = connection.totalActions + count;
+      this.connection.totalActions = this.connection.totalActions + count;
     }
   }
 
-  var incramentPendingActions = function(connection, count){
+  api.actionProcessor.prototype.incramentPendingActions = function(count){
     if(count == null){ count = 1; }
-    if(connection._original_connection != null){
-      connection._original_connection.pendingActions = connection._original_connection.pendingActions + count;
+    if(this.connection._original_connection != null){
+      this.connection._original_connection.pendingActions = this.connection._original_connection.pendingActions + count;
     }else{
-      connection.pendingActions = connection.pendingActions + count;
+      this.connection.pendingActions = this.connection.pendingActions + count;
     }
   }
 
-  var getPendingActionCount = function(connection){
-    if(connection._original_connection != null){
-      return connection._original_connection.pendingActions;
+  api.actionProcessor.prototype.getPendingActionCount = function(){
+    if(this.connection._original_connection != null){
+      return this.connection._original_connection.pendingActions;
     }else{
-      return connection.pendingActions;
+      return this.connection.pendingActions;
     }
   }
-  
-  api.processAction = function(api, connection, messageID, next){ 
-    incrementTotalActions(connection);
-    incramentPendingActions(connection);
+
+  api.actionProcessor.prototype.completeAction = function(error, toRender){
+    var self = this;
+    self.connection.respondingTo = self.messageID;
+    if(error != null){ self.connection.error = error; }
+    if(toRender == null){ toRender = true; }
+    self.incramentPendingActions(self.connection, -1);
+    process.nextTick(function(){
+      if(typeof self.callback == 'function'){
+        self.callback(self.connection, toRender);
+      }
+    });
+  }
+
+  api.actionProcessor.prototype.sanitizeLimitAndOffset = function(){
+    if(this.connection.params.limit == null){ 
+      this.connection.params.limit = api.configData.general.defaultLimit; 
+    }else{ 
+      this.connection.params.limit = parseFloat(this.connection.params.limit); 
+    }
+    if(this.connection.params.offset == null){ 
+      this.connection.params.offset = api.configData.general.defaultOffset; 
+    }else{ 
+      this.connection.params.offset = parseFloat(this.connection.params.offset); 
+    }
+  }
+
+  api.actionProcessor.prototype.processAction = function(messageID){ 
+    var self = this;
+    self.messageID = messageID;
+    self.incrementTotalActions();
+    self.incramentPendingActions();
+    self.sanitizeLimitAndOffset();
 
     if(api.running != true){
-      connection.error = "the server is shutting down";
-      next(connection, true);
-    }else if(getPendingActionCount(connection) > api.configData.general.simultaniousActions){
-      incrementTotalActions(connection, -1);
-      incramentPendingActions(connection, -1);
-      connection.error = "you have too many pending requests";
-      next(connection, true);
+      self.completeAction("the server is shutting down");
+    }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaniousActions){
+      self.completeAction("you have too many pending requests");
     }else{
-      if(connection.params.limit == null){ 
-        connection.params.limit = api.configData.general.defaultLimit; 
-      }else{ 
-        connection.params.limit = parseFloat(connection.params.limit); 
-      }
-
-      if(connection.params.offset == null){ 
-        connection.params.offset = api.configData.general.defaultOffset; 
-      }else{ 
-        connection.params.offset = parseFloat(connection.params.offset); 
-      }
-      
-      if (connection.error === null){
-        if(connection.type == "web"){ api.utils.processRoute(api, connection); }
-        connection.action = connection.params["action"];
-        if(api.actions[connection.action] != undefined){
-          api.utils.requiredParamChecker(api, connection, api.actions[connection.action].inputs.required);
-          if(connection.error === null){
+      if (self.connection.error === null){
+        if(self.connection.type == "web"){ api.utils.processRoute(api, self.connection); }
+        self.connection.action = self.connection.params["action"];
+        if(api.actions[self.connection.action] != undefined){
+          api.utils.requiredParamChecker(api, self.connection, api.actions[self.connection.action].inputs.required);
+          if(self.connection.error === null){
             process.nextTick(function() { 
               api.stats.increment(api, "actions:processedActions");
               if(api.domain != null){
                 var actionDomain = api.domain.create();
                 actionDomain.on("error", function(err){
-                  incramentPendingActions(connection, -1);
-                  api.exceptionHandlers.action(actionDomain, err, connection, next);
+                  self.incramentPendingActions(self.connection, -1);
+                  api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
                 });
                 actionDomain.run(function(){
-                  api.actions[connection.action].run(api, connection, function(connection, toRender){
-                    connection.respondingTo = messageID;
-                    // actionDomain.dispose();
-                    incramentPendingActions(connection, -1);
-                    next(connection, toRender);
+                  api.actions[self.connection.action].run(api, self.connection, function(connection, toRender){
+                    self.connection = connection;
+                    self.completeAction();
                   }); 
                 })
               }else{
-                api.actions[connection.action].run(api, connection, function(connection, toRender){
-                  connection.respondingTo = messageID;
-                  incramentPendingActions(connection, -1);
-                  next(connection, toRender);
+                api.actions[self.connection.action].run(api, self.connection, function(connection, toRender){
+                  self.connection = connection;
+                  self.completeAction();
                 }); 
               }
             });
           }else{
-            process.nextTick(function() { 
-              connection.respondingTo = messageID;
-              incramentPendingActions(connection, -1);
-              next(connection, true);  
-            });
+            self.completeAction(); 
           }
         }else{
           api.stats.increment(api, "actions:actionsNotFound");
-          if(connection.action == "" || connection.action == null){ connection.action = "{no action}"; }
-          connection.error = new Error(connection.action + " is not a known action.");
-          if(api.configData.commonWeb.returnErrorCodes == true && connection.type == "web"){
-            connection.responseHttpCode = 404;
+          if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
+          self.connection.error = new Error(self.connection.action + " is not a known action.");
+          if(api.configData.commonWeb.returnErrorCodes == true && self.connection.type == "web"){
+            self.connection.responseHttpCode = 404;
           }
-          process.nextTick(function(){ 
-            connection.respondingTo = messageID;
-            incramentPendingActions(connection, -1);
-            next(connection, true); 
-          });
+          self.completeAction();
         }
       }else{
-        process.nextTick(function(){ 
-          connection.respondingTo = messageID;
-          incramentPendingActions(connection, -1);
-          next(connection, true); 
-        });
+        self.completeAction();
       }
     }
   }

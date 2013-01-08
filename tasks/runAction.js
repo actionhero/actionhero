@@ -15,8 +15,8 @@ task.run = function(api, params, next){
 
   connection = api.utils.setupConnection(api, {id: 0}, 'task', 0, 0);
   connection.params = params;
-  
-  api.processAction(api, connection, null, function(connection, cont){
+
+  var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
     if(connection.error){
       api.log("task error: "+connection.error, "red");
     }else{
@@ -28,7 +28,8 @@ task.run = function(api, params, next){
       }
     }
     next(connection, true);
-  })
+  }});
+  actionProcessor.processAction();
 };
 
 /////////////////////////////////////////////////////////////////////
