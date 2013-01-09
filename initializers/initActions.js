@@ -161,7 +161,7 @@ var initActions = function(api, next)
     self.connection.respondingTo = self.messageID;
     if(error != null){ self.connection.error = error; }
     if(toRender == null){ toRender = true; }
-    self.incramentPendingActions(self.connection, -1);
+    self.incramentPendingActions(-1);
     process.nextTick(function(){
       if(typeof self.callback == 'function'){
         self.callback(self.connection, toRender);
@@ -205,7 +205,7 @@ var initActions = function(api, next)
               if(api.domain != null){
                 var actionDomain = api.domain.create();
                 actionDomain.on("error", function(err){
-                  self.incramentPendingActions(self.connection, -1);
+                  self.incramentPendingActions(-1);
                   api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
                 });
                 actionDomain.run(function(){
