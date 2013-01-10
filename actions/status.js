@@ -20,7 +20,7 @@ action.run = function(api, connection, next){
   connection.response.id = api.id;
   var now = new Date().getTime();
   connection.response.uptime = now - api.bootTime;
-  api.stats.getAll(api, function(err, stats){
+  api.stats.getAll(function(err, stats){
     connection.response.stats = stats;
     connection.response.tasks = {};
     api.tasks.getAllTasks(api, function(err, allTasks){

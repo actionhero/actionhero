@@ -28,7 +28,7 @@ var initWebServer = function(api, next){
     }
 
     api.webServer.handleRequest = function(req, res){
-      api.stats.increment(api, "webServer:numberOfWebRequests");
+      api.stats.increment("webServer:numberOfWebRequests");
       api.webServer.numberOfLocalWebRequests++;
 
       api.bf.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
@@ -103,7 +103,6 @@ var initWebServer = function(api, next){
                 if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
                 else{ connection.params.action = pathParts[1]; }
               }
-              // process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
               var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
               actionProcessor.processAction();
             }else{

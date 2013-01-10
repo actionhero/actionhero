@@ -27,11 +27,11 @@ action.run = function(api, connection, next)
     
   connection.response.cacheTestResults = {};
     
-  api.cache.save(api, key, value, 5000, function(err, resp){
+  api.cache.save(key, value, 5000, function(err, resp){
     connection.response.cacheTestResults.saveResp = resp;
-    api.cache.size(api, function(err, numberOfCacheObjects){
+    api.cache.size(function(err, numberOfCacheObjects){
       connection.response.cacheTestResults.sizeResp = numberOfCacheObjects;
-      api.cache.load(api, key, function(err, resp, expireTimestamp, createdAt, readAt){
+      api.cache.load(key, function(err, resp, expireTimestamp, createdAt, readAt){
         connection.response.cacheTestResults.loadResp = {
           key: key,
           value: resp,
@@ -39,7 +39,7 @@ action.run = function(api, connection, next)
           createdAt: createdAt,
           readAt: readAt
         };
-        api.cache.destroy(api,key, function(err, resp){
+        api.cache.destroy(key, function(err, resp){
           connection.response.cacheTestResults.deleteResp = resp;
           next(connection, true);
         });

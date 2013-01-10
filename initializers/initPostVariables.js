@@ -72,7 +72,7 @@ var initPostVariables = function(api, next)
   
   ////////////////////////////////////////////////////////////////////////////
   // api param checking
-  api.utils.requiredParamChecker = function(api, connection, required_params, mode){
+  api.utils.requiredParamChecker = function(connection, required_params, mode){
     if(mode == null){mode = "all";}
     if(mode == "all"){
       required_params.forEach(function(param){
@@ -106,7 +106,7 @@ var initPostVariables = function(api, next)
 
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
-  api.utils.processRoute = function(api, connection){
+  api.utils.processRoute = function(connection){
     if(connection.params["action"] == null || ( api.actions[connection.params["action"]] === undefined && connection.actionSetBy != "queryParam")){
       var method = connection.method.toLowerCase();
       var pathParts = connection.parsedURL.pathname.split("/");

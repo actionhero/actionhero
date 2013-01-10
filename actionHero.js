@@ -92,10 +92,13 @@ actionHero.prototype.start = function(params, next){
     'initRedis',
     'initCache',
     'initActions',
+    'actionProcessor',
     'initPostVariables',
     'initFileServer',
     'initChatRooms',
     'initTasks',
+    'initTask',
+    'initTaskProcessor',
     'initWebServer', 
     'initWebSockets', 
     'initSocketServer'

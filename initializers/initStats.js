@@ -9,7 +9,7 @@ var initStats = function(api, next){
     global: 'actionHero:stats:global',
   }
 
-  api.stats.increment = function(api, key, count, next){
+  api.stats.increment = function(key, count, next){
     if(count == null){ count = 1; }
     count = parseFloat(count);
     if(api.redis.enable === true && api.running == true){
@@ -25,7 +25,7 @@ var initStats = function(api, next){
     }
   }
 
-  api.stats.set = function(api, key, count, next){
+  api.stats.set = function(key, count, next){
     if(count == null){ count = 1; }
     count = parseFloat(count);
     if(api.redis.enable === true && api.running == true){
@@ -38,7 +38,7 @@ var initStats = function(api, next){
     }
   }
 
-  api.stats.get = function(api, key, collection, next){
+  api.stats.get = function(key, collection, next){
     if(api.redis.enable === true && api.running == true){
       api.redis.client.hget(collection, key, function(err, cacheObj){
         next(err, cacheObj);
@@ -48,7 +48,7 @@ var initStats = function(api, next){
     }
   }
 
-  api.stats.getAll = function(api, next){
+  api.stats.getAll = function(next){
     if(api.redis.enable === true && api.running == true){
       api.redis.client.hgetall(api.stats.collections.global, function(err, globalStats){
         api.redis.client.hgetall(api.stats.collections.local, function(err, localStats){

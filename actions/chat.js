@@ -25,12 +25,12 @@ action.outputExample = {
 action.run = function(api, connection, next){
   if(connection.type == "web"){
     if (connection.params.method == "roomView"){
-      api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
+      api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
         connection.response.roomStatus = roomStatus;
         next(connection, true);
       });
     }else if(connection.params.method == "roomChange"){
-      api.webServer.changeChatRoom(api, connection, function(){
+      api.webServer.changeChatRoom(connection, function(){
         next(connection, true);
       })
     }else if(connection.params.method == "detailsView"){
@@ -40,13 +40,13 @@ action.run = function(api, connection, next){
       next(connection, true);
     }else if(connection.params.method == "say"){
       if(connection.params.message != null){
-        api.chatRoom.socketRoomBroadcast(api, connection, connection.params.message);
+        api.chatRoom.socketRoomBroadcast(connection, connection.params.message);
       }else{
         connection.error = new Error("message is required to use the say method");
       }
       next(connection, true);
     }else if(connection.params.method == "messages"){
-      api.webServer.getWebChatMessage(api, connection, function(err, message){
+      api.webServer.getWebChatMessage(connection, function(err, message){
         connection.response.message = message;
         next(connection, true);
       });

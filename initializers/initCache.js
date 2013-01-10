@@ -35,14 +35,14 @@ var initCache = function(api, next){
     
     var redisCacheKey = "actionHero:cache";
 
-    api.cache.size = function(api, next){
+    api.cache.size = function(next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hlen(redisCacheKey, domain.bind(function(err, count){
         next(null, count);
       }));
     }
 
-    api.cache.load = function(api, key, next){
+    api.cache.load = function(key, next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
         if(err != null){ api.log(err, red); }
@@ -66,10 +66,10 @@ var initCache = function(api, next){
       }));
     };
 
-    api.cache.destroy = function(api, key, next){
+    api.cache.destroy = function(key, next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hdel(redisCacheKey, key, domain.bind(function(err, count){
-        api.stats.increment(api, "cache:cachedObjects", -1 );
+        api.stats.increment("cache:cachedObjects", -1 );
         if(err != null){ api.log(err, red); }
         var resp = true;
         if(count != 1){ resp = false; }
@@ -77,7 +77,7 @@ var initCache = function(api, next){
       }));
     };
 
-    api.cache.sweeper = function(api, next){
+    api.cache.sweeper = function(next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hkeys(redisCacheKey, domain.bind(function(err, keys){
         var started = 0;
@@ -112,21 +112,21 @@ var initCache = function(api, next){
 
     api.cache.data = {};
 
-    api.cache.size = function(api, next){
+    api.cache.size = function(next){
       var domain = api.cache.prepareDomain();
       process.nextTick(function(){
         next(null, api.utils.hashLength(api.cache.data));
       });
     }
 
-    api.cache.load = function(api, key, next){
+    api.cache.load = function(key, next){
       var domain = api.cache.prepareDomain();
       var cacheObj = api.cache.data[key];
       if(cacheObj == null){
-        api.stats.increment(api, "cache:nullCacheLoads");
+        api.stats.increment("cache:nullCacheLoads");
         process.nextTick(function() { next(new Error("Object not found"), null, null, null, null); });
       }else{
-        api.stats.increment(api, "cache:succesfullCacheLoads");
+        api.stats.increment("cache:succesfullCacheLoads");
         if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null ){
           api.cache.data[key].readAt = new Date().getTime();
           if(typeof next == "function"){  
@@ -140,19 +140,19 @@ var initCache = function(api, next){
       }
     };
 
-    api.cache.destroy = function(api, key, next){
+    api.cache.destroy = function(key, next){
       var domain = api.cache.prepareDomain();
       var cacheObj = api.cache.data[key];
       if(typeof cacheObj == "undefined"){
         if(typeof next == "function"){  process.nextTick(function() { next(null, false); }); }
       }else{
         delete api.cache.data[key];
-        api.stats.increment(api, "cache:cachedObjects", -1 );
+        api.stats.increment("cache:cachedObjects", -1 );
         if(typeof next == "function"){  process.nextTick(function() { next(null, true); }); }
       }
     };
 
-    api.cache.sweeper = function(api, next){
+    api.cache.sweeper = function(next){
       var domain = api.cache.prepareDomain();
       var sweepedKeys = [];
       for (var i in api.cache.data){
@@ -166,9 +166,9 @@ var initCache = function(api, next){
     }
   }
 
-  api.cache.save = function(api, key, value, expireTimeMS, next){
-    api.stats.increment(api, "cache:cachedObjects");
-    api.stats.increment(api, "cache:totalCachedObjects");
+  api.cache.save = function(key, value, expireTimeMS, next){
+    api.stats.increment("cache:cachedObjects");
+    api.stats.increment("cache:totalCachedObjects");
     var domain = api.cache.prepareDomain();
     if(typeof expireTimeMS == "function" && typeof next == "undefined"){
       next = expireTimeMS;
@@ -200,11 +200,11 @@ var initCache = function(api, next){
     }
   };
 
-  api.cache.runSweeper = function(api){
+  api.cache.runSweeper = function(){
     clearTimeout(api.cache.sweeperTimer);
-    api.cache.sweeper(api, function(err, sweepedKeys){
+    api.cache.sweeper(function(err, sweepedKeys){
       if(sweepedKeys.length > 0){
-        api.stats.increment(api, "cache:cachedObjects", -1 * sweepedKeys.length);
+        api.stats.increment("cache:cachedObjects", -1 * sweepedKeys.length);
         api.log("cleaned " + sweepedKeys.length + " expired cache keys");
       }
       if(api.running){
@@ -214,7 +214,7 @@ var initCache = function(api, next){
   }
 
   api.cache._start = function(api, callback){
-    api.cache.runSweeper(api);
+    api.cache.runSweeper();
     callback();
   }
 
