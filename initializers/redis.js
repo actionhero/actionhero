@@ -1,3 +1,5 @@
+var redisPackage = require('redis');
+
 var redis = function(api, next){  
 
   /* actionHero will create the following stores within your redis database:
@@ -29,7 +31,7 @@ var redis = function(api, next){
     api.redis.lostPeerCheckTime = 5000;
     if(api.configData.redis.DB == null){ api.configData.redis.DB = 0; }
     api.redis.channelHandlers = {};
-    api.redis.client = api.redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
+    api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
 
     if(api.configData.redis.password != null){
       api.redis.client.auth(api.configData.redis.password, function(){
@@ -101,7 +103,7 @@ var redis = function(api, next){
             api.redis.client.rpush("actionHero:peers", api.id, function(){
 
               // set up say pub/sub listeners
-              api.redis.clientSubscriber = api.redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
+              api.redis.clientSubscriber = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
 
               if(api.configData.redis.password != null){ 
                 api.redis.clientSubscriber.auth(api.configData.redis.password, function(){

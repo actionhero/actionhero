@@ -1,3 +1,5 @@
+var uuid = require("node-uuid");
+
 var task = function(api, next){
 
   /////////////////////
@@ -42,7 +44,7 @@ var task = function(api, next){
   }
 
   api.task.prototype.generateID = function(){
-    return api.uuid.v4();
+    return uuid.v4();
   }
 
   api.task.prototype.determineScope = function(){

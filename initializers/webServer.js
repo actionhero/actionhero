@@ -1,3 +1,11 @@
+var http = require('http');
+var https = require('https');
+var url = require('url');
+var fs = require('fs');
+var formidable = require('formidable');
+var data2xml = require('data2xml');
+var browser_fingerprint = require('browser_fingerprint');
+
 var webServer = function(api, next){
 
   if(api.configData.httpServer.enable != true){
@@ -37,13 +45,13 @@ var webServer = function(api, next){
     ////////////////////////////////////////////////////////////////////////////
     // server
     if(api.configData.httpServer.secure == false){
-      api.webServer.server = api.http.createServer(function (req, res) {
+      api.webServer.server = http.createServer(function (req, res) {
         api.webServer.handleRequest(req, res);
       });
     }else{
-      var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
-      var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
-      api.webServer.server = api.https.createServer({key: key, cert: cert}, function (req, res) {
+      var key = fs.readFileSync(api.configData.httpServer.keyFile);
+      var cert = fs.readFileSync(api.configData.httpServer.certFile);
+      api.webServer.server = https.createServer({key: key, cert: cert}, function (req, res) {
         api.webServer.handleRequest(req, res);
       });
     }
@@ -52,7 +60,7 @@ var webServer = function(api, next){
       api.stats.increment("webServer:numberOfWebRequests");
       api.webServer.numberOfLocalWebRequests++;
 
-      api.bf.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+      browser_fingerprint.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
         var responseHeaders = [];
         for(var i in cookieHash){
           responseHeaders.push([i, cookieHash[i]]);
@@ -88,7 +96,7 @@ var webServer = function(api, next){
         }
         
         // determine API or FILE
-        connection.parsedURL = api.url.parse(connection.req.url, true);
+        connection.parsedURL = url.parse(connection.req.url, true);
         var pathParts = connection.parsedURL.pathname.split("/");
         connection.requestMode = api.configData.commonWeb.rootEndpointType; // api or public
         connection.directModeAccess = false;
@@ -127,7 +135,7 @@ var webServer = function(api, next){
               var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
               actionProcessor.processAction();
             }else{
-              var form = new api.formidable.IncomingForm();
+              var form = new formidable.IncomingForm();
                 form.parse(connection.req, function(err, fields, files) {
                 if(err){
                   api.log(err, "red");
@@ -198,7 +206,7 @@ var webServer = function(api, next){
           var stringResponse = "";
           if(typeof connection.params.outputType == "string"){
             if(connection.params.outputType.toLowerCase() == "xml"){
-              stringResponse = api.data2xml()('XML', connection.response);
+              stringResponse = data2xml()('XML', connection.response);
             }else{
               stringResponse = JSON.stringify(connection.response); 
             }

@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var paramsAndRoutes = function(api, next){
   
   // special params we will always accept
@@ -135,7 +137,7 @@ var paramsAndRoutes = function(api, next){
   var loadRoutes = function(){
     api.routes = {};
     var routesFile = process.cwd() + '/routes.js';
-    if(api.fs.existsSync(routesFile)){
+    if(fs.existsSync(routesFile)){
       delete require.cache[routesFile];
       api.routes = require(routesFile).routes;
       for(var i in api.routes){
@@ -153,10 +155,10 @@ var paramsAndRoutes = function(api, next){
 
   if(api.configData.general.developmentMode == true){
     var routesFile = process.cwd() + '/routes.js';
-    api.fs.watchFile(routesFile, {interval:1000}, function(curr, prev){
+    fs.watchFile(routesFile, {interval:1000}, function(curr, prev){
       if(curr.mtime > prev.mtime){
         process.nextTick(function(){
-          if(api.fs.readFileSync(routesFile).length > 0){
+          if(fs.readFileSync(routesFile).length > 0){
             loadRoutes();
           }
         });

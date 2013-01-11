@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var tasks = function(api, next){
   
   //////////////////////////
@@ -347,12 +349,12 @@ var tasks = function(api, next){
     }
     
     var loadFolder = function(path){
-      if(api.fs.existsSync(path)){
-        api.fs.readdirSync(path).forEach( function(file) {
+      if(fs.existsSync(path)){
+        fs.readdirSync(path).forEach( function(file) {
           if(path[path.length - 1] != "/"){ path += "/"; } 
           var fullfFilePath = path + file;
           if (file[0] != "."){
-            var stats = api.fs.statSync(fullfFilePath);
+            var stats = fs.statSync(fullfFilePath);
             if(stats.isDirectory()){
               loadFolder(fullfFilePath);
             }else if(stats.isSymbolicLink()){
@@ -389,10 +391,10 @@ var tasks = function(api, next){
         if(api.configData.general.developmentMode == true){
           api.watchedFiles.push(fullfFilePath);
           (function() {
-            api.fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
+            fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
               if(curr.mtime > prev.mtime){
                 process.nextTick(function(){
-                  if(api.fs.readFileSync(fullfFilePath).length > 0){
+                  if(fs.readFileSync(fullfFilePath).length > 0){
                     delete require.cache[fullfFilePath];
                     delete api.tasks.tasks[taskName];
                     taskLoader(fullfFilePath, true);

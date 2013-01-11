@@ -1,3 +1,5 @@
+var socket_io = require('socket.io');
+
 var webSockets = function(api, next){
 
   if(api.configData.webSockets.enable != true){
@@ -22,7 +24,7 @@ var webSockets = function(api, next){
         }
       };
 
-      var io = api.io.listen(api.webServer.server, { 'log level': 0 });
+      var io = socket_io.listen(api.webServer.server, { 'log level': 0 });
 
       if(api.configData.webSockets.logLevel != null){
         io.set('log level', api.configData.webSockets.logLevel);

@@ -1,3 +1,5 @@
+var crypto = require("crypto");
+
 var utils = function(api, next){
 
   api.utils = {};
@@ -102,20 +104,6 @@ var utils = function(api, next){
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  // shellExec
-  api.utils.shellExec = function(command, next){
-    var response = {};
-    child = api.exec(command, function (error, stdout, stderr) {
-      if (stdout.length > 0){ response.stdout = stdout.replace(/(\r\n|\n|\r)/gm,""); }else{response.stdout = stdout; }
-      if (stderr.length > 0){ response.stderr = stderr.replace(/(\r\n|\n|\r)/gm,""); }else{response.stderr = stderr; }
-        if (error !== null) {
-          api.log(JSON.stringify(error), ["red","bold"]);
-        }
-        process.nextTick(function() { next(response); });
-    })
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
   // object Clone
   api.utils.objClone = function(obj){
     return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
@@ -172,7 +160,7 @@ var utils = function(api, next){
     connection.messageCount = 0;
     connection.connectedAt = new Date().getTime();
     if(connection.id == null){
-      var md5 = api.crypto.createHash('md5');
+      var md5 = crypto.createHash('md5');
       var hashBuff = new Buffer(String(remotePort+ remoteIP + Math.random() + connection.connectedAt)).toString('base64');
       md5.update(hashBuff);
       connection.id = md5.digest('hex');

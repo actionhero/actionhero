@@ -16,7 +16,6 @@
   "dependencies": {
     "browser_fingerprint":"0.0.x",
     "async":"0.1.x", 
-    "request":"2.12.x",
     "validator":"0.4.x",
     "formidable":"1.0.x",
     "colors":"0.6.x",
@@ -30,7 +29,8 @@
   "devDependencies": {
     "mocha":"1.7.x",
     "should":"1.2.x",
-    "socket.io-client":"0.9.x"
+    "socket.io-client":"0.9.x",
+    "request":"2.12.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"

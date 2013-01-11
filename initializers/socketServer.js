@@ -1,3 +1,7 @@
+var net = require("net");
+var tls = require("tls");
+var fs = require('fs');
+
 var socketServer = function(api, next){
 
   if(api.configData.tcpServer.enable != true){
@@ -7,13 +11,13 @@ var socketServer = function(api, next){
 
     api.socketServer._start = function(api, next){
       if(api.configData.tcpServer.secure == false){
-        api.socketServer.server = api.net.createServer(function(connection){
+        api.socketServer.server = net.createServer(function(connection){
           api.socketServer.handleConnection(connection);
         });
       }else{
-        var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
-        var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
-        api.socketServer.server = api.tls.createServer({key: key, cert: cert}, function(connection){
+        var key = fs.readFileSync(api.configData.httpServer.keyFile);
+        var cert = fs.readFileSync(api.configData.httpServer.certFile);
+        api.socketServer.server = tls.createServer({key: key, cert: cert}, function(connection){
           api.socketServer.handleConnection(connection);
         });
       }

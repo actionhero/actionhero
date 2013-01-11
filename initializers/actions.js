@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var actions = function(api, next){
   api.actions = {};
 
@@ -29,7 +31,7 @@ var actions = function(api, next){
   }
 
   var actionsPath = process.cwd() + "/actions/";
-  api.fs.exists(actionsPath, function (exists) {
+  fs.exists(actionsPath, function (exists) {
     if(!exists){
       var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
       api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow");
@@ -37,12 +39,12 @@ var actions = function(api, next){
     }
 
     function loadFolder(path){
-      if(api.fs.existsSync(path)){
-        api.fs.readdirSync(path).forEach( function(file) {
+      if(fs.existsSync(path)){
+        fs.readdirSync(path).forEach( function(file) {
           if(path[path.length - 1] != "/"){ path += "/"; } 
           var fullFilePath = path + file;
           if (file[0] != "."){
-            var stats = api.fs.statSync(fullFilePath);
+            var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
               loadFolder(fullFilePath);
             }else if(stats.isSymbolicLink()){
@@ -80,10 +82,10 @@ var actions = function(api, next){
         if(api.configData.general.developmentMode == true){
           api.watchedFiles.push(fullFilePath);
           (function() {
-            api.fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
+            fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
               if(curr.mtime > prev.mtime){
                 process.nextTick(function(){
-                  if(api.fs.readFileSync(fullFilePath).length > 0){
+                  if(fs.readFileSync(fullFilePath).length > 0){
                     delete require.cache[fullFilePath];
                     delete api.actions[actionName];
                     actionLoader(fullFilePath, true);
