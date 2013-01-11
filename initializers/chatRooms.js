@@ -15,8 +15,7 @@ var chatRooms = function(api, next){
     if(fromQueue == null){fromQueue = false;}
     if(connection == null){ connection = {}; }
     if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
-    if(connection.public == null){ connection.public = {}; }
-    if(connection.public.id == null){ connection.public.id = 0; }
+    if(connection.id == null){ connection.id = 0; }
     if(connection.params != null && connection.params.roomMatchKey != null){ connection.roomMatchKey = connection.params.roomMatchKey; }
     if(connection.params != null && connection.params.roomMatchValue != null){ connection.roomMatchValue = connection.params.roomMatchValue; }
     if(api.redis.enable === true && fromQueue == false){ 
@@ -26,20 +25,17 @@ var chatRooms = function(api, next){
           room: connection.room,
           roomMatchKey: connection.roomMatchKey,
           roomMatchValue: connection.roomMatchValue,
-          public: {
-            id: connection.public.id
-          }
         }
       };
       api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
     }
     else{
       api.stats.increment("chatRooom:messagesSent");
-      var messagePayload = {message: message, room: connection.room, from: connection.public.id, context: "user", sentAt: new Date().getTime() };
+      var messagePayload = {message: message, room: connection.room, from: connection.id, context: "user", sentAt: new Date().getTime() };
       for(var i in api.connections){
         var thisConnection = api.connections[i];
         if(thisConnection.room == connection.room || thisConnection.additionalListeningRooms.indexOf(connection.room) > -1){
-          if(connection == null || thisConnection.public.id != connection.public.id){
+          if(connection == null || thisConnection.id != connection.id){
             var matched = false;
             if(connection.roomMatchKey == null){
               matched = true;
@@ -49,7 +45,7 @@ var chatRooms = function(api, next){
             if(matched == true){
               if(thisConnection.type == "web"){ api.webServer.storeWebChatMessage(thisConnection, messagePayload); }
               else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
-              else if(thisConnection.type == "webSocket"){ thisConnection.emit("say", messagePayload); }
+              else if(thisConnection.type == "webSocket"){ thisConnection.rawConnection.emit("say", messagePayload); }
             }
           }
         }
@@ -88,7 +84,7 @@ var chatRooms = function(api, next){
 
   api.chatRoom.roomAddMember = function(connection, next){
     var room = connection.room;
-    var name = connection.public.id;
+    var name = connection.id;
     api.chatRoom.socketRoomStatus(room, function(err, roomStatus){
       var found = false
       for(var i in roomStatus.members){
@@ -117,7 +113,7 @@ var chatRooms = function(api, next){
 
   api.chatRoom.roomRemoveMember = function(connection, next){
     var room = connection.room;
-    var name = connection.public.id;
+    var name = connection.id;
     api.stats.increment("chatRooom:roomMembers:" + connection.room, -1);
     if(api.redis.enable === true){
       var key = api.chatRoom.redisRoomPrefix + connection.room;
@@ -144,7 +140,6 @@ var chatRooms = function(api, next){
   }
 
   api.chatRoom.announceMember = function(connection, direction){
-    // var message = connection.public.id;
     var message = "I";
     if(direction == true){
       message += " have entered the room";

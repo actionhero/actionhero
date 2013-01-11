@@ -19,7 +19,7 @@ var fileServer = function(api, next){
 
     // determine the filename
     if((connection.params.fileName == null || typeof connection.params.fileName == "undefined") && connection.type == "web"){
-      var parsedURL = url.parse(connection.req.url);
+      var parsedURL = url.parse(connection.rawConnection.req.url);
       var parts = parsedURL.pathname.split("/");
       parts.shift();
       if (connection.directModeAccess == true){ parts.shift(); }
@@ -29,7 +29,6 @@ var fileServer = function(api, next){
         fileName += parts[i];
       }
     }else{
-      connection.fileRequestStartTime = new Date().getTime();
       api.utils.requiredParamChecker(connection, ["fileName"]);
       if(connection.error === null){ fileName = connection.params.fileName; }
     }
@@ -90,8 +89,8 @@ var fileServer = function(api, next){
       connection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
       connection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
       api.webServer.cleanHeaders(connection);
-      connection.res.writeHead(200, connection.responseHeaders);
-      fileStream.pipe(connection.res, {end: true});
+      connection.rawConnection.res.writeHead(200, connection.responseHeaders);
+      fileStream.pipe(connection.rawConnection.res, {end: true});
     }else{
       try { 
         fileStream.pipe(connection._original_connection, {end: false});
@@ -112,8 +111,8 @@ var fileServer = function(api, next){
     if(connection.type == "web"){
       connection.responseHeaders.push(['Content-Type', 'text/html']);
       api.webServer.cleanHeaders(connection);
-      connection.res.writeHead(404, connection.responseHeaders);
-      connection.res.end(api.configData.general.flatFileNotFoundMessage);
+      connection.rawConnection.res.writeHead(404, connection.responseHeaders);
+      connection.rawConnection.res.end(api.configData.general.flatFileNotFoundMessage);
       next(connection, false);
     }else{
       if(connection.error === null){
@@ -129,12 +128,12 @@ var fileServer = function(api, next){
       var full_url = null;
       var duration = null;
       var type = connection.type;
-      if(connection.type == "web" && connection.req.headers != null){
-        full_url = connection.req.headers.host + connection.req.url
-        duration = new Date().getTime() - connection.timer.startTime;
+      if(connection.type == "web" && connection.rawConnection.req.headers != null){
+        full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url
+        duration = new Date().getTime() - connection.connectedAt;
       }else{
         full_url = connection.params.fileName;
-        duration = new Date().getTime() - connection.fileRequestStartTime;
+        duration = new Date().getTime() - connection.connectedAt;
       }
       api.logJSON({
         label: "file @ " + type,

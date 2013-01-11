@@ -9,13 +9,10 @@ var async = require('async');
 
 var actionHero = function(){
   var self = this;
-
   self.initalizers = {};
   self.api = {};
 
-  self.api.connections = {};
-
-  // backwards compatibility for old node versions
+    // backwards compatibility for old node versions
   fs.existsSync || (fs.existsSync = path.existsSync);
   fs.exists || (fs.exists = path.exists);
   try{ self.api.domain = require("domain"); }catch(e){ }
@@ -76,8 +73,9 @@ actionHero.prototype.start = function(params, next){
     'tasks',
     'task',
     'taskProcessor',
+    'connections',
     'webServer', 
-    'webSockets', 
+    'webSocketServer', 
     'socketServer'
   ].forEach(function(I){
     orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };

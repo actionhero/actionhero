@@ -21,7 +21,8 @@ describe('Action: chat', function(){
   describe('basics', function(){
     it('I can my chat details', function(done){
       specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        clientID = response.body.details.public.id
+        console.log(response.body)
+        clientID = response.body.details.id
         done();
       });
     });
@@ -55,7 +56,7 @@ describe('Action: chat', function(){
 
     it('clientID sticks (cookies)', function(done){
       specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        clientID.should.equal(response.body.details.public.id);
+        clientID.should.equal(response.body.details.id);
         done();
       });
     });

@@ -35,7 +35,7 @@ action.run = function(api, connection, next){
       })
     }else if(connection.params.method == "detailsView"){
       connection.response.details = {};
-      connection.response.details.public = connection.public;
+      connection.response.details.id = connection.id;
       connection.response.details.room = connection.room;
       next(connection, true);
     }else if(connection.params.method == "say"){

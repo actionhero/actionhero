@@ -38,10 +38,19 @@ var socketServer = function(api, next){
       api.socketServer.gracefulShutdown(next);
     }
 
-    api.socketServer.handleConnection = function(connection){
-      api.utils.setupConnection(connection, "socket", connection.remotePort, connection.remoteAddress);
+    api.socketServer.decorateConnection = function(connection){
       connection.responsesWaitingCount = 0;
       connection.socketDataString = "";
+    }
+
+    api.socketServer.handleConnection = function(rawConnection){
+      var connection = new api.connection({
+        type: 'socket', 
+        remotePort: rawConnection.remotePort, 
+        remoteIP: rawConnection.remoteAddress, 
+        rawConnection: rawConnection,
+      });
+      api.socketServer.decorateConnection(connection);
       api.stats.increment("socketServer:numberOfActiveClients");
       api.socketServer.logLine({label: "connect @ socket"}, connection);
 
@@ -49,7 +58,7 @@ var socketServer = function(api, next){
         api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
       });
       
-      connection.on("data", function (chunk) {
+      connection.rawConnection.on("data", function (chunk) {
         if(api.socketServer.checkBreakChars(chunk)){ 
           api.socketServer.goodbye(connection); 
         }else{
@@ -68,16 +77,16 @@ var socketServer = function(api, next){
         }
       });
 
-      connection.on("end", function () {        
+      connection.rawConnection.on("end", function () {        
         api.stats.increment("socketServer:numberOfActiveClients", -1);
-        api.utils.destroyConnection(connection);
         try{ 
-          connection.end(); 
+          connection.rawConnection.end(); 
         }catch(e){ }
+        connection.destroy();
         api.socketServer.logLine({label: "disconnect @ socket"}, connection);
       });
 
-      connection.on("error", function(e){
+      connection.rawConnection.on("error", function(e){
         api.log("socket error: " + e, "red");
         connection.end();
       });
@@ -205,7 +214,6 @@ var socketServer = function(api, next){
       }
 
       var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: function(proxy_connection, cont){
-        connection = proxy_connection._original_connection;
         connection.response = proxy_connection.response;
         connection.error = proxy_connection.error;
         connection.responsesWaitingCount--;
@@ -213,6 +221,7 @@ var socketServer = function(api, next){
         api.socketServer.logLine({label: "action @ socket", params: JSON.stringify(words), action: proxy_connection.action, duration: delta}, connection, 'grey');
         api.socketServer.respondToSocketClient(connection, cont, proxy_connection.messageCount);
       }});
+
       actionProcessor.processAction();
     }
 
@@ -246,7 +255,7 @@ var socketServer = function(api, next){
       try{ 
         api.socketServer.logLine({label: "quit @ socket"}, connection);
         api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response", reason: 'request'}); 
-        connection.end();
+        connection.rawConnection.end();
       }catch(e){ }
     }
 
@@ -277,7 +286,7 @@ var socketServer = function(api, next){
             message.messageCount = connection.messageCount;
           }
         }
-        connection.write(JSON.stringify(message) + "\r\n"); 
+        connection.rawConnection.write(JSON.stringify(message) + "\r\n"); 
       }catch(e){
         api.log("socket write error: "+e, "red");
       }

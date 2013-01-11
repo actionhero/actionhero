@@ -1,5 +1,3 @@
-var crypto = require("crypto");
-
 var utils = function(api, next){
 
   api.utils = {};
@@ -140,57 +138,6 @@ var utils = function(api, next){
     }
     return cookies;
   };
-
-  ////////////////////////////////////////////////////////////////////////////
-  // helpers for setting up and destroyign connections
-  api.utils.setupConnection = function(connection, type, remotePort, remoteIP){
-    if(connection == null){ connection = {}; }
-    connection.type = type;
-    connection.error = null;
-    connection.params = {};
-    connection.response = {};
-    connection.pendingActions = 0;
-    connection.totalActions = 0;
-    connection.remotePort = remotePort;
-    connection.remoteIP = remoteIP;
-    connection.additionalListeningRooms = [];
-    if(connection.roomMatchKey == null){ connection.roomMatchKey = null; }
-    if(connection.roomMatchValue == null){ connection.roomMatchValue = null; }
-    if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
-    connection.messageCount = 0;
-    connection.connectedAt = new Date().getTime();
-    if(connection.id == null){
-      var md5 = crypto.createHash('md5');
-      var hashBuff = new Buffer(String(remotePort+ remoteIP + Math.random() + connection.connectedAt)).toString('base64');
-      md5.update(hashBuff);
-      connection.id = md5.digest('hex');
-    }
-    connection.public = {
-      id: connection.id, 
-      connectedAt: connection.connectedAt
-    };
-    if(api.connections[connection.public.id] == null){
-      if(connection.type != "web" || (connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL > 0 )){
-        api.chatRoom.roomAddMember(connection);
-      }
-    }
-    api.connections[connection.public.id] = connection;
-    return connection;
-  }
-
-  api.utils.destroyConnection = function(connection, next){
-    if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
-      delete api.connections[connection.public.id]
-      delete connection;
-      if(typeof next == "function"){ next(null, null); }
-    }else{
-      api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
-        delete api.connections[connection.public.id];
-        delete connection;
-        if(typeof next == "function"){ next(null, null); }
-      }); 
-    }
-  }
 
   next()
 }
