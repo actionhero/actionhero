@@ -5,7 +5,7 @@ for(var i in versionParts){ versionParts[i] = parseInt(versionParts[i]); }
 if(versionParts[0] >= 0 && versionParts[1] >= 7){
     describe('Core: Developer Mode', function(){
 
-      var specHelper = require('../helpers/_specHelper.js').specHelper;
+      var specHelper = require('../helpers/specHelper.js').specHelper;
       var apiObj = {};
       var should = require("should");
 

@@ -1,4 +1,4 @@
-var initID = function(api, next){
+var id = function(api, next){
 
   var externalIP = api.utils.getExternalIPAddress();
   if(externalIP == false){
@@ -16,4 +16,4 @@ var initID = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initID = initID;
+exports.id = id;

@@ -1,5 +1,5 @@
 describe('Core: Tasks', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var rawAPI = {};
   var should = require("should");
@@ -113,10 +113,10 @@ describe('Core: Tasks', function(){
   });
 
   it('all queues should start empty', function(done){
-    rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-      rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount){
-        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.localQueue, function(err, localCount){
-          rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.processingQueue, function(err, processingCount){
+    rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+      rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
+          rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
             [delayedCount, globalCount, localCount, processingCount].forEach(function(count){
               count.should.equal(0)
             })
@@ -129,7 +129,7 @@ describe('Core: Tasks', function(){
 
   it('all perioduc tasks should be enqueued when the server starts', function(done){
     rawAPI.tasks.seedPeriodicTasks(function(){
-      rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+      rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
         delayedCount.should.equal(2)
         done();
       });
@@ -138,7 +138,7 @@ describe('Core: Tasks', function(){
 
   it('re-enquing a periodc task should fail (if it exists alread) via loader', function(done){
     rawAPI.tasks.seedPeriodicTasks(function(){
-      rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+      rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
         delayedCount.should.equal(2) // no change
         done();
       });
@@ -154,7 +154,7 @@ describe('Core: Tasks', function(){
   });
 
    it('I can inspect the state of my current tasks, the local queue, and the global queue', function(done){
-    rawAPI.tasks.getAllTasks(rawAPI, function(err, data){
+    rawAPI.tasks.getAllTasks(function(err, data){
       for(var i in data){
         var t = data[i];
         ( (['periodic_any', 'periodic_all'].indexOf(t.name) >= 0) ).should.be.true;
@@ -172,9 +172,9 @@ describe('Core: Tasks', function(){
     t.enqueue(function(){
       var t = new rawAPI.task({name: 'regular_any'});
       t.enqueue(function(){
-        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
           globalCount.should.equal(2);
-          rawAPI.tasks.getAllTasks(rawAPI, function(err, data){
+          rawAPI.tasks.getAllTasks(function(err, data){
             rawAPI.utils.hashLength(data).should.equal(4)
             done();
           });
@@ -188,17 +188,17 @@ describe('Core: Tasks', function(){
       var t = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() - 1});
       t.enqueue(function(err, success){
         success.should.equal(true);
-        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
           globalCount.should.equal(1);
-          rawAPI.tasks.changeQueue(rawAPI, rawAPI.tasks.queues.globalQueue, rawAPI.tasks.queues.processingQueue, function(err, task){
+          rawAPI.tasks.changeQueue(rawAPI.tasks.queues.globalQueue, rawAPI.tasks.queues.processingQueue, function(err, task){
             task.name.should.equal('regular_any')
-            rawAPI.tasks.setTaskData(rawAPI, task.id, {api_id: rawAPI.id, worker_id: 0, state: "processing"}, function(err, task){
+            rawAPI.tasks.setTaskData(task.id, {api_id: rawAPI.id, worker_id: 0, state: "processing"}, function(err, task){
               task.queue.should.equal('actionHero:tasks:processing')
-              rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
+              rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
                 globalCount2.should.equal(0)
               
                 rawAPI.tasks.savePreviouslyCrashedTasks(function(){
-                  rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount3){
+                  rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount3){
                     globalCount3.should.equal(1);
                     done();
                   });
@@ -258,23 +258,23 @@ describe('Core: Tasks', function(){
         var task = new rawAPI.task({name: 'busted_task'});
         task.enqueue(function(){
           setTimeout(function(){
-            rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+            rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
               delayedCount.should.equal(1);
               worker.process(function(){
                 // move to global
-                rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+                rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
                   globalCount.should.equal(1)
                   worker.process(function(){
                     // move to local
-                    rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.localQueue, function(err, localCount){
+                    rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
                       localCount.should.equal(1);
                       worker.process(function(){
                         // move to processing and try to work it
                         // should be back in delayed
-                        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.processingQueue, function(err, processingCount){
-                          rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
-                            rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.localQueue, function(err, localCount2){
-                              rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
+                        rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
+                          rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+                            rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount2){
+                              rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
                                 processingCount.should.equal(0)
                                 globalCount2.should.equal(0)
                                 localCount2.should.equal(0)
@@ -310,11 +310,11 @@ describe('Core: Tasks', function(){
       var worker = new rawAPI.taskProcessor({id: 1});
       var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 1000});
       task.enqueue(function(){
-        rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
           delayedCount.should.equal(1);
           setTimeout(function(){
             worker.process(function(){
-              rawAPI.tasks.queueLength(rawAPI, rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+              rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
                 delayedCount.should.equal(1);
                 done();
               });

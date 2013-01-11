@@ -1,12 +1,15 @@
 describe('Core: Utils', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
-      done();
+      var utilLoader = require("../initializers/utils.js").utils
+      utilLoader(specHelper, function(){
+        done();
+      })
     })
   });
 

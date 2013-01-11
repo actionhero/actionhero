@@ -1,4 +1,4 @@
-var initWebSockets = function(api, next){
+var webSockets = function(api, next){
 
   if(api.configData.webSockets.enable != true){
     next()
@@ -56,13 +56,20 @@ var initWebSockets = function(api, next){
         }
       }
 
+      api.webSockets._teardown = function(api, next){
+        api.webSockets.disconnectAll(function(){
+          api.webServer.server.close();
+          next();
+        });
+      }
+
       io.sockets.on('connection', function(connection){
         api.stats.increment("webSockets:numberOfRequests");
         api.stats.increment("webSockets:numberOfActiveWebClients");
         api.socketServer.numberOfLocalWebSocketRequests++;
 
-        api.utils.setupConnection(api, connection, "webSocket", connection.handshake.address.port, connection.handshake.address.address);
-        api.webSockets.logLine(api, {label: "connect @ webSocket"}, connection);
+        api.utils.setupConnection(connection, "webSocket", connection.handshake.address.port, connection.handshake.address.address);
+        api.webSockets.logLine({label: "connect @ webSocket"}, connection);
 
         var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
         connection.emit('welcome', welcomeMessage);
@@ -73,21 +80,21 @@ var initWebSockets = function(api, next){
         
         connection.on('roomView', function(data){
           if(data == null){ data = {}; }
-          api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
+          api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
             connection.messageCount++; 
             connection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
-            api.webSockets.logLine(api, {label: "roomView @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+            api.webSockets.logLine({label: "roomView @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
           });
         });
 
         connection.on('roomChange', function(data){
           if(data == null){ data = {}; }
-          api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
+          api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
             connection.room = data.room;
-            api.chatRoom.roomAddMember(api, connection);
+            api.chatRoom.roomAddMember(connection);
             connection.messageCount++; 
             connection.emit("response", {context: "response", status: "OK", room: connection.room, messageCount: connection.messageCount});
-            api.webSockets.logLine(api, {label: "roomChange @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+            api.webSockets.logLine({label: "roomChange @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
           });
         });
 
@@ -101,7 +108,7 @@ var initWebSockets = function(api, next){
             message.status = "OK"
           }
           connection.emit("response", message);
-          api.webSockets.logLine(api, {label: "listenToRoom @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+          api.webSockets.logLine({label: "listenToRoom @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
         });
 
         connection.on('silenceRoom', function(data){
@@ -116,16 +123,16 @@ var initWebSockets = function(api, next){
             message.error = "you are not listening to this room";
           }
           connection.emit("response", message);
-          api.webSockets.logLine(api, {label: "silenceRoom @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+          api.webSockets.logLine({label: "silenceRoom @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
         });
 
         connection.on('say', function(data){
           if(data == null){ data = {}; }
           var message = data.message;
-          api.chatRoom.socketRoomBroadcast(api, connection, message);
+          api.chatRoom.socketRoomBroadcast(connection, message);
           connection.messageCount++; 
           connection.emit("response", {context: "response", status: "OK", messageCount: connection.messageCount});
-          api.webSockets.logLine(api, {label: "say @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+          api.webSockets.logLine({label: "say @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
         }); 
 
         connection.on('detailsView', function(data){
@@ -138,7 +145,7 @@ var initWebSockets = function(api, next){
           details.pendingActions = connection.pendingActions;
           connection.messageCount++; 
           connection.emit("response", {context: "response", status: "OK", details: details, messageCount: connection.messageCount});
-          api.webSockets.logLine(api, {label: "detailsView @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
+          api.webSockets.logLine({label: "detailsView @ webSocket", params: JSON.stringify(data)}, connection, 'grey');
         });
 
         connection.on('action', function(data){
@@ -167,8 +174,8 @@ var initWebSockets = function(api, next){
 
         connection.on('disconnect', function(){
           api.stats.increment("webSockets:numberOfActiveWebClients", -1);
-          api.utils.destroyConnection(api, connection);
-          api.webSockets.logLine(api, {label: "disconnect @ webSocket"}, connection);
+          api.utils.destroyConnection(connection);
+          api.webSockets.logLine({label: "disconnect @ webSocket"}, connection);
         });
       });
 
@@ -183,10 +190,10 @@ var initWebSockets = function(api, next){
       connection.error = proxy_connection.error;
       var delta = new Date().getTime() - connection.actionStartTime;          
       api.webSockets.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
-      api.webSockets.logLine(api, {label: "action @ webSocket", params: JSON.stringify(proxy_connection.params), action: proxy_connection.action, duration: delta}, connection);
+      api.webSockets.logLine({label: "action @ webSocket", params: JSON.stringify(proxy_connection.params), action: proxy_connection.action, duration: delta}, connection);
     }
 
-    api.webSockets.logLine = function(api, data, connection, color){
+    api.webSockets.logLine = function(data, connection, color){
       if(api.configData.log.logRequests){
         if(data.to == null){ data.to = connection.remoteIP; }
         if(api.configData.log.logRequests){
@@ -213,7 +220,7 @@ var initWebSockets = function(api, next){
       }
     }
 
-    api.webSockets.disconnectAll = function(api, next){
+    api.webSockets.disconnectAll = function(next){
       for( var i in api.connections ){
         if(api.connections[i].type == "webSocket"){
           api.connections[i].disconnect();
@@ -223,13 +230,6 @@ var initWebSockets = function(api, next){
       if(typeof next == "function"){ next(); }
     }
 
-    api.webSockets._teardown = function(api, next){
-      api.webSockets.disconnectAll(api, function(){
-        api.webServer.server.close();
-        next();
-      });
-    }
-
     next();
     
   }
@@ -237,4 +237,4 @@ var initWebSockets = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initWebSockets = initWebSockets;
+exports.webSockets = webSockets;

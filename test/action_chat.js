@@ -1,5 +1,5 @@
 describe('Action: chat', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
 
@@ -79,7 +79,7 @@ describe('Action: chat', function(){
     });
 
     it('I should get messages from other clients', function(done){
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST");
       setTimeout(function(){
         specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
           response.body.message.message.should.equal("TEST");
@@ -89,9 +89,9 @@ describe('Action: chat', function(){
     });
 
     it('I should get queued messages from other clients', function(done){
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: A");
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: B");
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: C");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: A");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: B");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: C");
       setTimeout(function(){
         specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
           response.body.message.message.should.equal("TEST: A");

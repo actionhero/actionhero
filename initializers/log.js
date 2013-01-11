@@ -1,7 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
-// logging
-
-var initLog = function(api, next){
+var log = function(api, next){
   
   try { api.fs.mkdirSync(api.configData.log.logFolder, "777") } catch(e) {}; 
 
@@ -69,4 +66,4 @@ var initLog = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initLog = initLog;
+exports.log = log;

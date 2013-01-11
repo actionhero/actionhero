@@ -1,5 +1,5 @@
 describe('Client: Web', function(){
-    var specHelper = require('../helpers/_specHelper.js').specHelper;
+    var specHelper = require('../helpers/specHelper.js').specHelper;
     var apiObj = {};
     var rawApi = {};
     var should = require("should");

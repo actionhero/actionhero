@@ -1,8 +1,5 @@
-////////////////////////////////////////////////////////////////////////////
-// postVariable config and load
-
-var initPostVariables = function(api, next)
-{
+var paramsAndRoutes = function(api, next){
+  
   // special params we will always accept
   api.postVariables = [
     "callback",
@@ -174,4 +171,4 @@ var initPostVariables = function(api, next)
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initPostVariables = initPostVariables;
+exports.paramsAndRoutes = paramsAndRoutes;

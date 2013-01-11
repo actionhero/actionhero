@@ -1,20 +1,21 @@
-////////////////////////////////////////////////////////////////////////////
-// cache
-// I am an in-memory cache solution
-
-var initCache = function(api, next){
+var cache = function(api, next){
 
   api.cache = {};
   api.cache.sweeperTimer = null;
   api.cache.sweeperTimeout = 10 * 1000;
 
-  api.cache.stopTimers = function(api){
-    clearTimeout(api.cache.sweeperTimer);
+  api.cache._start = function(api, callback){
+    api.cache.runSweeper();
+    callback();
   }
 
   api.cache._teardown = function(api, next){
     api.cache.stopTimers(api);
     next();
+  }
+
+  api.cache.stopTimers = function(api){
+    clearTimeout(api.cache.sweeperTimer);
   }
 
   api.cache.prepareDomain = function(){
@@ -211,16 +212,11 @@ var initCache = function(api, next){
         api.cache.sweeperTimer = setTimeout(api.cache.runSweeper, api.cache.sweeperTimeout, api);
       }
     });
-  }
-
-  api.cache._start = function(api, callback){
-    api.cache.runSweeper();
-    callback();
-  }
+  }  
 
   next();
 }
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initCache = initCache;
+exports.cache = cache;

@@ -1,4 +1,5 @@
-var initTasks = function(api, next){
+var tasks = function(api, next){
+  
   //////////////////////////
   // The tasks themselves //
   //////////////////////////
@@ -438,4 +439,4 @@ var initTasks = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initTasks = initTasks;
+exports.tasks = tasks;

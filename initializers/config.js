@@ -1,4 +1,4 @@
-var initConfig = function(api, startingParams, next){
+var config = function(api, startingParams, next){
 
   api.watchedFiles = [];
 
@@ -50,4 +50,4 @@ var initConfig = function(api, startingParams, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initConfig = initConfig;
+exports.config = config;

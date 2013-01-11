@@ -1,4 +1,5 @@
-var initPids = function(api, next){
+var pids = function(api, next){
+  
   api.pids = {};
   api.pids.pid = process.pid;
 
@@ -43,4 +44,4 @@ var initPids = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initPids = initPids;
+exports.pids = pids;

@@ -1,7 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
-// cache
-
-var initFileServer = function(api, next){
+var fileServer = function(api, next){
 
   api.fileServer = {}
 
@@ -12,7 +9,7 @@ var initFileServer = function(api, next){
     api.configData.commonWeb.directoryFileType = "index.html";
   }
 
-  api.sendFile = function(api, connection, next){
+  api.sendFile = function(connection, next){
     var fileName = "";
 
     // determine the filename
@@ -28,50 +25,50 @@ var initFileServer = function(api, next){
       }
     }else{
       connection.fileRequestStartTime = new Date().getTime();
-      api.utils.requiredParamChecker(api, connection, ["fileName"]);
+      api.utils.requiredParamChecker(connection, ["fileName"]);
       if(connection.error === null){ fileName = connection.params.fileName; }
     }
 
     fileName = api.path.normalize(api.configData.general.flatFileDirectory  + "/" + fileName);
-    api.fileServer.checkPublic(api, fileName, connection, next);  
+    api.fileServer.checkPublic(fileName, connection, next);  
   };
 
-  api.fileServer.checkPublic = function(api, fileName, connection, next){
+  api.fileServer.checkPublic = function(fileName, connection, next){
     if(fileName.indexOf(api.path.normalize(api.configData.general.flatFileDirectory)) === 0 && connection.error == null){
-      api.fileServer.checkExistance(api, fileName, connection, next);
+      api.fileServer.checkExistance(fileName, connection, next);
     }else{
-      api.fileServer.sendFileNotFound(api, connection, next);
+      api.fileServer.sendFileNotFound(connection, next);
     }
   }
 
-  api.fileServer.checkExistance = function(api, fileName, connection, next){
+  api.fileServer.checkExistance = function(fileName, connection, next){
     api.fs.stat(fileName, function(err, stats){
       if(err != null){
-        api.fileServer.sendFileNotFound(api, connection, next);
+        api.fileServer.sendFileNotFound(connection, next);
       }else{
         if(stats.isDirectory()){
           fileName += "/";
           var indexPage = api.path.normalize(fileName + api.configData.commonWeb.directoryFileType);
-          api.fileServer.checkExistance(api, indexPage, connection, next);
+          api.fileServer.checkExistance(indexPage, connection, next);
         }else if(stats.isSymbolicLink()){
           api.fs.readLink(fileName, function(err, truePath){
             if(err != null){
-              api.fileServer.sendFileNotFound(api, connection, next);
+              api.fileServer.sendFileNotFound(connection, next);
             }else{
               truePath = api.path.normalize(truePath);
-              api.fileServer.checkExistance(api, truePath, connection, next);
+              api.fileServer.checkExistance(truePath, connection, next);
             }
           });
         }else if(stats.isFile()){
-          api.fileServer.sendFile(api, fileName, connection, next);
+          api.fileServer.sendFile(fileName, connection, next);
         }else{
-          api.fileServer.sendFileNotFound(api, connection, next);
+          api.fileServer.sendFileNotFound(connection, next);
         }
       }
     });
   }
 
-  api.fileServer.sendFile = function(api, file, connection, next){
+  api.fileServer.sendFile = function(file, connection, next){
     api.stats.increment("fileServer:filesSent");
     var fileSize = 0;
     var fileStream = api.fs.createReadStream(file, {
@@ -79,7 +76,7 @@ var initFileServer = function(api, next){
     }).addListener( "data", function(chunk) {
       fileSize = fileSize + chunk.length;
     }).addListener( "close",function() {
-      api.fileServer.logRequest(api, file, connection, fileSize, true);
+      api.fileServer.logRequest(file, connection, fileSize, true);
       process.nextTick(function() { next(connection, false); });
     });
 
@@ -87,7 +84,7 @@ var initFileServer = function(api, next){
       connection.responseHeaders.push(['Content-Type', api.mime.lookup(file)]);
       connection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
       connection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
-      api.webServer.cleanHeaders(api, connection);
+      api.webServer.cleanHeaders(connection);
       connection.res.writeHead(200, connection.responseHeaders);
       fileStream.pipe(connection.res, {end: true});
     }else{
@@ -105,11 +102,11 @@ var initFileServer = function(api, next){
     }
   }
 
-  api.fileServer.sendFileNotFound = function(api, connection, next){
+  api.fileServer.sendFileNotFound = function(connection, next){
     api.stats.increment("fileServer:failedFileRequests");
     if(connection.type == "web"){
       connection.responseHeaders.push(['Content-Type', 'text/html']);
-      api.webServer.cleanHeaders(api, connection);
+      api.webServer.cleanHeaders(connection);
       connection.res.writeHead(404, connection.responseHeaders);
       connection.res.end(api.configData.general.flatFileNotFoundMessage);
       next(connection, false);
@@ -117,12 +114,12 @@ var initFileServer = function(api, next){
       if(connection.error === null){
         connection.error = new Error("The file, "+connection.params.fileName+", is not found.");
       }
-      api.fileServer.logRequest(api, '{404: not found}', connection, null, false);
+      api.fileServer.logRequest('{404: not found}', connection, null, false);
       next(connection, true);
     }
   }
 
-  api.fileServer.logRequest = function(api, file, connection, length, success){
+  api.fileServer.logRequest = function(file, connection, length, success){
     if(api.configData.log.logRequests){
       var full_url = null;
       var duration = null;
@@ -151,4 +148,4 @@ var initFileServer = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initFileServer = initFileServer;
+exports.fileServer = fileServer;

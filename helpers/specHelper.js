@@ -4,7 +4,6 @@ specHelper.fs = require('fs');
 specHelper.net = require('net');
 specHelper.should = require('should');
 specHelper.request = require('request');
-specHelper.utils = require(__dirname + '/../helpers/utils.js').utils;
 specHelper.apis = [];
 specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";

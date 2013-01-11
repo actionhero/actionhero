@@ -1,5 +1,5 @@
 describe('~~ Benchmarks', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var client = {};
   var should = require("should");

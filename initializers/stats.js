@@ -1,7 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
-// initStats
-
-var initStats = function(api, next){
+var stats = function(api, next){
   api.stats = {};
   api.stats.data = {};
   api.stats.collections = {
@@ -67,4 +64,4 @@ var initStats = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initStats = initStats;
+exports.stats = stats;

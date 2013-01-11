@@ -1,4 +1,4 @@
-var initWebServer = function(api, next){
+var webServer = function(api, next){
 
   if(api.configData.httpServer.enable != true){
     next();
@@ -11,6 +11,27 @@ var initWebServer = function(api, next){
 
     if(["api", "public"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
       throw new Error('api.configData.commonWeb.rootEndpointType can only be "api" or "public"');
+    }
+
+    api.webServer._start = function(api, next){ 
+      api.webServer.server.on("error", function(e){
+        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
+        api.log(e, "red");
+        process.exit();
+      });
+      api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
+        api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
+        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
+        next();
+      });
+    }
+
+    api.webServer._teardown = function(api, next){
+      api.webServer.stopTimers(api);
+      if(api.configData.webSockets.enable != true){
+        api.webServer.server.close();
+      }
+      next();
     }
     
     ////////////////////////////////////////////////////////////////////////////
@@ -53,7 +74,7 @@ var initWebServer = function(api, next){
         if(connection.cookies[api.webServer.roomCookieKey] != null){
           connection.room = connection.cookies[api.webServer.roomCookieKey];
         }
-        api.utils.setupConnection(api, connection, "web", req.connection.remotePort, req.connection.remoteAddress);
+        api.utils.setupConnection(connection, "web", req.connection.remotePort, req.connection.remoteAddress);
 
         if(typeof(api.configData.commonWeb.httpHeaders) != 'undefined'){
           for(var i in api.configData.commonWeb.httpHeaders){
@@ -84,7 +105,7 @@ var initWebServer = function(api, next){
         
         if(connection.requestMode == 'api'){
           // parse GET (URL) variables
-          fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
+          fillParamsFromWebRequest(connection, connection.parsedURL.query);
           if(connection.params.action === undefined){ 
             connection.actionSetBy = "url";
             if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
@@ -97,7 +118,7 @@ var initWebServer = function(api, next){
           if (connection.req.method.toLowerCase() == 'post') {
             if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
               // if no form content-type, treat like GET
-              fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
+              fillParamsFromWebRequest(connection, connection.parsedURL.query);
               if(connection.params.action === undefined){ 
                 connection.actionSetBy = "url";
                 if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
@@ -111,11 +132,11 @@ var initWebServer = function(api, next){
                 if(err){
                   api.log(err, "red");
                   connection.error = new Error("There was an error processign this form.");
-                  process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+                  process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
                 }else{
-                    fillParamsFromWebRequest(api, connection, files);
-                    fillParamsFromWebRequest(api, connection, fields);
-                    process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+                    fillParamsFromWebRequest(connection, files);
+                    fillParamsFromWebRequest(connection, fields);
+                    process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
                 }
                 });
             }
@@ -126,13 +147,13 @@ var initWebServer = function(api, next){
         }
         
         if(connection.requestMode == 'public'){
-          fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
-          process.nextTick(function(){ api.sendFile(api, connection, api.webServer.respondToWebClient); })
+          fillParamsFromWebRequest(connection, connection.parsedURL.query);
+          process.nextTick(function(){ api.sendFile(connection, api.webServer.respondToWebClient); })
         } 
       });
     }
     
-    var fillParamsFromWebRequest = function(api, connection, varsHash){
+    var fillParamsFromWebRequest = function(connection, varsHash){
       api.postVariables.forEach(function(postVar){
         if(varsHash[postVar] !== undefined && varsHash[postVar] != null){ 
           connection.params[postVar] = varsHash[postVar]; 
@@ -189,7 +210,7 @@ var initWebServer = function(api, next){
             connection.responseHeaders.push(['Content-Type', "application/javascript"]);
             stringResponse = connection.params.callback + "(" + stringResponse + ");";
           }
-          api.webServer.cleanHeaders(api, connection);
+          api.webServer.cleanHeaders(connection);
           connection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
           connection.res.end(stringResponse);
         }
@@ -208,7 +229,7 @@ var initWebServer = function(api, next){
           }
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
-          api.utils.destroyConnection(api, connection);
+          api.utils.destroyConnection(connection);
           if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
         }else{
           // if enabled, persist the connection object for message queueing
@@ -216,7 +237,7 @@ var initWebServer = function(api, next){
             clearTimeout(api.webServer.clientClearTimers[connection.public.id]);
           }
           api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
-            api.utils.destroyConnection(api, connection);
+            api.utils.destroyConnection(connection);
             delete api.webServer.clientClearTimers[connection.public.id];
             if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
           }, api.configData.commonWeb.httpClientMessageTTL, connection);
@@ -230,17 +251,9 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer._teardown = function(api, next){
-      api.webServer.stopTimers(api);
-      if(api.configData.webSockets.enable != true){
-        api.webServer.server.close();
-      }
-      next();
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // Helpers to ensure uniqueness on response headers
-    api.webServer.cleanHeaders = function(api, connection){
+    api.webServer.cleanHeaders = function(connection){
       var originalHeaders = connection.responseHeaders.reverse();
       var foundHeaders = [];
       var cleanedHeaders = [];
@@ -260,7 +273,7 @@ var initWebServer = function(api, next){
     ////////////////////////////////////////////////////////////////////////////
     // Helpers to expand chat functionality to http(s) clients
 
-    api.webServer.storeWebChatMessage = function(api, connection, messagePayload, next){
+    api.webServer.storeWebChatMessage = function(connection, messagePayload, next){
       if(api.redis.enable === true){
         var rediskey = 'actionHero:webMessages:' + connection.public.id;
         api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
@@ -280,11 +293,11 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer.changeChatRoom = function(api, connection, next){
+    api.webServer.changeChatRoom = function(connection, next){
       if(connection.params.room != null){
         connection.room = connection.params.room;
-        api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
-          api.chatRoom.roomAddMember(api, connection, function(err, wasAdded){
+        api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
+          api.chatRoom.roomAddMember(connection, function(err, wasAdded){
             connection.responseHeaders.push(['Set-Cookie', api.webServer.roomCookieKey + "=" + connection.params.room]);
             connection.response.room = connection.room;
             if(typeof next == "function"){ next() };
@@ -296,7 +309,7 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer.getWebChatMessage = function(api, connection, next){
+    api.webServer.getWebChatMessage = function(connection, next){
       if(api.redis.enable === true){
         var rediskey = 'actionHero:webMessages:' + connection.public.id;
         api.redis.client.lpop(rediskey, function(err, message){
@@ -318,22 +331,6 @@ var initWebServer = function(api, next){
         }
       }
     }
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // Go server!
-
-    api.webServer._start = function(api, next){ 
-      api.webServer.server.on("error", function(e){
-        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
-        api.log(e, "red");
-        process.exit();
-      });
-      api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
-        api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
-        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
-        next();
-      });
-    }
 
     next();
 
@@ -342,4 +339,4 @@ var initWebServer = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initWebServer = initWebServer;
+exports.webServer = webServer;

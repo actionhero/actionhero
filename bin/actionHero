@@ -102,6 +102,31 @@ binary.utils.create_file_safely = function(file, data){
   }
 }
 
+binary.utils.sqlDateTime = function(time){
+  if(time == null){ time = new Date(); }
+  var dateStr = 
+    this.padDateDoubleStr(time.getFullYear()) +
+    "-" + this.padDateDoubleStr(1 + time.getMonth()) +
+    "-" + this.padDateDoubleStr(time.getDate()) +
+    " " + this.padDateDoubleStr(time.getHours()) +
+    ":" + this.padDateDoubleStr(time.getMinutes()) +
+    ":" + this.padDateDoubleStr(time.getSeconds());
+  return dateStr;
+};
+
+binary.utils.sqlDate = function(time){
+  if(time == null){ time = new Date(); }
+  var dateStr = 
+    this.padDateDoubleStr(time.getFullYear()) +
+    "-" + this.padDateDoubleStr(1 + time.getMonth()) +
+    "-" + this.padDateDoubleStr(time.getDate());
+  return dateStr;
+};
+
+binary.utils.padDateDoubleStr = function(i){
+    return (i < 10) ? "0" + i : "" + i;
+};
+
 //////////
 // Load //
 //////////
@@ -124,8 +149,6 @@ if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
 
 binary.consoleColors = require(binary.paths.actionHero_root + '/node_modules/colors/');
 binary.argv = require(binary.paths.actionHero_root + '/node_modules/optimist/').argv;
-var loadedUtils = require(binary.paths.actionHero_root + '/helpers/utils.js').utils;
-for(var i in loadedUtils){ binary.utils[i] = loadedUtils[i]; }
 
 binary.actions = {};
 

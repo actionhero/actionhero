@@ -77,31 +77,30 @@ actionHero.prototype.start = function(params, next){
       });
     }
   }
-    
-  self.api.utils = require(__dirname + '/helpers/utils.js').utils;
 
   // run the initializers
   var orderedInitializers = {};
-  orderedInitializers['initConfig'] = function(next){ self.initalizers['initConfig'](self.api, self.startingParams, next) };
+  orderedInitializers['config'] = function(next){ self.initalizers['config'](self.api, self.startingParams, next) };
   [
-    'initID',
-    'initPids',
-    'initLog',
-    'initExceptions',
-    'initStats',
-    'initRedis',
-    'initCache',
-    'initActions',
+    'utils',
+    'id',
+    'pids',
+    'log',
+    'exceptions',
+    'stats',
+    'redis',
+    'cache',
+    'actions',
     'actionProcessor',
-    'initPostVariables',
-    'initFileServer',
-    'initChatRooms',
-    'initTasks',
-    'initTask',
-    'initTaskProcessor',
-    'initWebServer', 
-    'initWebSockets', 
-    'initSocketServer'
+    'paramsAndRoutes',
+    'fileServer',
+    'chatRooms',
+    'tasks',
+    'task',
+    'taskProcessor',
+    'webServer', 
+    'webSockets', 
+    'socketServer'
   ].forEach(function(I){
     orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
   });

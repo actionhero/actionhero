@@ -1,4 +1,4 @@
-var initChatRooms = function(api, next){
+var chatRooms = function(api, next){
 
   api.chatRoom = {};
 
@@ -168,4 +168,4 @@ var initChatRooms = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initChatRooms = initChatRooms;
+exports.chatRooms = chatRooms;

@@ -1,7 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
-// populate actions
-
-var initActions = function(api, next){
+var actions = function(api, next){
   api.actions = {};
 
   if(api.configData.general.simultaniousActions == null){
@@ -126,4 +123,4 @@ var initActions = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initActions = initActions;
+exports.actions = actions;
