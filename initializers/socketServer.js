@@ -297,13 +297,6 @@ var socketServer = function(api, next){
     //shutdown helpers
     api.socketServer.gracefulShutdown = function(next, alreadyShutdown){
       if(alreadyShutdown == null){alreadyShutdown = false;}
-      if(alreadyShutdown == false){
-        for(var i in api.connections){
-          if(api.connections[i].type == 'socket'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
-        }
-        api.socketServer.server.close();
-        alreadyShutdown = true;
-      }
       var pendingConnections = 0;
       for(var i in api.connections){
         var connection = api.connections[i];

@@ -68,9 +68,6 @@ var webSocketServer = function(api, next){
     }
 
     api.webSockets._teardown = function(api, next){
-      for(var i in api.connections){
-        if(api.connections[i].type == 'webSocket'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
-      }
       api.webSockets.disconnectAll(function(){
         api.webServer.server.close();
         next();
