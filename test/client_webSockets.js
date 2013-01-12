@@ -84,7 +84,7 @@ describe('Client: Web Sockets', function(){
       makeSocketRequest(client_1, "detailsView", {}, function(response){
         response.should.be.an.instanceOf(Object);
         response.status.should.equal("OK")
-        response.details.public.connectedAt.should.be.within(0, new Date().getTime())
+        response.details.connectedAt.should.be.within(0, new Date().getTime())
         response.details.room.should.equal("defaultRoom")
         done()
       });

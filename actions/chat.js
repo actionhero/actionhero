@@ -23,7 +23,7 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
-  if(connection.type == "web"){
+  if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL != null){
     if (connection.params.method == "roomView"){
       api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
         connection.response.roomStatus = roomStatus;
@@ -46,14 +46,17 @@ action.run = function(api, connection, next){
       }
       next(connection, true);
     }else if(connection.params.method == "messages"){
-      api.webServer.getWebChatMessage(connection, function(err, message){
-        connection.response.message = message;
+      api.webServer.getWebChatMessage(connection, function(err, messages){
+        connection.response.messages = messages;
         next(connection, true);
       });
     }else{
       connection.error = new Error(connection.params.method + " is not a known chat method");
       next(connection, true);
     }
+  }else if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null){
+    connection.error = new Error("chatting via web clients is not enabled");
+    next(connection, true);
   }else{
     connection.error = new Error("this action is only for web clients; use your proticol's native methods");
     next(connection, true);

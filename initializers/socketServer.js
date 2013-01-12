@@ -88,7 +88,7 @@ var socketServer = function(api, next){
 
       connection.rawConnection.on("error", function(e){
         api.log("socket error: " + e, "red");
-        connection.end();
+        connection.rawConnection.end();
       });
 
     };
@@ -161,7 +161,8 @@ var socketServer = function(api, next){
       }else if(words[0] == "detailsView"){
         var details = {};
         details.params = connection.params;
-        details.public = connection.public;
+        details.id = connection.id;
+        details.connectedAt = connection.connectedAt;
         details.room = connection.room;
         details.totalActions = connection.totalActions;
         details.pendingActions = connection.pendingActions;
@@ -297,6 +298,9 @@ var socketServer = function(api, next){
     api.socketServer.gracefulShutdown = function(next, alreadyShutdown){
       if(alreadyShutdown == null){alreadyShutdown = false;}
       if(alreadyShutdown == false){
+        for(var i in api.connections){
+          if(api.connections[i].type == 'socket'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
+        }
         api.socketServer.server.close();
         alreadyShutdown = true;
       }
@@ -305,7 +309,7 @@ var socketServer = function(api, next){
         var connection = api.connections[i];
         if(connection.type == "socket"){
           if (connection.responsesWaitingCount == 0){
-            connection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
+            connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
           }else{
             pendingConnections++; 
             // hard shutdown in 5 seconds

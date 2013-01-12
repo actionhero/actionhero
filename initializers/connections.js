@@ -5,6 +5,7 @@ var connections = function(api, next){
     api.connections = {}
 
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
+    // id is optional
     api.connection = function(data){
       this.setup(data)
       this.joinRoomOnConnect();
@@ -13,7 +14,11 @@ var connections = function(api, next){
 
     api.connection.prototype.setup = function(data){
       var self = this;
-      self.id = self.generateID();
+      if(data.id != null){
+        self.id = data.id;
+      }else{
+        self.id = self.generateID();
+      }
       self.connectedAt = new Date().getTime();
       ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
         if(data[req] == null){ throw new Error(req + ' is required to create a new connection object'); }

@@ -35,6 +35,11 @@ var webServer = function(api, next){
 
     api.webServer._teardown = function(api, next){
       api.webServer.stopTimers(api);
+      if(api.configData.commonWeb.httpClientMessageTTL != null){
+        for(var i in api.connections){
+          if(api.connections[i].type == 'web'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
+        }
+      }
       if(api.configData.webSockets.enable != true){
         api.webServer.server.close();
       }
@@ -55,7 +60,7 @@ var webServer = function(api, next){
       });
     }
 
-    api.webServer.decorateConnection = function(connection, fingerprint, cookieHash){
+    api.webServer.decorateConnection = function(connection, cookieHash){
       var responseHeaders = [];
       for(var i in cookieHash){
         responseHeaders.push([i, cookieHash[i]]);
@@ -63,7 +68,6 @@ var webServer = function(api, next){
       responseHeaders.push(['Content-Type', "application/json"]);
       responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
 
-      connection.fingerprint = fingerprint;
       connection.responseHeaders = responseHeaders;
       connection.method = connection.rawConnection.req.method;
       connection.cookies =  api.utils.parseCookies(connection.rawConnection.req);
@@ -74,6 +78,7 @@ var webServer = function(api, next){
       browser_fingerprint.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
         var connection = new api.connection({
           type: 'web', 
+          id: fingerprint,
           remotePort: req.connection.remotePort, 
           remoteIP: req.connection.remoteAddress, 
           rawConnection: {
@@ -81,7 +86,7 @@ var webServer = function(api, next){
             res: res,
           },
         });
-        api.webServer.decorateConnection(connection, fingerprint, cookieHash);
+        api.webServer.decorateConnection(connection, cookieHash);
         api.stats.increment("webServer:numberOfWebRequests");
 
         if(connection.cookies[api.webServer.roomCookieKey] != null){
@@ -159,7 +164,7 @@ var webServer = function(api, next){
         }
         
         if(connection.requestMode == 'public'){
-          fillParamsFromWebRequest(connection, connection.parsedURL.query);
+          api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
           process.nextTick(function(){ api.sendFile(connection, api.webServer.respondToWebClient); })
         } 
       });
@@ -324,23 +329,23 @@ var webServer = function(api, next){
     api.webServer.getWebChatMessage = function(connection, next){
       if(api.redis.enable === true){
         var rediskey = 'actionHero:webMessages:' + connection.id;
-        api.redis.client.lpop(rediskey, function(err, message){
-          if(message != null){
-            var parsedMessage = JSON.parse(message);
-            if(parsedMessage == []){ parsedMessage = null; }
-            next(null, parsedMessage);
-          }else{
-            next(null, null);
-          }
+        var messages = [];
+        api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
+          api.redis.client.del(rediskey, function(){
+            for(var i in redisMessages){
+              messages.push(JSON.parse(redisMessages[i]));
+            }
+            next(null, messages);
+          });
         });
       }else{
         var store = api.webServer.webChatMessages[connection.id];
-        if(store == null){
-          next(null, null);
-        }else{
-          var message = store.splice(0,1);
-          next(null, message);
+        var messages = [];
+        for(var i in store){
+          messages.push(store[i]);
         }
+        delete api.webServer.webChatMessages[connection.id];
+        next(null, messages);
       }
     }
 

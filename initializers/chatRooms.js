@@ -22,6 +22,7 @@ var chatRooms = function(api, next){
       var payload = {
         message: message,
         connection: {
+          id: connection.id,
           room: connection.room,
           roomMatchKey: connection.roomMatchKey,
           roomMatchValue: connection.roomMatchValue,

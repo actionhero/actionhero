@@ -68,6 +68,9 @@ var webSocketServer = function(api, next){
     }
 
     api.webSockets._teardown = function(api, next){
+      for(var i in api.connections){
+        if(api.connections[i].type == 'webSocket'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
+      }
       api.webSockets.disconnectAll(function(){
         api.webServer.server.close();
         next();
@@ -159,7 +162,8 @@ var webSocketServer = function(api, next){
         if(data == null){ data = {}; }
         var details = {};
         details.params = connection.params;
-        details.public = connection.public;
+        details.id = connection.id;
+        details.connectedAt = connection.connectedAt;
         details.room = connection.room;
         details.totalActions = connection.totalActions;
         details.pendingActions = connection.pendingActions;
