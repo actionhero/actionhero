@@ -38,6 +38,7 @@ var actionProcessor = function(api, next){
     if(error != null){ self.connection.error = error; }
     if(toRender == null){ toRender = true; }
     self.incramentPendingActions(-1);
+    api.stats.increment("actions:actionsCurrentlyProcessing", -1);
     process.nextTick(function(){
       if(typeof self.callback == 'function'){
         self.callback(self.connection, toRender);
@@ -64,20 +65,22 @@ var actionProcessor = function(api, next){
     self.incrementTotalActions();
     self.incramentPendingActions();
     self.sanitizeLimitAndOffset();
+    api.stats.increment("actions:actionsCurrentlyProcessing");
 
     if(api.running != true){
       self.completeAction("the server is shutting down");
     }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaniousActions){
       self.completeAction("you have too many pending requests");
     }else{
-      if (self.connection.error === null){
+      if(self.connection.error === null){
         if(self.connection.type == "web"){ api.routes.processRoute(self.connection); }
         self.connection.action = self.connection.params["action"];
         if(api.actions[self.connection.action] != undefined){
           api.params.requiredParamChecker(self.connection, api.actions[self.connection.action].inputs.required);
           if(self.connection.error === null){
             process.nextTick(function() { 
-              api.stats.increment("actions:processedActions");
+              api.stats.increment("actions:totalProcessedActions");
+              if(self.connection.action != null){ api.stats.increment("actions:processedActions:" + self.connection.action); }
               if(api.domain != null){
                 var actionDomain = api.domain.create();
                 actionDomain.on("error", function(err){

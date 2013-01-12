@@ -75,7 +75,10 @@ var taskProcessor = function(api, next){
                 self.currentTask = task;
                 api.tasks.setTaskData(task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
                   if(task.toAnnounce != false){ self.log("starting task " + task.name); }
+                  api.stats.increment("tasks:tasksCurrentlyRunning");
+                  api.stats.increment("tasks:ranTasks:" + task.name);
                   task.run(function(){
+                    api.stats.increment("tasks:tasksCurrentlyRunning", -1);
                     api.tasks.removeFromQueue(task.id, api.tasks.queues.processingQueue, function(){
                       self.log("completed task " + task.name + ", " + task.id);
                       if(task.periodic == true && task.isDuplicate === false){
