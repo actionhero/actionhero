@@ -31,9 +31,11 @@ var tasks = function(api, next){
   }
 
   api.tasks._start = function(api, next){
-    api.tasks.savePreviouslyCrashedTasks(function(){
-      api.tasks.seedPeriodicTasks(function(){
-        next();
+    api.tasks.saveStuckDelayedTasks(function(){
+      api.tasks.savePreviouslyCrashedTasks(function(){
+        api.tasks.seedPeriodicTasks(function(){
+          next();
+        });
       });
     });
   }
@@ -327,6 +329,29 @@ var tasks = function(api, next){
         callback();
       }
     });
+  }
+
+  api.tasks.saveStuckDelayedTasks = function(callback){
+    if(api.redis.enable === true){
+      api.tasks.getAllTasks(function(err, tasks){
+        api.redis.client.lrange(api.tasks.queues.delayedQueue, 0, 1, function(err, delayedIds){
+          if(api.utils.hashLength(tasks) == 0){
+            callback();
+          }
+          for(var i in tasks){
+            var taskDetails = tasks[i];
+            if(taskDetails.queue == api.tasks.queues.delayedQueue && taskDetails.runAt < (new Date().getTime() - 5000) ){
+              if(delayedIds.indexOf(taskDetails.id) < 0){
+                api.log('saving a delayed task which was lost in a shutdown' + task.name, 'yellow');
+                api.tasks.placeInQueue(taskDetails.id, api.tasks.queues.delayedQueue);
+              }
+            }
+          }
+        });
+      });
+    }else{
+      callback();
+    }
   }
 
   api.tasks.load = function(api){
