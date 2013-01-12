@@ -339,14 +339,20 @@ var tasks = function(api, next){
             callback();
           }
           for(var i in tasks){
+            var started = 0;
             var taskDetails = tasks[i];
             if(taskDetails.queue == api.tasks.queues.delayedQueue && taskDetails.runAt < (new Date().getTime() - 5000) ){
               if(delayedIds.indexOf(taskDetails.id) < 0){
-                api.log('saving a delayed task which was lost in a shutdown' + task.name, 'yellow');
-                api.tasks.placeInQueue(taskDetails.id, api.tasks.queues.delayedQueue);
+                started++;
+                api.log('saving a delayed task which was lost in a shutdown' + taskDetails.name, 'yellow');
+                api.tasks.placeInQueue(taskDetails.id, api.tasks.queues.delayedQueue, function(){
+                  started--;
+                  if(started == 0){ callback(); }
+                });
               }
             }
           }
+          if(started == 0){ callback(); }
         });
       });
     }else{

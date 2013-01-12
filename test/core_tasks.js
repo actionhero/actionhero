@@ -305,6 +305,31 @@ describe('Core: Tasks', function(){
     done();
   });
 
+  it('Delayed tasks whose workers encounter a fault will eventually re-enqueued', function(done){
+    this.timeout(10000)
+    rawAPI.redis.client.flushdb(function(){
+      var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 1000});
+      task.enqueue(function(){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+          delayedCount.should.equal(1);
+          rawAPI.redis.client.del(rawAPI.tasks.queues.delayedQueue, function(err){
+            rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+              delayedCount.should.equal(0);
+              setTimeout(function(){
+                rawAPI.tasks.saveStuckDelayedTasks(function(){
+                  rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+                    delayedCount.should.equal(1);
+                    done();
+                  });
+                });
+              }, 6001);
+            }); 
+          }); 
+        });
+      });
+    });
+  });
+
   it('I will not process tasks with a runAt in the future', function(done){
     rawAPI.redis.client.flushdb(function(){
       var worker = new rawAPI.taskProcessor({id: 1});
