@@ -165,7 +165,7 @@ var webServer = function(api, next){
         
         if(connection.requestMode == 'public'){
           api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
-          process.nextTick(function(){ api.sendFile(connection, api.webServer.respondToWebClient); })
+          process.nextTick(function(){ api.fileServer.deliver(connection, api.webServer.respondToWebClient); })
         } 
       });
     }

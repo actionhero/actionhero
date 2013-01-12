@@ -28,11 +28,15 @@ describe('Core: actionCluster', function(){
   }
 
   before(function(done){
-    stopAllServers(done);
+    stopAllServers(function(){
+      setTimeout(done, 1000);
+    });
   });
 
   after(function(done){
-    stopAllServers(done);
+    stopAllServers(function(){
+      setTimeout(done, 1000);
+    });
   });
 
   describe('general actionCluster', function(){

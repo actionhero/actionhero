@@ -14,7 +14,7 @@ var fileServer = function(api, next){
     api.configData.commonWeb.directoryFileType = "index.html";
   }
 
-  api.sendFile = function(connection, next){
+  api.fileServer.deliver = function(connection, next){
     var fileName = "";
 
     // determine the filename

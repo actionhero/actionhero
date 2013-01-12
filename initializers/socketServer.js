@@ -297,6 +297,10 @@ var socketServer = function(api, next){
     //shutdown helpers
     api.socketServer.gracefulShutdown = function(next, alreadyShutdown){
       if(alreadyShutdown == null){alreadyShutdown = false;}
+      if(alreadyShutdown == false){
+        api.socketServer.server.close();
+        alreadyShutdown = true;
+      }
       var pendingConnections = 0;
       for(var i in api.connections){
         var connection = api.connections[i];
