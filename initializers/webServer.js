@@ -171,7 +171,7 @@ var webServer = function(api, next){
     }
     
     api.webServer.fillParamsFromWebRequest = function(connection, varsHash){
-      api.postVariables.forEach(function(postVar){
+      api.params.postVariables.forEach(function(postVar){
         if(varsHash[postVar] !== undefined && varsHash[postVar] != null){ 
           connection.params[postVar] = varsHash[postVar]; 
         }

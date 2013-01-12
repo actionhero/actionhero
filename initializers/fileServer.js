@@ -29,7 +29,7 @@ var fileServer = function(api, next){
         fileName += parts[i];
       }
     }else{
-      api.utils.requiredParamChecker(connection, ["fileName"]);
+      api.params.requiredParamChecker(connection, ["fileName"]);
       if(connection.error === null){ fileName = connection.params.fileName; }
     }
 

@@ -335,9 +335,7 @@ var tasks = function(api, next){
     if(api.redis.enable === true){
       api.tasks.getAllTasks(function(err, tasks){
         api.redis.client.lrange(api.tasks.queues.delayedQueue, 0, 1, function(err, delayedIds){
-          if(api.utils.hashLength(tasks) == 0){
-            callback();
-          }
+          if(api.utils.hashLength(tasks) == 0){ callback(); }
           for(var i in tasks){
             var started = 0;
             var taskDetails = tasks[i];

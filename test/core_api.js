@@ -54,7 +54,7 @@ describe('Core: API', function(){
       "key", // from action
       "value", // from action
     ].forEach(function(item){
-      apiObj.postVariables.should.include(item);
+      apiObj.params.postVariables.should.include(item);
     });
 
     done();

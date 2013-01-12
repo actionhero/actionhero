@@ -71,10 +71,10 @@ var actionProcessor = function(api, next){
       self.completeAction("you have too many pending requests");
     }else{
       if (self.connection.error === null){
-        if(self.connection.type == "web"){ api.utils.processRoute(self.connection); }
+        if(self.connection.type == "web"){ api.routes.processRoute(self.connection); }
         self.connection.action = self.connection.params["action"];
         if(api.actions[self.connection.action] != undefined){
-          api.utils.requiredParamChecker(self.connection, api.actions[self.connection.action].inputs.required);
+          api.params.requiredParamChecker(self.connection, api.actions[self.connection.action].inputs.required);
           if(self.connection.error === null){
             process.nextTick(function() { 
               api.stats.increment("actions:processedActions");
