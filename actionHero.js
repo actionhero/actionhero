@@ -101,7 +101,6 @@ actionHero.prototype.start = function(params, next){
 
     var started = 0;
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
-    delete self.initalizers;
     if(starters.length == 0){
       self.api.bootTime = new Date().getTime();
       self.api.log("server ID: " + self.api.id);
