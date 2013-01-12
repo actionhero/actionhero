@@ -7,14 +7,14 @@ var fs = require("fs");
 var path = require("path");
 var async = require('async');
 
+// backwards compatibility for old node versions
+fs.existsSync || (fs.existsSync = path.existsSync);
+fs.exists || (fs.exists = path.exists);
+
 var actionHero = function(){
   var self = this;
   self.initalizers = {};
   self.api = {};
-
-    // backwards compatibility for old node versions
-  fs.existsSync || (fs.existsSync = path.existsSync);
-  fs.exists || (fs.exists = path.exists);
   try{ self.api.domain = require("domain"); }catch(e){ }
 };
   
@@ -101,6 +101,7 @@ actionHero.prototype.start = function(params, next){
 
     var started = 0;
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
+    delete self.initalizers;
     if(starters.length == 0){
       self.api.bootTime = new Date().getTime();
       self.api.log("server ID: " + self.api.id);

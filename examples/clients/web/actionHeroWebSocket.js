@@ -31,6 +31,10 @@ var actionHeroWebSocket = function(options, connectCallback){
     // this is the socket connectiong primitive, but we should wait for actionHero's welcome message
   });
 
+  self.ws.on('disconnect', function(response){
+    self.emit('disconnect', response);
+  });
+
   self.ws.on('say', function(response){
     self.emit('say', response);
   });
