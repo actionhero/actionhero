@@ -159,7 +159,10 @@ var webServer = function(api, next){
                 }else{
                     api.webServer.fillParamsFromWebRequest(connection, files);
                     api.webServer.fillParamsFromWebRequest(connection, fields);
-                    process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
+                    process.nextTick(function() { 
+                    	var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+                    	actionProcessor.processAction();
+                    });
                 }
                 });
             }
