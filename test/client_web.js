@@ -105,6 +105,16 @@ describe('Client: Web', function(){
       });
     });
 
+    it('HTTP Verbs should work: Post with Form', function(done){
+      var postURL = 'http://' + specHelper.url + ":" + specHelper.params[0].httpServer.port + "/api/cacheTest";
+      specHelper.request.post(postURL, {form: {key:'key', value: 'value'}}, function(err, response, body){
+        console.log(err)
+        console.log(response)
+        console.log(body)
+        done();
+      });
+    });
+
     it('returnErrorCodes false should still have a status of 200', function(done){
       specHelper.apiTest.del('/', 0, {}, function(response){
         response.statusCode.should.eql(200);
