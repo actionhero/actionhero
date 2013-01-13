@@ -33,8 +33,8 @@ var chatRooms = function(api, next){
     else{
       api.stats.increment("chatRooom:messagesSent");
       var messagePayload = {message: message, room: connection.room, from: connection.id, context: "user", sentAt: new Date().getTime() };
-      for(var i in api.connections){
-        var thisConnection = api.connections[i];
+      for(var i in api.connections.connections){
+        var thisConnection = api.connections.connections[i];
         if(thisConnection.room == connection.room || thisConnection.additionalListeningRooms.indexOf(connection.room) > -1){
           if(connection == null || thisConnection.id != connection.id){
             var matched = false;

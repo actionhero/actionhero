@@ -86,9 +86,6 @@ var webSocketServer = function(api, next){
         rawConnection: rawConnection,
       });
       api.webSockets.decorateConnection(connection);
-
-      api.stats.increment("webSockets:numberOfRequests");
-      api.stats.increment("webSockets:numberOfActiveWebClients");
       api.webSockets.logLine({label: "connect @ webSocket"}, connection);
 
       var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
@@ -194,10 +191,10 @@ var webSocketServer = function(api, next){
       });
 
       rawConnection.on('disconnect', function(){
-        api.stats.increment("webSockets:numberOfActiveWebClients", -1);
-        connection.destroy();
-        delete rawConnection;
-        api.webSockets.logLine({label: "disconnect @ webSocket"}, connection);
+        connection.destroy(function(){
+          delete rawConnection;
+          api.webSockets.logLine({label: "disconnect @ webSocket"}, connection);
+        });
       });
     }
 
@@ -238,10 +235,10 @@ var webSocketServer = function(api, next){
     }
 
     api.webSockets.disconnectAll = function(next){
-      for( var i in api.connections ){
-        if(api.connections[i].type == "webSocket"){
-          api.connections[i].rawConnection.disconnect();
-          delete api.connections[i];
+      for( var i in api.connections.connections ){
+        if(api.connections.connections[i].type == "webSocket"){
+          api.connections.connections[i].rawConnection.disconnect();
+          delete api.connections.connections[i];
         }
       }
       if(typeof next == "function"){ next(); }

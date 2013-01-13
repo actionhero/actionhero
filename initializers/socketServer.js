@@ -51,7 +51,6 @@ var socketServer = function(api, next){
         rawConnection: rawConnection,
       });
       api.socketServer.decorateConnection(connection);
-      api.stats.increment("socketServer:numberOfActiveClients");
       api.socketServer.logLine({label: "connect @ socket"}, connection);
 
       process.nextTick(function(){
@@ -68,7 +67,6 @@ var socketServer = function(api, next){
             var line = connection.socketDataString.slice(0, index);
             connection.socketDataString = connection.socketDataString.slice(index + 2);
             if(line.length > 0) {
-              api.stats.increment("socketServer:numberOfRequests");
               connection.messageCount++; // increment at the start of the requset so that responses can be caught in order on the client
               line = line.replace("\n","");
               api.socketServer.parseRequest(connection, line);
@@ -78,12 +76,12 @@ var socketServer = function(api, next){
       });
 
       connection.rawConnection.on("end", function () {        
-        api.stats.increment("socketServer:numberOfActiveClients", -1);
         try{ 
           connection.rawConnection.end(); 
         }catch(e){ }
-        connection.destroy();
-        api.socketServer.logLine({label: "disconnect @ socket"}, connection);
+        connection.destroy(function(){
+          api.socketServer.logLine({label: "disconnect @ socket"}, connection);
+        });
       });
 
       connection.rawConnection.on("error", function(e){
@@ -302,8 +300,8 @@ var socketServer = function(api, next){
         alreadyShutdown = true;
       }
       var pendingConnections = 0;
-      for(var i in api.connections){
-        var connection = api.connections[i];
+      for(var i in api.connections.connections){
+        var connection = api.connections.connections[i];
         if(connection.type == "socket"){
           if (connection.responsesWaitingCount == 0){
             connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");

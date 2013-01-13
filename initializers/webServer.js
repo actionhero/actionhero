@@ -36,8 +36,15 @@ var webServer = function(api, next){
     api.webServer._teardown = function(api, next){
       api.webServer.stopTimers(api);
       if(api.configData.commonWeb.httpClientMessageTTL != null){
-        for(var i in api.connections){
-          if(api.connections[i].type == 'web'){ api.chatRoom.roomRemoveMember(api.connections[i]) }
+        for(var i in api.connections.connections){
+          started = 0;
+          if(api.connections.connections[i].type == 'web'){ 
+            started ++;
+            api.connections.connections[i].destroy(function(){
+              started--;
+              if(started == 0){ next(); }
+            }); 
+          }
         }
       }
       if(api.configData.webSockets.enable != true){
@@ -87,7 +94,6 @@ var webServer = function(api, next){
           },
         });
         api.webServer.decorateConnection(connection, cookieHash);
-        api.stats.increment("webServer:numberOfWebRequests");
 
         if(connection.cookies[api.webServer.roomCookieKey] != null){
           connection.room = connection.cookies[api.webServer.roomCookieKey];

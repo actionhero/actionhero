@@ -68,7 +68,7 @@ describe('Client: Socket', function(){
   it('single string message are treated as actions', function(done){
     makeSocketRequest(client, "status", function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
+      response.stats.local['connections:activeConnections:socket'].should.equal(3)
       done();
     });
   });
@@ -76,7 +76,7 @@ describe('Client: Socket', function(){
   it('stringified JSON can also be sent as actions', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
+      response.stats.local['connections:activeConnections:socket'].should.equal(3)
       done();
     });
   });
@@ -342,7 +342,7 @@ describe('Client: Socket', function(){
   });
 
   it('can send auth\'d messages', function(done){
-    rawAPI.connections[client_details.id].auth = 'true';
+    rawAPI.connections.connections[client_details.id].auth = 'true';
     client2.write("paramAdd roomMatchKey=auth\r\n");
     client2.write("paramAdd roomMatchValue=true\r\n");
     client2.write("roomChange secretRoom\r\n");
@@ -361,7 +361,7 @@ describe('Client: Socket', function(){
   });
 
   it('doesn\'t send messages to people who are not authed', function(done){
-    rawAPI.connections[client_details.id].auth = 'false';
+    rawAPI.connections.connections[client_details.id].auth = 'false';
     client2.write("paramAdd roomMatchKey=auth\r\n");
     client2.write("paramAdd roomMatchValue=true\r\n");
     client2.write("roomChange secretRoom\r\n");

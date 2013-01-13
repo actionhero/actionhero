@@ -23,8 +23,8 @@ describe('Client: Web Sockets', function(){
 
   function countWebSocketConnections(){
     var found = 0;
-    for(var i in apiObj.connections){
-      if(apiObj.connections[i].type == "webSocket"){
+    for(var i in apiObj.connections.connections){
+      if(apiObj.connections.connections[i].type == "webSocket"){
         found++;
       }
     }
