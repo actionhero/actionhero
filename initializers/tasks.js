@@ -290,7 +290,7 @@ var tasks = function(api, next){
   }
 
   api.tasks.seedPeriodicTasks = function(callback){
-    if(api.tasks.tasks.length == 0){
+    if(api.utils.hashLength(api.tasks.tasks) == 0){
       callback();
     }else{
       var started = 0;
@@ -397,7 +397,7 @@ var tasks = function(api, next){
           }
         });
       }else{
-        api.log("No tasks folder found, skipping...");
+        api.log("no tasks folder found, skipping");
       }
     }
 

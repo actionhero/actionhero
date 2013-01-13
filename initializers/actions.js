@@ -58,7 +58,7 @@ var actions = function(api, next){
           }
         });
       }else{
-        api.log("No actions folder found, skipping...");
+        api.log("ao actions folder found");
       }
     }
 
