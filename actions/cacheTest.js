@@ -8,6 +8,7 @@ action.inputs = {
   "required" : ["key", "value"],
   "optional" : []
 };
+action.blockedConnectionTypes = [];
 action.outputExample = {
   cacheTestResults: {
     key: "key",

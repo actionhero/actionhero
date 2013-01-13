@@ -1,5 +1,9 @@
 # Action Hero API Versions
 
+## Version 4.2.1
+
+Allowing support to limit the connection.type for which an action if valid for.  Define the array of `action.blockedConnectionTypes = ['socket', 'webSocket']` for example to not allow access from TCP or webSocket clients.  Not defining the array will allow all client types in.
+
 ## Version 4.2.0
 
 ** General **

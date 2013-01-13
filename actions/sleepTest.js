@@ -8,6 +8,7 @@ action.inputs = {
   "required" : [],
   "optional" : ['sleepDuration']
 };
+action.blockedConnectionTypes = [];
 action.outputExample = {
   sleepStarted: 1234,
   sleepEnded: 1234,

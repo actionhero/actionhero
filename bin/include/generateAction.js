@@ -16,6 +16,7 @@ exports['generateAction'] = function(binary, next){
   var optional = binary.utils.stringifyInputList(binary.argv['inputsOptional'])
   templateLines.push('  "optional" : ['+optional+']')
   templateLines.push('};')
+  templateLines.push('action.blockedConnectionTypes = []')
   templateLines.push('action.outputExample = {}')
   templateLines.push('')
   templateLines.push('/////////////////////////////////////////////////////////////////////')

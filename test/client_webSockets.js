@@ -1,15 +1,16 @@
 describe('Client: Web Sockets', function(){
-    var specHelper = require('../helpers/specHelper.js').specHelper;
-    var apiObj = {};
-    var should = require("should");
-    var io = require('socket.io-client');
-    var socketURL = "http://localhost:9000";
+  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var apiObj = {};
+  var should = require("should");
+  var io = require('socket.io-client');
+  var socketURL = "http://localhost:9000";
   var io_options ={
     transports: ['websocket'],
     'force new connection': true
   };
+  
   var client_1 = {};
-    var client_2 = {};
+  var client_2 = {};
   var client_3 = {};
 
   function makeSocketRequest(thisClient, type, data, cb){

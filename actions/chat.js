@@ -8,6 +8,7 @@ action.inputs = {
   "required" : ["method"],
   "optional" : ["room", "message"]
 };
+action.blockedConnectionTypes = ['socket', 'webSocket'];
 action.outputExample = {
   roomStatus: {
     roomStatus: {
@@ -56,9 +57,6 @@ action.run = function(api, connection, next){
     }
   }else if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null){
     connection.error = new Error("chatting via web clients is not enabled");
-    next(connection, true);
-  }else{
-    connection.error = new Error("this action is only for web clients; use your proticol's native methods");
     next(connection, true);
   }
 };

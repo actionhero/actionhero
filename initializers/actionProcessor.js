@@ -65,55 +65,57 @@ var actionProcessor = function(api, next){
     self.incrementTotalActions();
     self.incramentPendingActions();
     self.sanitizeLimitAndOffset();
+    self.connection.action = self.connection.params["action"];
+    var actionTemplate = api.actions[self.connection.action];
+
     api.stats.increment("actions:actionsCurrentlyProcessing");
+
+    if(self.connection.type == "web"){ api.routes.processRoute(self.connection); }
 
     if(api.running != true){
       self.completeAction("the server is shutting down");
     }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaniousActions){
       self.completeAction("you have too many pending requests");
+    }else if(self.connection.error !== null){
+      self.completeAction();
+    }else if(self.connection.action == null || actionTemplate == null){
+      api.stats.increment("actions:actionsNotFound");
+      if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
+      self.connection.error = new Error(self.connection.action + " is not a known action.");
+      if(api.configData.commonWeb.returnErrorCodes == true && self.connection.type == "web"){
+        self.connection.responseHttpCode = 404;
+      }
+      self.completeAction();
+    }else if(actionTemplate.blockedConnectionTypes != null && actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
+      self.connection.error = new Error("this action does not support the " + self.connection.type + "connection type");
+      self.completeAction();
     }else{
+      api.params.requiredParamChecker(self.connection, actionTemplate.inputs.required);
       if(self.connection.error === null){
-        if(self.connection.type == "web"){ api.routes.processRoute(self.connection); }
-        self.connection.action = self.connection.params["action"];
-        if(api.actions[self.connection.action] != undefined){
-          api.params.requiredParamChecker(self.connection, api.actions[self.connection.action].inputs.required);
-          if(self.connection.error === null){
-            process.nextTick(function() { 
-              api.stats.increment("actions:totalProcessedActions");
-              if(self.connection.action != null){ api.stats.increment("actions:processedActions:" + self.connection.action); }
-              if(api.domain != null){
-                var actionDomain = api.domain.create();
-                actionDomain.on("error", function(err){
-                  self.incramentPendingActions(-1);
-                  api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
-                });
-                actionDomain.run(function(){
-                  api.actions[self.connection.action].run(api, self.connection, function(connection, toRender){
-                    self.connection = connection;
-                    self.completeAction();
-                  }); 
-                })
-              }else{
-                api.actions[self.connection.action].run(api, self.connection, function(connection, toRender){
-                  self.connection = connection;
-                  self.completeAction();
-                }); 
-              }
+        process.nextTick(function() { 
+          api.stats.increment("actions:totalProcessedActions");
+          api.stats.increment("actions:processedActions:" + self.connection.action);
+          if(api.domain != null){
+            var actionDomain = api.domain.create();
+            actionDomain.on("error", function(err){
+              self.incramentPendingActions(-1);
+              api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
             });
+            actionDomain.run(function(){
+              actionTemplate.run(api, self.connection, function(connection, toRender){
+                self.connection = connection;
+                self.completeAction();
+              }); 
+            })
           }else{
-            self.completeAction(); 
+            actionTemplate.run(api, self.connection, function(connection, toRender){
+              self.connection = connection;
+              self.completeAction();
+            }); 
           }
-        }else{
-          api.stats.increment("actions:actionsNotFound");
-          if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
-          self.connection.error = new Error(self.connection.action + " is not a known action.");
-          if(api.configData.commonWeb.returnErrorCodes == true && self.connection.type == "web"){
-            self.connection.responseHttpCode = 404;
-          }
-          self.completeAction();
-        }
+        });
       }else{
-        self.completeAction();
+        self.completeAction(); 
       }
     }
   }

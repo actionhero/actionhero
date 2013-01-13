@@ -2,6 +2,12 @@ describe('Action: chat', function(){
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
+  var io = require('socket.io-client');
+  var socketURL = "http://localhost:9000";
+  var io_options ={
+    transports: ['websocket'],
+    'force new connection': true
+  };
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
@@ -94,6 +100,19 @@ describe('Action: chat', function(){
           done();
         }); 
       }, 50);
+    });
+
+    it('action should only be valid for http/s clients', function(done){
+      var client = io.connect(socketURL, io_options);
+      client.on('welcome', function(data){
+        client.on('response', function(data){
+          client.removeListener('response', this); 
+          data.error.should.equal("Error: this action does not support the webSocketconnection type");
+          client.disconnect();
+          done();
+        });
+        client.emit('action', {action: 'chat'});
+      });
     });
 
   });

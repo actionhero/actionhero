@@ -8,6 +8,7 @@ action.inputs = {
   "required" : [],
   "optional" : []
 };
+action.blockedConnectionTypes = [];
 action.outputExample = {
   "actions" : [
   {
