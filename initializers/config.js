@@ -1,4 +1,7 @@
-var initConfig = function(api, startingParams, next){
+var fs = require('fs');
+var argv = require('optimist').argv;
+
+var config = function(api, startingParams, next){
 
   api.watchedFiles = [];
 
@@ -8,10 +11,10 @@ var initConfig = function(api, startingParams, next){
     }
   }
       
-  if(api.argv["config"] != null){
-    var configFile = api.argv["config"];
-    console.log(' >> configuration read from: ' + api.argv["config"]);
-  }else if(api.fs.existsSync(process.cwd() + '/config.js')){
+  if(argv["config"] != null){
+    var configFile = argv["config"];
+    console.log(' >> configuration read from: ' + argv["config"]);
+  }else if(fs.existsSync(process.cwd() + '/config.js')){
     var configFile = process.cwd() + '/config.js';
   }else{
     var configFile = __dirname + "/../config.js";
@@ -35,7 +38,7 @@ var initConfig = function(api, startingParams, next){
   if(api.configData.general.developmentMode == true){
     api.watchedFiles.push(configFile);
     (function() {
-      api.fs.watchFile(configFile, {interval:1000}, function(curr, prev){
+      fs.watchFile(configFile, {interval:1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
           api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n");
           delete require.cache[configFile];
@@ -50,4 +53,4 @@ var initConfig = function(api, startingParams, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initConfig = initConfig;
+exports.config = config;

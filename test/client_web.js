@@ -1,5 +1,5 @@
 describe('Client: Web', function(){
-    var specHelper = require('../helpers/_specHelper.js').specHelper;
+    var specHelper = require('../helpers/specHelper.js').specHelper;
     var apiObj = {};
     var rawApi = {};
     var should = require("should");
@@ -224,7 +224,7 @@ describe('Client: Web', function(){
         }
     }
     var map = ["gameID", "userID", "data"]
-    var urlParams = apiObj.utils.mapParamsFromURL(connection, map);
+    var urlParams = apiObj.params.mapParamsFromURL(connection, map);
     urlParams.gameID.should.equal('game-10')
     urlParams.userID.should.equal('user-13')
     urlParams.data.should.equal('something_else')
@@ -239,7 +239,7 @@ describe('Client: Web', function(){
         }
     }
     var map = ["gameID", "userID", "data"]
-    var urlParams = apiObj.utils.mapParamsFromURL(connection, map);
+    var urlParams = apiObj.params.mapParamsFromURL(connection, map);
     urlParams.gameID.should.equal('game-10')
     urlParams.userID.should.equal('user-13')
     urlParams.data.should.equal('something_else')
@@ -248,7 +248,7 @@ describe('Client: Web', function(){
 
     describe('routes', function(){
     beforeEach(function(done){
-        rawApi.routes = {
+        rawApi.routes.routes = {
           users: {
             get: {
               action: "usersList", // (GET) /api/users
@@ -273,17 +273,17 @@ describe('Client: Web', function(){
             }
           }
       };
-      rawApi.routes.should.be.an.instanceOf(Object);
-      rawApi.routes.users.should.be.an.instanceOf(Object);
-      rawApi.routes.user.should.be.an.instanceOf(Object);
+      rawApi.routes.routes.should.be.an.instanceOf(Object);
+      rawApi.routes.routes.users.should.be.an.instanceOf(Object);
+      rawApi.routes.routes.user.should.be.an.instanceOf(Object);
       done();
     });
 
     afterEach(function(done){
-      rawApi.routes = {};
-      rawApi.routes.should.be.an.instanceOf(Object);
-      should.not.exist(rawApi.routes.users);
-      should.not.exist(rawApi.routes.user);
+      rawApi.routes.routes = {};
+      rawApi.routes.routes.should.be.an.instanceOf(Object);
+      should.not.exist(rawApi.routes.routes.users);
+      should.not.exist(rawApi.routes.routes.user);
       done();
     });
     

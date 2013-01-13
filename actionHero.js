@@ -3,43 +3,18 @@
 // evan@evantahler.com 
 // https://github.com/evantahler/actionHero
 
+var fs = require("fs");
+var path = require("path");
+var async = require('async');
+
+// backwards compatibility for old node versions
+fs.existsSync || (fs.existsSync = path.existsSync);
+fs.exists || (fs.exists = path.exists);
+
 var actionHero = function(){
   var self = this;
-
   self.initalizers = {};
   self.api = {};
-
-  self.api.connections = {};
-
-  // core packages for the API
-  self.api.util = require("util");
-  self.api.exec = require('child_process').exec;
-  self.api.fork = require('child_process').fork;
-  self.api.net = require("net");
-  self.api.tls = require("tls");
-  self.api.http = require("http");
-  self.api.https = require("https");
-  self.api.url = require("url");
-  self.api.fs = require("fs");
-  self.api.path = require("path");
-  self.api.os = require('os');
-  self.api.formidable = require('formidable');
-  self.api.request = require("request");
-  self.api.async = require('async');
-  self.api.crypto = require("crypto");
-  self.api.uuid = require("node-uuid");
-  self.api.consoleColors = require('colors');
-  self.api.data2xml = require('data2xml');
-  self.api.mime = require('mime');
-  self.api.redisPackage = require('redis');
-  self.api.cluster = require('cluster');
-  self.api.io = require('socket.io');
-  self.api.bf = require('browser_fingerprint');
-  self.api.argv = require('optimist').argv;
-
-  // backwards compatibility for old node versions
-  self.api.fs.existsSync || (self.api.fs.existsSync = self.api.path.existsSync);
-  self.api.fs.exists || (self.api.fs.exists = self.api.path.exists);
   try{ self.api.domain = require("domain"); }catch(e){ }
 };
   
@@ -64,8 +39,8 @@ actionHero.prototype.start = function(params, next){
   var initializerMethods = [];
   for(var i in initializerFolders){
     var folder = initializerFolders[i];
-    if(self.api.fs.existsSync(folder)){
-      self.api.fs.readdirSync(folder).sort().forEach( function(file) {
+    if(fs.existsSync(folder)){
+      fs.readdirSync(folder).sort().forEach( function(file) {
         if (file[0] != "."){
           var initalizer = file.split(".")[0];
           if(require.cache[initializerFolders[i] + file] !== null){
@@ -77,28 +52,32 @@ actionHero.prototype.start = function(params, next){
       });
     }
   }
-    
-  self.api.utils = require(__dirname + '/helpers/utils.js').utils;
 
   // run the initializers
   var orderedInitializers = {};
-  orderedInitializers['initConfig'] = function(next){ self.initalizers['initConfig'](self.api, self.startingParams, next) };
+  orderedInitializers['config'] = function(next){ self.initalizers['config'](self.api, self.startingParams, next) };
   [
-    'initID',
-    'initPids',
-    'initLog',
-    'initExceptions',
-    'initStats',
-    'initRedis',
-    'initCache',
-    'initActions',
-    'initPostVariables',
-    'initFileServer',
-    'initChatRooms',
-    'initTasks',
-    'initWebServer', 
-    'initWebSockets', 
-    'initSocketServer'
+    'utils',
+    'id',
+    'pids',
+    'log',
+    'exceptions',
+    'stats',
+    'redis',
+    'cache',
+    'actions',
+    'actionProcessor',
+    'params',
+    'fileServer',
+    'chatRooms',
+    'tasks',
+    'task',
+    'taskProcessor',
+    'routes',
+    'connections',
+    'webServer', 
+    'webSocketServer', 
+    'socketServer'
   ].forEach(function(I){
     orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
   });
@@ -151,7 +130,7 @@ actionHero.prototype.start = function(params, next){
     }
   };
 
-  self.api.async.series(orderedInitializers);
+  async.series(orderedInitializers);
 };
 
 actionHero.prototype.stop = function(next){ 
@@ -164,7 +143,7 @@ actionHero.prototype.stop = function(next){
     orderedTeardowns['watchedFiles'] = function(next){ 
       self.api.log(" > teardown: watchedFiles", 'grey');
       for(var i in self.api.watchedFiles){
-        self.api.fs.unwatchFile(self.api.watchedFiles[i]);
+        fs.unwatchFile(self.api.watchedFiles[i]);
       }
       next();
     }
@@ -187,7 +166,7 @@ actionHero.prototype.stop = function(next){
       if(typeof next == "function"){ next(null, self.api); }
     };
 
-    self.api.async.series(orderedTeardowns);
+    async.series(orderedTeardowns);
   }else{
     self.api.log("Cannot shut down (not running any servers)");
     if(typeof next == "function"){ next(null, self.api); }

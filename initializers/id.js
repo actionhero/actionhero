@@ -1,4 +1,6 @@
-var initID = function(api, next){
+var cluster = require('cluster')
+
+var id = function(api, next){
 
   var externalIP = api.utils.getExternalIPAddress();
   if(externalIP == false){
@@ -9,11 +11,11 @@ var initID = function(api, next){
   api.id = externalIP;
   if(api.configData.httpServer.enable){ api.id += ":" + api.configData.httpServer.port }
   if(api.configData.tcpServer.enable){ api.id += ":" + api.configData.tcpServer.port }
-  if(api.cluster.isWorker){ api.id += ":" + process.pid; }
+  if(cluster.isWorker){ api.id += ":" + process.pid; }
 
   next();
 }
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initID = initID;
+exports.id = id;

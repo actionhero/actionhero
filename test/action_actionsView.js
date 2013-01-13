@@ -1,5 +1,5 @@
 describe('Action: actionsView', function(){
-    var specHelper = require('../helpers/_specHelper.js').specHelper;
+    var specHelper = require('../helpers/specHelper.js').specHelper;
     var apiObj = {};
     var should = require("should");
 

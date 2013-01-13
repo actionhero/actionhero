@@ -1,5 +1,5 @@
 describe('Action: chat', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
 
@@ -16,17 +16,6 @@ describe('Action: chat', function(){
     done();
   });
 
-  clientID = null;
-
-  describe('basics', function(){
-    it('I can my chat details', function(done){
-      specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        clientID = response.body.details.public.id
-        done();
-      });
-    });
-  });
-
   describe('should be off', function(){
     it('messages should not be saved when httpClientMessageTTL is null', function(done){
       apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST");
@@ -41,9 +30,14 @@ describe('Action: chat', function(){
 
   describe('should be on', function(){
 
+    var clientID = null;
+
     before(function(done){
       apiObj.configData.commonWeb.httpClientMessageTTL = 10000;
-      done();
+      specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
+        clientID = response.body.details.id
+        done();
+      });
     });
 
     it('I can my room details', function(done){
@@ -55,7 +49,7 @@ describe('Action: chat', function(){
 
     it('clientID sticks (cookies)', function(done){
       specHelper.apiTest.get('/chat/?method=detailsView', 0, {}, function(response){
-        clientID.should.equal(response.body.details.public.id);
+        clientID.should.equal(response.body.details.id);
         done();
       });
     });
@@ -79,29 +73,25 @@ describe('Action: chat', function(){
     });
 
     it('I should get messages from other clients', function(done){
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST");
       setTimeout(function(){
         specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
-          response.body.message.message.should.equal("TEST");
+          response.body.messages[0].message.should.equal("TEST");
           done();
         }); 
       }, 50);
     });
 
-    it('I should get queued messages from other clients', function(done){
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: A");
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: B");
-      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST: C");
+    it('I can get many messagse and the order is maintained', function(done){
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: A");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: B");
+      apiObj.chatRoom.socketRoomBroadcast({room: 'defaultRoom'}, "TEST: C");
       setTimeout(function(){
         specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
-          response.body.message.message.should.equal("TEST: A");
-          specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
-            response.body.message.message.should.equal("TEST: B");
-            specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
-              response.body.message.message.should.equal("TEST: C");
-              done();
-            });
-          });
+          response.body.messages[0].message.should.equal("TEST: A");
+          response.body.messages[1].message.should.equal("TEST: B");
+          response.body.messages[2].message.should.equal("TEST: C");
+          done();
         }); 
       }, 50);
     });

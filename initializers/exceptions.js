@@ -1,8 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
-// error handling for unCaught exceptions from tasks and actions
-// I make use of node.js domains, so I am only availalbe for node v0.8.0 and higher
-
-var initExceptions = function(api, next){
+var exceptions = function(api, next){
   api.exceptionHandlers = {};
 
   api.exceptionHandlers.renderError = function(err){
@@ -20,7 +16,7 @@ var initExceptions = function(api, next){
 
   if(api.domain != null){
     api.exceptionHandlers.action = function(domain, err, connection, next){
-      api.stats.increment(api, "exceptions:actions");
+      api.stats.increment("exceptions:actions");
       api.log("! uncaught error from action: " + connection.action, ["red","bold"]);
       api.exceptionHandlers.renderConnection(connection);
       api.exceptionHandlers.renderError(err);
@@ -33,7 +29,7 @@ var initExceptions = function(api, next){
       next(connection, true);
     };
     api.exceptionHandlers.task = function(domain, err, task, next){
-      api.stats.increment(api, "exceptions:tasks");
+      api.stats.increment("exceptions:tasks");
       api.log("! uncaught error from task: " + task.name, ["red","bold"]);
       api.exceptionHandlers.renderError(err);
       // domain.dispose();
@@ -57,4 +53,4 @@ var initExceptions = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initExceptions = initExceptions;
+exports.exceptions = exceptions;

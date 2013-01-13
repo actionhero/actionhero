@@ -4,7 +4,6 @@ specHelper.fs = require('fs');
 specHelper.net = require('net');
 specHelper.should = require('should');
 specHelper.request = require('request');
-specHelper.utils = require(__dirname + '/../helpers/utils.js').utils;
 specHelper.apis = [];
 specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
@@ -219,7 +218,8 @@ specHelper.cleanAPIObject = function(api){
   cleanAPI["stats"] = api["stats"];
   cleanAPI["cache"] = api["cache"];
   cleanAPI["redis"] = api["redis"];
-  cleanAPI["postVariables"] = api["postVariables"];
+  cleanAPI["params"] = api["params"];
+  cleanAPI["routes"] = api["routes"];
   cleanAPI["connections"] = api["connections"];
   cleanAPI["chatRoom"] = api["chatRoom"];
   return cleanAPI

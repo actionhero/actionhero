@@ -1,5 +1,5 @@
 describe('Client: Socket', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var net = require('net');
   var apiObj = {};
   var rawAPI = {};
@@ -68,7 +68,7 @@ describe('Client: Socket', function(){
   it('single string message are treated as actions', function(done){
     makeSocketRequest(client, "status", function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
+      response.stats.local['connections:activeConnections:socket'].should.equal(3)
       done();
     });
   });
@@ -76,7 +76,7 @@ describe('Client: Socket', function(){
   it('stringified JSON can also be sent as actions', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), function(response){
       response.should.be.an.instanceOf(Object)
-      response.stats.local['socketServer:numberOfActiveClients'].should.equal(3)
+      response.stats.local['connections:activeConnections:socket'].should.equal(3)
       done();
     });
   });
@@ -100,7 +100,8 @@ describe('Client: Socket', function(){
     makeSocketRequest(client2, "detailsView", function(response){
       response.status.should.equal("OK")
       response.details.params.should.be.an.instanceOf(Object)
-      response.details.public.should.be.an.instanceOf(Object)
+      response.details.should.be.an.instanceOf(Object)
+      response.details.connectedAt.should.be.within(0, new Date().getTime())
       client_2_details = response.details; // save for later!
       done();
     });
@@ -266,7 +267,7 @@ describe('Client: Socket', function(){
     client.removeListener('data',listener);
     response = JSON.parse(response);
     response.message.should.equal("I have entered the room");
-    response.from.should.equal(client_2_details.public.id);
+    response.from.should.equal(client_2_details.id);
     done();
   }
   client.on('data', listener);
@@ -278,7 +279,7 @@ describe('Client: Socket', function(){
     client.removeListener('data',listener);
     response = JSON.parse(response);
     response.message.should.equal("I have left the room");
-    response.from.should.equal(client_2_details.public.id);
+    response.from.should.equal(client_2_details.id);
     done();
   }
   client.on('data', listener);
@@ -341,7 +342,7 @@ describe('Client: Socket', function(){
   });
 
   it('can send auth\'d messages', function(done){
-    rawAPI.connections[client_details.public.id].auth = 'true';
+    rawAPI.connections.connections[client_details.id].auth = 'true';
     client2.write("paramAdd roomMatchKey=auth\r\n");
     client2.write("paramAdd roomMatchValue=true\r\n");
     client2.write("roomChange secretRoom\r\n");
@@ -351,7 +352,7 @@ describe('Client: Socket', function(){
         client.removeListener('data',listener);
         response = JSON.parse(response);
         response.message.should.equal("secretAuthTest");
-        response.from.should.equal(client_2_details.public.id);
+        response.from.should.equal(client_2_details.id);
         done();
       }
       client.on('data', listener);
@@ -360,7 +361,7 @@ describe('Client: Socket', function(){
   });
 
   it('doesn\'t send messages to people who are not authed', function(done){
-    rawAPI.connections[client_details.public.id].auth = 'false';
+    rawAPI.connections.connections[client_details.id].auth = 'false';
     client2.write("paramAdd roomMatchKey=auth\r\n");
     client2.write("paramAdd roomMatchValue=true\r\n");
     client2.write("roomChange secretRoom\r\n");

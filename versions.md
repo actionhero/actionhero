@@ -1,5 +1,22 @@
 # Action Hero API Versions
 
+## Version 4.2.0
+
+** General **
+
+This release chanes (simplifies) a nmber of APIs, but it does introduce changes.  Please read the wiki, specifically the API methods page, to learn the new syntax for various methods.
+
+- circular refrences are bad... remove all functions that require api to be passed in (mainly the API object)
+- change initializer names to remove (init)
+- object-ize connections, append connection-type prototypes in the server setups
+- remove connection classes from utils
+- remove global 'requires' from the API object, put them in the intilizers that need them
+- remove the notion of 'public' from connection objects
+- server shutdown needs to clear its connections from the chatrooms
+- delayed tasks which are older than 1 min should be checked against the various queues to be sure exist
+- fix http message request so that all pending messages are returned
+- general project orginization
+
 ## Version 4.1.0
 
 ** Tasks **

@@ -1,9 +1,10 @@
-////////////////////////////////////////////////////////////////////////////
-// logging
+var fs = require('fs');
+var colors = require('colors');
+var cluster = require('cluster');
 
-var initLog = function(api, next){
+var log = function(api, next){
   
-  try { api.fs.mkdirSync(api.configData.log.logFolder, "777") } catch(e) {}; 
+  try { fs.mkdirSync(api.configData.log.logFolder, "777") } catch(e) {}; 
 
   api.logger = {};
   
@@ -12,8 +13,8 @@ var initLog = function(api, next){
     if (styles == null){styles = ["white"];}
     if (typeof styles == "string"){styles = [styles];}
     for(var i in styles){
-      if(api.consoleColors[styles[i]] != null){
-        inner_message = api.consoleColors[styles[i]](inner_message);
+      if(colors[styles[i]] != null){
+        inner_message = colors[styles[i]](inner_message);
       }
     }
     return inner_message;
@@ -27,15 +28,15 @@ var initLog = function(api, next){
       }else{
         var time_string = "!";
       }
-      if(api.cluster.isWorker){
+      if(cluster.isWorker){
         time_string += " [" + process.pid + "]";
       }
-      var console_message = api.consoleColors.grey(time_string) + api.consoleColors.grey(" | ");
+      var console_message = colors.grey(time_string) + colors.grey(" | ");
       console_message += api.logger.colorize(original_message, styles);
       console.log(console_message);
       var file_message = time_string + " | " + original_message;
       if (api.logWriter == null){
-        api.logWriter = api.fs.createWriteStream((api.configData.log.logFolder + "/" + api.pids.title + ".log"), {flags:"a"});
+        api.logWriter = fs.createWriteStream((api.configData.log.logFolder + "/" + api.pids.title + ".log"), {flags:"a"});
       }
       process.nextTick(function() { 
         try{
@@ -69,4 +70,4 @@ var initLog = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initLog = initLog;
+exports.log = log;

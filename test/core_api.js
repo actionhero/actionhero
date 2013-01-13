@@ -1,5 +1,5 @@
 describe('Core: API', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
 
@@ -54,7 +54,7 @@ describe('Core: API', function(){
       "key", // from action
       "value", // from action
     ].forEach(function(item){
-      apiObj.postVariables.should.include(item);
+      apiObj.params.postVariables.should.include(item);
     });
 
     done();

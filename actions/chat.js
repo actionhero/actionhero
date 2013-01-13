@@ -23,37 +23,40 @@ action.outputExample = {
 /////////////////////////////////////////////////////////////////////
 // functional
 action.run = function(api, connection, next){
-  if(connection.type == "web"){
+  if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL != null){
     if (connection.params.method == "roomView"){
-      api.chatRoom.socketRoomStatus(api, connection.room, function(err, roomStatus){
+      api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
         connection.response.roomStatus = roomStatus;
         next(connection, true);
       });
     }else if(connection.params.method == "roomChange"){
-      api.webServer.changeChatRoom(api, connection, function(){
+      api.webServer.changeChatRoom(connection, function(){
         next(connection, true);
       })
     }else if(connection.params.method == "detailsView"){
       connection.response.details = {};
-      connection.response.details.public = connection.public;
+      connection.response.details.id = connection.id;
       connection.response.details.room = connection.room;
       next(connection, true);
     }else if(connection.params.method == "say"){
       if(connection.params.message != null){
-        api.chatRoom.socketRoomBroadcast(api, connection, connection.params.message);
+        api.chatRoom.socketRoomBroadcast(connection, connection.params.message);
       }else{
         connection.error = new Error("message is required to use the say method");
       }
       next(connection, true);
     }else if(connection.params.method == "messages"){
-      api.webServer.getWebChatMessage(api, connection, function(err, message){
-        connection.response.message = message;
+      api.webServer.getWebChatMessage(connection, function(err, messages){
+        connection.response.messages = messages;
         next(connection, true);
       });
     }else{
       connection.error = new Error(connection.params.method + " is not a known chat method");
       next(connection, true);
     }
+  }else if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null){
+    connection.error = new Error("chatting via web clients is not enabled");
+    next(connection, true);
   }else{
     connection.error = new Error("this action is only for web clients; use your proticol's native methods");
     next(connection, true);

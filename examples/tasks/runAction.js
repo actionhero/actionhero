@@ -8,25 +8,28 @@ task.scope = "any";
 task.frequency = 0;
 
 /////////////////////////////////////////////////////////////////////
-// functional
+// functional 
+
 task.run = function(api, params, next){
-  if(params == null){prams = {};}
-  
-  var connection = {
-    type: "task",
-    params: params,
-    error: false,
-    remoteIP: "task",
-    action: params.action,
-    response: {}
-  };
-  
-  api.processAction(api, connection, null, function(connection, cont){
+  if(params == null){params = {};}
+
+  connection = api.utils.setupConnection(api, {id: 0}, 'task', 0, 0);
+  connection.params = params;
+
+  var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
     if(connection.error){
       api.log("task error: "+connection.error, "red");
+    }else{
+      if(api.configData.log.logRequests){
+        api.logJSON({
+          label: "action @ task",
+          params: JSON.stringify(params),
+        }, "grey");
+      }
     }
-    next(true, connection);
-  })
+    next(connection, true);
+  }});
+  actionProcessor.processAction();
 };
 
 /////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 describe('Client: Web Sockets', function(){
-    var specHelper = require('../helpers/_specHelper.js').specHelper;
+    var specHelper = require('../helpers/specHelper.js').specHelper;
     var apiObj = {};
     var should = require("should");
     var io = require('socket.io-client');
@@ -23,8 +23,8 @@ describe('Client: Web Sockets', function(){
 
   function countWebSocketConnections(){
     var found = 0;
-    for(var i in apiObj.connections){
-      if(apiObj.connections[i].type == "webSocket"){
+    for(var i in apiObj.connections.connections){
+      if(apiObj.connections.connections[i].type == "webSocket"){
         found++;
       }
     }
@@ -84,7 +84,7 @@ describe('Client: Web Sockets', function(){
       makeSocketRequest(client_1, "detailsView", {}, function(response){
         response.should.be.an.instanceOf(Object);
         response.status.should.equal("OK")
-        response.details.public.connectedAt.should.be.within(0, new Date().getTime())
+        response.details.connectedAt.should.be.within(0, new Date().getTime())
         response.details.room.should.equal("defaultRoom")
         done()
       });

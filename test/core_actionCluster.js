@@ -1,9 +1,8 @@
 describe('Core: actionCluster', function(){
-  var specHelper = require('../helpers/_specHelper.js').specHelper;
+  var specHelper = require('../helpers/specHelper.js').specHelper;
   var apis = [];
   var should = require("should");
-  var externalIP = specHelper.utils.getExternalIPAddress();
-  if(externalIP === false){ externalIP = 'actionHero'; }
+  var externalIP = 'actionHero';
 
   var stopAllServers = function(done){
     specHelper.stopServer(0, function(){
@@ -29,11 +28,15 @@ describe('Core: actionCluster', function(){
   }
 
   before(function(done){
-    stopAllServers(done);
+    stopAllServers(function(){
+      setTimeout(done, 1000);
+    });
   });
 
   after(function(done){
-    stopAllServers(done);
+    stopAllServers(function(){
+      setTimeout(done, 1000);
+    });
   });
 
   describe('general actionCluster', function(){
@@ -42,6 +45,8 @@ describe('Core: actionCluster', function(){
       specHelper.prepare(0, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
+        var ip = api.utils.getExternalIPAddress();
+        if(ip != null){ externalIP = ip; }
         api.id.should.equal(externalIP + ":9000:8000");
         apis[0] = api;
         done();
@@ -173,10 +178,10 @@ describe('Core: actionCluster', function(){
       });
 
       it("If a peer goes away, it should be removed from the list of peers (ping)", function(done){
-        this.timeout(0);
+        this.timeout(20000);
         var sleepTime = (apis[0].redis.lostPeerCheckTime * 2) + 1;
         setTimeout(function(){
-          apis[0].redis.checkForDroppedPeers(apis[0], function(){
+          apis[0].redis.checkForDroppedPeers(function(){
             apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
               apis[0].redis.client.llen("actionHero:peers", function(err, length){
                 apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
@@ -294,8 +299,8 @@ describe('Core: actionCluster', function(){
   describe('shared cache', function(){
 
     it("peer 1 writes and peer 2 should read", function(done){
-      apis[0].cache.save(apis[0], "test_key", "yay", null, function(err, save_resp){
-        apis[1].cache.load(apis[1], "test_key", function(err, value){
+      apis[0].cache.save("test_key", "yay", null, function(err, save_resp){
+        apis[1].cache.load("test_key", function(err, value){
           value.should.equal('yay');
           done();
         })
@@ -303,18 +308,14 @@ describe('Core: actionCluster', function(){
     }); 
 
     it("peer 3 deletes and peer 1 cannot read any more", function(done){
-      apis[2].cache.destroy(apis[2], "test_key", function(err, del_resp){
-        apis[0].cache.load(apis[0], "test_key", function(err, value){
+      apis[2].cache.destroy("test_key", function(err, del_resp){
+        apis[0].cache.load("test_key", function(err, value){
           should.not.exist(value);
           done();
         })
       });
     });
 
-  });
-
-  describe('task sync and sharing', function(){
-    // TODO
   });
 
 });

@@ -1,10 +1,17 @@
-var initWebServer = function(api, next){
+var http = require('http');
+var https = require('https');
+var url = require('url');
+var fs = require('fs');
+var formidable = require('formidable');
+var data2xml = require('data2xml');
+var browser_fingerprint = require('browser_fingerprint');
+
+var webServer = function(api, next){
 
   if(api.configData.httpServer.enable != true){
     next();
   }else{
     api.webServer = {};
-    api.webServer.numberOfLocalWebRequests = 0;
     api.webServer.roomCookieKey = "__room";
     api.webServer.clientClearTimers = [];
     if(api.redis.enable != true){ api.webServer.webChatMessages = {}; }
@@ -12,48 +19,85 @@ var initWebServer = function(api, next){
     if(["api", "public"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
       throw new Error('api.configData.commonWeb.rootEndpointType can only be "api" or "public"');
     }
+
+    api.webServer._start = function(api, next){ 
+      api.webServer.server.on("error", function(e){
+        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
+        api.log(e, "red");
+        process.exit();
+      });
+      api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
+        api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
+        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
+        next();
+      });
+    }
+
+    api.webServer._teardown = function(api, next){
+      api.webServer.stopTimers(api);
+      if(api.configData.commonWeb.httpClientMessageTTL != null){
+        for(var i in api.connections.connections){
+          started = 0;
+          if(api.connections.connections[i].type == 'web'){ 
+            started ++;
+            api.connections.connections[i].destroy(function(){
+              started--;
+              if(started == 0){ next(); }
+            }); 
+          }
+        }
+      }
+      if(api.configData.webSockets.enable != true){
+        api.webServer.server.close();
+      }
+      next();
+    }
     
     ////////////////////////////////////////////////////////////////////////////
     // server
     if(api.configData.httpServer.secure == false){
-      api.webServer.server = api.http.createServer(function (req, res) {
+      api.webServer.server = http.createServer(function (req, res) {
         api.webServer.handleRequest(req, res);
       });
     }else{
-      var key = api.fs.readFileSync(api.configData.httpServer.keyFile);
-      var cert = api.fs.readFileSync(api.configData.httpServer.certFile);
-      api.webServer.server = api.https.createServer({key: key, cert: cert}, function (req, res) {
+      var key = fs.readFileSync(api.configData.httpServer.keyFile);
+      var cert = fs.readFileSync(api.configData.httpServer.certFile);
+      api.webServer.server = https.createServer({key: key, cert: cert}, function (req, res) {
         api.webServer.handleRequest(req, res);
       });
     }
 
-    api.webServer.handleRequest = function(req, res){
-      api.stats.increment(api, "webServer:numberOfWebRequests");
-      api.webServer.numberOfLocalWebRequests++;
+    api.webServer.decorateConnection = function(connection, cookieHash){
+      var responseHeaders = [];
+      for(var i in cookieHash){
+        responseHeaders.push([i, cookieHash[i]]);
+      }
+      responseHeaders.push(['Content-Type', "application/json"]);
+      responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
 
-      api.bf.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
-        var responseHeaders = [];
-        for(var i in cookieHash){
-          responseHeaders.push([i, cookieHash[i]]);
-        }
-        responseHeaders.push(['Content-Type', "application/json"]);
-        responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
-        var connection = {
+      connection.responseHeaders = responseHeaders;
+      connection.method = connection.rawConnection.req.method;
+      connection.cookies =  api.utils.parseCookies(connection.rawConnection.req);
+      connection.responseHttpCode = 200;
+    }
+
+    api.webServer.handleRequest = function(req, res){
+      browser_fingerprint.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+        var connection = new api.connection({
+          type: 'web', 
           id: fingerprint,
-          params: {},
-          timer: { startTime: new Date().getTime() },
-          req: req,
-          res: res,
-          method: req.method,
-          responseHeaders: responseHeaders,
-          responseHttpCode: 200,
-          cookies: api.utils.parseCookies(req),
-        }
+          remotePort: req.connection.remotePort, 
+          remoteIP: req.connection.remoteAddress, 
+          rawConnection: {
+            req: req,
+            res: res,
+          },
+        });
+        api.webServer.decorateConnection(connection, cookieHash);
 
         if(connection.cookies[api.webServer.roomCookieKey] != null){
           connection.room = connection.cookies[api.webServer.roomCookieKey];
         }
-        api.utils.setupConnection(api, connection, "web", req.connection.remotePort, req.connection.remoteAddress);
 
         if(typeof(api.configData.commonWeb.httpHeaders) != 'undefined'){
           for(var i in api.configData.commonWeb.httpHeaders){
@@ -61,13 +105,13 @@ var initWebServer = function(api, next){
           }
         }
                     
-        if(connection.req.headers['x-forwarded-for'] != null){
-          var IPs = connection.req.headers['x-forwarded-for'].split(",");
+        if(connection.rawConnection.req.headers['x-forwarded-for'] != null){
+          var IPs = connection.rawConnection.req.headers['x-forwarded-for'].split(",");
           connection.remoteIP = IPs[0]; 
         }
         
         // determine API or FILE
-        connection.parsedURL = api.url.parse(connection.req.url, true);
+        connection.parsedURL = url.parse(connection.rawConnection.req.url, true);
         var pathParts = connection.parsedURL.pathname.split("/");
         connection.requestMode = api.configData.commonWeb.rootEndpointType; // api or public
         connection.directModeAccess = false;
@@ -84,7 +128,7 @@ var initWebServer = function(api, next){
         
         if(connection.requestMode == 'api'){
           // parse GET (URL) variables
-          fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
+          api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
           if(connection.params.action === undefined){ 
             connection.actionSetBy = "url";
             if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
@@ -92,46 +136,48 @@ var initWebServer = function(api, next){
           }else{
             connection.actionSetBy = "queryParam";
           }
-        
+
           // parse POST variables
-          if (connection.req.method.toLowerCase() == 'post') {
-            if(connection.req.headers['content-type'] == null && connection.req.headers['Content-Type'] == null){
+          if (connection.rawConnection.req.method.toLowerCase() == 'post') {
+            if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
               // if no form content-type, treat like GET
-              fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
+              api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
               if(connection.params.action === undefined){ 
                 connection.actionSetBy = "url";
                 if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
                 else{ connection.params.action = pathParts[1]; }
               }
-              process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+              var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+              actionProcessor.processAction();
             }else{
-              var form = new api.formidable.IncomingForm();
-                form.parse(connection.req, function(err, fields, files) {
+              var form = new formidable.IncomingForm();
+                form.parse(connection.rawConnection.req, function(err, fields, files) {
                 if(err){
                   api.log(err, "red");
                   connection.error = new Error("There was an error processign this form.");
-                  process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+                  process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
                 }else{
-                    fillParamsFromWebRequest(api, connection, files);
-                    fillParamsFromWebRequest(api, connection, fields);
-                    process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+                    api.webServer.fillParamsFromWebRequest(connection, files);
+                    api.webServer.fillParamsFromWebRequest(connection, fields);
+                    process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
                 }
                 });
             }
           }else{
-            process.nextTick(function() { api.processAction(api, connection, null, api.webServer.respondToWebClient); });
+            var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+            actionProcessor.processAction();
           }
         }
         
         if(connection.requestMode == 'public'){
-          fillParamsFromWebRequest(api, connection, connection.parsedURL.query);
-          process.nextTick(function(){ api.sendFile(api, connection, api.webServer.respondToWebClient); })
+          api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
+          process.nextTick(function(){ api.fileServer.deliver(connection, api.webServer.respondToWebClient); })
         } 
       });
     }
     
-    var fillParamsFromWebRequest = function(api, connection, varsHash){
-      api.postVariables.forEach(function(postVar){
+    api.webServer.fillParamsFromWebRequest = function(connection, varsHash){
+      api.params.postVariables.forEach(function(postVar){
         if(varsHash[postVar] !== undefined && varsHash[postVar] != null){ 
           connection.params[postVar] = varsHash[postVar]; 
         }
@@ -150,7 +196,7 @@ var initWebServer = function(api, next){
           
       // requestorInformation
       connection.response.requestorInformation = {};
-      connection.response.requestorInformation.id = connection.public.id;
+      connection.response.requestorInformation.id = connection.id;
       connection.response.requestorInformation.remoteAddress = connection.remoteIP;
       connection.response.requestorInformation.receivedParams = {};
       for(var k in connection.params){
@@ -158,9 +204,9 @@ var initWebServer = function(api, next){
       };
           
       // request timer
-      connection.timer.stopTime = new Date().getTime();
-      connection.response.serverInformation.requestDuration = connection.timer.stopTime - connection.timer.startTime;
-      connection.response.serverInformation.currentTime = connection.timer.stopTime;
+      var stopTime = new Date().getTime();
+      connection.response.serverInformation.requestDuration = stopTime - connection.connectedAt;
+      connection.response.serverInformation.currentTime = stopTime;
             
       // errors
       if(connection.error != null){
@@ -175,7 +221,7 @@ var initWebServer = function(api, next){
           var stringResponse = "";
           if(typeof connection.params.outputType == "string"){
             if(connection.params.outputType.toLowerCase() == "xml"){
-              stringResponse = api.data2xml()('XML', connection.response);
+              stringResponse = data2xml()('XML', connection.response);
             }else{
               stringResponse = JSON.stringify(connection.response); 
             }
@@ -187,13 +233,13 @@ var initWebServer = function(api, next){
             connection.responseHeaders.push(['Content-Type', "application/javascript"]);
             stringResponse = connection.params.callback + "(" + stringResponse + ");";
           }
-          api.webServer.cleanHeaders(api, connection);
-          connection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
-          connection.res.end(stringResponse);
+          api.webServer.cleanHeaders(connection);
+          connection.rawConnection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
+          connection.rawConnection.res.end(stringResponse);
         }
         if(api.configData.log.logRequests){
-          if(connection.req.headers.host == null){ connection.req.headers.host = "localhost"; }
-          var full_url = connection.req.headers.host + connection.req.url;
+          if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
+          var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
           if(connection.action != null && connection.action != "file"){
             api.logJSON({
               label: "action @ web",
@@ -206,17 +252,17 @@ var initWebServer = function(api, next){
           }
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
-          api.utils.destroyConnection(api, connection);
-          if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
+          connection.destroy();
+          if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.id]; }
         }else{
           // if enabled, persist the connection object for message queueing
-          if(api.webServer.clientClearTimers[connection.public.id] != null){
-            clearTimeout(api.webServer.clientClearTimers[connection.public.id]);
+          if(api.webServer.clientClearTimers[connection.id] != null){
+            clearTimeout(api.webServer.clientClearTimers[connection.id]);
           }
-          api.webServer.clientClearTimers[connection.public.id] = setTimeout(function(connection){
-            api.utils.destroyConnection(api, connection);
-            delete api.webServer.clientClearTimers[connection.public.id];
-            if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.public.id]; }
+          api.webServer.clientClearTimers[connection.id] = setTimeout(function(connection){
+            connection.destroy();
+            delete api.webServer.clientClearTimers[connection.id];
+            if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.id]; }
           }, api.configData.commonWeb.httpClientMessageTTL, connection);
         }
       });
@@ -228,17 +274,9 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer._teardown = function(api, next){
-      api.webServer.stopTimers(api);
-      if(api.configData.webSockets.enable != true){
-        api.webServer.server.close();
-      }
-      next();
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // Helpers to ensure uniqueness on response headers
-    api.webServer.cleanHeaders = function(api, connection){
+    api.webServer.cleanHeaders = function(connection){
       var originalHeaders = connection.responseHeaders.reverse();
       var foundHeaders = [];
       var cleanedHeaders = [];
@@ -258,9 +296,9 @@ var initWebServer = function(api, next){
     ////////////////////////////////////////////////////////////////////////////
     // Helpers to expand chat functionality to http(s) clients
 
-    api.webServer.storeWebChatMessage = function(api, connection, messagePayload, next){
+    api.webServer.storeWebChatMessage = function(connection, messagePayload, next){
       if(api.redis.enable === true){
-        var rediskey = 'actionHero:webMessages:' + connection.public.id;
+        var rediskey = 'actionHero:webMessages:' + connection.id;
         api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
           api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
             if(typeof next == "function"){ next(); }
@@ -268,8 +306,8 @@ var initWebServer = function(api, next){
         });
       }else{
         // add message
-        if(api.webServer.webChatMessages[connection.public.id] == null){ api.webServer.webChatMessages[connection.public.id] = []; }
-        var store = api.webServer.webChatMessages[connection.public.id];
+        if(api.webServer.webChatMessages[connection.id] == null){ api.webServer.webChatMessages[connection.id] = []; }
+        var store = api.webServer.webChatMessages[connection.id];
         store.push({
           messagePayload: messagePayload,
           expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL, 
@@ -278,11 +316,11 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer.changeChatRoom = function(api, connection, next){
+    api.webServer.changeChatRoom = function(connection, next){
       if(connection.params.room != null){
         connection.room = connection.params.room;
-        api.chatRoom.roomRemoveMember(api, connection, function(err, wasRemoved){
-          api.chatRoom.roomAddMember(api, connection, function(err, wasAdded){
+        api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
+          api.chatRoom.roomAddMember(connection, function(err, wasAdded){
             connection.responseHeaders.push(['Set-Cookie', api.webServer.roomCookieKey + "=" + connection.params.room]);
             connection.response.room = connection.room;
             if(typeof next == "function"){ next() };
@@ -294,43 +332,27 @@ var initWebServer = function(api, next){
       }
     }
 
-    api.webServer.getWebChatMessage = function(api, connection, next){
+    api.webServer.getWebChatMessage = function(connection, next){
       if(api.redis.enable === true){
-        var rediskey = 'actionHero:webMessages:' + connection.public.id;
-        api.redis.client.lpop(rediskey, function(err, message){
-          if(message != null){
-            var parsedMessage = JSON.parse(message);
-            if(parsedMessage == []){ parsedMessage = null; }
-            next(null, parsedMessage);
-          }else{
-            next(null, null);
-          }
+        var rediskey = 'actionHero:webMessages:' + connection.id;
+        var messages = [];
+        api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
+          api.redis.client.del(rediskey, function(){
+            for(var i in redisMessages){
+              messages.push(JSON.parse(redisMessages[i]));
+            }
+            next(null, messages);
+          });
         });
       }else{
-        var store = api.webServer.webChatMessages[connection.public.id];
-        if(store == null){
-          next(null, null);
-        }else{
-          var message = store.splice(0,1);
-          next(null, message);
+        var store = api.webServer.webChatMessages[connection.id];
+        var messages = [];
+        for(var i in store){
+          messages.push(store[i]);
         }
+        delete api.webServer.webChatMessages[connection.id];
+        next(null, messages);
       }
-    }
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // Go server!
-
-    api.webServer._start = function(api, next){ 
-      api.webServer.server.on("error", function(e){
-        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
-        api.log(e, "red");
-        process.exit();
-      });
-      api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
-        api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
-        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
-        next();
-      });
     }
 
     next();
@@ -340,4 +362,4 @@ var initWebServer = function(api, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.initWebServer = initWebServer;
+exports.webServer = webServer;
