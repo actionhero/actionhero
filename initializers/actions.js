@@ -100,9 +100,10 @@ var actions = function(api, next){
       try{
         var collection = require(fullFilePath);
         if(api.utils.hashLength(collection) == 1){
-          api.actions[actionName] = require(fullFilePath).action;
-          validateAction(api.actions[actionName]);
-          loadMessage(actionName);
+          action = require(fullFilePath).action;
+          api.actions[action.name] = action;
+          validateAction(api.actions[action.name]);
+          loadMessage(action.name);
         }else{
           for(var i in collection){
             var action = collection[i];
