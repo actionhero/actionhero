@@ -1,5 +1,4 @@
 var fs = require('fs');
-var path = require('path');
 
 var routes = function(api, next){
 
@@ -38,7 +37,7 @@ var routes = function(api, next){
 
   // load in the routes file
   var loadRoutes = function(){
-    var routesFile = path.join(process.cwd(), 'routes.js');
+    var routesFile = process.cwd() + '/routes.js';
     if(fs.existsSync(routesFile)){
       delete require.cache[routesFile];
       api.routes.routes = require(routesFile).routes;
