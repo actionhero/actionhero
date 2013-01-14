@@ -29,17 +29,18 @@ exports['startCluster'] = function(binary, next){
   var loopSleep = 1500;
 
   var cluster = require('cluster');
+  var path = require('path');
 
   binary.async.series({
     setup: function(next){
       binary.numCPUs = require('os').cpus().length
       binary.numWorkers = binary.numCPUs - 2;
       if (binary.numWorkers < 2){ binary.numWorkers = 2};
-      binary.execCMD = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+      binary.execCMD = binary.path.normalize(path.join(binary.paths.actionHero_root, "bin" , "actionHero"));
       next();
     },
     pids: function(next){
-      binary.pidPath = process.cwd() + "/pids";
+      binary.pidPath = path.join(process.cwd(), "pids");
       try{
         stats = binary.fs.lstatSync(binary.pidPath);
         if(!stats.isDirectory()){
@@ -57,8 +58,8 @@ exports['startCluster'] = function(binary, next){
         exec: binary.execCMD, 
         args: "start",
         workers: binary.numWorkers,
-        pidfile: binary.pidPath + "/cluster_pidfile",
-        log: process.cwd() + "/log/cluster.log",
+        pidfile: path.join(binary.pidPath, "cluster_pidfile"),
+        log: path.join(process.cwd(), "log", "cluster.log"),
         title: "actionHero-master",
         workerTitlePrefix: "actionHero-worker",
         silent: true, // don't pass stdout/err to the master

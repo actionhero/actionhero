@@ -32,8 +32,8 @@ actionHero.prototype.start = function(params, next){
   self.startingParams = params;
 
   var initializerFolders = [ 
-    process.cwd() + "/initializers/", 
-    __dirname + "/initializers/"
+    path.join(process.cwd() , "initializers"), 
+    path.join(__dirname , "initializers")
   ];
     
   var initializerMethods = [];
@@ -47,7 +47,7 @@ actionHero.prototype.start = function(params, next){
             delete require.cache[initializerFolders[i] + file];
           }
           initializerMethods.push(initalizer);
-          self.initalizers[initalizer] = require(initializerFolders[i] + file)[initalizer];
+          self.initalizers[initalizer] = require(path.join(initializerFolders[i], file))[initalizer];
         }
       });
     }
