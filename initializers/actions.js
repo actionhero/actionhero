@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 
 var actions = function(api, next){
   api.actions = {};
@@ -30,10 +31,10 @@ var actions = function(api, next){
     }
   }
 
-  var actionsPath = process.cwd() + "/actions/";
+  var actionsPath = path.join(process.cwd(), "actions");
   fs.exists(actionsPath, function (exists) {
     if(!exists){
-      var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
+      var defaultActionsPath = path.join(process.cwd(), "node_modules", "actionHero", "actions");
       api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow");
       actionsPath = defaultActionsPath;
     }

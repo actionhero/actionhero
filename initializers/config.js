@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var argv = require('optimist').argv;
 
 var config = function(api, startingParams, next){
@@ -14,10 +15,10 @@ var config = function(api, startingParams, next){
   if(argv["config"] != null){
     var configFile = argv["config"];
     console.log(' >> configuration read from: ' + argv["config"]);
-  }else if(fs.existsSync(process.cwd() + '/config.js')){
-    var configFile = process.cwd() + '/config.js';
+  }else if(fs.existsSync(path.join(process.cwd(), '/config.js'))){
+    var configFile = path.join(process.cwd(), '/config.js');
   }else{
-    var configFile = __dirname + "/../config.js";
+    var configFile = path.join(__dirname, "..", "config.js");
     console.log(' >> no local config.json, using default from '+configFile);
   }
   try{
