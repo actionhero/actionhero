@@ -1,9 +1,7 @@
 exports['start'] = function(binary, next){
 
   var cluster = require('cluster');
-  var path = require('path');
-    
-  var actionHeroPrototype = require(path.join(binary.paths.actionHero_root, "actionHero.js")).actionHeroPrototype;
+  var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
   var actionHero = new actionHeroPrototype();
 
   var shutdownTimeout = 10000 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully

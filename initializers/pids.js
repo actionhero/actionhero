@@ -1,5 +1,4 @@
 var fs = require('fs');
-var path = require('path');
 var cluster = require('cluster');
 var argv = require('optimist').argv;
 
@@ -9,7 +8,7 @@ var pids = function(api, next){
   api.pids.pid = process.pid;
 
   if(api.configData.general.pidFileDirectory == null){
-    api.configData.general.pidFileDirectory = path.join(process.cwd(), "pids");
+    api.configData.general.pidFileDirectory = process.cwd() + "/pids/";
   }
 
   if(argv["title"] != null){

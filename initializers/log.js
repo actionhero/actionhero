@@ -1,5 +1,4 @@
 var fs = require('fs');
-var path = require('path');
 var colors = require('colors');
 var cluster = require('cluster');
 
@@ -37,7 +36,7 @@ var log = function(api, next){
       console.log(console_message);
       var file_message = time_string + " | " + original_message;
       if (api.logWriter == null){
-        api.logWriter = fs.createWriteStream((path.join(api.configData.log.logFolder, api.pids.title + ".log")), {flags:"a"});
+        api.logWriter = fs.createWriteStream((api.configData.log.logFolder + "/" + api.pids.title + ".log"), {flags:"a"});
       }
       process.nextTick(function() { 
         try{
