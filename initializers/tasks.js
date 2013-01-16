@@ -297,25 +297,27 @@ var tasks = function(api, next){
       for(var i in api.tasks.tasks){
         started++;
         var taskTemplate = api.tasks.tasks[i];
-        if(taskTemplate.frequency > 0){
-          var task = new api.task({name: taskTemplate.name});
-          task.enqueue(function(err, resp){
-            if(err != null){ 
-              api.log(String(err).replace('Error: ', ""), 'yellow'); 
-            }else{
-              api.log("seeded preiodoc task " + task.name, "yellow");
-            }
+        (function(taskTemplate){
+          if(taskTemplate.frequency > 0){
+            var task = new api.task({name: taskTemplate.name});
+            task.enqueue(function(err, resp){
+              if(err != null){ 
+                api.log(String(err).replace('Error: ', ""), 'yellow'); 
+              }else{
+                api.log("seeded preiodoc task " + task.name, "yellow");
+              }
+              process.nextTick(function(){ 
+                started--;
+                if(started == 0){ callback(); }
+              })
+            });
+          }else{
             process.nextTick(function(){ 
               started--;
               if(started == 0){ callback(); }
             })
-          });
-        }else{
-          process.nextTick(function(){ 
-            started--;
-            if(started == 0){ callback(); }
-          })
-        }
+          }
+        })(taskTemplate)
       }
     }
   }
