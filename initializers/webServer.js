@@ -151,20 +151,19 @@ var webServer = function(api, next){
               actionProcessor.processAction();
             }else{
               var form = new formidable.IncomingForm();
-                form.parse(connection.rawConnection.req, function(err, fields, files) {
+              form.parse(connection.rawConnection.req, function(err, fields, files) {
                 if(err){
                   api.log(err, "red");
                   connection.error = new Error("There was an error processign this form.");
-                  process.nextTick(function() { api.processAction(connection, null, api.webServer.respondToWebClient); });
                 }else{
-                    api.webServer.fillParamsFromWebRequest(connection, files);
-                    api.webServer.fillParamsFromWebRequest(connection, fields);
-                    process.nextTick(function() { 
-                    	var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
-                    	actionProcessor.processAction();
-                    });
+                  api.webServer.fillParamsFromWebRequest(connection, files);
+                  api.webServer.fillParamsFromWebRequest(connection, fields);
                 }
+                process.nextTick(function() { 
+                  var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
+                  actionProcessor.processAction();
                 });
+              });
             }
           }else{
             var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
