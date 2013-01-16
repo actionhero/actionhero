@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 4.2.3
+
+** Bugs **
+
+- boot order regarding logging
+- task load messaging
+
 ## Version 4.2.2
 
 ** Bugs **
