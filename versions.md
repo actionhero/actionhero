@@ -6,6 +6,7 @@
 
 - boot order regarding logging
 - task load messaging
+- runAction task crashes
 
 ## Version 4.2.2
 
