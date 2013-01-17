@@ -13,7 +13,12 @@ task.frequency = 0;
 task.run = function(api, params, next){
   if(params == null){params = {};}
 
-  connection = api.utils.setupConnection(api, {id: 0}, 'task', 0, 0);
+  var connection = new api.connection({
+    type: 'task', 
+    remotePort: '0', 
+    remoteIP: '0', 
+    rawConnection: {},
+  });
   connection.params = params;
 
   var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
