@@ -80,7 +80,7 @@ var taskProcessor = function(api, next){
                   task.run(function(){
                     api.stats.increment("tasks:tasksCurrentlyRunning", -1);
                     api.tasks.removeFromQueue(task.id, api.tasks.queues.processingQueue, function(){
-                      self.log("completed task " + task.name + ", " + task.id);
+                      if(task.toAnnounce != false){ self.log("completed task " + task.name + ", " + task.id); }
                       if(task.periodic == true && task.isDuplicate === false){
                         task.runAt = null;
                         task.enqueue(function(error){
