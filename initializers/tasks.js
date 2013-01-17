@@ -280,7 +280,7 @@ var tasks = function(api, next){
             }
           }catch(e){
             api.log(e, 'red');
-            api.tasks.removeFromQueue(data.id, api.tasks.queues.delayedQueue, function(){
+            api.tasks.removeFromQueue(JSON.stringify(data), api.tasks.queues.delayedQueue, function(){
               callback(err, null);
             });
           }
