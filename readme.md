@@ -7,7 +7,7 @@
 <img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="250"/>
 
 ## Who is the actionHero?
-actionHero is a [node.js](http://nodejs.org) **API framework** for many types fo clients.  The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
+actionHero is a [node.js](http://nodejs.org) **API framework** for many types of clients.  The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
 
 Currently actionHero supports:
 
