@@ -58,9 +58,9 @@ actionHero.prototype.start = function(params, next){
   orderedInitializers['config'] = function(next){ self.initalizers['config'](self.api, self.startingParams, next) };
   [
     'utils',
-    'log',
     'id',
     'pids',
+    'log',
     'exceptions',
     'stats',
     'redis',

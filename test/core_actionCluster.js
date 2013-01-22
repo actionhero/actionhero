@@ -46,7 +46,11 @@ describe('Core: actionCluster', function(){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         var ip = api.utils.getExternalIPAddress();
-        if(ip != null){ externalIP = ip; }
+        if(ip != null && ip != false){ 
+          externalIP = ip; 
+        }else{
+          externalIP = "actionHero";
+        }
         api.id.should.equal(externalIP + ":9000:8000");
         apis[0] = api;
         done();
