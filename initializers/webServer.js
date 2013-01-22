@@ -131,8 +131,8 @@ var webServer = function(api, next){
           api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
           if(connection.params.action === undefined){ 
             connection.actionSetBy = "url";
-            if(connection.directModeAccess == true){ connection.params.action = connection.parsedURL.pathname.substring(5); }
-            else{ connection.params.action = connection.parsedURL.pathname.substring(1); }
+            if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
+            else{ connection.params.action = pathParts[1]; }
           }else{
             connection.actionSetBy = "queryParam";
           }
