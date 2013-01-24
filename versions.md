@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 4.2.5
+
+## Version 4.2.4
+
+** Bugs **
+
+- fixes to boot order and booting withoug an IP address (external)
+- fix to booting actionCluster
+- use actionName from definition rather than file name (thanks @Macrauder)
+- logging fixes for tasks
+
 ## Version 4.2.3
 
 ** Bugs **
