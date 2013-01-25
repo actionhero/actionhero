@@ -15,8 +15,9 @@ var tasks = function(api, next){
     globalQueue: 'actionHero:tasks:global',
     delayedQueue: 'actionHero:tasks:delayed',
     localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
-    processingQueue: 'actionHero:tasks:processing',
     data: 'actionHero:tasks:data', // actually a hash
+    workerStatus: 'actionHero:tasks:workerStatus', // actually a hash
+    enqueuedPeriodicTasks: 'actionHero:tasks:enqueuedPeriodicTasks',
   }
 
   if(api.redis.enable === true){
@@ -26,18 +27,57 @@ var tasks = function(api, next){
     api.tasks.queueData[api.tasks.queues.globalQueue] = [];
     api.tasks.queueData[api.tasks.queues.delayedQueue] = [];
     api.tasks.queueData[api.tasks.queues.localQueue] = [];
-    api.tasks.queueData[api.tasks.queues.processingQueue] = [];
     api.tasks.queueData[api.tasks.queues.data] = {};
+    api.tasks.queueData[api.tasks.queues.workerStatus] = {};
+    api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks] = [];
   }
 
   api.tasks._start = function(api, next){
-    api.tasks.saveStuckDelayedTasks(function(){
-      api.tasks.savePreviouslyCrashedTasks(function(){
-        api.tasks.seedPeriodicTasks(function(){
-          next();
-        });
+    api.tasks.clearWorkerStatus(function(){
+      api.tasks.seedPeriodicTasks(function(){
+        next();
       });
     });
+  }
+
+  api.tasks.getWorkerStatuses = function(callback){
+    if(api.redis.enable === true){
+      api.redis.client.hgetall(api.tasks.queues.workerStatus, function(err, workerStatuses){
+        callback(err, workerStatuses);
+      });
+    }else{
+      var workerStatuses = api.tasks.queueData[api.tasks.queues.workerStatus]
+      process.nextTick(function(){
+        callback(null, workerStatuses);
+      });
+    }
+  }
+
+  api.tasks.clearWorkerStatus = function(callback){
+    if(api.redis.enable === true){
+      api.redis.client.hgetall(api.tasks.queues.workerStatus, function(err, data){
+        started = 0;
+        for(var key in data){
+          var id = key.split("#")[0];
+          if(id == api.id){
+            started++;
+            api.log('clearing worker status: ' + key, 'yellow');
+            api.redis.client.hdel(api.tasks.queues.workerStatus, key, function(err){
+              started--;
+              if(started == 0){
+                if(typeof callback == "function"){ callback(null, null); }
+              }
+            });
+          }
+        }
+        if(started == 0){
+          if(typeof callback == "function"){ callback(null, null); }
+        }
+      });
+    }else{
+      api.tasks.queueData[api.tasks.queues.workerStatus] = {};
+      if(typeof callback == "function"){ callback(null, null); }
+    }
   }
 
   api.tasks.getAllLocalQueues = function(callback){
@@ -178,15 +218,19 @@ var tasks = function(api, next){
 
   api.tasks.placeInQueue = function(taskId, queue, callback){
     api.tasks.setTaskData(taskId, {queue: queue}, function(err){
-      if(api.redis.enable === true){
-        api.redis.client.rpush(queue, taskId, function(err){
-          if(typeof callback == "function"){ callback(err); }
-        });
+      if(queue != api.tasks.queues.delayedQueue){
+        if(api.redis.enable === true){
+          api.redis.client.rpush(queue, taskId, function(err){
+            if(typeof callback == "function"){ callback(err); }
+          });
+        }else{
+          process.nextTick(function(){
+            api.tasks.queueData[queue].push(taskId);
+            if(typeof callback == "function"){ callback(null); }
+          });
+        }
       }else{
-        process.nextTick(function(){
-          api.tasks.queueData[queue].push(taskId);
-          if(typeof callback == "function"){ callback(null); }
-        });
+        // TODO: THIS
       }
     });
   }
@@ -260,33 +304,45 @@ var tasks = function(api, next){
   }
 
   api.tasks.promoteFromDelayedQueue = function(callback){
-    api.tasks.popFromQueue(api.tasks.queues.delayedQueue, function(err, taskIdReturned){
-      if(taskIdReturned == null){
-        callback(err, null);
-      }else{
-        api.tasks.getTaskData(taskIdReturned, function(err, data){
-          try{
-            var task = new api.task(data);
-            if(task.runAt < new Date().getTime()){
-              api.tasks.setTaskData(taskIdReturned, {state: 'pending'}, function(err){
-                api.tasks.placeInQueue(taskIdReturned, api.tasks.queues.globalQueue, function(err){
-                  callback(err, task);
-                });
-              });
-            }else{
-              api.tasks.placeInQueue(taskIdReturned, api.tasks.queues.delayedQueue, function(err){
-                callback(err, null);
-              });
-            }
-          }catch(e){
-            api.log(e, 'red');
-            api.tasks.removeFromQueue(JSON.stringify(data), api.tasks.queues.delayedQueue, function(){
-              callback(err, null);
-            });
-          }
-        });
+    // TODO: THIS
+  }
+
+  api.tasks.getEnqueuedPeriodicTasks = function(callback){
+    if(api.redis.enable === true){
+      api.redis.client.lrange(api.tasks.queues.enqueuedPeriodicTasks, 0, -1, function(err, enqueuedPeriodicTasks){
+        callback(null, enqueuedPeriodicTasks);
+      });
+    }else{
+      var enqueuedPeriodicTasks = api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks];
+      callback(null, enqueuedPeriodicTasks);
+    }
+  }
+
+  api.tasks.denotePeriodicTaskAsEnqueued = function(task, callback){
+    if(api.redis.enable === true){
+      api.redis.client.lpush(api.tasks.queues.enqueuedPeriodicTasks, task.name, function(err){
+        callback(err);
+      });
+    }else{
+      api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks].push(task.name);
+      callback(null);
+    }
+  }
+
+  api.tasks.denotePeriodicTaskAsClear = function(task, callback){
+    if(api.redis.enable === true){
+      api.redis.client.lrem(api.tasks.queues.enqueuedPeriodicTasks, 1, task.name, function(err){
+        callback(err);
+      });
+    }else{
+      for(var i in api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks]){
+        if(api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks][i] == task.name){
+          api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks].splice(i);
+          break;
+        }
       }
-    });
+      callback()
+    }
   }
 
   api.tasks.seedPeriodicTasks = function(callback){
@@ -303,13 +359,19 @@ var tasks = function(api, next){
             task.enqueue(function(err, resp){
               if(err != null){ 
                 api.log(String(err).replace('Error: ', ""), 'yellow'); 
+                process.nextTick(function(){ 
+                  started--;
+                  if(started == 0){ callback(); }
+                })
               }else{
-                api.log("seeded preiodoc task " + task.name, "yellow");
+                api.tasks.denotePeriodicTaskAsEnqueued(task, function(err){
+                  api.log("seeded preiodoc task " + task.name, "yellow");
+                  process.nextTick(function(){ 
+                    started--;
+                    if(started == 0){ callback(); }
+                  })
+                });
               }
-              process.nextTick(function(){ 
-                started--;
-                if(started == 0){ callback(); }
-              })
             });
           }else{
             process.nextTick(function(){ 
@@ -322,45 +384,7 @@ var tasks = function(api, next){
     }
   }
 
-  api.tasks.savePreviouslyCrashedTasks = function(callback){
-    api.tasks.changeQueue(api.tasks.queues.processingQueue, api.tasks.queues.globalQueue, function(err, task){
-      if(task != null){
-        api.log('restarting a previously interupted/crashed task ' + task.name, 'yellow');
-        api.tasks.savePreviouslyCrashedTasks(callback);
-      }else{
-        callback();
-      }
-    });
-  }
-
-  api.tasks.saveStuckDelayedTasks = function(callback){
-    if(api.redis.enable === true){
-      api.tasks.getAllTasks(function(err, tasks){
-        api.redis.client.lrange(api.tasks.queues.delayedQueue, 0, 1, function(err, delayedIds){
-          if(api.utils.hashLength(tasks) == 0){ callback(); }
-          for(var i in tasks){
-            var started = 0;
-            var taskDetails = tasks[i];
-            if(taskDetails.queue == api.tasks.queues.delayedQueue && taskDetails.runAt < (new Date().getTime() - 5000) ){
-              if(delayedIds.indexOf(taskDetails.id) < 0){
-                started++;
-                api.log('saving a delayed task which was lost in a shutdown' + taskDetails.name, 'yellow');
-                api.tasks.placeInQueue(taskDetails.id, api.tasks.queues.delayedQueue, function(){
-                  started--;
-                  if(started == 0){ callback(); }
-                });
-              }
-            }
-          }
-          if(started == 0){ callback(); }
-        });
-      });
-    }else{
-      callback();
-    }
-  }
-
-  api.tasks.load = function(api){
+  api.tasks.load = function(){
     var validateTask = function(task){
       var fail = function(msg){
         api.log(msg + "; exiting.", ['red', 'bold']);
@@ -465,7 +489,7 @@ var tasks = function(api, next){
     }
   }
 
-  api.tasks.load(api); // run right away
+  api.tasks.load(); // run right away
   next();
 
 }
