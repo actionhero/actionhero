@@ -132,12 +132,13 @@ var webServer = function(api, next){
           if(connection.params.action === undefined){ 
             connection.actionSetBy = "url";
             if(connection.directModeAccess == true){ 
-            	connection.params.action = connection.parsedURL.pathname.substring(5); 
-            }	else { 
-            	connection.params.action = connection.parsedURL.pathname.substring(1); 
+              connection.params.action = connection.parsedURL.pathname.substring(5); 
+            } else { 
+              connection.params.action = connection.parsedURL.pathname.substring(1); 
             }
-						if (connection.params.action[connection.params.action.length-1] == '/')
-								connection.params.action = connection.params.action.slice(0, -1);
+            if (connection.params.action[connection.params.action.length-1] == '/'){
+              connection.params.action = connection.params.action.slice(0, -1);
+            }
           }else{
             connection.actionSetBy = "queryParam";
           }

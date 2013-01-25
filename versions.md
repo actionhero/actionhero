@@ -2,6 +2,9 @@
 
 ## Version 4.2.5
 
+** webserver ** 
+- Support for grouped action names added (thanks @Macrauder)
+
 ## Version 4.2.4
 
 ** Bugs **
