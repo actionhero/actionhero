@@ -13,7 +13,7 @@ var tasks = function(api, next){
 
   api.tasks.queues = {
     globalQueue: 'actionHero:tasks:global',
-    delayedQueue: 'actionHero:tasks:delayed',
+    delayedQueuePrefix: 'actionHero:tasks:delayed',
     localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
     data: 'actionHero:tasks:data', // actually a hash
     workerStatus: 'actionHero:tasks:workerStatus', // actually a hash
@@ -25,7 +25,6 @@ var tasks = function(api, next){
   }else{
     api.tasks.queueData = {};
     api.tasks.queueData[api.tasks.queues.globalQueue] = [];
-    api.tasks.queueData[api.tasks.queues.delayedQueue] = [];
     api.tasks.queueData[api.tasks.queues.localQueue] = [];
     api.tasks.queueData[api.tasks.queues.data] = {};
     api.tasks.queueData[api.tasks.queues.workerStatus] = {};
@@ -230,7 +229,22 @@ var tasks = function(api, next){
           });
         }
       }else{
-        // TODO: THIS
+        api.tasks.getTaskData(taskId, function(err, data){
+          var delayedQueue = api.tasks.queues.delayedQueuePrefix + "@" + data.runAt;
+          if(api.redis.enable === true){
+            api.redis.lpush(delayedQueue, taskId, function(err){
+              if(typeof callback == "function"){ callback(err); }
+            });
+          }else{
+            if(api.tasks.queueData[delayedQueue] == null?){
+              api.tasks.queueData[delayedQueue] = [];
+            }
+            api.tasks.queueData[delayedQueue].push(taskId);
+            process.nextTick(function(){
+              if(typeof callback == "function"){ callback(null); }
+            });
+          }
+        });
       }
     });
   }
@@ -303,8 +317,52 @@ var tasks = function(api, next){
     });
   }
 
+  api.tasks.getOldestDelayedQueue = function(callback){
+    var oldestTimestamp = null;
+    var oldestQueue = null;
+    if(api.redis.enable === true){
+      api.redis.client.keys(api.tasks.queues.delayedQueuePrefix, function(err, queues){
+        for(var i in queues){
+          var queue = queues[i];
+          var timestamp = parseFloat(queue.split("@")[1]);
+          if(oldestTimestamp == null || timestamp < oldestTimestamp){
+            oldestTimestamp = timestamp;
+            oldestQueue = queue;
+          }
+        }
+        callback(null, oldestQueue);
+      });
+    }else{
+      for(var queue in api.tasks.queueData){
+        if(queue.indexOf(api.tasks.queues.delayedQueuePrefix) == 0){
+          var timestamp = parseFloat(queue.split("@")[1]);
+          if(oldestTimestamp == null || timestamp < oldestTimestamp){
+            oldestTimestamp = timestamp;
+            oldestQueue = queue;
+          }
+        }
+      }
+      process.nextTick(function(){
+        callback(null, oldestQueue);
+      });
+    }
+  }
+
   api.tasks.promoteFromDelayedQueue = function(callback){
-    // TODO: THIS
+    api.tasks.getOldestDelayedQueue(err, oldestQueue){
+      if(oldestQueue == null){
+        if(typeof callback == 'function'){ callback(); }
+      }else{
+        var queueTimestamp = parseFloat(oldestQueue.split("@")[1]);
+        if(queueTimestamp > new Date().getTime()){
+          if(typeof callback == 'function'){ callback(); }
+        }else{
+          api.tasks.changeQueue(oldestQueue, api.tasks.queues.globalQueue, function(err, task){
+            if(typeof callback == 'function'){ callback(err, task); }
+          });
+        }
+      }
+    }
   }
 
   api.tasks.getEnqueuedPeriodicTasks = function(callback){
@@ -383,6 +441,10 @@ var tasks = function(api, next){
       }
     }
   }
+
+  /////////////
+  // LOADERS //
+  /////////////  
 
   api.tasks.load = function(){
     var validateTask = function(task){

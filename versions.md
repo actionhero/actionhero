@@ -2,6 +2,10 @@
 
 ## Version 4.2.5
 
+** tasks ** 
+**It is likley you will loose access to previously enqueued tasks with this upgrade**
+- fixes to the delayed task system
+
 ** webserver ** 
 - Support for grouped action names added (thanks @Macrauder)
 
