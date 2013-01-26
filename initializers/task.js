@@ -65,6 +65,8 @@ var task = function(api, next){
     var toEnqueue = true;
     if(self.periodic == false){
       callback(toEnqueue);
+    }else if(self.isDuplicate === true){
+      callback(toEnqueue);
     }else{
       api.tasks.getEnqueuedPeriodicTasks(function(err,enqueuedPeriodicTasks){
         for(var i in enqueuedPeriodicTasks){

@@ -109,7 +109,8 @@ var tasks = function(api, next){
             var queue = releventLocalQueues[i];
             if(queue != api.tasks.queues.localQueue){
               var taskCopy = task.duplicate();
-              taskCopy.enqueue(queue, function(){
+              taskCopy.enqueue(queue, function(err){
+                if(err != null){ api.log(err, "red") }
                 started--;
                 if(started == 0){ if(typeof callback == "function"){ callback(); } }
               }); 

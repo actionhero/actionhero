@@ -128,7 +128,7 @@ var taskProcessor = function(api, next){
             // nothing to do, so check on the delayed queue
             self.setWorkerStatus("checking delayed queue", function(){
               api.tasks.promoteFromDelayedQueue(function(err, task){
-                if(task != null){ self.log("time to process delayed task" + task.name, "yellow"); }
+                if(task != null){ self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "yellow"); }
                 self.prepareNextRun(function(){
                   setTimeout(callback, 1000); // wait longer if there is no work to be done
                 });
