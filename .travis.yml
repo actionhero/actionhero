@@ -9,6 +9,7 @@ branches:
   only:
     - master
     - develop
+    - task_refactor
 services:
   - redis-server
 # before_script:
