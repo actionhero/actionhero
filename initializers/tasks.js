@@ -55,7 +55,7 @@ var tasks = function(api, next){
   api.tasks.clearWorkerStatus = function(callback){
     if(api.redis.enable === true){
       api.redis.client.hgetall(api.tasks.queues.workerStatus, function(err, data){
-        started = 0;
+        var started = 0;
         for(var key in data){
           var id = key.split("#")[0];
           if(id == api.id){
@@ -231,19 +231,21 @@ var tasks = function(api, next){
       }else{
         api.tasks.getTaskData(taskId, function(err, data){
           var delayedQueue = api.tasks.queues.delayedQueuePrefix + "@" + data.runAt;
-          if(api.redis.enable === true){
-            api.redis.lpush(delayedQueue, taskId, function(err){
-              if(typeof callback == "function"){ callback(err); }
-            });
-          }else{
-            if(api.tasks.queueData[delayedQueue] == null?){
-              api.tasks.queueData[delayedQueue] = [];
+          api.tasks.setTaskData(taskId, {queue: delayedQueue}, function(err){
+            if(api.redis.enable === true){
+              api.redis.client.lpush(delayedQueue, taskId, function(err){
+                if(typeof callback == "function"){ callback(err); }
+              });
+            }else{
+              if(api.tasks.queueData[delayedQueue] == null){
+                api.tasks.queueData[delayedQueue] = [];
+              }
+              api.tasks.queueData[delayedQueue].push(taskId);
+              process.nextTick(function(){
+                if(typeof callback == "function"){ callback(null); }
+              });
             }
-            api.tasks.queueData[delayedQueue].push(taskId);
-            process.nextTick(function(){
-              if(typeof callback == "function"){ callback(null); }
-            });
-          }
+          });
         });
       }
     });
@@ -259,6 +261,19 @@ var tasks = function(api, next){
         if(typeof callback == "function"){ callback(null, api.tasks.queueData[queue].length); }
       });
     }
+  }
+
+  api.tasks.countDelayedTasks = function(callback){
+    api.tasks.getAllTasks(function(err, allTasks){
+      var delayedTasks = 0;
+      for(var i in allTasks){
+        var task = allTasks[i];
+        if(task.state == "delayed"){
+          delayedTasks++;
+        }
+      }
+      callback(err, delayedTasks)
+    });
   }
 
   api.tasks.removeFromQueue = function(taskId, queue, callback){
@@ -288,8 +303,11 @@ var tasks = function(api, next){
     }else{
       process.nextTick(function(){ 
         var queueData = api.tasks.queueData[queue];
-        taskIdReturned = queueData.splice(0,1)[0];
-        if(taskIdReturned == null){ taskIdReturned = null; }
+        try{
+          taskIdReturned = queueData.splice(0,1)[0];
+        }catch(e){
+          taskIdReturned = null;
+        }
         callback(null, taskIdReturned); 
       })
     }
@@ -321,7 +339,7 @@ var tasks = function(api, next){
     var oldestTimestamp = null;
     var oldestQueue = null;
     if(api.redis.enable === true){
-      api.redis.client.keys(api.tasks.queues.delayedQueuePrefix, function(err, queues){
+      api.redis.client.keys(api.tasks.queues.delayedQueuePrefix + "*", function(err, queues){
         for(var i in queues){
           var queue = queues[i];
           var timestamp = parseFloat(queue.split("@")[1]);
@@ -349,7 +367,7 @@ var tasks = function(api, next){
   }
 
   api.tasks.promoteFromDelayedQueue = function(callback){
-    api.tasks.getOldestDelayedQueue(err, oldestQueue){
+    api.tasks.getOldestDelayedQueue(function(err, oldestQueue){
       if(oldestQueue == null){
         if(typeof callback == 'function'){ callback(); }
       }else{
@@ -358,11 +376,22 @@ var tasks = function(api, next){
           if(typeof callback == 'function'){ callback(); }
         }else{
           api.tasks.changeQueue(oldestQueue, api.tasks.queues.globalQueue, function(err, task){
-            if(typeof callback == 'function'){ callback(err, task); }
+            if(task == null){
+              if(api.redis.enable === true){
+                api.redis.client.del(oldestQueue, function(err){
+                  if(typeof callback == 'function'){ callback(err, task); }
+                });
+              }else{
+                delete api.tasks.queueData[oldestQueue];
+                if(typeof callback == 'function'){ callback(err, task); }
+              }
+            }else{
+              if(typeof callback == 'function'){ callback(err, task); }
+            }
           });
         }
       }
-    }
+    });
   }
 
   api.tasks.getEnqueuedPeriodicTasks = function(callback){
@@ -383,7 +412,9 @@ var tasks = function(api, next){
       });
     }else{
       api.tasks.queueData[api.tasks.queues.enqueuedPeriodicTasks].push(task.name);
-      callback(null);
+      process.nextTick(function(){
+        callback(null);
+      });
     }
   }
 

@@ -25,11 +25,21 @@ var taskProcessor = function(api, next){
   }
 
   api.taskProcessor._teardown = function(api, next){
+    var numberOfWorkersWorking = 0
     api.tasks.taskProcessors.forEach(function(taskProcessor){
       taskProcessor.stop();
+      if(taskProcessor.currentTask != null){
+        numberOfWorkersWorking++;
+      }
     });
-    // TODO: don't return until each worker is actually done
-    next();
+    if(numberOfWorkersWorking > 0){
+      api.log("Delaying shutdown, there are still " + numberOfWorkersWorking + " workers working...", ["yellow", "bold"]);
+      setTimeout(function(){
+        api.taskProcessor._teardown(api, next);
+      }, 1000);
+    }else{
+      next();
+    }
   }
 
   api.taskProcessor.prototype.buildDefaults = function(data){
@@ -65,35 +75,40 @@ var taskProcessor = function(api, next){
           // });
           if(localQueueCount > 0){
             // work something from the local queue to processing, and work it off
-            if(task == null){
-              self.prepareNextRun(callback);
-            }else{
-              self.currentTask = task;
-              self.setWorkerStatus("working task: " + task.id, function(){
-                api.tasks.setTaskData(task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
-                  if(task.toAnnounce != false){ self.log("starting task " + task.name); }
-                  api.stats.increment("tasks:tasksCurrentlyRunning");
-                  api.stats.increment("tasks:ranTasks:" + task.name);
-                  task.run(function(){
-                    api.stats.increment("tasks:tasksCurrentlyRunning", -1);
-                    if(task.toAnnounce != false){ self.log("completed task " + task.name + ", " + task.id); }
-                    if(task.periodic == true && task.isDuplicate === false){
-                      task.runAt = null;
-                      api.tasks.denotePeriodicTaskAsClear(task, function(){
-                        task.enqueue(function(error){
-                          api.tasks.denotePeriodicTaskAsEnqueued(function(error){
-                            if(error != null){ self.log(error); }
-                            self.prepareNextRun(callback);
+            api.tasks.popFromQueue(api.tasks.queues.localQueue, function(err, taskIdReturned){
+              api.tasks.getTaskData(taskIdReturned, function(err, data){
+                if(data == null){
+                  self.prepareNextRun(callback);
+                }else{
+                  var task = new api.task(data);
+                  self.currentTask = task;
+                  self.setWorkerStatus("working task: " + task.id, function(){
+                    api.tasks.setTaskData(task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
+                      if(task.toAnnounce != false){ self.log("starting task " + task.name + ", " + task.id); }
+                      api.stats.increment("tasks:tasksCurrentlyRunning");
+                      api.stats.increment("tasks:ranTasks:" + task.name);
+                      task.run(function(){
+                        api.stats.increment("tasks:tasksCurrentlyRunning", -1);
+                        if(task.toAnnounce != false){ self.log("completed task " + task.name + ", " + task.id); }
+                        if(task.periodic == true && task.isDuplicate === false){
+                          task.runAt = null;
+                          api.tasks.denotePeriodicTaskAsClear(task, function(){
+                            task.enqueue(function(error){
+                              api.tasks.denotePeriodicTaskAsEnqueued(task, function(error){
+                                if(error != null){ self.log(error); }
+                                self.prepareNextRun(callback);
+                              });
+                            });
                           });
-                        });
+                        }else{
+                          self.prepareNextRun(callback);
+                        }
                       });
-                    }else{
-                      self.prepareNextRun(callback);
-                    }
+                    });
                   });
-                });
+                }
               });
-            }
+            });
           }else if(globalQueueCount > 0){
             // move something from the global queue to the local queue (and distribute if needed)
             self.setWorkerStatus("checking global queue", function(){
@@ -113,7 +128,7 @@ var taskProcessor = function(api, next){
             // nothing to do, so check on the delayed queue
             self.setWorkerStatus("checking delayed queue", function(){
               api.tasks.promoteFromDelayedQueue(function(err, task){
-                api.log("time to process delayed task" + task.name, "yellow");
+                if(task != null){ self.log("time to process delayed task" + task.name, "yellow"); }
                 self.prepareNextRun(function(){
                   setTimeout(callback, 1000); // wait longer if there is no work to be done
                 });
@@ -131,22 +146,22 @@ var taskProcessor = function(api, next){
     if(self.running == true){
       self.timer = setTimeout(function(){
         self.process();
-      }, self.cycleTimeMS);
+      }, self.cycleTimeMS); 
     }
     self.setWorkerStatus("idle", function(){
       if(typeof callback == "function"){ callback(); }
-    })
+    });
   }
 
   api.taskProcessor.prototype.start = function(){
     this.running = true
     this.process();
-    self.setWorkerStatus("started");
+    this.setWorkerStatus("started");
   }
 
   api.taskProcessor.prototype.stop = function(){
     this.running = false;
-    self.setWorkerStatus("stopped");
+    this.setWorkerStatus("stopped");
     clearTimeout(this.timer);
   }
 
@@ -155,7 +170,7 @@ var taskProcessor = function(api, next){
     var workerKey = api.id + "#" + self.id
     if(api.redis.enable === true){
       api.redis.client.hset(api.tasks.queues.workerStatus, workerKey, status, function(err){
-        callback(err);
+        if(typeof callback == "function"){ callback(); }
       });
     }else{
       api.tasks.queueData[api.tasks.queues.workerStatus][workerKey] = status;

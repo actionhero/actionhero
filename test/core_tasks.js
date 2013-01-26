@@ -114,15 +114,13 @@ describe('Core: Tasks', function(){
   });
 
   it('all queues should start empty', function(done){
-    rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-      rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
-        rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
-          rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
-            [delayedCount, globalCount, localCount, processingCount].forEach(function(count){
-              count.should.equal(0)
-            })
-            done();
-          });
+    rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+      rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
+        rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
+          [globalCount, localCount, processingCount].forEach(function(count){
+            count.should.equal(0)
+          })
+          done();
         });
       });
     });
@@ -130,20 +128,20 @@ describe('Core: Tasks', function(){
 
   it('all perioduc tasks should be enqueued when the server starts', function(done){
     rawAPI.tasks.seedPeriodicTasks(function(){
-      rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-        delayedCount.should.equal(2)
+      rawAPI.tasks.countDelayedTasks(function(err, delayedTasksCount){
+        delayedTasksCount.should.equal(2); 
         done();
       });
-    })
+    });
   });
 
   it('re-enquing a periodc task should fail (if it exists alread) via loader', function(done){
     rawAPI.tasks.seedPeriodicTasks(function(){
-      rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-        delayedCount.should.equal(2) // no change
+      rawAPI.tasks.countDelayedTasks(function(err, delayedTasksCount){
+        delayedTasksCount.should.equal(2); // no change
         done();
       });
-    })
+    });
   });
 
   it('re-enquing a periodc task should fail (if it exists alread) via direct enqueue', function(done){
@@ -161,7 +159,7 @@ describe('Core: Tasks', function(){
         ( (['periodic_any', 'periodic_all'].indexOf(t.name) >= 0) ).should.be.true;
         t.periodic.should.equal(true);
         t.frequency.should.equal(1000);
-        t.queue.should.equal('actionHero:tasks:delayed');
+        t.queue.indexOf('actionHero:tasks:delayed').should.equal(0);
         t.state.should.equal('delayed');
       }
       done();
@@ -184,34 +182,35 @@ describe('Core: Tasks', function(){
     });
   });
 
-  it('If I crash while working on a task, I will clear the crash on my next boot', function(done){
-    rawAPI.redis.client.flushdb(function(){
-      var t = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() - 1});
-      t.enqueue(function(err, success){
-        success.should.equal(true);
-        rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
-          globalCount.should.equal(1);
-          rawAPI.tasks.changeQueue(rawAPI.tasks.queues.globalQueue, rawAPI.tasks.queues.processingQueue, function(err, task){
-            task.name.should.equal('regular_any')
-            rawAPI.tasks.setTaskData(task.id, {api_id: rawAPI.id, worker_id: 0, state: "processing"}, function(err, task){
-              task.queue.should.equal('actionHero:tasks:processing')
-              rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
-                globalCount2.should.equal(0)
+  // TODO
+  // it('If I crash while working on a task, I will clear the crash on my next boot', function(done){
+  //   rawAPI.redis.client.flushdb(function(){
+  //     var t = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() - 1});
+  //     t.enqueue(function(err, success){
+  //       success.should.equal(true);
+  //       rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
+  //         globalCount.should.equal(1);
+  //         rawAPI.tasks.changeQueue(rawAPI.tasks.queues.globalQueue, rawAPI.tasks.queues.processingQueue, function(err, task){
+  //           task.name.should.equal('regular_any')
+  //           rawAPI.tasks.setTaskData(task.id, {api_id: rawAPI.id, worker_id: 0, state: "processing"}, function(err, task){
+  //             task.queue.should.equal('actionHero:tasks:processing')
+  //             rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
+  //               globalCount2.should.equal(0)
               
-                rawAPI.tasks.savePreviouslyCrashedTasks(function(){
-                  rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount3){
-                    globalCount3.should.equal(1);
-                    done();
-                  });
-                });
+  //               rawAPI.tasks.savePreviouslyCrashedTasks(function(){
+  //                 rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount3){
+  //                   globalCount3.should.equal(1);
+  //                   done();
+  //                 });
+  //               });
 
-              });
-            });
-          });
-        });
-      });
-    });
-  });
+  //             });
+  //           });
+  //         });
+  //       });
+  //     });
+  //   });
+  // });
 
   describe('busted periodic task', function(){
 
@@ -257,14 +256,14 @@ describe('Core: Tasks', function(){
       it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
         var worker = new rawAPI.taskProcessor({id: 1});
         var task = new rawAPI.task({name: 'busted_task'});
-        task.enqueue(function(){
+        task.enqueue(function(err, resp){
           setTimeout(function(){
-            rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+            rawAPI.tasks.countDelayedTasks(function(err, delayedCount){
               delayedCount.should.equal(1);
               worker.process(function(){
                 // move to global
                 rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
-                  globalCount.should.equal(1)
+                  globalCount.should.equal(1);
                   worker.process(function(){
                     // move to local
                     rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
@@ -273,13 +272,13 @@ describe('Core: Tasks', function(){
                         // move to processing and try to work it
                         // should be back in delayed
                         rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
-                          rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+                          rawAPI.tasks.countDelayedTasks(function(err, delayedCount2){
                             rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount2){
                               rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
-                                processingCount.should.equal(0)
-                                globalCount2.should.equal(0)
-                                localCount2.should.equal(0)
-                                delayedCount2.should.equal(1)
+                                processingCount.should.equal(0);
+                                globalCount2.should.equal(0);
+                                localCount2.should.equal(0);
+                                delayedCount2.should.equal(1);
                                 done();
                               });
                             });
@@ -306,41 +305,17 @@ describe('Core: Tasks', function(){
     done();
   });
 
-  it('Delayed tasks whose workers encounter a fault will eventually re-enqueued', function(done){
-    this.timeout(10000)
-    rawAPI.redis.client.flushdb(function(){
-      var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 1000});
-      task.enqueue(function(){
-        rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-          delayedCount.should.equal(1);
-          rawAPI.redis.client.del(rawAPI.tasks.queues.delayedQueue, function(err){
-            rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-              delayedCount.should.equal(0);
-              setTimeout(function(){
-                rawAPI.tasks.saveStuckDelayedTasks(function(){
-                  rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
-                    delayedCount.should.equal(1);
-                    done();
-                  });
-                });
-              }, 6001);
-            }); 
-          }); 
-        });
-      });
-    });
-  });
-
   it('I will not process tasks with a runAt in the future', function(done){
+    this.timeout(5000);
     rawAPI.redis.client.flushdb(function(){
       var worker = new rawAPI.taskProcessor({id: 1});
-      var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 1000});
+      var task = new rawAPI.task({name: 'regular_any', runAt: new Date().getTime() + 10000});
       task.enqueue(function(){
-        rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount){
+        rawAPI.tasks.countDelayedTasks(function(err, delayedCount){
           delayedCount.should.equal(1);
           setTimeout(function(){
             worker.process(function(){
-              rawAPI.tasks.queueLength(rawAPI.tasks.queues.delayedQueue, function(err, delayedCount2){
+              rawAPI.tasks.countDelayedTasks(function(err, delayedCount2){
                 delayedCount.should.equal(1);
                 done();
               });

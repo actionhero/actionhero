@@ -136,6 +136,7 @@ actionHero.prototype.start = function(params, next){
 actionHero.prototype.stop = function(next){ 
   var self = this;
   if(self.api.running === true){
+    self.shuttingDown = true;
     self.api.running = false;
     self.api.log("Shutting down open servers and stopping task processing", "bold");
 
@@ -163,10 +164,13 @@ actionHero.prototype.stop = function(next){
       self.api.pids.clearPidFile();
       self.api.log("The actionHero has been stopped", "bold");
       self.api.log("***");
+      delete self.shuttingDown;
       if(typeof next == "function"){ next(null, self.api); }
     };
 
     async.series(orderedTeardowns);
+  }else if(self.shuttingDown === true){
+    // double sigterm; ignore it
   }else{
     self.api.log("Cannot shut down (not running any servers)");
     if(typeof next == "function"){ next(null, self.api); }
