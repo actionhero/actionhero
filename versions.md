@@ -2,8 +2,19 @@
 
 ## Version 4.2.5
 
+** tasks ** 
+**It is likley you will loose access to previously enqueued tasks with this upgrade**
+- fixes to the delayed task system
+
 ** webserver ** 
 - Support for grouped action names added (thanks @Macrauder)
+
+** core **
+- the actionHero server will not exit until any currently processing tasks are compelte 
+
+** cluster ** 
+- when running in a cluser, the child processes will ignore all signals passed in from the parent
+- the timeout for closing a worker has been increased to a minute to allow for tasks to complete
 
 ## Version 4.2.4
 

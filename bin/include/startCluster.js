@@ -124,7 +124,7 @@ exports['startCluster'] = function(binary, next){
       }
 
       binary.setupShutdown = function(){
-        binary.log("Cluster manager quitting", "red", "bold");
+        binary.log("Cluster manager quitting", ["red", "bold"]);
         binary.log("Stopping each worker...");
         for(var i in cluster.workers){
           cluster.workers[i].send('stop');
@@ -133,9 +133,9 @@ exports['startCluster'] = function(binary, next){
       }
 
       binary.loopUntilNoWorkers = function(){
-        if(cluster.workers.length > 0){
+        if(binary.utils.hashLength(cluster.workers) > 0){
           binary.log("there are still " + binary.utils.hashLength(cluster.workers) + " workers...");
-          setTimeout(loopUntilNoWorkers, loopSleep);
+          setTimeout(binary.loopUntilNoWorkers, loopSleep);
         }else{
           binary.log("all workers gone");
           if(binary.clusterConfig.pidfile != null){

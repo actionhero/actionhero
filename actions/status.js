@@ -24,11 +24,17 @@ action.run = function(api, connection, next){
   api.stats.getAll(function(err, stats){
     connection.response.stats = stats;
     connection.response.tasks = {};
+    connection.response.workers = {};
     api.tasks.getAllTasks(api, function(err, allTasks){
       for(var i in allTasks){
         connection.response.tasks[i] = allTasks[i];
       }
-      next(connection, true);
+      api.tasks.getWorkerStatuses(function(err, workerStatuses){
+        for(var i in workerStatuses){
+          connection.response.workers[i] = workerStatuses[i];
+        }
+        next(connection, true);
+      });
     });
   });
 };
