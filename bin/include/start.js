@@ -23,7 +23,6 @@ exports['start'] = function(binary, next){
         process.exit();
       }else{
         api = api_from_callback;
-        api.log("Boot Sucessful @ pid #" + process.pid, "green");
         if(typeof next == "function"){
           if(cluster.isWorker){ process.send("started"); }
           next(api);
@@ -95,7 +94,6 @@ exports['start'] = function(binary, next){
   // start the server!
   startServer(function(api_from_callback){
     api = api_from_callback;
-    api.log("Successfully Booted!", ["green", "bold"]);     
     next();
   });
 

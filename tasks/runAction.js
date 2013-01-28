@@ -23,13 +23,10 @@ task.run = function(api, params, next){
 
   var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
     if(connection.error){
-      api.log("task error: "+connection.error, "red");
+      api.log("task error: "+connection.error, "error");
     }else{
       if(api.configData.log.logRequests){
-        api.logJSON({
-          label: "action @ task",
-          params: JSON.stringify(params),
-        }, "grey");
+        api.log("[ action @ task ]", "info", {params: JSON.stringify(params)})
       }
     }
     next(connection, true);

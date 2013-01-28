@@ -35,7 +35,7 @@ describe('Core: Exceptions', function(){
         inputs: { required: [], optional: [] },
         outputExample: { },
         run: function(api, connection, next){
-          api.log(thing); // undefined
+          api.log(thing, 'info'); // undefined
           next(connection, true);
         }
       }

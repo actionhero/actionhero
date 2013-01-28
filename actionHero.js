@@ -60,7 +60,7 @@ actionHero.prototype.start = function(params, next){
     'utils',
     'id',
     'pids',
-    'log',
+    'logger',
     'exceptions',
     'stats',
     'redis',
@@ -85,7 +85,7 @@ actionHero.prototype.start = function(params, next){
   initializerMethods.forEach(function(method){
     if(typeof orderedInitializers[method] != "function"){
       orderedInitializers[method] = function(next){ 
-        self.api.log("running custom initalizer: " + method);
+        self.api.log("running custom initalizer: " + method, "info");
         self.initalizers[method](self.api, next);
       };
     }
@@ -104,8 +104,8 @@ actionHero.prototype.start = function(params, next){
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
     if(starters.length == 0){
       self.api.bootTime = new Date().getTime();
-      self.api.log("server ID: " + self.api.id);
-      self.api.log(successMessage, ["green", "bold"]);
+      self.api.log("server ID: " + self.api.id, "notice");
+      self.api.log(successMessage, "notice");
       if(next !== null){ 
         next(null, self.api);
       }
@@ -114,12 +114,12 @@ actionHero.prototype.start = function(params, next){
         started++;
         self.api[starter]._start(self.api, function(){
           process.nextTick(function(){
-            self.api.log(" > start: " + starter, 'grey');
+            self.api.log(" > start: " + starter, 'debug');
             started--;
             if(started == 0){
               self.api.bootTime = new Date().getTime();
-              self.api.log("server ID: " + self.api.id);
-              self.api.log(successMessage, ["green", "bold"]);
+              self.api.log("server ID: " + self.api.id, "notice");
+              self.api.log(successMessage, "notice");
               if(next !== null){ 
                 next(null, self.api);
               }
@@ -138,11 +138,11 @@ actionHero.prototype.stop = function(next){
   if(self.api.running === true){
     self.shuttingDown = true;
     self.api.running = false;
-    self.api.log("Shutting down open servers and stopping task processing", "bold");
+    self.api.log("Shutting down open servers and stopping task processing", "alert");
 
     var orderedTeardowns = {};
     orderedTeardowns['watchedFiles'] = function(next){ 
-      self.api.log(" > teardown: watchedFiles", 'grey');
+      self.api.log(" > teardown: watchedFiles", 'debug');
       for(var i in self.api.watchedFiles){
         fs.unwatchFile(self.api.watchedFiles[i]);
       }
@@ -153,7 +153,7 @@ actionHero.prototype.stop = function(next){
       if(typeof self.api[i]._teardown == "function"){
         (function(name) {
           orderedTeardowns[name] = function(next){ 
-            self.api.log(" > teardown: " + name, 'grey');
+            self.api.log(" > teardown: " + name, 'debug');
             self.api[name]._teardown(self.api, next); 
           };
         })(i);
@@ -162,8 +162,8 @@ actionHero.prototype.stop = function(next){
 
     orderedTeardowns['_complete'] = function(){ 
       self.api.pids.clearPidFile();
-      self.api.log("The actionHero has been stopped", "bold");
-      self.api.log("***");
+      self.api.log("The actionHero has been stopped", "alert");
+      self.api.log("***", "debug");
       delete self.shuttingDown;
       if(typeof next == "function"){ next(null, self.api); }
     };
@@ -172,7 +172,7 @@ actionHero.prototype.stop = function(next){
   }else if(self.shuttingDown === true){
     // double sigterm; ignore it
   }else{
-    self.api.log("Cannot shut down (not running any servers)");
+    self.api.log("Cannot shut down (not running any servers)", "info");
     if(typeof next == "function"){ next(null, self.api); }
   }
 };
@@ -183,13 +183,13 @@ actionHero.prototype.restart = function(next){
   if(self.api.running === true){
     self.stop(function(err){
       self.start(self.startingParams, function(err, api){
-        api.log('actionHero restarted', "green");
+        api.log('actionHero restarted', "notice");
         if(typeof next == "function"){ next(null, self.api); } 
       });
     });
   }else{
     self.start(self.startingParams, function(err, api){
-      api.log('actionHero restarted', "green");
+      api.log('actionHero restarted', "notice");
       if(typeof next == "function"){ next(null, self.api); } 
     });
   }

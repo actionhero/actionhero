@@ -46,7 +46,7 @@ var cache = function(api, next){
     api.cache.load = function(key, next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
-        if(err != null){ api.log(err, red); }
+        if(err != null){ api.log(err, "error"); }
         try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
         if(cacheObj == null){
           if(typeof next == "function"){ 
@@ -71,7 +71,7 @@ var cache = function(api, next){
       var domain = api.cache.prepareDomain();
       api.redis.client.hdel(redisCacheKey, key, domain.bind(function(err, count){
         api.stats.increment("cache:cachedObjects", -1 );
-        if(err != null){ api.log(err, red); }
+        if(err != null){ api.log(err, "error"); }
         var resp = true;
         if(count != 1){ resp = false; }
         if(typeof next == "function"){  process.nextTick(function() { next(null, resp); }); }
@@ -86,7 +86,7 @@ var cache = function(api, next){
         keys.forEach(function(key){
           started++;
           api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
-            if(err != null){ api.log(err, red); }
+            if(err != null){ api.log(err, "error"); }
             try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
             if(cacheObj != null){
               if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
@@ -195,7 +195,7 @@ var cache = function(api, next){
         api.cache.data[key] = cacheObj;
         if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
       }catch(e){
-        api.log("Cache save error: " + e, "red");
+        api.log("Cache save error: " + e, "error");
         if(typeof next == "function"){  process.nextTick(function() { next(null, false); }); }
       }
     }
@@ -206,7 +206,7 @@ var cache = function(api, next){
     api.cache.sweeper(function(err, sweepedKeys){
       if(sweepedKeys.length > 0){
         api.stats.increment("cache:cachedObjects", -1 * sweepedKeys.length);
-        api.log("cleaned " + sweepedKeys.length + " expired cache keys");
+        api.log("cleaned " + sweepedKeys.length + " expired cache keys", "debug");
       }
       if(api.running){
         api.cache.sweeperTimer = setTimeout(api.cache.runSweeper, api.cache.sweeperTimeout, api);

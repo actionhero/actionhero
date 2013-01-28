@@ -40,12 +40,12 @@ var redis = function(api, next){
     }
 
     api.redis.client.on("error", function (err) {
-        api.log("Redis Error: " + err, ["red", "bold"]);
+        api.log("Redis Error: " + err, "emerg");
         process.exit();  // redis is really important...
     });
 
     api.redis.client.on("connect", function (err) {
-        api.log("connected to redis (data)")
+        api.log("connected to redis (data)", "debug")
     });
 
     api.redis.client.on("ready", function (err) {
@@ -65,7 +65,7 @@ var redis = function(api, next){
     api.redis._teardown = function(api, next){
       api.redis.stopTimers(api);
       api.redis.client.lrem("actionHero:peers", 1, api.id, function(err, count){
-        if(count != 1){ api.log("Error removing myself from the peers list", "red"); }
+        if(count != 1){ api.log("Error removing myself from the peers list", "error"); }
         api.redis.client.hdel("actionHero:peerPings", api.id, function(){
           next();
         });
@@ -95,7 +95,7 @@ var redis = function(api, next){
     api.redis.registerServer = function(next){
       api.redis.client.select(api.configData.redis.DB, function(err,res){
         if(err){
-          api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", ["red", "bold"]);
+          api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg");
           process.exit();
         }else{
           // add myself to the list
@@ -112,12 +112,12 @@ var redis = function(api, next){
               }
 
               api.redis.clientSubscriber.on("error", function (err) {
-                api.log("Redis Error: " + err, ["red", "bold"]);
+                api.log("Redis Error: " + err, "emerg");
                 process.exit();  // redis is really important...
               });
 
               api.redis.client.on("connect", function (err) {
-                api.log("connected to redis (pub-sub)")
+                api.log("connected to redis (pub-sub)", "debug")
               });
 
               api.redis.clientSubscriber.on("ready", function (err) {
@@ -145,7 +145,7 @@ var redis = function(api, next){
           }
         }
         if(peerID != null){
-          api.log("peer: " + peerID + " has gone away", "red");
+          api.log("peer: " + peerID + " has gone away", "error");
           api.redis.client.hdel("actionHero:peerPings", peerID, function(){
             api.redis.client.lrem("actionHero:peers", 1, peerID, function(){
               if(api.running){
@@ -155,7 +155,6 @@ var redis = function(api, next){
             });
           });
         }else{
-          // api.log("all peers remain connected");
           api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
           if (typeof next == "function"){ next(); }
         }
@@ -173,17 +172,17 @@ var redis = function(api, next){
             }
           }
           if(found == false){
-            api.log("message from unknown channel ("+channel+"): "+message, "red");
+            api.log("message from unknown channel ("+channel+"): "+message, "warning");
           }
         }catch(e){
-          api.log("redis message processing error: " + e, ["red", "bold"])
+          api.log("redis message processing error: " + e, "error")
         }
       });
-      api.log("connected to redis @ "+api.configData.redis.host+":"+api.configData.redis.port+" on DB #"+api.configData.redis.DB);
+      api.log("connected to redis @ "+api.configData.redis.host+":"+api.configData.redis.port+" on DB #"+api.configData.redis.DB, "notice");
       next()
     }
   }else{
-    api.log("running without redis");
+    api.log("running without redis", "notice");
     next();
   }
 }

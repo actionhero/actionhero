@@ -9,7 +9,7 @@ var actions = function(api, next){
   
   var validateAction = function(action){
     var fail = function(msg){
-      api.log(msg + "; exiting.", ['red', 'bold']);
+      api.log(msg + "; exiting.", emerg);
       process.exit();
     }
 
@@ -34,7 +34,7 @@ var actions = function(api, next){
   fs.exists(actionsPath, function (exists) {
     if(!exists){
       var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
-      api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "yellow");
+      api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "warning");
       actionsPath = defaultActionsPath;
     }
 
@@ -53,12 +53,12 @@ var actions = function(api, next){
             }else if(stats.isFile()){
               actionLoader(fullFilePath);
             }else{
-              api.log(file+" is a type of file I cannot read", "red")
+              api.log(file+" is a type of file I cannot read", "error")
             }
           }
         });
       }else{
-        api.log("ao actions folder found");
+        api.log("ao actions folder found", "warning");
       }
     }
 
@@ -71,7 +71,7 @@ var actions = function(api, next){
         }else{
           var loadMessage = "action loaded: " + loadedActionName + ", " + fullFilePath;
         }
-        api.log(loadMessage, "blue");
+        api.log(loadMessage, "debug");
       }
 
       var parts = fullFilePath.split("/");

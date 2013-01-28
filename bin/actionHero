@@ -3,12 +3,11 @@
 var binary = {};
 
 binary.fs = require('fs');
+winston = require('winston');
 binary.path = require('path');
 binary.async = require('async');
 binary.spawn = require('child_process').spawn
 binary.fork = require('child_process').fork
-
-binary.useColors = true;
 
 ///////////////
 // utilities //
@@ -16,30 +15,25 @@ binary.useColors = true;
 
 binary.utils = {};
 
-binary.log = function(message, styles){
+binary.logger = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)({
+      colorize: true, 
+      level: 'debug'
+    }),
+  ] 
+});
+binary.logger.setLevels(winston.config.syslog.levels);
+
+binary.log = function(message, severity){
   if(binary.argv['silent'] != 'true'){
-    if(binary.useColors == true){
-      if (styles == null){styles = ["white"];}
-      if (typeof styles == "string"){styles = [styles];}
-      for(var i in styles){
-        if(binary.consoleColors[styles[i]] != null){
-          message = binary.consoleColors[styles[i]](message);
-        }
-      }
-    }else{
-      // TODO: strip ansi color codes
-      // message = message.replace(new RegExp('\033\\[91m', 'g'), '')
-    }
-    console.log(binary.consoleColors.grey(binary.generateTimeSting()) + message);
+    if(severity == null){ severity = "info" }
+    binary.logger.log(severity, message);
   }
 }
 
-binary.generateTimeSting = function(){
-  return binary.utils.sqlDateTime() + " | ";
-}
-
 binary.hardError = function(err){
-  binary.log(err, ['red', 'bold']);
+  binary.log(err);
   process.exit(1);
 }
 
@@ -86,46 +80,21 @@ binary.utils.file_exists = function(file){
 
 binary.utils.create_dir_safely = function(dir){
   if(binary.utils.dir_exists(dir)){
-    binary.log(" - directory `"+binary.path.normalize(dir)+"` already exists, skipping", "yellow");
+    binary.log(" - directory `"+binary.path.normalize(dir)+"` already exists, skipping");
   }else{
-    binary.log(" - creating directory `"+binary.path.normalize(dir)+"`", "green");
+    binary.log(" - creating directory `"+binary.path.normalize(dir)+"`");
     binary.fs.mkdirSync(dir , 0766);
   }
 }
 
 binary.utils.create_file_safely = function(file, data){
   if(binary.utils.file_exists(file)){
-    binary.log(" - file `"+binary.path.normalize(file)+"` already exists, skipping", "yellow");
+    binary.log(" - file `"+binary.path.normalize(file)+"` already exists, skipping");
   }else{
-    binary.log(" - wrote file `"+binary.path.normalize(file)+"`", "green");
+    binary.log(" - wrote file `"+binary.path.normalize(file)+"`");
     binary.fs.writeFileSync(file, data);
   }
 }
-
-binary.utils.sqlDateTime = function(time){
-  if(time == null){ time = new Date(); }
-  var dateStr = 
-    this.padDateDoubleStr(time.getFullYear()) +
-    "-" + this.padDateDoubleStr(1 + time.getMonth()) +
-    "-" + this.padDateDoubleStr(time.getDate()) +
-    " " + this.padDateDoubleStr(time.getHours()) +
-    ":" + this.padDateDoubleStr(time.getMinutes()) +
-    ":" + this.padDateDoubleStr(time.getSeconds());
-  return dateStr;
-};
-
-binary.utils.sqlDate = function(time){
-  if(time == null){ time = new Date(); }
-  var dateStr = 
-    this.padDateDoubleStr(time.getFullYear()) +
-    "-" + this.padDateDoubleStr(1 + time.getMonth()) +
-    "-" + this.padDateDoubleStr(time.getDate());
-  return dateStr;
-};
-
-binary.utils.padDateDoubleStr = function(i){
-    return (i < 10) ? "0" + i : "" + i;
-};
 
 binary.utils.hashLength = function(obj) {
   var size = 0, key;
@@ -155,7 +124,6 @@ if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
   binary.paths.actionHero_root = binary.path.normalize(__dirname + "/..");
 }
 
-binary.consoleColors = require(binary.paths.actionHero_root + '/node_modules/colors/');
 binary.argv = require(binary.paths.actionHero_root + '/node_modules/optimist/').argv;
 
 binary.actions = {};
