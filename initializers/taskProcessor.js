@@ -59,8 +59,9 @@ var taskProcessor = function(api, next){
     }
   }
 
-  api.taskProcessor.prototype.log = function(message){
-    api.log("[taskProcessor "+this.id+"] " + message, "info");
+  api.taskProcessor.prototype.log = function(message, severity){
+    if(severity == null){ severity = 'info'; }
+    api.log("[taskProcessor "+this.id+"] " + message, severity);
   }
 
   api.taskProcessor.prototype.process = function(callback){
@@ -128,7 +129,7 @@ var taskProcessor = function(api, next){
             // nothing to do, so check on the delayed queue
             self.setWorkerStatus("checking delayed queue", function(){
               api.tasks.promoteFromDelayedQueue(function(err, task){
-                if(task != null){ self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "yellow"); }
+                if(task != null){ self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug"); }
                 self.prepareNextRun(function(){
                   setTimeout(callback, 1000); // wait longer if there is no work to be done
                 });

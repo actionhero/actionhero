@@ -448,7 +448,7 @@ var tasks = function(api, next){
             var task = new api.task({name: taskTemplate.name});
             task.enqueue(function(err, resp){
               if(err != null){ 
-                api.log(String(err).replace('Error: ', ""), 'error'); 
+                api.log(String(err).replace('Error: ', ""), 'info'); 
                 process.nextTick(function(){ 
                   started--;
                   if(started == 0){ callback(); }
