@@ -45,9 +45,7 @@ configData.general = {
 // logging //
 /////////////
 
-var winston = require('winston');
 configData.logger = {
-  levels: winston.config.syslog.levels,
   transports: [
     function(api){
       return new (winston.transports.Console)({
