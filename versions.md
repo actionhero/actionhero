@@ -1,6 +1,10 @@
 # Action Hero API Versions
 
-## Version 4.2.5
+## Version 4.3.0
+
+** logger **
+actionHero is now using the winston logger: https://github.com/flatiron/winston.  This will allow for better, more customizable logging
+
 
 ** tasks ** 
 **It is likley you will loose access to previously enqueued tasks with this upgrade**

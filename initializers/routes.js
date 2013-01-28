@@ -48,9 +48,9 @@ var routes = function(api, next){
           api.routes.routes[i][j.toLowerCase()] = tmp;
         }
       }
-      api.log(api.utils.hashLength(api.routes.routes) + " routes loaded from " + routesFile, "green");
+      api.log(api.utils.hashLength(api.routes.routes) + " routes loaded from " + routesFile, "debug");
     }else{
-      api.log("no routes file found, skipping");
+      api.log("no routes file found, skipping", "debug");
     }
   };
 

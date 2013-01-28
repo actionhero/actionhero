@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  "apiVersion": "4.2.5",
+  "apiVersion": "4.3.0",
   "serverName": "actionHero API",
   // The welcome message seen by TCP and webSocket clients upon connection
   "welcomeMessage" : "Hello! Welcome to the actionHero api",
@@ -45,11 +45,25 @@ configData.general = {
 // logging //
 /////////////
 
-configData.log = {
-  "logging" : true,
-  "logFolder" : "./log/",
-  // Should we log the actual requests coming in (and their params)?
-  "logRequests" : true,
+var winston = require('winston');
+configData.logger = {
+  levels: winston.config.syslog.levels,
+  transports: [
+    function(api){
+      return new (winston.transports.Console)({
+        colorize: true, 
+        level: "debug", 
+        timestamp: api.utils.sqlDateTime,
+      });
+    },
+    function(api){
+      return new (winston.transports.File)({
+        filename: './log/' + api.pids.title + '.log',
+        level: "info",
+        timestamp: true,
+      });
+    }
+  ]
 };
 
 ///////////

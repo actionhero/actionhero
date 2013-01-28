@@ -100,7 +100,7 @@ var fileServer = function(api, next){
           fileStream.pipe(connection, {end: false});
           connection.write("\r\n"); 
         }catch(e){
-          api.log(e, "red");
+          api.log(e, "error");
         }
       }
     }
@@ -124,27 +124,24 @@ var fileServer = function(api, next){
   }
 
   api.fileServer.logRequest = function(file, connection, length, success){
-    if(api.configData.log.logRequests){
-      var full_url = null;
-      var duration = null;
-      var type = connection.type;
-      if(connection.type == "web" && connection.rawConnection.req.headers != null){
-        full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url
-        duration = new Date().getTime() - connection.connectedAt;
-      }else{
-        full_url = connection.params.fileName;
-        duration = new Date().getTime() - connection.connectedAt;
-      }
-      api.logJSON({
-        label: "file @ " + type,
-        to: connection.remoteIP,
-        file: file,
-        request: full_url,
-        size: length,
-        duration: duration,
-        success: success
-      }, "grey");
+    var full_url = null;
+    var duration = null;
+    var type = connection.type;
+    if(connection.type == "web" && connection.rawConnection.req.headers != null){
+      full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url
+      duration = new Date().getTime() - connection.connectedAt;
+    }else{
+      full_url = connection.params.fileName;
+      duration = new Date().getTime() - connection.connectedAt;
     }
+    api.log("[ file @ " + type + " ]", 'debug', {
+      to: connection.remoteIP,
+      file: file,
+      request: full_url,
+      size: length,
+      duration: duration,
+      success: success
+    });
   }
 
   next();

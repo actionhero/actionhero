@@ -22,13 +22,13 @@ var webServer = function(api, next){
 
     api.webServer._start = function(api, next){ 
       api.webServer.server.on("error", function(e){
-        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", ["red", "bold"]);
-        api.log(e, "red");
+        api.log("Cannot start web server @ " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port + "; Exiting.", "emerg");
+        api.log(e, "error");
         process.exit();
       });
       api.webServer.server.listen(api.configData.httpServer.port, api.configData.httpServer.bindIP, function(){
         api.webServer.server.addListener("connection",function(stream) { stream.setTimeout(10000); });
-        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "green");
+        api.log("web server listening on " + api.configData.httpServer.bindIP + ":" + api.configData.httpServer.port, "notice");
         next();
       });
     }
@@ -159,7 +159,7 @@ var webServer = function(api, next){
               var form = new formidable.IncomingForm();
               form.parse(connection.rawConnection.req, function(err, fields, files) {
                 if(err){
-                  api.log(err, "red");
+                  api.log(err, "error");
                   connection.error = new Error("There was an error processign this form.");
                 }else{
                   api.webServer.fillParamsFromWebRequest(connection, files);
@@ -245,19 +245,17 @@ var webServer = function(api, next){
           connection.rawConnection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
           connection.rawConnection.res.end(stringResponse);
         }
-        if(api.configData.log.logRequests){
-          if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
-          var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
-          if(connection.action != null && connection.action != "file"){
-            api.logJSON({
-              label: "action @ web",
-              to: connection.remoteIP,
-              action: connection.action,
-              request: full_url,
-              params: JSON.stringify(connection.params),
-              duration: connection.response.serverInformation.requestDuration
-            });
-          }
+        if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
+        var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
+        if(connection.action != null && connection.action != "file"){
+          api.log("[ action @ web ]", "info", {
+            to: connection.remoteIP,
+            action: connection.action,
+            request: full_url,
+            params: JSON.stringify(connection.params),
+            duration: connection.response.serverInformation.requestDuration,
+            error: connection.error
+          })
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
           connection.destroy();

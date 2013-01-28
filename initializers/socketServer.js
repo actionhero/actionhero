@@ -23,13 +23,13 @@ var socketServer = function(api, next){
       }
 
       api.socketServer.server.on("error", function(e){
-        api.log("Cannot start socket server @ " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port + "; Exiting.", ["red", "bold"]);
-        api.log(e);
+        api.log("Cannot start socket server @ " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port + "; Exiting.", "emerg");
+        api.log(e, "error");
         process.exit();
       });
       
       api.socketServer.server.listen(api.configData.tcpServer.port, api.configData.tcpServer.bindIP, function(){
-        api.log("tcp server listening on " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port, "green");
+        api.log("tcp server listening on " + api.configData.tcpServer.bindIP + ":" + api.configData.tcpServer.port, "notice");
         next();
       });
     }
@@ -51,7 +51,7 @@ var socketServer = function(api, next){
         rawConnection: rawConnection,
       });
       api.socketServer.decorateConnection(connection);
-      api.socketServer.logLine({label: "connect @ socket"}, connection);
+      api.log("[ connect @ socket ]", 'info', {to: connection.remoteIP});
 
       process.nextTick(function(){
         api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
@@ -80,12 +80,12 @@ var socketServer = function(api, next){
           connection.rawConnection.end(); 
         }catch(e){ }
         connection.destroy(function(){
-          api.socketServer.logLine({label: "disconnect @ socket"}, connection);
+          api.log("[ disconnect @ socket ]", 'info', {to: connection.remoteIP});
         });
       });
 
       connection.rawConnection.on("error", function(e){
-        api.log("socket error: " + e, "red");
+        api.log("socket error: " + e, "error");
         connection.rawConnection.end();
       });
 
@@ -105,35 +105,35 @@ var socketServer = function(api, next){
         }else{
           api.socketServer.sendSocketMessage(connection, {status: "Cannot set null", context: "response"});
         }
-        api.socketServer.logLine({label: "paramAdd @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ quit @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramDelete"){
         connection.params[words[1]] = null;
         api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
-        api.socketServer.logLine({label: "paramDelete @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ paramDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramView"){
         var q = words[1];
         var params = {}
         params[q] = connection.params[q];
         api.socketServer.sendSocketMessage(connection, {context: "response", params: params});
-        api.socketServer.logLine({label: "paramView @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ paramView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramsView"){
         api.socketServer.sendSocketMessage(connection, {context: "response", params: connection.params});
-        api.socketServer.logLine({label: "paramsView @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ paramsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramsDelete"){
         connection.params = {};
         api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
-        api.socketServer.logLine({label: "paramsDelete @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ paramsDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "roomChange"){
         api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
           connection.room = words[1];
           api.chatRoom.roomAddMember(connection);
           api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
-          api.socketServer.logLine({label: "roomChange @ socket", params: JSON.stringify(words)}, connection, 'grey');
+          api.log("[ roomChange @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });
       }else if(words[0] == "roomView"){
         api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
           api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
-          api.socketServer.logLine({label: "roomView @ socket", params: JSON.stringify(words)}, connection, 'grey');
+          api.log("[ roomView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });   
       }else if(words[0] == "listenToRoom"){
         var message = {context: "response", status: "OK", room: words[1]}
@@ -144,7 +144,7 @@ var socketServer = function(api, next){
           message.status = "OK"
         }
         api.socketServer.sendSocketMessage(connection, message);
-        api.socketServer.logLine({label: "listenToRoom @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ listenToRoom @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "silenceRoom"){
         var message = {context: "response", status: "OK", room: words[1]}
         if(connection.additionalListeningRooms.indexOf(words[1]) > -1){
@@ -155,7 +155,7 @@ var socketServer = function(api, next){
           message.error = "you are not listening to this room";
         }
         api.socketServer.sendSocketMessage(connection, message);
-        api.socketServer.logLine({label: "silenceRoom @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ silenceRoom @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "detailsView"){
         var details = {};
         details.params = connection.params;
@@ -165,12 +165,12 @@ var socketServer = function(api, next){
         details.totalActions = connection.totalActions;
         details.pendingActions = connection.pendingActions;
         api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", details: details});
-        api.socketServer.logLine({label: "detailsView @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ detailsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "say"){
         var message = line.substr(4);
         api.chatRoom.socketRoomBroadcast(connection, message);
         api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
-        api.socketServer.logLine({label: "say @ socket", params: JSON.stringify(words)}, connection, 'grey');
+        api.log("[ say @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else{
         api.socketServer.processAction(connection, line, words);
       }
@@ -217,8 +217,14 @@ var socketServer = function(api, next){
         connection.error = proxy_connection.error;
         connection.responsesWaitingCount--;
         var delta = new Date().getTime() - connection.actionStartTime;
-        api.socketServer.logLine({label: "action @ socket", params: JSON.stringify(words), action: proxy_connection.action, duration: delta}, connection, 'grey');
         api.socketServer.respondToSocketClient(connection, cont, proxy_connection.messageCount);
+        api.log("[ action @ socket ]", 'info', {
+          to: connection.remoteIP, 
+          params: JSON.stringify(words), 
+          action: proxy_connection.action, 
+          duration: delta, 
+          error: String(proxy_connection.error)
+        });
       }});
 
       actionProcessor.processAction();
@@ -238,21 +244,10 @@ var socketServer = function(api, next){
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // logging
-    api.socketServer.logLine = function(data, connection, color){
-      if(api.configData.log.logRequests){
-        if(data.to == null){ data.to = connection.remoteIP; }
-        if(api.configData.log.logRequests){
-          api.logJSON(data ,color);
-        }
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     // goodbye
     api.socketServer.goodbye = function(connection){
       try{ 
-        api.socketServer.logLine({label: "quit @ socket"}, connection);
+        api.log("[ quit @ socket ]", 'info', {to: connection.remoteIP});
         api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response", reason: 'request'}); 
         connection.rawConnection.end();
       }catch(e){ }
@@ -287,7 +282,7 @@ var socketServer = function(api, next){
         }
         connection.rawConnection.write(JSON.stringify(message) + "\r\n"); 
       }catch(e){
-        api.log("socket write error: "+e, "red");
+        api.log("socket write error: "+e, "error");
       }
     }
 
@@ -317,7 +312,7 @@ var socketServer = function(api, next){
         }
       }
       if(pendingConnections > 0){
-        api.log("[socket] waiting on shutdown, there are still " + pendingConnections + " connected clients waiting on a response");
+        api.log("[socket] waiting on shutdown, there are still " + pendingConnections + " connected clients waiting on a response", "notice");
         setTimeout(function(){
           api.socketServer.gracefulShutdown(next, alreadyShutdown);
         }, 1000);
