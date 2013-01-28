@@ -32,7 +32,7 @@ var logger = function(api, next){
   for(var i in api.logger.levels){
     logLevels.push(i);
   }
-  api.log('Logger loaded for levels', 'debug', logLevels);
+  api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
 
   next();
 

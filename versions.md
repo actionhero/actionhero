@@ -3,18 +3,27 @@
 ## Version 4.3.0
 
 ** logger **
-actionHero is now using the winston logger: https://github.com/flatiron/winston.  This will allow for better, more customizable logging
-
+- actionHero is now using the winston logger: https://github.com/flatiron/winston.  This will allow for better, more customizable logging.
+- The `api.configData.log` is replaced with `api.configData.logger`
+- You can now specifiy all the logging options and transports in `api.configData.logger.transports`
+- You will probably want to define your transports in functions(api) so that you can evaluate them later and get things like `api.id` to use in your file names
+- The notion of 'coloring' output has been removed, and replaced with more standard log-levels
+- actionHero's log levels: 0=debug, 1=info, 2=notice, 3=warning, 4=error, 5=crit, 6=alert, 7=emerg
+- `api.log(message, severity, data)` is the new syntax
+- you can access winston directly at `api.logger`
 
 ** tasks ** 
-**It is likley you will loose access to previously enqueued tasks with this upgrade**
+**!!! It is likley you will loose access to previously enqueued tasks with this upgrade**
 - fixes to the delayed task system
+- delayed tasks now occupy thier own timestamp'd queue
+- periodic tasks now have a specific hash to deonte if they have been enqueued already or not
 
 ** webserver ** 
 - Support for grouped action names added (thanks @Macrauder)
 
 ** core **
 - the actionHero server will not exit until any currently processing tasks are compelte 
+- This may effect forever adversley
 
 ** cluster ** 
 - when running in a cluser, the child processes will ignore all signals passed in from the parent
