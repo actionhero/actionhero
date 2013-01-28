@@ -102,7 +102,9 @@ var taskProcessor = function(api, next){
                             });
                           });
                         }else{
-                          self.prepareNextRun(callback);
+                          api.tasks.clearTaskData(task.id, function(){
+                            self.prepareNextRun(callback);
+                          });
                         }
                       });
                     });
