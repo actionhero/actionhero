@@ -1,5 +1,5 @@
 exports['unknownInput'] = function(binary, next){
-  binary.log("`" + binary.mainAction + "` is not a known action", ["red", "bold"]);
-  binary.log("run `" + "actionHero help".green +  "` for more information");
+  binary.log("`" + binary.mainAction + "` is not a known action", "warning");
+  binary.log("run `actionHero help` for more information", "info");
   next();
 }
