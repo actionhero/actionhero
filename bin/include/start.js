@@ -4,7 +4,7 @@ exports['start'] = function(binary, next){
   var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
   var actionHero = new actionHeroPrototype();
 
-  var shutdownTimeout = 10000 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
+  var shutdownTimeout = 1000 * 60 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
 
   var title = process.title;
   var api = {};
@@ -46,28 +46,6 @@ exports['start'] = function(binary, next){
     });
   }
 
-  // handle posix signals
-  process.on('SIGINT', function(){
-    setTimeout(process.exit, shutdownTimeout);
-    stopServer(function(){
-      setTimeout(process.exit, 500);
-    });
-  });
-  process.on('SIGTERM', function(){
-    stopServer(function(){
-      setTimeout(process.exit, 500);
-    });
-  });
-  process.on('SIGKILL', function(){
-    setTimeout(process.exit, shutdownTimeout);
-    stopServer(function(){
-      setTimeout(process.exit, 500);
-    });
-  });
-  process.on('SIGUSR2', function(){
-    restartServer();
-  });
-
   // handle signals from master if running in cluster
   if(cluster.isWorker){
     process.on('message', function(msg) {
@@ -80,6 +58,7 @@ exports['start'] = function(binary, next){
         process.send("stopping");
         stopServer(function(){
           process.send("stopped");
+          setTimeout(process.exit, 500);
         })
       }
       else if(msg == "restart"){
@@ -88,6 +67,28 @@ exports['start'] = function(binary, next){
           process.send("restarted");
         });
       }
+    });
+    process.on('SIGINT', function(){}); // catch to ignore
+  }else{
+    process.on('SIGINT', function(){
+      setTimeout(process.exit, shutdownTimeout);
+      stopServer(function(){
+        setTimeout(process.exit, 500);
+      });
+    });
+    process.on('SIGTERM', function(){
+      stopServer(function(){
+        setTimeout(process.exit, 500);
+      });
+    });
+    process.on('SIGKILL', function(){
+      setTimeout(process.exit, shutdownTimeout);
+      stopServer(function(){
+        setTimeout(process.exit, 500);
+      });
+    });
+    process.on('SIGUSR2', function(){
+      restartServer();
     });
   }
 

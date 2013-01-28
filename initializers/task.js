@@ -65,20 +65,17 @@ var task = function(api, next){
     var toEnqueue = true;
     if(self.periodic == false){
       callback(toEnqueue);
+    }else if(self.isDuplicate === true){
+      callback(toEnqueue);
     }else{
-      api.tasks.getAllTasks(self.name, function(err, matchedTasks){
-        if(self.scope === "any"){
-          if(api.utils.hashLength(matchedTasks) > 0){ toEnqueue = false; }
-          callback(toEnqueue);
-        }else{
-          for(var i in matchedTasks){
-            if(matchedTasks[i].queue == api.tasks.queues.globalQueue || matchedTasks[i].queue == api.tasks.queues.delayedQueue){
-              toEnqueue = false;
-              break;
-            }
+      api.tasks.getEnqueuedPeriodicTasks(function(err,enqueuedPeriodicTasks){
+        for(var i in enqueuedPeriodicTasks){
+          if(enqueuedPeriodicTasks[i] == self.name){
+            toEnqueue = false; 
+            break;
           }
-          callback(toEnqueue);
         }
+        callback(toEnqueue);
       });
     }
   }
