@@ -23,7 +23,7 @@ var config = function(api, startingParams, next){
   try{
     api.configData = require(configFile).configData;
   }catch(e){
-    throw new Error(configFile + " is not a valid config file or is not readable");
+    throw new Error(configFile + " is not a valid config file or is not readable: " + e);
   }
   
   if(startingParams.configChanges != null){
@@ -40,7 +40,7 @@ var config = function(api, startingParams, next){
     (function() {
       fs.watchFile(configFile, {interval:1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
-          api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n");
+          api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n", "info");
           delete require.cache[configFile];
           api._commands.restart.call(api._self);
         }

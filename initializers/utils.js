@@ -7,21 +7,21 @@ var utils = function(api, next){
   api.utils.sqlDateTime = function(time){
     if(time == null){ time = new Date(); }
     var dateStr = 
-      this.padDateDoubleStr(time.getFullYear()) +
-      "-" + this.padDateDoubleStr(1 + time.getMonth()) +
-      "-" + this.padDateDoubleStr(time.getDate()) +
-      " " + this.padDateDoubleStr(time.getHours()) +
-      ":" + this.padDateDoubleStr(time.getMinutes()) +
-      ":" + this.padDateDoubleStr(time.getSeconds());
+      api.utils.padDateDoubleStr(time.getFullYear()) +
+      "-" + api.utils.padDateDoubleStr(1 + time.getMonth()) +
+      "-" + api.utils.padDateDoubleStr(time.getDate()) +
+      " " + api.utils.padDateDoubleStr(time.getHours()) +
+      ":" + api.utils.padDateDoubleStr(time.getMinutes()) +
+      ":" + api.utils.padDateDoubleStr(time.getSeconds());
     return dateStr;
   };
 
   api.utils.sqlDate = function(time){
     if(time == null){ time = new Date(); }
     var dateStr = 
-      this.padDateDoubleStr(time.getFullYear()) +
-      "-" + this.padDateDoubleStr(1 + time.getMonth()) +
-      "-" + this.padDateDoubleStr(time.getDate());
+      api.utils.padDateDoubleStr(time.getFullYear()) +
+      "-" + api.utils.padDateDoubleStr(1 + time.getMonth()) +
+      "-" + api.utils.padDateDoubleStr(time.getDate());
     return dateStr;
   };
 

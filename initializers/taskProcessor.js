@@ -11,7 +11,7 @@ var taskProcessor = function(api, next){
 
   api.taskProcessor._start = function(api, next){
     var i = 0;
-    api.log("starting "+api.configData.general.workers+" task timers", "yellow")
+    api.log("starting "+api.configData.general.workers+" task timers", "notice")
     while(i < api.configData.general.workers){
       (function(){
         var taskProcessor = new api.taskProcessor({id: i});
@@ -33,7 +33,7 @@ var taskProcessor = function(api, next){
       }
     });
     if(numberOfWorkersWorking > 0){
-      api.log("Delaying shutdown, there are still " + numberOfWorkersWorking + " workers working...", ["yellow", "bold"]);
+      api.log("Delaying shutdown, there are still " + numberOfWorkersWorking + " workers working...", "notice");
       setTimeout(function(){
         api.taskProcessor._teardown(api, next);
       }, 1000);
@@ -60,7 +60,7 @@ var taskProcessor = function(api, next){
   }
 
   api.taskProcessor.prototype.log = function(message){
-    api.log("[taskProcessor "+this.id+"] " + message, "yellow");
+    api.log("[taskProcessor "+this.id+"] " + message, "info");
   }
 
   api.taskProcessor.prototype.process = function(callback){

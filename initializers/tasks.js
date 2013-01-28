@@ -60,7 +60,7 @@ var tasks = function(api, next){
           var id = key.split("#")[0];
           if(id == api.id){
             started++;
-            api.log('clearing worker status: ' + key, 'yellow');
+            api.log('clearing worker status: ' + key, 'debug');
             api.redis.client.hdel(api.tasks.queues.workerStatus, key, function(err){
               started--;
               if(started == 0){
@@ -110,7 +110,7 @@ var tasks = function(api, next){
             if(queue != api.tasks.queues.localQueue){
               var taskCopy = task.duplicate();
               taskCopy.enqueue(queue, function(err){
-                if(err != null){ api.log(err, "red") }
+                if(err != null){ api.log(err, "error") }
                 started--;
                 if(started == 0){ if(typeof callback == "function"){ callback(); } }
               }); 
@@ -325,7 +325,7 @@ var tasks = function(api, next){
               var task = new api.task(data)
               callback(err, task);
             }catch(e){
-              api.log(e, 'red');
+              api.log(e, 'error');
               api.tasks.removeFromQueue(data.id, endQueue, function(){
                 callback(err, null);
               });
@@ -448,14 +448,14 @@ var tasks = function(api, next){
             var task = new api.task({name: taskTemplate.name});
             task.enqueue(function(err, resp){
               if(err != null){ 
-                api.log(String(err).replace('Error: ', ""), 'yellow'); 
+                api.log(String(err).replace('Error: ', ""), 'error'); 
                 process.nextTick(function(){ 
                   started--;
                   if(started == 0){ callback(); }
                 })
               }else{
                 api.tasks.denotePeriodicTaskAsEnqueued(task, function(err){
-                  api.log("seeded preiodoc task " + task.name, "yellow");
+                  api.log("seeded preiodoc task " + task.name, "notice");
                   process.nextTick(function(){ 
                     started--;
                     if(started == 0){ callback(); }
@@ -481,7 +481,7 @@ var tasks = function(api, next){
   api.tasks.load = function(){
     var validateTask = function(task){
       var fail = function(msg){
-        api.log(msg + "; exiting.", ['red', 'bold']);
+        api.log(msg + "; exiting.", "emerg");
         process.exit();
       }
       if(typeof task.name != "string" && task.name.length < 1){
@@ -512,12 +512,12 @@ var tasks = function(api, next){
             }else if(stats.isFile()){
               taskLoader(fullfFilePath)
             }else{
-              api.log(file+" is a type of file I cannot read", "red")
+              api.log(file+" is a type of file I cannot read", "alert")
             }
           }
         });
       }else{
-        api.log("no tasks folder found, skipping");
+        api.log("no tasks folder found, skipping", "debug");
       }
     }
 
@@ -530,7 +530,7 @@ var tasks = function(api, next){
         }else{
           var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
         }
-        api.log(loadMessage, "yellow");
+        api.log(loadMessage, "debug");
       }
 
       var parts = fullfFilePath.split("/");

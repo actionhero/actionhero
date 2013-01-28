@@ -6,7 +6,7 @@ var id = function(api, next){
   if(externalIP == false){
     var message = " * Error fetching this host's external IP address; setting id base to 'actionHero'"
     try{
-      api.log(message);
+      api.log(message, "crit");
     }catch(e){
       console.log(message);
     }

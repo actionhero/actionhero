@@ -120,7 +120,7 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
 
   binary.log("");
-  binary.log("Generation Complete.  Your project directory should look like this:\r\n" + documents.projectMap.blue);
+  binary.log("Generation Complete.  Your project directory should look like this:\r\n" + documents.projectMap);
   binary.log("");
   binary.log("run `./node_modules/.bin/actionHero start` to start your server");
 

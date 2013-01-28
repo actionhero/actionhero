@@ -8,6 +8,7 @@ specHelper.apis = [];
 specHelper.actionHeroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
+var winston = require('winston');
 
 specHelper.canUseDomains = true;
 var versionParts = process.version.split(".")
@@ -31,9 +32,9 @@ specHelper.params[0] = {
     workers: 1,
     "developmentMode": true,
   },
-  log: {
-    logging: showLogs,
-    logFile: "api_peer_1.log",
+  logger: {
+    levels: winston.config.syslog.levels,
+    transports: []
   },
   httpServer: {
     enable: true,
@@ -56,9 +57,9 @@ specHelper.params[1] = {
     workers: 1,
     "developmentMode": false,
   },
-  log: {
-    logging: showLogs,
-    logFile: "api_peer_2.log",
+  logger: {
+    levels: winston.config.syslog.levels,
+    transports: []
   },
   httpServer: {
     secure: false,
@@ -81,9 +82,9 @@ specHelper.params[2] = {
     workers: 1,
     "developmentMode": false,
   },
-  log: {
-    logging: showLogs,
-    logFile: "api_peer_3.log",
+  logger: {
+    levels: winston.config.syslog.levels,
+    transports: []
   },
   httpServer: {
     secure: false,

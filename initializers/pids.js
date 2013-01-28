@@ -37,6 +37,7 @@ var pids = function(api, next){
 
   api.pids._start = function(api, next){
     api.pids.writePidFile();
+    api.log("pid: " + process.pid, "notice");
     next();
   }
 
