@@ -105,6 +105,9 @@ var task = function(api, next){
           self.state = 'delayed';
           self.runAt = new Date().getTime() + self.frequency;
         }
+        if(self.runAt == null){
+          self.runAt = new Date().getTime() - 1;
+        }
         var data = {
           id: self.id, 
           name: self.name, 
