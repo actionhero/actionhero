@@ -144,6 +144,7 @@ binary.log("actionHero_root >> " + binary.path.normalize(binary.paths.actionHero
 
 if(binary.argv['isDaemon'] == 'true'){
   binary.isDaemon = true;
+  binary.logger.remove(winston.transports.Console);
 }else{
   binary.isDaemon = false;
 }
@@ -157,10 +158,9 @@ if(binary.actions[binary.mainAction] != null){
         break;
       }
     }
-    args.push('--silent=true')
     args.push('--isDaemon=true')
     var command = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
-    var child = binary.fork(command, args, {silent: true, detached: true});
+    var child = binary.fork(command, args, {detached: true, silent: true});
     process.nextTick(function(){
       binary.log("spawned child process with pid "+ child.pid);
       child.unref();
