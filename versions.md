@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 4.3.1
+
+** cluster **
+- fix logging of master when daemonized
+
 ## Version 4.3.0
 
 ** logger **
