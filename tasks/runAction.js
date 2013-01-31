@@ -27,7 +27,9 @@ task.run = function(api, params, next){
     }else{
       api.log("[ action @ task ]", "debug", {params: JSON.stringify(params)});
     }
-    next(connection, true);
+    connection.destroy(function(){
+      next(connection, true);
+    });
   }});
   actionProcessor.processAction();
 };
