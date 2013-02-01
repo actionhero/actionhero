@@ -45,8 +45,9 @@ var config = function(api, startingParams, next){
       });
     })();
   }
-
+if(next){
   next();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////

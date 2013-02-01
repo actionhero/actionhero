@@ -39,6 +39,30 @@ configData.general = {
   "pidFileDirectory": process.cwd() + "/pids/",
   // how many pending actions can a single connection be working on 
   "simultaniousActions": 5,
+  "startupInitializers": [
+      'utils',
+      'id',
+      'pids',
+      'logger',
+      'exceptions',
+      'stats',
+      'redis',
+      'cache',
+      'actions',
+      'actionProcessor',
+      'params',
+      'fileServer',
+      'chatRooms',
+      'tasks',
+      'task',
+      'taskProcessor',
+      'routes',
+      'connections',
+      'webServer',
+      'webSocketServer',
+      'socketServer'
+  ],
+  "startupCustomInitializers": []
 };
 
 /////////////
