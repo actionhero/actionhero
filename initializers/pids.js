@@ -23,10 +23,6 @@ var pids = function(api, next){
 
   try { fs.mkdirSync(api.configData.general.pidFileDirectory, "777") } catch(e) {};
 
-  api.pids.setTitle = function(){
-    process.title = api.pids.title;
-  }
-
   api.pids.writePidFile = function(){
     fs.writeFileSync(api.configData.general.pidFileDirectory + api.pids.title, api.pids.pid.toString(), 'ascii');
   }
@@ -43,7 +39,6 @@ var pids = function(api, next){
 
   //
 
-  api.pids.setTitle()
   next();
 }
 

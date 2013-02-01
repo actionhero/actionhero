@@ -163,7 +163,6 @@ exports['startCluster'] = function(binary, next){
     },
     process: function(next){
       process.stdin.resume();
-      process.title = binary.clusterConfig.title;
       binary.workerRestartArray = []; // used to trask rolling restarts of workers
       binary.workersExpected = 0;
 
@@ -240,8 +239,6 @@ exports['startCluster'] = function(binary, next){
         args: binary.clusterConfig.args.split(" "),
         silent : binary.clusterConfig.silent
       });
-
-      process.title = binary.clusterConfig.title;
 
       for (var i = 0; i < binary.clusterConfig.workers; i++) {
         binary.workersExpected++;
