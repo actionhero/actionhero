@@ -13,12 +13,10 @@ var config = function(api, startingParams, next){
       
   if(argv["config"] != null){
     var configFile = argv["config"];
-    console.log(' >> configuration read from: ' + argv["config"]);
   }else if(fs.existsSync(process.cwd() + '/config.js')){
     var configFile = process.cwd() + '/config.js';
   }else{
-    var configFile = __dirname + "/../config.js";
-    console.log(' >> no local config.json, using default from '+configFile);
+    throw new Error(configFile + "No config.js found in this project or specified with --config");
   }
   try{
     api.configData = require(configFile).configData;
