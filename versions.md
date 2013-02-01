@@ -4,6 +4,8 @@
 
 ** cluster **
 - fix logging of master when daemonized
+- fix daemon server from not being able to detach
+- disable renaming of the running process.  This was not consistant across various operating systems and was confusing.
 
 ## Version 4.3.0
 
