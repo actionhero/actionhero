@@ -160,10 +160,10 @@ if(binary.actions[binary.mainAction] != null){
     }
     args.push('--isDaemon=true')
     var command = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
-    var child = binary.fork(command, args, {detached: true, silent: true});
+    var child = binary.spawn(command, args, {detached: true, stdio: 'ignore'});
+    child.unref();
     process.nextTick(function(){
       binary.log("spawned child process with pid "+ child.pid);
-      child.unref();
       setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
     });
   }else{

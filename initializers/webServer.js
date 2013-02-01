@@ -254,7 +254,7 @@ var webServer = function(api, next){
             request: full_url,
             params: JSON.stringify(connection.params),
             duration: connection.response.serverInformation.requestDuration,
-            error: connection.error
+            error: String(connection.error),
           })
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){

@@ -3,10 +3,7 @@ exports['start'] = function(binary, next){
   var cluster = require('cluster');
   var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
   var actionHero = new actionHeroPrototype();
-
   var shutdownTimeout = 1000 * 60 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
-
-  var title = process.title;
   var api = {};
 
   // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.
