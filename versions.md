@@ -2,6 +2,9 @@
 
 ## Version 4.3.1
 
+** bugs **
+- callbacks from actions with `toRender = false` now are respected properly
+
 ** cluster **
 - fix logging of master when daemonized
 - fix daemon server from not being able to detach
