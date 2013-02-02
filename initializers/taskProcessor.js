@@ -146,12 +146,12 @@ var taskProcessor = function(api, next){
   api.taskProcessor.prototype.prepareNextRun = function(callback){
     var self = this;
     self.currentTask = null;
-    if(self.running == true){
-      self.timer = setTimeout(function(){
-        self.process();
-      }, self.cycleTimeMS); 
-    }
     self.setWorkerStatus("idle", function(){
+      if(self.running == true){
+        self.timer = setTimeout(function(){
+          self.process();
+        }, self.cycleTimeMS); 
+      }
       if(typeof callback == "function"){ callback(); }
     });
   }
