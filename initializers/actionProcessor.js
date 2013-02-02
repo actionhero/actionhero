@@ -104,13 +104,13 @@ var actionProcessor = function(api, next){
             actionDomain.run(function(){
               actionTemplate.run(api, self.connection, function(connection, toRender){
                 self.connection = connection;
-                self.completeAction();
+                self.completeAction(null, toRender);
               }); 
             })
           }else{
             actionTemplate.run(api, self.connection, function(connection, toRender){
               self.connection = connection;
-              self.completeAction();
+              self.completeAction(null, toRender);
             }); 
           }
         });
