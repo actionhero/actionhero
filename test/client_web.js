@@ -125,7 +125,7 @@ describe('Client: Web', function(){
 
       before(function(done){
         rawApi.configData.commonWeb.returnErrorCodes = true;
-        rawApi.actions.headerTestAction = {
+        rawApi.actions.actions.headerTestAction = {
           name: "headerTestAction",
           description: "I am a test",
           inputs: { required: [], optional: [] }, outputExample: {},
@@ -160,7 +160,7 @@ describe('Client: Web', function(){
       });
 
       after(function(done){
-        delete rawApi.actions['headerTestAction'];
+        delete rawApi.actions.actions['headerTestAction'];
         done();
       })
 
@@ -170,7 +170,7 @@ describe('Client: Web', function(){
 
       before(function(done){
         rawApi.configData.commonWeb.returnErrorCodes = true;
-        rawApi.actions.statusTestAction = {
+        rawApi.actions.actions.statusTestAction = {
           name: "statusTestAction",
           description: "I am a test",
           inputs: { required: ["key"], optional: [] }, outputExample: {},
@@ -219,7 +219,7 @@ describe('Client: Web', function(){
 
       after(function(done){
         rawApi.configData.commonWeb.returnErrorCodes = false;
-        delete rawApi.actions['statusTestAction'];
+        delete rawApi.actions.actions['statusTestAction'];
         done();
       })
 

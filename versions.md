@@ -4,6 +4,7 @@
 
 ** bugs **
 - callbacks from actions with `toRender = false` now are respected properly
+- `api.actions` is now a collection for all things action, and `api.actions.actions` contail the list of actions
 
 ** cluster **
 - fix logging of master when daemonized

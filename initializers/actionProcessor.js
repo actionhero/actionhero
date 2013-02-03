@@ -66,7 +66,7 @@ var actionProcessor = function(api, next){
     self.incramentPendingActions();
     self.sanitizeLimitAndOffset();
     self.connection.action = self.connection.params["action"];
-    var actionTemplate = api.actions[self.connection.action];
+    var actionTemplate = api.actions.actions[self.connection.action];
 
     api.stats.increment("actions:actionsCurrentlyProcessing");
 
