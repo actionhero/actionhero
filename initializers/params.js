@@ -15,8 +15,8 @@ var params = function(api, next){
     "roomMatchKey",
     "roomMatchValue"
   ];
-  for(var i in api.actions){
-    var action = api.actions[i];
+  for(var i in api.actions.actions){
+    var action = api.actions.actions[i];
     if(action.inputs.required.length > 0){
       for(var j in action.inputs.required){
         api.params.postVariables.push(action.inputs.required[j]);

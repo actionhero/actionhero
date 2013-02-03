@@ -29,12 +29,13 @@ action.outputExample = {
 // functional
 action.run = function(api, connection, next){
   connection.response.actions = [];
-  for(var i in api.actions){
+  for(var i in api.actions.actions){
+    var action = api.actions.actions[i];
     connection.response.actions.push({
-      name: api.actions[i].name,
-      description: api.actions[i].description,
-      inputs: api.actions[i].inputs,
-      outputExample: api.actions[i].outputExample,
+      name: action.name,
+      description: action.description,
+      inputs: action.inputs,
+      outputExample: action.outputExample,
     });
   }
   connection.response.actions.sort(function compare(a,b) {
