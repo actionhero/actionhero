@@ -3,6 +3,62 @@ var fs = require('fs');
 var actions = function(api, next){
   api.actions = {};
 
+  api.actionLoader = function(fullFilePath, reload){
+    if(reload == null){ reload = false; }
+
+    var loadMessage = function(loadedActionName){
+      if(reload){
+        loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullFilePath;
+      }else{
+        var loadMessage = "action loaded: " + loadedActionName + ", " + fullFilePath;
+      }
+      api.log(loadMessage, "debug");
+    }
+
+    var parts = fullFilePath.split("/");
+    var file = parts[(parts.length - 1)];
+    var actionName = file.split(".")[0];
+    
+    if(!reload){
+      if(api.configData.general.developmentMode == true){
+        api.watchedFiles.push(fullFilePath);
+        (function() {
+          fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
+            if(curr.mtime > prev.mtime){
+              process.nextTick(function(){
+                if(fs.readFileSync(fullFilePath).length > 0){
+                  delete require.cache[fullFilePath];
+                  delete api.actions[actionName];
+                  api.actionLoader(fullFilePath, true);
+                }
+              });
+            }
+          });
+        })();
+      }
+    }
+
+    try{
+      var collection = require(fullFilePath);
+      if(api.utils.hashLength(collection) == 1){
+        action = require(fullFilePath).action;
+        api.actions[action.name] = action;
+        validateAction(api.actions[action.name]);
+        loadMessage(action.name);
+      }else{
+        for(var i in collection){
+          var action = collection[i];
+          api.actions[action.name] = action;
+          validateAction(api.actions[action.name]);
+          loadMessage(action.name);
+        }
+      }       
+    }catch(err){
+      api.exceptionHandlers.loader(fullFilePath, err);
+      delete api.actions[actionName];
+    }
+  }
+
   if(api.configData.general.simultaniousActions == null){
     api.configData.general.simultaniousActions = 5;
   }
@@ -51,7 +107,7 @@ var actions = function(api, next){
               var realPath = readlinkSync(fullFilePath);
               loadFolder(realPath);
             }else if(stats.isFile()){
-              actionLoader(fullFilePath);
+              api.actionLoader(fullFilePath);
             }else{
               api.log(file+" is a type of file I cannot read", "error")
             }
@@ -59,62 +115,6 @@ var actions = function(api, next){
         });
       }else{
         api.log("ao actions folder found", "warning");
-      }
-    }
-
-    function actionLoader(fullFilePath, reload){
-      if(reload == null){ reload = false; }
-
-      var loadMessage = function(loadedActionName){
-        if(reload){
-          loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullFilePath;
-        }else{
-          var loadMessage = "action loaded: " + loadedActionName + ", " + fullFilePath;
-        }
-        api.log(loadMessage, "debug");
-      }
-
-      var parts = fullFilePath.split("/");
-      var file = parts[(parts.length - 1)];
-      var actionName = file.split(".")[0];
-      
-      if(!reload){
-        if(api.configData.general.developmentMode == true){
-          api.watchedFiles.push(fullFilePath);
-          (function() {
-            fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
-              if(curr.mtime > prev.mtime){
-                process.nextTick(function(){
-                  if(fs.readFileSync(fullFilePath).length > 0){
-                    delete require.cache[fullFilePath];
-                    delete api.actions[actionName];
-                    actionLoader(fullFilePath, true);
-                  }
-                });
-              }
-            });
-          })();
-        }
-      }
-
-      try{
-        var collection = require(fullFilePath);
-        if(api.utils.hashLength(collection) == 1){
-          action = require(fullFilePath).action;
-          api.actions[action.name] = action;
-          validateAction(api.actions[action.name]);
-          loadMessage(action.name);
-        }else{
-          for(var i in collection){
-            var action = collection[i];
-            api.actions[action.name] = action;
-            validateAction(api.actions[action.name]);
-            loadMessage(action.name);
-          }
-        }       
-      }catch(err){
-        api.exceptionHandlers.loader(fullFilePath, err);
-        delete api.actions[actionName];
       }
     }
 
