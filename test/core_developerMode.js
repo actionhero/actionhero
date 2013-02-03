@@ -56,7 +56,7 @@ if(versionParts[0] >= 0 && versionParts[1] >= 7){
           specHelper.fs.writeFile(original_file, new_file_content, function(err) {
           setTimeout(function(){
             specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-              apiObj.actions.randomNumber.description.should.equal("HACK");
+              apiObj.actions.actions.randomNumber.description.should.equal("HACK");
               response.body.randomNumber.should.equal("not a number!");
               done();
             });

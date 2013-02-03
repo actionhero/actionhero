@@ -8,7 +8,7 @@ var routes = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
   api.routes.processRoute = function(connection){
-    if(connection.params["action"] == null || ( api.actions[connection.params["action"]] === undefined && connection.actionSetBy != "queryParam")){
+    if(connection.params["action"] == null || ( api.actions.actions[connection.params["action"]] === undefined && connection.actionSetBy != "queryParam")){
       var method = connection.method.toLowerCase();
       var pathParts = connection.parsedURL.pathname.split("/");
       for(var i in api.routes.routes){

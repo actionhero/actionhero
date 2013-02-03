@@ -2,8 +2,9 @@ var fs = require('fs');
 
 var actions = function(api, next){
   api.actions = {};
+  api.actions.actions = {};
 
-  api.actionLoader = function(fullFilePath, reload){
+  api.actions.load = function(fullFilePath, reload){
     if(reload == null){ reload = false; }
 
     var loadMessage = function(loadedActionName){
@@ -28,8 +29,8 @@ var actions = function(api, next){
               process.nextTick(function(){
                 if(fs.readFileSync(fullFilePath).length > 0){
                   delete require.cache[fullFilePath];
-                  delete api.actions[actionName];
-                  api.actionLoader(fullFilePath, true);
+                  delete api.actions.actions[actionName];
+                  api.actions.load(fullFilePath, true);
                 }
               });
             }
@@ -42,20 +43,20 @@ var actions = function(api, next){
       var collection = require(fullFilePath);
       if(api.utils.hashLength(collection) == 1){
         action = require(fullFilePath).action;
-        api.actions[action.name] = action;
-        validateAction(api.actions[action.name]);
+        api.actions.actions[action.name] = action;
+        validateAction(api.actions.actions[action.name]);
         loadMessage(action.name);
       }else{
         for(var i in collection){
           var action = collection[i];
-          api.actions[action.name] = action;
-          validateAction(api.actions[action.name]);
+          api.actions.actions[action.name] = action;
+          validateAction(api.actions.actions[action.name]);
           loadMessage(action.name);
         }
       }       
     }catch(err){
       api.exceptionHandlers.loader(fullFilePath, err);
-      delete api.actions[actionName];
+      delete api.actions.actions[actionName];
     }
   }
 
@@ -107,7 +108,7 @@ var actions = function(api, next){
               var realPath = readlinkSync(fullFilePath);
               loadFolder(realPath);
             }else if(stats.isFile()){
-              api.actionLoader(fullFilePath);
+              api.actions.load(fullFilePath);
             }else{
               api.log(file+" is a type of file I cannot read", "error")
             }

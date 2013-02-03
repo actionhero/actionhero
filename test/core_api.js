@@ -13,26 +13,27 @@ describe('Core: API', function(){
   it('should have an api object with propper parts', function(done){
     [
       apiObj.actions,
-      apiObj.actions.actionsView,
-      apiObj.actions.cacheTest,
-      apiObj.actions.randomNumber,
-      apiObj.actions.status,
+      apiObj.actions.actions,
+      apiObj.actions.actions.actionsView,
+      apiObj.actions.actions.cacheTest,
+      apiObj.actions.actions.randomNumber,
+      apiObj.actions.actions.status,
     ].forEach(function(item){
       item.should.be.a('object');
     });
 
     [
-      apiObj.actions.actionsView.run,
-      apiObj.actions.cacheTest.run,
-      apiObj.actions.randomNumber.run,
-      apiObj.actions.status.run,
+      apiObj.actions.actions.actionsView.run,
+      apiObj.actions.actions.cacheTest.run,
+      apiObj.actions.actions.randomNumber.run,
+      apiObj.actions.actions.status.run,
     ].forEach(function(item){
       item.should.be.an.instanceOf(Function);
     });
 
     [
-      apiObj.actions.randomNumber.name,
-      apiObj.actions.randomNumber.description,
+      apiObj.actions.actions.randomNumber.name,
+      apiObj.actions.actions.randomNumber.description,
     ].forEach(function(item){
       item.should.be.a('string');
     });

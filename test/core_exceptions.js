@@ -29,7 +29,7 @@ describe('Core: Exceptions', function(){
     });
 
     it('I can inject a bad task that breaks', function(done){
-      apiObj.actions['badAction'] = { 
+      apiObj.actions.actions['badAction'] = { 
         name: 'badAction',
         description: 'I will break',
         inputs: { required: [], optional: [] },
@@ -39,7 +39,7 @@ describe('Core: Exceptions', function(){
           next(connection, true);
         }
       }
-      apiObj.actions['badAction'].should.be.an.instanceOf(Object);
+      apiObj.actions.actions['badAction'].should.be.an.instanceOf(Object);
       done();
     });
 
@@ -58,8 +58,8 @@ describe('Core: Exceptions', function(){
     });
 
     it('I can remove the bad action', function(done){
-      delete apiObj.actions['badAction'];
-      should.not.exist(apiObj.actions['badAction']);
+      delete apiObj.actions.actions['badAction'];
+      should.not.exist(apiObj.actions.actions['badAction']);
       done();
     });
 
