@@ -81,28 +81,28 @@ var taskProcessor = function(api, next){
                 if(data == null){
                   self.prepareNextRun(callback);
                 }else{
-                  var task = new api.task(data);
-                  self.currentTask = task;
-                  self.setWorkerStatus("working task: " + task.id, function(){
-                    api.tasks.setTaskData(task.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
-                      if(task.toAnnounce != false){ self.log("starting task " + task.name + ", " + task.id); }
+                  self.currentTask = new api.task(data);
+                  // self.currentTask = task;
+                  self.setWorkerStatus("working task: " + self.currentTask.id, function(){
+                    api.tasks.setTaskData(self.currentTask.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
+                      if(self.currentTask.toAnnounce != false){ self.log("starting task " + self.currentTask.name + ", " + self.currentTask.id); }
                       api.stats.increment("tasks:tasksCurrentlyRunning");
-                      api.stats.increment("tasks:ranTasks:" + task.name);
-                      task.run(function(){
+                      api.stats.increment("tasks:ranTasks:" + self.currentTask.name);
+                      self.currentTask.run(function(){
                         api.stats.increment("tasks:tasksCurrentlyRunning", -1);
-                        if(task.toAnnounce != false){ self.log("completed task " + task.name + ", " + task.id); }
-                        if(task.periodic == true && task.isDuplicate === false){
-                          task.runAt = null;
-                          api.tasks.denotePeriodicTaskAsClear(task, function(){
-                            task.enqueue(function(error){
-                              api.tasks.denotePeriodicTaskAsEnqueued(task, function(error){
+                        if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + ", " + self.currentTask.id); }
+                        if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
+                          self.currentTask.runAt = null;
+                          api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
+                            self.currentTask.enqueue(function(error){
+                              api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
                                 if(error != null){ self.log(error); }
                                 self.prepareNextRun(callback);
                               });
                             });
                           });
                         }else{
-                          api.tasks.clearTaskData(task.id, function(){
+                          api.tasks.clearTaskData(self.currentTask.id, function(){
                             self.prepareNextRun(callback);
                           });
                         }

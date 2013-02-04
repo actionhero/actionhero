@@ -104,6 +104,7 @@ var actionProcessor = function(api, next){
             actionDomain.run(function(){
               actionTemplate.run(api, self.connection, function(connection, toRender){
                 self.connection = connection;
+                actionDomain.dispose();
                 self.completeAction(null, toRender);
               }); 
             })
