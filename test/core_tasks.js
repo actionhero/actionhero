@@ -216,6 +216,8 @@ describe('Core: Tasks', function(){
 
     if(specHelper.canUseDomains){
 
+      var uncaughtExceptionHandlers;
+
       before(function(done){
         rawAPI.tasks.tasks['busted_task'] = {
           name: 'busted_task',
@@ -223,10 +225,16 @@ describe('Core: Tasks', function(){
           scope: 'any',
           frequency: 1,
           run: function(api, params, next){
-            done = bad + thing;
+            stuff = bad + thing;
             next();
           }
         }
+
+        uncaughtExceptionHandlers = process.listeners("uncaughtException");
+        uncaughtExceptionHandlers.forEach(function(e){
+          process.removeListener("uncaughtException", e); 
+        });
+
         rawAPI.redis.client.flushdb(function(){
           done();
         });
@@ -234,23 +242,10 @@ describe('Core: Tasks', function(){
 
       after(function(done){
         delete rawAPI.tasks.tasks['busted_task'];
-        done()
-      });
-
-      var uncaughtExceptionHandlers;
-      beforeEach(function(done){
-        uncaughtExceptionHandlers = process.listeners("uncaughtException");
-        uncaughtExceptionHandlers.forEach(function(e){
-          process.removeListener("uncaughtException", e); 
-        });
-        done();
-      })
-
-      afterEach(function(done){
         uncaughtExceptionHandlers.forEach(function(e){
           process.on("uncaughtException", e);
         });
-        done();
+        done()
       });
 
       it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
