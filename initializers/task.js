@@ -159,7 +159,7 @@ var task = function(api, next){
         api.tasks.tasks[self.name].run(api, params, function(err, cont){
           self.ran = true;
           if(cont == null){cont = true;}
-          taskDomain.dispose();
+          // taskDomain.dispose();
           if(typeof callback == "function"){ callback(cont); }
         });
       })
