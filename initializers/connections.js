@@ -89,12 +89,10 @@ var connections = function(api, next){
         api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
           if(self.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
             delete api.connections.connections[self.id]
-            delete self;
             if(typeof callback == "function"){ callback(); }
           }else{
             api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
               delete api.connections.connections[self.id];
-              delete self;
               if(typeof callback == "function"){ callback(); }
             }); 
           }
