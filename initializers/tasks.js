@@ -387,7 +387,9 @@ var tasks = function(api, next){
                 if(typeof callback == 'function'){ callback(err, task); }
               }
             }else{
-              if(typeof callback == 'function'){ callback(err, task); }
+              api.tasks.setTaskData(task.id, {state: 'pending' }, function(err){
+                if(typeof callback == 'function'){ callback(err, task); }
+              });
             }
           });
         }
