@@ -4,8 +4,8 @@ var connections = function(api, next){
 
     api.connections = {
       resetLocalConnectionStats : function(next){
-        api.stats.set("connections:toatalActiveConnections", 0);
-        api.stats.set("connections:toatalConnections", 0);
+        api.stats.set("connections:totalActiveConnections", 0);
+        api.stats.set("connections:totalConnections", 0);
 
         ['web', 'socket', 'webSocket'].forEach(function(type){
           api.stats.set("connections:connections:" + type, 0);
@@ -33,9 +33,9 @@ var connections = function(api, next){
     api.connection = function(data){
       this.setup(data)
       this.joinRoomOnConnect();
-      api.stats.increment("connections:toatalActiveConnections");
+      api.stats.increment("connections:totalActiveConnections");
       api.stats.increment("connections:activeConnections:" + this.type);
-      api.stats.increment("connections:toatalConnections");
+      api.stats.increment("connections:totalConnections");
       api.stats.increment("connections:connections:" + this.type);
       api.connections.connections[this.id] = this;
     }
@@ -85,7 +85,7 @@ var connections = function(api, next){
 
     api.connection.prototype.destroy = function(callback){
       var self = this;
-      api.stats.increment("connections:toatalActiveConnections", -1, function(){
+      api.stats.increment("connections:totalActiveConnections", -1, function(){
         api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
           if(self.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
             delete api.connections.connections[self.id]
