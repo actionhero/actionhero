@@ -55,5 +55,6 @@
     "test": "node ./node_modules/.bin/mocha --reporter spec",
     "start": "node ./bin/actionHero"
   },
-  "subdomain": "actionhero"
+  "subdomain": "actionhero",
+  "domains": ["demo.actionherojs.com", "actionherojs.com"]
 }
