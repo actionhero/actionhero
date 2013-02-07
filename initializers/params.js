@@ -4,8 +4,11 @@ var params = function(api, next){
   
   api.params = {};
 
+  // params we will accept
+  api.params.postVariables = {};
+  
   // special params we will always accept
-  api.params.postVariables = [
+  api.params.specialPostVariables = [
     "callback",
     "action",
     "limit",
@@ -15,8 +18,22 @@ var params = function(api, next){
     "roomMatchKey",
     "roomMatchValue"
   ];
-  for(var i in api.actions.actions){
-    var action = api.actions.actions[i];
+  
+  api.params._start = function(api, next){
+    api.params.loadPostVariables(api);
+    next();
+  }
+  
+  api.params.loadPostVariables = function(api){
+    api.params.postVariables = api.params.specialPostVariables;
+    for(var i in api.actions.actions){
+      api.params.loadPostVariablesForAction(api, api.actions.actions[i].name);
+    }
+    api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables);
+  }
+  
+  api.params.loadPostVariablesForAction = function(api, name){
+    var action = api.actions.actions[name];
     if(action.inputs.required.length > 0){
       for(var j in action.inputs.required){
         api.params.postVariables.push(action.inputs.required[j]);
@@ -27,13 +44,9 @@ var params = function(api, next){
         api.params.postVariables.push(action.inputs.optional[j]);
       }
     }
+    api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables);
   }
-  for(var model in api.models){
-    for(var attr in api.models[model].rawAttributes){
-      api.params.postVariables.push(attr);
-    }
-  }
-  api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables);
+
 
   ////////////////////////////////////////////////////////////////////////////
   // parse a connections's URL and build params based on RESTful map
