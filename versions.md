@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 4.3.2
+
+** Binary **
+- the default action for the actionHero binary is now `start` rather than `help`
+
 ## Version 4.3.1
 
 ** bugs **

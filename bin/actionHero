@@ -136,7 +136,7 @@ binary.fs.readdirSync(binary.paths.actionHero_root + "/bin/include/").sort().for
 });
 
 binary.mainAction = binary.argv["_"][0];
-if(binary.mainAction == null){ binary.mainAction = "help"; }
+if(binary.mainAction == null){ binary.mainAction = "start"; }
 
 binary.log("actionHero >> " + binary.mainAction);
 binary.log("project_root >> " + binary.path.normalize(binary.paths.project_root + "/"))
