@@ -1,10 +1,14 @@
 # actionHero API Framework
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
+
 
 **Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/evantahler/actionHero/wiki) | [API Methods](https://github.com/evantahler/actionHero/wiki/API-Methods) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
 
-<img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="250"/>
+<img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="300"/>
+
+[![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionHero.png)](http://demo.actionherojs.com)
+
+[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is the actionHero?
 actionHero is a [node.js](http://nodejs.org) **API framework** for many types of clients.  The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
