@@ -5,6 +5,10 @@
 ** Binary **
 - the default action for the actionHero binary is now `start` rather than `help`
 
+** config **
+- for compatibility, only the "http" server will be on at boot
+- directory creation is now part of the example file logger
+
 ## Version 4.3.1
 
 ** bugs **

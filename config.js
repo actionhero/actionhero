@@ -55,6 +55,15 @@ configData.logger = {
       });
     },
     function(api){
+      var fs = require('fs');
+      try{ 
+        fs.mkdirSync("./log");
+        console.log("created ./log directory");
+      }catch(e){
+        if(e.code != "EEXIST"){
+          console.log(e); process.exit();
+        }
+      }
       return new (winston.transports.File)({
         filename: './log/' + api.pids.title + '.log',
         level: "info",
@@ -128,7 +137,7 @@ configData.httpServer = {
 ////////////////
 
 configData.tcpServer = {
-  "enable": true,
+  "enable": false,
   "secure": false,
   "port": 5000,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
@@ -142,7 +151,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  "enable": true,
+  "enable": false,
   "logLevel" : 1,
   "settings" : [
     "browser client minification",
