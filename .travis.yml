@@ -13,6 +13,12 @@ branches:
 services:
   - redis-server
 # before_script:
+notifications:
+  webhooks: 
+    urls:
+      - http://webhooks.nodejitsu.com/1/deploy
+    on_success: always
+    on_failure: never
 after_failure: 
   - "cat /home/travis/builds/evantahler/actionHero/npm-debug.log"
   
