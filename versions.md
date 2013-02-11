@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 4.3.3
+
+** Bugs **
+
+- `listenToRoom` and `silenceRoom` for websocket clients will not properly modify the messageCount id in the response object
+
 ## Version 4.3.2
 
 ** Binary **
