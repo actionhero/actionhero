@@ -102,6 +102,7 @@ var webSocketServer = function(api, next){
 
       rawConnection.on('listenToRoom', function(data){
         if(data == null){ data = {}; }
+        connection.messageCount++; 
         var message = {context: "response", messageCount: connection.messageCount, room: data.room}
         if(connection.additionalListeningRooms.indexOf(data.room) > -1){
           message.error = "you are already listening to this room";
@@ -115,6 +116,7 @@ var webSocketServer = function(api, next){
 
       rawConnection.on('silenceRoom', function(data){
         if(data == null){ data = {}; }
+        connection.messageCount++; 
         var message = {context: "response", messageCount: connection.messageCount, room: data.room}
         if(connection.additionalListeningRooms.indexOf(data.room) > -1){
           var index = connection.additionalListeningRooms.indexOf(data.room);
