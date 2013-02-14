@@ -163,7 +163,7 @@ var webServer = function(api, next){
               form.parse(connection.rawConnection.req, function(err, fields, files) {
                 if(err){
                   api.log(err, "error");
-                  connection.error = new Error("There was an error processign this form.");
+                  connection.error = new Error("There was an error processing this form.");
                 }else{
                   api.webServer.fillParamsFromWebRequest(connection, files);
                   api.webServer.fillParamsFromWebRequest(connection, fields);
