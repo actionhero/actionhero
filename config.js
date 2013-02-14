@@ -114,6 +114,13 @@ configData.commonWeb = {
     toSetCookie: true,
     onlyStaticElements: false,
   },
+  // options to be applied to incomming file uplaods.  
+  // more options and details at https://github.com/felixge/node-formidable
+  formOptions: {
+    uploadDir: process.cwd() + "/tmp",
+    keepExtensions: false,
+    maxFieldsSize: 1024 * 1024 * 100,
+  },
   // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
   // You can also set connection.responseHttpCode to specify a code per request.
   "returnErrorCodes": false,

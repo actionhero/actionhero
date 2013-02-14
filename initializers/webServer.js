@@ -157,6 +157,9 @@ var webServer = function(api, next){
               actionProcessor.processAction();
             }else{
               var form = new formidable.IncomingForm();
+              for(var i in api.configData.commonWeb.formOptions){
+                form[i] = api.configData.commonWeb.formOptions[i];
+              }
               form.parse(connection.rawConnection.req, function(err, fields, files) {
                 if(err){
                   api.log(err, "error");
