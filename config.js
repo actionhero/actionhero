@@ -117,7 +117,7 @@ configData.commonWeb = {
   // options to be applied to incomming file uplaods.  
   // more options and details at https://github.com/felixge/node-formidable
   formOptions: {
-    uploadDir: process.cwd() + "/tmp",
+    uploadDir: "/tmp",
     keepExtensions: false,
     maxFieldsSize: 1024 * 1024 * 100,
   },
