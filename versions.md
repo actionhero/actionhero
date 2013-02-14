@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 4.3.4
+
+** webServer ** 
+- allow for `formidable` options to be passed via config.  Details on the optons here: https://github.com/felixge/node-formidable
+
 ## Version 4.3.3
 
 ** Bugs **
