@@ -31,6 +31,7 @@ var actions = function(api, next){
                   delete require.cache[fullFilePath];
                   delete api.actions.actions[actionName];
                   api.actions.load(fullFilePath, true);
+                  api.params.buildPostVariables();
                 }
               });
             }
