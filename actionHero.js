@@ -92,6 +92,9 @@ actionHero.prototype.start = function(params, next){
   });
 
   orderedInitializers['_complete'] = function(){ 
+    if(self.api.configData.general.developmentMode == true){
+      self.api.log("running in development mode", "info")
+    }
     self.api.running = true;
     var starters = [];
     for(var i in self.api){
