@@ -31,6 +31,7 @@ var actions = function(api, next){
                   delete require.cache[fullFilePath];
                   delete api.actions.actions[actionName];
                   api.actions.load(fullFilePath, true);
+                  api.params.loadPostVariables(api);
                 }
               });
             }
@@ -45,12 +46,16 @@ var actions = function(api, next){
         action = require(fullFilePath).action;
         api.actions.actions[action.name] = action;
         validateAction(api.actions.actions[action.name]);
+        if (api.running)
+            api.params.loadPostVariablesForAction(api, action.name);
         loadMessage(action.name);
       }else{
         for(var i in collection){
           var action = collection[i];
           api.actions.actions[action.name] = action;
           validateAction(api.actions.actions[action.name]);
+          if (api.running)
+            api.params.loadPostVariablesForAction(api, action.name);
           loadMessage(action.name);
         }
       }       

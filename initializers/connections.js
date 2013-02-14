@@ -24,6 +24,8 @@ var connections = function(api, next){
           next();
         });
       },
+      createHandlers: [],
+      destroyHandlers: [],
       connections: {}
     };
     
@@ -69,6 +71,9 @@ var connections = function(api, next){
       for(var i in connectionDefaults){
         self[i] = connectionDefaults[i];
       }
+      
+      for (var i = 0; i < api.connections.createHandlers.length; ++i)
+        api.connections.createHandlers[i](api, self);
     }
 
     api.connection.prototype.joinRoomOnConnect = function(){
@@ -85,6 +90,9 @@ var connections = function(api, next){
 
     api.connection.prototype.destroy = function(callback){
       var self = this;
+      for (var i = 0; i < api.connections.destroyHandlers.length; ++i)
+        api.connections.destroyHandlers[i](api, self);
+        
       api.stats.increment("connections:totalActiveConnections", -1, function(){
         api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
           if(self.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
