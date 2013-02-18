@@ -5,9 +5,9 @@ var webSocketServer = function(api, next){
   if(api.configData.webSockets.enable != true){
     next()
   }else{
-    api.webSockets = {};
+    api.webSocketServer = {};
 
-    api.webSockets._start = function(api, next){
+    api.webSocketServer._start = function(api, next){
 
       var io = socket_io.listen(api.webServer.server, { 'log level': 0 });
 
@@ -44,36 +44,36 @@ var webSocketServer = function(api, next){
       }
 
       io.sockets.on('connection', function(connection){
-        api.webSockets.handleConnnection(connection);
+        api.webSocketServer.handleConnnection(connection);
       });
 
-      api.webSockets.io = io;
+      api.webSocketServer.io = io;
       api.log("webSockets bound to " + api.configData.httpServer.port, "notice");
       next();
     }
 
-    api.webSockets._teardown = function(api, next){
-      api.webSockets.disconnectAll(function(){
+    api.webSocketServer._teardown = function(api, next){
+      api.webSocketServer.disconnectAll(function(){
         api.webServer.server.close();
         next();
       });
     }
 
-    api.webSockets.decorateConnection = function(connection){
+    api.webSocketServer.decorateConnection = function(connection){
       connection.sendMessage = function(message, type){
         if(type == null){ type = 'say'; }
         connection.rawConnection.emit(type, message);
       }
     }
 
-    api.webSockets.handleConnnection = function(rawConnection){
+    api.webSocketServer.handleConnnection = function(rawConnection){
       var connection = new api.connection({
         type: 'webSocket', 
         remotePort: rawConnection.handshake.address.port, 
         remoteIP: rawConnection.handshake.address.address, 
         rawConnection: rawConnection
       });
-      api.webSockets.decorateConnection(connection);
+      api.webSocketServer.decorateConnection(connection);
       api.log("connection @ webSocket", "info", {to: connection.remoteIP});
 
       var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
@@ -176,7 +176,7 @@ var webSocketServer = function(api, next){
           }
         }
 
-        var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSockets.handleActionResponse});
+        var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSocketServer.handleActionResponse});
         actionProcessor.processAction();
       });
 
@@ -188,12 +188,12 @@ var webSocketServer = function(api, next){
       });
     }
 
-    api.webSockets.handleActionResponse = function(proxy_connection, cont){
+    api.webSocketServer.handleActionResponse = function(proxy_connection, cont){
       var connection = proxy_connection._original_connection;
       connection.response = proxy_connection.response;
       connection.error = proxy_connection.error;
       var delta = new Date().getTime() - connection.actionStartTime;          
-      api.webSockets.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
+      api.webSocketServer.respondToWebSocketClient(connection, cont, proxy_connection.respondingTo);
       api.log("action @ webSocket", "info", {
         to: connection.remoteIP, 
         params: JSON.stringify(proxy_connection.params), 
@@ -203,7 +203,7 @@ var webSocketServer = function(api, next){
       });
     }
 
-    api.webSockets.respondToWebSocketClient = function(connection, cont, respondingTo){
+    api.webSocketServer.respondToWebSocketClient = function(connection, cont, respondingTo){
       if(cont != false){
         if(connection.response.context == "response"){
           if(respondingTo != null){
@@ -221,9 +221,10 @@ var webSocketServer = function(api, next){
       }
     }
 
-    api.webSockets.disconnectAll = function(next){
+    api.webSocketServer.disconnectAll = function(next){
       for( var i in api.connections.connections ){
         if(api.connections.connections[i].type == "webSocket"){
+          api.connections.connections[i].sendMessage({bye: "bye", reason: "server shutdown"});
           api.connections.connections[i].rawConnection.disconnect();
           delete api.connections.connections[i];
         }
