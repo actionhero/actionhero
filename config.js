@@ -38,7 +38,7 @@ configData.general = {
   // the location of the directory to keep pidfiles
   "pidFileDirectory": process.cwd() + "/pids/",
   // how many pending actions can a single connection be working on 
-  "simultaniousActions": 5,
+  "simultaniousActions": 5
 };
 
 /////////////
@@ -51,7 +51,7 @@ configData.logger = {
       return new (winston.transports.Console)({
         colorize: true, 
         level: "debug", 
-        timestamp: api.utils.sqlDateTime,
+        timestamp: api.utils.sqlDateTime
       });
     },
     function(api){
@@ -67,7 +67,7 @@ configData.logger = {
       return new (winston.transports.File)({
         filename: './log/' + api.pids.title + '.log',
         level: "info",
-        timestamp: true,
+        timestamp: true
       });
     }
   ]
@@ -112,18 +112,18 @@ configData.commonWeb = {
   "fingerprintOptions" : {
     cookieKey: "sessionID",
     toSetCookie: true,
-    onlyStaticElements: false,
+    onlyStaticElements: false
   },
   // options to be applied to incomming file uplaods.  
   // more options and details at https://github.com/felixge/node-formidable
   formOptions: {
     uploadDir: "/tmp",
     keepExtensions: false,
-    maxFieldsSize: 1024 * 1024 * 100,
+    maxFieldsSize: 1024 * 1024 * 100
   },
   // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
   // You can also set connection.responseHttpCode to specify a code per request.
-  "returnErrorCodes": false,
+  "returnErrorCodes": false
 };
 
 /////////////////
@@ -136,7 +136,7 @@ configData.httpServer = {
   "port": 8080,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
   "keyFile": "./certs/server-key.pem", // only for secure = true
-  "certFile": "./certs/server-cert.pem", // only for secure = true
+  "certFile": "./certs/server-cert.pem" // only for secure = true
 };
 
 ////////////////
@@ -149,7 +149,7 @@ configData.tcpServer = {
   "port": 5000,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
   "keyFile": "./certs/server-key.pem", // only for secure = true
-  "certFile": "./certs/server-cert.pem", // only for secure = true
+  "certFile": "./certs/server-cert.pem" // only for secure = true
 };
 
 /////////////////
@@ -165,7 +165,7 @@ configData.webSockets = {
     "browser client etag",
     "browser client gzip"
   ],
-  "options" : {},
+  "options" : {}
 };
 
 //////////////////////////////////

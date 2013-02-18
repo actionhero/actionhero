@@ -260,13 +260,13 @@ describe('Client: Web', function(){
         rawApi.routes.routes = {
           users: {
             get: {
-              action: "usersList", // (GET) /api/users
+              action: "usersList" // (GET) /api/users
             }
           },
           user : {
             get: {
               action: "userAdd",
-              urlMap: ["userID"], // (GET) /api/user/123
+              urlMap: ["userID"] // (GET) /api/user/123
             },
             post: {
               action: "userEdit",

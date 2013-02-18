@@ -12,7 +12,7 @@ describe('Core: Tasks', function(){
           var data = {
             delayed: delayedCount,
             global: globalCount,
-            local: localCount,
+            local: localCount
           }
           callback(null, data);
         });

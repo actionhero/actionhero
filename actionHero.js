@@ -25,7 +25,7 @@ actionHero.prototype.start = function(params, next){
   self.api._commands = {
     start: self.start,
     stop: self.stop,
-    restart: self.restart,
+    restart: self.restart
   };
 
   if (params === null){ params = {}; }

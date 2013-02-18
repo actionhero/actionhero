@@ -16,7 +16,7 @@ var logger = function(api, next){
 
   api.logger = new (winston.Logger)({
     levels: winston.config.syslog.levels,
-    transports: transports,
+    transports: transports
   });
 
   if(api.configData.logger.levels != null){

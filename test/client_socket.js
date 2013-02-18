@@ -86,8 +86,8 @@ describe('Client: Socket', function(){
       action: 'cacheTest',
       params: {
         key: apiObj.utils.randomString(16384),
-        value: apiObj.utils.randomString(16384),
-      },
+        value: apiObj.utils.randomString(16384)
+      }
     }
     makeSocketRequest(client, JSON.stringify(msg), function(response){
       response.cacheTestResults.loadResp.key.should.eql("cacheTest_"+msg.params.key);

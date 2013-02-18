@@ -61,7 +61,7 @@ exports['startCluster'] = function(binary, next){
         log: process.cwd() + "/log/cluster.log",
         title: "actionHero-master",
         workerTitlePrefix: "actionHero-worker",
-        silent: true, // don't pass stdout/err to the master
+        silent: true // don't pass stdout/err to the master
       };
 
       for(var i in binary.clusterConfig){

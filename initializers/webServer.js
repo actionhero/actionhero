@@ -96,8 +96,8 @@ var webServer = function(api, next){
           remoteIP: req.connection.remoteAddress, 
           rawConnection: {
             req: req,
-            res: res,
-          },
+            res: res
+          }
         });
         api.webServer.decorateConnection(connection, cookieHash);
 
@@ -263,7 +263,7 @@ var webServer = function(api, next){
             request: full_url,
             params: JSON.stringify(connection.params),
             duration: connection.response.serverInformation.requestDuration,
-            error: String(connection.error),
+            error: String(connection.error)
           })
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
@@ -325,7 +325,7 @@ var webServer = function(api, next){
         var store = api.webServer.webChatMessages[connection.id];
         store.push({
           messagePayload: messagePayload,
-          expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL, 
+          expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL
         });
         if(typeof next == "function"){ next(); }
       }

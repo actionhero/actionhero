@@ -63,7 +63,7 @@ var connections = function(api, next){
         additionalListeningRooms: [],
         roomMatchKey: null,
         roomMatchValue: null,
-        room: api.configData.general.defaultChatRoom,
+        room: api.configData.general.defaultChatRoom
       }
 
       for(var i in connectionDefaults){

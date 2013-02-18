@@ -25,7 +25,7 @@ var chatRooms = function(api, next){
           id: connection.id,
           room: connection.room,
           roomMatchKey: connection.roomMatchKey,
-          roomMatchValue: connection.roomMatchValue,
+          roomMatchValue: connection.roomMatchValue
         }
       };
       api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
