@@ -4,30 +4,23 @@ exports['generateTask'] = function(binary, next){
   if(binary.argv.description == null){ binary.hardError("description is a required input"); }
   if(binary.argv.scope == null){ binary.argv.scope = "any"; }
   if(binary.argv.frequency == null){ binary.argv.frequency = 0; }
+  if(binary.argv.toAnnounce == null){ binary.argv.toAnnounce = 'true'; }
 
   var templateLines = [];
-  templateLines.push('var task = {};')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// metadata')
-  templateLines.push('task.name = "'+binary.argv['name']+'";')
-  templateLines.push('task.description = "'+binary.argv['description']+'";')
-  templateLines.push('task.scope = "'+binary.argv['scope']+'";')
-  templateLines.push('task.frequency = '+binary.argv['frequency']+';')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// functional')
-  templateLines.push('task.run = function(api, params, next){')
-  templateLines.push('  if(params == null){ prams = {}; }')
-  templateLines.push('  var error = null;')
-  templateLines.push('  // your logic here')
-  templateLines.push('')
-  templateLines.push('  next(error, true);')
-  templateLines.push('};')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// exports')
-  templateLines.push('exports.task = task;')
+
+  templateLines.push('exports.task = {');
+  templateLines.push('  name: "' + binary.argv['name'] + '",');
+  templateLines.push('  description: "' + binary.argv['description'] + '",');
+  templateLines.push('  scope: "' + binary.argv['scope'] + '",');
+  templateLines.push('  frequency: ' + binary.argv['frequency'] + ',');
+  templateLines.push('  toAnnounce: ' + binary.argv['toAnnounce'] + ',');
+  templateLines.push('  run: function(api, params, next){');
+  templateLines.push('    if(params == null){ prams = {}; }');
+  templateLines.push('    var error = null;');
+  templateLines.push('    // your logic here');
+  templateLines.push('    next(error, true);');
+  templateLines.push('  }');
+  templateLines.push('};');
 
   var data = "";
   for(var i in templateLines){

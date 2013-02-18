@@ -3,32 +3,24 @@ exports['generateAction'] = function(binary, next){
   if(binary.argv.name == null){ binary.hardError("name is a required input"); }
   if(binary.argv.description == null){ binary.hardError("description is a required input"); }
 
-  var templateLines = [];
-  templateLines.push('var action = {};')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// metadata')
-  templateLines.push('action.name = "'+binary.argv['name']+'";')
-  templateLines.push('action.description = "'+binary.argv['description']+'";')
-  templateLines.push('action.inputs = {')
   var req = binary.utils.stringifyInputList(binary.argv['inputsRequired']);
-  templateLines.push('  "required" : ['+req+'],')
-  var optional = binary.utils.stringifyInputList(binary.argv['inputsOptional'])
-  templateLines.push('  "optional" : ['+optional+']')
-  templateLines.push('};')
-  templateLines.push('action.blockedConnectionTypes = []')
-  templateLines.push('action.outputExample = {}')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// functional')
-  templateLines.push('action.run = function(api, connection, next){')
-  templateLines.push('  // your logic here')
-  templateLines.push('  next(connection, true);')
-  templateLines.push('}')
-  templateLines.push('')
-  templateLines.push('/////////////////////////////////////////////////////////////////////')
-  templateLines.push('// exports')
-  templateLines.push('exports.action = action;')
+  var optional = binary.utils.stringifyInputList(binary.argv['inputsOptional']);
+  var templateLines = [];
+
+  templateLines.push('exports.action = {');
+  templateLines.push('  name: "' + binary.argv['name'] + '",');
+  templateLines.push('  description: "' + binary.argv['description'] + '",');
+  templateLines.push('  inputs: {');
+  templateLines.push('    required: [' + req + '],');
+  templateLines.push('    optional: [' + optional + '],');
+  templateLines.push('  },');
+  templateLines.push('  blockedConnectionTypes: [],');
+  templateLines.push('  outputExample: {},');
+  templateLines.push('  run: function(api, connection, next){');
+  templateLines.push('    // your logic here');
+  templateLines.push('    next(connection, true);');
+  templateLines.push('  }');
+  templateLines.push('};');
 
   var data = "";
   for(var i in templateLines){

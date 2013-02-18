@@ -7,6 +7,7 @@
 - there were too many commas (@mmadden)
 - `api.webSockets` renambed to `api.webSocketServer` to be consistant with other servers
 - reordered shutdown proess to help with stats (https://github.com/evantahler/actionHero/issues/109)
+- action and task generators now generate `hash` style files
 
 ** Web Sockets
 - Will be sent a message on server shutdown
