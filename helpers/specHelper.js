@@ -30,7 +30,7 @@ var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPro
 specHelper.params[0] = {
   general: {
     workers: 1,
-    "developmentMode": true,
+    "developmentMode": true
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -39,23 +39,23 @@ specHelper.params[0] = {
   httpServer: {
     enable: true,
     secure: false,
-    port: 9000,
+    port: 9000
   },
   tcpServer: {
     secure: false,
     enable: true,
-    port: 8000,
+    port: 8000
   },
   webSockets: {
     enable: true
   },
-  redis : redisConfig,
+  redis : redisConfig
 };
 
 specHelper.params[1] = {
   general: {
     workers: 1,
-    "developmentMode": false,
+    "developmentMode": false
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -64,23 +64,23 @@ specHelper.params[1] = {
   httpServer: {
     secure: false,
     enable: true,
-    port: 9001,
+    port: 9001
   },
   tcpServer: {
     secure: false,
     enable: true,
-    port: 8001,
+    port: 8001
   },
   webSockets: {
     enable: true
   },
-  redis : redisConfig,
+  redis : redisConfig
 };
 
 specHelper.params[2] = {
   general: {
     workers: 1,
-    "developmentMode": false,
+    "developmentMode": false
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -89,17 +89,17 @@ specHelper.params[2] = {
   httpServer: {
     secure: false,
     enable: true,
-    port: 9002,
+    port: 9002
   },
   tcpServer: {
     secure: false,
     enable: true,
-    port: 8002,
+    port: 8002
   },
   webSockets: {
     enable: true
   },
-  redis : redisConfig,
+  redis : redisConfig
 };
 
 specHelper.clearRedis = function(serverID, next){

@@ -28,7 +28,7 @@ var task = function(api, next){
       queue: 'unknown',
       state: 'unknown',
       ran: false,
-      isDuplicate: false,
+      isDuplicate: false
     }
     for(var i in defaults){
       this[i] = defaults[i];
@@ -120,7 +120,7 @@ var task = function(api, next){
           enqueuedAt: new Date().getTime(),
           state: self.state,
           queue: queue,
-          isDuplicate: self.isDuplicate,
+          isDuplicate: self.isDuplicate
         };
         api.tasks.setTaskData(self.id, data, function(error){
           api.tasks.placeInQueue(self.id, queue, function(){

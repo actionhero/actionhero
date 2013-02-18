@@ -71,7 +71,7 @@ var webSocketServer = function(api, next){
         type: 'webSocket', 
         remotePort: rawConnection.handshake.address.port, 
         remoteIP: rawConnection.handshake.address.address, 
-        rawConnection: rawConnection,
+        rawConnection: rawConnection
       });
       api.webSockets.decorateConnection(connection);
       api.log("connection @ webSocket", "info", {to: connection.remoteIP});
@@ -168,7 +168,7 @@ var webSocketServer = function(api, next){
         // actions should be run using params set at the begining of excecution
         // build a proxy connection so that param changes during execution will not break this
         var proxy_connection = {
-          _original_connection: connection,
+          _original_connection: connection
         }
         for (var i in connection) {
           if (connection.hasOwnProperty(i)) {
@@ -199,7 +199,7 @@ var webSocketServer = function(api, next){
         params: JSON.stringify(proxy_connection.params), 
         action: proxy_connection.action, 
         duration: delta, 
-        error: String(proxy_connection.error),
+        error: String(proxy_connection.error)
       });
     }
 

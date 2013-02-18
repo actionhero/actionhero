@@ -17,7 +17,7 @@ task.run = function(api, params, next){
     type: 'task', 
     remotePort: '0', 
     remoteIP: '0', 
-    rawConnection: {},
+    rawConnection: {}
   });
   connection.params = params;
 

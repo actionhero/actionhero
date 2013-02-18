@@ -3,7 +3,7 @@ var stats = function(api, next){
   api.stats.data = {};
   api.stats.collections = {
     local: 'actionHero:stats:' + api.id.replace(/:/g, "-"),
-    global: 'actionHero:stats:global',
+    global: 'actionHero:stats:global'
   }
 
   api.stats.increment = function(key, count, next){
@@ -64,7 +64,7 @@ var stats = function(api, next){
           statNames.sort();
           var result = {
             global: {},
-            local: {},
+            local: {}
           };
           for(var i in statNames){
             var name = statNames[i];
