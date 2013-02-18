@@ -60,9 +60,9 @@ var webSocketServer = function(api, next){
     }
 
     api.webSockets.decorateConnection = function(connection){
-      connection.sendMessage = function(message, emmitterEvent){
-        if(emmitterEvent == null){ emmitterEvent = 'say'; }
-        connection.rawConnection.emit(emmitterEvent, message);
+      connection.sendMessage = function(message, type){
+        if(type == null){ type = 'say'; }
+        connection.rawConnection.emit(type, message);
       }
     }
 
@@ -77,7 +77,7 @@ var webSocketServer = function(api, next){
       api.log("connection @ webSocket", "info", {to: connection.remoteIP});
 
       var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
-      rawConnection.emit('welcome', welcomeMessage);
+      connection.sendMessage(welcomeMessage, 'welcome');
 
       rawConnection.on('exit', function(data){ connection.disconnect(); });
       rawConnection.on('quit', function(data){ connection.disconnect(); });
@@ -87,7 +87,7 @@ var webSocketServer = function(api, next){
         if(data == null){ data = {}; }
         api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
           connection.messageCount++; 
-          rawConnection.emit("response", {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
+          connection.sendMessage({context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount}, "response")
           api.log("roomView @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         });
       });
@@ -98,7 +98,7 @@ var webSocketServer = function(api, next){
           connection.room = data.room;
           api.chatRoom.roomAddMember(connection);
           connection.messageCount++; 
-          rawConnection.emit("response", {context: "response", status: "OK", room: connection.room, messageCount: connection.messageCount});
+          connection.sendMessage({context: "response", status: "OK", room: connection.room, messageCount: connection.messageCount}, "response")
           api.log("roomChange @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         });
       });
@@ -113,7 +113,7 @@ var webSocketServer = function(api, next){
           connection.additionalListeningRooms.push(data.room);
           message.status = "OK"
         }
-        rawConnection.emit("response", message);
+        connection.sendMessage(message, "response")
         api.log("listenToRoom @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
       });
 
@@ -129,7 +129,7 @@ var webSocketServer = function(api, next){
           connection.additionalListeningRooms.push(data.room);
           message.error = "you are not listening to this room";
         }
-        rawConnection.emit("response", message);
+        connection.sendMessage(message, "response");
         api.log("silenceRoom @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
       });
 
@@ -138,7 +138,7 @@ var webSocketServer = function(api, next){
         var message = data.message;
         api.chatRoom.socketRoomBroadcast(connection, message);
         connection.messageCount++; 
-        rawConnection.emit("response", {context: "response", status: "OK", messageCount: connection.messageCount});
+        connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount}, "response")
         api.log("say @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
       }); 
 
@@ -152,7 +152,7 @@ var webSocketServer = function(api, next){
         details.totalActions = connection.totalActions;
         details.pendingActions = connection.pendingActions;
         connection.messageCount++; 
-        rawConnection.emit("response", {context: "response", status: "OK", details: details, messageCount: connection.messageCount});
+        connection.sendMessage({context: "response", status: "OK", details: details, messageCount: connection.messageCount}, "response")
         api.log("detailsView @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
       });
 
@@ -217,7 +217,7 @@ var webSocketServer = function(api, next){
             connection.response.error = String(connection.error);
           }
         }
-        connection.rawConnection.emit(connection.response.context, connection.response);
+        connection.sendMessage(connection.response, connection.response.context)
       }
     }
 
