@@ -79,6 +79,12 @@ var webServer = function(api, next){
       connection.method = connection.rawConnection.req.method;
       connection.cookies =  api.utils.parseCookies(connection.rawConnection.req);
       connection.responseHttpCode = 200;
+
+      connection.sendMessage = function(message){
+        if(api.configData.commonWeb.httpClientMessageTTL != null){
+          api.webServer.storeWebChatMessage(connection, message);
+        }
+      }
     }
 
     api.webServer.handleRequest = function(req, res){

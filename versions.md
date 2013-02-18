@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 4.3.5
+
+** General **
+- normalized all connection times to have a `connection.sendMessage(message,type)` method which can be used globally.  This will allow you to send a message to any connection directly without messing with chatrooms
+
 ## Version 4.3.4
 
 ** webServer ** 

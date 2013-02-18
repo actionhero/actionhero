@@ -60,7 +60,10 @@ var webSocketServer = function(api, next){
     }
 
     api.webSockets.decorateConnection = function(connection){
-      //
+      connection.sendMessage = function(message, emmitterEvent){
+        if(emmitterEvent == null){ emmitterEvent = 'say'; }
+        connection.rawConnection.emit(emmitterEvent, message);
+      }
     }
 
     api.webSockets.handleConnnection = function(rawConnection){

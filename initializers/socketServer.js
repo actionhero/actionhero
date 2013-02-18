@@ -41,6 +41,13 @@ var socketServer = function(api, next){
     api.socketServer.decorateConnection = function(connection){
       connection.responsesWaitingCount = 0;
       connection.socketDataString = "";
+      connection.sendMessage = function(message){
+        try{
+          connection.rawConnection.write(JSON.stringify(message) + "\r\n");
+        }catch(e){
+          api.log("socket write error: "+e, "error");
+        } 
+      }
     }
 
     api.socketServer.handleConnection = function(rawConnection){
@@ -54,7 +61,7 @@ var socketServer = function(api, next){
       api.log("[ connect @ socket ]", 'info', {to: connection.remoteIP});
 
       process.nextTick(function(){
-        api.socketServer.sendSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
+        api.socketServer.prepareSocketMessage(connection, {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
       });
       
       connection.rawConnection.on("data", function (chunk) {
@@ -101,38 +108,38 @@ var socketServer = function(api, next){
         var parts = words[1].split("=");
         if(parts[0] != null){
           connection.params[parts[0]] = parts[1];
-          api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
+          api.socketServer.prepareSocketMessage(connection, {status: "OK", context: "response"});
         }else{
-          api.socketServer.sendSocketMessage(connection, {status: "Cannot set null", context: "response"});
+          api.socketServer.prepareSocketMessage(connection, {status: "Cannot set null", context: "response"});
         }
         api.log("[ quit @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramDelete"){
         connection.params[words[1]] = null;
-        api.socketServer.sendSocketMessage(connection, {status: "OK", context: "response"});
+        api.socketServer.prepareSocketMessage(connection, {status: "OK", context: "response"});
         api.log("[ paramDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramView"){
         var q = words[1];
         var params = {}
         params[q] = connection.params[q];
-        api.socketServer.sendSocketMessage(connection, {context: "response", params: params});
+        api.socketServer.prepareSocketMessage(connection, {context: "response", params: params});
         api.log("[ paramView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramsView"){
-        api.socketServer.sendSocketMessage(connection, {context: "response", params: connection.params});
+        api.socketServer.prepareSocketMessage(connection, {context: "response", params: connection.params});
         api.log("[ paramsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramsDelete"){
         connection.params = {};
-        api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
+        api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK"});
         api.log("[ paramsDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "roomChange"){
         api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
           connection.room = words[1];
           api.chatRoom.roomAddMember(connection);
-          api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
+          api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
           api.log("[ roomChange @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });
       }else if(words[0] == "roomView"){
         api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
-          api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
+          api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
           api.log("[ roomView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });   
       }else if(words[0] == "listenToRoom"){
@@ -143,7 +150,7 @@ var socketServer = function(api, next){
           connection.additionalListeningRooms.push(words[1]);
           message.status = "OK"
         }
-        api.socketServer.sendSocketMessage(connection, message);
+        api.socketServer.prepareSocketMessage(connection, message);
         api.log("[ listenToRoom @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "silenceRoom"){
         var message = {context: "response", status: "OK", room: words[1]}
@@ -154,7 +161,7 @@ var socketServer = function(api, next){
         }else{
           message.error = "you are not listening to this room";
         }
-        api.socketServer.sendSocketMessage(connection, message);
+        api.socketServer.prepareSocketMessage(connection, message);
         api.log("[ silenceRoom @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "detailsView"){
         var details = {};
@@ -164,12 +171,12 @@ var socketServer = function(api, next){
         details.room = connection.room;
         details.totalActions = connection.totalActions;
         details.pendingActions = connection.pendingActions;
-        api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK", details: details});
+        api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", details: details});
         api.log("[ detailsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "say"){
         var message = line.substr(4);
         api.chatRoom.socketRoomBroadcast(connection, message);
-        api.socketServer.sendSocketMessage(connection, {context: "response", status: "OK"});
+        api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK"});
         api.log("[ say @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else{
         api.socketServer.processAction(connection, line, words);
@@ -217,7 +224,14 @@ var socketServer = function(api, next){
         connection.error = proxy_connection.error;
         connection.responsesWaitingCount--;
         var delta = new Date().getTime() - connection.actionStartTime;
-        api.socketServer.respondToSocketClient(connection, cont, proxy_connection.messageCount);
+        if(cont != false){
+          if(connection.error != null){ 
+            if(connection.response.error == null){
+              connection.response.error = String(connection.error);
+            }
+          }
+          api.socketServer.prepareSocketMessage(connection, connection.response, proxy_connection.messageCount);
+        }
         api.log("[ action @ socket ]", 'info', {
           to: connection.remoteIP, 
           params: JSON.stringify(words), 
@@ -248,42 +262,25 @@ var socketServer = function(api, next){
     api.socketServer.goodbye = function(connection){
       try{ 
         api.log("[ quit @ socket ]", 'info', {to: connection.remoteIP});
-        api.socketServer.sendSocketMessage(connection, {status: "Bye!", context: "response", reason: 'request'}); 
+        api.socketServer.prepareSocketMessage(connection, {status: "Bye!", context: "response", reason: 'request'}); 
         connection.rawConnection.end();
       }catch(e){ }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // action response helper
-    api.socketServer.respondToSocketClient = function(connection, cont, proxyMessageCount){
-      if(cont != false){
-        if(connection.error != null){ 
-          if(connection.response.error == null){
-            connection.response.error = String(connection.error);
-          }
-        }
-        api.socketServer.sendSocketMessage(connection, connection.response, proxyMessageCount);
-      }
     }
     
     ////////////////////////////////////////////////////////////////////////////
     //message helper
-    api.socketServer.sendSocketMessage = function(connection, message, proxyMessageCount){
-      try{
-        if(connection.respondingTo != null){
-          message.messageCount = connection.respondingTo;
-          connection.respondingTo = null;
-        }else if(message.context == "response"){
-          if(proxyMessageCount != null){
-            message.messageCount = proxyMessageCount;
-          }else{
-            message.messageCount = connection.messageCount;
-          }
+    api.socketServer.prepareSocketMessage = function(connection, message, proxyMessageCount){
+      if(connection.respondingTo != null){
+        message.messageCount = connection.respondingTo;
+        connection.respondingTo = null;
+      }else if(message.context == "response"){
+        if(proxyMessageCount != null){
+          message.messageCount = proxyMessageCount;
+        }else{
+          message.messageCount = connection.messageCount;
         }
-        connection.rawConnection.write(JSON.stringify(message) + "\r\n"); 
-      }catch(e){
-        api.log("socket write error: "+e, "error");
       }
+      connection.sendMessage(message);
     }
 
     ////////////////////////////////////////////////////////////////////////////

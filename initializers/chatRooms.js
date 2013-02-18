@@ -44,9 +44,7 @@ var chatRooms = function(api, next){
                 matched = true;
             }
             if(matched == true){
-              if(thisConnection.type == "web"){ api.webServer.storeWebChatMessage(thisConnection, messagePayload); }
-              else if(thisConnection.type == "socket"){ api.socketServer.sendSocketMessage(thisConnection, messagePayload); }
-              else if(thisConnection.type == "webSocket"){ thisConnection.rawConnection.emit("say", messagePayload); }
+              thisConnection.sendMessage(messagePayload, 'say');
             }
           }
         }

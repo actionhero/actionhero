@@ -83,6 +83,10 @@ var connections = function(api, next){
       return uuid.v4();
     }
 
+    api.connection.prototype.sendMessage = function(message){
+      throw new Error("I should be replaced with a connection-specific method");
+    }
+
     api.connection.prototype.destroy = function(callback){
       var self = this;
       api.stats.increment("connections:totalActiveConnections", -1, function(){
