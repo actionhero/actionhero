@@ -35,7 +35,7 @@ action.run = function(api, connection, next){
       name: action.name,
       description: action.description,
       inputs: action.inputs,
-      outputExample: action.outputExample,
+      outputExample: action.outputExample
     });
   }
   connection.response.actions.sort(function compare(a,b) {

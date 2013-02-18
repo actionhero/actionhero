@@ -15,7 +15,7 @@ action.outputExample = {
     value: "value",
     saveResp: "OK",
     loadResp: "OK",
-    deleteResp: "OK",
+    deleteResp: "OK"
   }
 }
 

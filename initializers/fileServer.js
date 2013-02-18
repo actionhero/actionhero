@@ -76,7 +76,7 @@ var fileServer = function(api, next){
     api.stats.increment("fileServer:filesSent");
     var fileSize = 0;
     var fileStream = fs.createReadStream(file, {
-      'flags': 'r',
+      'flags': 'r'
     }).addListener( "data", function(chunk) {
       fileSize = fileSize + chunk.length;
     }).addListener( "close",function() {

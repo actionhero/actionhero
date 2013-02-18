@@ -17,7 +17,7 @@ var tasks = function(api, next){
     localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
     data: 'actionHero:tasks:data', // actually a hash
     workerStatus: 'actionHero:tasks:workerStatus', // actually a hash
-    enqueuedPeriodicTasks: 'actionHero:tasks:enqueuedPeriodicTasks',
+    enqueuedPeriodicTasks: 'actionHero:tasks:enqueuedPeriodicTasks'
   }
 
   if(api.redis.enable === true){

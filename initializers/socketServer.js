@@ -48,7 +48,7 @@ var socketServer = function(api, next){
         type: 'socket', 
         remotePort: rawConnection.remotePort, 
         remoteIP: rawConnection.remoteAddress, 
-        rawConnection: rawConnection,
+        rawConnection: rawConnection
       });
       api.socketServer.decorateConnection(connection);
       api.log("[ connect @ socket ]", 'info', {to: connection.remoteIP});
@@ -201,7 +201,7 @@ var socketServer = function(api, next){
       // actions should be run using params set at the begining of excecution
       // build a proxy connection so that param changes during execution will not break this
       var proxy_connection = {
-        _original_connection: connection,
+        _original_connection: connection
       }
       for (var i in connection) {
         if (connection.hasOwnProperty(i)) {

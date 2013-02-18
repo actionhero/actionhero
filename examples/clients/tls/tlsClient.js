@@ -6,7 +6,7 @@ var fs = require('fs');
 
 var options = {
   key: fs.readFileSync('../../../certs/server-key.pem'),
-  cert: fs.readFileSync('../../../certs/server-cert.pem'),
+  cert: fs.readFileSync('../../../certs/server-cert.pem')
 };
 
 var cleartextStream = tls.connect(5000, options, function() {
