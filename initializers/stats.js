@@ -9,7 +9,7 @@ var stats = function(api, next){
   api.stats.increment = function(key, count, next){
     if(count == null){ count = 1; }
     count = parseFloat(count);
-    if(api.redis.enable === true && api.running == true){
+    if(api.redis.enable === true){
       api.redis.client.hincrby(api.stats.collections.local, key, count, function(){
         api.redis.client.hincrby(api.stats.collections.global, key, count, function(){
           if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
@@ -25,7 +25,7 @@ var stats = function(api, next){
   api.stats.set = function(key, count, next){
     if(count == null){ count = 1; }
     count = parseFloat(count);
-    if(api.redis.enable === true && api.running == true){
+    if(api.redis.enable === true){
       api.redis.client.hset(api.stats.collections.local, key, count, function(err){
         if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
       });

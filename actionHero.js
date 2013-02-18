@@ -144,16 +144,25 @@ actionHero.prototype.stop = function(next){
     self.api.log("Shutting down open servers and stopping task processing", "alert");
 
     var orderedTeardowns = {};
-    orderedTeardowns['watchedFiles'] = function(next){ 
-      self.api.log(" > teardown: watchedFiles", 'debug');
-      for(var i in self.api.watchedFiles){
-        fs.unwatchFile(self.api.watchedFiles[i]);
+    var thing = [
+      "webServer", 
+      "webSocketServer", 
+      "socketServer", 
+      "taskProcessor"
+    ]
+    thing.forEach(function(terdown){
+      if(self.api[terdown] != null && typeof self.api[terdown]._teardown == "function"){
+        (function(name) {
+          orderedTeardowns[name] = function(next){ 
+            self.api.log(" > teardown: " + name, 'debug');
+            self.api[name]._teardown(self.api, next); 
+          };
+        })(terdown);
       }
-      next();
-    }
+    });
 
     for(var i in self.api){
-      if(typeof self.api[i]._teardown == "function"){
+      if(typeof self.api[i]._teardown == "function" && orderedTeardowns[i] == null){
         (function(name) {
           orderedTeardowns[name] = function(next){ 
             self.api.log(" > teardown: " + name, 'debug');
@@ -164,6 +173,9 @@ actionHero.prototype.stop = function(next){
     }
 
     orderedTeardowns['_complete'] = function(){ 
+      for(var i in self.api.watchedFiles){
+        fs.unwatchFile(self.api.watchedFiles[i]);
+      }
       self.api.pids.clearPidFile();
       self.api.log("The actionHero has been stopped", "alert");
       self.api.log("***", "debug");

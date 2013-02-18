@@ -5,6 +5,11 @@
 ** General **
 - normalized all connection times to have a `connection.sendMessage(message,type)` method which can be used globally.  This will allow you to send a message to any connection directly without messing with chatrooms
 - there were too many commas (@mmadden)
+- `api.webSockets` renambed to `api.webSocketServer` to be consistant with other servers
+- reordered shutdown proess to help with stats (https://github.com/evantahler/actionHero/issues/109)
+
+** Web Sockets
+- Will be sent a message on server shutdown
 
 * Tasks *
 - if `toAnnounce` is false, we will no silence the act of enquing delayed versions of this task (@macrauder)
