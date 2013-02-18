@@ -447,7 +447,10 @@ var tasks = function(api, next){
         var taskTemplate = api.tasks.tasks[i];
         (function(taskTemplate){
           if(taskTemplate.frequency > 0){
-            var task = new api.task({name: taskTemplate.name});
+            var task = new api.task({
+              name: taskTemplate.name,
+              toAnnounce: taskTemplate.toAnnounce,
+            });
             task.enqueue(function(err, resp){
               if(err != null){ 
                 api.log(String(err).replace('Error: ', ""), 'info'); 
@@ -457,7 +460,7 @@ var tasks = function(api, next){
                 })
               }else{
                 api.tasks.denotePeriodicTaskAsEnqueued(task, function(err){
-                  api.log("seeded preiodoc task " + task.name, "notice");
+                  api.log("seeded periodic task " + task.name, "notice");
                   process.nextTick(function(){ 
                     started--;
                     if(started == 0){ callback(); }

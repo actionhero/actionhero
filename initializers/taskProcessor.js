@@ -152,7 +152,9 @@ var taskProcessor = function(api, next){
         api.tasks.promoteFromDelayedQueue(function(err, task){
           if(task != null){ 
             self.currentTask = task;
-            self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug"); 
+            if(self.currentTask.toAnnounce != false){
+              self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug");
+            } 
             callback(null, task.id);
           }else{
             callback(null, null);
