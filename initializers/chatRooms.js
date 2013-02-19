@@ -86,9 +86,15 @@ var chatRooms = function(api, next){
     var name = connection.id;
     api.stats.increment("chatRooom:roomMembers:" + connection.room, -1);
     var key = api.chatRoom.redisRoomPrefix + connection.room;
-    api.redis.client.lrem(key, 1, name, function(){
-      api.chatRoom.announceMember(connection, false);
-      if(typeof next == "function"){ next(null, true) }
+    api.redis.client.llen(key, function(err, length){
+      if(length > 0){
+        api.redis.client.lrem(key, 1, name, function(){
+          api.chatRoom.announceMember(connection, false);
+          if(typeof next == "function"){ next(null, true) }
+        });
+      }else{
+        if(typeof next == "function"){ next(null, true) }
+      }
     });
   }
 

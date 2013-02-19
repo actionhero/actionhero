@@ -111,7 +111,9 @@ var redis = function(api, next){
       });
     }else{
       api.redis.client.rpush("actionHero:peers", api.id, function(){
-        callback();
+        process.nextTick(function(){
+          callback();
+        });
       });
     }
   }
