@@ -9,7 +9,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  "apiVersion": "4.3.5",
+  "apiVersion": "4.3.6",
   "serverName": "actionHero API",
   // The welcome message seen by TCP and webSocket clients upon connection
   "welcomeMessage" : "Hello! Welcome to the actionHero api",
@@ -78,7 +78,7 @@ configData.logger = {
 ///////////
 
 configData.redis = {
-  "enable": false,
+  "fake": false,
   "host": "127.0.0.1",
   "port": 6379,
   "password": null,

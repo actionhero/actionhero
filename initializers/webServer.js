@@ -14,7 +14,6 @@ var webServer = function(api, next){
     api.webServer = {};
     api.webServer.roomCookieKey = "__room";
     api.webServer.clientClearTimers = [];
-    if(api.redis.enable != true){ api.webServer.webChatMessages = {}; }
 
     if(["api", "public"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
       throw new Error('api.configData.commonWeb.rootEndpointType can only be "api" or "public"');
@@ -268,7 +267,6 @@ var webServer = function(api, next){
         }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
           connection.destroy();
-          if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.id]; }
         }else{
           // if enabled, persist the connection object for message queueing
           if(api.webServer.clientClearTimers[connection.id] != null){
@@ -277,7 +275,6 @@ var webServer = function(api, next){
           api.webServer.clientClearTimers[connection.id] = setTimeout(function(connection){
             connection.destroy();
             delete api.webServer.clientClearTimers[connection.id];
-            if(api.redis.enable != true){ delete api.webServer.webChatMessages[connection.id]; }
           }, api.configData.commonWeb.httpClientMessageTTL, connection);
         }
       });
@@ -312,23 +309,12 @@ var webServer = function(api, next){
     // Helpers to expand chat functionality to http(s) clients
 
     api.webServer.storeWebChatMessage = function(connection, messagePayload, next){
-      if(api.redis.enable === true){
-        var rediskey = 'actionHero:webMessages:' + connection.id;
-        api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
-          api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
-            if(typeof next == "function"){ next(); }
-          });
+      var rediskey = 'actionHero:webMessages:' + connection.id;
+      api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
+        api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
+          if(typeof next == "function"){ next(); }
         });
-      }else{
-        // add message
-        if(api.webServer.webChatMessages[connection.id] == null){ api.webServer.webChatMessages[connection.id] = []; }
-        var store = api.webServer.webChatMessages[connection.id];
-        store.push({
-          messagePayload: messagePayload,
-          expiresAt: new Date().getTime() + api.configData.commonWeb.httpClientMessageTTL
-        });
-        if(typeof next == "function"){ next(); }
-      }
+      });
     }
 
     api.webServer.changeChatRoom = function(connection, next){
@@ -348,26 +334,16 @@ var webServer = function(api, next){
     }
 
     api.webServer.getWebChatMessage = function(connection, next){
-      if(api.redis.enable === true){
-        var rediskey = 'actionHero:webMessages:' + connection.id;
-        var messages = [];
-        api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
-          api.redis.client.del(rediskey, function(){
-            for(var i in redisMessages){
-              messages.push(JSON.parse(redisMessages[i]));
-            }
-            next(null, messages);
-          });
+      var rediskey = 'actionHero:webMessages:' + connection.id;
+      var messages = [];
+      api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
+        api.redis.client.del(rediskey, function(){
+          for(var i in redisMessages){
+            messages.push(JSON.parse(redisMessages[i]));
+          }
+          next(null, messages);
         });
-      }else{
-        var store = api.webServer.webChatMessages[connection.id];
-        var messages = [];
-        for(var i in store){
-          messages.push(store[i]);
-        }
-        delete api.webServer.webChatMessages[connection.id];
-        next(null, messages);
-      }
+      });
     }
 
     next();

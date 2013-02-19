@@ -179,16 +179,9 @@ var taskProcessor = function(api, next){
   api.taskProcessor.prototype.setWorkerStatus = function(status, callback){
     var self = this;
     var workerKey = api.id + "#" + self.id
-    if(api.redis.enable === true){
-      api.redis.client.hset(api.tasks.queues.workerStatus, workerKey, status, function(err){
-        if(typeof callback == "function"){ callback(); }
-      });
-    }else{
-      api.tasks.queueData[api.tasks.queues.workerStatus][workerKey] = status;
-      process.nextTick(function(){
-        if(typeof callback == "function"){ callback(); }
-      });
-    }
+    api.redis.client.hset(api.tasks.queues.workerStatus, workerKey, status, function(err){
+      if(typeof callback == "function"){ callback(); }
+    });
   }
 
   next();

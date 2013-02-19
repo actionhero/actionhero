@@ -17,7 +17,7 @@ if(versionParts[0] == "v0" && parseFloat(versionParts[1]) < 8){
 }
 
 var redisConfig = {
-  "enable": true,
+  "fake": true,
   "host": "127.0.0.1",
   "port": 6379,
   "password": null,
