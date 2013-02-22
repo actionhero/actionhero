@@ -29,18 +29,13 @@ var webSocketServer = function(api, next){
         }
       }
 
-      var c = api.configData.redis;
-      if(c.enable == true){
+      if(api.redis.enable === true){
         var RedisStore = require('socket.io/lib/stores/redis');
-        var completeRedisInit = function(){
-          if(c.enable == true){
-            io.set('store', new RedisStore({
-              redisPub : api.redis.client,
-              redisSub : api.redis.clientSubscriber,
-              redisClient : api.redis.client
-            }));
-          }
-        }
+        io.set('store', new RedisStore({
+          redisPub : api.redis.client,
+          redisSub : api.redis.clientSubscriber,
+          redisClient : api.redis.client
+        }));
       }
 
       io.sockets.on('connection', function(connection){
