@@ -131,7 +131,7 @@ configData.commonWeb = {
 /////////////////
 
 configData.httpServer = {
-  "enable": false,
+  "enable": true,
   "secure": false,
   "port": 8080,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)

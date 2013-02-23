@@ -33,7 +33,7 @@ binary.log = function(message, severity){
 }
 
 binary.hardError = function(err){
-  binary.log(err);
+  binary.log(err, "error");
   process.exit(1);
 }
 
