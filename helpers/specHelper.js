@@ -11,11 +11,11 @@ specHelper.params = [];
 var winston = require('winston');
 
 var toFakeRedis = false;
-if( process.env['fakeRedis'] != null){
-  if(process.env['fakeRedis'] == 'true'){ toFakeRedis = true; }
-  if(process.env['fakeRedis'] == 'false'){ toFakeRedis = false; }
+if( process.env['fakeredis'] != null){
+  if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
+  if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
 }
-console.log("\r\n\r\n****** Running test sute with fakeredis=" + toFakeRedis + " *****\r\n\r\n");
+console.log("\r\n * running test sute with fakeredis=" + toFakeRedis + " *");
 
 var redisConfig = {
   "fake": toFakeRedis,
