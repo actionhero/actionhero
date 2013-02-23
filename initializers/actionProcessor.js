@@ -95,25 +95,18 @@ var actionProcessor = function(api, next){
         process.nextTick(function() { 
           api.stats.increment("actions:totalProcessedActions");
           api.stats.increment("actions:processedActions:" + self.connection.action);
-          if(api.domain != null){
-            var actionDomain = api.domain.create();
-            actionDomain.on("error", function(err){
-              self.incramentPendingActions(-1);
-              api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
-            });
-            actionDomain.run(function(){
-              actionTemplate.run(api, self.connection, function(connection, toRender){
-                self.connection = connection;
-                // actionDomain.dispose();
-                self.completeAction(null, toRender);
-              }); 
-            })
-          }else{
+          var actionDomain = api.domain.create();
+          actionDomain.on("error", function(err){
+            self.incramentPendingActions(-1);
+            api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
+          });
+          actionDomain.run(function(){
             actionTemplate.run(api, self.connection, function(connection, toRender){
               self.connection = connection;
+              // actionDomain.dispose();
               self.completeAction(null, toRender);
             }); 
-          }
+          });
         });
       }else{
         self.completeAction(); 

@@ -22,14 +22,10 @@ var cache = function(api, next){
   api.cache.prepareDomain = function(){
     // until the redis module handles domains, we need to force the callback to be bound properly
     // https://github.com/mranney/node_redis/pull/310/files
-    if(api.domain != null && process.domain != null){
-      return process.domain;
-    }else{
-      return {
-        bind: function(callback){
-          return callback
-        }
-      };
+    return {
+      bind: function(callback){
+        return callback
+      }
     }
   }
     

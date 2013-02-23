@@ -151,12 +151,14 @@ describe('Client: Web Sockets', function(){
 
     it('can change rooms and get room details', function(done){
        client_1.emit("roomChange", {room: "otherRoom"});
-       makeSocketRequest(client_1, "roomView", {}, function(response){
-        response.should.be.an.instanceOf(Object);
-        should.not.exist(response.error);
-        response.room.should.equal("otherRoom")
-        done();
-       });
+       setTimeout(function(){
+        makeSocketRequest(client_1, "roomView", {}, function(response){
+          response.should.be.an.instanceOf(Object);
+          should.not.exist(response.error);
+          response.room.should.equal("otherRoom")
+          done();
+         });
+       }, 100);
     });
 
     it('I can register for messages from rooms I am not in', function(done){

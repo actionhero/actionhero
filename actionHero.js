@@ -6,12 +6,13 @@
 var fs = require("fs");
 var path = require("path");
 var async = require('async');
+var domain = require("domain");
 
 var actionHero = function(){
   var self = this;
   self.initalizers = {};
   self.api = {};
-  try{ self.api.domain = require("domain"); }catch(e){ }
+  self.api.domain = domain;
 };
   
 actionHero.prototype.start = function(params, next){

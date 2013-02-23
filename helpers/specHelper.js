@@ -10,14 +10,8 @@ specHelper.url = "127.0.0.1";
 specHelper.params = [];
 var winston = require('winston');
 
-specHelper.canUseDomains = true;
-var versionParts = process.version.split(".")
-if(versionParts[0] == "v0" && parseFloat(versionParts[1]) < 8){
-  specHelper.canUseDomains = false;
-}
-
 var redisConfig = {
-  "fake": true,
+  "fake": false,
   "host": "127.0.0.1",
   "port": 6379,
   "password": null,
