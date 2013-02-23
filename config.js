@@ -78,7 +78,7 @@ configData.logger = {
 ///////////
 
 configData.redis = {
-  "enable": false,
+  "enable": true,
   "host": "127.0.0.1",
   "port": 6379,
   "password": null,
@@ -144,7 +144,7 @@ configData.httpServer = {
 ////////////////
 
 configData.tcpServer = {
-  "enable": false,
+  "enable": true,
   "secure": false,
   "port": 5000,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
@@ -158,7 +158,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  "enable": false,
+  "enable": true,
   "logLevel" : 1,
   "settings" : [
     "browser client minification",
