@@ -29,19 +29,17 @@ var webSocketServer = function(api, next){
         }
       }
 
-      var c = api.configData.redis;
-      if(c.enable == true){
-        var RedisStore = require('socket.io/lib/stores/redis');
-        var completeRedisInit = function(){
-          if(c.enable == true){
-            io.set('store', new RedisStore({
-              redisPub : api.redis.client,
-              redisSub : api.redis.clientSubscriber,
-              redisClient : api.redis.client
-            }));
-          }
-        }
-      }
+      // Causes many errors on travis, probably related to: https://github.com/evantahler/actionHero/issues/67
+      // Was not actually invoked before anyway :/ 
+      
+      // if(api.redis.enable === true){
+      //   var RedisStore = require('socket.io/lib/stores/redis');
+      //   io.set('store', new RedisStore({
+      //     redisPub : api.redis.client,
+      //     redisSub : api.redis.clientSubscriber,
+      //     redisClient : api.redis.client
+      //   }));
+      // }
 
       io.sockets.on('connection', function(connection){
         api.webSocketServer.handleConnnection(connection);
