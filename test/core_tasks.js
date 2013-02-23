@@ -131,12 +131,10 @@ describe('Core: Tasks', function(){
   it('all queues should start empty', function(done){
     rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount){
       rawAPI.tasks.queueLength(rawAPI.tasks.queues.localQueue, function(err, localCount){
-        rawAPI.tasks.queueLength(rawAPI.tasks.queues.processingQueue, function(err, processingCount){
-          [globalCount, localCount, processingCount].forEach(function(count){
-            count.should.equal(0)
-          })
-          done();
-        });
+        [globalCount, localCount].forEach(function(count){
+          count.should.equal(0)
+        })
+        done();
       });
     });
   });
@@ -279,7 +277,7 @@ describe('Core: Tasks', function(){
     });
 
     it('general task flow works (periodic)', function(done){
-      this.timeout(5000);
+      this.timeout(10000);
       var worker = new rawAPI.taskProcessor({id: 1});
       var task = new rawAPI.task({name: 'periodic_any'});
       task.enqueue(function(err, resp){
@@ -315,7 +313,7 @@ describe('Core: Tasks', function(){
               });
             }); 
           });
-        }, 2001);
+        }, 4001);
       });
     });
 
@@ -475,7 +473,7 @@ describe('Core: Tasks', function(){
           taskOutput[0].should.equal('TEST');
           worker.stop();
           done();
-        }, rawAPI.tasks.cycleTimeMS * 2 + 1)
+        }, rawAPI.tasks.cycleTimeMS * 10 + 1)
       });
     });
   });

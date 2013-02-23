@@ -10,8 +10,15 @@ specHelper.url = "127.0.0.1";
 specHelper.params = [];
 var winston = require('winston');
 
+var toFakeRedis = false;
+if( process.env['fakeRedis'] != null){
+  if(process.env['fakeRedis'] == 'true'){ toFakeRedis = true; }
+  if(process.env['fakeRedis'] == 'false'){ toFakeRedis = false; }
+}
+console.log("\r\n\r\n****** Running test sute with fakeredis=" + toFakeRedis + " *****\r\n\r\n");
+
 var redisConfig = {
-  "fake": false,
+  "fake": toFakeRedis,
   "host": "127.0.0.1",
   "port": 6379,
   "password": null,
@@ -28,7 +35,15 @@ specHelper.params[0] = {
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: []
+    transports: [
+      // function(api){
+      //   return new (winston.transports.Console)({
+      //     colorize: true, 
+      //     level: "debug", 
+      //     timestamp: api.utils.sqlDateTime
+      //   });
+      // }
+    ]
   },
   httpServer: {
     enable: true,

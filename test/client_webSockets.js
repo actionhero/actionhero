@@ -34,8 +34,10 @@ describe('Client: Web Sockets', function(){
 
     before(function(done){
       specHelper.prepare(0, function(api){ 
-        apiObj = specHelper.cleanAPIObject(api);
-        done();
+        api.redis.client.flushdb(function(){
+          apiObj = specHelper.cleanAPIObject(api);
+          done();
+        });
       })
     });
 
@@ -158,7 +160,7 @@ describe('Client: Web Sockets', function(){
           response.room.should.equal("otherRoom")
           done();
          });
-       }, 100);
+       }, 500);
     });
 
     it('I can register for messages from rooms I am not in', function(done){
@@ -174,7 +176,7 @@ describe('Client: Web Sockets', function(){
             setTimeout(function(){
               client_1.on('say', listener);
               client_2.emit('say', {message: "hello in room2"});
-            }, 100);
+            }, 500);
           });
         });
       });
@@ -194,7 +196,7 @@ describe('Client: Web Sockets', function(){
                   setTimeout(function(){
                     client_1.on('say', listener);
                     client_2.emit('say', {message: "hello in room2"});
-                  }, 100);
+                  }, 200);
                   setTimeout(function(){
                     client_1.removeListener('say',listener);
                     done(); // yay, I didn't get the message

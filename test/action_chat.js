@@ -85,7 +85,7 @@ describe('Action: chat', function(){
           response.body.messages[0].message.should.equal("TEST");
           done();
         }); 
-      }, 50);
+      }, 200);
     });
 
     it('I can get many messagse and the order is maintained', function(done){
@@ -99,7 +99,7 @@ describe('Action: chat', function(){
           response.body.messages[2].message.should.equal("TEST: C");
           done();
         }); 
-      }, 50);
+      }, 200);
     });
 
     it('action should only be valid for http/s clients', function(done){
