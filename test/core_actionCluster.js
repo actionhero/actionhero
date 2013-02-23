@@ -21,7 +21,15 @@ describe('Core: actionCluster', function(){
           apis[1] = api;
           specHelper.restartServer(2, function(resp, api){
             apis[2] = api;
-            done();
+            
+            apis[0].redis.client.flushdb(function(){
+              apis[1].redis.client.flushdb(function(){
+                apis[2].redis.client.flushdb(function(){
+                  done();
+                });
+              });
+            });
+            
           });
       });
     });

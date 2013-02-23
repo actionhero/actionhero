@@ -150,26 +150,18 @@ var task = function(api, next){
     var self = this;
     var params = self.params;
     api.stats.increment("tasks:tasksRun");
-    if(api.domain != null){
-      var taskDomain = api.domain.create();
-      taskDomain.on("error", function(err){
-        api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[self.name], callback);
-      });
-      taskDomain.run(function(){
-        api.tasks.tasks[self.name].run(api, params, function(err, cont){
-          self.ran = true;
-          if(cont == null){cont = true;}
-          // taskDomain.dispose();
-          if(typeof callback == "function"){ callback(cont); }
-        });
-      })
-    }else{
+    var taskDomain = api.domain.create();
+    taskDomain.on("error", function(err){
+      api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[self.name], callback);
+    });
+    taskDomain.run(function(){
       api.tasks.tasks[self.name].run(api, params, function(err, cont){
         self.ran = true;
         if(cont == null){cont = true;}
+        // taskDomain.dispose();
         if(typeof callback == "function"){ callback(cont); }
       });
-    }
+    });
   }
 
   next();
