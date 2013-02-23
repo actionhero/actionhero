@@ -33,7 +33,7 @@ describe('Core: Exceptions', function(){
       inputs: { required: [], optional: [] },
       outputExample: { },
       run: function(api, connection, next){
-        api.log(thing, 'info'); // undefined
+        thing // undefined
         next(connection, true);
       }
     }
@@ -41,13 +41,12 @@ describe('Core: Exceptions', function(){
     done();
   });
 
-  // TODO: MOCHA DOESN'T LIKE THIS AGAIN
-  // it('the bad action should fail gracefully', function(done){
-  //   specHelper.apiTest.get('/badAction', 0, {} , function(response){
-  //     response.body.error.should.equal("Error: The server experienced an internal error");
-  //     done();
-  //   });
-  // });
+  it('the bad action should fail gracefully', function(done){
+    specHelper.apiTest.get('/badAction', 0, {} , function(response){
+      response.body.error.should.equal("Error: The server experienced an internal error");
+      done();
+    });
+  });
 
   it('other actions still work', function(done){
     specHelper.apiTest.get('/randomNumber', 0, {} , function(response){

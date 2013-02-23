@@ -1,4 +1,5 @@
 var uuid = require("node-uuid");
+var domain = require("domain");
 
 var task = function(api, next){
 
@@ -150,7 +151,7 @@ var task = function(api, next){
     var self = this;
     var params = self.params;
     api.stats.increment("tasks:tasksRun");
-    var taskDomain = api.domain.create();
+    var taskDomain = domain.create();
     taskDomain.on("error", function(err){
       api.exceptionHandlers.task(taskDomain, err, api.tasks.tasks[self.name], callback);
     });

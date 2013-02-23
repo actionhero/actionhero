@@ -1,3 +1,5 @@
+var domain = require("domain");
+
 var actionProcessor = function(api, next){
 
   api.actionProcessor = function(data){
@@ -95,7 +97,7 @@ var actionProcessor = function(api, next){
         process.nextTick(function() { 
           api.stats.increment("actions:totalProcessedActions");
           api.stats.increment("actions:processedActions:" + self.connection.action);
-          var actionDomain = api.domain.create();
+          var actionDomain = domain.create();
           actionDomain.on("error", function(err){
             self.incramentPendingActions(-1);
             api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);

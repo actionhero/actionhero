@@ -392,46 +392,46 @@ describe('Core: Tasks', function(){
       });
     });
 
-    // TODO: MOCHA DOESN'T LIKE THIS AGAIN
-    // it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
-    //   var worker = new rawAPI.taskProcessor({id: 1});
-    //   var task = new rawAPI.task({name: 'busted_task'});
-    //   task.enqueue(function(err, resp){
-    //     setTimeout(function(){
-    //       getAllQueueLengths(function(err, data1){
-    //         data1.delayed.should.equal(1);
-    //         data1.local.should.equal(0);
-    //         data1.global.should.equal(0);
-    //         worker.process(function(){
-    //           // move to global
-    //           getAllQueueLengths(function(err, data2){
-    //             data2.delayed.should.equal(0);
-    //             data2.local.should.equal(0);
-    //             data2.global.should.equal(1);
-    //             worker.process(function(){
-    //               // move to local
-    //               getAllQueueLengths(function(err, data3){
-    //                 data3.delayed.should.equal(0);
-    //                 data3.local.should.equal(1);
-    //                 data3.global.should.equal(0);
-    //                 worker.process(function(){
-    //                   // move to processing and try to work it
-    //                   // should be back in delayed
-    //                   getAllQueueLengths(function(err, data4){
-    //                     data4.delayed.should.equal(0);
-    //                     data4.local.should.equal(0);
-    //                     data4.global.should.equal(1);
-    //                     done();
-    //                   });
-    //                 });
-    //               });
-    //             });
-    //           });
-    //         }); 
-    //       });
-    //     }, 2);
-    //   });
-    // });
+    it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
+      this.timeout(5000);
+      var worker = new rawAPI.taskProcessor({id: 1});
+      var task = new rawAPI.task({name: 'busted_task'});
+      task.enqueue(function(err, resp){
+        setTimeout(function(){
+          getAllQueueLengths(function(err, data1){
+            data1.delayed.should.equal(1);
+            data1.local.should.equal(0);
+            data1.global.should.equal(0);
+            worker.process(function(){
+              // move to global
+              getAllQueueLengths(function(err, data2){
+                data2.delayed.should.equal(0);
+                data2.local.should.equal(0);
+                data2.global.should.equal(1);
+                worker.process(function(){
+                  // move to local
+                  getAllQueueLengths(function(err, data3){
+                    data3.delayed.should.equal(0);
+                    data3.local.should.equal(1);
+                    data3.global.should.equal(0);
+                    worker.process(function(){
+                      // move to processing and try to work it
+                      // should be back in delayed
+                      getAllQueueLengths(function(err, data4){
+                        data4.delayed.should.equal(0);
+                        data4.local.should.equal(0);
+                        data4.global.should.equal(1);
+                        done();
+                      });
+                    });
+                  });
+                });
+              });
+            }); 
+          });
+        }, 200);
+      });
+    });
 
   });
 

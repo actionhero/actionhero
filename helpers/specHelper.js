@@ -15,7 +15,7 @@ if( process.env['fakeredis'] != null){
   if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
   if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
 }
-console.log("\r\n * running test sute with fakeredis=" + toFakeRedis + " *");
+console.log("\r\n>>> running test sute with fakeredis=" + toFakeRedis + " <<<");
 
 var redisConfig = {
   "fake": toFakeRedis,
