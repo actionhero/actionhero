@@ -27,8 +27,10 @@ describe('Client: Socket', function(){
   before(function(done){
     specHelper.prepare(0, function(api){ 
       rawAPI = api;
-      apiObj = specHelper.cleanAPIObject(api);
-      done();
+      rawAPI.redis.client.flushdb(function(){
+        apiObj = specHelper.cleanAPIObject(api);
+        done();
+      });
     })
   });
 
@@ -213,7 +215,7 @@ describe('Client: Socket', function(){
     });
   });
 
-  it('clients can view additional infor about rooms they are in', function(done){
+  it('clients can view additional info about rooms they are in', function(done){
     makeSocketRequest(client, "roomView", function(response){
       response.roomStatus.membersCount.should.equal(3)
       done();
@@ -300,7 +302,7 @@ describe('Client: Socket', function(){
           setTimeout(function(){
             client.on('data', listener);
             client2.write("say hello in room2\r\n");
-          }, 100);
+          }, 200);
         });
       });
     });

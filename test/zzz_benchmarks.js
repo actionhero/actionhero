@@ -57,60 +57,51 @@ describe('~~ Benchmarks', function(){
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
-      apiObj = specHelper.cleanAPIObject(api);
-      done();
+      api.redis.client.flushdb(function(){
+        apiObj = specHelper.cleanAPIObject(api);
+        done();
+      });
     })
   });
 
   it('say 1000 times', function(done){
-    this.timeout(10000)
+    this.timeout(60000)
     startTime = new Date().getTime();
-  loopingTest("/say", {room: 'defaultRoom', message: "hello there! I am a test."}, 1000, function(){
-    var delta = new Date().getTime() - startTime
-    done();
-  });
+    loopingTest("/say", {room: 'defaultRoom', message: "hello there! I am a test."}, 1000, function(){
+      var delta = new Date().getTime() - startTime
+      done();
+    });
   });
 
   it('ask for status 1000 times', function(done){
-    this.timeout(10000)
+    this.timeout(60000)
     startTime = new Date().getTime();
-  loopingTest("/status", {}, 1000, function(){
-    var delta = new Date().getTime() - startTime
-    done();
+    loopingTest("/status", {}, 1000, function(){
+      var delta = new Date().getTime() - startTime
+      done();
   });
   });
 
   it('actionsView 1000 times', function(done){
-    this.timeout(10000)
+    this.timeout(60000)
     startTime = new Date().getTime();
-  loopingTest("/", {action: 'actionsView'}, 1000, function(){
-    var delta = new Date().getTime() - startTime
-    done();
-  });
+    loopingTest("/", {action: 'actionsView'}, 1000, function(){
+      var delta = new Date().getTime() - startTime
+      done();
+    });
   });
 
   it('cacheTest 1000 times', function(done){
-    this.timeout(10000)
+    this.timeout(60000)
     startTime = new Date().getTime();
-  loopingTest('/cacheTest', { key: function(){ 
-        return apiObj.utils.randomString(99); 
-      }, value: function(){ 
-        return apiObj.utils.randomString(99); 
-      } }, 1000, function(){
-    var delta = new Date().getTime() - startTime
-    done();
-  });
+    loopingTest('/cacheTest', { key: function(){ 
+          return apiObj.utils.randomString(99); 
+        }, value: function(){ 
+          return apiObj.utils.randomString(99); 
+        } }, 1000, function(){
+      var delta = new Date().getTime() - startTime
+      done();
+    });
   });
 
 });
-
-// suite.addBatch({
-//   'actionCluster.stop - 0':{
-//     topic: function(){ 
-//       var cb = this.callback
-//       makeSocketRequest("exit", function(){
-//         specHelper.stopServer(0, cb); 
-//       });
-//     },
-//     'actionHero should be stopped - 0': function(resp){ specHelper.assert.equal(resp, true); } }
-// });
