@@ -4,6 +4,7 @@
 
 ** General **
 
+- removed support for node versions < v0.8.0.  Time to modernize! 
 - actionHero now uses fakeredis rather than implamenting certain operations locally (cache, tasks)
 - this allows for a smaller, more unified codebase
 - redis is now always 'enabled', but `fake` can be toggled (boolean)
