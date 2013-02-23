@@ -13,17 +13,20 @@ var config = function(api, startingParams, next){
       
   if(argv["config"] != null){
     var configFile = argv["config"];
+  }else if(process.env.ACTIONHERO_CONFIG != null){
+    var configFile = process.env.ACTIONHERO_CONFIG;
   }else if(fs.existsSync(process.cwd() + '/config.js')){
     var configFile = process.cwd() + '/config.js';
   }else{
-    throw new Error(configFile + "No config.js found in this project or specified with --config");
+    throw new Error(configFile + "No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG");
   }
+
   try{
     api.configData = require(configFile).configData;
   }catch(e){
     throw new Error(configFile + " is not a valid config file or is not readable: " + e);
   }
-  
+
   if(startingParams.configChanges != null){
     for (var i in startingParams.configChanges){ 
       var collection = startingParams.configChanges[i];

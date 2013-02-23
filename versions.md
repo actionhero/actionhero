@@ -9,6 +9,9 @@
 - this allows for a smaller, more unified codebase
 - redis is now always 'enabled', but `fake` can be toggled (boolean)
 
+** Config **
+- In addition to passing --config=/path/to/file to specifiy a `config.js` to actionHero, you can also set the `ACTIONHERO_CONFIG` envrionment variable.
+
 ## Version 4.3.5
 
 ** General **
