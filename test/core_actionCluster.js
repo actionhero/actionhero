@@ -272,6 +272,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("all connections should be in the default room and client #1 can see them", function(done){
+      this.timeout(5000)
       makeSocketRequest(client1, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.room.should.equal('defaultRoom');
@@ -281,6 +282,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("all connections should be in the default room and client #2 can see them", function(done){
+      this.timeout(5000)
       makeSocketRequest(client2, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.room.should.equal('defaultRoom');
@@ -290,6 +292,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("all connections should be in the default room and client #3 can see them", function(done){
+      this.timeout(5000)
       makeSocketRequest(client3, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.room.should.equal('defaultRoom');
@@ -299,6 +302,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("clients can communicate across the cluster", function(done){
+      this.timeout(5000)
       makeSocketRequest(client2, "", function(response){
         response.message.should.equal("Hi there!");
         done();
