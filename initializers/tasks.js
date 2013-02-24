@@ -358,7 +358,7 @@ var tasks = function(api, next){
 								if(fs.readFileSync(fullfFilePath).length > 0){
 									delete require.cache[fullfFilePath];
 									delete api.tasks.tasks[taskName];
-									taskLoader(fullfFilePath, true);
+									api.tasks.load(fullfFilePath, true);
 								}
 							});
 						}
