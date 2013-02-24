@@ -35,16 +35,15 @@
     "data2xml": "0.8.x",
     "mime": "1.2.x",
     "redis": "0.8.x",
-    "socket.io": "0.9.x",
     "optimist": "0.3.x",
     "winston": "0.6.x",
     "node-uuid": "1.4.x",
-    "fakeredis": "0.1.x"
+    "fakeredis": "0.1.x",
+    "faye": "0.8.x"
   },
   "devDependencies": {
     "mocha": "1.7.x",
     "should": "1.2.x",
-    "socket.io-client": "0.9.x",
     "request": "2.12.x"
   },
   "bin": {

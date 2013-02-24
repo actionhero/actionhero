@@ -1,0 +1,28 @@
+<script src="/faye/client.js"></script>
+
+<script>
+
+var client = new Faye.Client('http://localhost:8080/faye');
+var initialMessage = client.publish('/setup', {text: 'Hi there'});
+var defaultRoom = "/room/defaultRoom";
+var roomSubscription;
+var personalSubscription;
+
+initialMessage.callback(function() {
+  // connected
+  console.log("ONLINE")
+  var myRoom = '/connection/' + client.getClientId();
+  console.log("subscribing to: " + myRoom);
+  personalSubscription = client.subscribe(myRoom, function(message) {
+    console.log(message)
+  });
+  roomSubscription = client.subscribe(defaultRoom, function(message) {
+    console.log(message)
+  });
+});
+
+initialMessage.errback(function(error) {
+  console.log("Error connecting: " + error);
+});
+
+</script>

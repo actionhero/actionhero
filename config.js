@@ -144,7 +144,7 @@ configData.httpServer = {
 ////////////////
 
 configData.tcpServer = {
-  "enable": false,
+  "enable": true,
   "secure": false,
   "port": 5000,
   "bindIP": "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
@@ -158,14 +158,12 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  "enable": false,
-  "logLevel" : 1,
-  "settings" : [
-    "browser client minification",
-    "browser client etag",
-    "browser client gzip"
-  ],
-  "options" : {}
+  "enable": true,
+  options: {
+    "mount": "/faye",
+    "timeout": 45,
+    "ping": null,
+  }
 };
 
 //////////////////////////////////
