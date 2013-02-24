@@ -103,6 +103,7 @@ describe('Action: chat', function(){
     });
 
     it('action should only be valid for http/s clients', function(done){
+      this.timeout(5000)
       var client = io.connect(socketURL, io_options);
       client.on('welcome', function(data){
         client.on('response', function(data){
