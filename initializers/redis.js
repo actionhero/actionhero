@@ -32,6 +32,7 @@ var redis = function(api, next){
   if(api.redis.fake == true){
     api.log("running with fakeredis", "warning");
     var redisPackage = require('fakeredis');
+    redisPackage.fast = true;
   }else{
     var redisPackage = require('redis');
   }
