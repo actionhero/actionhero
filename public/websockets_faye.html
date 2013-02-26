@@ -2,27 +2,111 @@
 
 <script>
 
-var client = new Faye.Client('http://localhost:8080/faye');
-var initialMessage = client.publish('/setup', {text: 'Hi there'});
-var defaultRoom = "/room/defaultRoom";
-var roomSubscription;
-var personalSubscription;
+var actionHeroWebSocket = function(options, callback){
+  var self = this;
+  if(callback == null && typeof options == "function"){
+    callback = options; options = null;
+  }
 
-initialMessage.callback(function() {
-  // connected
-  console.log("ONLINE")
-  var myRoom = '/connection/' + client.getClientId();
-  console.log("subscribing to: " + myRoom);
-  personalSubscription = client.subscribe(myRoom, function(message) {
-    console.log(message)
-  });
-  roomSubscription = client.subscribe(defaultRoom, function(message) {
-    console.log(message)
-  });
-});
+  self.messageCount = 0;
+  self.callbacks = {};
+  self.id = null;
+  self.events = {};
 
-initialMessage.errback(function(error) {
-  console.log("Error connecting: " + error);
-});
+  self.options = self.defaults();
+  for(var i in options){
+    self.options[i] = options[i];
+  }
+}
+
+actionHeroWebSocket.prototype.defaults = function(){
+  return {
+    host: window.location.origin,
+    path: "/faye",
+    setupChannel: "/welcome",
+  }
+}
+
+actionHeroWebSocket.prototype.connect = function(callback){
+  var self = this;
+
+  self.client = new Faye.Client(self.options.host + self.options.path);
+  
+  var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
+  
+  initialMessage.callback(function() {
+    self.id = self.client.getClientId()
+    self.channel = '/connection/' + self.id;
+    self.subscription = self.client.subscribe(self.channel, function(message) {
+      self.handleMessage(message);
+    });
+    callback(null, self);
+  });
+
+  initialMessage.errback(function(error) {
+    callback(error, null);
+  })
+}
+
+actionHeroWebSocket.prototype.send = function(args, callback){
+  var self = this;
+  self.messageCount++;
+  self.callbacks[self.messageCount] = callback;
+  self.client.publish(self.channel, args).errback(function(err){
+    console.log(err);
+  });
+};
+
+actionHeroWebSocket.prototype.handleMessage = function(message){
+  var self = this;
+
+  if(message.context == "response"){
+    if(typeof self.callbacks[self.messageCount] === 'function'){
+      self.callbacks[self.messageCount](message);
+    }
+    delete self.callbacks[self.messageCount];
+  }
+
+  else if(message.context == "user"){
+    if(typeof self.events.say == 'function'){
+      self.events.say(message);
+    }
+  }
+
+  else{
+    if(typeof self.events.alert == 'function'){
+      self.events.alert(message);
+    }
+  }
+};
+
+actionHeroWebSocket.prototype.say = function(message, callback){
+  this.send({
+    event: 'say', 
+    message: message,
+  }, callback);
+}
+
+</script>
+
+
+<script>
+
+  var A = new actionHeroWebSocket
+  A.events.say = function(message){
+    console.log("SAY:");
+    console.log(message)
+  }
+  A.events.alert = function(message){
+    console.log("ALERT:");
+    console.log(message)
+  }
+  A.connect(function(err){
+    if(err != null){
+      console.log(err);
+    }else{
+      console.log("CONNECTED");
+    }
+  });
 
 </script>

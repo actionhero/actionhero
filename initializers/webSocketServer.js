@@ -7,13 +7,12 @@ var webSocketServer = function(api, next){
   }else{
     api.webSocketServer = {};
 
-    var roomPrefix = "/room/";
-    var connectionPrefix = "/connection/"
-    var connectionsMap = {}
+    var connectionPrefix = "/connection/";
+    var connectionsMap = {};
+    api.webSocketServer.extensions = [];
 
     api.webSocketServer._start = function(api, next){
       api.webSocketServer.bayeux = new faye.NodeAdapter(api.configData.webSockets.options);
-      api.webSocketServer.bayeux.addExtension(api.webSocketServer.extension);
       api.webSocketServer.bayeux.bind('handshake', function(clientId){
         api.webSocketServer.createClient(clientId);
       });
@@ -24,40 +23,60 @@ var webSocketServer = function(api, next){
         api.webSocketServer.handleSubscribe(clientId, channel);
       });
       api.webSocketServer.bayeux.attach(api.webServer.server);
+      for(var i in api.webSocketServer.extensions){
+        api.webSocketServer.bayeux.addExtension(api.webSocketServer.extensions[i]);
+      }
+      api.webSocketServer.internalClient = api.webSocketServer.bayeux.getClient();
+      api.webSocketServer.internalClient.publish('/_welcome');
+      api.log("websocket internal client ID: " + api.webSocketServer.internalClient._clientId, 'debug');
       api.log("webSockets bound to " + api.configData.httpServer.port + " mounted at " + api.configData.webSockets.options.mount, "notice"); 
       next();
     }
 
-    // api.webSocketServer._teardown = function(api, next){
-    //   api.webSocketServer.disconnectAll(function(){
-    //     api.webServer.server.close();
-    //     next();
-    //   });
-    // }
+    api.webSocketServer._teardown = function(api, next){
+      next();
+    }
 
-    api.webSocketServer.extension = {
+    api.webSocketServer.extensions.push({
       incoming: function(message, callback){
-        if(message.channel.indexOf('/meta/') != 0){
-          console.log(message);
-          callback(message);
-        }else{
-          callback(message);
+        if(message.clientId == api.webSocketServer.internalClient._clientId){ return callback(message); }
+        else if(message.channel.indexOf(connectionPrefix) != 0){ return callback(message); }
+        else if(message.data == null){ return callback(message); }
+        else{
+          api.webSocketServer.handleMessage(message);
+          delete callback;
+          return;
+        }
+      },
+      outgoing: function(message, callback){
+        if(message.clientId == api.webSocketServer.internalClient._clientId){ return callback(message); }
+        else if(message.channel.indexOf(connectionPrefix) != 0){ return callback(message); }
+        else if(message.data == null){ return callback(message); }
+        else{
+          var senderId = message.channel.split("/")[2];
+          if(senderId === message.clientId){
+            delete callback;
+            return;
+          }else{
+            return callback(message);
+          }
         }
       }
-    };
+    });
 
     api.webSocketServer.createClient = function(clientId){
       var connection = new api.connection({
         type: 'webSocket', 
         remotePort: 0, 
         remoteIP: 0,
+        id: clientId,
         rawConnection: {
           clientId: clientId,
         }
       });
       connection.sendMessage = function(message){
         var channel = connectionPrefix + this.rawConnection.clientId;
-        api.webSocketServer.bayeux.getClient().publish(channel, message);
+        api.webSocketServer.internalClient.publish(channel, message);
       };
       connectionsMap[clientId] = connection;
       api.log("connection @ webSocket", "info", {to: connection.remoteIP});
@@ -80,6 +99,24 @@ var webSocketServer = function(api, next){
           connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
         }
       };
+    }
+
+    api.webSocketServer.handleMessage = function(message){
+      var clientId = message.channel.split("/")[2];
+      var connection = connectionsMap[clientId];
+      if(connection != null){
+        var data = message.data;
+        var event = data.event;
+        delete data.event;
+
+        if(event == "say"){
+          api.chatRoom.socketRoomBroadcast(connection, data.message);
+          connection.messageCount++; 
+          connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount}, "response")
+          api.log("say @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
+        }
+
+      }
     }
 
     // api.webSocketServer.decorateConnection = function(connection){
