@@ -85,14 +85,65 @@ var webSocketServer = function(api, next){
       };
     }
 
+    api.webSocketServer.renderActionResponse = function(proxy_connection, toRender){
+      var connection = proxy_connection._original_connection;
+      connection.response = proxy_connection.response;
+      connection.error = proxy_connection.error;
+      var delta = new Date().getTime() - connection.actionStartTime;          
+      
+      if(toRender != false){
+        if(connection.response.context == "response"){
+          if(proxy_connection.respondingTo != null){
+            connection.response.messageCount = proxy_connection.respondingTo;
+          }else{
+            connection.response.messageCount = connection.messageCount;
+          }
+        }
+        if(connection.error != null && connection.response.error == null){ 
+          connection.response.error = String(connection.error);
+        }
+        connection.sendMessage(connection.response)
+      }
+
+      api.log("action @ webSocket", "info", {
+        to: connection.remoteIP, 
+        params: JSON.stringify(proxy_connection.params), 
+        action: proxy_connection.action, 
+        duration: delta, 
+        error: String(proxy_connection.error)
+      });
+    }
+
     api.webSocketServer.incommingMessage = function(message){
       var clientId = message.channel.split("/")[4];
-      console.log(clientId)
       var connection = api.webSocketServer.connectionsMap[clientId];
       if(connection != null){
         var data = message.data;
         var event = data.event;
         delete data.event;
+
+        if(event == "action"){
+          if(data == null){ data = {}; }
+          connection.params = data.params;
+          connection.error = null;
+          connection.actionStartTime = new Date().getTime();
+          connection.response = {};
+          connection.response.context = "response";
+          connection.messageCount++; 
+          // actions should be run using params set at the begining of excecution
+          // build a proxy connection so that param changes during execution will not break this
+          var proxy_connection = {
+            _original_connection: connection
+          }
+          for (var i in connection) {
+            if (connection.hasOwnProperty(i)) {
+              proxy_connection[i] = connection[i];
+            }
+          }
+          var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSocketServer.renderActionResponse});
+
+          actionProcessor.processAction();
+        }
 
         if(event == "say"){
           api.chatRoom.socketRoomBroadcast(connection, data.message);
@@ -104,29 +155,6 @@ var webSocketServer = function(api, next){
       }
     }
 
-    // api.webSocketServer.decorateConnection = function(connection){
-    //   connection.sendMessage = function(message, type){
-    //     if(type == null){ type = 'say'; }
-    //     connection.rawConnection.emit(type, message);
-    //   }
-    // }
-
-    // api.webSocketServer.handleConnnection = function(rawConnection){
-    //   var connection = new api.connection({
-    //     type: 'webSocket', 
-    //     remotePort: rawConnection.handshake.address.port, 
-    //     remoteIP: rawConnection.handshake.address.address, 
-    //     rawConnection: rawConnection
-    //   });
-    //   api.webSocketServer.decorateConnection(connection);
-    //   api.log("connection @ webSocket", "info", {to: connection.remoteIP});
-
-    //   var welcomeMessage = {welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"};
-    //   connection.sendMessage(welcomeMessage, 'welcome');
-
-    //   rawConnection.on('exit', function(data){ connection.disconnect(); });
-    //   rawConnection.on('quit', function(data){ connection.disconnect(); });
-    //   rawConnection.on('close', function(data){ connection.disconnect(); });
       
     //   rawConnection.on('roomView', function(data){
     //     if(data == null){ data = {}; }

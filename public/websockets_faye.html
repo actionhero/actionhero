@@ -63,8 +63,10 @@ actionHeroWebSocket.prototype.connect = function(callback){
 
 actionHeroWebSocket.prototype.send = function(args, callback){
   var self = this;
-  self.messageCount++;
-  self.callbacks[self.messageCount] = callback;
+  if(typeof callback == "function"){
+    self.messageCount++;
+    self.callbacks[self.messageCount] = callback;
+  }
   self.client.publish(self.channel, args).errback(function(err){
     self.log(err);
   });
@@ -93,11 +95,24 @@ actionHeroWebSocket.prototype.handleMessage = function(message){
   }
 };
 
-actionHeroWebSocket.prototype.say = function(message, callback){
+actionHeroWebSocket.prototype.action = function(action, params, callback){
+  if(callback == null && typeof params == 'function'){
+    callback = params;
+    params = null;
+  }
+  if(params == null){ params = {}; }
+  params.action = action;
+  this.send({
+    event: 'action', 
+    params: params,
+  }, callback);
+}
+
+actionHeroWebSocket.prototype.say = function(message){
   this.send({
     event: 'say', 
     message: message,
-  }, callback);
+  });
 }
 
 </script>
@@ -105,15 +120,19 @@ actionHeroWebSocket.prototype.say = function(message, callback){
 
 <script>
 
-  var A = new actionHeroWebSocket
-  A.events.say = function(message){
-    A.log("SAY:");
-    A.log(message)
+  var A = new actionHeroWebSocket;
+
+  A.events = {
+    say: function(message){
+      A.log("SAY:");
+      A.log(message)
+    },
+    alert: function(message){
+      A.log("ALERT:");
+      A.log(message);
+    }
   }
-  A.events.alert = function(message){
-    A.log("ALERT:");
-    A.log(message)
-  }
+
   A.connect(function(err){
     if(err != null){
       A.log(err);
