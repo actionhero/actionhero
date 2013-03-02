@@ -1,7 +1,7 @@
 var chatRooms = function(api, next){
 
   api.chatRoom = {};
-  api.chatRoom.redisRoomPrefix = "actionHero:roomMembers:";
+  api.chatRoom.redisDataPrefix = "actionHero:roomMembers:";
   api.chatRoom.fayeChannel = "/actionHero/chat";
 
   ////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ var chatRooms = function(api, next){
       api.log("message token miss-match from " + message.serverId, "error", message);
     }else{
       api.stats.increment("chatRooom:messagesRecieved");
-      var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user" };
+      var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user", sentAt: message.sentAt };
       for(var i in api.connections.connections){
         var thisConnection = api.connections.connections[i];
         if(thisConnection.room == message.connection.room || thisConnection.additionalListeningRooms.indexOf(message.connection.room) > -1){
@@ -56,7 +56,7 @@ var chatRooms = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // status for a room
   api.chatRoom.socketRoomStatus = function(room, next){
-    var key = api.chatRoom.redisRoomPrefix + room;
+    var key = api.chatRoom.redisDataPrefix + room;
     api.redis.client.lrange(key, 0, -1, function(err, members){
       next(null, {
         room: room,
@@ -77,7 +77,7 @@ var chatRooms = function(api, next){
       if(found == false){
         api.stats.increment("chatRooom:roomMembers:" + connection.room);
         api.chatRoom.announceMember(connection, true);
-        var key = api.chatRoom.redisRoomPrefix + connection.room;
+        var key = api.chatRoom.redisDataPrefix + connection.room;
         api.redis.client.rpush(key, name, function(){
           if(typeof next == "function"){ next(null, true) }
         });
@@ -91,7 +91,7 @@ var chatRooms = function(api, next){
     var room = connection.room;
     var name = connection.id;
     api.stats.increment("chatRooom:roomMembers:" + connection.room, -1);
-    var key = api.chatRoom.redisRoomPrefix + connection.room;
+    var key = api.chatRoom.redisDataPrefix + connection.room;
     api.redis.client.llen(key, function(err, length){
       if(length > 0){
         api.redis.client.lrem(key, 1, name, function(){

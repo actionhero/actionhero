@@ -6,14 +6,17 @@ var webSocketServer = function(api, next){
     next()
   }else{
     api.webSocketServer = {};
-
-    var connectionPrefix = "/connection/";
-    var connectionsMap = {};
-    api.webSocketServer.extensions = [];
+    api.webSocketServer.fayeChannelPrefix = "/client/websocket/connection/"
+    api.webSocketServer.connectionsMap = {};
 
     api.webSocketServer._start = function(api, next){
       api.faye.server.attach(api.webServer.server);
-      api.log("webSockets bound to " + api.configData.httpServer.port + " mounted at " + api.configData.webSockets.options.mount, "notice"); 
+      api.log("webSockets bound to " + api.configData.httpServer.port + " mounted at " + api.configData.faye.mount, "notice"); 
+
+      api.faye.disconnectHandlers.push(function(clientId){
+        api.webSocketServer.destroyClient(clientId);
+      });
+
       next();
     }
 
@@ -21,27 +24,26 @@ var webSocketServer = function(api, next){
       next();
     }
 
-    api.webSocketServer.extensions.push({
+    api.faye.extensions.push({
       incoming: function(message, callback){
-        if(message.clientId == api.webSocketServer.internalClient._clientId){ callback(message); }
-        else if(message.channel.indexOf(connectionPrefix) != 0){  callback(message); }
-        else if(message.data == null){ callback(message); }
-        else{
-          api.webSocketServer.handleMessage(message);
-          callback();
-        }
-      },
-      outgoing: function(message, callback){
-        if(message.clientId == api.webSocketServer.internalClient._clientId){ callback(message); }
-        else if(message.channel.indexOf(connectionPrefix) != 0){ callback(message); }
-        else if(message.data == null){ callback(message); }
-        else{
-          var senderId = message.channel.split("/")[2];
-          if(senderId === message.clientId){
-            callback();
-          }else{
+        if(message.channel.indexOf(api.webSocketServer.fayeChannelPrefix) === 0){
+          if(message.clientId === api.faye.client._clientId){
             callback(message);
+          }else{
+            api.webSocketServer.incommingMessage(message);
+            callback(null);
           }
+        }else if(message.channel.indexOf('/meta/subscribe') === 0){
+          if(message.subscription.indexOf(api.webSocketServer.fayeChannelPrefix) === 0){
+            if(message.clientId != message.subscription.split("/")[4]){
+              message.error = "You cannot subscribe to another client's channel";
+            }else{
+              api.webSocketServer.createClient(message.clientId);
+            }
+          }
+          callback(message);
+        }else{
+          callback(message);
         }
       }
     });
@@ -51,24 +53,24 @@ var webSocketServer = function(api, next){
         type: 'webSocket', 
         remotePort: 0, 
         remoteIP: 0,
-        id: clientId,
+        clientId: clientId,
         rawConnection: {
           clientId: clientId,
         }
       });
       connection.sendMessage = function(message){
-        var channel = connectionPrefix + this.rawConnection.clientId;
-        api.webSocketServer.internalClient.publish(channel, message);
+        var channel = api.webSocketServer.fayeChannelPrefix + this.rawConnection.clientId;
+        api.faye.client.publish(channel, message);
       };
-      connectionsMap[clientId] = connection;
+      api.webSocketServer.connectionsMap[clientId] = connection;
       api.log("connection @ webSocket", "info", {to: connection.remoteIP});
     }
 
     api.webSocketServer.destroyClient = function(clientId){
-      var connection = connectionsMap[clientId];
+      var connection = api.webSocketServer.connectionsMap[clientId];
       if(connection){
-        delete connectionsMap[clientId];
         connection.destroy(function(){
+          delete api.webSocketServer.connectionsMap[clientId];
           api.log("disconnect @ webSocket", "info", {to: connection.remoteIP});
         });
       }
@@ -76,16 +78,17 @@ var webSocketServer = function(api, next){
 
     api.webSocketServer.handleSubscribe = function(clientId, channel){
       if(channel.indexOf(connectionPrefix) == 0){
-        var connection = connectionsMap[clientId];
+        var connection = api.webSocketServer.connectionsMap[clientId];
         if(connection){
           connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
         }
       };
     }
 
-    api.webSocketServer.handleMessage = function(message){
-      var clientId = message.channel.split("/")[2];
-      var connection = connectionsMap[clientId];
+    api.webSocketServer.incommingMessage = function(message){
+      var clientId = message.channel.split("/")[4];
+      console.log(clientId)
+      var connection = api.webSocketServer.connectionsMap[clientId];
       if(connection != null){
         var data = message.data;
         var event = data.event;

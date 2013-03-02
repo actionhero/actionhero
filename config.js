@@ -175,7 +175,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  enable: false,
+  enable: true,
 };
 
 //////////////////////////////////

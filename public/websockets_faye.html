@@ -23,7 +23,20 @@ actionHeroWebSocket.prototype.defaults = function(){
   return {
     host: window.location.origin,
     path: "/faye",
-    setupChannel: "/welcome",
+    setupChannel: "/_welcome",
+    channelPrefix: "/client/websocket/connection/"
+  }
+}
+
+actionHeroWebSocket.prototype.log = function(message){
+  if(console && console.log){
+    if(typeof message != "string"){ message = JSON.stringify(message); }
+    var date = new Date();
+    var times = [date.getHours().toString(), date.getMinutes().toString(), date.getSeconds().toString()];
+    for(var i in times){
+      if(times[i].length < 2){ times[i] = "0" + times[i]; }
+    }
+    console.log("[AH::client @ " + times.join(":") + "] " + message);
   }
 }
 
@@ -36,7 +49,7 @@ actionHeroWebSocket.prototype.connect = function(callback){
   
   initialMessage.callback(function() {
     self.id = self.client.getClientId()
-    self.channel = '/connection/' + self.id;
+    self.channel = self.options.channelPrefix + self.id;
     self.subscription = self.client.subscribe(self.channel, function(message) {
       self.handleMessage(message);
     });
@@ -53,7 +66,7 @@ actionHeroWebSocket.prototype.send = function(args, callback){
   self.messageCount++;
   self.callbacks[self.messageCount] = callback;
   self.client.publish(self.channel, args).errback(function(err){
-    console.log(err);
+    self.log(err);
   });
 };
 
@@ -94,18 +107,18 @@ actionHeroWebSocket.prototype.say = function(message, callback){
 
   var A = new actionHeroWebSocket
   A.events.say = function(message){
-    console.log("SAY:");
-    console.log(message)
+    A.log("SAY:");
+    A.log(message)
   }
   A.events.alert = function(message){
-    console.log("ALERT:");
-    console.log(message)
+    A.log("ALERT:");
+    A.log(message)
   }
   A.connect(function(err){
     if(err != null){
-      console.log(err);
+      A.log(err);
     }else{
-      console.log("CONNECTED");
+      A.log("CONNECTED");
     }
   });
 
