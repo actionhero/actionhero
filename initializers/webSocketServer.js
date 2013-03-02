@@ -12,23 +12,7 @@ var webSocketServer = function(api, next){
     api.webSocketServer.extensions = [];
 
     api.webSocketServer._start = function(api, next){
-      api.webSocketServer.bayeux = new faye.NodeAdapter(api.configData.webSockets.options);
-      api.webSocketServer.bayeux.bind('handshake', function(clientId){
-        api.webSocketServer.createClient(clientId);
-      });
-      api.webSocketServer.bayeux.bind('disconnect', function(clientId){
-        api.webSocketServer.destroyClient(clientId);
-      });
-      api.webSocketServer.bayeux.bind('subscribe', function(clientId, channel){
-        api.webSocketServer.handleSubscribe(clientId, channel);
-      });
-      api.webSocketServer.bayeux.attach(api.webServer.server);
-      for(var i in api.webSocketServer.extensions){
-        api.webSocketServer.bayeux.addExtension(api.webSocketServer.extensions[i]);
-      }
-      api.webSocketServer.internalClient = api.webSocketServer.bayeux.getClient();
-      api.webSocketServer.internalClient.publish('/_welcome');
-      api.log("websocket internal client ID: " + api.webSocketServer.internalClient._clientId, 'debug');
+      api.faye.server.attach(api.webServer.server);
       api.log("webSockets bound to " + api.configData.httpServer.port + " mounted at " + api.configData.webSockets.options.mount, "notice"); 
       next();
     }
@@ -39,26 +23,24 @@ var webSocketServer = function(api, next){
 
     api.webSocketServer.extensions.push({
       incoming: function(message, callback){
-        if(message.clientId == api.webSocketServer.internalClient._clientId){ return callback(message); }
-        else if(message.channel.indexOf(connectionPrefix) != 0){ return callback(message); }
-        else if(message.data == null){ return callback(message); }
+        if(message.clientId == api.webSocketServer.internalClient._clientId){ callback(message); }
+        else if(message.channel.indexOf(connectionPrefix) != 0){  callback(message); }
+        else if(message.data == null){ callback(message); }
         else{
           api.webSocketServer.handleMessage(message);
-          delete callback;
-          return;
+          callback();
         }
       },
       outgoing: function(message, callback){
-        if(message.clientId == api.webSocketServer.internalClient._clientId){ return callback(message); }
-        else if(message.channel.indexOf(connectionPrefix) != 0){ return callback(message); }
-        else if(message.data == null){ return callback(message); }
+        if(message.clientId == api.webSocketServer.internalClient._clientId){ callback(message); }
+        else if(message.channel.indexOf(connectionPrefix) != 0){ callback(message); }
+        else if(message.data == null){ callback(message); }
         else{
           var senderId = message.channel.split("/")[2];
           if(senderId === message.clientId){
-            delete callback;
-            return;
+            callback();
           }else{
-            return callback(message);
+            callback(message);
           }
         }
       }

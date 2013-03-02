@@ -73,20 +73,20 @@ var redis = function(api, next){
         api.redis[client].auth(api.configData.redis.password, function(){
           api.redis.selectDatabase(api.redis[client], function(){
             started--;
-            if(started == 0){ api.redis.initPubSub(callback); }
+            if(started == 0){ api.redis.initPeers(callback); }
           });
         }); 
       }else if(api.redis.fake != true){
         api.redis.client.on("ready", function (err) {
           api.redis.selectDatabase(api.redis[client], function(){
             started--;
-            if(started == 0){ api.redis.initPubSub(callback); }
+            if(started == 0){ api.redis.initPeers(callback); }
           });
         });
       }else{
         process.nextTick(function(){
           started--;
-          if(started == 0){ api.redis.initPubSub(callback); }
+          if(started == 0){ api.redis.initPeers(callback); }
         });
       }
     });
@@ -104,52 +104,27 @@ var redis = function(api, next){
   }
 
   api.redis.initPeers = function(callback){
+    var successMessage = "connected to redis @ "+api.configData.redis.host+":"+api.configData.redis.port+" on DB #"+api.configData.redis.DB;
     if(api.redis.fake != true){
       api.redis.client.lrem("actionHero:peers", 1, api.id, function(){
         api.redis.client.rpush("actionHero:peers", api.id, function(){
+          api.log(successMessage, "notice");
           callback();
         });
       });
     }else{
       api.redis.client.rpush("actionHero:peers", api.id, function(){
         process.nextTick(function(){
+          api.log(successMessage, "notice");
           callback();
         });
       });
     }
   }
 
-  api.redis.initPubSub = function(callback){
-    api.redis.initPeers(function(){
-      api.redis.clientSubscriber.on("message", function(channel, message){
-        try{
-          var found = false;
-          for(var i in api.redis.channelHandlers){
-            if(i === channel){
-              found = true;
-              api.redis.channelHandlers[i](channel, message);
-            }
-          }
-          if(found == false){
-            api.log("message from unknown channel ("+channel+"): "+message, "warning");
-          }
-        }catch(e){
-          api.log("redis message processing error: " + e, "error")
-        }
-      });
-      api.log("connected to redis @ "+api.configData.redis.host+":"+api.configData.redis.port+" on DB #"+api.configData.redis.DB, "notice");
-      callback();
-    });
-  }
-
   api.redis.stopTimers = function(api){
     clearTimeout(api.redis.pingTimer);
     clearTimeout(api.redis.lostPeerTimer);
-  }
-
-  api.redis.registerChannel = function(channel, handler){
-    api.redis.clientSubscriber.subscribe(channel);
-    api.redis.channelHandlers[channel] = handler;
   }
 
   api.redis.ping = function(next){

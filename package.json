@@ -39,7 +39,8 @@
     "winston": "0.6.x",
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
-    "faye": "0.8.x"
+    "faye": "0.8.x",
+    "faye-redis": "0.1.x"
   },
   "devDependencies": {
     "mocha": "1.7.x",

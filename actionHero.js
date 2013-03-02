@@ -58,6 +58,7 @@ actionHero.prototype.start = function(params, next){
     'exceptions',
     'stats',
     'redis',
+    'faye',
     'cache',
     'actions',
     'actionProcessor',

@@ -2,40 +2,46 @@ var chatRooms = function(api, next){
 
   api.chatRoom = {};
   api.chatRoom.redisRoomPrefix = "actionHero:roomMembers:";
-  api.chatRoom.chatChannel = "actionHero:say:" + api.configData.redis.DB;
+  api.chatRoom.fayeChannel = "/actionHero/chat";
 
   ////////////////////////////////////////////////////////////////////////////
   // broadcast a message to all connections in a room
-  api.chatRoom.socketRoomBroadcast = function(connection, message, fromQueue){
-    if(fromQueue == null){fromQueue = false;}
+  api.chatRoom.socketRoomBroadcast = function(connection, message){
     if(connection == null){ connection = {}; }
     if(connection.room == null){ connection.room = api.configData.general.defaultChatRoom; }
     if(connection.id == null){ connection.id = 0; }
     if(connection.params != null && connection.params.roomMatchKey != null){ connection.roomMatchKey = connection.params.roomMatchKey; }
     if(connection.params != null && connection.params.roomMatchValue != null){ connection.roomMatchValue = connection.params.roomMatchValue; }
-    if(fromQueue == false){ 
-      var payload = {
-        message: message,
-        connection: {
-          id: connection.id,
-          room: connection.room,
-          roomMatchKey: connection.roomMatchKey,
-          roomMatchValue: connection.roomMatchValue
-        }
-      };
-      api.redis.client.publish(api.chatRoom.chatChannel, JSON.stringify(payload));
-    }
-    else{
-      api.stats.increment("chatRooom:messagesSent");
-      var messagePayload = {message: message, room: connection.room, from: connection.id, context: "user", sentAt: new Date().getTime() };
+    api.stats.increment("chatRooom:messagesSent");
+    var payload = {
+      serverToken: api.configData.general.serverToken,
+      serverId: api.id,
+      message: message,
+      sentAt: new Date().getTime(),
+      connection: {
+        id: connection.id,
+        room: connection.room,
+        roomMatchKey: connection.roomMatchKey,
+        roomMatchValue: connection.roomMatchValue
+      }
+    };
+    api.faye.client.publish(api.chatRoom.fayeChannel, payload)
+  }
+
+  api.chatRoom.incommingMessage = function(message){
+    if(message.serverToken != api.configData.general.serverToken){
+      api.log("message token miss-match from " + message.serverId, "error", message);
+    }else{
+      api.stats.increment("chatRooom:messagesRecieved");
+      var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user" };
       for(var i in api.connections.connections){
         var thisConnection = api.connections.connections[i];
-        if(thisConnection.room == connection.room || thisConnection.additionalListeningRooms.indexOf(connection.room) > -1){
-          if(connection == null || thisConnection.id != connection.id){
+        if(thisConnection.room == message.connection.room || thisConnection.additionalListeningRooms.indexOf(message.connection.room) > -1){
+          if(message.connection == null || thisConnection.id != message.connection.id){
             var matched = false;
-            if(connection.roomMatchKey == null){
+            if(message.connection.roomMatchKey == null){
               matched = true;
-            }else if(thisConnection[connection.roomMatchKey] == connection.roomMatchValue){
+            }else if(thisConnection[message.connection.roomMatchKey] == message.connection.roomMatchValue){
                 matched = true;
             }
             if(matched == true){
@@ -108,12 +114,17 @@ var chatRooms = function(api, next){
     api.chatRoom.socketRoomBroadcast(connection, message);
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-  // register for messages
-  api.redis.registerChannel(api.chatRoom.chatChannel, function(channel, message){
-    message = JSON.parse(message);
-    api.chatRoom.socketRoomBroadcast(message.connection, message.message, true);
-  });
+  api.chatRoom._start = function(api, next){
+    api.chatRoom.subscription = api.faye.client.subscribe(api.chatRoom.fayeChannel, function(message) {
+      api.chatRoom.incommingMessage(message);
+    });
+    next();
+  } 
+
+  api.chatRoom._teardown = function(api, next){
+    api.chatRoom.subscription.cancel();
+    next();
+  } 
 
   next();
 }
