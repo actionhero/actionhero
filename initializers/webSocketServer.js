@@ -142,7 +142,6 @@ var webSocketServer = function(api, next){
             }
           }
           var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSocketServer.renderActionResponse});
-
           actionProcessor.processAction();
         }
 
