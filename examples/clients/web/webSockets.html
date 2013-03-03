@@ -1,22 +1,27 @@
-<script src="/socket.io/socket.io.js"></script>
+<script src="/faye/client.js"></script>
 <script src="/public/javascript/actionHeroWebSocket.js"></script>
 
 <script>
-  
-  s = new actionHeroWebSocket
-  s.on('connected', function(){
-    console.log('websocket connected');
-    s.action("cacheTest", {key: "key", value: "value"}, function(err, response, dela){
-       console.log(response);
-    });
 
-    s.on('say', function(message){
-      console.log(message);
-    });    
-  });
+  var A = new actionHeroWebSocket;
 
-  s.on('error', function(message){
-    console.log("web socket error: " + message);
+  A.events = {
+    say: function(message){
+      A.log("SAY:");
+      A.log(message)
+    },
+    alert: function(message){
+      A.log("ALERT:");
+      A.log(message);
+    }
+  }
+
+  A.connect(function(err){
+    if(err != null){
+      A.log(err);
+    }else{
+      A.log("CONNECTED");
+    }
   });
 
 </script>
