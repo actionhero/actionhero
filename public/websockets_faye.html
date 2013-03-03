@@ -108,11 +108,32 @@ actionHeroWebSocket.prototype.action = function(action, params, callback){
   }, callback);
 }
 
-actionHeroWebSocket.prototype.say = function(message){
+actionHeroWebSocket.prototype.say = function(message, callback){
   this.send({
     event: 'say', 
     message: message,
-  });
+  }, callback);
+}
+
+actionHeroWebSocket.prototype.detailsView = function(callback){
+  this.send({event: 'detailsView'}, callback);
+}
+
+actionHeroWebSocket.prototype.roomView = function(callback){
+  this.send({event: 'roomView'}, callback);
+}
+
+actionHeroWebSocket.prototype.roomChange = function(room, callback){
+  this.room = room;
+  this.send({event: 'roomChange', room: room}, callback);
+}
+
+actionHeroWebSocket.prototype.listenToRoom = function(room, callback){
+  this.send({event: 'listenToRoom', room: room}, callback);
+}
+
+actionHeroWebSocket.prototype.silenceRoom = function(room, callback){
+  this.send({event: 'silenceRoom', room: room}, callback);
 }
 
 </script>
