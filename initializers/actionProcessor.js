@@ -89,7 +89,7 @@ var actionProcessor = function(api, next){
       }
       self.completeAction();
     }else if(actionTemplate.blockedConnectionTypes != null && actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
-      self.connection.error = new Error("this action does not support the " + self.connection.type + "connection type");
+      self.connection.error = new Error("this action does not support the " + self.connection.type + " connection type");
       self.completeAction();
     }else{
       api.params.requiredParamChecker(self.connection, actionTemplate.inputs.required);
