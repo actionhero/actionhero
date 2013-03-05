@@ -114,7 +114,7 @@ describe('Action: chat', function(){
         thisClient.write(message + "\r\n");
       }
 
-      client = net.connect(specHelper.params[0].tcpServer.port, function(){
+      var client = net.connect(specHelper.params[0].tcpServer.port, function(){
         client.setEncoding('utf8');
         var rsp = function(d){ 
           var lines = d.split("\n");
