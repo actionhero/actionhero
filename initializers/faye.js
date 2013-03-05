@@ -40,6 +40,11 @@ var faye = function(api, next){
     next();
   }  
 
+  api.faye._teardown = function(api, next){
+    api.faye.server.getClient().disconnect();
+    next();
+  }
+
   api.faye.connectHandlers.push(function(clientId){
     api.log("faye client connected: " + clientId, "debug");
   });

@@ -141,6 +141,7 @@ actionHero.prototype.stop = function(next){
     var orderedTeardowns = {};
     var thing = [
       "webServer", 
+      "faye", 
       "webSocketServer", 
       "socketServer", 
       "taskProcessor"
