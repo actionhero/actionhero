@@ -2,12 +2,8 @@ describe('Action: chat', function(){
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
-  var io = require('socket.io-client');
   var socketURL = "http://localhost:9000";
-  var io_options ={
-    transports: ['websocket'],
-    'force new connection': true
-  };
+  var net = require('net')
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
@@ -104,16 +100,39 @@ describe('Action: chat', function(){
 
     it('action should only be valid for http/s clients', function(done){
       this.timeout(5000)
-      var client = io.connect(socketURL, io_options);
-      client.on('welcome', function(data){
-        client.on('response', function(data){
-          client.removeListener('response', this); 
-          data.error.should.equal("Error: this action does not support the webSocketconnection type");
-          client.disconnect();
+
+      function makeSocketRequest(thisClient, message, cb){
+        var rsp = function(d){ 
+          var lines = d.split("\n");
+          var lastLine = lines[(lines.length - 1)];
+          if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
+          var parsed = JSON.parse(lastLine);
+          thisClient.removeListener('data', rsp); 
+          cb(parsed); 
+        };
+        thisClient.on('data', rsp);
+        thisClient.write(message + "\r\n");
+      }
+
+      client = net.connect(specHelper.params[0].tcpServer.port, function(){
+        client.setEncoding('utf8');
+        var rsp = function(d){ 
+          var lines = d.split("\n");
+          var lastLine = lines[(lines.length - 1)];
+          if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
+          var parsed = JSON.parse(lastLine);
+          client.removeListener('data', rsp); 
+          
+          parsed.error.should.equal("Error: this action does not support the socket connection type");
           done();
-        });
-        client.emit('action', {action: 'chat'});
+        };
+        
+        setTimeout(function(){
+          client.on('data', rsp);
+          client.write("chat" + "\r\n");
+        }, 1000);
       });
+
     });
 
   });

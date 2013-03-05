@@ -2,7 +2,6 @@ describe('Client: Web Sockets', function(){
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
-  var io = require('socket.io-client');
   var socketURL = "http://localhost:9000";
   var io_options ={
     transports: ['websocket'],
