@@ -36,6 +36,8 @@ var faye = function(api, next){
     setTimeout(function(){
       api.log("api faye client ID: " + api.faye.client._clientId, 'debug');
     }, 1000);
+
+    next();
   }  
 
   api.faye.connectHandlers.push(function(clientId){
