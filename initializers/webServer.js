@@ -46,9 +46,8 @@ var webServer = function(api, next){
           }
         }
       }
-      if(api.configData.webSockets.enable != true){
-        api.webServer.server.close();
-      }
+      
+      api.webServer.server.close();
       next();
     }
     

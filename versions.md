@@ -7,8 +7,12 @@
 - removed support for node versions < v0.8.0.  Time to modernize! 
 - actionHero now uses fakeredis rather than implamenting certain operations locally (cache, tasks)
   - thanks to hdachev for all his help!
-- this allows for a smaller, more unified codebase
-- redis is now always 'enabled', but `fake` can be toggled (boolean)
+  - this allows for a smaller, more unified codebase
+  - redis is now always 'enabled', but `fake` can be toggled (boolean)
+- actionHero now uses the Faye messaging system
+  - this replaces socket.io for websocket clients
+  - this replaces actionHero's ineternal methods for redis pub/sub
+  - please checkout the wiki for API changes
 
 ** Config **
 - In addition to passing --config=/path/to/file to specifiy a `config.js` to actionHero, you can also set the `ACTIONHERO_CONFIG` envrionment variable.
