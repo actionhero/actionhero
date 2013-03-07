@@ -16,11 +16,12 @@
     }
   }
 
-  A.connect(function(err){
+  A.connect(function(err, details){
     if(err != null){
       A.log(err);
     }else{
       A.log("CONNECTED");
+      A.log(details);
     }
   });
 

@@ -4,9 +4,10 @@ describe('Client: Web Sockets', function(){
   var should = require("should");
   var socketURL = "http://localhost:9000";
   var faye = require("faye");
-  var client_1 = new faye.Client(socketURL);
-  var client_2 = new faye.Client(socketURL);
-  var client_3 = new faye.Client(socketURL);
+  var actionHeroWebSocket = require(process.cwd() + "/public/javascript/actionHeroWebSocket.js").actionHeroWebSocket;
+  var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye});
+  var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye});
+  var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye});
 
   function makeSocketRequest(thisClient, type, data, cb){
     var listener = function(response){ 
@@ -30,20 +31,31 @@ describe('Client: Web Sockets', function(){
   before(function(done){
     specHelper.prepare(0, function(api){ 
       api.redis.client.flushdb(function(){
-        apiObj = specHelper.cleanAPIObject(api);
+        apiObj = api;
         done();
       });
     })
   });
 
+  it('faye should work in general', function(done){
+    var client = new faye.Client(socketURL + "/faye");
+    client.subscribe('/test', function(message){
+      message.message.should.equal('hello');
+      done();
+    });
+
+    setTimeout(function(){
+      apiObj.faye.client.publish("/test", {message: 'hello'});
+    }, 1000);
+  });
+
   it('socket client connections should work: client 1', function(done){
-    client_1.on('welcome', function(data){
+    client_1.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
-      data.context.should.equal("api");
-      data.room.should.equal("defaultRoom");
-            setTimeout(function(){
-          done();
-        }, 1000);
+      data.context.should.equal("response");
+      data.details.room.should.equal("defaultRoom");
+      data.details.totalActions.should.equal(0);
+      done();
     });
   });
 

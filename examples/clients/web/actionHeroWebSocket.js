@@ -15,14 +15,25 @@
     for(var i in options){
       self.options[i] = options[i];
     }
+
+    if(options && options.faye != null){
+      self.faye = options.faye;
+    }else if(window.Faye != null){
+      self.faye = window.Faye;
+    }else{
+      self.faye = Faye;
+    }
   }
 
   actionHeroWebSocket.prototype.defaults = function(){
+    var host;
+    if(typeof window != 'undefined'){ host = window.location.origin; }
     return {
-      host: window.location.origin,
+      host: host,
       path: "/faye",
       setupChannel: "/_welcome",
-      channelPrefix: "/client/websocket/connection/"
+      channelPrefix: "/client/websocket/connection/",
+      startupDelay: 500
     }
   }
 
@@ -41,17 +52,23 @@
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
 
-    self.client = new Faye.Client(self.options.host + self.options.path);
+    self.client = new self.faye.Client(self.options.host + self.options.path);
     
     var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
     
     initialMessage.callback(function() {
-      self.id = self.client.getClientId()
+      self.id = self.client.getClientId();
       self.channel = self.options.channelPrefix + self.id;
       self.subscription = self.client.subscribe(self.channel, function(message) {
         self.handleMessage(message);
       });
-      callback(null, self);
+
+      setTimeout(function(){
+        self.detailsView(function(details){
+          callback(null, details);
+        });
+      }, self.options.startupDelay);
+      
     });
 
     initialMessage.errback(function(error) {
@@ -134,4 +151,6 @@
     this.send({event: 'silenceRoom', room: room}, callback);
   }
 
-})(typeof exports === 'undefined'? this['mymodule']={}: exports);
+  exports.actionHeroWebSocket = actionHeroWebSocket;
+
+})(typeof exports === 'undefined' ? window : exports);
