@@ -78,7 +78,7 @@
 
   actionHeroWebSocket.prototype.send = function(args, callback){
     var self = this;
-    if(typeof callback == "function"){
+    if(typeof callback === "function"){
       self.messageCount++;
       self.callbacks[self.messageCount] = callback;
     }
@@ -89,21 +89,21 @@
 
   actionHeroWebSocket.prototype.handleMessage = function(message){
     var self = this;
-    if(message.context == "response"){
+    if(message.context === "response"){
       if(typeof self.callbacks[message.messageCount] === 'function'){
         self.callbacks[message.messageCount](message);
       }
       delete self.callbacks[message.messageCount];
     }
 
-    else if(message.context == "user"){
-      if(typeof self.events.say == 'function'){
+    else if(message.context === "user"){
+      if(typeof self.events.say === 'function'){
         self.events.say(message);
       }
     }
 
     else{
-      if(typeof self.events.alert == 'function'){
+      if(typeof self.events.alert === 'function'){
         self.events.alert(message);
       }
     }
@@ -148,6 +148,10 @@
 
   actionHeroWebSocket.prototype.silenceRoom = function(room, callback){
     this.send({event: 'silenceRoom', room: room}, callback);
+  }
+
+  actionHeroWebSocket.prototype.disconnect = function(){
+    this.client.disconnect();
   }
 
   exports.actionHeroWebSocket = actionHeroWebSocket;

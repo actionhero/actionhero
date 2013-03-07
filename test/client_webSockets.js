@@ -60,7 +60,7 @@ describe('Client: Web Sockets', function(){
     });
   });
 
-  it('Other clients should have been told about people entering the room', function(done){
+  it('socket client connections should work: client 3', function(done){
     client_3.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
@@ -85,10 +85,10 @@ describe('Client: Web Sockets', function(){
       delete client_1.events.say;
       response.should.be.an.instanceOf(Object);
       response.context.should.equal('user');
-      response.message.message.should.equal('hello from client 2');
+      response.message.should.equal('hello from client 2');
       done();
     }
-    client_2.say({message: "hello from client 2"});
+    client_2.say("hello from client 2", function(){}); // TODO: why does this block without a callback?
   });
 
   it('can run actions with errors', function(done){
@@ -133,70 +133,62 @@ describe('Client: Web Sockets', function(){
 
   });
 
-  // it('can change rooms and get room details', function(done){
-  //    client_1.emit("roomChange", {room: "otherRoom"});
-  //    setTimeout(function(){
-  //     makeSocketRequest(client_1, "roomView", {}, function(response){
-  //       response.should.be.an.instanceOf(Object);
-  //       should.not.exist(response.error);
-  //       response.room.should.equal("otherRoom")
-  //       done();
-  //      });
-  //    }, 500);
-  // });
+  it('can change rooms and get room details', function(done){
+    client_1.roomChange("otherRoom", function(){
+      client_1.detailsView(function(response){
+        response.should.be.an.instanceOf(Object);
+        should.not.exist(response.error);
+        response.details.room.should.equal("otherRoom")
+        done();
+      });
+    });
+  });
 
-  // it('I can register for messages from rooms I am not in', function(done){
-  //   this.timeout(5000);
-  //   makeSocketRequest(client_1, "roomChange", {room: 'room1'}, function(response){
-  //     makeSocketRequest(client_2, "roomChange", {room: 'room2'}, function(response){
-  //       makeSocketRequest(client_1, "listenToRoom", {room: 'room2'}, function(response){
-  //         var listener = function(message){
-  //           client_1.removeListener('say',listener);
-  //           message.message.should.eql("hello in room2")
-  //           done();
-  //         }
-  //         setTimeout(function(){
-  //           client_1.on('say', listener);
-  //           client_2.emit('say', {message: "hello in room2"});
-  //         }, 500);
-  //       });
-  //     });
-  //   });
-  // });
+  it('I can register for messages from rooms I am not in; and then unregister', function(done){
+    this.timeout(5000)
+    client_1.roomChange("room1", function(){
+      client_2.roomChange("room2", function(){
+        
+        setTimeout(function(){
+          client_1.listenToRoom("room2", function(){
+            client_1.events.say = function(response){
+              delete client_1.events.say;
+              response.should.be.an.instanceOf(Object);
+              response.context.should.equal('user');
+              response.message.should.equal('hello in room2');
+              
+              client_1.silenceRoom("room2");
+              
+              client_1.events.say = function(response){
+                delete client_1.events.say;
+                throw new Error("I should not have gotten this message: " + response);
+              }
+              setTimeout(function(){
+                delete client_1.events.say;
+                done(); // yay!
+              }, 1000)
+              setTimeout(function(){
+                client_2.say("hello in room2");
+              }, 500);
 
-  // it('I can unregister for messages from rooms I am not in', function(done){
-  //   this.timeout(5000);
-  //   makeSocketRequest(client_1, "roomChange", {room: 'room1'}, function(response){
-  //     makeSocketRequest(client_2, "roomChange", {room: 'room2'}, function(response){
-  //       makeSocketRequest(client_1, "listenToRoom", {room: 'room2'}, function(response){
-  //           makeSocketRequest(client_1, "silenceRoom", {room: 'room2'}, function(response){
-  //               var listener = function(response){
-  //                 client_1.removeListener('data',listener);
-  //                 throw new Error("I should not have gotten this message: " + response)
-  //                 done();
-  //               }
-  //               setTimeout(function(){
-  //                 client_1.on('say', listener);
-  //                 client_2.emit('say', {message: "hello in room2"});
-  //               }, 200);
-  //               setTimeout(function(){
-  //                 client_1.removeListener('say',listener);
-  //                 done(); // yay, I didn't get the message
-  //               }, 2000);
-  //           });
-  //       });
-  //     });
-  //   });
-  // });
+            }
+            client_2.say("hello in room2");
+          });
+        }, 500);
 
-  // it('can disconnect', function(done){
-  //   countWebSocketConnections().should.equal(2);
-  //   client_1.disconnect();
-  //   client_2.disconnect();
-  //   setTimeout(function(){
-  //     countWebSocketConnections().should.equal(0);
-  //     done();
-  //   }, 500);
-  // });
+      });
+    });
+  });
+
+  it('can disconnect', function(done){
+    countWebSocketConnections().should.equal(3);
+    client_1.disconnect();
+    client_2.disconnect();
+    client_3.disconnect();
+    setTimeout(function(){
+      countWebSocketConnections().should.equal(0);
+      done();
+    }, 500);
+  });
 
 });
