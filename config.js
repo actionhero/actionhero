@@ -161,7 +161,7 @@ configData.httpServer = {
 ////////////////
 
 configData.tcpServer = {
-  enable: true,
+  enable: false,
   secure: false,
   port: 5000,
   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
@@ -175,7 +175,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  enable: true,
+  enable: false,
 };
 
 //////////////////////////////////
