@@ -9,15 +9,6 @@ describe('Client: Web Sockets', function(){
   var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye});
   var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye});
 
-  function makeSocketRequest(thisClient, type, data, cb){
-    var listener = function(response){ 
-      thisClient.removeListener('response', listener); 
-      cb(response); 
-    };
-    thisClient.on('response', listener);
-    thisClient.emit(type, data);
-  }
-
   function countWebSocketConnections(){
     var found = 0;
     for(var i in apiObj.connections.connections){
@@ -46,7 +37,7 @@ describe('Client: Web Sockets', function(){
 
     setTimeout(function(){
       apiObj.faye.client.publish("/test", {message: 'hello'});
-    }, 1000);
+    }, 500);
   });
 
   it('socket client connections should work: client 1', function(done){
@@ -59,103 +50,88 @@ describe('Client: Web Sockets', function(){
     });
   });
 
-  // it('socket client connections should work: client 2', function(done){
-  //   client_2 = io.connect(socketURL, io_options);
-  //   client_2.on('welcome', function(data){
-  //     data.should.be.an.instanceOf(Object);
-  //     data.context.should.equal("api");
-  //     data.room.should.equal("defaultRoom");
-  //     setTimeout(function(){
-  //         done();
-  //     }, 1000);
-  //   });
-  // });
+  it('socket client connections should work: client 2', function(done){
+    client_2.connect(function(err, data){
+      data.should.be.an.instanceOf(Object);
+      data.context.should.equal("response");
+      data.details.room.should.equal("defaultRoom");
+      data.details.totalActions.should.equal(0);
+      done();
+    });
+  });
 
-  // it('Other clients should have been told about people entering the room', function(done){
-  //   this.timeout(3000)
-  //   var listener = function(response){
-  //     client_1.removeListener('say', listener);
-  //     response.should.be.an.instanceOf(Object);
-  //     response.context.should.equal('user');
-  //     response.message.should.equal('I have entered the room');
-  //     setTimeout(function(){
-  //         client_3.disconnect();
-  //         setTimeout(function(){
-  //             done();
-  //         }, 1000);  
-  //     }, 1000);
-  //   }
-  //   client_1.on('say', listener);
-  //   client_3 = io.connect(socketURL, io_options);
-  // });
+  it('Other clients should have been told about people entering the room', function(done){
+    client_3.connect(function(err, data){
+      data.should.be.an.instanceOf(Object);
+      data.context.should.equal("response");
+      data.details.room.should.equal("defaultRoom");
+      data.details.totalActions.should.equal(0);
+      done();
+    });
+  });
 
-  // it('I can get my connection details', function(done){
-  //   makeSocketRequest(client_1, "detailsView", {}, function(response){
-  //     response.should.be.an.instanceOf(Object);
-  //     response.status.should.equal("OK")
-  //     response.details.connectedAt.should.be.within(0, new Date().getTime())
-  //     response.details.room.should.equal("defaultRoom")
-  //     done()
-  //   });
-  // });
+  it('I can get my connection details', function(done){
+    client_1.detailsView(function(response){
+      response.should.be.an.instanceOf(Object);
+      response.status.should.equal("OK")
+      response.details.connectedAt.should.be.within(0, new Date().getTime())
+      response.details.room.should.equal("defaultRoom")
+      done()
+    });
+  });
 
-  // it('Clients can talk to each other', function(done){
-  //   var listener = function(response){
-  //     client_1.removeListener('say', listener);
-  //     response.should.be.an.instanceOf(Object);
-  //     response.context.should.equal('user');
-  //     response.message.should.equal('hello from client 2');
-  //     done();
-  //   }
-  //   client_1.on('say', listener);
-  //   client_2.emit("say", {message: "hello from client 2"});
-  // });
+  it('Clients can talk to each other', function(done){
+    client_1.events.say = function(response){
+      delete client_1.events.say;
+      response.should.be.an.instanceOf(Object);
+      response.context.should.equal('user');
+      response.message.message.should.equal('hello from client 2');
+      done();
+    }
+    client_2.say({message: "hello from client 2"});
+  });
 
-  // it('can run actions with errors', function(done){
-  //   makeSocketRequest(client_1, "action", {action: "cacheTest"}, function(response){
-  //     response.should.be.an.instanceOf(Object);
-  //     response.error.should.equal("Error: key is a required parameter for this action");
-  //     done();
-  //   });
-  // });
+  it('can run actions with errors', function(done){
+    client_1.action('cacheTest', function(response){
+      response.should.be.an.instanceOf(Object);
+      response.error.should.equal("Error: key is a required parameter for this action");
+      done();
+    });
+  });
 
-  // it('can run actions', function(done){
-  //   makeSocketRequest(client_1, "action", {action: "cacheTest", key: "test key", value: "test value"}, function(response){
-  //     response.should.be.an.instanceOf(Object);
-  //         should.not.exist(response.error);
-  //     done();
-  //   });
-  // });
+  it('can run actions properly', function(done){
+    client_1.action("cacheTest", {key: "test key", value: "test value"}, function(response){
+      response.should.be.an.instanceOf(Object);
+      should.not.exist(response.error);
+      done();
+    });
+  });
 
-  // it('will limit how many simultanious connections I can have', function(done){
-  //   this.timeout(5000)
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 500}});
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 600}});
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 700}});
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 800}});
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 900}});
-  //   client_1.emit('action', {action: 'sleepTest', params: {sleepDuration: 1000}});
+  it('will limit how many simultanious connections I can have', function(done){
+    this.timeout(5000);
 
-  //   var responses = []
-  //   var checkResponses = function(data){
-  //     responses.push(data);
-  //     if(responses.length == 6){
-  //       for(var i in responses){
-  //         var response = responses[i];
-  //         if(i == 0){
-  //           response.error.should.eql("you have too many pending requests");
-  //         }else{
-  //           should.not.exist(response.error)
-  //         }
-  //       }
+    var responses = [];
+    client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 700}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 800}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 900}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 1000}, function(response){ responses.push(response); })
 
-  //       client_1.removeListener('response', checkResponses);
-  //       done();
-  //     }
-  //   }
+    setTimeout(function(){
+      responses.length.should.equal(6);
+      for(var i in responses){
+        var response = responses[i];
+        if(i == 0){
+          response.error.should.eql("you have too many pending requests");
+        }else{
+          should.not.exist(response.error)
+        }
+      }
+      done();
+    }, 2000);
 
-  //   client_1.on('response', checkResponses);
-  // });
+  });
 
   // it('can change rooms and get room details', function(done){
   //    client_1.emit("roomChange", {room: "otherRoom"});

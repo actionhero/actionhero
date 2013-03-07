@@ -95,6 +95,8 @@ var webSocketServer = function(api, next){
         if(connection.response.context == "response"){
           if(proxy_connection.respondingTo != null){
             connection.response.messageCount = proxy_connection.respondingTo;
+          }else if(proxy_connection.messageCount != null){
+            connection.response.messageCount = proxy_connection.messageCount;
           }else{
             connection.response.messageCount = connection.messageCount;
           }

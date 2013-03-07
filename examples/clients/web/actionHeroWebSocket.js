@@ -89,12 +89,11 @@
 
   actionHeroWebSocket.prototype.handleMessage = function(message){
     var self = this;
-
     if(message.context == "response"){
-      if(typeof self.callbacks[self.messageCount] === 'function'){
-        self.callbacks[self.messageCount](message);
+      if(typeof self.callbacks[message.messageCount] === 'function'){
+        self.callbacks[message.messageCount](message);
       }
-      delete self.callbacks[self.messageCount];
+      delete self.callbacks[message.messageCount];
     }
 
     else if(message.context == "user"){
