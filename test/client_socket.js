@@ -12,16 +12,16 @@ describe('Client: Socket', function(){
   var client3 = {};
 
   function makeSocketRequest(thisClient, message, cb){
-  var rsp = function(d){ 
-    var lines = d.split("\n");
-    var lastLine = lines[(lines.length - 1)];
-    if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
-    var parsed = JSON.parse(lastLine);
-    thisClient.removeListener('data', rsp); 
-    cb(parsed); 
-  };
-  thisClient.on('data', rsp);
-  thisClient.write(message + "\r\n");
+    var rsp = function(d){ 
+      var lines = d.split("\n");
+      var lastLine = lines[(lines.length - 1)];
+      if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
+      var parsed = JSON.parse(lastLine);
+      thisClient.removeListener('data', rsp); 
+      cb(parsed); 
+    };
+    thisClient.on('data', rsp);
+    thisClient.write(message + "\r\n");
   }
 
   before(function(done){

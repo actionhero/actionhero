@@ -1,112 +1,159 @@
-var actionHeroWebSocket = function(options, connectCallback){
-  if(typeof options == 'function' && connectCallback == null){
-    connectCallback = options;
-    options = {};
-  }
+(function(exports){
 
-  var self = this;
-  var e = new io.EventEmitter();
-  for(var i in e){ self[i] = e[i]; }
-  if(connectCallback != null){ self.connectCallback = connectCallback;}   
-  self.messageCount = 1;
-  self.responseTimeout = 30000;
-  self.responseHandlers = {};
-  self.startingTimeStamps = {};
-  self.responseTimesouts = {};
-  self.details = {};
-  self.ready = false;
-  this.room = null;
-
-  if(options == null){
-    options = {};
-  }
-  
-  self.ws = io.connect('/', options);
-
-  self.ws.on('error', function(response){
-    self.emit('error', response);
-  });
-
-  self.ws.on('connect', function(response){
-    // this is the socket connectiong primitive, but we should wait for actionHero's welcome message
-  });
-
-  self.ws.on('disconnect', function(response){
-    self.emit('disconnect', response);
-  });
-
-  self.ws.on('say', function(response){
-    self.emit('say', response);
-  });
-
-  self.ws.on('welcome', function(response){
-    self.registerCallback('detailsView', {}, function(err, response, delta){
-      self.details = response.details;
-      self.emit("connected", self.details);
-      if(self.room != null){
-        self.roomChange(self.room, function(){
-          self.ready = true;
-          if(typeof self.connectCallback == 'function'){ connectCallback(self.details); }
-        });
-      }else{
-        self.ready = true;
-        if(typeof self.connectCallback == 'function'){ connectCallback(self.details); }
-      }
-    });
-  });
-
-  self.ws.on('response', function(response){
-    if(typeof self.responseHandlers[response.messageCount] == 'function'){
-      var delta = new Date().getTime() - self.startingTimeStamps[response.messageCount];
-      self.responseHandlers[response.messageCount](response.error, response, delta);
-      delete self.responseTimesouts[response.messageCount];
-      delete self.startingTimeStamps[response.messageCount];
-      delete self.responseHandlers[response.messageCount];
+  var actionHeroWebSocket = function(options, callback){
+    var self = this;
+    if(callback == null && typeof options == "function"){
+      callback = options; options = null;
     }
-  });   
-}
 
-actionHeroWebSocket.prototype.registerCallback = function(event, params, next){
-  var self = this;
-  if (params == null){ params = {}; }
-  if(typeof next == 'function'){
-    self.responseHandlers[self.messageCount] = next;
-    self.startingTimeStamps[self.messageCount] = new Date().getTime();
-    self.responseTimesouts[self.messageCount] = setTimeout(function(){
-      self.emit('timeout', event, params, next);
-    }, self.responseTimeout, event, params, next);
+    self.messageCount = 0;
+    self.callbacks = {};
+    self.id = null;
+    self.events = {};
+
+    self.options = self.defaults();
+    for(var i in options){
+      self.options[i] = options[i];
+    }
+
+    if(options && options.faye != null){
+      self.faye = options.faye;
+    }else if(window.Faye != null){
+      self.faye = window.Faye;
+    }else{
+      self.faye = Faye;
+    }
   }
-  self.messageCount++;
-  self.ws.emit(event, params);
-}
 
-actionHeroWebSocket.prototype.action = function(action, params, next){
-  if (params == null){ params = {}; }
-  params['action'] = action;
-  this.registerCallback('action', params, next);
-}
+  actionHeroWebSocket.prototype.defaults = function(){
+    var host;
+    if(typeof window != 'undefined'){ host = window.location.origin; }
+    return {
+      host: host,
+      path: "/faye",
+      setupChannel: "/_welcome",
+      channelPrefix: "/client/websocket/connection/",
+      startupDelay: 500
+    }
+  }
 
-actionHeroWebSocket.prototype.say = function(message, next){
-  this.registerCallback('say', {message: message}, next);
-}
+  actionHeroWebSocket.prototype.log = function(message){
+    if(console && console.log){
+      if(typeof message != "string"){ message = JSON.stringify(message); }
+      var date = new Date();
+      var times = [date.getHours().toString(), date.getMinutes().toString(), date.getSeconds().toString()];
+      for(var i in times){
+        if(times[i].length < 2){ times[i] = "0" + times[i]; }
+      }
+      console.log("[AH::client @ " + times.join(":") + "] " + message);
+    }
+  }
 
-actionHeroWebSocket.prototype.roomView = function(next){
-  this.registerCallback('roomView', {}, next);
-}
+  actionHeroWebSocket.prototype.connect = function(callback){
+    var self = this;
 
-actionHeroWebSocket.prototype.roomChange = function(room, next){
-  this.room = room;
-  this.registerCallback('roomChange', {room: room}, next);
-}
+    self.client = new self.faye.Client(self.options.host + self.options.path);
+    
+    var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
+    
+    initialMessage.callback(function() {
+      self.id = self.client.getClientId();
+      self.channel = self.options.channelPrefix + self.id;
+      self.subscription = self.client.subscribe(self.channel, function(message) {
+        self.handleMessage(message);
+      });
 
-actionHeroWebSocket.prototype.listenToRoom = function(room, next){
-  this.registerCallback('listenToRoom', {room: room}, next);
-}
+      setTimeout(function(){
+        self.detailsView(function(details){
+          callback(null, details);
+        });
+      }, self.options.startupDelay);
+      
+    });
 
-actionHeroWebSocket.prototype.silenceRoom = function(room, next){
-  this.registerCallback('silenceRoom', {room: room}, next);
-}
+    initialMessage.errback(function(error) {
+      callback(error, null);
+    })
+  }
 
-actionHeroWebSocket.prototype.quit = function(){
-  this.ws.emit("quit");
-}
+  actionHeroWebSocket.prototype.send = function(args, callback){
+    var self = this;
+    if(typeof callback === "function"){
+      self.messageCount++;
+      self.callbacks[self.messageCount] = callback;
+    }
+    self.client.publish(self.channel, args).errback(function(err){
+      self.log(err);
+    });
+  };
+
+  actionHeroWebSocket.prototype.handleMessage = function(message){
+    var self = this;
+    if(message.context === "response"){
+      if(typeof self.callbacks[message.messageCount] === 'function'){
+        self.callbacks[message.messageCount](message);
+      }
+      delete self.callbacks[message.messageCount];
+    }
+
+    else if(message.context === "user"){
+      if(typeof self.events.say === 'function'){
+        self.events.say(message);
+      }
+    }
+
+    else{
+      if(typeof self.events.alert === 'function'){
+        self.events.alert(message);
+      }
+    }
+  };
+
+  actionHeroWebSocket.prototype.action = function(action, params, callback){
+    if(callback == null && typeof params == 'function'){
+      callback = params;
+      params = null;
+    }
+    if(params == null){ params = {}; }
+    params.action = action;
+    this.send({
+      event: 'action', 
+      params: params,
+    }, callback);
+  }
+
+  actionHeroWebSocket.prototype.say = function(message, callback){
+    this.send({
+      event: 'say', 
+      message: message,
+    }, callback);
+  }
+
+  actionHeroWebSocket.prototype.detailsView = function(callback){
+    this.send({event: 'detailsView'}, callback);
+  }
+
+  actionHeroWebSocket.prototype.roomView = function(callback){
+    this.send({event: 'roomView'}, callback);
+  }
+
+  actionHeroWebSocket.prototype.roomChange = function(room, callback){
+    this.room = room;
+    this.send({event: 'roomChange', room: room}, callback);
+  }
+
+  actionHeroWebSocket.prototype.listenToRoom = function(room, callback){
+    this.send({event: 'listenToRoom', room: room}, callback);
+  }
+
+  actionHeroWebSocket.prototype.silenceRoom = function(room, callback){
+    this.send({event: 'silenceRoom', room: room}, callback);
+  }
+
+  actionHeroWebSocket.prototype.disconnect = function(){
+    this.client.disconnect();
+  }
+
+  exports.actionHeroWebSocket = actionHeroWebSocket;
+
+})(typeof exports === 'undefined' ? window : exports);
