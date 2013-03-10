@@ -350,23 +350,23 @@ var tasks = function(api, next){
 		var taskName = file.split(".")[0];
         if(!reload){
             if(api.configData.general.developmentMode == true){
-                api.watchedFiles.push(fullFilePath);
+                api.watchedFiles.push(fullfFilePath);
                 (function() {
                     fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
                         if(curr.mtime > prev.mtime){
                             process.nextTick(function(){
-                                if(fs.readFileSync(fullFilePath).length > 0){
+                                if(fs.readFileSync(fullfFilePath).length > 0){
                                     var cleanPath;
                                     console.log(fullFilePath);
                                     if(process.platform === 'win32'){
-                                        cleanPath = fullFilePath.replace(/\//g, "\\");
+                                        cleanPath = fullfFilePath.replace(/\//g, "\\");
                                     } else {
-                                        cleanPath = fullFilePath;
+                                        cleanPath = fullfFilePath;
                                     }
 
                                     delete require.cache[cleanPath];
                                     delete api.actions.actions[actionName];
-                                    api.actions.load(fullFilePath, true);
+                                    api.actions.load(fullfFilePath, true);
                                     api.params.buildPostVariables();
                                 }
                             });
