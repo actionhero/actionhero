@@ -348,24 +348,32 @@ var tasks = function(api, next){
 		var parts = fullfFilePath.split("/");
 		var file = parts[(parts.length - 1)];
 		var taskName = file.split(".")[0];
-		if(!reload){
-			if(api.configData.general.developmentMode == true){
-				api.watchedFiles.push(fullfFilePath);
-				(function() {
-					fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-						if(curr.mtime > prev.mtime){
-							process.nextTick(function(){
-								if(fs.readFileSync(fullfFilePath).length > 0){
-									delete require.cache[fullfFilePath];
-									delete api.tasks.tasks[taskName];
-									api.tasks.load(fullfFilePath, true);
-								}
-							});
-						}
-					});
-				})();
-			}
-		}
+        if(!reload){
+            if(api.configData.general.developmentMode == true){
+                api.watchedFiles.push(fullfFilePath);
+                (function() {
+                    fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
+                        if(curr.mtime > prev.mtime){
+                            process.nextTick(function(){
+                                if(fs.readFileSync(fullfFilePath).length > 0){
+                                    var cleanPath;
+                                    if(process.platform === 'win32'){
+                                        cleanPath = fullfFilePath.replace(/\//g, "\\");
+                                    } else {
+                                        cleanPath = fullfFilePath;
+                                    }
+
+                                    delete require.cache[cleanPath];
+                                    delete api.actions.actions[actionName];
+                                    api.actions.load(fullfFilePath, true);
+                                    api.params.buildPostVariables();
+                                }
+                            });
+                        }
+                    });
+                })();
+            }
+        }
 		try{
 			var collection = require(fullfFilePath);
 			if(api.utils.hashLength(collection) == 1){
