@@ -352,12 +352,11 @@ var tasks = function(api, next){
             if(api.configData.general.developmentMode == true){
                 api.watchedFiles.push(fullfFilePath);
                 (function() {
-                    fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
+                    fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
                         if(curr.mtime > prev.mtime){
                             process.nextTick(function(){
                                 if(fs.readFileSync(fullfFilePath).length > 0){
                                     var cleanPath;
-                                    console.log(fullFilePath);
                                     if(process.platform === 'win32'){
                                         cleanPath = fullfFilePath.replace(/\//g, "\\");
                                     } else {

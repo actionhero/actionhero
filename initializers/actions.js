@@ -29,7 +29,6 @@ var actions = function(api, next){
               process.nextTick(function(){
                 if(fs.readFileSync(fullFilePath).length > 0){
                   var cleanPath;
-                  console.log(fullFilePath);
                   if(process.platform === 'win32'){
                     cleanPath = fullFilePath.replace(/\//g, "\\");
                   } else {
