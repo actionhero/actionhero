@@ -9,7 +9,20 @@ var faye = function(api, next){
   // api.faye.subscribeHandlers = [];
 
   api.faye._start = function(api, next){
-    api.faye.server = new fayePackage.NodeAdapter(api.configData.faye);
+
+    var options = api.configData.faye;
+    if(api.redis.fake != true){
+      options.engine = {
+        type: require('faye-redis'),
+        host: api.configData.redis.host,
+        port: api.configData.redis.port,
+        password: api.configData.redis.password,
+        database: api.configData.redis.DB,
+        namespace: "faye:",
+      }
+    }
+
+    api.faye.server = new fayePackage.NodeAdapter(options);
     
     api.faye.server.bind('handshake', function(clientId){
       for(var i in api.faye.connectHandlers){

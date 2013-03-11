@@ -93,14 +93,6 @@ configData.faye = {
   mount: "/faye",
   timeout: 45,
   ping: null,
-  engine: {
-    type: require('faye-redis'),
-    host: configData.redis.host,
-    port: configData.redis.port,
-    password: configData.redis.password,
-    database: configData.redis.DB,
-    namespace: "faye:",
-  }
 };
 
 ///////////////////////////////////////
@@ -175,7 +167,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  enable: false,
+  enable: true,
 };
 
 //////////////////////////////////
