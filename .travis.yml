@@ -4,6 +4,8 @@ notifications:
 language: node_js
 node_js:
   - 0.8
+  - 0.9
+  - 0.10
 branches:
   only:
     - master
