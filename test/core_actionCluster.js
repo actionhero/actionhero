@@ -298,12 +298,17 @@ describe('Core: actionCluster', function(){
     });
 
     it("clients can communicate across the cluster", function(done){
-      this.timeout(5000)
-      makeSocketRequest(client2, "", function(response){
-        response.message.should.equal("Hi there!");
+      this.timeout(5000);
+      if(apis[0].configData.redis.fake == true){
+        // you can't communicte across the cluster with fakeredis!
         done();
-      });
-      client1.write("say Hi there!" + "\r\n");
+      }else{
+        makeSocketRequest(client2, "", function(response){
+          response.message.should.equal("Hi there!");
+          done();
+        });
+        client1.write("say Hi there!" + "\r\n");
+      }
     });
 
   });
