@@ -21,10 +21,8 @@ describe('Client: Web Sockets', function(){
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
-      api.redis.client.flushdb(function(){
-        apiObj = api;
-        done();
-      });
+      apiObj = api;
+      done();
     })
   });
 

@@ -25,7 +25,7 @@ var chatRooms = function(api, next){
         roomMatchValue: connection.roomMatchValue
       }
     };
-    api.faye.client.publish(api.chatRoom.fayeChannel, payload)
+    api.faye.client.publish(api.chatRoom.fayeChannel, payload);
   }
 
   api.chatRoom.incommingMessage = function(message){

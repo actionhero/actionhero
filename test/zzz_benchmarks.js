@@ -57,10 +57,8 @@ describe('~~ Benchmarks', function(){
 
   before(function(done){
     specHelper.prepare(0, function(api){ 
-      api.redis.client.flushdb(function(){
-        apiObj = specHelper.cleanAPIObject(api);
-        done();
-      });
+      apiObj = specHelper.cleanAPIObject(api);
+      done();
     })
   });
 

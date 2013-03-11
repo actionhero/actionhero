@@ -46,11 +46,11 @@ var faye = function(api, next){
 
     api.faye.client = api.faye.server.getClient();
     api.faye.client.publish('/_welcome');
+
     setTimeout(function(){
       api.log("api faye client ID: " + api.faye.client._clientId, 'debug');
+      next();
     }, 1000);
-
-    next();
   }  
 
   api.faye._teardown = function(api, next){

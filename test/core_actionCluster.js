@@ -15,22 +15,14 @@ describe('Core: actionCluster', function(){
   }
 
    var restartAllServers = function(done){
-    specHelper.restartServer(0, function(resp, api){
+    specHelper.restartServer(0, function(api){
       apis[0] = api;
-        specHelper.restartServer(1, function(resp, api){
-          apis[1] = api;
-          specHelper.restartServer(2, function(resp, api){
-            apis[2] = api;
-            
-            apis[0].redis.client.flushdb(function(){
-              apis[1].redis.client.flushdb(function(){
-                apis[2].redis.client.flushdb(function(){
-                  done();
-                });
-              });
-            });
-            
-          });
+      specHelper.restartServer(1, function(api){
+        apis[1] = api;
+        specHelper.restartServer(2, function(api){
+          apis[2] = api;
+          done(); 
+        });
       });
     });
   }
@@ -123,6 +115,7 @@ describe('Core: actionCluster', function(){
   describe("reconnection and peers", function(){
 
     after(function(done){
+      this.timeout(10000);
       restartAllServers(done);
     });
 
@@ -143,9 +136,10 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #1 can see all other peers in the cluster again", function(done){
-      specHelper.restartServer(1, function(resp, api){
+      this.timeout(5000);
+      specHelper.restartServer(1, function(api){
         apis[1] = api;
-        specHelper.restartServer(2, function(resp, api){
+        specHelper.restartServer(2, function(api){
           apis[2] = api;
           apis[0].redis.client.llen("actionHero:peers", function(err, length){
             apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
@@ -160,6 +154,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #2 can see all other peers in the cluster again", function(done){
+      this.timeout(5000);
       apis[1].redis.client.llen("actionHero:peers", function(err, length){
         apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
           peers.should.include(externalIP+":9000:8000");
@@ -171,6 +166,7 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #3 can see all other peers in the cluster again", function(done){
+      this.timeout(5000);
       apis[2].redis.client.llen("actionHero:peers", function(err, length){
         apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
           peers.should.include(externalIP+":9000:8000");

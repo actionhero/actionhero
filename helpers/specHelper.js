@@ -31,7 +31,7 @@ var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPro
 specHelper.params[0] = {
   general: {
     workers: 1,
-    "developmentMode": true
+    "developmentMode": false
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -68,7 +68,15 @@ specHelper.params[1] = {
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: []
+    transports: [
+      // function(api){
+      //   return new (winston.transports.Console)({
+      //     colorize: true, 
+      //     level: "debug", 
+      //     timestamp: api.utils.sqlDateTime
+      //   });
+      // }
+    ]
   },
   httpServer: {
     secure: false,
@@ -93,7 +101,15 @@ specHelper.params[2] = {
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: []
+    transports: [
+      // function(api){
+      //   return new (winston.transports.Console)({
+      //     colorize: true, 
+      //     level: "debug", 
+      //     timestamp: api.utils.sqlDateTime
+      //   });
+      // }
+    ]
   },
   httpServer: {
     secure: false,
@@ -138,9 +154,15 @@ specHelper.tables = [ "Logs" ];
 specHelper.prepare = function(serverID, next){
   if(serverID == null){serverID = 0};
   specHelper.clearRedis(serverID, function(){
-    specHelper.startServer(serverID, function(api){
-      next(api);
-    });
+    if(specHelper.actionHeroes[serverID] != null){
+      specHelper.restartServer(serverID, function(api){
+        next(api);
+      });
+    }else{
+      specHelper.startServer(serverID, function(api){
+        next(api);
+      });
+    }
   });
 }
 
@@ -171,7 +193,8 @@ specHelper.stopServer = function(serverID, next){
   if(serverID == null){serverID = 0};
   if(specHelper.actionHeroes[serverID] != null){
     specHelper.actionHeroes[serverID].stop(function(err, api){
-      next(err, api);
+      specHelper.apis[serverID] = api;
+      next(specHelper.apis[serverID]);
     });
   }else{
     next(false);
@@ -181,7 +204,8 @@ specHelper.stopServer = function(serverID, next){
 specHelper.restartServer = function(serverID, next){
   if(serverID == null){serverID = 0};
   specHelper.actionHeroes[serverID].restart(function(err, api){
-    next(err, api);
+    specHelper.apis[serverID] = api;
+    next(specHelper.apis[serverID]);
   });
 };
 

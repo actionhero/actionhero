@@ -25,13 +25,25 @@ describe('Client: Socket', function(){
   }
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       rawAPI = api;
-      rawAPI.redis.client.flushdb(function(){
-        apiObj = specHelper.cleanAPIObject(api);
-        done();
-      });
-    })
+      apiObj = specHelper.cleanAPIObject(api);
+      
+        client = net.connect(specHelper.params[0].tcpServer.port, function(){
+          client.setEncoding('utf8');
+          client2 = net.connect(specHelper.params[0].tcpServer.port, function(){
+            client2.setEncoding('utf8');
+            client3 = net.connect(specHelper.params[0].tcpServer.port, function(){
+              client3.setEncoding('utf8');
+              setTimeout(function(){ // This timeout is to wait-out all the 
+                done();
+              }, 1000);
+            });
+          }); 
+        }); 
+
+    });
   });
 
   after(function(done){
@@ -39,24 +51,6 @@ describe('Client: Socket', function(){
     client2.write("quit\r\n")
     client3.write("quit\r\n")
     done();
-  });
-
-  it('should connect all 3 clients', function(done){
-    client = net.connect(specHelper.params[0].tcpServer.port, function(){
-      client.setEncoding('utf8');
-      client2 = net.connect(specHelper.params[0].tcpServer.port, function(){
-        client2.setEncoding('utf8');
-        client3 = net.connect(specHelper.params[0].tcpServer.port, function(){
-          client3.setEncoding('utf8');
-          setTimeout(function(){ // This timeout is to wait-out all the 
-            client.should.be.an.instanceOf(Object)
-            client2.should.be.an.instanceOf(Object)
-            client3.should.be.an.instanceOf(Object)
-            done();
-          }, 1000);
-        });
-      }); 
-    }); 
   });
 
   it('socket connections should be able to connect and get JSON', function(done){
@@ -234,58 +228,60 @@ describe('Client: Socket', function(){
 
   it('connections in the first room see the count go down', function(done){
     makeSocketRequest(client2, "roomView", function(response){
+      response.room.should.equal(apiObj.configData.general.defaultChatRoom);
+      response.roomStatus.room.should.equal(apiObj.configData.general.defaultChatRoom);
       response.roomStatus.membersCount.should.equal(2)
       done();
     });
   });
 
   it('folks in my room hear what I say (and say works)', function(done){
-  var listener = function(response){
-    client3.removeListener('data',listener);
-    response = JSON.parse(response);
-    response.message.should.equal("hello?");
-    done();
-  }
-  client3.on('data', listener);
-  client2.write("say hello?" + "\r\n");
+    var listener = function(response){
+      client3.removeListener('data',listener);
+      response = JSON.parse(response);
+      response.message.should.equal("hello?");
+      done();
+    }
+    client3.on('data', listener);
+    client2.write("say hello?" + "\r\n");
   });
 
   it('folks NOT in my room DON\'T hear what I say', function(done){
-  var listener = function(response){
-    client.removeListener('data',listener);
-    throw new Error("I shouldn't have gotten this message");
-    done();
-  };
-  client.on('data', listener);
-  client2.write("say hello?" + "\r\n");
-  setTimeout(function(){
-    client.removeListener('data',listener);
-    done(); // this is the proper way to pass this test.
-  }, 1000)
+    var listener = function(response){
+      client.removeListener('data',listener);
+      throw new Error("I shouldn't have gotten this message");
+      done();
+    };
+    client.on('data', listener);
+    client2.write("say hello?" + "\r\n");
+    setTimeout(function(){
+      client.removeListener('data',listener);
+      done(); // this is the proper way to pass this test.
+    }, 1000);
   });
 
   it('Folks are notified when I join a room', function(done){
-  var listener = function(response){
-    client.removeListener('data',listener);
-    response = JSON.parse(response);
-    response.message.should.equal("I have entered the room");
-    response.from.should.equal(client_2_details.id);
-    done();
-  }
-  client.on('data', listener);
-  client2.write("roomChange otherRoom" + "\r\n");
+    var listener = function(response){
+      client.removeListener('data',listener);
+      response = JSON.parse(response);
+      response.message.should.equal("I have entered the room");
+      response.from.should.equal(client_2_details.id);
+      done();
+    }
+    client.on('data', listener);
+    client2.write("roomChange otherRoom" + "\r\n");
   });
 
   it('Folks are notified when I leave a room', function(done){
-  var listener = function(response){
-    client.removeListener('data',listener);
-    response = JSON.parse(response);
-    response.message.should.equal("I have left the room");
-    response.from.should.equal(client_2_details.id);
-    done();
-  }
-  client.on('data', listener);
-  client2.write("roomChange " + apiObj.configData.general.defaultChatRoo + "\r\n");
+    var listener = function(response){
+      client.removeListener('data',listener);
+      response = JSON.parse(response);
+      response.message.should.equal("I have left the room");
+      response.from.should.equal(client_2_details.id);
+      done();
+    }
+    client.on('data', listener);
+    client2.write("roomChange " + apiObj.configData.general.defaultChatRoom + "\r\n");
   });
 
   it('I can register for messages from rooms I am not in', function(done){
