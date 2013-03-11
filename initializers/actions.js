@@ -28,7 +28,14 @@ var actions = function(api, next){
             if(curr.mtime > prev.mtime){
               process.nextTick(function(){
                 if(fs.readFileSync(fullFilePath).length > 0){
-                  delete require.cache[fullFilePath];
+                  var cleanPath;
+                  if(process.platform === 'win32'){
+                    cleanPath = fullFilePath.replace(/\//g, "\\");
+                  } else {
+                    cleanPath = fullFilePath;
+                  }
+
+                  delete require.cache[cleanPath];
                   delete api.actions.actions[actionName];
                   api.actions.load(fullFilePath, true);
                   api.params.buildPostVariables();
