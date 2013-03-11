@@ -40,7 +40,6 @@
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
     "faye": "0.8.x",
-    "//": "** Currently using github source for faye-redis until hiredis dependency is removed",
     "faye-redis": "git://github.com/faye/faye-redis-node#master"
   },
   "devDependencies": {
