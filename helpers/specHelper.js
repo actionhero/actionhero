@@ -131,20 +131,28 @@ specHelper.clearRedis = function(serverID, next){
   if(serverID != 0){
     next();
   }else{
-    var redis = require('redis');
-    var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
-    client.on("ready", function (err) {
-      client.select(redisConfig.DB, function(){
+    if(toFakeRedis){
+      var redis = require('fakeredis');
+      var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+      redis.fast = true;
+      client.flushdb(function(){
+        next();
+      });
+    }else{
+      var redis = require('redis');
+      var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+      client.on("ready", function (err) {
+        client.select(redisConfig.DB, function(){
           client.flushdb(function(){
-            // process.stdout.write("[ test redis emptied ] ");
             next();
           });
+        });
       });
-    });
-    client.on("error", function (err) {
-        process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
-        process.exit();  // redis is really important...
-    });
+      client.on("error", function (err) {
+          process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
+          process.exit();  // redis is really important...
+      });
+    }
   }
 }
 
