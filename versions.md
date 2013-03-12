@@ -5,6 +5,7 @@
 ** General **
 
 - removed support for node versions < v0.8.0.  Time to modernize! 
+- added support for node v0.9 and v0.10
 - actionHero now uses fakeredis rather than implamenting certain operations locally (cache, tasks)
   - thanks to hdachev for all his help!
   - this allows for a smaller, more unified codebase

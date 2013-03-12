@@ -116,20 +116,25 @@ describe('Action: chat', function(){
 
       var client = net.connect(specHelper.params[0].tcpServer.port, function(){
         client.setEncoding('utf8');
-        var rsp = function(d){ 
-          var lines = d.split("\n");
-          var lastLine = lines[(lines.length - 1)];
-          if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
-          var parsed = JSON.parse(lastLine);
-          client.removeListener('data', rsp); 
-          
-          parsed.error.should.equal("Error: this action does not support the socket connection type");
-          done();
-        };
         
+        var d = "";
+        var addData = function(data){
+          d += data;
+        }
+        client.on('data', addData);
+
         setTimeout(function(){
-          client.on('data', rsp);
           client.write("chat" + "\r\n");
+          setTimeout(function(){
+            var lines = d.split("\n");
+            var lastLine = lines[(lines.length - 1)];
+            if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
+            var parsed = JSON.parse(lastLine);
+
+            client.removeListener('data', addData); 
+            parsed.error.should.equal("Error: this action does not support the socket connection type");
+            done();
+        }, 500);
         }, 1000);
       });
 
