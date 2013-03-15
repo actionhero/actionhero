@@ -429,7 +429,7 @@ describe('Core: Tasks', function(){
               });
             }); 
           });
-        }, 200);
+        }, 400);
       });
     });
 
