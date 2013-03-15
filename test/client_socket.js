@@ -12,14 +12,27 @@ describe('Client: Socket', function(){
   var client3 = {};
 
   function makeSocketRequest(thisClient, message, cb){
+    var lines = [];
+
     var rsp = function(d){ 
-      var lines = d.split("\n");
+      d.split("\n").forEach(function(l){
+        lines.push(l);
+      });
+      lines.push()
+    };    
+
+    setTimeout(function(){
       var lastLine = lines[(lines.length - 1)];
       if(lastLine == ""){ lastLine = lines[(lines.length - 2)]; }
-      var parsed = JSON.parse(lastLine);
+      try{
+        var parsed = JSON.parse(lastLine);
+      }catch(e){
+        var parsed = null;
+      }
       thisClient.removeListener('data', rsp); 
-      cb(parsed); 
-    };
+      if(typeof cb == "function"){ cb(parsed); }
+    }, 50);
+
     thisClient.on('data', rsp);
     thisClient.write(message + "\r\n");
   }
@@ -236,52 +249,37 @@ describe('Client: Socket', function(){
   });
 
   it('folks in my room hear what I say (and say works)', function(done){
-    var listener = function(response){
-      client3.removeListener('data',listener);
-      response = JSON.parse(response);
+    makeSocketRequest(client3, "", function(response){
       response.message.should.equal("hello?");
       done();
-    }
-    client3.on('data', listener);
-    client2.write("say hello?" + "\r\n");
+    });
+    makeSocketRequest(client2, "say hello?" + "\r\n");
   });
 
   it('folks NOT in my room DON\'T hear what I say', function(done){
-    var listener = function(response){
-      client.removeListener('data',listener);
-      throw new Error("I shouldn't have gotten this message");
+    makeSocketRequest(client, "", function(response){
+      should.not.exist(response);
       done();
-    };
-    client.on('data', listener);
-    client2.write("say hello?" + "\r\n");
-    setTimeout(function(){
-      client.removeListener('data',listener);
-      done(); // this is the proper way to pass this test.
-    }, 1000);
+    });
+    makeSocketRequest(client2, "say hello?" + "\r\n");
   });
 
   it('Folks are notified when I join a room', function(done){
-    var listener = function(response){
-      client.removeListener('data',listener);
-      response = JSON.parse(response);
+    makeSocketRequest(client, "", function(response){
       response.message.should.equal("I have entered the room");
       response.from.should.equal(client_2_details.id);
       done();
-    }
-    client.on('data', listener);
-    client2.write("roomChange otherRoom" + "\r\n");
+    });
+    makeSocketRequest(client2, "roomChange otherRoom" + "\r\n");
   });
 
   it('Folks are notified when I leave a room', function(done){
-    var listener = function(response){
-      client.removeListener('data',listener);
-      response = JSON.parse(response);
+    makeSocketRequest(client, "", function(response){
       response.message.should.equal("I have left the room");
       response.from.should.equal(client_2_details.id);
       done();
-    }
-    client.on('data', listener);
-    client2.write("roomChange " + apiObj.configData.general.defaultChatRoom + "\r\n");
+    });
+    makeSocketRequest(client2, "roomChange " + apiObj.configData.general.defaultChatRoom + "\r\n");
   });
 
   it('I can register for messages from rooms I am not in', function(done){
@@ -289,16 +287,11 @@ describe('Client: Socket', function(){
     makeSocketRequest(client, "roomChange room1", function(response){
       makeSocketRequest(client2, "roomChange room2", function(response){
         makeSocketRequest(client, "listenToRoom room2", function(response){
-          var listener = function(response){
-            client.removeListener('data',listener);
-            var message = JSON.parse(response);
-            message.message.should.eql("hello in room2")
+          makeSocketRequest(client, "", function(response){
+            response.message.should.eql("hello in room2")
             done();
-          }
-          setTimeout(function(){
-            client.on('data', listener);
-            client2.write("say hello in room2\r\n");
-          }, 200);
+          });
+          makeSocketRequest(client2, "say hello in room2\r\n");
         });
       });
     });
@@ -310,19 +303,11 @@ describe('Client: Socket', function(){
       makeSocketRequest(client2, "roomChange room2", function(response){
         makeSocketRequest(client, "listenToRoom room2", function(response){
           makeSocketRequest(client, "silenceRoom room2", function(response){
-            var listener = function(response){
-              client.removeListener('data',listener);
-              throw new Error("I should not have gotten this message: " + response)
+            makeSocketRequest(client, "", function(response){
+              should.not.exist(response);
               done();
-            }
-            setTimeout(function(){
-              client.on('data', listener);
-              client2.write("say hello in room2\r\n");
-            }, 100);
-            setTimeout(function(){
-              client.removeListener('data',listener);
-              done(); // yay, I didn't get the message
-            }, 2000);
+            });
+            makeSocketRequest(client2, "say hello in room2\r\n");
           });
         });
       });
@@ -330,13 +315,10 @@ describe('Client: Socket', function(){
   });
 
   it('I can get my id', function(done){
-    var listener = function(response){
-      client.removeListener('data',listener);
-      client_details = JSON.parse(response).details;
+    makeSocketRequest(client, "detailsView" + "\r\n", function(response){
+      client_details = response.details;
       done();
-    }
-    client.on('data', listener);
-    client.write("detailsView\r\n");
+    });
   });
 
   it('can send auth\'d messages', function(done){
@@ -346,15 +328,12 @@ describe('Client: Socket', function(){
     client2.write("roomChange secretRoom\r\n");
     client.write("roomChange secretRoom\r\n");
     setTimeout(function(){
-      var listener = function(response){
-        client.removeListener('data',listener);
-        response = JSON.parse(response);
+      makeSocketRequest(client, "", function(response){
         response.message.should.equal("secretAuthTest");
         response.from.should.equal(client_2_details.id);
         done();
-      }
-      client.on('data', listener);
-      client2.write("say secretAuthTest\r\n");
+      });
+      makeSocketRequest(client2, "say secretAuthTest" + "\r\n");
     },500) 
   });
 
@@ -365,17 +344,11 @@ describe('Client: Socket', function(){
     client2.write("roomChange secretRoom\r\n");
     client.write("roomChange secretRoom\r\n");
     setTimeout(function(){
-      var listener = function(response){
-        client.removeListener('data',listener);
-        throw new Error("should not get the message");
+      makeSocketRequest(client, "", function(response){
+        should.not.exist(response);
         done();
-      }
-      client.on('data', listener);
-      client2.write("say secretAuthTest\r\n");
-      setTimeout(function(){
-        client.removeListener('data',listener);
-        done(); // should just timeout
-      }, 1000)
+      });
+      makeSocketRequest(client2, "say secretAuthTest" + "\r\n");
     },500) 
   });
 
