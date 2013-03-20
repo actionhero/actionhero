@@ -393,7 +393,7 @@ describe('Core: Tasks', function(){
     });
 
     it('periodc tasks which return a failure will still be re-enqueued and tried again', function(done){
-      this.timeout(5000);
+      this.timeout(10000);
       var worker = new rawAPI.taskProcessor({id: 1});
       var task = new rawAPI.task({name: 'busted_task'});
       task.enqueue(function(err, resp){

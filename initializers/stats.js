@@ -33,33 +33,23 @@ var stats = function(api, next){
   api.stats.getAll = function(next){
     api.redis.client.hgetall(api.stats.collections.global, function(err, globalStats){
       api.redis.client.hgetall(api.stats.collections.local, function(err, localStats){
-        var statNames = [];
         if(globalStats == null){ globalStats = {}; }
         if(localStats == null){ localStats = {}; }
-        for(var i in localStats){ 
-          statNames.push(i);
-          localStats[i] = parseFloat(localStats[i]); 
-        }
-        for(var i in globalStats){ 
-          statNames.push(i);
-          globalStats[i] = parseFloat(globalStats[i]); 
-        }
-        api.utils.arrayUniqueify(statNames);
-        statNames.sort();
-        var result = {
+
+        var results = {
           global: {},
-          local: {}
-        };
-        for(var i in statNames){
-          var name = statNames[i];
-          if(globalStats[name] != null){
-            result.global[name] = globalStats[name];
-          }
-          if(localStats[name] != null){
-            result.local[name] = localStats[name];
-          }
+          local: {},
         }
-        next(err, result);
+
+        for(var key in globalStats){
+          api.utils.hasifyNestedString(key, globalStats[key], results.global);
+        }
+
+        for(var key in localStats){
+          api.utils.hasifyNestedString(key, localStats[key], results.local);
+        }
+
+        next(err, results);
       });
     });
   }

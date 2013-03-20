@@ -137,10 +137,32 @@ var utils = function(api, next){
       });
     }
     return cookies;
-  };
+  }
 
-  next()
-}
+  ////////////////////////////////////////////////////////////////////////////
+  // convert strings of the form "a:b:c" into a nested hash with a value
+
+  api.utils.hasifyNestedString = function(string, value, hash, seperator){
+    if(hash == null){ hash = {}; }
+    if(seperator == null){ seperator = ":"; }
+    var parts = string.split(seperator);
+    var refHash = hash;
+    var depth = 0;
+    parts.forEach(function(part){
+      if(depth == parts.length - 1){
+        refHash[part] = value;
+      }else{
+        if(refHash[part] == null){ refHash[part] = {}; }
+        refHash = refHash[part];
+      }
+      depth++;
+    });
+    return hash;
+  }
+
 ////////////////////////////////////////////////////////////////////////////
 // EXPORT
+  next();
+}
+
 exports.utils = utils;

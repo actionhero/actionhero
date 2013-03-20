@@ -18,8 +18,8 @@ describe('Action: status', function(){
         response.body.uptime.should.be.above(0);
         response.body.id.length.should.be.above(0);
 
-        response.body.stats.local['actions:actionsCurrentlyProcessing'].should.be.above(0);
-        response.body.stats.local['actions:totalProcessedActions'].should.be.above(0);
+        response.body.stats.local.actions.actionsCurrentlyProcessing.should.be.above(0);
+        response.body.stats.local.actions.totalProcessedActions.should.be.above(0);
         
         done();
       });
