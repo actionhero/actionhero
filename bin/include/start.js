@@ -77,12 +77,6 @@ exports['start'] = function(binary, next){
         setTimeout(process.exit, 500);
       });
     });
-    process.on('SIGKILL', function(){
-      setTimeout(process.exit, shutdownTimeout);
-      stopServer(function(){
-        setTimeout(process.exit, 500);
-      });
-    });
     process.on('SIGUSR2', function(){
       restartServer();
     });
