@@ -147,6 +147,12 @@ var webSocketServer = function(api, next){
           actionProcessor.processAction();
         }
 
+        else if(event == "setIP"){
+          connection.remoteIP = data.ip;
+          connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount});
+          api.log("setIP @ webSocket", "debug", {clientId: connection.rawConnection.clientId, params: JSON.stringify(data)});
+        }
+
         else if(event == "say"){
           api.chatRoom.socketRoomBroadcast(connection, data.message);
           connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount});
@@ -199,6 +205,7 @@ var webSocketServer = function(api, next){
           var details = {
             params: connection.params,
             id: connection.id,
+            remoteIP: connection.remoteIP,
             connectedAt: connection.connectedAt,
             room: connection.room,
             totalActions: connection.totalActions,

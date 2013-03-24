@@ -33,7 +33,8 @@
       path: "/faye",
       setupChannel: "/_welcome",
       channelPrefix: "/client/websocket/connection/",
-      startupDelay: 500
+      startupDelay: 500,
+      apiPath: "/api"
     }
   }
 
@@ -64,8 +65,10 @@
       });
 
       setTimeout(function(){
-        self.detailsView(function(details){
-          callback(null, details);
+        self.setIP(function(err, ip){
+            self.detailsView(function(details){
+              callback(null, details);
+            });
         });
       }, self.options.startupDelay);
       
@@ -108,6 +111,30 @@
       }
     }
   };
+
+  actionHeroWebSocket.prototype.setIP = function(callback){
+    var self = this;
+    try{
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange=function(){
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+          var response = JSON.parse(xmlhttp.responseText);
+          var ip = response.requestorInformation.remoteAddress;
+          self.send({ event: 'setIP', ip: ip }, function(){
+            callback(null, ip);
+          });
+        }
+      }
+      xmlhttp.open("GET", self.options.host + self.options.apiPath, true);
+      xmlhttp.send();
+    }catch(e){
+      // can't make the ajax call, assume it's localhost
+      var ip = "127.0.0.1";
+      self.send({ event: 'setIP', ip: ip }, function(){
+        callback(null, ip);
+      });
+    }
+  }
 
   actionHeroWebSocket.prototype.action = function(action, params, callback){
     if(callback == null && typeof params == 'function'){
