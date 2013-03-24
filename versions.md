@@ -5,14 +5,14 @@
 ** General **
 
 - removed support for node versions < v0.8.0.  Time to modernize! 
-- added support for node v0.9 and v0.10
-- actionHero now uses fakeredis rather than implamenting certain operations locally (cache, tasks)
-  - thanks to hdachev for all his help!
+- added support for node versions 0.9 and 0.10
+- actionHero now uses fakeredis rather than implementing certain operations locally (cache, tasks)
+  - thanks to @hdachev for all his help!
   - this allows for a smaller, more unified codebase
   - redis is now always 'enabled', but `fake` can be toggled (boolean)
 - actionHero now uses the Faye messaging system
   - this replaces socket.io for websocket clients
-  - this replaces actionHero's ineternal methods for redis pub/sub
+  - this replaces actionHero's internal methods for redis pub/sub
   - please checkout the wiki for API changes
 
 ** Config **

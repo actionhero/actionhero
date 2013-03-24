@@ -42,6 +42,7 @@ describe('Core: actionCluster', function(){
   describe('general actionCluster', function(){
 
     it('Start cluster server #1', function(done){
+      this.timeout(5000);
       specHelper.prepare(0, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
@@ -58,6 +59,7 @@ describe('Core: actionCluster', function(){
     });
 
     it('Start cluster server #2', function(done){
+      this.timeout(5000);
       specHelper.prepare(1, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
@@ -68,6 +70,7 @@ describe('Core: actionCluster', function(){
     });
 
     it('Start cluster server #3', function(done){
+      this.timeout(5000);
       specHelper.prepare(2, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
