@@ -15,10 +15,6 @@ var redis = function(api, next){
   - `actionHero:tasks:{serverID}` [] a list of tasks to be completed by only this node.  This queue will be drained at a lower priority than the regular task queue
   - `actionHero:tasks:data` {} the data hash for the task queue.
   - `actionHero:tasks:processing` [] a list of tasks being worked on.
-
-  ** Channels **
-
-  - `actionHero:say:[db]` the pub/sub channel used for the chat sub-system
   */
 
   api.redis = {};

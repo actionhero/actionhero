@@ -177,11 +177,6 @@ exports['startCluster'] = function(binary, next){
         binary.workersExpected = 0;
         binary.setupShutdown();
       });
-      process.on('SIGKILL', function(){
-        binary.log("Signal: SIGKILL", "debug");
-        binary.workersExpected = 0;
-        binary.setupShutdown();
-      });
       process.on('SIGUSR2', function(){
         binary.log("Signal: SIGUSR2", "debug");
         binary.log("swap out new workers one-by-one", "info");

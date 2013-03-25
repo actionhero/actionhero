@@ -15,6 +15,9 @@
   - this replaces actionHero's internal methods for redis pub/sub
   - please checkout the wiki for API changes
 
+** Note **
+- At this time, we are using the *master* branch directly of faye-redis, and not the version of NPM.  This is likely to be unstable.  Use with caution! 
+
 ** Config **
 - In addition to passing --config=/path/to/file to specifiy a `config.js` to actionHero, you can also set the `ACTIONHERO_CONFIG` envrionment variable.
 

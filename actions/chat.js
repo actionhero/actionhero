@@ -58,6 +58,9 @@ action.run = function(api, connection, next){
   }else if(connection.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null){
     connection.error = new Error("chatting via web clients is not enabled");
     next(connection, true);
+  }else{
+    connection.error = new Error("please chat using your transport's native chat methods");
+    next(connection, true);
   }
 };
 
