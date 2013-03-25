@@ -1,5 +1,10 @@
 # Action Hero API Versions
 
+## Version 5.0.1
+
+remove SIGKILL from startCluster ans Start (single server)
+  - these signals do not work with node >= v0.9
+
 ## Version 5.0.0
 
 ** General **
