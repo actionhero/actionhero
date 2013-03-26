@@ -12,7 +12,7 @@ var chatRooms = function(api, next){
     if(connection.id == null){ connection.id = 0; }
     if(connection.params != null && connection.params.roomMatchKey != null){ connection.roomMatchKey = connection.params.roomMatchKey; }
     if(connection.params != null && connection.params.roomMatchValue != null){ connection.roomMatchValue = connection.params.roomMatchValue; }
-    api.stats.increment("chatRooom:messagesSent");
+    api.stats.increment("chatRoom:messagesSent");
     var payload = {
       serverToken: api.configData.general.serverToken,
       serverId: api.id,
@@ -32,7 +32,7 @@ var chatRooms = function(api, next){
     if(message.serverToken != api.configData.general.serverToken){
       api.log("message token miss-match from " + message.serverId, "error", message);
     }else{
-      api.stats.increment("chatRooom:messagesRecieved");
+      api.stats.increment("chatRoom:messagesRecieved");
       var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user", sentAt: message.sentAt };
       for(var i in api.connections.connections){
         var thisConnection = api.connections.connections[i];
@@ -75,7 +75,7 @@ var chatRooms = function(api, next){
         if (name == roomStatus.members[i]){ found = true; break; }
       }
       if(found == false){
-        api.stats.increment("chatRooom:roomMembers:" + connection.room);
+        api.stats.increment("chatRoom:roomMembers:" + connection.room);
         api.chatRoom.announceMember(connection, true);
         var key = api.chatRoom.redisDataPrefix + connection.room;
         api.redis.client.rpush(key, name, function(){
@@ -90,7 +90,7 @@ var chatRooms = function(api, next){
   api.chatRoom.roomRemoveMember = function(connection, next){
     var room = connection.room;
     var name = connection.id;
-    api.stats.increment("chatRooom:roomMembers:" + connection.room, -1);
+    api.stats.increment("chatRoom:roomMembers:" + connection.room, -1);
     var key = api.chatRoom.redisDataPrefix + connection.room;
     api.redis.client.llen(key, function(err, length){
       if(length > 0){
