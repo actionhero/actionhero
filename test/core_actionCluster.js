@@ -28,12 +28,14 @@ describe('Core: actionCluster', function(){
   }
 
   before(function(done){
+    this.timeout(5000);
     stopAllServers(function(){
       setTimeout(done, 1000);
     });
   });
 
   after(function(done){
+    this.timeout(5000);
     stopAllServers(function(){
       setTimeout(done, 1000);
     });
