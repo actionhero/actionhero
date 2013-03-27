@@ -16,7 +16,11 @@ var exceptions = function(api, next){
 
   api.exceptionHandlers.action = function(domain, err, connection, next){
     api.stats.increment("exceptions:actions");
-    api.log("! uncaught error from action: " + connection.action, "alert");
+    try{
+      api.log("! uncaught error from action: " + connection.action, "alert");
+    }catch(e){
+      api.log("! uncaught error from action: " + e.message, "alert");
+    }
     api.exceptionHandlers.renderConnection(connection);
     api.exceptionHandlers.renderError(err);
     connection.error = new Error(api.configData.general.serverErrorMessage);
@@ -29,7 +33,11 @@ var exceptions = function(api, next){
   };
   api.exceptionHandlers.task = function(domain, err, task, next){
     api.stats.increment("exceptions:tasks");
-    api.log("! uncaught error from task: " + task.name, "alert");
+    try{
+      api.log("! uncaught error from task: " + task.name, "alert");
+    }catch(e){
+      api.log("! uncaught error from task: " + e.message, "alert");
+    }
     api.exceptionHandlers.renderError(err);
     // domain.dispose();
     if(typeof next == "function"){ next(false); }
