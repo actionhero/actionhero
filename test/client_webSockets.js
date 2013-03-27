@@ -20,6 +20,7 @@ describe('Client: Web Sockets', function(){
   }
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = api;
       done();
