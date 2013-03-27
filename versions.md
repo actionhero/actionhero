@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 5.0.2
+
+** Bugs **
+
+- re-enabled the welcome message in websocket clients, and used this as the connection trigger rather than a timer
+- added a welcome event websocket clients
+
 ## Version 5.0.1
 
 remove SIGKILL from startCluster ans Start (single server)
