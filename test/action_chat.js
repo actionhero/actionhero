@@ -81,7 +81,7 @@ describe('Action: chat', function(){
           response.body.messages[0].message.should.equal("TEST");
           done();
         }); 
-      }, 400);
+      }, 1000);
     });
 
     it('I can get many messagse and the order is maintained', function(done){

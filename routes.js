@@ -11,6 +11,8 @@ If the client doesn't specify and action in a param, and the base route isn't a 
 - data contains the 'action' to map to, and then an optional urlMap (api.params.mapParamsFromURL)
 - only single depth routes are supported at this time
 
+---------------------- */
+
 /////////////
 // EXAMPLE //
 /////////////
@@ -44,6 +46,6 @@ exports.routes = {
 
 };
 
----------------------- */
+// --------------------------
 
 exports.routes = {};
