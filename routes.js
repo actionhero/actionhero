@@ -17,34 +17,31 @@ If the client doesn't specify and action in a param, and the base route isn't a 
 // EXAMPLE //
 /////////////
 
-exports.routes = {
-  
-  users: {
-    get: {
-      action: "usersList", // (GET) /api/users
-    }
-  },
-
-  user : {
-    get: {
-      action: "userAdd",
-      urlMap: ["userID"], // (GET) /api/user/123
-    },
-    post: {
-      action: "userEdit",
-      urlMap: ["userID"] // (POST) /api/user/123
-    },
-    put: {
-      action: "userAdd",
-      urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
-    },
-    delete: {
-      action: "userDelete",
-      urlMap: ["userID"] // (DELETE) /api/user/123
-    }
-  }
-
-};
+// exports.routes = {
+//   users: {
+//     get: {
+//       action: "usersList", // (GET) /api/users
+//     }
+//   },
+//   user : {
+//     get: {
+//       action: "userAdd",
+//       urlMap: ["userID"], // (GET) /api/user/123
+//     },
+//     post: {
+//       action: "userEdit",
+//       urlMap: ["userID"] // (POST) /api/user/123
+//     },
+//     put: {
+//       action: "userAdd",
+//       urlMap: ["type", "screenName"] // (PUT) /api/user/admin/handle123
+//     },
+//     delete: {
+//       action: "userDelete",
+//       urlMap: ["userID"] // (DELETE) /api/user/123
+//     }
+//   }
+// };
 
 // --------------------------
 
