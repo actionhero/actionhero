@@ -2,6 +2,11 @@
 
 ## Version 5.0.2
 
+** Routes **
+
+- We now use express-style routes
+- `api.utils.mapParamsFromURL` is removed
+
 ** Bugs **
 
 - re-enabled the welcome message in websocket clients, and used this as the connection trigger rather than a timer
