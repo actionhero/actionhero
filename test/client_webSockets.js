@@ -44,6 +44,7 @@ describe('Client: Web Sockets', function(){
       data.context.should.equal("response");
       data.details.room.should.equal("defaultRoom");
       data.details.totalActions.should.equal(0);
+      client_1.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
   });
@@ -54,6 +55,7 @@ describe('Client: Web Sockets', function(){
       data.context.should.equal("response");
       data.details.room.should.equal("defaultRoom");
       data.details.totalActions.should.equal(0);
+      client_2.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
   });
@@ -64,6 +66,7 @@ describe('Client: Web Sockets', function(){
       data.context.should.equal("response");
       data.details.room.should.equal("defaultRoom");
       data.details.totalActions.should.equal(0);
+      client_3.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
   });

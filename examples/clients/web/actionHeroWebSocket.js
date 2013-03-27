@@ -33,7 +33,6 @@
       path: "/faye",
       setupChannel: "/_welcome",
       channelPrefix: "/client/websocket/connection/",
-      startupDelay: 500,
       apiPath: "/api"
     }
   }
@@ -52,6 +51,7 @@
 
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
+    self.startupCallback = callback;
 
     self.client = new self.faye.Client(self.options.host + self.options.path);
     
@@ -63,20 +63,23 @@
       self.subscription = self.client.subscribe(self.channel, function(message) {
         self.handleMessage(message);
       });
-
-      setTimeout(function(){
-        self.setIP(function(err, ip){
-            self.detailsView(function(details){
-              callback(null, details);
-            });
-        });
-      }, self.options.startupDelay);
-      
     });
 
     initialMessage.errback(function(error) {
       callback(error, null);
     })
+  }
+
+  actionHeroWebSocket.prototype.completeConnect = function(){
+    var self = this;
+    self.setIP(function(err, ip){
+      self.detailsView(function(details){
+        if(typeof self.startupCallback == "function"){
+          self.startupCallback(null, details);
+          delete self.startupCallback;
+        }
+      });
+    });
   }
 
   actionHeroWebSocket.prototype.send = function(args, callback){
@@ -102,6 +105,14 @@
     else if(message.context === "user"){
       if(typeof self.events.say === 'function'){
         self.events.say(message);
+      }
+    }
+
+    else if(message.welcome != null && message.context == "api"){
+      self.welcomeMessage = message.welcome;
+      self.completeConnect();
+      if(typeof self.events.say === 'function'){
+        self.events.welcome(message);
       }
     }
 

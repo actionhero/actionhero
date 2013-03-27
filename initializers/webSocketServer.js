@@ -63,26 +63,21 @@ var webSocketServer = function(api, next){
         api.faye.client.publish(channel, message);
       };
       api.webSocketServer.connectionsMap[clientId] = connection;
-      api.log("connection @ webSocket", "info", {to: connection.remoteIP});
+      setTimeout(function(){
+        connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
+        api.log("connection @ webSocket", "info", {to: connection.remoteIP});
+      }, 100);
     }
 
     api.webSocketServer.destroyClient = function(clientId){
       var connection = api.webSocketServer.connectionsMap[clientId];
       if(connection){
+        clearTimeout(connection.welcomeTimer);
         connection.destroy(function(){
           delete api.webSocketServer.connectionsMap[clientId];
           api.log("disconnect @ webSocket", "info", {to: connection.remoteIP});
         });
       }
-    }
-
-    api.webSocketServer.handleSubscribe = function(clientId, channel){
-      if(channel.indexOf(connectionPrefix) == 0){
-        var connection = api.webSocketServer.connectionsMap[clientId];
-        if(connection){
-          connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
-        }
-      };
     }
 
     api.webSocketServer.renderActionResponse = function(proxy_connection, toRender){
