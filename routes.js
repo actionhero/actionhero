@@ -6,10 +6,14 @@ If the client doesn't specify and action in a param, and the base route isn't a 
 
 - routes remain optional
 - actions defiend in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will always override RESTful routing 
-- the hierarchy of the routes object is prefix --> REST verb -> data
-- you can mix explicitly defined params with route-defined params.  If there is an overlap, the explicitly defined params win
-- data contains the 'action' to map to, and then an optional urlMap (api.params.mapParamsFromURL)
-- only single depth routes are supported at this time
+- you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
+  - IE: /api/user/123?userId=456 => `connection.userId = 123`
+  - this is a change from previous versions
+- routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"
+- use ":variable" to defined "variable"
+- undefined ":variable" will match
+  - IE: "/api/user/" WILL match "/api/user/:userId"
+- routes are matched as defined here top-down
 
 ---------------------- */
 

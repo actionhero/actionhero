@@ -4,8 +4,16 @@
 
 ** Routes **
 
-- We now use express-style routes
-- `api.utils.mapParamsFromURL` is removed
+- routes remain optional
+- actions defiend in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will always override RESTful routing 
+- you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
+  - IE: /api/user/123?userId=456 => `connection.userId = 123`
+  - this is a change from previous versions
+- routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"
+- use ":variable" to defined "variable"
+- undefined ":variable" will match
+  - IE: "/api/user/" WILL match "/api/user/:userId"
+- routes are matched as defined here top-down
 
 ** Bugs **
 
