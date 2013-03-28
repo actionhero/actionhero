@@ -15,17 +15,12 @@ If the client doesn't specify and action in a param, and the base route isn't a 
   - IE: "/api/user/" WILL match "/api/user/:userId"
 - routes are matched as defined here top-down
 
----------------------- */
+example:
 
-/////////////
-// EXAMPLE //
-/////////////
-
-exports.routes = {
-
+{
   get: [
     { path: "/users", action: "usersList" }, // (GET) /api/users
-    { path: "/search/:term/limit/:limit/offset/:offset", action: "usersList" }, // (GET) /api/search/car/limit/10/offset/100
+    { path: "/search/:term/limit/:limit/offset/:offset", action: "search" }, // (GET) /api/search/car/limit/10/offset/100
   ],
 
   post: [
@@ -35,5 +30,12 @@ exports.routes = {
   all: [
     { path: "/user/:userID", action: "user" } // (*) / /api/user/123
   ]
+}
 
-};
+---------------------- */
+
+////////////
+// ROUTES //
+////////////
+
+exports.routes = {};
