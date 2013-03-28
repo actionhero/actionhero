@@ -31,7 +31,7 @@ describe('Client: Socket', function(){
       }
       thisClient.removeListener('data', rsp); 
       if(typeof cb == "function"){ cb(parsed); }
-    }, 50);
+    }, 100);
 
     thisClient.on('data', rsp);
     thisClient.write(message + "\r\n");
