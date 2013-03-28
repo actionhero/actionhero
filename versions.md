@@ -15,6 +15,10 @@
   - IE: "/api/user/" WILL match "/api/user/:userId"
 - routes are matched as defined here top-down
 
+** General **
+- tasks will now log thier params when starting
+- tasks will now log thier duration when complete
+
 ** Bugs **
 
 - re-enabled the welcome message in websocket clients, and used this as the connection trigger rather than a timer

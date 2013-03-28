@@ -59,9 +59,9 @@ var taskProcessor = function(api, next){
     }
   }
 
-  api.taskProcessor.prototype.log = function(message, severity){
+  api.taskProcessor.prototype.log = function(message, severity, data){
     if(severity == null){ severity = 'info'; }
-    api.log("[taskProcessor "+this.id+"] " + message, severity);
+    api.log("[taskProcessor "+this.id+"] " + message, severity, data);
   }
 
   api.taskProcessor.prototype.process = function(callback){
@@ -94,14 +94,16 @@ var taskProcessor = function(api, next){
         }else{
           api.tasks.getTaskData(taskIdReturned, function(err, data){
             self.currentTask = new api.task(data);
+            var startTime = new Date().getTime();
             self.setWorkerStatus("working task: " + self.currentTask.id, function(){
               api.tasks.setTaskData(self.currentTask.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
-                if(self.currentTask.toAnnounce != false){ self.log("starting task " + self.currentTask.name + ", " + self.currentTask.id); }
+                if(self.currentTask.toAnnounce != false){ self.log("starting task " + self.currentTask.name + ", " + self.currentTask.id, 'notice', self.currentTask.params); }
                 api.stats.increment("tasks:tasksCurrentlyRunning");
                 api.stats.increment("tasks:ranTasks:" + self.currentTask.name);
                 self.currentTask.run(function(){
                   api.stats.increment("tasks:tasksCurrentlyRunning", -1);
-                  if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + ", " + self.currentTask.id); }
+                  var deltaSeconds = Math.round((new Date().getTime() - startTime) / 1000)
+                  if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + " (" + deltaSeconds + "s), " + self.currentTask.id); }
                   if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
                     self.currentTask.runAt = null;
                     api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
