@@ -37,9 +37,19 @@ var routes = function(api, next){
     if(urlParts[0] == api.configData.commonWeb.urlPathForActions){ urlParts.splice(0,1); }
     for(var i in matchParts){
       var part = matchParts[i];
-      if(part[0] === ":"){
+      if(part[0] === ":" && part.indexOf("(") < 0){
         var variable = part.replace(":","");
         response.params[variable] = urlParts[i];
+      }else if(part[0] === ":" && part.indexOf("(") >= 0){
+        var variable = part.replace(":","").split("(")[0];
+        var regexp = part.split("(")[1];  
+        regexp = new RegExp(regexp.substring(0, regexp.length - 1), 'g');
+        var matches = urlParts[i].match(regexp);
+        if(matches != null){
+          response.params[variable] = urlParts[i];
+        }else{
+          return response;
+        }
       }else{
         if(urlParts[i].toLowerCase() != matchParts[i].toLowerCase()){
           return response;

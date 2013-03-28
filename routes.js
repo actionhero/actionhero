@@ -14,6 +14,9 @@ If the client doesn't specify and action in a param, and the base route isn't a 
 - undefined ":variable" will match
   - IE: "/api/user/" WILL match "/api/user/:userId"
 - routes are matched as defined here top-down
+- you can optionally define a regex match along with your route variable
+  - IE: { path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }
+  - be sure to double-escape when needed: { path: "/login/:userID(^\\d{3}$)", action: "login" }
 
 example:
 
@@ -24,7 +27,7 @@ example:
   ],
 
   post: [
-    { path: "/login/:userID", action: "login" } // (POST) /api/login/123
+    { path: "/login/:userID(^\\d{3}$)", action: "login" } // (POST) /api/login/123
   ],
 
   all: [

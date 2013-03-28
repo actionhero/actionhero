@@ -238,7 +238,7 @@ describe('Client: Web', function(){
           { path: "/search/:term/limit/:limit/offset/:offset", action: "search" },
         ],
         post: [
-          { path: "/login/:userID", action: "login" }
+          { path: "/login/:userID(^\\d{3}$)", action: "login" }
         ]
       });
 
@@ -327,6 +327,23 @@ describe('Client: Web', function(){
         response.body.requestorInformation.receivedParams.term.should.equal('SeachTerm')
         response.body.requestorInformation.receivedParams.limit.should.equal('123')
         response.body.requestorInformation.receivedParams.offset.should.equal('456')
+        done();
+      });
+    });
+
+    it('regexp matches will provide proper variables', function(done){
+      specHelper.apiTest.post('/login/123', 0, {}, function(response){
+        response.body.requestorInformation.receivedParams.action.should.equal('login');
+        response.body.requestorInformation.receivedParams.userID.should.equal('123');
+        done();
+      });
+    });
+
+    it('regexp match failures will be regected', function(done){
+      specHelper.apiTest.post('/login/1234', 0, {}, function(response){
+        response.body.error.should.equal("Error: login/1234 is not a known action.");
+        response.body.requestorInformation.receivedParams.action.should.equal('login/1234');
+        should.not.exist(response.body.requestorInformation.receivedParams.userID);
         done();
       });
     });

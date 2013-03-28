@@ -14,6 +14,9 @@
 - undefined ":variable" will match
   - IE: "/api/user/" WILL match "/api/user/:userId"
 - routes are matched as defined here top-down
+- you can optionally define a regex match along with your route variable
+  - IE: { path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }
+  - be sure to double-escape when needed: { path: "/login/:userID(^\\d{3}$)", action: "login" }
 
 ** General **
 - tasks will now log thier params when starting
