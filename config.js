@@ -8,7 +8,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  apiVersion: "5.0.2",
+  apiVersion: "5.1.0",
   serverName: "actionHero API",
   // A unique token to your application which servers will use to authenticate to eachother
   serverToken: "change-me",
