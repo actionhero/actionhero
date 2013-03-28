@@ -106,7 +106,7 @@ var routes = function(api, next){
       if(curr.mtime > prev.mtime){
         process.nextTick(function(){
           if(fs.readFileSync(routesFile).length > 0){
-            loadRoutes();
+            api.routes.loadRoutes();
           }
         });
       }
