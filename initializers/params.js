@@ -32,42 +32,6 @@ var params = function(api, next){
     api.params.postVariables = api.utils.arrayUniqueify(postVariables);
     return api.params.postVariables;
   }
-
-  ////////////////////////////////////////////////////////////////////////////
-  // parse a connections's URL and build params based on RESTful map
-  // map is an array of the param's keys in order (ie: /:action/:userID/:email/:gameID => ['userID', 'email', 'gameID'])
-  // the action itself will be ommited from consideration in the mapping
-  // these are equvilent: [ localhost:8080/a/path/and/stuff?action=randomNumber ] && [ localhost:8080/randomNumber/a/path/and/stuff ]
-  api.params.mapParamsFromURL = function(connection, map, routePrefix){
-    if(connection.parsedURL != null && connection.parsedURL.path != null){
-      if(map == null){ map = []; };
-      var urlParts = connection.parsedURL.path.split("/");
-      var urlParams = {};
-      var mapCounter = 0;
-      if(connection.params != null){
-        var actionParam = connection.params.action;
-      }else{
-        var actionParam = null;
-      }
-      for (var i in urlParts){
-        var part = urlParts[i].split("?")[0];
-        if(part != "" && part != connection.action && part != actionParam && map[mapCounter] != null){
-          if(routePrefix != null){
-            if(part != routePrefix){
-              urlParams[map[mapCounter]] = part;
-              mapCounter++;
-            }
-          }else{
-            urlParams[map[mapCounter]] = part;
-            mapCounter++;
-          }
-        }
-      }
-      return urlParams;
-    }else{
-      return null;
-    }
-  }
   
   ////////////////////////////////////////////////////////////////////////////
   // api param checking
