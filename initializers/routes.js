@@ -10,48 +10,84 @@ var routes = function(api, next){
   api.routes.processRoute = function(connection){
     if(connection.params["action"] == null || ( api.actions.actions[connection.params["action"]] === undefined && connection.actionSetBy != "queryParam")){
       var method = connection.method.toLowerCase();
-      var pathParts = connection.parsedURL.pathname.split("/");
-      for(var i in api.routes.routes){
-        var routePrefix = i;
-        if (pathParts[1] == routePrefix){
-          for(var j in api.routes.routes[i]){
-            var routeMethod = j;
-            var route = api.routes.routes[i][j];
-            if(routeMethod == method){
-              connection.params["action"] = route.action;
-              connection.actionSetBy = "routes";
-              var routeParams = api.params.mapParamsFromURL(connection, route.urlMap, routePrefix);
-              for(var k in routeParams){
-                if(connection.params[k] == null){
-                  connection.params[k] = routeParams[k];
-                }
-              }
-              break;
-            }
+      for(var i in api.routes.routes[method]){
+        var route = api.routes.routes[method][i];
+        var match = api.routes.matchURL(connection.parsedURL.pathname, route.path);
+        if(match.match === true){
+          for(var param in match.params){
+            connection.params[param] = match.params[param];
           }
+          connection.params["action"] = route.action;
+          connection.actionSetBy = "routes";
           break;
         }
-      }
+      } 
     }
   }
 
-  // load in the routes file
-  var loadRoutes = function(){
-    var routesFile = process.cwd() + '/routes.js';
-    if(fs.existsSync(routesFile)){
-      delete require.cache[routesFile];
-      api.routes.routes = require(routesFile).routes;
-      for(var i in api.routes){
-        for(var j in api.routes.routes[i]){
-          var tmp = api.routes.routes[i][j];
-          delete api.routes[i][j];
-          api.routes.routes[i][j.toLowerCase()] = tmp;
+  api.routes.matchURL = function(url, match){
+    var response = {match: false, params: {} }
+    var urlParts = url.split("/");
+    var matchParts = match.split("/");
+    var regexp = "";
+    if(urlParts[0] == ""){ urlParts.splice(0,1); }
+    if(matchParts[0] == ""){ matchParts.splice(0,1); }
+    if(urlParts[(urlParts.length - 1)] == ""){ urlParts.pop(); }
+    if(matchParts[(matchParts.length - 1)] == ""){ matchParts.pop(); }
+    if(urlParts[0] == api.configData.commonWeb.urlPathForActions){ urlParts.splice(0,1); }
+    for(var i in matchParts){
+      var part = matchParts[i];
+      if(part[0] === ":"){
+        var variable = part.replace(":","");
+        response.params[variable] = urlParts[i];
+      }else{
+        if(urlParts[i].toLowerCase() != matchParts[i].toLowerCase()){
+          return response;
         }
       }
-      api.log(api.utils.hashLength(api.routes.routes) + " routes loaded from " + routesFile, "debug");
-    }else{
-      api.log("no routes file found, skipping", "debug");
     }
+    response.match = true;
+    return response;
+  }
+
+  // load in the routes file
+  api.routes.loadRoutes = function(rawRoutes){
+    var counter = 0;
+    api.routes.routes = { "get": [], "post": [], "put": [], "delete": [] };
+    
+    if(rawRoutes == null){
+      var routesFile = process.cwd() + '/routes.js';
+      if(fs.existsSync(routesFile)){
+        delete require.cache[routesFile];
+        var rawRoutes = require(routesFile).routes;
+      }else{
+        api.log("no routes file found, skipping", "debug");
+        return;
+      }
+    }
+    for(var i in rawRoutes){
+      var method = i.toLowerCase(); 
+      for(var j in rawRoutes[i]){
+        var route = rawRoutes[i][j];
+        if(method == "all"){
+          ["get", "post", "put", "delete"].forEach(function(verb){
+            api.routes.routes[verb].push({ path: route.path, action: route.action });
+          });
+        }else{
+          api.routes.routes[method].push({ path: route.path, action: route.action });
+        }
+        var words = route.path.split("/");
+        words.forEach(function(word){
+          if(word[0] === ":"){
+            var cleanedWord = word.replace(":","");
+            api.params.postVariables.push(cleanedWord);
+          }
+        });
+        counter++;
+      }
+    }
+    api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
+    api.log(counter + " routes loaded from " + routesFile, "debug", api.routes.routes);
   };
 
   if(api.configData.general.developmentMode == true){
@@ -67,8 +103,7 @@ var routes = function(api, next){
     });
   };
 
-  loadRoutes();
-
+  api.routes.loadRoutes();
   next();
 }
 

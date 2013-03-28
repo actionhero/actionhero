@@ -67,12 +67,12 @@ var actionProcessor = function(api, next){
     self.incrementTotalActions();
     self.incramentPendingActions();
     self.sanitizeLimitAndOffset();
-    self.connection.action = self.connection.params["action"];
-    var actionTemplate = api.actions.actions[self.connection.action];
-
-    api.stats.increment("actions:actionsCurrentlyProcessing");
 
     if(self.connection.type == "web"){ api.routes.processRoute(self.connection); }
+
+    self.connection.action = self.connection.params["action"];
+    var actionTemplate = api.actions.actions[self.connection.action];
+    api.stats.increment("actions:actionsCurrentlyProcessing");
 
     if(api.running != true){
       self.completeAction("the server is shutting down");
