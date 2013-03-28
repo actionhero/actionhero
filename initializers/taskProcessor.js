@@ -68,11 +68,8 @@ var taskProcessor = function(api, next){
     var self = this;
     clearTimeout(self.timer);
     self.processLocalQueue(function(){
-      delete self.currentTask;
       self.processGlobalQueue(function(){
-        delete self.currentTask;
         self.processDelayedQueue(function(){
-          delete self.currentTask;
           self.setWorkerStatus("idle", function(){
             if(self.running == true){
               self.timer = setTimeout(function(){
@@ -111,12 +108,14 @@ var taskProcessor = function(api, next){
                       self.currentTask.enqueue(function(error){
                         api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
                           if(error != null){ self.log(error); }
+                          delete self.currentTask;
                           callback(null, taskIdReturned);
                         });
                       });
                     });
                   }else{
                     api.tasks.clearTaskData(self.currentTask.id, function(){
+                      delete self.currentTask;
                       callback(null, taskIdReturned);
                     });
                   }
@@ -138,6 +137,7 @@ var taskProcessor = function(api, next){
         }else{
           self.currentTask = task;
           api.tasks.copyToReleventLocalQueues(task, function(){
+            delete self.currentTask;
             callback(null, task.id);
           });
         }
@@ -155,6 +155,7 @@ var taskProcessor = function(api, next){
             if(self.currentTask.toAnnounce != false){
               self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug");
             } 
+            delete self.currentTask;
             callback(null, task.id);
           }else{
             callback(null, null);
