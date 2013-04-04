@@ -71,6 +71,15 @@ var connections = function(api, next){
       }
     }
 
+    /**
+     * Resets connection-specific params
+     *
+     * @return {void}
+     */
+    api.connection.prototype.resetParams = function () {
+      this.params = {};
+    };
+
     api.connection.prototype.joinRoomOnConnect = function(){
       if(api.connections.connections[this.id] == null){
         if(this.type != "web" || (this.type == "web" && api.configData.commonWeb.httpClientMessageTTL > 0 )){
