@@ -64,7 +64,9 @@ var webSocketServer = function(api, next){
       };
       api.webSocketServer.connectionsMap[clientId] = connection;
       setTimeout(function(){
-        connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
+        if(api.chatRoom.enabled){
+          connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"});
+        }
         api.log("connection @ webSocket", "info", {to: connection.remoteIP});
       }, 100);
     }
@@ -148,20 +150,20 @@ var webSocketServer = function(api, next){
           api.log("setIP @ webSocket", "debug", {clientId: connection.rawConnection.clientId, params: JSON.stringify(data)});
         }
 
-        else if(event == "say"){
+        else if(api.chatRoom.enabled && event == "say"){
           api.chatRoom.socketRoomBroadcast(connection, data.message);
           connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount});
           api.log("say @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         }
 
-        else if(event == "roomView"){
+        else if(api.chatRoom.enabled && event == "roomView"){
           api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
             connection.sendMessage({context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
             api.log("roomView @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
           });
         }
 
-        else if(event == "roomChange"){
+        else if(api.chatRoom.enabled && event == "roomChange"){
           api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
             connection.room = data.room;
             api.chatRoom.roomAddMember(connection);
@@ -170,7 +172,7 @@ var webSocketServer = function(api, next){
           });
         }
 
-        else if(event == "listenToRoom"){
+        else if(api.chatRoom.enabled && event == "listenToRoom"){
           var message = {context: "response", messageCount: connection.messageCount, room: data.room}
           if(connection.additionalListeningRooms.indexOf(data.room) > -1){
             message.error = "you are already listening to this room";
@@ -182,7 +184,7 @@ var webSocketServer = function(api, next){
           api.log("listenToRoom @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         }
 
-        else if(event == "silenceRoom"){
+        else if(api.chatRoom.enabled && event == "silenceRoom"){
           var message = {context: "response", messageCount: connection.messageCount, room: data.room}
           if(connection.additionalListeningRooms.indexOf(data.room) > -1){
             var index = connection.additionalListeningRooms.indexOf(data.room);

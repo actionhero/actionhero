@@ -79,7 +79,7 @@ var webServer = function(api, next){
       connection.responseHttpCode = 200;
 
       connection.sendMessage = function(message){
-        if(api.configData.commonWeb.httpClientMessageTTL != null){
+        if(api.chatRoom.enabled && api.configData.commonWeb.httpClientMessageTTL != null){
           api.webServer.storeWebChatMessage(connection, message);
         }
       }
@@ -308,16 +308,20 @@ var webServer = function(api, next){
     // Helpers to expand chat functionality to http(s) clients
 
     api.webServer.storeWebChatMessage = function(connection, messagePayload, next){
-      var rediskey = 'actionHero:webMessages:' + connection.id;
-      api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
-        api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
-          if(typeof next == "function"){ next(); }
+      if(api.chatRoom.enabled){
+        var rediskey = 'actionHero:webMessages:' + connection.id;
+        api.redis.client.rpush(rediskey, JSON.stringify(messagePayload), function(){
+          api.redis.client.pexpire(rediskey, api.configData.commonWeb.httpClientMessageTTL, function(){
+            if(typeof next == "function"){ next(); }
+          });
         });
-      });
+      }
     }
 
     api.webServer.changeChatRoom = function(connection, next){
-      if(connection.params.room != null){
+      if(!api.chatRoom.enabled){
+        if(typeof next == "function"){ next() };
+      }else if(connection.params.room != null){
         connection.room = connection.params.room;
         api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
           api.chatRoom.roomAddMember(connection, function(err, wasAdded){
@@ -333,16 +337,20 @@ var webServer = function(api, next){
     }
 
     api.webServer.getWebChatMessage = function(connection, next){
-      var rediskey = 'actionHero:webMessages:' + connection.id;
-      var messages = [];
-      api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
-        api.redis.client.del(rediskey, function(){
-          for(var i in redisMessages){
-            messages.push(JSON.parse(redisMessages[i]));
-          }
-          next(null, messages);
+      if(!api.chatRoom.enabled){
+        next(null, []);
+      }else{
+        var rediskey = 'actionHero:webMessages:' + connection.id;
+        var messages = [];
+        api.redis.client.lrange(rediskey, 0, -1, function(err, redisMessages){
+          api.redis.client.del(rediskey, function(){
+            for(var i in redisMessages){
+              messages.push(JSON.parse(redisMessages[i]));
+            }
+            next(null, messages);
+          });
         });
-      });
+      }
     }
 
     next();

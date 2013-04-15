@@ -130,19 +130,19 @@ var socketServer = function(api, next){
         connection.params = {};
         api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK"});
         api.log("[ paramsDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
-      }else if(words[0] == "roomChange"){
+      }else if(api.chatRoom.enabled && words[0] == "roomChange"){
         api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
           connection.room = words[1];
           api.chatRoom.roomAddMember(connection);
           api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", room: connection.room});
           api.log("[ roomChange @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });
-      }else if(words[0] == "roomView"){
+      }else if(api.chatRoom.enabled && words[0] == "roomView"){
         api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
           api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
           api.log("[ roomView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
         });   
-      }else if(words[0] == "listenToRoom"){
+      }else if(api.chatRoom.enabled && words[0] == "listenToRoom"){
         var message = {context: "response", status: "OK", room: words[1]}
         if(connection.additionalListeningRooms.indexOf(words[1]) > -1){
           message.error = "you are already listening to this room";
@@ -152,7 +152,7 @@ var socketServer = function(api, next){
         }
         api.socketServer.prepareSocketMessage(connection, message);
         api.log("[ listenToRoom @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
-      }else if(words[0] == "silenceRoom"){
+      }else if(api.chatRoom.enabled && words[0] == "silenceRoom"){
         var message = {context: "response", status: "OK", room: words[1]}
         if(connection.additionalListeningRooms.indexOf(words[1]) > -1){
           var index = connection.additionalListeningRooms.indexOf(words[1]);
@@ -173,7 +173,7 @@ var socketServer = function(api, next){
         details.pendingActions = connection.pendingActions;
         api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK", details: details});
         api.log("[ detailsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
-      }else if(words[0] == "say"){
+      }else if(api.chatRoom.enabled && words[0] == "say"){
         var message = line.substr(4);
         api.chatRoom.socketRoomBroadcast(connection, message);
         api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK"});
