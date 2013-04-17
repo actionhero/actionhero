@@ -82,6 +82,16 @@ exports['start'] = function(binary, next){
     });
   }
 
+  if (process.platform === "win32"){
+    var rl = binary.readLine.createInterface ({
+        input: process.stdin,
+        output: process.stdout
+    });
+    rl.on("SIGINT", function (){
+        process.emit ("SIGINT");
+    });
+  }
+
   // start the server!
   startServer(function(api_from_callback){
     api = api_from_callback;

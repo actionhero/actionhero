@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 5.1.1
+
+** Windows **
+
+Using the unstable `readline` module, catching of `sigint` on windows can be achieved.  This allows for a graceful shutdown.
+
 ## Version 5.1.0
 
 ** Routes **

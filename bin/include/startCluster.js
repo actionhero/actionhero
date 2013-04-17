@@ -226,6 +226,17 @@ exports['startCluster'] = function(binary, next){
         binary.workersExpected = 0;
         binary.log("Bye!")
       });
+
+      if (process.platform === "win32"){
+        var rl = binary.readLine.createInterface ({
+            input: process.stdin,
+            output: process.stdout
+        });
+        rl.on("SIGINT", function (){
+            process.emit ("SIGINT");
+        });
+      }
+      
       next();
     },
     start: function(next){

@@ -8,6 +8,7 @@ binary.path = require('path');
 binary.async = require('async');
 binary.spawn = require('child_process').spawn
 binary.fork = require('child_process').fork
+binary.readLine = require("readline");
 
 ///////////////
 // utilities //
