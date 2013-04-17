@@ -23,9 +23,9 @@ actionHero is ideal for large game projects (MMOs), heavily trafficked APIs, and
 
 ## Quick Start
 
-- npm install actionHero
-- ./node_modules/.bin/actionHero generate
-- ./node_modules/.bin/actionHero start
+- `npm install actionHero`
+- `./node_modules/.bin/actionHero generate`
+- `./node_modules/.bin/actionHero start`
 
 ## Want more?
 
