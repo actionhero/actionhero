@@ -17,7 +17,7 @@ Currently actionHero supports:
 
 - [Web Clients](https://github.com/evantahler/actionHero/wiki/Web-Clients): HTTP, HTTPS
 - [Socket Clients](https://github.com/evantahler/actionHero/wiki/TCP-Clients): TCP (telnet), TLS
-- [Web Socket (socket.io) clients](https://github.com/evantahler/actionHero/wiki/Web-Socket-Clients): HTTP, HTTPS
+- [Web Socket (Faye) clients](https://github.com/evantahler/actionHero/wiki/Web-Socket-Clients): HTTP, HTTPS
 
 actionHero is ideal for large game projects (MMOs), heavily trafficked APIs, and even API-driver websites.  actionHero servers can process both requests and [tasks](https://github.com/evantahler/actionHero/wiki/Tasks) (delayed actions like `send e-mail` or other background jobs).  Taks can be enqued as a delayed job, or run periodically.  actionHero servers can also run in a cluster (on the [same](https://github.com/evantahler/actionHero/wiki/Running-ActionHero) or [multiple machines](https://github.com/evantahler/actionHero/wiki/actionCluster)) to work in concert to handle your load.  Tasks can be alocated to run on `any` or `all` of the servers in yoru cluster.
 
