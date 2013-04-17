@@ -6,12 +6,13 @@ describe('Client: Web', function(){
   var should = require("should");
 
   before(function(done){
-      specHelper.prepare(0, function(api){ 
-        rawApi = api;
-        apiObj = specHelper.cleanAPIObject(api);
-        specHelper.resetCookieJar();
-        done();
-      })
+    this.timeout(5000)
+    specHelper.prepare(0, function(api){ 
+      rawApi = api;
+      apiObj = specHelper.cleanAPIObject(api);
+      specHelper.resetCookieJar();
+      done();
+    })
   });
 
   it('Server should be up and return data', function(done){
