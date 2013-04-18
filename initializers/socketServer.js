@@ -127,7 +127,7 @@ var socketServer = function(api, next){
         api.socketServer.prepareSocketMessage(connection, {context: "response", params: connection.params});
         api.log("[ paramsView @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "paramsDelete"){
-        connection.params = {};
+        connection.resetParams();
         api.socketServer.prepareSocketMessage(connection, {context: "response", status: "OK"});
         api.log("[ paramsDelete @ socket ]", 'debug', {to: connection.remoteIP, params: JSON.stringify(words)});
       }else if(words[0] == "roomChange"){

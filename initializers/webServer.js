@@ -264,6 +264,10 @@ var webServer = function(api, next){
             error: String(connection.error)
           })
         }
+
+        // Now clear this connection's parameters
+        connection.resetParams( );
+
         if(api.configData.commonWeb.httpClientMessageTTL == null){
           connection.destroy();
         }else{

@@ -70,8 +70,8 @@ actionHero.prototype.start = function(params, next){
     'taskProcessor',
     'routes',
     'connections',
-    'webServer', 
-    'webSocketServer', 
+    'webServer',
+    'webSocketServer',
     'socketServer'
   ].forEach(function(I){
     orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
@@ -141,9 +141,9 @@ actionHero.prototype.stop = function(next){
     var orderedTeardowns = {};
     var thing = [
       "webServer", 
-      "faye", 
-      "webSocketServer", 
-      "socketServer", 
+      "faye",
+      "webSocketServer",
+      "socketServer",
       "taskProcessor"
     ]
     thing.forEach(function(terdown){
