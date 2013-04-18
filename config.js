@@ -10,6 +10,8 @@ var configData = {};
 configData.general = {
   apiVersion: "5.1.1",
   serverName: "actionHero API",
+  // Whether chatrooms are enabled
+  chatEnabled: true,
   // A unique token to your application which servers will use to authenticate to eachother
   serverToken: "change-me",
   // The welcome message seen by TCP and webSocket clients upon connection

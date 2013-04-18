@@ -72,7 +72,7 @@ var connections = function(api, next){
     }
 
     api.connection.prototype.joinRoomOnConnect = function(){
-      if(api.connections.connections[this.id] == null){
+      if(api.chatRoom.enabled && api.connections.connections[this.id] == null){
         if(this.type != "web" || (this.type == "web" && api.configData.commonWeb.httpClientMessageTTL > 0 )){
           api.chatRoom.roomAddMember(this);
         }
@@ -84,21 +84,23 @@ var connections = function(api, next){
     }
 
     api.connection.prototype.sendMessage = function(message){
-      throw new Error("I should be replaced with a connection-specific method");
+      if(api.chatRooms.enabled){
+        throw new Error("I should be replaced with a connection-specific method");
+      }
     }
 
     api.connection.prototype.destroy = function(callback){
       var self = this;
       api.stats.increment("connections:totalActiveConnections", -1, function(){
         api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
-          if(self.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
-            delete api.connections.connections[self.id]
-            if(typeof callback == "function"){ callback(); }
-          }else{
+          if(api.chatRoom.enabled && self.type != "web" && api.configData.commonWeb.httpClientMessageTTL != null ){
             api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
               delete api.connections.connections[self.id];
               if(typeof callback == "function"){ callback(); }
             }); 
+          }else{
+            delete api.connections.connections[self.id]
+            if(typeof callback == "function"){ callback(); }
           }
         });
       });

@@ -9,13 +9,39 @@ describe('Action: chat', function(){
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       apiObj.configData.commonWeb.httpClientMessageTTL = null;
+      apiObj.chatRoom.enabled = true;
       done();
     })
   });
 
   after(function(done){
     apiObj.configData.commonWeb.httpClientMessageTTL = null;
+    apiObj.chatRoom.enabled = true;
     done();
+  });
+
+  describe('should be disabled', function(){
+    before(function(done){
+      apiObj.configData.commonWeb.httpClientMessageTTL = 75;
+      apiObj.chatRoom.enabled = false;
+      done();
+    });
+    after(function(done){
+      // Reset the fields we modified:
+      apiObj.chatRoom.enabled = true;
+      apiObj.configData.commonWeb.httpClientMessageTTL = null;
+      done();
+    });
+
+    it('messages should not be saved or sent when chatEnabled is false', function(done){
+      apiObj.chatRoom.socketRoomBroadcast(apiObj, {room: 'defaultRoom'}, "TEST");
+      setTimeout(function(){
+        specHelper.apiTest.get('/chat/?method=messages', 0, {}, function(response){
+          should.equal(0, response.body.messages.length);
+          done();
+        });
+      });
+    });
   });
 
   describe('should be off', function(){
