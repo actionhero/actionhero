@@ -204,15 +204,8 @@ var webServer = function(api, next){
     
     ////////////////////////////////////////////////////////////////////////////
     // Response Prety-maker
-    api.webServer.respondToWebClient = function(proxyConnection, toRender){
-      var connection = proxyConnection._original_connection;
-      connection.error = proxyConnection.error;
-      connection.action = proxyConnection.action;
-      connection.response = proxyConnection.response || {};
-      if(connection.responseHttpCode == 200 && proxyConnection.responseHttpCode != null){
-        connection.responseHttpCode = proxyConnection.responseHttpCode;
-      }
-            
+    api.webServer.respondToWebClient = function(connection, toRender, messageCount){
+  
       // serverInformation information
       connection.response.serverInformation = {};
       connection.response.serverInformation.serverName = api.configData.general.serverName;
@@ -267,16 +260,6 @@ var webServer = function(api, next){
         if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
         var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
 
-        if(connection.params.action != null && connection.action != "file"){
-          api.log("[ action @ web ]", "info", {
-            to: connection.remoteIP,
-            action: connection.action,
-            request: full_url,
-            params: JSON.stringify(connection.params),
-            duration: connection.response.serverInformation.requestDuration,
-            error: String(connection.error)
-          })
-        }
         if(api.configData.commonWeb.httpClientMessageTTL == null){
           connection.destroy();
         }else{

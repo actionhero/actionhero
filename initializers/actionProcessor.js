@@ -42,10 +42,28 @@ var actionProcessor = function(api, next){
     if(toRender == null){ toRender = true; }
     self.incramentPendingActions(-1);
     api.stats.increment("actions:actionsCurrentlyProcessing", -1);
+    self.duration = new Date().getTime() - self.actionStartTime;
+
     process.nextTick(function(){
+
+      self.connection._original_connection.action = self.connection.action;
+      self.connection._original_connection.error = self.connection.error;
+      self.connection._original_connection.response = self.connection.response || {};
+      self.connection._original_connection.responseHttpCode = self.connection.responseHttpCode;
+      self.connection._original_connection.responsesWaitingCount = self.connection.responsesWaitingCount;
+
       if(typeof self.callback == 'function'){
-        self.callback(self.connection, toRender);
+        self.callback(self.connection._original_connection, toRender, self.connection.messageCount);
       }
+
+      api.log("[ action @ " + self.connection.type + " ]", "info", {
+        to: self.connection.remoteIP,
+        action: self.connection.action,
+        params: JSON.stringify(self.connection.params),
+        duration: self.duration,
+        error: String(self.connection.error)
+      });
+
     });
   }
 
@@ -69,6 +87,7 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.processAction = function(){ 
     var self = this;
+    self.actionStartTime = new Date().getTime();
     self.incrementTotalActions();
     self.incramentPendingActions();
     self.sanitizeLimitAndOffset();

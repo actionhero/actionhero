@@ -187,7 +187,6 @@ var socketServer = function(api, next){
     // process the action
     api.socketServer.processAction = function(connection, line, words){
       connection.error = null;
-      connection.actionStartTime = new Date().getTime();
       connection.response = {};
       connection.response.context = "response";
       connection.responsesWaitingCount++;
@@ -196,23 +195,11 @@ var socketServer = function(api, next){
       actionProcessor.processAction();
     }
 
-    api.socketServer.renderActionResponse = function(proxyConnection, cont){
-      var connection = proxyConnection._original_connection;
-      connection.response = proxyConnection.response;
-      connection.error = proxyConnection.error;
-      connection.action = proxyConnection.action;
+    api.socketServer.renderActionResponse = function(connection, cont, messageCount){
       connection.responsesWaitingCount--;
-      var delta = new Date().getTime() - connection.actionStartTime;
       if(cont != false){
-        api.socketServer.prepareSocketMessage(connection, connection.response, proxyConnection.messageCount);
+        api.socketServer.prepareSocketMessage(connection, connection.response, messageCount);
       }
-      api.log("[ action @ socket ]", 'info', {
-        to: connection.remoteIP, 
-        params: JSON.stringify(proxyConnection.params), 
-        action: proxyConnection.action, 
-        duration: delta, 
-        error: String(proxyConnection.error)
-      });
     }
 
     api.socketServer.buildProxyConnectionParams = function(proxyConnection, line, words){

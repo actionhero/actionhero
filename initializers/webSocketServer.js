@@ -82,23 +82,11 @@ var webSocketServer = function(api, next){
       }
     }
 
-    api.webSocketServer.renderActionResponse = function(proxyConnection, toRender){
-      var connection = proxyConnection._original_connection;
-      connection.response = proxyConnection.response;
-      connection.error = proxyConnection.error;
-      connection.action = proxyConnection.action;
-      var delta = new Date().getTime() - connection.actionStartTime;          
+    api.webSocketServer.renderActionResponse = function(connection, toRender, messageCount){
       if(toRender != false){
-        connection.response.messageCount = proxyConnection.messageCount;
+        connection.response.messageCount = messageCount;
         connection.sendMessage(connection.response)
       }
-      api.log("action @ webSocket", "info", {
-        to: connection.remoteIP, 
-        params: JSON.stringify(proxyConnection.params), 
-        action: proxyConnection.action, 
-        duration: delta, 
-        error: String(proxyConnection.error)
-      });
     }
 
     api.webSocketServer.incommingMessage = function(message){
@@ -115,7 +103,6 @@ var webSocketServer = function(api, next){
           if(data == null){ data = {}; }
           connection.params = data.params;
           connection.error = null;
-          connection.actionStartTime = new Date().getTime();
           connection.response = {};
           connection.response.context = "response";
           var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webSocketServer.renderActionResponse});
