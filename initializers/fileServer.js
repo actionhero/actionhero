@@ -81,7 +81,7 @@ var fileServer = function(api, next){
       fileSize = fileSize + chunk.length;
     }).addListener( "close",function() {
       api.fileServer.logRequest(file, connection, fileSize, true);
-      process.nextTick(function() { next(connection, false); });
+      if(typeof next == 'functon'){ next(connection, false); }
     });
 
     if(connection.type == "web"){
@@ -113,13 +113,13 @@ var fileServer = function(api, next){
       api.webServer.cleanHeaders(connection);
       connection.rawConnection.res.writeHead(404, connection.responseHeaders);
       connection.rawConnection.res.end(api.configData.general.flatFileNotFoundMessage);
-      next(connection, false);
+      if(typeof next == 'functon'){ next(connection, false); }
     }else{
       if(connection.error === null){
         connection.error = new Error("The file, "+connection.params.fileName+", is not found.");
       }
       api.fileServer.logRequest('{404: not found}', connection, null, false);
-      next(connection, true);
+      if(typeof next == 'functon'){ next(connection, true); }
     }
   }
 

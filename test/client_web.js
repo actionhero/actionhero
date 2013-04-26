@@ -345,12 +345,12 @@ describe('Client: Web', function(){
       });
     });
 
-    it('oute params trump explicit params', function(done){
-      specHelper.apiTest.get('/search/SeachTerm/limit/123/offset/456?term=otherSearchTerm', 0, {}, function(response){
+    it('route params trump explicit params', function(done){
+      specHelper.apiTest.get('/search/SeachTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', 0, {}, function(response){
         response.body.requestorInformation.receivedParams.action.should.equal('search')
         response.body.requestorInformation.receivedParams.term.should.equal('SeachTerm')
-        response.body.requestorInformation.receivedParams.limit.should.equal('123')
-        response.body.requestorInformation.receivedParams.offset.should.equal('456')
+        response.body.requestorInformation.receivedParams.limit.should.equal(123)
+        response.body.requestorInformation.receivedParams.offset.should.equal(456)
         done();
       });
     });

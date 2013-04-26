@@ -58,8 +58,10 @@ var webSocketServer = function(api, next){
           clientId: clientId,
         }
       });
-      connection.sendMessage = function(message){
+      connection.sendMessage = function(message, mode){
+        if(mode == null){ mode = 'response'; }
         var channel = api.webSocketServer.fayeChannelPrefix + this.rawConnection.clientId;
+        if(mode === 'response' && message.messageCount == null){ message.messageCount = connection.messageCount; }
         api.faye.client.publish(channel, message);
       };
       api.webSocketServer.connectionsMap[clientId] = connection;
@@ -80,34 +82,22 @@ var webSocketServer = function(api, next){
       }
     }
 
-    api.webSocketServer.renderActionResponse = function(proxy_connection, toRender){
-      var connection = proxy_connection._original_connection;
-      connection.response = proxy_connection.response;
-      connection.error = proxy_connection.error;
+    api.webSocketServer.renderActionResponse = function(proxyConnection, toRender){
+      var connection = proxyConnection._original_connection;
+      connection.response = proxyConnection.response;
+      connection.error = proxyConnection.error;
+      connection.action = proxyConnection.action;
       var delta = new Date().getTime() - connection.actionStartTime;          
-      
       if(toRender != false){
-        if(connection.response.context == "response"){
-          if(proxy_connection.respondingTo != null){
-            connection.response.messageCount = proxy_connection.respondingTo;
-          }else if(proxy_connection.messageCount != null){
-            connection.response.messageCount = proxy_connection.messageCount;
-          }else{
-            connection.response.messageCount = connection.messageCount;
-          }
-        }
-        if(connection.error != null && connection.response.error == null){ 
-          connection.response.error = String(connection.error);
-        }
+        connection.response.messageCount = proxyConnection.messageCount;
         connection.sendMessage(connection.response)
       }
-
       api.log("action @ webSocket", "info", {
         to: connection.remoteIP, 
-        params: JSON.stringify(proxy_connection.params), 
-        action: proxy_connection.action, 
+        params: JSON.stringify(proxyConnection.params), 
+        action: proxyConnection.action, 
         duration: delta, 
-        error: String(proxy_connection.error)
+        error: String(proxyConnection.error)
       });
     }
 
@@ -128,35 +118,25 @@ var webSocketServer = function(api, next){
           connection.actionStartTime = new Date().getTime();
           connection.response = {};
           connection.response.context = "response";
-          // actions should be run using params set at the begining of excecution
-          // build a proxy connection so that param changes during execution will not break this
-          var proxy_connection = {
-            _original_connection: connection
-          }
-          for (var i in connection) {
-            if (connection.hasOwnProperty(i)) {
-              proxy_connection[i] = connection[i];
-            }
-          }
-          var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: api.webSocketServer.renderActionResponse});
+          var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webSocketServer.renderActionResponse});
           actionProcessor.processAction();
         }
 
         else if(event == "setIP"){
           connection.remoteIP = data.ip;
-          connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount});
+          connection.sendMessage({context: "response", status: "OK"});
           api.log("setIP @ webSocket", "debug", {clientId: connection.rawConnection.clientId, params: JSON.stringify(data)});
         }
 
         else if(event == "say"){
           api.chatRoom.socketRoomBroadcast(connection, data.message);
-          connection.sendMessage({context: "response", status: "OK", messageCount: connection.messageCount});
+          connection.sendMessage({context: "response", status: "OK"});
           api.log("say @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         }
 
         else if(event == "roomView"){
           api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
-            connection.sendMessage({context: "response", status: "OK", room: connection.room, roomStatus: roomStatus, messageCount: connection.messageCount});
+            connection.sendMessage({context: "response", status: "OK", room: connection.room, roomStatus: roomStatus});
             api.log("roomView @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
           });
         }
@@ -165,13 +145,13 @@ var webSocketServer = function(api, next){
           api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
             connection.room = data.room;
             api.chatRoom.roomAddMember(connection);
-            connection.sendMessage({context: "response", status: "OK", room: connection.room, messageCount: connection.messageCount});
+            connection.sendMessage({context: "response", status: "OK", room: connection.room});
             api.log("roomChange @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
           });
         }
 
         else if(event == "listenToRoom"){
-          var message = {context: "response", messageCount: connection.messageCount, room: data.room}
+          var message = {context: "response", room: data.room}
           if(connection.additionalListeningRooms.indexOf(data.room) > -1){
             message.error = "you are already listening to this room";
           }else{
@@ -183,7 +163,7 @@ var webSocketServer = function(api, next){
         }
 
         else if(event == "silenceRoom"){
-          var message = {context: "response", messageCount: connection.messageCount, room: data.room}
+          var message = {context: "response", room: data.room}
           if(connection.additionalListeningRooms.indexOf(data.room) > -1){
             var index = connection.additionalListeningRooms.indexOf(data.room);
             connection.additionalListeningRooms.splice(index, 1);
@@ -206,7 +186,7 @@ var webSocketServer = function(api, next){
             totalActions: connection.totalActions,
             pendingActions: connection.pendingActions,
           };
-          connection.sendMessage({context: "response", status: "OK", details: details, messageCount: connection.messageCount});
+          connection.sendMessage({context: "response", status: "OK", details: details});
           api.log("detailsView @ webSocket", "debug", {to: connection.remoteIP, params: JSON.stringify(data)});
         }
 

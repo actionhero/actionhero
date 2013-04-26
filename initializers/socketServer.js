@@ -190,6 +190,32 @@ var socketServer = function(api, next){
       connection.actionStartTime = new Date().getTime();
       connection.response = {};
       connection.response.context = "response";
+      connection.responsesWaitingCount++;
+      var actionProcessor = new api.actionProcessor({connection: connection, callback: api.socketServer.renderActionResponse});
+      api.socketServer.buildProxyConnectionParams(actionProcessor.connection, line, words);
+      actionProcessor.processAction();
+    }
+
+    api.socketServer.renderActionResponse = function(proxyConnection, cont){
+      var connection = proxyConnection._original_connection;
+      connection.response = proxyConnection.response;
+      connection.error = proxyConnection.error;
+      connection.action = proxyConnection.action;
+      connection.responsesWaitingCount--;
+      var delta = new Date().getTime() - connection.actionStartTime;
+      if(cont != false){
+        api.socketServer.prepareSocketMessage(connection, connection.response, proxyConnection.messageCount);
+      }
+      api.log("[ action @ socket ]", 'info', {
+        to: connection.remoteIP, 
+        params: JSON.stringify(proxyConnection.params), 
+        action: proxyConnection.action, 
+        duration: delta, 
+        error: String(proxyConnection.error)
+      });
+    }
+
+    api.socketServer.buildProxyConnectionParams = function(proxyConnection, line, words){
       try{
         var local_params = {};
         var request_hash = JSON.parse(line);
@@ -201,47 +227,12 @@ var socketServer = function(api, next){
         }
       }catch(e){
         local_params = null;
-        connection.params["action"] = words[0];
+        proxyConnection.params["action"] = words[0];
       }
-      connection.responsesWaitingCount++;
 
-      // actions should be run using params set at the begining of excecution
-      // build a proxy connection so that param changes during execution will not break this
-      var proxy_connection = {
-        _original_connection: connection
-      }
-      for (var i in connection) {
-        if (connection.hasOwnProperty(i)) {
-          proxy_connection[i] = connection[i];
-        }
-      }
       if(local_params != null && api.utils.hashLength(local_params) > 0){
-        proxy_connection.params = local_params;
+        proxyConnection.params = local_params;
       }
-
-      var actionProcessor = new api.actionProcessor({connection: proxy_connection, callback: function(proxy_connection, cont){
-        connection.response = proxy_connection.response;
-        connection.error = proxy_connection.error;
-        connection.responsesWaitingCount--;
-        var delta = new Date().getTime() - connection.actionStartTime;
-        if(cont != false){
-          if(connection.error != null){ 
-            if(connection.response.error == null){
-              connection.response.error = String(connection.error);
-            }
-          }
-          api.socketServer.prepareSocketMessage(connection, connection.response, proxy_connection.messageCount);
-        }
-        api.log("[ action @ socket ]", 'info', {
-          to: connection.remoteIP, 
-          params: JSON.stringify(words), 
-          action: proxy_connection.action, 
-          duration: delta, 
-          error: String(proxy_connection.error)
-        });
-      }});
-
-      actionProcessor.processAction();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -269,13 +260,13 @@ var socketServer = function(api, next){
     
     ////////////////////////////////////////////////////////////////////////////
     //message helper
-    api.socketServer.prepareSocketMessage = function(connection, message, proxyMessageCount){
+    api.socketServer.prepareSocketMessage = function(connection, message, messageCount){
       if(connection.respondingTo != null){
-        message.messageCount = connection.respondingTo;
+        message.messageCount = messageCount;
         connection.respondingTo = null;
       }else if(message.context == "response"){
-        if(proxyMessageCount != null){
-          message.messageCount = proxyMessageCount;
+        if(messageCount != null){
+          message.messageCount = messageCount;
         }else{
           message.messageCount = connection.messageCount;
         }

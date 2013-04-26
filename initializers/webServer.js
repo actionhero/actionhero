@@ -157,6 +157,7 @@ var webServer = function(api, next){
                 if(connection.directModeAccess == true){ connection.params.action = pathParts[2]; }
                 else{ connection.params.action = pathParts[1]; }
               }
+              api.routes.processRoute(connection);
               var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
               actionProcessor.processAction();
             }else{
@@ -173,20 +174,22 @@ var webServer = function(api, next){
                   api.webServer.fillParamsFromWebRequest(connection, fields);
                 }
                 process.nextTick(function() { 
+                  api.routes.processRoute(connection);
                   var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
                   actionProcessor.processAction();
                 });
               });
             }
           }else{
+            api.routes.processRoute(connection);
             var actionProcessor = new api.actionProcessor({connection: connection, callback: api.webServer.respondToWebClient});
             actionProcessor.processAction();
           }
         }
         
-        if(connection.requestMode == 'public'){
+        else if(connection.requestMode == 'public'){
           api.webServer.fillParamsFromWebRequest(connection, connection.parsedURL.query);
-          process.nextTick(function(){ api.fileServer.deliver(connection, api.webServer.respondToWebClient); })
+          process.nextTick(function(){ api.fileServer.deliver(connection); })
         } 
       });
     }
@@ -201,8 +204,14 @@ var webServer = function(api, next){
     
     ////////////////////////////////////////////////////////////////////////////
     // Response Prety-maker
-    api.webServer.respondToWebClient = function(connection, toRender){
-      connection.response = connection.response || {};
+    api.webServer.respondToWebClient = function(proxyConnection, toRender){
+      var connection = proxyConnection._original_connection;
+      connection.error = proxyConnection.error;
+      connection.action = proxyConnection.action;
+      connection.response = proxyConnection.response || {};
+      if(connection.responseHttpCode == 200 && proxyConnection.responseHttpCode != null){
+        connection.responseHttpCode = proxyConnection.responseHttpCode;
+      }
             
       // serverInformation information
       connection.response.serverInformation = {};
@@ -223,11 +232,14 @@ var webServer = function(api, next){
       connection.response.serverInformation.requestDuration = stopTime - connection.connectedAt;
       connection.response.serverInformation.currentTime = stopTime;
             
-      // errors
-      if(connection.error != null){
-        connection.response.error = String(connection.error); 
+      // error codes
+      if(connection.response.error != null){
         if(api.configData.commonWeb.returnErrorCodes == true && connection.responseHttpCode == 200){
-          connection.responseHttpCode = 400;
+          if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
+            connection.responseHttpCode = 404;
+          }else{
+            connection.responseHttpCode = 400;
+          }
         }
       }
       
@@ -254,7 +266,8 @@ var webServer = function(api, next){
         }
         if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
         var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
-        if(connection.action != null && connection.action != "file"){
+
+        if(connection.params.action != null && connection.action != "file"){
           api.log("[ action @ web ]", "info", {
             to: connection.remoteIP,
             action: connection.action,
