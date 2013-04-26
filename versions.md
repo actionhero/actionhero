@@ -1,5 +1,16 @@
 # Action Hero API Versions
 
+## Version 5.1.2
+
+You can overwrite the stub method `api.actionProcessor.prototype.preProcessAction` which will be called before every action.  You can use this to do things like authentication before allowing a connection into an action.  The arguments to `preProcessAction` are:
+`function(api, connection, actionTemplate, callback)`.
+
+`actionTemplate` is the literal action definition, so you can inspect `actionTemplate.name`, `actionTemplate.description`, etc.  You can feel free to add additional parameters to your action definitions like `actionTemplate.secure` which you can inspect in the `preProcessAction` method.
+
+The goal of `preProcessAction` is to return either `true` or `false` to the callback, where `true` will move on to the action proper, and `false` will render the connection types default return to the client.  It would be best to set `connection.error` if you are returning false to `preProcessAction`'s callback so the client has an idea of why they were denied.
+
+It is best to define `preProcessAction` in an [initializer](https://github.com/evantahler/actionHero/wiki/Initializers).  
+
 ## Version 5.1.1
 
 ** Windows **

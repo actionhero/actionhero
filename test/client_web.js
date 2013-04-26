@@ -123,6 +123,29 @@ describe('Client: Web', function(){
     });
   });
 
+  describe('actionPreprocessor', function(){
+
+    after(function(done){
+      rawApi.actionProcessor.prototype.preProcessAction = function(api, connection, actionTemplate, callback){
+        callback(true);
+      }
+      done();
+    });
+
+    it('I can define an action preProcessor', function(done){
+      rawApi.actionProcessor.prototype.preProcessAction = function(api, connection, actionTemplate, callback){
+        connection.error = "failed: preProcessor";
+        callback(false);
+      }
+
+      specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
+        response.body.error.should.equal("failed: preProcessor");
+        done();
+      });
+    });
+
+  });
+
   describe('http header', function(){
 
     before(function(done){

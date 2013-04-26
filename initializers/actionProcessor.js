@@ -61,6 +61,11 @@ var actionProcessor = function(api, next){
     }
   }
 
+  api.actionProcessor.prototype.preProcessAction = function(api, connection, actionTemplate, callback){
+    // You probably want to overwite me and make your own `preProcessAction`
+    callback(true);
+  }
+
   api.actionProcessor.prototype.processAction = function(messageID){ 
     var self = this;
     self.messageID = messageID;
@@ -103,11 +108,17 @@ var actionProcessor = function(api, next){
             api.exceptionHandlers.action(actionDomain, err, self.connection, self.callback);
           });
           actionDomain.run(function(){
-            actionTemplate.run(api, self.connection, function(connection, toRender){
-              self.connection = connection;
-              // actionDomain.dispose();
-              self.completeAction(null, toRender);
-            }); 
+            self.preProcessAction(api, self.connection, actionTemplate, function(toContinue){
+              if(toContinue === true){
+                actionTemplate.run(api, self.connection, function(connection, toRender){
+                  self.connection = connection;
+                  // actionDomain.dispose();
+                  self.completeAction(null, toRender);
+                }); 
+              }else{
+                self.completeAction(null, true);
+              }
+            });
           });
         });
       }else{
