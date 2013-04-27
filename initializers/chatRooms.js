@@ -94,8 +94,10 @@ var chatRooms = function(api, next){
     var key = api.chatRoom.redisDataPrefix + connection.room;
     api.redis.client.llen(key, function(err, length){
       if(length > 0){
-        api.redis.client.lrem(key, 1, name, function(){
-          api.chatRoom.announceMember(connection, false);
+        api.redis.client.lrem(key, 1, name, function(err, count){
+          if(count > 0){
+            api.chatRoom.announceMember(connection, false);
+          }
           if(typeof next == "function"){ next(null, true) }
         });
       }else{

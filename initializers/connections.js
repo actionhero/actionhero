@@ -72,8 +72,9 @@ var connections = function(api, next){
     }
 
     api.connection.prototype.joinRoomOnConnect = function(){
+      var self = this;
       if(api.connections.connections[this.id] == null){
-        if(this.type != "web" || (this.type == "web" && api.configData.commonWeb.httpClientMessageTTL > 0 )){
+        if(self.type != "web"){
           api.chatRoom.roomAddMember(this);
         }
       }
@@ -91,15 +92,10 @@ var connections = function(api, next){
       var self = this;
       api.stats.increment("connections:totalActiveConnections", -1, function(){
         api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
-          if(self.type == "web" && api.configData.commonWeb.httpClientMessageTTL == null ){
-            delete api.connections.connections[self.id]
+          api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
+            delete api.connections.connections[self.id];
             if(typeof callback == "function"){ callback(); }
-          }else{
-            api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
-              delete api.connections.connections[self.id];
-              if(typeof callback == "function"){ callback(); }
-            }); 
-          }
+          }); 
         });
       });
     }

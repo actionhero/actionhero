@@ -11,10 +11,15 @@ You can overwrite the stub method `api.actionProcessor.prototype.preProcessActio
 
 The goal of `preProcessAction` is to return either `true` or `false` to the callback, where `true` will move on to the action proper, and `false` will render the connection types default return to the client.  It would be best to set `connection.error` if you are returning false to `preProcessAction`'s callback so the client has an idea of why they were denied.
 
-** Bugs **
-- websocket clients will now reconnect properly when the connection to the server has been lost
-
 It is best to define `preProcessAction` in an [initializer](https://github.com/evantahler/actionHero/wiki/Initializers).  
+
+** Chat **
+
+- web clients (http) can no longer use chat.  They can only send messages to chat rooms via a method you design.  A web-only 'chat' method is provided as an example
+
+** Bugs **
+
+- websocket clients will now reconnect properly when the connection to the server has been lost
 
 ## Version 5.1.1
 
