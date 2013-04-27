@@ -280,7 +280,7 @@ var socketServer = function(api, next){
             // hard shutdown in 5 seconds
             if(connection.shutDownTimer == null){
               connection.shutDownTimer = setTimeout(function(){
-                connection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
+                connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "response", reason: 'server shutdown'}) + "\r\n");
               }, 5000);
             }
           }
