@@ -9,6 +9,13 @@ Open the Console for more information.
   var A = new actionHeroWebSocket;
 
   A.events = {
+    disconnect: function(message){
+      A.log("DISCONNECTED");
+    },
+    reconnect: function(message){
+      A.log("RECONNECTED");
+      A.log("New ID: " + A.id);
+    },
     say: function(message){
       A.log("SAY:");
       A.log(message)
