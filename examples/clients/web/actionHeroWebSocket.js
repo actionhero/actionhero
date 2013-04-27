@@ -33,7 +33,8 @@
       path: "/faye",
       setupChannel: "/_welcome",
       channelPrefix: "/client/websocket/connection/",
-      apiPath: "/api"
+      apiPath: "/api",
+      connectionDelay: 100,
     }
   }
 
@@ -89,22 +90,24 @@
           self.handleMessage(message);
         });
 
-        self.setIP(function(err, ip){
-          self.detailsView(function(details){
-            if(self.room != null){
-              self.send({event: 'roomChange', room: self.room});
-            }
-            self.completeConnect(details);
-            callback();
+        setTimeout(function(){
+          self.setIP(function(err, ip){
+            self.detailsView(function(details){
+              if(self.room != null){
+                self.send({event: 'roomChange', room: self.room});
+              }
+              self.completeConnect(details);
+              callback();
+            });
           });
-        });
+        },self.options.connectionDelay);
 
       });
 
       initialMessage.errback(function(error) {
         callback(error, null);
       });
-    },100);
+    },self.options.connectionDelay);
   }
 
   actionHeroWebSocket.prototype.completeConnect = function(details){
