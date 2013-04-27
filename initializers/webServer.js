@@ -191,26 +191,23 @@ var webServer = function(api, next){
     // Response Prety-maker
     api.webServer.respondToWebClient = function(connection, toRender, messageCount){
   
-      // serverInformation information
-      connection.response.serverInformation = {};
-      connection.response.serverInformation.serverName = api.configData.general.serverName;
-      connection.response.serverInformation.apiVersion = api.configData.general.apiVersion;
+      var stopTime = new Date().getTime();
+      connection.response.serverInformation = {
+        serverName: api.configData.general.serverName,
+        apiVersion: api.configData.general.apiVersion,
+        requestDuration: (stopTime - connection.connectedAt),
+        currentTime: stopTime,
+      };
           
-      // requestorInformation
-      connection.response.requestorInformation = {};
-      connection.response.requestorInformation.id = connection.id;
-      connection.response.requestorInformation.remoteAddress = connection.remoteIP;
-      connection.response.requestorInformation.receivedParams = {};
+      connection.response.requestorInformation = {
+        id: connection.id,
+        remoteIP: connection.remoteIP,
+        receivedParams: {},
+      };
       for(var k in connection.params){
         connection.response.requestorInformation.receivedParams[k] = connection.params[k] ;
       };
-          
-      // request timer
-      var stopTime = new Date().getTime();
-      connection.response.serverInformation.requestDuration = stopTime - connection.connectedAt;
-      connection.response.serverInformation.currentTime = stopTime;
-            
-      // error codes
+    
       if(connection.response.error != null){
         if(api.configData.commonWeb.returnErrorCodes == true && connection.responseHttpCode == 200){
           if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
@@ -221,31 +218,28 @@ var webServer = function(api, next){
         }
       }
       
-      process.nextTick(function() {
-        if(toRender != false){
-          var stringResponse = "";
-          if(typeof connection.params.outputType == "string"){
-            if(connection.params.outputType.toLowerCase() == "xml"){
-              stringResponse = data2xml()('XML', connection.response);
-            }else{
-              stringResponse = JSON.stringify(connection.response); 
-            }
+      if(toRender != false){
+        var stringResponse = "";
+        if(typeof connection.params.outputType == "string"){
+          if(connection.params.outputType.toLowerCase() == "xml"){
+            stringResponse = data2xml()('XML', connection.response);
           }else{
-            stringResponse = JSON.stringify(connection.response);
+            stringResponse = JSON.stringify(connection.response); 
           }
-        
-          if(connection.params.callback != null){
-            connection.responseHeaders.push(['Content-Type', "application/javascript"]);
-            stringResponse = connection.params.callback + "(" + stringResponse + ");";
-          }
-          api.webServer.cleanHeaders(connection);
-          connection.rawConnection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
-          connection.rawConnection.res.end(stringResponse);
+        }else{
+          stringResponse = JSON.stringify(connection.response);
         }
-        if(connection.rawConnection.req.headers.host == null){ connection.rawConnection.req.headers.host = "localhost"; }
-        var full_url = connection.rawConnection.req.headers.host + connection.rawConnection.req.url;
-        connection.destroy();
-      });
+      
+        if(connection.params.callback != null){
+          connection.responseHeaders.push(['Content-Type', "application/javascript"]);
+          stringResponse = connection.params.callback + "(" + stringResponse + ");";
+        }
+        api.webServer.cleanHeaders(connection);
+        connection.rawConnection.res.writeHead(parseInt(connection.responseHttpCode), connection.responseHeaders);
+        connection.rawConnection.res.end(stringResponse);
+      }
+
+      connection.destroy();
     };
 
     api.webServer.stopTimers = function(api){
@@ -254,8 +248,6 @@ var webServer = function(api, next){
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Helpers to ensure uniqueness on response headers
     api.webServer.cleanHeaders = function(connection){
       var originalHeaders = connection.responseHeaders.reverse();
       var foundHeaders = [];
