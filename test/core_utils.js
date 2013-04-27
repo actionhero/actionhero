@@ -4,6 +4,7 @@ describe('Core: Utils', function(){
   var should = require("should");
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       var utilLoader = require("../initializers/utils.js").utils

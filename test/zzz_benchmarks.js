@@ -56,6 +56,7 @@ describe('~~ Benchmarks', function(){
   }
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       done();

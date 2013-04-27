@@ -4,6 +4,7 @@ describe('Action: status', function(){
   var should = require("should");
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       done();

@@ -6,6 +6,7 @@ describe('Action: chat', function(){
   var net = require('net')
 
   before(function(done){
+    this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       apiObj.configData.commonWeb.httpClientMessageTTL = null;
@@ -14,6 +15,7 @@ describe('Action: chat', function(){
   });
 
   after(function(done){
+    this.timeout(5000);
     apiObj.configData.commonWeb.httpClientMessageTTL = null;
     done();
   });
