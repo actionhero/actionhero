@@ -52,34 +52,67 @@
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
     self.startupCallback = callback;
+    self.client = new self.faye.Client(self.options.host + self.options.path);    
+    self.setupConnection(function(){
+      if(typeof self.events.connect === 'function'){
+        self.events.connect('connected');
+      }
 
-    self.client = new self.faye.Client(self.options.host + self.options.path);
-    
-    var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
-    
-    initialMessage.callback(function() {
-      self.id = self.client.getClientId();
-      self.channel = self.options.channelPrefix + self.id;
-      self.subscription = self.client.subscribe(self.channel, function(message) {
-        self.handleMessage(message);
-      });
-    });
-
-    initialMessage.errback(function(error) {
-      callback(error, null);
-    })
-  }
-
-  actionHeroWebSocket.prototype.completeConnect = function(){
-    var self = this;
-    self.setIP(function(err, ip){
-      self.detailsView(function(details){
-        if(typeof self.startupCallback == "function"){
-          self.startupCallback(null, details);
-          delete self.startupCallback;
+      self.client.bind('transport:down', function() {
+        if(typeof self.events.disconnect === 'function'){
+          self.events.disconnect('disconnected');
         }
       });
+
+      self.client.bind('transport:up', function() {
+        self.messageCount = 0;
+        self.setupConnection(function(){
+          if(typeof self.events.reconnect === 'function'){
+            self.events.reconnect('reconnected');
+          }
+        });
+      });
+
     });
+  }
+
+  actionHeroWebSocket.prototype.setupConnection = function(callback){
+    var self = this;
+    setTimeout(function(){
+      var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
+      
+      initialMessage.callback(function() {
+        self.id = self.client.getClientId();
+        self.channel = self.options.channelPrefix + self.id;
+        
+        self.subscription = self.client.subscribe(self.channel, function(message) {
+          self.handleMessage(message);
+        });
+
+        self.setIP(function(err, ip){
+          self.detailsView(function(details){
+            if(self.room != null){
+              self.send({event: 'roomChange', room: self.room});
+            }
+            self.completeConnect(details);
+            callback();
+          });
+        });
+
+      });
+
+      initialMessage.errback(function(error) {
+        callback(error, null);
+      });
+    },100);
+  }
+
+  actionHeroWebSocket.prototype.completeConnect = function(details){
+    var self = this;
+    if(typeof self.startupCallback == "function"){
+      self.startupCallback(null, details);
+      delete self.startupCallback;
+    }
   }
 
   actionHeroWebSocket.prototype.send = function(args, callback){
@@ -110,7 +143,6 @@
 
     else if(message.welcome != null && message.context == "api"){
       self.welcomeMessage = message.welcome;
-      self.completeConnect();
       if(typeof self.events.say === 'function'){
         self.events.welcome(message);
       }
@@ -130,9 +162,9 @@
       xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
           var response = JSON.parse(xmlhttp.responseText);
-          var ip = response.requestorInformation.remoteAddress;
-          self.send({ event: 'setIP', ip: ip }, function(){
-            callback(null, ip);
+          self.ip = response.requestorInformation.remoteAddress;
+          self.send({ event: 'setIP', ip: self.ip }, function(){
+            callback(null, self.ip);
           });
         }
       }
@@ -140,9 +172,9 @@
       xmlhttp.send();
     }catch(e){
       // can't make the ajax call, assume it's localhost
-      var ip = "127.0.0.1";
-      self.send({ event: 'setIP', ip: ip }, function(){
-        callback(null, ip);
+      self.ip = "127.0.0.1";
+      self.send({ event: 'setIP', ip: self.ip }, function(){
+        callback(null, self.ip);
       });
     }
   }
