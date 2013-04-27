@@ -5,9 +5,9 @@ describe('Client: Web Sockets', function(){
   var socketURL = "http://localhost:9000";
   var faye = require("faye");
   var actionHeroWebSocket = require(process.cwd() + "/public/javascript/actionHeroWebSocket.js").actionHeroWebSocket;
-  var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye});
-  var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye});
-  var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye});
+  var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+  var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+  var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
 
   function countWebSocketConnections(){
     var found = 0;
