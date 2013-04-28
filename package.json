@@ -40,7 +40,7 @@
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
     "faye": "0.8.x",
-    "faye-redis": "git://github.com/faye/faye-redis-node#master"
+    "faye-redis": "0.1.2"
   },
   "devDependencies": {
     "mocha": "1.7.x",
