@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 5.1.3
+
+** General ** 
+- When using ./bin/actionHero generateTask, you no longer are required to pass description (name will be used if you don't)
+- When using ./bin/actionHero generateAction, you no longer are required to pass description (name will be used if you don't)
+- If you don't to use actionHero's default id genrator, you can set `api.configData.general.id`.  Be careful to make this unique for all of your servers!
+
 ## Version 5.1.2
 
 ** Action PreProcessor ** 

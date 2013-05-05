@@ -8,7 +8,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  apiVersion: "5.1.2",
+  apiVersion: "5.1.3",
   serverName: "actionHero API",
   // id can be set here, or generated dynamically.
   // be sure that every server you run as a unique ID (which will happen when genrated dynamically)
