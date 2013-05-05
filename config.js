@@ -10,6 +10,9 @@ var configData = {};
 configData.general = {
   apiVersion: "5.1.2",
   serverName: "actionHero API",
+  // id can be set here, or generated dynamically.
+  // be sure that every server you run as a unique ID (which will happen when genrated dynamically)
+  // id: "myActionHeroServer",
   // A unique token to your application which servers will use to authenticate to eachother
   serverToken: "change-me",
   // The welcome message seen by TCP and webSocket clients upon connection
