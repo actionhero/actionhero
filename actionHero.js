@@ -70,9 +70,8 @@ actionHero.prototype.start = function(params, next){
     'taskProcessor',
     'routes',
     'connections',
-    'webServer', 
-    'webSocketServer', 
-    'socketServer'
+    'genericServer',
+    'servers'
   ].forEach(function(I){
     orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
   });

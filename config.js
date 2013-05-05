@@ -95,6 +95,22 @@ configData.faye = {
   ping: null,
 };
 
+/////////////
+// SERVERS //
+/////////////
+
+config.servers = {
+  "web" : {
+    secure: false,
+    port: 8080,
+    bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+    keyFile: "./certs/server-key.pem", // only for secure = true
+    certFile: "./certs/server-cert.pem" // only for secure = true
+  },
+  // "socket" : {},
+  // "webSocket" : {},
+}
+
 ///////////////////////////////////////
 // Common HTTP & HTTPS Configuration //
 ///////////////////////////////////////
@@ -115,8 +131,6 @@ configData.commonWeb = {
   directoryFileType : "index.html",
   // the header which will be returend for all flat file served from /public.  I am defiend in seconds
   flatFileCacheDuration : 60,
-  // how often to prune pending messages for http clients.  Setting this to `null` will disable http client message queues
-  httpClientMessageTTL : null,
   // settings for determining the id of an http(s) requset (browser-fingerprint)
   fingerprintOptions : {
     cookieKey: "sessionID",
@@ -153,7 +167,7 @@ configData.httpServer = {
 ////////////////
 
 configData.tcpServer = {
-  enable: false,
+  enable: true,
   secure: false,
   port: 5000,
   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
@@ -167,7 +181,7 @@ configData.tcpServer = {
 
 configData.webSockets = {
   // You must have the web server enabled as well
-  enable: false,
+  enable: true,
 };
 
 //////////////////////////////////

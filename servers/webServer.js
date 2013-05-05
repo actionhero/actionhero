@@ -6,6 +6,54 @@ var formidable = require('formidable');
 var data2xml = require('data2xml');
 var browser_fingerprint = require('browser_fingerprint');
 
+var initialize = function(api, next){
+  var type = "web"
+  var options = api.configData.servers[type];
+  var attributes = {
+    canChat = false;
+  }
+
+  var server = api.genericServer.new(type, options, attributes);
+
+  if(options.secure == false){
+    server.server = http.createServer(function(req, res){
+      handleRequest(api, server, req, res);
+    });
+  }else{
+    var key = fs.readFileSync(options.keyFile);
+    var cert = fs.readFileSync(options.certFile);
+    server.server = https.createServer({key: key, cert: cert}, function(req, res){
+      handleRequest(api, server, req, res);
+    });
+  }
+
+  var handleRequest = function(req, res){
+    var rawConnection = {req: req, res: res};
+    var connection = server.buildConnection(rawConnection);
+  }
+
+  server.server.on("error", function(e){
+    api.log("Cannot start web server @ " + options.bindIP + ":" + options.port + "; Exiting.", "emerg");
+    api.log(e, "error");
+  });
+
+  server.server.listen(options.port, options.bindIP, function(){
+    next(server);
+  });
+}
+
+exports.initialize = initialize;
+
+
+
+
+
+
+
+
+
+
+
 var webServer = function(api, next){
 
   if(api.configData.httpServer.enable != true){
@@ -13,7 +61,6 @@ var webServer = function(api, next){
   }else{
     api.webServer = {};
     api.webServer.roomCookieKey = "__room";
-    api.webServer.clientClearTimers = [];
 
     if(["api", "public"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
       throw new Error('api.configData.commonWeb.rootEndpointType can only be "api" or "public"');
@@ -33,7 +80,6 @@ var webServer = function(api, next){
     }
 
     api.webServer._teardown = function(api, next){
-      api.webServer.stopTimers(api);      
       api.webServer.server.close();
       next();
     }
@@ -241,12 +287,6 @@ var webServer = function(api, next){
 
       connection.destroy();
     };
-
-    api.webServer.stopTimers = function(api){
-      for(var i in api.webServer.clientClearTimers){ 
-        clearTimeout(api.webServer.clientClearTimers[i]); 
-      }
-    }
 
     api.webServer.cleanHeaders = function(connection){
       var originalHeaders = connection.responseHeaders.reverse();

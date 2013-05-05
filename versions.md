@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-## Version 5.1.2
+## Version 5.2.0
 
 ** Action PreProcessor ** 
 
@@ -12,6 +12,9 @@ You can overwrite the stub method `api.actionProcessor.prototype.preProcessActio
 The goal of `preProcessAction` is to return either `true` or `false` to the callback, where `true` will move on to the action proper, and `false` will render the connection types default return to the client.  It would be best to set `connection.error` if you are returning false to `preProcessAction`'s callback so the client has an idea of why they were denied.
 
 It is best to define `preProcessAction` in an [initializer](https://github.com/evantahler/actionHero/wiki/Initializers).  
+
+** Server **
+All of the server types (web, webSocket, socket) are now extended from a prototypical `genericServer` class.  This should make it easer to make your own servers going forward
 
 ** Chat **
 
