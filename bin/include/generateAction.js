@@ -1,7 +1,7 @@
 exports['generateAction'] = function(binary, next){
 
   if(binary.argv.name == null){ binary.hardError("name is a required input"); }
-  if(binary.argv.description == null){ binary.hardError("description is a required input"); }
+  if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
 
   var req = binary.utils.stringifyInputList(binary.argv['inputsRequired']);
   var optional = binary.utils.stringifyInputList(binary.argv['inputsOptional']);
