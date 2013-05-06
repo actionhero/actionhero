@@ -15,6 +15,10 @@ var actionProcessor = function(api, next){
         proxyConnection[i] = connection[i];
       }
     }
+    if(connection.temporaryParams != null){
+      proxyConnection.params = connection.temporaryParams;
+      delete connection.temporaryParams;
+    }
     proxyConnection._original_connection = connection
     return proxyConnection;
   }
@@ -49,8 +53,6 @@ var actionProcessor = function(api, next){
       self.connection._original_connection.action = self.connection.action;
       self.connection._original_connection.error = self.connection.error;
       self.connection._original_connection.response = self.connection.response || {};
-      self.connection._original_connection.responseHttpCode = self.connection.responseHttpCode;
-      self.connection._original_connection.responsesWaitingCount = self.connection.responsesWaitingCount;
 
       if(typeof self.callback == 'function'){
         self.callback(self.connection._original_connection, toRender, self.connection.messageCount);

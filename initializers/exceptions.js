@@ -25,9 +25,6 @@ var exceptions = function(api, next){
     api.exceptionHandlers.renderError(err);
     connection.error = new Error(api.configData.general.serverErrorMessage);
     connection.response = {}; // no partial responses
-    if(connection.type == "web"){
-      connection.responseHttpCode = 500;
-    }
     // domain.dispose();
     next(connection, true);
   };

@@ -102,6 +102,7 @@ configData.faye = {
 // SERVERS //
 /////////////
 
+// uncomment server block to enable
 configData.servers = {
   "web" : {
     secure: false,
@@ -110,7 +111,13 @@ configData.servers = {
     keyFile: "./certs/server-key.pem", // only for secure = true
     certFile: "./certs/server-cert.pem" // only for secure = true
   },
-  // "socket" : {},
+  "socket" : {
+    secure: false,
+    port: 5000,
+    bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+    keyFile: "./certs/server-key.pem", // only for secure = true
+    certFile: "./certs/server-cert.pem" // only for secure = true
+  },
   // "webSocket" : {},
 }
 
@@ -151,41 +158,6 @@ configData.commonWeb = {
   // You can also set connection.responseHttpCode to specify a code per request.
   returnErrorCodes: false
 };
-
-/////////////////
-// Web Server //
-/////////////////
-
-// configData.httpServer = {
-//   enable: true,
-//   secure: false,
-//   port: 8080,
-//   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-//   keyFile: "./certs/server-key.pem", // only for secure = true
-//   certFile: "./certs/server-cert.pem" // only for secure = true
-// };
-
-////////////////
-// TCP Server //
-////////////////
-
-// configData.tcpServer = {
-//   enable: true,
-//   secure: false,
-//   port: 5000,
-//   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-//   keyFile: "./certs/server-key.pem", // only for secure = true
-//   certFile: "./certs/server-cert.pem" // only for secure = true
-// };
-
-/////////////////
-// Web Sockets //
-/////////////////
-
-// configData.webSockets = {
-//   // You must have the web server enabled as well
-//   enable: true,
-// };
 
 //////////////////////////////////
 

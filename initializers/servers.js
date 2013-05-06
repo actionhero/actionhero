@@ -9,12 +9,12 @@ var servers = function(api, next){
     var started = 0;
     for(var server in api.configData.servers){
       started++;
+      api.log("starting server: " + server, "notice");
       api.servers.servers[server]._start(function(){
-        started--;
-        api.log("server started: " + server, "notice");
-        if(started == 0){
-          next();
-        }
+        process.nextTick(function(){
+          started--;
+          if(started == 0){ next(); }
+        });
       });
     };    
   }
@@ -23,12 +23,12 @@ var servers = function(api, next){
     var started = 0;
     for(var server in api.servers.servers){
       started++;
-      api.servers.servers[server]._teardown(function(){
-        started--;
-        api.log("server stopped: " + server, "notice");
-        if(started == 0){
-          next();
-        }
+      api.log("stopping server: " + server, "notice");
+      api.servers.servers[server]._teardown(function(){        
+        process.nextTick(function(){
+          started--;
+          if(started == 0){ next(); }
+        });
       });
     };
   }
@@ -40,33 +40,38 @@ var servers = function(api, next){
     __dirname + "/servers/"
   ];
     
-  var started = 0;
+  var inits = {}
   for(var i in serverFolders){
     var folder = serverFolders[i];
     if(fs.existsSync(folder)){
-      fs.readdirSync(folder).sort().forEach( function(file) {
+      fs.readdirSync(folder).sort().forEach(function(file){
         if (file[0] != "."){
           var server = file.split(".")[0];
           if(api.configData.servers[server] != null){
-            started++;
             if(require.cache[serverFolders[i] + file] !== null){
               delete require.cache[serverFolders[i] + file];
             }
-            var init = require(serverFolders[i] + file)[server];
-            var options = api.configData.servers[server];
-            init(api, options, function(serverObject){
-              api.servers.servers[server] = serverObject;
-              api.log("initialized server: " + server, "debug");
-              started--;
-              if(started == 0){ next(); }
-            });
+            inits[server] = require(serverFolders[i] + file)[server];
           }
         }
       });
-    }else{
-      if(started == 0){ next(); }
     }
   }
+
+  var started = 0;
+  for(var server in inits){
+    started++;
+    var options = api.configData.servers[server];
+    inits[server](api, options, function(serverObject){
+      api.servers.servers[server] = serverObject;
+      api.log("initialized server: " + server, "debug");
+      process.nextTick(function(){
+        started--;
+        if(started == 0){ next(); }
+      });
+    });
+  }
+  if(started == 0){ next(); }
 }
 
 exports.servers = servers;

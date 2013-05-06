@@ -14,13 +14,17 @@ var web = function(api, options, next){
 
   var type = "web"
   var attributes = {
-    canChat: false
+    canChat: false,
+    logConnections: false,
+    logExits: false,
+    sendWelcomeMessage: false,
+    verbs: []
   }
 
   var server = new api.genericServer(type, options, attributes);
 
   if(["api", "file"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
-    api.log('api.configData.commonWeb.rootEndpointType can only be "api" or "file"', "fatal");
+    server.log('api.configData.commonWeb.rootEndpointType can only be "api" or "file"', "fatal");
     process.exit();
   }
   if(api.configData.commonWeb.flatFileCacheDuration == null){
@@ -48,8 +52,8 @@ var web = function(api, options, next){
     }
 
     server.server.on("error", function(e){
-      api.log("Cannot start web server @ " + options.bindIP + ":" + options.port + "; Exiting.", "emerg");
-      api.log(e, "error");
+      server.log("cannot start web server @ " + options.bindIP + ":" + options.port + "; exiting.", "emerg");
+      server.log(e, "error");
     });
 
     server.server.listen(options.port, options.bindIP, function(){
@@ -69,7 +73,7 @@ var web = function(api, options, next){
     var stringResponse = String(message)
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
     connection.rawConnection.res.end(stringResponse);
-    connection.destroy(); // no need to keep the connection object around; stateless
+    server.destroyConnection(connection);
   }
 
   server.sendFile = function(connection, content, mime, length){
@@ -93,7 +97,7 @@ var web = function(api, options, next){
     });
   });
 
-  server.on("actionComplete", function(connection, toRender){
+  server.on("actionComplete", function(connection, toRender, messageCount){
     if(toRender === true){
       var stopTime = new Date().getTime();
       connection.response.serverInformation = {
@@ -120,6 +124,8 @@ var web = function(api, options, next){
             connection.responseHttpCode = 422;
           }else if(String(connection.error).indexOf("none of the required params for this action were provided") > 0){
             connection.responseHttpCode = 422;
+          }else if("Error: " + String(connection.response.error) == api.configData.general.serverErrorMessage){
+            connection.responseHttpCode = 500;
           }else{
             connection.responseHttpCode = 400;
           }
@@ -216,7 +222,7 @@ var web = function(api, options, next){
           }
           form.parse(connection.rawConnection.req, function(err, fields, files) {
             if(err){
-              api.log("Error processing form: " + String(err), "error");
+              server.log("error processing form: " + String(err), "error");
               connection.error = new Error("There was an error processing this form.");
             }else{
               fillParamsFromWebRequest(connection, files);
