@@ -63,7 +63,7 @@ actionHero.prototype.start = function(params, next){
     'actions',
     'actionProcessor',
     'params',
-    'fileServer',
+    'staticFile',
     'chatRooms',
     'tasks',
     'task',

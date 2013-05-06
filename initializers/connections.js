@@ -32,7 +32,6 @@ var connections = function(api, next){
     // id is optional
     api.connection = function(data){
       this.setup(data)
-      this.joinRoomOnConnect();
       api.stats.increment("connections:totalActiveConnections");
       api.stats.increment("connections:activeConnections:" + this.type);
       api.stats.increment("connections:totalConnections");
@@ -68,15 +67,6 @@ var connections = function(api, next){
 
       for(var i in connectionDefaults){
         self[i] = connectionDefaults[i];
-      }
-    }
-
-    api.connection.prototype.joinRoomOnConnect = function(){
-      var self = this;
-      if(api.connections.connections[this.id] == null){
-        if(self.type != "web"){
-          api.chatRoom.roomAddMember(this);
-        }
       }
     }
 

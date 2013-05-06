@@ -1,0 +1,274 @@
+var http = require('http');
+var https = require('https');
+var url = require('url');
+var fs = require('fs');
+var formidable = require('formidable');
+var data2xml = require('data2xml');
+var browser_fingerprint = require('browser_fingerprint');
+
+var web = function(api, options, next){
+  
+  //////////
+  // INIT //
+  //////////
+
+  var type = "web"
+  var attributes = {
+    canChat: false
+  }
+
+  var server = new api.genericServer(type, options, attributes);
+
+  if(["api", "file"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
+    api.log('api.configData.commonWeb.rootEndpointType can only be "api" or "file"', "fatal");
+    process.exit();
+  }
+  if(api.configData.commonWeb.flatFileCacheDuration == null){
+    api.configData.commonWeb.flatFileCacheDuration = 0;
+  }
+  if(api.configData.commonWeb.directoryFileType == null){
+    api.configData.commonWeb.directoryFileType = "index.html";
+  }
+  
+  //////////////////////
+  // REQUIRED METHODS //
+  //////////////////////
+
+  server._start = function(next){
+    if(options.secure == false){
+      server.server = http.createServer(function(req, res){
+        handleRequest(req, res);
+      });
+    }else{
+      var key = fs.readFileSync(options.keyFile);
+      var cert = fs.readFileSync(options.certFile);
+      server.server = https.createServer({key: key, cert: cert}, function(req, res){
+        handleRequest(req, res);
+      });
+    }
+
+    server.server.on("error", function(e){
+      api.log("Cannot start web server @ " + options.bindIP + ":" + options.port + "; Exiting.", "emerg");
+      api.log(e, "error");
+    });
+
+    server.server.listen(options.port, options.bindIP, function(){
+      next(server);
+    });
+  }
+
+  server._teardown = function(next){
+    server.server.close();
+    next();
+  }
+
+  server.sendMessage = function(connection, message){
+    cleanHeaders(connection);
+    var headers = connection.rawConnection.responseHeaders;
+    var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+    var stringResponse = String(message)
+    connection.rawConnection.res.writeHead(responseHttpCode, headers);
+    connection.rawConnection.res.end(stringResponse);
+    connection.destroy(); // no need to keep the connection object around; stateless
+  }
+
+  server.sendFile = function(connection, content, mime, length){
+    connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
+    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
+    connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
+    server.sendMessage(connection, content)
+  };
+
+  ////////////
+  // EVENTS //
+  ////////////
+
+  server.on("connection", function(connection){
+    determineRequestParams(connection, function(requestMode){
+      if(requestMode == "api"){
+        server.processAction(connection);
+      }else{
+        server.processFile(connection);
+      }
+    });
+  });
+
+  server.on("actionComplete", function(connection, toRender){
+    if(toRender === true){
+      var stopTime = new Date().getTime();
+      connection.response.serverInformation = {
+        serverName: api.configData.general.serverName,
+        apiVersion: api.configData.general.apiVersion,
+        requestDuration: (stopTime - connection.connectedAt),
+        currentTime: stopTime,
+      };
+          
+      connection.response.requestorInformation = {
+        id: connection.id,
+        remoteIP: connection.remoteIP,
+        receivedParams: {},
+      };
+      for(var k in connection.params){
+        connection.response.requestorInformation.receivedParams[k] = connection.params[k] ;
+      };
+    
+      if(connection.response.error != null){
+        if(api.configData.commonWeb.returnErrorCodes == true && connection.responseHttpCode == 200){
+          if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
+            connection.responseHttpCode = 404;
+          }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
+            connection.responseHttpCode = 422;
+          }else if(String(connection.error).indexOf("none of the required params for this action were provided") > 0){
+            connection.responseHttpCode = 422;
+          }else{
+            connection.responseHttpCode = 400;
+          }
+        }
+      }
+      
+      var stringResponse = JSON.stringify(connection.response); 
+      if(typeof connection.params.outputType === "string"){
+        if(connection.params.outputType.toLowerCase() == "xml"){
+          stringResponse = data2xml()('XML', connection.response);
+        }
+      }
+      if(connection.params.callback != null){
+        connection.responseHeaders.push(['Content-Type', "application/javascript"]);
+        stringResponse = connection.params.callback + "(" + stringResponse + ");";
+      }
+
+      server.sendMessage(connection, stringResponse);
+    }
+  });
+
+  /////////////
+  // HELPERS //
+  /////////////
+
+  var handleRequest = function(req, res){
+    browser_fingerprint.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+      var responseHeaders = []
+      var cookies =  api.utils.parseCookies(req);
+      var responseHttpCode = 200;
+      var method = req.method;
+      var parsedURL = url.parse(req.url, true);
+      for(var i in cookieHash){
+        responseHeaders.push([i, cookieHash[i]]);
+      }
+      responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
+      responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
+
+      if(typeof(api.configData.commonWeb.httpHeaders) != null){
+        for(var i in api.configData.commonWeb.httpHeaders){
+          responseHeaders.push([i, api.configData.commonWeb.httpHeaders[i]]);
+        }
+      }
+             
+      var remoteIP = req.connection.remoteAddress;
+      if(req.headers['x-forwarded-for'] != null){
+        var IPs = req.headers['x-forwarded-for'].split(",");
+        var remoteIP = IPs[0]; 
+      }
+
+      server.buildConnection({
+        rawConnection: {
+          req: req, 
+          res: res, 
+          method: method, 
+          cookies: cookies, 
+          responseHeaders: responseHeaders, 
+          responseHttpCode: responseHttpCode,
+          parsedURL: parsedURL
+        }, 
+        id: fingerprint, 
+        remoteAddress: remoteIP, 
+        remotePort: req.connection.remotePort}
+      ); // will emit "connection"
+    });
+  }
+
+  var determineRequestParams = function(connection, callback){
+    var requestMode = api.configData.commonWeb.rootEndpointType; // api or public
+    var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
+    var apiPathParts = connection.rawConnection.parsedURL.pathname.split("/");
+    var filePathParts = connection.rawConnection.parsedURL.pathname.split("/");
+    filePathParts.shift();
+    apiPathParts.shift();
+    if(pathParts.length > 0){
+      if(pathParts[1] == api.configData.commonWeb.urlPathForActions){ 
+        requestMode = 'api'; 
+        apiPathParts.shift();
+      }
+      else if(pathParts[1] == api.configData.commonWeb.urlPathForFiles){ 
+        requestMode = 'file'; 
+        filePathParts.shift();
+      }
+    }
+    fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
+    if(requestMode == 'api'){
+      if(connection.rawConnection.req.method.toUpperCase() == 'POST'){ // POST params
+        if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
+          // not a legal post; bad headers
+        }else{
+          var form = new formidable.IncomingForm();
+          for(var i in api.configData.commonWeb.formOptions){
+            form[i] = api.configData.commonWeb.formOptions[i];
+          }
+          form.parse(connection.rawConnection.req, function(err, fields, files) {
+            if(err){
+              api.log("Error processing form: " + String(err), "error");
+              connection.error = new Error("There was an error processing this form.");
+            }else{
+              fillParamsFromWebRequest(connection, files);
+              fillParamsFromWebRequest(connection, fields);
+            }
+          });
+        }
+      }
+      api.routes.processRoute(connection);
+      if(connection.params["action"] == null){
+        connection.params["action"] = apiPathParts[0];
+      }
+    }else{
+      if(connection.params["file"] == null){
+        connection.params["file"] = filePathParts.join("/");
+        if (connection.params["file"][connection.params["file"].length - 1] == "/"){
+          connection.params["file"] + api.configData.commonWeb.directoryFileType;
+        }
+      }
+    }
+    callback(requestMode);
+  }
+
+  var fillParamsFromWebRequest = function(connection, varsHash){
+    api.params.postVariables.forEach(function(postVar){
+      if(varsHash[postVar] !== undefined && varsHash[postVar] != null){ 
+        connection.params[postVar] = varsHash[postVar]; 
+      }
+    });
+  }
+
+  var cleanHeaders = function(connection){
+    var originalHeaders = connection.rawConnection.responseHeaders.reverse();
+    var foundHeaders = [];
+    var cleanedHeaders = [];
+    for(var i in originalHeaders){
+      var key = originalHeaders[i][0];
+      var value = originalHeaders[i][1];
+      if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
+        // ignore, it's a duplicate
+      }else{
+        foundHeaders.push(key.toLowerCase());
+        cleanedHeaders.push([key, value]);
+      }
+    }
+    connection.rawConnection.responseHeaders = cleanedHeaders;
+  }
+
+  next(server);
+
+}
+
+/////////////////////////////////////////////////////////////////////
+// exports
+exports.web = web;

@@ -8,17 +8,16 @@ var routes = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
   api.routes.processRoute = function(connection){
-    if(connection.params["action"] == null || ( api.actions.actions[connection.params["action"]] === undefined && connection.actionSetBy != "queryParam")){
-      var method = connection.method.toLowerCase();
+    if(connection.params["action"] == null || ( api.actions.actions[connection.params["action"]] === undefined)){
+      var method = connection.rawConnection.method.toLowerCase();
       for(var i in api.routes.routes[method]){
         var route = api.routes.routes[method][i];
-        var match = api.routes.matchURL(connection.parsedURL.pathname, route.path);
+        var match = api.routes.matchURL(connection.rawConnection.parsedURL.pathname, route.path);
         if(match.match === true){
           for(var param in match.params){
             connection.params[param] = match.params[param];
           }
           connection.params["action"] = route.action;
-          connection.actionSetBy = "routes";
           break;
         }
       } 

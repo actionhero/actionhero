@@ -15,8 +15,6 @@ var id = function(api, next){
     }
 
     api.id = externalIP;
-    if(api.configData.httpServer.enable){ api.id += ":" + api.configData.httpServer.port }
-    if(api.configData.tcpServer.enable){ api.id += ":" + api.configData.tcpServer.port }
     if(cluster.isWorker){ api.id += ":" + process.pid; }
   }else{
     api.id = api.configData.general.id;

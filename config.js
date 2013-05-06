@@ -102,7 +102,7 @@ configData.faye = {
 // SERVERS //
 /////////////
 
-config.servers = {
+configData.servers = {
   "web" : {
     secure: false,
     port: 8080,
@@ -127,7 +127,7 @@ configData.commonWeb = {
   // route which static files will be served from
   // folder path (relitive to your project root) to server static content from
   urlPathForFiles : "public",
-  // when visiting the root URL, should visitors see "api" or "public"?
+  // when visiting the root URL, should visitors see "api" or "file"?
   // visitors can always visit /api and /public as normal
   rootEndpointType : "api",
   // the default filetype to server when a user requests a directory
@@ -156,36 +156,36 @@ configData.commonWeb = {
 // Web Server //
 /////////////////
 
-configData.httpServer = {
-  enable: true,
-  secure: false,
-  port: 8080,
-  bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-  keyFile: "./certs/server-key.pem", // only for secure = true
-  certFile: "./certs/server-cert.pem" // only for secure = true
-};
+// configData.httpServer = {
+//   enable: true,
+//   secure: false,
+//   port: 8080,
+//   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+//   keyFile: "./certs/server-key.pem", // only for secure = true
+//   certFile: "./certs/server-cert.pem" // only for secure = true
+// };
 
 ////////////////
 // TCP Server //
 ////////////////
 
-configData.tcpServer = {
-  enable: true,
-  secure: false,
-  port: 5000,
-  bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-  keyFile: "./certs/server-key.pem", // only for secure = true
-  certFile: "./certs/server-cert.pem" // only for secure = true
-};
+// configData.tcpServer = {
+//   enable: true,
+//   secure: false,
+//   port: 5000,
+//   bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
+//   keyFile: "./certs/server-key.pem", // only for secure = true
+//   certFile: "./certs/server-cert.pem" // only for secure = true
+// };
 
 /////////////////
 // Web Sockets //
 /////////////////
 
-configData.webSockets = {
-  // You must have the web server enabled as well
-  enable: true,
-};
+// configData.webSockets = {
+//   // You must have the web server enabled as well
+//   enable: true,
+// };
 
 //////////////////////////////////
 
