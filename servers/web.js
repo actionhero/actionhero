@@ -133,7 +133,7 @@ var web = function(api, options, next){
         }
       }
       if(connection.params.callback != null){
-        connection.responseHeaders.push(['Content-Type', "application/javascript"]);
+        connection.rawConnection.responseHeaders.push(['Content-Type', "application/javascript"]);
         stringResponse = connection.params.callback + "(" + stringResponse + ");";
       }
 
