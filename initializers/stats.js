@@ -9,11 +9,12 @@ var stats = function(api, next){
   api.stats.increment = function(key, count, next){
     if(count == null){ count = 1; }
     count = parseFloat(count);
-    api.redis.client.hincrby(api.stats.collections.local, key, count, function(){
-      api.redis.client.hincrby(api.stats.collections.global, key, count, function(){
+    api.redis.client.multi()
+      .hincrby(api.stats.collections.local, key, count)
+      .hincrby(api.stats.collections.global, key, count)
+      .exec(function(){
         if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
       });
-    });
   }
 
   api.stats.set = function(key, count, next){
@@ -31,8 +32,12 @@ var stats = function(api, next){
   }
 
   api.stats.getAll = function(next){
-    api.redis.client.hgetall(api.stats.collections.global, function(err, globalStats){
-      api.redis.client.hgetall(api.stats.collections.local, function(err, localStats){
+    api.redis.client.multi()
+      .hgetall(api.stats.collections.global)
+      .hgetall(api.stats.collections.local)
+      .exec(function(err, stats){
+        var globalStats = stats[0];
+        var localStats = stats[1];
         if(globalStats == null){ globalStats = {}; }
         if(localStats == null){ localStats = {}; }
 
@@ -51,7 +56,6 @@ var stats = function(api, next){
 
         next(err, results);
       });
-    });
   }
   
   next();
