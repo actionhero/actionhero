@@ -16,6 +16,8 @@ var socket = function(api, options, next){
     pendingShutdownWaitLimit: 5000,
     sendWelcomeMessage: true,
     verbs: [
+      "quit",
+      "exit",
       "paramAdd", 
       "paramDelete",
       "paramView",
@@ -82,8 +84,16 @@ var socket = function(api, options, next){
     } 
   }
 
+  server.goodbye = function(connection, reason){
+    if(reason == null){ reason = 'server shutdown' }
+    try{ 
+      connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "api", reason: reason}) + "\r\n");
+      server.destroyConnection(connection);
+    }catch(e){ }
+  }
+
   server.sendFile = function(connection, content, mime, length){
-    
+    // TODO
   };
 
   ////////////
@@ -94,7 +104,7 @@ var socket = function(api, options, next){
 
     connection.rawConnection.on("data", function(chunk){
       if(checkBreakChars(chunk)){ 
-        goodbye(connection, "break-charecter"); 
+        server.goodbye(connection, "break-charecter"); 
       }else{
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, "\n");
         var index, line;
@@ -138,7 +148,7 @@ var socket = function(api, options, next){
   parseRequest = function(connection, line){
     var words = line.split(" ");
     var verb = words.shift();
-    server.verbParser(connection, verb, words, function(error, data){
+    connection.verbs(verb, words, function(error, data){
       if(error == null){
         var message = {status: "OK", context: "response", data: data}
         server.sendMessage(connection, message);
@@ -182,14 +192,6 @@ var socket = function(api, options, next){
     return found
   }
 
-  goodbye = function(connection, reason){
-    if(reason == null){ reason = 'server shutdown' }
-    try{ 
-      connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "api", reason: reason}) + "\r\n");
-      server.destroyConnection(connection);
-    }catch(e){ }
-  }
-
   gracefulShutdown = function(next, alreadyShutdown){
     if(alreadyShutdown == null || alreadyShutdown == false){ 
       server.server.close();
@@ -197,12 +199,12 @@ var socket = function(api, options, next){
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
       if(connection.pendingActions == 0){
-        goodbye(connection);
+        server.goodbye(connection);
       }else{
         pendingConnections++; 
         if(connection.rawConnection.shutDownTimer == null){
           connection.rawConnection.shutDownTimer = setTimeout(function(){
-            goodbye(connection);
+            server.goodbye(connection);
           }, attributes.pendingShutdownWaitLimit);
         }
       }

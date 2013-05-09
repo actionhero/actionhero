@@ -78,6 +78,9 @@ var genericServer = function(api, next){
     this.type = name;
     this.options = options;
     this.attributes = attributes;
+
+    api.stats.set("connections:connections:" + this.type, 0);
+    api.stats.set("connections:activeConnections:" + this.type, 0);
   }
   util.inherits(api.genericServer, EventEmitter);
 
@@ -111,92 +114,6 @@ var genericServer = function(api, next){
       self.log("connection closed", 'info', {to: connection.remoteIP});
     }
     connection.destroy();
-  }
-
-  api.genericServer.prototype.verbParser = function(connection, verb, words, callback){
-    var self = this;
-    if(self.attributes.verbs.indexOf(verb) >= 0){
-      self.log("verb", 'debug', {verb: verb, to: connection.remoteIP, params: JSON.stringify(words)});
-        if(verb === "paramAdd"){
-          if(words[0].indexOf("=") >= 0){
-            var parts = words[0].split("=");
-            var key = parts[0];
-            var value = parts[1];
-            connection.params[key] = value;
-          }else{
-            var key = words[0];
-            var value = words[1];
-            connection.params[key] = value;
-          }
-          callback(null, null);
-
-        }else if(verb === "paramDelete"){
-          var key = words[0];
-          delete connection.params[key];
-          callback(null, null);
-
-        }else if(verb === "paramView"){
-          var key = words[0];
-          callback(null, connection.params[key]);
-
-        }else if(verb === "paramsView"){
-          callback(null, connection.params);
-
-        }else if(verb === "paramsDelete"){
-          for(var i in connection.params){
-            delete connection.params[i];
-          }
-          callback(null, null);
-
-        }else if(verb === "roomChange"){
-          api.chatRoom.roomRemoveMember(connection, function(err, wasRemoved){
-            connection.room = words[0];
-            api.chatRoom.roomAddMember(connection);
-            callback(null, wasRemoved);
-          });
-
-        }else if(verb === "roomView"){
-          api.chatRoom.socketRoomStatus(connection.room, function(err, roomStatus){
-            callback(null, roomStatus);
-          });
-
-        }else if(verb === "listenToRoom"){
-          if(connection.additionalListeningRooms.indexOf(words[0]) >= 0){
-            callback("alredy listening to this room", null);
-          }else{
-            connection.additionalListeningRooms.push(words[0]);
-            callback(null, null);
-          }
-
-        }else if(verb === "silenceRoom"){
-          if(connection.additionalListeningRooms.indexOf(words[0]) >= 0){
-            var index = connection.additionalListeningRooms.indexOf(words[0]);
-            connection.additionalListeningRooms.splice(index, 1);
-            callback(null, null);
-          }else{
-            callback("you are not listening to this room", null);
-          }
-
-        }else if(verb === "detailsView"){
-          var details = {}
-          details.id = connection.id;
-          details.params = connection.params;
-          details.connectedAt = connection.connectedAt;
-          details.room = connection.room;
-          details.totalActions = connection.totalActions;
-          details.pendingActions = connection.pendingActions;
-          callback(null, details);
-
-        }else if(verb === "say"){
-          api.chatRoom.socketRoomBroadcast(connection, words.join(" "));
-          callback(null, null);
-
-        }else{
-          callback("I do not know know to perform this verb", null);
-        }
-    }else{
-      callback("verb not found or not allowed", null);
-    }
   }
 
   api.genericServer.prototype.processAction = function(connection){
@@ -253,6 +170,9 @@ var genericServer = function(api, next){
 
   // This method will be appended to the connection as `connection.sendMessage`
   api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined(); }
+
+  // This method will be used to gracefully disconnect the client
+  api.genericServer.prototype.goodbye = function(connection, reason){ methodNotDefined(); }
 
   next();
 
