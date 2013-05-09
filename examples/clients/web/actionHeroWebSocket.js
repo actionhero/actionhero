@@ -165,7 +165,7 @@
       xmlhttp.onreadystatechange=function(){
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
           var response = JSON.parse(xmlhttp.responseText);
-          self.ip = response.requestorInformation.remoteAddress;
+          self.ip = response.requestorInformation.remoteIP;
           self.send({ event: 'setIP', ip: self.ip }, function(){
             callback(null, self.ip);
           });

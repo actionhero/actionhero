@@ -5,49 +5,51 @@ var util = require('util');
 
 A generic imaplmentation of a server:
 
-var myServer = function(api, options, next){
-  
-  //////////
-  // INIT //
-  //////////
+    var myServer = function(api, options, next){
+      
+      //////////
+      // INIT //
+      //////////
 
-  var type = "myServer"
-  var attributes = {
-    canChat: true
-  }
+      var type = "myServer"
+      var attributes = {
+        canChat: true
+      }
 
-  var server = new api.genericServer(type, options, attributes);
+      var server = new api.genericServer(type, options, attributes);
 
-  //////////////////////
-  // REQUIRED METHODS //
-  //////////////////////
+      //////////////////////
+      // REQUIRED METHODS //
+      //////////////////////
 
-  server._start = function(next){}
+      server._start = function(next){}
 
-  server._teardown = function(next){}
+      server._teardown = function(next){}
 
-  server.sendMessage = function(connection, message){}
+      server.sendMessage = function(connection, message, messageCount){}
 
-  server.sendFile = function(connection, content, mime, length){};
+      server.sendFile = function(connection, content, mime, length){};
 
-  ////////////
-  // EVENTS //
-  ////////////
+      server.goodbye = function(connection, reason){};
 
-  server.on("connection", function(connection){});
+      ////////////
+      // EVENTS //
+      ////////////
 
-  server.on("actionComplete", function(connection, toRender){});
+      server.on("connection", function(connection){});
 
-  /////////////
-  // HELPERS //
-  /////////////
+      server.on("actionComplete", function(connection, toRender, messageCount){});
 
-  next(server);
-}
+      /////////////
+      // HELPERS //
+      /////////////
 
-/////////////////////////////////////////////////////////////////////
-// exports
-exports.myServer = myServer;
+      next(server);
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // exports
+    exports.myServer = myServer;
 
 */
 
@@ -61,7 +63,7 @@ var genericServer = function(api, next){
   ////////////////////
 
   // options are meant to be configrable in `config.js`
-  // attributes are descrptions of the server and cannot be changed at implamentation:
+  // attributes are descrptions of the server:
   /* 
 
     attributes = {
@@ -78,6 +80,14 @@ var genericServer = function(api, next){
     this.type = name;
     this.options = options;
     this.attributes = attributes;
+
+    // you can overwrite attributes with options
+    // this could cause some problems, be careful
+    for(var key in this.options){
+      if(this.attributes[key] != null){
+        this.attributes[key] = this.options[key];
+      }
+    }
 
     api.stats.set("connections:connections:" + this.type, 0);
     api.stats.set("connections:activeConnections:" + this.type, 0);
@@ -102,6 +112,15 @@ var genericServer = function(api, next){
     }
     if(self.attributes.sendWelcomeMessage === true){
       connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"})
+    }
+    if(typeof self.attributes.sendWelcomeMessage === "number"){
+      setTimeout(function(){
+        try{
+          connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"})
+        }catch(e){
+          api.log(e, "error");
+        }
+      }, self.attributes.sendWelcomeMessage);
     }
     if(self.attributes.canChat === true){
       api.chatRoom.roomAddMember(connection);

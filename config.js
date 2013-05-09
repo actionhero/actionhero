@@ -118,7 +118,7 @@ configData.servers = {
     keyFile: "./certs/server-key.pem", // only for secure = true
     certFile: "./certs/server-cert.pem" // only for secure = true
   },
-  // "webSocket" : {},
+  "websocket" : { },
 }
 
 ///////////////////////////////////////

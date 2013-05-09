@@ -9,11 +9,16 @@
   - you can make your own
   - config.js chnges
   - prototypical server which must be extended
+  - many responses and params have been homogenized
+    - remoteIP 
+    - "data" returned from verbs
   - preparing to seperate into seperate NPM packages
 - connections have "verbs"
   - optional to use
   - homogenized between all server types
   - you can't use thier names in actions
+- the file-sending middleware is renamed to 'staticFile'
+  - much simpler API, appropriate for more server types
 - server types renamed to "web", "socket", "websocket" for claricy
 - serer types can have options about chatting and such
 
