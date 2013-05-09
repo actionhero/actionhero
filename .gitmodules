@@ -1,0 +1,3 @@
+[submodule "license"]
+	path = license
+	url = git@github.com:evantahler/Dont-be-a-Jerk.git
