@@ -45,7 +45,8 @@ var servers = function(api, next){
     var folder = serverFolders[i];
     if(fs.existsSync(folder)){
       fs.readdirSync(folder).sort().forEach(function(file){
-        if (file[0] != "."){
+        var ext = file.split('.')[1];
+        if (file[0] != "." && ext === 'js'){
           var server = file.split(".")[0];
           if(api.configData.servers[server] != null){
             if(require.cache[serverFolders[i] + file] !== null){
