@@ -3,21 +3,42 @@ var uuid = require("node-uuid");
 var connections = function(api, next){
 
   api.connections = {
+    
     resetLocalConnectionStats : function(next){
       api.stats.set("connections:totalActiveConnections", 0);
       api.stats.set("connections:totalConnections", 0);
       next();
     },
+
     _start: function(api, next){
       api.connections.resetLocalConnectionStats(function(){
         next();
       });
     },
+
     _teardown: function(api, next){
       api.connections.resetLocalConnectionStats(function(){
         next();
       });
     },
+
+    allowedVerbs: [
+      "quit", 
+      "exit",
+      "paramAdd",
+      "paramDelete",
+      "paramView",
+      "paramsView",
+      "paramsDelete",
+      "roomChange",
+      "roomView",
+      "listenToRoom",
+      "silenceRoom",
+      "detailsView",
+      "say",
+      "setIP"
+    ],
+
     connections: {}
   };
   

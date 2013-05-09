@@ -60,6 +60,7 @@ actionHero.prototype.start = function(params, next){
     'redis',
     'faye',
     'cache',
+    'connections',
     'actions',
     'actionProcessor',
     'params',
@@ -69,7 +70,6 @@ actionHero.prototype.start = function(params, next){
     'task',
     'taskProcessor',
     'routes',
-    'connections',
     'genericServer',
     'servers'
   ].forEach(function(I){

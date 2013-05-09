@@ -74,7 +74,7 @@ var actions = function(api, next){
   
   var validateAction = function(action){
     var fail = function(msg){
-      api.log(msg + "; exiting.", emerg);
+      api.log(msg + "; exiting.", "emerg");
       process.exit();
     }
 
@@ -92,6 +92,8 @@ var actions = function(api, next){
       fail("Action "+action.name+" has no outputExample");
     }else if(typeof action.run != "function"){
       fail("Action "+action.name+" has no run method");
+    }else if(api.connections.allowedVerbs.indexOf(action.name) >= 0){
+      fail(action.name+" is a reserved verb for connections. choose a new name");
     }
   }
 
