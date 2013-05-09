@@ -116,7 +116,9 @@ var actions = function(api, next){
               var realPath = readlinkSync(fullFilePath);
               loadFolder(realPath);
             }else if(stats.isFile()){
-              api.actions.load(fullFilePath);
+              var ext = file.split('.')[1];
+              if (ext === 'js')
+                api.actions.load(fullFilePath);
             }else{
               api.log(file+" is a type of file I cannot read", "error")
             }
