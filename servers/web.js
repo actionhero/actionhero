@@ -18,7 +18,9 @@ var web = function(api, options, next){
     logConnections: false,
     logExits: false,
     sendWelcomeMessage: false,
-    verbs: []
+    verbs: [
+      // no verbs for connections of this type, as they are to be very short-lived
+    ]
   }
 
   var server = new api.genericServer(type, options, attributes);

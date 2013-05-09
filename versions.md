@@ -1,7 +1,25 @@
 # Action Hero API Versions
 
 ## Version 5.2.0
-??????????????????????
+
+** Modular & Prototypical Servers ** 
+
+- "engines" for servers
+  - all "sever-specific" logic moved only into servers; no more "if type == 'web'" shenanigans
+  - you can make your own
+  - config.js chnges
+  - prototypical server which must be extended
+  - preparing to seperate into seperate NPM packages
+- connections have "verbs"
+  - optional to use
+  - homogenized between all server types
+  - you can't use thier names in actions
+- server types renamed to "web", "socket", "websocket" for claricy
+- serer types can have options about chatting and such
+
+** Other **
+
+- speed improvments and tests added for the stats module (thanks @jacobbubu)
 
 ## Version 5.1.3
 
