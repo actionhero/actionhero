@@ -142,7 +142,7 @@ exports.action = action;
 			</div>
 			<div class="logical_section">
 				<h1>actionHero Speaks Many Protocols</h1>
-				<p>One of the goals of actionHero is to be able to speak to as many client types as possible.  Currently implamented is: ['http', 'https', 'tcp', 'web socket'].</p>
+				<p>One of the goals of actionHero is to be able to speak to as many client types as possible.  Currently implamented is: ['http', 'https', 'tcp', 'tls', 'websocket'].</p>
 				<p>Say you wanted to ask the server for a list of all the actions it can respond to `actionsView`.  Here are examples using a number of protocols:</p>
 
 				<div class="wide-table">
@@ -199,17 +199,21 @@ New, TLSv1/SSLv3, Cipher is AES256-SHA
 						</td>
 						<td>
 							<pre>
-var socket = io.connect('http://localhost:8080/');
 
-socket.on('welcome', function(data){
-    console.log("connected!")
-    console.log(JSON.stringify(data));
-    socket.emit("action", {action: "actionsView"});
+var A = new actionHeroWebSocket;
+
+A.connect(function(err, details){
+  if(err != null){
+    A.log(err);
+  }else{
+    A.log("CONNECTED");
+    A.log(details);
+  }
 });
 
-socket.on('response', function(data){
-    console.log(JSON.stringify(data));
-});
+A.action("actionsView", function(data){ console.log(data); })
+
+
 							</pre>
 						</td>
 					</tr>
