@@ -24,6 +24,7 @@
 
 ** Other **
 
+- `config.js` drastically simplified (no more `commonWeb`, servers block, etc)
 - speed improvments and tests added for the stats module (thanks @jacobbubu)
 
 ## Version 5.1.3
