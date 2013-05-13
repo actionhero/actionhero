@@ -10,37 +10,19 @@ var configData = {};
 configData.general = {
   apiVersion: "6.0.0",
   serverName: "actionHero API",
-  // id can be set here, or generated dynamically.
-  // be sure that every server you run as a unique ID (which will happen when genrated dynamically)
-  // id: "myActionHeroServer",
-  // A unique token to your application which servers will use to authenticate to eachother
-  serverToken: "change-me",
-  // The welcome message seen by TCP and webSocket clients upon connection
-  welcomeMessage : "Hello! Welcome to the actionHero api",
-  // The directory which will be the root for the /public route
-  flatFileDirectory: "./public/",
-  // The body message to acompany 404 (file not found) errors regading flat files
-  flatFileNotFoundMessage: "Sorry, that file is not found :(",
-  // The body message to acompany 404 (file not found) errors regading directories
-  flatFileIndexPageNotFoundMessage: "Sorry, there is no index page for this folder :(",
-  // The message to acompany 500 errors (internal server errors)
-  serverErrorMessage: "The server experienced an internal error",
-  // the chatRoom that TCP and webSocket clients are joined to when the connect
-  defaultChatRoom: "defaultRoom",
-  // defaultLimit & defaultOffset are useful for limiting the length of response lists.  
-  // These params will always be appended to any request as "limit" and "offest" unless set by the client
-  defaultLimit: 100,
+  // id: "myActionHeroServer",                                    // id can be set here, or generated dynamically.  be sure that every server you run as a unique ID (which will happen when genrated dynamically)
+  serverToken: "change-me",                                       // A unique token to your application which servers will use to authenticate to eachother
+  welcomeMessage : "Hello! Welcome to the actionHero api",        // The welcome message seen by TCP and webSocket clients upon connection
+  flatFileDirectory: "./public/",                                 // The directory which will be the root for the /public route
+  flatFileNotFoundMessage: "Sorry, that file is not found :(",    // The body message to acompany 404 (file not found) errors regading flat files
+  serverErrorMessage: "The server experienced an internal error", // The message to acompany 500 errors (internal server errors)
+  defaultChatRoom: "defaultRoom",                                 // the chatRoom that TCP and webSocket clients are joined to when the connect
+  defaultLimit: 100,                                              // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultOffset: 0,
-  // The number of internal "workers" this node will have.
-  // Remember these are logical timers (not threads) so they will block if they are computationally intense
-  workers : 5,
-  // watch for changes in actions and tasks, and reload them on the fly
-  // This will not work in all operating systems [ http://nodejs.org/docs/latest/api/fs.html#fs_fs_watchfile_filename_options_listener ] 
-  developmentMode: false,
-  // the location of the directory to keep pidfiles
-  pidFileDirectory: process.cwd() + "/pids/",
-  // how many pending actions can a single connection be working on 
-  simultaniousActions: 5
+  workers : 5,                                                    // The number of internal "workers" (timers) this node will have.
+  developmentMode: false,                                         // watch for changes in actions and tasks, and reload/restart them on the fly
+  pidFileDirectory: process.cwd() + "/pids/",                     // the location of the directory to keep pidfiles
+  simultaniousActions: 5                                          // how many pending actions can a single connection be working on 
 };
 
 /////////////
@@ -102,62 +84,42 @@ configData.faye = {
 // SERVERS //
 /////////////
 
-// uncomment server block to enable
 configData.servers = {
   "web" : {
-    secure: false,
-    port: 8080,
-    bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-    keyFile: "./certs/server-key.pem", // only for secure = true
-    certFile: "./certs/server-cert.pem" // only for secure = true
+    secure: false,                       // HTTP or HTTPS?
+    port: 8080,                          // Port or Socket
+    bindIP: "0.0.0.0",                   // which IP to listen on (use 0.0.0.0 for all)
+    keyFile: "./certs/server-key.pem",   // only for secure = true
+    certFile: "./certs/server-cert.pem", // only for secure = true
+    httpHeaders : { },                   // Any additional headers you want actionHero to respond with
+    urlPathForActions : "api",           // route which actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
+    urlPathForFiles : "public",          // route which static files will be served from; path (relitive to your project root) to server static content from
+    rootEndpointType : "api",            // when visiting the root URL, should visitors see "api" or "file"? visitors can always visit /api and /public as normal
+    directoryFileType : "index.html",    // the default filetype to server when a user requests a directory
+    flatFileCacheDuration : 60,          // the header which will be returend for all flat file served from /public; defiend in seconds
+    fingerprintOptions : {               // settings for determining the id of an http(s) requset (browser-fingerprint)
+      cookieKey: "sessionID",
+      toSetCookie: true,
+      onlyStaticElements: false
+    },
+    formOptions: {                       // options to be applied to incomming file uplaods.  more options and details at https://github.com/felixge/node-formidable
+      uploadDir: "/tmp",
+      keepExtensions: false,
+      maxFieldsSize: 1024 * 1024 * 100
+    },
+    returnErrorCodes: false              // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.  You can also set connection.responseHttpCode to specify a code per request.
+
   },
   "socket" : {
-    secure: false,
-    port: 5000,
-    bindIP: "0.0.0.0", // which IP to listen on (use 0.0.0.0 for all)
-    keyFile: "./certs/server-key.pem", // only for secure = true
-    certFile: "./certs/server-cert.pem" // only for secure = true
+    secure: false,                        // TCP or TLS?
+    port: 5000,                           // Port or Socket
+    bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
+    keyFile: "./certs/server-key.pem",    // only for secure = true
+    certFile: "./certs/server-cert.pem"   // only for secure = true
   },
-  "websocket" : { },
+  "websocket" : {
+  },
 }
-
-///////////////////////////////////////
-// Common HTTP & HTTPS Configuration //
-///////////////////////////////////////
-
-configData.commonWeb = {
-  // Any additional headers you want actionHero to respond with
-  httpHeaders : { },
-  // route which actions will be served from
-  // secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
-  urlPathForActions : "api",
-  // route which static files will be served from
-  // folder path (relitive to your project root) to server static content from
-  urlPathForFiles : "public",
-  // when visiting the root URL, should visitors see "api" or "file"?
-  // visitors can always visit /api and /public as normal
-  rootEndpointType : "api",
-  // the default filetype to server when a user requests a directory
-  directoryFileType : "index.html",
-  // the header which will be returend for all flat file served from /public.  I am defiend in seconds
-  flatFileCacheDuration : 60,
-  // settings for determining the id of an http(s) requset (browser-fingerprint)
-  fingerprintOptions : {
-    cookieKey: "sessionID",
-    toSetCookie: true,
-    onlyStaticElements: false
-  },
-  // options to be applied to incomming file uplaods.  
-  // more options and details at https://github.com/felixge/node-formidable
-  formOptions: {
-    uploadDir: "/tmp",
-    keepExtensions: false,
-    maxFieldsSize: 1024 * 1024 * 100
-  },
-  // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
-  // You can also set connection.responseHttpCode to specify a code per request.
-  returnErrorCodes: false
-};
 
 //////////////////////////////////
 

@@ -25,15 +25,15 @@ var web = function(api, options, next){
 
   var server = new api.genericServer(type, options, attributes);
 
-  if(["api", "file"].indexOf(api.configData.commonWeb.rootEndpointType) < 0){
-    server.log('api.configData.commonWeb.rootEndpointType can only be "api" or "file"', "fatal");
+  if(["api", "file"].indexOf(api.configData.servers.web.rootEndpointType) < 0){
+    server.log('api.configData.servers.web.rootEndpointType can only be "api" or "file"', "fatal");
     process.exit();
   }
-  if(api.configData.commonWeb.flatFileCacheDuration == null){
-    api.configData.commonWeb.flatFileCacheDuration = 0;
+  if(api.configData.servers.web.flatFileCacheDuration == null){
+    api.configData.servers.web.flatFileCacheDuration = 0;
   }
-  if(api.configData.commonWeb.directoryFileType == null){
-    api.configData.commonWeb.directoryFileType = "index.html";
+  if(api.configData.servers.web.directoryFileType == null){
+    api.configData.servers.web.directoryFileType = "index.html";
   }
   
   //////////////////////
@@ -80,8 +80,8 @@ var web = function(api, options, next){
 
   server.sendFile = function(connection, content, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.commonWeb.flatFileCacheDuration * 1000).toUTCString()]);
-    connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.commonWeb.flatFileCacheDuration + ", must-revalidate"]);
+    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
+    connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.servers.web.flatFileCacheDuration + ", must-revalidate"]);
     server.sendMessage(connection, content)
   };
 
@@ -119,7 +119,7 @@ var web = function(api, options, next){
       };
     
       if(connection.response.error != null){
-        if(api.configData.commonWeb.returnErrorCodes == true && connection.responseHttpCode == 200){
+        if(api.configData.servers.web.returnErrorCodes == true && connection.responseHttpCode == 200){
           if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
             connection.responseHttpCode = 404;
           }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
@@ -154,7 +154,7 @@ var web = function(api, options, next){
   /////////////
 
   var handleRequest = function(req, res){
-    browser_fingerprint.fingerprint(req, api.configData.commonWeb.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+    browser_fingerprint.fingerprint(req, api.configData.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
       var responseHeaders = []
       var cookies =  api.utils.parseCookies(req);
       var responseHttpCode = 200;
@@ -166,9 +166,9 @@ var web = function(api, options, next){
       responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
       responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
 
-      if(typeof(api.configData.commonWeb.httpHeaders) != null){
-        for(var i in api.configData.commonWeb.httpHeaders){
-          responseHeaders.push([i, api.configData.commonWeb.httpHeaders[i]]);
+      if(typeof(api.configData.servers.web.httpHeaders) != null){
+        for(var i in api.configData.servers.web.httpHeaders){
+          responseHeaders.push([i, api.configData.servers.web.httpHeaders[i]]);
         }
       }
              
@@ -196,18 +196,18 @@ var web = function(api, options, next){
   }
 
   var determineRequestParams = function(connection, callback){
-    var requestMode = api.configData.commonWeb.rootEndpointType; // api or public
+    var requestMode = api.configData.servers.web.rootEndpointType; // api or public
     var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var apiPathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var filePathParts = connection.rawConnection.parsedURL.pathname.split("/");
     filePathParts.shift();
     apiPathParts.shift();
     if(pathParts.length > 0){
-      if(pathParts[1] == api.configData.commonWeb.urlPathForActions){ 
+      if(pathParts[1] == api.configData.servers.web.urlPathForActions){ 
         requestMode = 'api'; 
         apiPathParts.shift();
       }
-      else if(pathParts[1] == api.configData.commonWeb.urlPathForFiles){ 
+      else if(pathParts[1] == api.configData.servers.web.urlPathForFiles){ 
         requestMode = 'file'; 
         filePathParts.shift();
       }
@@ -219,8 +219,8 @@ var web = function(api, options, next){
           // not a legal post; bad headers
         }else{
           var form = new formidable.IncomingForm();
-          for(var i in api.configData.commonWeb.formOptions){
-            form[i] = api.configData.commonWeb.formOptions[i];
+          for(var i in api.configData.servers.web.formOptions){
+            form[i] = api.configData.servers.web.formOptions[i];
           }
           form.parse(connection.rawConnection.req, function(err, fields, files) {
             if(err){
@@ -241,7 +241,7 @@ var web = function(api, options, next){
       if(connection.params["file"] == null){
         connection.params["file"] = filePathParts.join("/");
         if (connection.params["file"][connection.params["file"].length - 1] == "/"){
-          connection.params["file"] + api.configData.commonWeb.directoryFileType;
+          connection.params["file"] + api.configData.servers.web.directoryFileType;
         }
       }
     }

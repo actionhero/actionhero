@@ -33,7 +33,7 @@ var routes = function(api, next){
     if(matchParts[0] == ""){ matchParts.splice(0,1); }
     if(urlParts[(urlParts.length - 1)] == ""){ urlParts.pop(); }
     if(matchParts[(matchParts.length - 1)] == ""){ matchParts.pop(); }
-    if(urlParts[0] == api.configData.commonWeb.urlPathForActions){ urlParts.splice(0,1); }
+    if(urlParts[0] == api.configData.servers.web.urlPathForActions){ urlParts.splice(0,1); }
     for(var i in matchParts){
       var part = matchParts[i];
       if(part[0] === ":" && part.indexOf("(") < 0){
