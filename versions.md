@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-## Version 5.2.0
+## Version 6.0.0
 
 ** Modular & Prototypical Servers ** 
 
