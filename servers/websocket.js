@@ -118,7 +118,7 @@ var websocket = function(api, options, next){
     }
   });
 
-  incommingMessage = function(message){
+  var incommingMessage = function(message){
     var clientId = message.channel.split("/")[4];
     var connection = server.connectionsMap[clientId];
     if(connection != null){

@@ -145,7 +145,7 @@ var socket = function(api, options, next){
   // HELPERS //
   /////////////
 
-  parseRequest = function(connection, line){
+  var parseRequest = function(connection, line){
     var words = line.split(" ");
     var verb = words.shift();
     connection.verbs(verb, words, function(error, data){
@@ -171,7 +171,7 @@ var socket = function(api, options, next){
     });
   }
 
-  handleConnection = function(rawConnection){
+  var handleConnection = function(rawConnection){
     rawConnection.socketDataString = "";
     server.buildConnection({
       rawConnection  : rawConnection, 
@@ -181,7 +181,7 @@ var socket = function(api, options, next){
   }
 
   // I check for ctrl+c in the stream
-  checkBreakChars = function(chunk){
+  var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
     if(hexChunk == "fff4fffd06"){
@@ -192,7 +192,7 @@ var socket = function(api, options, next){
     return found
   }
 
-  gracefulShutdown = function(next, alreadyShutdown){
+  var gracefulShutdown = function(next, alreadyShutdown){
     if(alreadyShutdown == null || alreadyShutdown == false){ 
       server.server.close();
     }
