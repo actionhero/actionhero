@@ -24,6 +24,7 @@ actionHero.prototype.start = function(params, next){
 
   if (params === null){ params = {}; }
   self.startingParams = params;
+  self.api._startingParams = self.startingParams;
 
   var initializerFolders = [ 
     process.cwd() + "/initializers/", 
@@ -46,12 +47,10 @@ actionHero.prototype.start = function(params, next){
   }
 
   // run the initializers
-  var orderedInitializers = {
-    utils: function(next){ self.initalizers['utils'](self.api, next) },
-    config: function(next){ self.initalizers['config'](self.api, self.startingParams, next) }
-  };
-
+  var orderedInitializers = {};
   [
+    'utils',
+    'config',
     'id',
     'pids',
     'logger',

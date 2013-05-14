@@ -1,12 +1,12 @@
 var fs = require('fs');
 var argv = require('optimist').argv;
 
-var config = function(api, startingParams, next){
+var config = function(api, next){
 
   api.watchedFiles = [];
 
-  if(startingParams.api != null){
-    api.utils.hashMerge(api, startingParams.api);
+  if(api._startingParams.api != null){
+    api.utils.hashMerge(api, api._startingParams.api);
   }
       
   if(argv["config"] != null){
@@ -27,8 +27,8 @@ var config = function(api, startingParams, next){
   }
 
 
-  if(startingParams.configChanges != null){
-    api.configData = api.utils.hashMerge(api.configData, startingParams.configChanges);
+  if(api._startingParams.configChanges != null){
+    api.configData = api.utils.hashMerge(api.configData, api._startingParams.configChanges);
   }
 
   if(api.configData.general.developmentMode == true){
