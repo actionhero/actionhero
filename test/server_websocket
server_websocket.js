@@ -1,4 +1,5 @@
-describe('Client: Web Sockets', function(){
+describe('Server: Web Sockets', function(){
+
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");

@@ -48,13 +48,7 @@ describe('Core: actionCluster', function(){
       specHelper.prepare(0, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        var ip = api.utils.getExternalIPAddress();
-        if(ip != null && ip != false){ 
-          externalIP = ip; 
-        }else{
-          externalIP = "actionHero";
-        }
-        api.id.should.equal(externalIP + ":9000:8000");
+        api.id.should.equal("test-server-1");
         apis[0] = api;
         done();
       });
@@ -65,7 +59,7 @@ describe('Core: actionCluster', function(){
       specHelper.prepare(1, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        api.id.should.equal(externalIP + ":9001:8001");
+        api.id.should.equal("test-server-2");
         apis[1] = api;
         done();
       });
@@ -76,7 +70,7 @@ describe('Core: actionCluster', function(){
       specHelper.prepare(2, function(api){ 
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        api.id.should.equal(externalIP + ":9002:8002");
+        api.id.should.equal("test-server-3");
         apis[2] = api;
         done();
       });
@@ -85,9 +79,9 @@ describe('Core: actionCluster', function(){
     it("Peer #1 can see all other peers in the cluster", function(done){
     apis[0].redis.client.llen("actionHero:peers", function(err, length){
       apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-        peers.should.include(externalIP+":9000:8000");
-        peers.should.include(externalIP+":9001:8001");
-        peers.should.include(externalIP+":9002:8002");
+        peers.should.include("test-server-1");
+        peers.should.include("test-server-2");
+        peers.should.include("test-server-3");
         done();
       });
     });
@@ -96,9 +90,9 @@ describe('Core: actionCluster', function(){
     it("Peer #2 can see all other peers in the cluster", function(done){
     apis[1].redis.client.llen("actionHero:peers", function(err, length){
       apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-        peers.should.include(externalIP+":9000:8000");
-        peers.should.include(externalIP+":9001:8001");
-        peers.should.include(externalIP+":9002:8002");
+        peers.should.include("test-server-1");
+        peers.should.include("test-server-2");
+        peers.should.include("test-server-3");
         done();
       });
     });
@@ -107,9 +101,9 @@ describe('Core: actionCluster', function(){
     it("Peer #3 can see all other peers in the cluster", function(done){
     apis[2].redis.client.llen("actionHero:peers", function(err, length){
       apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-        peers.should.include(externalIP+":9000:8000");
-        peers.should.include(externalIP+":9001:8001");
-        peers.should.include(externalIP+":9002:8002");
+         peers.should.include("test-server-1");
+         peers.should.include("test-server-2");
+         peers.should.include("test-server-3");
         done();
       });
     });
@@ -130,9 +124,9 @@ describe('Core: actionCluster', function(){
           apis[0].redis.client.llen("actionHero:peers", function(err, length){
           apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
             peers.length.should.equal(1);
-            peers.should.include(externalIP+":9000:8000");
-            peers.should.not.include(externalIP+":9001:8001");
-            peers.should.not.include(externalIP+":9002:8002");
+            peers.should.include("test-server-1");
+            peers.should.not.include("test-server-2");
+            peers.should.not.include("test-server-3");
             done();
           });
         });
@@ -148,9 +142,9 @@ describe('Core: actionCluster', function(){
           apis[2] = api;
           apis[0].redis.client.llen("actionHero:peers", function(err, length){
             apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-              peers.should.include(externalIP+":9000:8000");
-              peers.should.include(externalIP+":9001:8001");
-              peers.should.include(externalIP+":9002:8002");
+              peers.should.include("test-server-1");
+              peers.should.include("test-server-2");
+              peers.should.include("test-server-3");
               done();
             });
           });
@@ -162,9 +156,9 @@ describe('Core: actionCluster', function(){
       this.timeout(5000);
       apis[1].redis.client.llen("actionHero:peers", function(err, length){
         apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-          peers.should.include(externalIP+":9000:8000");
-          peers.should.include(externalIP+":9001:8001");
-          peers.should.include(externalIP+":9002:8002");
+          peers.should.include("test-server-1");
+          peers.should.include("test-server-2");
+          peers.should.include("test-server-3");
           done();
         });
       });
@@ -174,9 +168,9 @@ describe('Core: actionCluster', function(){
       this.timeout(5000);
       apis[2].redis.client.llen("actionHero:peers", function(err, length){
         apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
-          peers.should.include(externalIP+":9000:8000");
-          peers.should.include(externalIP+":9001:8001");
-          peers.should.include(externalIP+":9002:8002");
+          peers.should.include("test-server-1");
+          peers.should.include("test-server-2");
+          peers.should.include("test-server-3");
           done();
         });
       });
@@ -258,15 +252,15 @@ describe('Core: actionCluster', function(){
         }
       };
 
-      client1 = net.connect(specHelper.params[0].tcpServer.port);
+      client1 = net.connect(specHelper.params[0].servers.socket.port);
       client1.setEncoding('utf8');
       client1.on("data", connnectedClient);
 
-      client2 = net.connect(specHelper.params[1].tcpServer.port);
+      client2 = net.connect(specHelper.params[1].servers.socket.port);
       client2.setEncoding('utf8');
       client2.on("data", connnectedClient);
 
-      client3 = net.connect(specHelper.params[2].tcpServer.port);
+      client3 = net.connect(specHelper.params[2].servers.socket.port);
       client3.setEncoding('utf8');
       client3.on("data", connnectedClient);
 
@@ -276,8 +270,8 @@ describe('Core: actionCluster', function(){
       this.timeout(10000)
       makeSocketRequest(client1, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
-        response.room.should.equal('defaultRoom');
-        response.roomStatus.members.length.should.equal(3);
+        response.data.room.should.equal('defaultRoom');
+        response.data.roomStatus.members.length.should.equal(3);
         done();
       });
     });
@@ -286,8 +280,8 @@ describe('Core: actionCluster', function(){
       this.timeout(10000)
       makeSocketRequest(client2, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
-        response.room.should.equal('defaultRoom');
-        response.roomStatus.members.length.should.equal(3);
+        response.data.room.should.equal('defaultRoom');
+        response.data.roomStatus.members.length.should.equal(3);
         done();
       });
     });
@@ -295,8 +289,8 @@ describe('Core: actionCluster', function(){
     it("all connections should be in the default room and client #3 can see them", function(done){
       this.timeout(10000)
       makeSocketRequest(client3, "roomView", function(response){
-        response.should.be.an.instanceOf(Object);
-        response.room.should.equal('defaultRoom');
+        response.data.should.be.an.instanceOf(Object);
+        response.data.room.should.equal('defaultRoom');
         response.roomStatus.members.length.should.equal(3);
         done();
       });

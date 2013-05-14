@@ -30,101 +30,75 @@ var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPro
 
 specHelper.params[0] = {
   general: {
+    id: "test-server-1",
     workers: 1,
-    "developmentMode": false
+    developmentMode: false
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: [
-      // function(api){
-      //   return new (winston.transports.Console)({
-      //     colorize: true, 
-      //     level: "debug", 
-      //     timestamp: api.utils.sqlDateTime
-      //   });
-      // }
-    ]
+    transports: null,
+    // transports: [],
   },
-  httpServer: {
-    enable: true,
-    secure: false,
-    port: 9000
-  },
-  tcpServer: {
-    secure: false,
-    enable: true,
-    port: 8000
-  },
-  webSockets: {
-    enable: true
-  },
-  redis : redisConfig
+  redis : redisConfig,
+  servers: {
+    web: {
+      secure: false, 
+      port: 9000,    
+    },
+    socket: {
+      secure: false, 
+      port: 8000, 
+    },
+    websocket: { }
+  }
 };
 
 specHelper.params[1] = {
   general: {
+    id: "test-server-2",
     workers: 1,
-    "developmentMode": false
+    developmentMode: false
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: [
-      // function(api){
-      //   return new (winston.transports.Console)({
-      //     colorize: true, 
-      //     level: "debug", 
-      //     timestamp: api.utils.sqlDateTime
-      //   });
-      // }
-    ]
+    transports: null
   },
-  httpServer: {
-    secure: false,
-    enable: true,
-    port: 9001
-  },
-  tcpServer: {
-    secure: false,
-    enable: true,
-    port: 8001
-  },
-  webSockets: {
-    enable: true
-  },
-  redis : redisConfig
+  redis : redisConfig,
+  servers: {
+    web: {
+      secure: false, 
+      port: 9001,    
+    },
+    socket: {
+      secure: false, 
+      port: 8001, 
+    },
+    websocket: { }
+  }
 };
 
 specHelper.params[2] = {
   general: {
+    id: "test-server-3",
     workers: 1,
-    "developmentMode": false
+    developmentMode: false
   },
   logger: {
     levels: winston.config.syslog.levels,
-    transports: [
-      // function(api){
-      //   return new (winston.transports.Console)({
-      //     colorize: true, 
-      //     level: "debug", 
-      //     timestamp: api.utils.sqlDateTime
-      //   });
-      // }
-    ]
+    transports: null
   },
-  httpServer: {
-    secure: false,
-    enable: true,
-    port: 9002
-  },
-  tcpServer: {
-    secure: false,
-    enable: true,
-    port: 8002
-  },
-  webSockets: {
-    enable: true
-  },
-  redis : redisConfig
+  redis : redisConfig,
+  servers: {
+    web: {
+      secure: false, 
+      port: 9002,    
+    },
+    socket: {
+      secure: false, 
+      port: 8002, 
+    },
+    websocket: { }
+  }
 };
 
 specHelper.clearRedis = function(serverID, next){
@@ -178,7 +152,7 @@ specHelper.prepare = function(serverID, next){
 // Start Test Server
 specHelper.startServer = function(serverID, next){
   if(serverID == null){serverID = 0};
-  var conn = specHelper.net.createConnection(specHelper.params[serverID].httpServer.port, specHelper.url, function(){
+  var conn = specHelper.net.createConnection(specHelper.params[serverID].servers.web.port, specHelper.url, function(){
     next(specHelper.apis[serverID]);
     conn.destroy();
   });
@@ -225,9 +199,9 @@ specHelper.apiTest = {
     var params = {}
     params.method = method;
     if(url.indexOf("?") > -1){
-      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'');
+      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].servers.web.port + (url||'');
     }else{
-      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].httpServer.port + (url||'') + "?";
+      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].servers.web.port + (url||'') + "?";
       for(var i in data){
         params.url += i + "=" + data[i] + "&";
       }

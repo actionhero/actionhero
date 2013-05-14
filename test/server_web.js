@@ -1,4 +1,4 @@
-describe('Client: Web', function(){
+describe('Server: Web', function(){
 
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
