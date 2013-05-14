@@ -37,7 +37,7 @@ var config = function(api, startingParams, next){
       fs.watchFile(configFile, {interval:1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
           api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n", "info");
-          delete require.cache[configFile];
+          delete require.cache[require.resolve(configFile)];
           api._commands.restart.call(api._self);
         }
       });

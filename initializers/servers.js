@@ -45,14 +45,25 @@ var servers = function(api, next){
     var folder = serverFolders[i];
     if(fs.existsSync(folder)){
       fs.readdirSync(folder).sort().forEach(function(file){
+        var fullFilePath = serverFolders[i] + file;
         var ext = file.split('.')[1];
         if (file[0] != "." && ext === 'js'){
           var server = file.split(".")[0];
           if(api.configData.servers[server] != null){
-            if(require.cache[serverFolders[i] + file] !== null){
-              delete require.cache[serverFolders[i] + file];
-            }
-            inits[server] = require(serverFolders[i] + file)[server];
+            inits[server] = require(fullFilePath)[server];
+          }
+
+          if(api.configData.general.developmentMode == true){
+            api.watchedFiles.push(fullFilePath);
+            (function() {
+              fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
+                if(curr.mtime > prev.mtime){
+                  api.log("\r\n\r\n*** rebooting due to server change ***\r\n\r\n", "info");
+                  delete require.cache[require.resolve(fullFilePath)];
+                  api._commands.restart.call(api._self);
+                }
+              });
+            })();
           }
         }
       });

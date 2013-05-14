@@ -37,9 +37,7 @@ actionHero.prototype.start = function(params, next){
       fs.readdirSync(folder).sort().forEach( function(file) {
         if (file[0] != "."){
           var initalizer = file.split(".")[0];
-          if(require.cache[initializerFolders[i] + file] !== null){
-            delete require.cache[initializerFolders[i] + file];
-          }
+          delete require.cache[require.resolve(initializerFolders[i] + file)];
           initializerMethods.push(initalizer);
           self.initalizers[initalizer] = require(initializerFolders[i] + file)[initalizer];
         }

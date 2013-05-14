@@ -35,7 +35,7 @@ var actions = function(api, next){
                     cleanPath = fullFilePath;
                   }
 
-                  delete require.cache[cleanPath];
+                  delete require.cache[require.resolve(cleanPath)];
                   delete api.actions.actions[actionName];
                   api.actions.load(fullFilePath, true);
                   api.params.buildPostVariables();

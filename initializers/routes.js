@@ -67,7 +67,7 @@ var routes = function(api, next){
     if(rawRoutes == null){
       var routesFile = process.cwd() + '/routes.js';
       if(fs.existsSync(routesFile)){
-        delete require.cache[routesFile];
+        delete require.cache[require.resolve(routesFile)];
         var rawRoutes = require(routesFile).routes;
       }else{
         api.log("no routes file found, skipping", "debug");
