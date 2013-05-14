@@ -131,6 +131,8 @@ var websocket = function(api, options, next){
         connection.error = null;
         connection.response = {};
         server.processAction(connection);
+      }else if(verb == "file"){
+        server.processFile(connection);
       }else{
         words = []
         for(var i in data){ words.push(data[i]); }

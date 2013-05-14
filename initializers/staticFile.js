@@ -37,9 +37,11 @@ var staticFile = function(api, next){
           var mime = Mime.lookup(file);
           var length = stats.size;
           var fileStream = fs.createReadStream(file, {'flags': 'r'});
+          var start = new Date().getTime();
           fileStream.addListener("close", function(){
             api.stats.increment("staticFiles:filesSent");
-            self.logRequest(file, connection, length, true);
+            var duration = new Date().getTime() - start;
+            self.logRequest(file, connection, length, duration, true);
           });
           callback(connection, null, fileStream, mime, length);
         }
@@ -50,7 +52,7 @@ var staticFile = function(api, next){
       var self = this;
       api.stats.increment("staticFiles:failedFileRequests");
       connection.error = new Error(errorMessage);
-      self.logRequest('{404: not found}', connection, null, false);
+      self.logRequest('{404: not found}', connection, null, null, false);
       callback(connection, api.configData.general.flatFileNotFoundMessage, null, 'text/html', api.configData.general.flatFileNotFoundMessage.length);
     },
 
@@ -80,8 +82,7 @@ var staticFile = function(api, next){
       });
     },
 
-    logRequest: function(file, connection, length, success){
-      var duration = new Date().getTime() - connection.connectedAt;
+    logRequest: function(file, connection, length, duration, success){
       api.log("[ file @ " + connection.type + " ]", 'debug', {
         to: connection.remoteIP,
         file: file,

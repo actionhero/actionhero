@@ -93,7 +93,11 @@ var socket = function(api, options, next){
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
-    // TODO
+    if(error != null){
+      server.sendMessage(connection, error, connection.messageCount);
+    }else{
+      fileStream.pipe(connection.rawConnection, {end: false});
+    }
   };
 
   ////////////
@@ -148,27 +152,34 @@ var socket = function(api, options, next){
   var parseRequest = function(connection, line){
     var words = line.split(" ");
     var verb = words.shift();
-    connection.verbs(verb, words, function(error, data){
-      if(error == null){
-        var message = {status: "OK", context: "response", data: data}
-        server.sendMessage(connection, message);
-      }else if(error === "verb not found or not allowed"){
-        try{
-          // check for and attempt to check single-use params
-          var request_hash = JSON.parse(line);
-          if(request_hash["params"] != null){
-            connection.temporaryParams = request_hash["params"];
-          }
-        }catch(e){ }
-        connection.params.action = verb;
-        connection.error = null;
-        connection.response = {};
-        server.processAction(connection);
-      }else{
-        var message = {status: error, context: "response", data: data}
-        server.sendMessage(connection, message);
+    if(verb == "file"){
+      if (words.length > 0){
+        connection.params.file = words[0];
       }
-    });
+      server.processFile(connection);
+    }else{
+      connection.verbs(verb, words, function(error, data){
+        if(error == null){
+          var message = {status: "OK", context: "response", data: data}
+          server.sendMessage(connection, message);
+        }else if(error === "verb not found or not allowed"){
+          try{
+            // check for and attempt to check single-use params
+            var request_hash = JSON.parse(line);
+            if(request_hash["params"] != null){
+              connection.temporaryParams = request_hash["params"];
+            }
+          }catch(e){ }
+          connection.params.action = verb;
+          connection.error = null;
+          connection.response = {};
+          server.processAction(connection);
+        }else{
+          var message = {status: error, context: "response", data: data}
+          server.sendMessage(connection, message);
+        }
+      });
+    }
   }
 
   var handleConnection = function(rawConnection){
