@@ -5,6 +5,7 @@ var actionProcessor = function(api, next){
   api.actionProcessor = function(data){
     if(data.connection == null){ throw new Error('data.connection is required'); }
     this.connection = this.buildProxyConnection(data.connection);
+    this.messageCount = this.connection.messageCount
     this.callback = data.callback;
   }
 
@@ -14,10 +15,6 @@ var actionProcessor = function(api, next){
       if (connection.hasOwnProperty(i)) {
         proxyConnection[i] = connection[i];
       }
-    }
-    if(connection.temporaryParams != null){
-      proxyConnection.params = connection.temporaryParams;
-      delete connection.temporaryParams;
     }
     proxyConnection._original_connection = connection
     return proxyConnection;
@@ -55,7 +52,7 @@ var actionProcessor = function(api, next){
       self.connection._original_connection.response = self.connection.response || {};
 
       if(typeof self.callback == 'function'){
-        self.callback(self.connection._original_connection, toRender, self.connection.messageCount);
+        self.callback(self.connection._original_connection, toRender, self.messageCount);
       }
 
       api.log("[ action @ " + self.connection.type + " ]", "info", {

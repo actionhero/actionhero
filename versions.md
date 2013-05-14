@@ -27,6 +27,7 @@
 
 - `config.js` drastically simplified (no more `commonWeb`, servers block, etc)
 - winston logger object will now be passed into loger config methods
+- when setting params with JSON for a socket connection, those JSON params will now 'stick' with the connection going forward
 - speed improvments and tests added for the stats module (thanks @jacobbubu)
 
 ## Version 5.1.3

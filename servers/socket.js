@@ -105,6 +105,10 @@ var socket = function(api, options, next){
   ////////////
 
   server.on("connection", function(connection){
+    connection.params = {
+      limit:  api.configData.general.defaultLimit,
+      offset: api.configData.general.defaultOffset
+    }
 
     connection.rawConnection.on("data", function(chunk){
       if(checkBreakChars(chunk)){ 
@@ -113,15 +117,16 @@ var socket = function(api, options, next){
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, "\n");
         var index, line;
         while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1) {
-          var line = connection.rawConnection.socketDataString.slice(0, index);
+          var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          if(line.length > 0) {
-            // increment at the start of the requset so that responses can be caught in order on the client
-            // this is not handled by the genericServer
-            connection.messageCount++; 
-            line = line.replace("\n","");
-            parseRequest(connection, line);
-          }
+          data.split("\n").forEach(function(line){
+            if(line.length > 0){
+              // increment at the start of the requset so that responses can be caught in order on the client
+              // this is not handled by the genericServer
+              connection.messageCount++; 
+              parseRequest(connection, line);
+            }
+          });
         }
       }
     });
@@ -163,14 +168,17 @@ var socket = function(api, options, next){
           var message = {status: "OK", context: "response", data: data}
           server.sendMessage(connection, message);
         }else if(error === "verb not found or not allowed"){
-          try{
-            // check for and attempt to check single-use params
+          try{ // check for and attempt to check single-use params
             var request_hash = JSON.parse(line);
             if(request_hash["params"] != null){
-              connection.temporaryParams = request_hash["params"];
+              connection.params = request_hash["params"];
             }
-          }catch(e){ }
-          connection.params.action = verb;
+            if(request_hash["action"] != null){
+              connection.params["action"] = request_hash["action"];
+            }
+          }catch(e){
+            connection.params.action = verb;
+          }
           connection.error = null;
           connection.response = {};
           server.processAction(connection);

@@ -137,15 +137,13 @@ var genericServer = function(api, next){
 
   api.genericServer.prototype.processAction = function(connection){
     var self = this;
-    process.nextTick(function() { 
-      var actionProcessor = new api.actionProcessor({
-        connection: connection, 
-        callback: function(connection, toRender, messageCount){
-          self.emit("actionComplete", connection, toRender, messageCount);
-        }
-      });
-      actionProcessor.processAction();
+    var actionProcessor = new api.actionProcessor({
+      connection: connection, 
+      callback: function(connection, toRender, messageCount){
+        self.emit("actionComplete", connection, toRender, messageCount);
+      }
     });
+    actionProcessor.processAction();
   }
 
   api.genericServer.prototype.processFile = function(connection){

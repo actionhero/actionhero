@@ -71,7 +71,6 @@ var connections = function(api, next){
     var connectionDefaults = {
       error: null,
       params: {},
-      temporaryParams: null,
       response: {},
       pendingActions: 0,
       totalActions: 0,

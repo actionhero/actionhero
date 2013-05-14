@@ -43,11 +43,11 @@ describe('Server: Socket', function(){
       rawAPI = api;
       apiObj = specHelper.cleanAPIObject(api);
       
-        client = net.connect(specHelper.params[0].tcpServer.port, function(){
+        client = net.connect(specHelper.params[0].servers.socket.port, function(){
           client.setEncoding('utf8');
-          client2 = net.connect(specHelper.params[0].tcpServer.port, function(){
+          client2 = net.connect(specHelper.params[0].servers.socket.port, function(){
             client2.setEncoding('utf8');
-            client3 = net.connect(specHelper.params[0].tcpServer.port, function(){
+            client3 = net.connect(specHelper.params[0].servers.socket.port, function(){
               client3.setEncoding('utf8');
               setTimeout(function(){ // This timeout is to wait-out all the 
                 done();
@@ -108,10 +108,10 @@ describe('Server: Socket', function(){
   it('I can get my details', function(done){
     makeSocketRequest(client2, "detailsView", function(response){
       response.status.should.equal("OK")
-      response.details.params.should.be.an.instanceOf(Object)
-      response.details.should.be.an.instanceOf(Object)
-      response.details.connectedAt.should.be.within(0, new Date().getTime())
-      client_2_details = response.details; // save for later!
+      response.data.should.be.an.instanceOf(Object)
+      response.data.params.should.be.an.instanceOf(Object)
+      response.data.connectedAt.should.be.within(10, new Date().getTime())
+      client_2_details = response.data; // save for later!
       done();
     });
   });
@@ -119,8 +119,8 @@ describe('Server: Socket', function(){
   it('default parmas are set', function(done){
     makeSocketRequest(client, "paramsView", function(response){
       response.should.be.an.instanceOf(Object)
-      response.params.limit.should.equal(100)
-      response.params.offset.should.equal(0)
+      response.data.limit.should.equal(100)
+      response.data.offset.should.equal(0)
       done();
     });
   });
@@ -129,16 +129,18 @@ describe('Server: Socket', function(){
     makeSocketRequest(client, "paramAdd limit=50", function(response){
       response.status.should.equal('OK');
       makeSocketRequest(client, "paramsView", function(response){
-        response.params.limit.should.equal(String(50))
+        response.data.limit.should.equal(String(50))
         done();
       });
     });
   });
 
   it('actions will fail without proper parmas set to the connection', function(done){
-    makeSocketRequest(client, "cacheTest", function(response){
-      response.error.should.equal('Error: key is a required parameter for this action')
-      done();
+    makeSocketRequest(client, "paramDelete key", function(response){
+      makeSocketRequest(client, "cacheTest", function(response){
+        response.error.should.equal('Error: key is a required parameter for this action')
+        done();
+      });
     });
   });
 
@@ -151,7 +153,7 @@ describe('Server: Socket', function(){
 
   it('a new param can be viewed once added', function(done){
     makeSocketRequest(client, "paramView key", function(response){
-      response.params.key.should.equal("socketTestKey")
+      response.data.should.equal("socketTestKey")
       done();
     });
   });
@@ -189,8 +191,13 @@ describe('Server: Socket', function(){
 
     var responses = []
     var checkResponses = function(data){
-      responses.push(JSON.parse(data));
+      data.split("\n").forEach(function(line){
+        if(line.length > 0){
+          responses.push(JSON.parse(line));
+        }
+      })
       if(responses.length == 6){
+        client.removeListener('data', checkResponses);
         for(var i in responses){
           var response = responses[i];
           if(i == 0){
@@ -199,8 +206,6 @@ describe('Server: Socket', function(){
             should.not.exist(response.error)
           }
         }
-
-        client.removeListener('data', checkResponses);
         done();
       }
     }
