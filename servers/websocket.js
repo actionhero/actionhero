@@ -49,7 +49,7 @@ var websocket = function(api, options, next){
   server.sendMessage = function(connection, message, messageCount){
     if(message.context == null){ message.context = 'response'; }
     if(messageCount == null){ messageCount = connection.messageCount; }
-    if(connection.context  === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
+    if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
     var channel = server.attributes.fayeChannelPrefix + connection.rawConnection.clientId;
     api.faye.client.publish(channel, message);
   }
@@ -134,15 +134,15 @@ var websocket = function(api, options, next){
       }else if(verb == "file"){
         server.processFile(connection);
       }else{
-        words = []
+        var words = []
         for(var i in data){ words.push(data[i]); }
         connection.verbs(verb, words, function(error, data){
           if(error == null){
-            var message = {status: "OK", context: "response", data: data}
-            server.sendMessage(connection, message);
-            if(verb === "setIP"){
-              self.log(clientId + "set remoteIP from " + words[0]);
+            var message = {status: "OK", context: "response", data: data};
+            if(verb === "setIP" || verb === "setPort"){
+              server.log(clientId + " " + verb + " from " + words[0]);
             }
+            server.sendMessage(connection, message);
           }else{
             var message = {status: error, context: "response", data: data}
             server.sendMessage(connection, message);

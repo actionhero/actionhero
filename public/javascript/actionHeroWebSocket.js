@@ -174,7 +174,7 @@
       xmlhttp.open("GET", self.options.host + self.options.apiPath, true);
       xmlhttp.send();
     }catch(e){
-      // can't make the ajax call, assume it's localhost
+      // can't make the ajax call, assume it's localhost...
       self.ip = "127.0.0.1";
       self.send({ event: 'setIP', ip: self.ip }, function(){
         callback(null, self.ip);

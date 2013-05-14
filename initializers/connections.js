@@ -117,9 +117,11 @@ var connections = function(api, next){
 
         }else if(verb === "setIP"){
           self.remoteIP = words[0];
+          callback(null, null);
 
         }else if(verb === "setPort"){
           self.remotePort = words[0];
+          callback(null, null);
 
         }else if(verb === "paramAdd"){
           if(words[0].indexOf("=") >= 0){
@@ -184,6 +186,8 @@ var connections = function(api, next){
         }else if(verb === "detailsView"){
           var details = {}
           details.id = self.id;
+          details.remoteIP = self.remoteIP;
+          details.remotePort = self.remotePort;
           details.params = self.params;
           details.connectedAt = self.connectedAt;
           details.room = self.room;

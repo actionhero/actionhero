@@ -13,7 +13,7 @@ describe('Server: Web Sockets', function(){
   function countWebSocketConnections(){
     var found = 0;
     for(var i in apiObj.connections.connections){
-      if(apiObj.connections.connections[i].type == "webSocket"){
+      if(apiObj.connections.connections[i].type == "websocket"){
         found++;
       }
     }
@@ -44,8 +44,8 @@ describe('Server: Web Sockets', function(){
     client_1.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.details.room.should.equal("defaultRoom");
-      data.details.totalActions.should.equal(0);
+      data.data.room.should.equal("defaultRoom");
+      data.data.totalActions.should.equal(0);
       client_1.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
@@ -55,8 +55,8 @@ describe('Server: Web Sockets', function(){
     client_2.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.details.room.should.equal("defaultRoom");
-      data.details.totalActions.should.equal(0);
+      data.data.room.should.equal("defaultRoom");
+      data.data.totalActions.should.equal(0);
       client_2.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
@@ -66,8 +66,8 @@ describe('Server: Web Sockets', function(){
     client_3.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.details.room.should.equal("defaultRoom");
-      data.details.totalActions.should.equal(0);
+      data.data.room.should.equal("defaultRoom");
+      data.data.totalActions.should.equal(0);
       client_3.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
     });
@@ -76,10 +76,9 @@ describe('Server: Web Sockets', function(){
   it('I can get my connection details', function(done){
     client_1.detailsView(function(response){
       response.should.be.an.instanceOf(Object);
-      response.status.should.equal("OK");
-      response.details.connectedAt.should.be.within(0, new Date().getTime())
-      response.details.room.should.equal("defaultRoom");
-      response.details.remoteIP.should.equal("127.0.0.1");
+      response.data.connectedAt.should.be.within(0, new Date().getTime())
+      response.data.room.should.equal("defaultRoom");
+      response.data.remoteIP.should.equal("127.0.0.1");
       done()
     });
   });
@@ -142,7 +141,7 @@ describe('Server: Web Sockets', function(){
       client_1.detailsView(function(response){
         response.should.be.an.instanceOf(Object);
         should.not.exist(response.error);
-        response.details.room.should.equal("otherRoom")
+        response.data.room.should.equal("otherRoom")
         done();
       });
     });
