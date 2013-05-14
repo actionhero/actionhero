@@ -213,23 +213,16 @@ describe('Server: Socket', function(){
     client.on('data', checkResponses);
   });
 
-  it('params sent in a JSON do not stick', function(done){
-    makeSocketRequest(client, "paramsView", function(response){
-      response.params.key.should.equal('socketTestKey')
-      done();
-    });
-  });
-
   it('clients start in the default room', function(done){
     makeSocketRequest(client, "roomView", function(response){
-      response.room.should.equal(apiObj.configData.general.defaultChatRoom);
+      response.data.room.should.equal(apiObj.configData.general.defaultChatRoom);
       done();
     });
   });
 
   it('clients can view additional info about rooms they are in', function(done){
     makeSocketRequest(client, "roomView", function(response){
-      response.roomStatus.membersCount.should.equal(3)
+      response.data.membersCount.should.equal(3)
       done();
     });
   });
@@ -238,7 +231,7 @@ describe('Server: Socket', function(){
     makeSocketRequest(client, "roomChange otherRoom", function(response){
       response.status.should.equal("OK")
       makeSocketRequest(client, "roomView", function(response){
-        response.room.should.equal('otherRoom');
+        response.data.room.should.equal('otherRoom');
         done();
       })
     });
@@ -246,9 +239,8 @@ describe('Server: Socket', function(){
 
   it('connections in the first room see the count go down', function(done){
     makeSocketRequest(client2, "roomView", function(response){
-      response.room.should.equal(apiObj.configData.general.defaultChatRoom);
-      response.roomStatus.room.should.equal(apiObj.configData.general.defaultChatRoom);
-      response.roomStatus.membersCount.should.equal(2)
+      response.data.room.should.equal(apiObj.configData.general.defaultChatRoom);
+      response.data.membersCount.should.equal(2)
       done();
     });
   });
@@ -321,7 +313,7 @@ describe('Server: Socket', function(){
 
   it('I can get my id', function(done){
     makeSocketRequest(client, "detailsView" + "\r\n", function(response){
-      client_details = response.details;
+      client_details = response.data;
       done();
     });
   });
