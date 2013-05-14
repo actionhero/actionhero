@@ -1,297 +1,442 @@
-<!-- Free web templates by http://www.templatesdock.com; released for free under a Creative Commons Attribution 3.0 License -->
-<html>
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta http-equiv="content-language" content="en" />
-	<meta name="description" content="actionHero A Node.js framework for reusable & scalable APIs">
-	<meta name="keywords" content="actionHero, API creator, Node.js framework, API builder, API, framework, Node.js">
-	
-	<link rel="stylesheet" media="screen,projection" type="text/css" href="css/main.css" />
-	<link rel="stylesheet" media="screen,projection" type="text/css" href="css/skin.css" />	
-
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <title>ActionHero - The Reusable, Scalable, and Quick node.js API Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel='stylesheet' id='prettyphoto-css'  href="css/prettyPhoto.css" type='text/css' media='all'>
+    <link href="css/fontello.css" type="text/css" rel="stylesheet">
+    <!--[if lt IE 7]>
+            <link href="css/fontello-ie7.css" type="text/css" rel="stylesheet">  
+        <![endif]-->
+    <!-- Google Web fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Quattrocento:400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Patua+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+    body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+    }
+    </style>
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <!-- Load ScrollTo -->
+    <script type="text/javascript" src="js/jquery.scrollTo-1.4.2-min.js"></script>
+    <!-- Load LocalScroll -->
+    <script type="text/javascript" src="js/jquery.localscroll-1.2.7-min.js"></script>
+    <!-- prettyPhoto Initialization -->
+    <script type="text/javascript" charset="utf-8">
+          $(document).ready(function(){
+            $("a[rel^='prettyPhoto']").prettyPhoto();
+          });
+        </script>
+    </head>
+    <body>
+    <!--******************** NAVBAR ********************-->
+    <div class="navbar-wrapper">
+      <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+            <h1 class="brand"><a href="#top">actionHero</a></h1>
+            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
+            <nav class="pull-right nav-collapse collapse">
+              <ul id="menu-main" class="nav">
+                <li><a title="portfolio" href="#portfolio">Portfolio</a></li>
+                <li><a title="services" href="#services">Services</a></li>
+                <li><a title="news" href="#news">News</a></li>
+                <li><a title="team" href="#team">Team</a></li>
+                <li><a title="contact" href="#contact">Contact</a></li>
+              </ul>
+            </nav>
+          </div>
+          <!-- /.container -->
+        </div>
+        <!-- /.navbar-inner -->
+      </div>
+      <!-- /.navbar -->
+    </div>
+    <!-- /.navbar-wrapper -->
+    <div id="top"></div>
+    <!-- ******************** HeaderWrap ********************-->
+    <div id="headerwrap">
+      <header class="clearfix">
+        <h1><span>ActionHero</span> The Reusable, Scalable, and Quick node.js API Server</h1>
+        <div class="container">
+          <div class="row">
+            <div class="span12">
+              <img src="logo/v2/actionHero_400.png" height="42" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="span12">
+              <ul class="icon">
+                <li><a href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js" target="_blank"><i class="icon-chat"></i></a></li>
+                <li><a href="http://twitter.com/actionherojs" target="_blank"><i class="icon-twitter-circled"></i></a></li>
+                <li><a href="https://github.com/evantahler/actionhero" target="_blank"><i class="icon-cog"></i></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+    <!--******************** Feature ********************-->
+    <div class="scrollblock">
+      <section id="feature">
+        <div class="container">
+          <div class="row">
+            <div class="span12">
+              <article>
+                <p>We work to make web a beautiful place.</p>
+                <p>We craft beautiful designs and convert them into</p>
+                <p>fully functional and user-friendy web app.</p>
+              </article>
+            </div>
+            <!-- ./span12 -->
+          </div>
+          <!-- .row -->
+        </div>
+        <!-- ./container -->
+      </section>
+    </div>
+    <hr>
+    <!--******************** Portfolio Section ********************-->
+    <section id="portfolio" class="single-page scrollblock">
+      <div class="container">
+        <div class="align"><i class="icon-desktop-circled"></i></div>
+        <h1 id="folio-headline">Portfolio...</h1>
+        <div class="row">
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-01.jpg" rel="prettyPhoto"><img src="img/portfolio-01.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Ethan Marcotte Design</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-02.jpg" rel="prettyPhoto"><img src="img/portfolio-02.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>A Book Apart</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-03.jpg" rel="prettyPhoto"><img src="img/portfolio-03.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Four Rules for Designers</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+        </div>
+        <!-- /.row -->
+        
+        <div class="row">
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-01.jpg" rel="prettyPhoto"><img src="img/portfolio-03.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Ethan Marcotte Design</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-02.jpg" rel="prettyPhoto"><img src="img/portfolio-01.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>A Book Apart</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/portfolio-03.jpg" rel="prettyPhoto"><img src="img/portfolio-02.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Four Rules for Designers</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <a class="more-link" href="#">view project</a> </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    <hr>
+    <!--******************** Services Section ********************-->
+    <section id="services" class="single-page scrollblock">
+      <div class="container">
+        <div class="align"><i class="icon-cog-circled"></i></div>
+        <h1>Services</h1>
+        <!-- Four columns -->
+        <div class="row">
+          <div class="span3">
+            <div class="align"> <i class="icon-desktop sev_icon"></i> </div>
+            <h2>Web design</h2>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+          </div>
+          <!-- /.span3 -->
+          <div class="span3">
+            <div class="align"> <i class="icon-vector sev_icon"></i> </div>
+            <h2>Print Design</h2>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+          </div>
+          <!-- /.span3 -->
+          <div class="span3">
+            <div class="align"> <i class="icon-basket sev_icon"></i> </div>
+            <h2>Ecommerce</h2>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+          </div>
+          <!-- /.span3 -->
+          <div class="span3">
+            <div class="align"> <i class="icon-mobile-1 sev_icon"></i> </div>
+            <h2>Marketing</h2>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+          </div>
+          <!-- /.span3 -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    <hr>
+    <!--******************** Testimonials Section ********************-->
+    <section id="testimonials" class="single-page hidden-phone">
+      <div class="container">
+        <div class="row">
+          <div class="blockquote-wrapper">
+            <blockquote class="mega">
+              <div class="span4">
+                <p class="cite">John Doe &amp; Sons:</p>
+              </div>
+              <div class="span8">
+                <p class="alignright">"We highly appreciate the enthusiasm and creative talent of the people at Legend!"</p>
+              </div>
+            </blockquote>
+          </div>
+          <!-- /.blockquote-wrapper -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    <hr>
+    <!--******************** News Section ********************-->
+    <section id="news" class="single-page scrollblock">
+      <div class="container">
+        <div class="align"><i class="icon-pencil-circled"></i></div>
+        <h1>Our Blog</h1>
+        <!-- Three columns -->
+        <div class="row">
+          <article class="span4 post"> <img class="img-news" src="img/blog_img-01.jpg" alt="">
+            <div class="inside">
+              <p class="post-date"><i class="icon-calendar"></i> March 17, 2013</p>
+              <h2>A girl running on a road</h2>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
+                <a href="#" class="more-link">read more</a> </div>
+            </div>
+            <!-- /.inside -->
+          </article>
+          <!-- /.span4 -->
+          <article class="span4 post"> <img class="img-news" src="img/blog_img-02.jpg" alt="">
+            <div class="inside">
+              <p class="post-date">February 28, 2013</p>
+              <h2>A bear sleeping on a tree</h2>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
+                <a href="#" class="more-link">read more</a> </div>
+            </div>
+            <!-- /.inside -->
+          </article>
+          <!-- /.span4 -->
+          <article class="span4 post"> <img class="img-news" src="img/blog_img-03.jpg" alt="">
+            <div class="inside">
+              <p class="post-date">February 06, 2013</p>
+              <h2>A Panda playing with his baby</h2>
+              <div class="entry-content">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
+                <a href="#" class="more-link">read more</a> </div>
+            </div>
+            <!-- /.inside -->
+          </article>
+          <!-- /.span4 -->
+        </div>
+        <!-- /.row -->
+        <a href="#" class="btn btn-large">Go to our blog</a> </div>
+      <!-- /.container -->
+    </section>
+    <hr>
+    <!--******************** Team Section ********************-->
+    <section id="team" class="single-page scrollblock">
+      <div class="container">
+        <div class="align"><i class="icon-group-circled"></i></div>
+        <h1>Meet the team</h1>
+        <!-- Five columns -->
+        <div class="row">
+          <div class="span2 offset1">
+            <div class="teamalign"> <img class="team-thumb img-circle" src="img/portrait-1.jpg" alt=""> </div>
+            <h3>Andrew</h3>
+            <div class="job-position">web designer</div>
+          </div>
+          <!-- ./span2 -->
+          <div class="span2">
+            <div class="teamalign"> <img class="team-thumb img-circle" src="img/portrait-2.jpg" alt=""> </div>
+            <h3>Stephen</h3>
+            <div class="job-position">web developer</div>
+          </div>
+          <!-- ./span2 -->
+          <div class="span2">
+            <div class="teamalign"> <img class="team-thumb img-circle" src="img/portrait-3.jpg" alt=""> </div>
+            <h3>Maria</h3>
+            <div class="job-position">graphic designer</div>
+          </div>
+          <!-- ./span2 -->
+          <div class="span2">
+            <div class="teamalign"> <img class="team-thumb img-circle" src="img/portrait-4.jpg" alt=""> </div>
+            <h3>John</h3>
+            <div class="job-position">project manager</div>
+          </div>
+          <!-- ./span2 -->
+          <div class="span2">
+            <div class="teamalign"> <img class="team-thumb img-circle" src="img/portrait-2.jpg" alt=""> </div>
+            <h3>Ashton</h3>
+            <div class="job-position">real owner</div>
+          </div>
+          <!-- ./span2 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+          <div class="span10 offset1">
+            <hr class="featurette-divider">
+            <div class="featurette">
+              <h2 class="featurette-heading">Want to know more? <span class="muted">| a little about us</span></h2>
+              <p>Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores.</p>
+              <p>At solmen va esser necessi far uniform grammatica, pronunciation e plu sommun paroles. Ma quande lingues coalesce, li grammatica del resultant lingue es plu simplic e regulari quam ti del coalescent lingues.</p>
+              <p>A un Angleso it va semblar un simplificat Angles, quam un skeptic Cambridge amico dit me que Occidental es.</p>
+            </div>
+            <!-- /.featurette -->
+            <hr class="featurette-divider">
+          </div>
+          <!-- .span10 -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    <!--******************** Contact Section ********************-->
+    <section id="contact" class="single-page scrollblock">
+      <div class="container">
+        <div class="align"><i class="icon-mail-2"></i></div>
+        <h1>Contact us now!</h1>
+        <div class="row">
+          <div class="span12">
+            <div class="cform" id="theme-form">
+              <form action="#" method="post" class="cform-form">
+                <div class="row">
+                  <div class="span6"> <span class="your-name">
+                    <input type="text" name="your-name" placeholder="Your Name" class="cform-text" size="40" title="your name">
+                    </span> </div>
+                  <div class="span6"> <span class="your-email">
+                    <input type="text" name="your-email" placeholder="Your Email" class="cform-text" size="40" title="your email">
+                    </span> </div>
+                </div>
+                <div class="row">
+                  <div class="span6"> <span class="company">
+                    <input type="text" name="company" placeholder="Your Company" class="cform-text" size="40" title="company">
+                    </span> </div>
+                  <div class="span6"> <span class="website">
+                    <input type="text" name="website" placeholder="Your Website" class="cform-text" size="40" title="website">
+                    </span> </div>
+                </div>
+                <div class="row">
+                  <div class="span12"> <span class="message">
+                    <textarea name="message" class="cform-textarea" cols="40" rows="10" title="drop us a line."></textarea>
+                    </span> </div>
+                </div>
+                <div>
+                  <input type="submit" value="Send message" class="cform-submit pull-left">
+                </div>
+                <div class="cform-response-output"></div>
+              </form>
+            </div>
+          </div>
+          <!-- ./span12 -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    <hr>
+    <div class="footer-wrapper">
+      <div class="container">
+        <footer>
+          <small>&copy; 2013 Inbetwin Network. All rights reserved.</small>
+        </footer>
+      </div>
+      <!-- ./container -->
+    </div>
+    <!-- Loading the javaScript at the end of the page -->
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/jquery.prettyPhoto.js"></script>
+    <script type="text/javascript" src="js/site.js"></script>
+    
+    <!--ANALYTICS CODE-->
 	<script type="text/javascript">
-		// catch for other github URLs
-		if(window.location.host != "actionherojs.com"){
-			window.location.href = "http://actionherojs.com"
-		}
-	</script>
-
-	<script type="text/javascript" src="javascript/jquery.min.js"></script>
-	<script type="text/javascript" src="javascript/cufon-yui.js"></script>
-	<script type="text/javascript" src="javascript/font.font.js"></script>
-	
-	<link href='syntaxhighlighter/styles/shCore.css' rel='stylesheet' type='text/css' />
-	<script src='syntaxhighlighter/scripts/shCore.js' type='text/javascript'></script>
-	<link href='syntaxhighlighter/styles/shThemeDefault.css' rel='stylesheet' type='text/css' />
-	<script src='syntaxhighlighter/scripts/shBrushJScript.js' type='text/javascript'></script>
-	
-	<script type="text/javascript">
-		Cufon.replace('h1, h2', {hover:true});
-	</script>
-	<title>actionHero.js</title>
-	
-	<script type="text/javascript">
-
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-29132597-1']);
-	  _gaq.push(['_setDomainName', 'actionherojs.com']);
+	  _gaq.push(['_setAccount', 'UA-29231762-1']);
+	  _gaq.push(['_setDomainName', 'dzyngiri.com']);
 	  _gaq.push(['_trackPageview']);
-
+	
 	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
-
 	</script>
-	
-</head>
-
-<body id="hp"> 
-	
-<a href="https://github.com/evantahler/actionHero"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-<div id="main">
-
-	<!-- HEADER -->
-	<div id="header" class="box">
-
-		<p id="logo"><a href="./" title="[Go to homepage]"><img src="logo/v1/actionHeroWordsWhite.png" width="120" alt="" /></a></p>
-
-		<!-- NAVIGATION -->
-		<ul id="nav">
-			<li class="current"><a href="#"><span>Homepage</span></a></li>
-			<li><a href="https://github.com/evantahler/actionHero"><span>GitHub</span></a></li>
-			<li><a href="https://github.com/evantahler/actionHero/wiki"><span>Wiki</span></a></li>
-			<li><a href="https://github.com/evantahler/actionHero/blob/master/versions.md"><span>Change Log</span></a></li>
-			<li><a href="https://npmjs.org/package/actionHero"><span>NPM</span></a></li>
-			<li><a href="http://demo.actionherojs.com/public/"><span>Demo Server</span></a></li>
-		</ul>		
-		
-	</div> <!-- /header -->
-
-	<!-- WELCOME -->
-	<div id="welcome" class="box">
-		<div id="welcome-inner">
-			<h2>actionHero is a node.js API framework for tcp sockets, web sockets, and http clients.</h2>
-			<p>actionHero is a node.js API framework for tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable and scalable APIs.  actionHero provides cluster support, shared cache, integrated delayed processing, and more.</p>
-		</div> <!-- /welcome-inner -->
-		<div id="smallInset" class="box">
-			<ul>
-				<li>actionHero is for the node.js server.  Learn more here <a href="http://nodejs.org/">http://nodejs.org/</a></li>
-				<li>actionHero is available in the NPM (node package manager).  Learn more <a href="http://search.npmjs.org/#/actionHero">here</a></li>
-			</ul>
-			<br />
-			<br />
-			<br />
-		</div>
-		<div id="imac">
-			<img src="logo/v2/actionHero.png" height="330" alt="ActionHero">
-		</div> <!-- /imac -->
-	</div> <!-- /welcome -->
-
-	<div id="section" class="box">
-		<div id="get_started">
-			<h2 class="boldWhite">Get Started Now:</h2>
-			<ul class="boldWhite">
-				<li>npm install actionHero</li>
-				<li>./node_modules/.bin/actionHero generate</li>
-				<li>./node_modules/.bin/actionHero start</li>
-			</ul>
-		</div>
-	</div>
-
-	<!-- COLUMNS -->
-	<div id="section" class="box">
-		<!-- CONTENT -->
-		<div id="content_full_width">
-			<div class="logical_section">
-				<h1>actionHero: A Framework for APIs</h1>
-				<p>actionHero is a node.js API framework for tcp sockets, web sockets, and http clients. The goals of actionHero are to create an easy-to-use toolkit for making reusable and scalable APIs.  You write one action, and all your clients can consume it:</p>
-
-				<pre class="brush: js">
-var action = {};
-
-/////////////////////////////////////////////////////////////////////
-// metadata
-action.name = "randomNumber";
-action.description = "I am an API method which will generate a random number";
-action.inputs = {
-    "required" : [],
-    "optional" : []
-};
-action.outputExample = {
-    randomNumber: 123
-}
-
-/////////////////////////////////////////////////////////////////////
-// functional
-action.run = function(api, connection, next){
-    connection.response.randomNumber = Math.random();
-    next(connection, true);
-};
-
-/////////////////////////////////////////////////////////////////////
-// exports
-exports.action = action;
-				</pre>
-
-				<p>actionHero servers can process both requests and tasks (delayed actions like send e-mail or other background jobs). actionHero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.</p>
-				<p>The actionHero API defines a single access point and accepts GET, POST, PUT and DELETE input along with persistent connection via TCP or web sockets. You define Actions which handle input and response, such as “userAdd” or “geoLocate”. HTTP, HTTPS, and TCP clients can all use these actions. The actionHero API is not inherently “RESTful” (which is meaningless for persistent socket connections) but can be extended to be so if you with.</p>
-				<p>actionHero will also serve static files for you, but actionHero is not a server-side website host (like express or rails).</p>
-			</div>
-			<div class="logical_section">
-				<h1>actionHero Speaks Many Protocols</h1>
-				<p>One of the goals of actionHero is to be able to speak to as many client types as possible.  Currently implamented is: ['http', 'https', 'tcp', 'tls', 'websocket'].</p>
-				<p>Say you wanted to ask the server for a list of all the actions it can respond to `actionsView`.  Here are examples using a number of protocols:</p>
-
-				<div class="wide-table">
-				<table class="table" width="1700">
-					<tr>
-						<th>cURL</th>
-						<th>jQuery</th>
-						<th>TCP</th>
-						<th>TLS</th>
-						<th>Web Socket</th>
-					</tr>
-					<tr>
-						<td>
-							<pre>
-curl "http://127.0.0.1:8080/api/" -d "action=actionsView"
-							</pre>
-						</td>
-						<td>
-							<pre>
-$.ajax({
-	url: "http://127.0.0.1:8080/api/,
-	data: {
-		action: "actionsView"
-	},
-	type: "POST",
-	dataType: "jsonp",
-	jsonp : "callback",
-	jsonpCallback: function(data){
-		if(data.error != "OK"){
-			console.log(data.actions)
-		}
-	},
-});
-							</pre>
-						</td>
-						<td>
-							<pre>> telnet localhost 5000
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-{"welcome":"Hello! Welcome to the actionHero api}
-> actionsView
-							</pre>
-						</td>
-						<td>
-							<pre>> openssl s_client -connect 127.0.0.1:5000
-... 
-SSL handshake has read 4619 bytes and written 456 bytes
-New, TLSv1/SSLv3, Cipher is AES256-SHA
-...
-{"welcome":"Hello! Welcome to the actionHero api}
-> actionsView
-							</pre>
-						</td>
-						<td>
-							<pre>
-
-var A = new actionHeroWebSocket;
-
-A.connect(function(err, details){
-  if(err != null){
-    A.log(err);
-  }else{
-    A.log("CONNECTED");
-    A.log(details);
-  }
-});
-
-A.action("actionsView", function(data){ console.log(data); })
-
-
-							</pre>
-						</td>
-					</tr>
-				</table>
-				</div>
-				<p>You can also talk to an actionHero server from other node.js applications via the <a href="https://github.com/evantahler/actionhero_client">actionHero client</a></p>
-				<div class="image_center">
-					<img src="graphics/actionHeroGraphic.png" />
-				</div>
-			</div>
-			<div class="logical_section">
-				<h1>actionHero is Made for Scale: actionCluster</h1>
-				<p>actionHero can be run either as a stand-alone server or as part of a cluster. The goal of actionCluster is to allow you to create a group of servers which will share memory state and all be able to handle requests and run tasks. You can also add and remove nodes from the cluster without fear of data loss or task duplication. You can run many instances of actionHero using node.js' <a href="https://github.com/evantahler/actionHero/blob/master/scripts/actionHeroCluster">cluster methods</a>.</p>
-				<p>Using a redis backend, actionHero nodes can now share memory objects and have a common queue for tasks. Philosophically, we have changed from a mesh network (actionHero versions prior to v2) to a queue-based network (action hero after version 2).</p>
-				<p>When working within an actionCluster the api.cache methods described above switch from using an in-process memory store, to using a common one based on redis. This means that all peers will have access to all data stored in the cache. The task system described below also becomes a common queue which all peers will work on draining. There should be no changes needed to your use of the api to use the benefits of cluster deployment and synchronization. Using a redis-based backend works for both a cluster hosted on many physically separate hosts or if you set using the node.js cluster module on one host, or both at the same time.</p>
-			</div>
-			<div class="logical_section">
-				<h1>Integrated Delayed Processing</h1>
-				<p>Tasks are background jobs meant to be run asynchronously from a request.  With actionHero, there is no need to run a separate job processing/queuing process.  Using the node.js event loop, background tasks can be processed in-line with web requests in a non-blocking way.  Tasks are built like actions, but they can be queued to run once later or periodically.  Tasks can be run on every node in the actionCluster or just one.  There is one task which is core to action hero `runAction`, but there are a number of example tasks provided</p>
-				<pre class="brush: js">
-var task = {};
-
-/////////////////////////////////////////////////////////////////////
-// metadata
-task.name = "sayHello";
-task.description = "I am a demo task which will be run only on one peer";
-task.scope = "any";
-task.frequency = 1000;
-
-/////////////////////////////////////////////////////////////////////
-// functional
-task.run = function(api, params, next){
-    api.log("----- Hi There! ----", "green");
-    next(true);
-};
-
-/////////////////////////////////////////////////////////////////////
-// exports
-exports.task = task;
-				</pre>
-			</div>
-			<div id="logical_section">
-				<h1>You should be developing API-first already</h1>
-				<h3><a href="http://api-first.com/">API-first.com</a></h3>
-			</div>
-			<div id="logical_section">
-				<h1>Want to learn more?</h1>
-				<h3><a href="https://github.com/evantahler/actionHero/wiki">Learn More on Github</a></h3>
-			</div>
-		</div> <!-- /content -->
-	</div> <!-- /section -->	
-
-	<!-- CONTACT -->
-	<div id="contact">
-		<h1>Get actionHero Now:</h1>
-	    <div>
-         <a href="https://github.com/evantahler/actionHero/zipball/master">
-           <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-         <a href="https://github.com/evantahler/actionHero/tarball/master">
-           <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-       </div>
-	   <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-         by running:
-         <pre>$ git clone git://github.com/evantahler/actionHero</pre>
-       </p>
-	</div> <!-- /contact -->	
-	<!-- FOOTER -->
-	<div id="footer" class="box">
-		<p class="f-right t-right"><a href="http://www.templatesdock.com/">Free web templates</a> by TemplatesDock
-		<p class="f-left">Hosted on <a href="http://pages.github.com/">GitHub Pages</a></p>
-	</div> <!-- /footer -->
-</div> <!-- /main -->
-
-<script type="text/javascript"> 
-	Cufon.now(); 
-	$('#content').load("readme.html");
-	$('#aside').load("news.html");
-	SyntaxHighlighter.all()
-</script>
-</body>
-</html>
+    </body>
+    </html>
