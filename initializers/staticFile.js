@@ -1,12 +1,13 @@
 var fs = require('fs');
 var path = require('path');
-var mime = require('mime');
+var Mime = require('mime');
 
 var staticFile = function(api, next){
 
   api.staticFile = {
 
     // connection.params.file should be set
+    // callback is of the form: callback(connection, error, fileStream, mime, length)
     get: function(connection, callback){
       var self = this;
       if(connection.params.file == null){
@@ -28,17 +29,19 @@ var staticFile = function(api, next){
     },
 
     sendFile: function(file, connection, callback){
-      // TODO: Bring back generic pipe/stream for file reading; setting in RAM is wasteful 
       var self = this;
-      fs.readFile(file, 'utf8', function(err, data){
+      fs.stat(file, function(err, stats){
         if(err){
           self.sendFileNotFound(connection, "error reading file: " + String(err), callback);
         }else{
-          api.stats.increment("staticFiles:filesSent");
-          var fileMime = mime.lookup(file);
-          var length = data.length;
-          self.logRequest(file, connection, length, true);
-          callback(connection, data, fileMime, length);
+          var mime = Mime.lookup(file);
+          var length = stats.size;
+          var fileStream = fs.createReadStream(file, {'flags': 'r'});
+          fileStream.addListener("close", function(){
+            api.stats.increment("staticFiles:filesSent");
+            self.logRequest(file, connection, length, true);
+          });
+          callback(connection, null, fileStream, mime, length);
         }
       });
     },
@@ -48,7 +51,7 @@ var staticFile = function(api, next){
       api.stats.increment("staticFiles:failedFileRequests");
       connection.error = new Error(errorMessage);
       self.logRequest('{404: not found}', connection, null, false);
-      callback(connection, api.configData.general.flatFileNotFoundMessage, 'text/html'. null);
+      callback(connection, api.configData.general.flatFileNotFoundMessage, null, 'text/html', api.configData.general.flatFileNotFoundMessage.length);
     },
 
     checkExistance: function(file, callback){

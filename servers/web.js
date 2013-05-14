@@ -78,11 +78,21 @@ var web = function(api, options, next){
     server.destroyConnection(connection);
   }
 
-  server.sendFile = function(connection, content, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
     connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.servers.web.flatFileCacheDuration + ", must-revalidate"]);
-    server.sendMessage(connection, content)
+    cleanHeaders(connection);
+    var headers = connection.rawConnection.responseHeaders;
+    if(error != null){ connection.rawConnection.responseHttpCode = 404; }
+    var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+    connection.rawConnection.res.writeHead(responseHttpCode, headers);
+    if(error != null){
+      connection.rawConnection.res.end(String(error));
+    }else{
+      fileStream.pipe(connection.rawConnection.res, {end: true});
+    }
+    server.destroyConnection(connection);
   };
 
   ////////////
@@ -240,8 +250,8 @@ var web = function(api, options, next){
     }else{
       if(connection.params["file"] == null){
         connection.params["file"] = filePathParts.join("/");
-        if (connection.params["file"][connection.params["file"].length - 1] == "/"){
-          connection.params["file"] + api.configData.servers.web.directoryFileType;
+        if (connection.params["file"] == "" || connection.params["file"][connection.params["file"].length - 1] == "/"){
+          connection.params["file"] = api.configData.servers.web.directoryFileType;
         }
       }
     }

@@ -92,7 +92,7 @@ var socket = function(api, options, next){
     }catch(e){ }
   }
 
-  server.sendFile = function(connection, content, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length){
     // TODO
   };
 

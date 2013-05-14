@@ -28,7 +28,7 @@ A generic imaplmentation of a server:
 
       server.sendMessage = function(connection, message, messageCount){}
 
-      server.sendFile = function(connection, content, mime, length){};
+      server.sendFile = function(connection, error, fileStream, mime, length){};
 
       server.goodbye = function(connection, reason){};
 
@@ -150,10 +150,8 @@ var genericServer = function(api, next){
 
   api.genericServer.prototype.processFile = function(connection){
     var self = this;
-    process.nextTick(function() { 
-      api.staticFile.get(connection, function(connection, content, mime, length){
-        self.sendFile(connection, content, mime, length);
-      });
+    api.staticFile.get(connection, function(connection, error, fileStream, mime, length){
+      self.sendFile(connection, error, fileStream, mime, length);
     });
   }
 

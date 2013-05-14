@@ -54,7 +54,7 @@ var websocket = function(api, options, next){
     api.faye.client.publish(channel, message);
   }
 
-  server.sendFile = function(connection, content, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length){
     // TODO;
   };
 

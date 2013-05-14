@@ -1,4 +1,4 @@
-describe('Action: file', function(){
+describe('Core: Static File', function(){
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
@@ -34,7 +34,7 @@ describe('Action: file', function(){
   });
 
   it('file: ?filename should work like a path', function(done){
-    specHelper.apiTest.get("/public/" + "?fileName=simple.html", 0, {}, function(response){
+    specHelper.apiTest.get("/public/" + "?file=simple.html", 0, {}, function(response){
       response.statusCode.should.equal(200);
       response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/index.html<br />');
       done();
@@ -42,7 +42,7 @@ describe('Action: file', function(){
   });
 
   it('I should not see files outsite of the public dir', function(done){
-    specHelper.apiTest.get("/public/" + "?fileName=../config.json", 0, {}, function(response){
+    specHelper.apiTest.get("/public/" + "?file=../config.json", 0, {}, function(response){
       response.statusCode.should.equal(404);
       response.body.should.equal(apiObj.configData.general.flatFileNotFoundMessage);
       done();

@@ -271,7 +271,7 @@ describe('Core: actionCluster', function(){
       makeSocketRequest(client1, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.data.roomStatus.members.length.should.equal(3);
+        response.data.members.length.should.equal(3);
         done();
       });
     });
@@ -281,7 +281,7 @@ describe('Core: actionCluster', function(){
       makeSocketRequest(client2, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.data.roomStatus.members.length.should.equal(3);
+        response.data.members.length.should.equal(3);
         done();
       });
     });
@@ -289,9 +289,9 @@ describe('Core: actionCluster', function(){
     it("all connections should be in the default room and client #3 can see them", function(done){
       this.timeout(10000)
       makeSocketRequest(client3, "roomView", function(response){
-        response.data.should.be.an.instanceOf(Object);
+        response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.roomStatus.members.length.should.equal(3);
+        response.data.members.length.should.equal(3);
         done();
       });
     });

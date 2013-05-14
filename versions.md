@@ -21,6 +21,7 @@
   - much simpler API, appropriate for more server types
 - server types renamed to "web", "socket", "websocket" for claricy
 - serer types can have options about chatting and such
+- the param "file" replaces "fileName" when attempting to directly access the content of files
 
 ** Other **
 
