@@ -58,6 +58,38 @@ describe('Core: Utils', function(){
     done();
   });
 
+  describe("utils.hashMerge", function(){
+    var A = {a: 1, b: 2};
+    var B = {b: -2, c: 3};
+    var C = {a: 1, b: {m: 10, n:11}};
+    var D = {a: 1, b: {n:111, o:22}};
+
+    it('simple', function(done){
+      var Z = specHelper.utils.hashMerge(A, B);
+      Z.a.should.equal(1);
+      Z.b.should.equal(-2);
+      Z.c.should.equal(3);
+      done();
+    });
+
+    it('directional', function(done){
+      var Z = specHelper.utils.hashMerge(B, A);
+      Z.a.should.equal(1);
+      Z.b.should.equal(2);
+      Z.c.should.equal(3);
+      done();
+    });
+
+    it('nested', function(done){
+      var Z = specHelper.utils.hashMerge(C, D);
+      Z.a.should.equal(1);
+      Z.b.m.should.equal(10);
+      Z.b.n.should.equal(111);
+      Z.b.o.should.equal(22);
+      done();
+    });
+  });
+
   it('utils.inArray', function(done){
     specHelper.utils.inArray([1,2,3], 1).should.eql(true);
     specHelper.utils.inArray([1,2,3], 4).should.eql(false);
