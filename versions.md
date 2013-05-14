@@ -23,11 +23,21 @@
 - serer types can have options about chatting and such
 - the param "file" replaces "fileName" when attempting to directly access the content of files
 
+** web server **
+
+- header control in the web server has been moved to `connection.rawConnection.responseHeaders` from `connection.responseHeaders`
+- http code control in the web server has been moved to `connection.rawConnection.responseHttpCode` from `connection.responseHttpCode`
+
+** socket server **
+
+- when setting params with JSON for a socket connection, those JSON params will now 'stick' with the connection going forward
+
+** websocket server ** 
+
 ** Other **
 
 - `config.js` drastically simplified (no more `commonWeb`, servers block, etc)
 - winston logger object will now be passed into loger config methods
-- when setting params with JSON for a socket connection, those JSON params will now 'stick' with the connection going forward
 - speed improvments and tests added for the stats module (thanks @jacobbubu)
 
 ## Version 5.1.3

@@ -129,17 +129,17 @@ var web = function(api, options, next){
       };
     
       if(connection.response.error != null){
-        if(api.configData.servers.web.returnErrorCodes == true && connection.responseHttpCode == 200){
+        if(api.configData.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
           if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
-            connection.responseHttpCode = 404;
+            connection.rawConnection.responseHttpCode = 404;
           }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
-            connection.responseHttpCode = 422;
+            connection.rawConnection.responseHttpCode = 422;
           }else if(String(connection.error).indexOf("none of the required params for this action were provided") > 0){
-            connection.responseHttpCode = 422;
+            connection.rawConnection.responseHttpCode = 422;
           }else if("Error: " + String(connection.response.error) == api.configData.general.serverErrorMessage){
-            connection.responseHttpCode = 500;
+            connection.rawConnection.responseHttpCode = 500;
           }else{
-            connection.responseHttpCode = 400;
+            connection.rawConnection.responseHttpCode = 400;
           }
         }
       }
@@ -227,6 +227,9 @@ var web = function(api, options, next){
       if(connection.rawConnection.req.method.toUpperCase() == 'POST'){ // POST params
         if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
           // not a legal post; bad headers
+          api.routes.processRoute(connection);
+          if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
+          callback(requestMode);
         }else{
           var form = new formidable.IncomingForm();
           for(var i in api.configData.servers.web.formOptions){
@@ -240,12 +243,15 @@ var web = function(api, options, next){
               fillParamsFromWebRequest(connection, files);
               fillParamsFromWebRequest(connection, fields);
             }
+            api.routes.processRoute(connection);
+            if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
+            callback(requestMode);
           });
         }
-      }
-      api.routes.processRoute(connection);
-      if(connection.params["action"] == null){
-        connection.params["action"] = apiPathParts[0];
+      }else{
+        api.routes.processRoute(connection);
+        if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
+        callback(requestMode);
       }
     }else{
       if(connection.params["file"] == null){
@@ -254,8 +260,8 @@ var web = function(api, options, next){
           connection.params["file"] = api.configData.servers.web.directoryFileType;
         }
       }
+      callback(requestMode);
     }
-    callback(requestMode);
   }
 
   var fillParamsFromWebRequest = function(connection, varsHash){

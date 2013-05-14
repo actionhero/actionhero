@@ -108,7 +108,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: Post with Form', function(done){
-    var postURL = 'http://' + specHelper.url + ":" + specHelper.params[0].httpServer.port + "/api/cacheTest";
+    var postURL = 'http://' + specHelper.url + ":" + specHelper.params[0].servers.web.port + "/api/cacheTest";
     specHelper.request.post(postURL, {form: {key:'key', value: 'value'}}, function(err, response, body){
       body = JSON.parse(body);
       body.cacheTestResults.saveResp.should.eql(true);
@@ -149,17 +149,17 @@ describe('Server: Web', function(){
   describe('http header', function(){
 
     before(function(done){
-      rawApi.configData.commonWeb.returnErrorCodes = true;
+      rawApi.configData.servers.web.returnErrorCodes = true;
       rawApi.actions.actions.headerTestAction = {
         name: "headerTestAction",
         description: "I am a test",
         inputs: { required: [], optional: [] }, outputExample: {},
         run:function(api, connection, next){
-          connection.responseHeaders.push(['thing', "A"]);
-        connection.responseHeaders.push(['thing', "B"]);
-        connection.responseHeaders.push(['thing', "C"]);
-        connection.responseHeaders.push(['set-cookie', "value 1"]);
-        connection.responseHeaders.push(['set-cookie', "value 2"]);
+          connection.rawConnection.responseHeaders.push(['thing', "A"]);
+          connection.rawConnection.responseHeaders.push(['thing', "B"]);
+          connection.rawConnection.responseHeaders.push(['thing', "C"]);
+          connection.rawConnection.responseHeaders.push(['set-cookie', "value 1"]);
+          connection.rawConnection.responseHeaders.push(['set-cookie', "value 2"]);
           next(connection, true);
         }
       }
@@ -194,7 +194,7 @@ describe('Server: Web', function(){
   describe('http returnErrorCodes true', function(){
 
     before(function(done){
-      rawApi.configData.commonWeb.returnErrorCodes = true;
+      rawApi.configData.servers.web.returnErrorCodes = true;
       rawApi.actions.actions.statusTestAction = {
         name: "statusTestAction",
         description: "I am a test",
@@ -202,7 +202,7 @@ describe('Server: Web', function(){
         run:function(api, connection, next){
           if(connection.params.key != 'value'){
             connection.error = "key != value";
-            connection.responseHttpCode = 402;
+            connection.rawConnection.responseHttpCode = 402;
           }else{
             connection.response.good = true;
           }
@@ -213,7 +213,7 @@ describe('Server: Web', function(){
     });
 
     after(function(done){
-      rawApi.configData.commonWeb.returnErrorCodes = false;
+      rawApi.configData.servers.web.returnErrorCodes = false;
       delete rawApi.actions.actions['statusTestAction'];
       done();
     });
@@ -295,10 +295,16 @@ describe('Server: Web', function(){
       });
     });
 
-    it('explicit action declarations still override routed actions', function(done){
-      specHelper.apiTest.get('/user/123?action=theRealAction', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('theRealAction')
-        response.body.error.should.equal('Error: theRealAction is not a known action.')
+    it('explicit action declarations still override routed actions, if the defined action is real', function(done){
+      specHelper.apiTest.get('/user/123?action=randomNumber', 0, {}, function(response){
+        response.body.requestorInformation.receivedParams.action.should.equal('randomNumber')
+        done();
+      });
+    });
+
+    it('route actions will override explicit actions, if the defined action is null', function(done){
+      specHelper.apiTest.get('/user/123?action=someFakeAction', 0, {}, function(response){
+        response.body.requestorInformation.receivedParams.action.should.equal('user')
         done();
       });
     });
@@ -363,10 +369,10 @@ describe('Server: Web', function(){
       });
     });
 
-    it('regexp match failures will be regected', function(done){
+    it('regexp match failures will be rejected', function(done){
       specHelper.apiTest.post('/login/1234', 0, {}, function(response){
-        response.body.error.should.equal("Error: login/1234 is not a known action.");
-        response.body.requestorInformation.receivedParams.action.should.equal('login/1234');
+        response.body.error.should.equal("Error: login is not a known action.");
+        response.body.requestorInformation.receivedParams.action.should.equal('login');
         should.not.exist(response.body.requestorInformation.receivedParams.userID);
         done();
       });
