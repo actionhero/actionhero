@@ -48,10 +48,12 @@ actionHero.prototype.start = function(params, next){
   }
 
   // run the initializers
-  var orderedInitializers = {};
-  orderedInitializers['config'] = function(next){ self.initalizers['config'](self.api, self.startingParams, next) };
+  var orderedInitializers = {
+    utils: function(next){ self.initalizers['utils'](self.api, next) },
+    config: function(next){ self.initalizers['config'](self.api, self.startingParams, next) }
+  };
+
   [
-    'utils',
     'id',
     'pids',
     'logger',

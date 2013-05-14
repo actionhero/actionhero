@@ -54,6 +54,27 @@ var utils = function(api, next){
   };
 
   ////////////////////////////////////////////////////////////////////////////
+  // merge two hashes recursively 
+  api.utils.hashMerge = function(a, b) {
+    var c = {};
+    for(var i in a){
+      if(typeof a[i] === 'object' && a[i] != null){
+        c[i] = api.utils.hashMerge(c[i], a[i]);
+      }else{
+        c[i] = a[i];
+      }
+    }
+    for(var i in b){
+      if(typeof b[i] === 'object' && b[i] != null){
+        c[i] = api.utils.hashMerge(c[i], b[i]);
+      }else{
+        c[i] = b[i];
+      }
+    }
+    return c;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////
   // unique-ify an array
   api.utils.arrayUniqueify = function(arr) {
     var a = [];

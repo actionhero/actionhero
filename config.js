@@ -31,14 +31,14 @@ configData.general = {
 
 configData.logger = {
   transports: [
-    function(api){
+    function(api, winston){
       return new (winston.transports.Console)({
         colorize: true, 
         level: "debug", 
         timestamp: api.utils.sqlDateTime
       });
     },
-    function(api){
+    function(api, winston){
       var fs = require('fs');
       try{ 
         fs.mkdirSync("./log");

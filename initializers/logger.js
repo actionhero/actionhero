@@ -8,7 +8,7 @@ var logger = function(api, next){
   for(var i in api.configData.logger.transports){
     var t = api.configData.logger.transports[i];
     if(typeof t == "function"){
-      transports.push( t(api) );
+      transports.push( t(api, winston) );
     }else{
       transports.push(t);
     }

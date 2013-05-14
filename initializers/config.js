@@ -6,9 +6,7 @@ var config = function(api, startingParams, next){
   api.watchedFiles = [];
 
   if(startingParams.api != null){
-    for(var i in startingParams.api){
-      api[i] = startingParams.api[i];
-    }
+    api.utils.hashMerge(api, startingParams.api);
   }
       
   if(argv["config"] != null){
@@ -19,6 +17,7 @@ var config = function(api, startingParams, next){
     var configFile = process.cwd() + '/config.js';
   }else{
     throw new Error(configFile + "No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG");
+    proces.exit(1);
   }
 
   try{
@@ -27,13 +26,9 @@ var config = function(api, startingParams, next){
     throw new Error(configFile + " is not a valid config file or is not readable: " + e);
   }
 
+
   if(startingParams.configChanges != null){
-    for (var i in startingParams.configChanges){ 
-      var collection = startingParams.configChanges[i];
-      for (var j in collection){
-        api.configData[i][j] = collection[j];
-      }
-    }
+    api.configData = api.utils.hashMerge(api.configData, startingParams.configChanges);
   }
 
   if(api.configData.general.developmentMode == true){
