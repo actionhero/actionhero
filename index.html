@@ -2,7 +2,7 @@
     <html lang="en">
     <head>
     <meta charset="utf-8">
-    <title>ActionHero - The Reusable, Scalable, and Quick node.js API Server</title>
+    <title>ActionHero.js - The Reusable, Scalable, and Quick node.js API Server</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -51,7 +51,7 @@
           <div class="container">
             <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
-            <h1 class="brand"><a href="#top">actionHero</a></h1>
+            <h1 class="brand"><a href="#top">actionHero.js</a></h1>
             <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
             <nav class="pull-right nav-collapse collapse">
               <ul id="menu-main" class="nav">
@@ -74,7 +74,7 @@
     <!-- ******************** HeaderWrap ********************-->
     <div id="headerwrap">
       <header class="clearfix">
-        <h1><span>ActionHero</span> The Reusable, Scalable, and Quick node.js API Server</h1>
+        <h1><span>ActionHero.js</span> The Reusable, Scalable, and Quick node.js API Server</h1>
         <div class="container">
           <div class="row">
             <div class="span12">
@@ -100,9 +100,7 @@
           <div class="row">
             <div class="span12">
               <article>
-                <p>We work to make web a beautiful place.</p>
-                <p>We craft beautiful designs and convert them into</p>
-                <p>fully functional and user-friendy web app.</p>
+                <p>actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks.</p>
               </article>
             </div>
             <!-- ./span12 -->
@@ -117,43 +115,57 @@
     <section id="portfolio" class="single-page scrollblock">
       <div class="container">
         <div class="align"><i class="icon-desktop-circled"></i></div>
-        <h1 id="folio-headline">Portfolio...</h1>
+        <h1 id="folio-headline">Features</h1>
+        <div class="row">
+          <div class="span2">
+            <div class="align"><div class="mask2"> <a href="img/actionHeroGraphic.png" rel="prettyPhoto"><img height="200" src="img/actionHeroGraphic.png" alt=""></a> </div></div>
+          </div>
+          <div class="span10">
+            <h2>actionHero was built from the ground up to include all the features you expect from a modern API framework.  This includes all the features listed below and more.</h2>
+            <h2>ActionHero also knows when to get out of the way to allow you to customize your stack to fit your needs.</h2>
+          </div>
+        </div>
+        <hr />
         <div class="row">
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-01.jpg" rel="prettyPhoto"><img src="img/portfolio-01.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/actions.jpg" rel="prettyPhoto"><img src="img/features/actions.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>Ethan Marcotte Design</h2>
+                <h2>Easy-to-use Actions</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>With actionHero, you create 'actions' which can respond to any type of connection.  They process incomming params and offer a response to the client.  actionHero takes care of routing and responding to each connection type for you.</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Actions">Learn more about Actions</a>
+              </div>
             </div>
             <!-- /.inside -->
           </div>
           <!-- /.span4 -->
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-02.jpg" rel="prettyPhoto"><img src="img/portfolio-02.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/tasks.jpg" rel="prettyPhoto"><img src="img/features/tasks.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>A Book Apart</h2>
+                <h2>Built-in Delayed Jobs</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>Background tasks are first-class citizens in actionHero.  You can enque a task from anywhere in the application.  Tasks can be recurring or single-run, and there is also support for runnign a task across any or all peers in the cluster.</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Tasks">Learn more about Tasks</a>
+              </div>
             </div>
             <!-- /.inside -->
           </div>
           <!-- /.span4 -->
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-03.jpg" rel="prettyPhoto"><img src="img/portfolio-03.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/faye-redis.jpg" rel="prettyPhoto"><img src="img/features/faye-redis.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>Four Rules for Designers</h2>
+                <h2>Cluster-Ready</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>actionHero uses Faye and Redis to store and share data.  With first-clas cache functions, decentralized communications, and distributed workers, you can be sure that your application is able to scale from 1 worker on one server, to as big of a cluster as you need</p>
+                <a target="_blank" class="more-link" href="http://redis.io/">Learn more about Redis</a><br />
+                <a target="_blank" class="more-link" href="http://faye.jcoglan.com/">Learn more about Faye</a>
+              </div>
             </div>
             <!-- /.inside -->
           </div>
@@ -163,46 +175,94 @@
         
         <div class="row">
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-01.jpg" rel="prettyPhoto"><img src="img/portfolio-03.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/servers.jpg" rel="prettyPhoto"><img src="img/features/servers.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>Ethan Marcotte Design</h2>
+                <h2>Multiple Servers & Transports</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>The actionHero API makes it simple to create a traditional HTTP(s) API, but it also lets you easily extend your API to TCP and websocket clients (all included).  actionHero also easily lets you write your own servers to handle custom transports.</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Servers">Learn more about Servers</a>
+              </div>
             </div>
             <!-- /.inside -->
           </div>
           <!-- /.span4 -->
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-02.jpg" rel="prettyPhoto"><img src="img/portfolio-01.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/routes.jpg" rel="prettyPhoto"><img src="img/features/routes.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>A Book Apart</h2>
+                <h2>Routing</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>actionHero ships with a router to make mapping HTTP requests to your actions a breeze.</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Web-Clients#routes">Learn more about Routes</a>  
+              </div>
             </div>
             <!-- /.inside -->
           </div>
           <!-- /.span4 -->
           <div class="span4">
-            <div class="mask2"> <a href="img/portfolio-03.jpg" rel="prettyPhoto"><img src="img/portfolio-02.jpg" alt=""></a> </div>
+            <div class="mask2"> <a href="img/features/api-first.jpg" rel="prettyPhoto"><img src="img/features/api-first.jpg" alt=""></a> </div>
             <div class="inside">
               <hgroup>
-                <h2>Four Rules for Designers</h2>
+                <h2>API First Development</h2>
               </hgroup>
               <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                <a class="more-link" href="#">view project</a> </div>
+                <p>actionHero makes API-First development very easy by enforcing a strict seperation of views and application logic.  actionHero also makes modularizing your application easy with simple clustering and easy-to-use background tasks.</p>
+                <a class="more-link" target="_blank" href="http://api-first.com">Learn More about API-First development</a> </div>
             </div>
             <!-- /.inside -->
           </div>
           <!-- /.span4 -->
         </div>
         <!-- /.row -->
+
+        <div class="row">
+          <div class="span4">
+            <div class="mask2"> <a href="img/features/chat.jpg" rel="prettyPhoto"><img src="img/features/chat.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Chat</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>actionHero (optionally) facilitates real-time communication not only from server-to-client, but also client-to-client!  actionHero's chat sub-system allows for streaming of both public and private messages between clients</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Chat">Learn more about Chat</a> 
+              </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/features/cluster.jpg" rel="prettyPhoto"><img src="img/features/cluster.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>Clustered Deployment and 0-downtime binaries</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>It is simple to deploy actionHero with our included binaries.  You can launch your server as a single instance or as part of a node.js cluster</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/Running-ActionHero">Learn more about Running actionHero</a> 
+              </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+          <div class="span4">
+            <div class="mask2"> <a href="img/features/file.jpg" rel="prettyPhoto"><img src="img/features/file.jpg" alt=""></a> </div>
+            <div class="inside">
+              <hgroup>
+                <h2>File Server</h2>
+              </hgroup>
+              <div class="entry-content">
+                <p>Every respctible framework needs to serve files to its clients (even those that don't speak HTTP), and actionHero is no exception.  Configured to asynchnoulsy stream file contents, actionHero provides an excelent file server which can live in parallel with your api routes allowing for a fully featured server.  No nginx required!</p>
+                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionHero/wiki/File-Server">Learn more about Serving Files with actionHero</a> 
+              </div>
+            </div>
+            <!-- /.inside -->
+          </div>
+          <!-- /.span4 -->
+        </div>
+
       </div>
       <!-- /.container -->
     </section>
@@ -211,7 +271,7 @@
     <section id="services" class="single-page scrollblock">
       <div class="container">
         <div class="align"><i class="icon-cog-circled"></i></div>
-        <h1>Services</h1>
+        <h1>Servers & Transports</h1>
         <!-- Four columns -->
         <div class="row">
           <div class="span3">
@@ -246,15 +306,20 @@
     <hr>
     <!--******************** Testimonials Section ********************-->
     <section id="testimonials" class="single-page hidden-phone">
+    <!-- <section id="testimonials" class="single-page"> -->
       <div class="container">
         <div class="row">
           <div class="blockquote-wrapper">
             <blockquote class="mega">
               <div class="span4">
-                <p class="cite">John Doe &amp; Sons:</p>
+                <p class="cite">Get Started Now:</p>
               </div>
-              <div class="span8">
-                <p class="alignright">"We highly appreciate the enthusiasm and creative talent of the people at Legend!"</p>
+              <div class="span11">
+                <pre class="prettyprint linenums">
+                <p class="alignright">npm install actionHero</p>
+                <p class="alignright">./node_modules/.bin/actionHero generate</p>
+                <p class="alignright">./node_modules/.bin/actionHero start</p>
+                </pre>
               </div>
             </blockquote>
           </div>
@@ -372,38 +437,18 @@
     <section id="contact" class="single-page scrollblock">
       <div class="container">
         <div class="align"><i class="icon-mail-2"></i></div>
-        <h1>Contact us now!</h1>
+        <h1>Join the Community</h1>
         <div class="row">
           <div class="span12">
-            <div class="cform" id="theme-form">
-              <form action="#" method="post" class="cform-form">
-                <div class="row">
-                  <div class="span6"> <span class="your-name">
-                    <input type="text" name="your-name" placeholder="Your Name" class="cform-text" size="40" title="your name">
-                    </span> </div>
-                  <div class="span6"> <span class="your-email">
-                    <input type="text" name="your-email" placeholder="Your Email" class="cform-text" size="40" title="your email">
-                    </span> </div>
-                </div>
-                <div class="row">
-                  <div class="span6"> <span class="company">
-                    <input type="text" name="company" placeholder="Your Company" class="cform-text" size="40" title="company">
-                    </span> </div>
-                  <div class="span6"> <span class="website">
-                    <input type="text" name="website" placeholder="Your Website" class="cform-text" size="40" title="website">
-                    </span> </div>
-                </div>
-                <div class="row">
-                  <div class="span12"> <span class="message">
-                    <textarea name="message" class="cform-textarea" cols="40" rows="10" title="drop us a line."></textarea>
-                    </span> </div>
-                </div>
-                <div>
-                  <input type="submit" value="Send message" class="cform-submit pull-left">
-                </div>
-                <div class="cform-response-output"></div>
-              </form>
-            </div>
+            <ul>
+              <li><h2><a target="_blank" href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js">Mailing List</a><small>: actionHero's Google Group & Mailing List</small></h2></li>
+              <li><h2><a target="_blank" href="https://twitter.com/actionherojs">Twitter</a><small>: quick news updates</small></h2></li>
+              <li><h2><a target="_blank" href="https://npmjs.org/package/actionHero">NPM</a><small>: the Node Package Manager</small></h2></li>
+              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero">Github</a><small>: check out the latest code and current issues</small></h2></li>
+              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a><small>: documentation and examples</small></h2></li>
+              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki/API-Methods">API Methods</a><small>: quick refrences for actionHero's exposed methods for developers</small></h2></li>
+              <li><h2><a target="_blank" href="https://github.com/evantahler/actionhero_client">Client</a><small>: ndoe.js client example for consuming a actionHero API</small></h2></li>
+            </ul>
           </div>
           <!-- ./span12 -->
         </div>
@@ -415,7 +460,7 @@
     <div class="footer-wrapper">
       <div class="container">
         <footer>
-          <small>&copy; 2013 Inbetwin Network. All rights reserved.</small>
+          <small>&copy; 2013 <a target="_blank" href="http://evantahler.com">Evan Tahler</a>.</small>
         </footer>
       </div>
       <!-- ./container -->
@@ -428,15 +473,15 @@
     <!--ANALYTICS CODE-->
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-29231762-1']);
-	  _gaq.push(['_setDomainName', 'dzyngiri.com']);
-	  _gaq.push(['_trackPageview']);
-	
-	  (function() {
-		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
+    _gaq.push(['_setAccount', 'UA-29132597-1']);
+    _gaq.push(['_setDomainName', 'actionherojs.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
 	</script>
     </body>
     </html>
