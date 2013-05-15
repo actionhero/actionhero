@@ -36,10 +36,10 @@ var cache = function(api, next){
     }));
   }
 
-  api.cache.load = function(key, extension, next){
-    if (typeof extension == "function") {
-      next = extension
-      extension = 0
+  api.cache.load = function(key, options, next){
+    if (typeof options == "function") {
+      next = options
+      options = {}
     }
     var domain = api.cache.prepareDomain();
     api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
@@ -51,8 +51,8 @@ var cache = function(api, next){
         }
       }else if( cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null ){
         cacheObj.readAt = new Date().getTime();
-        if ( cacheObj.expireTimestamp != null ) 
-          cacheObj.expireTimestamp += extension;
+        if ( cacheObj.expireTimestamp != null && options.expireTimeMS ) 
+          cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
         api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
           if(typeof next == "function"){  
             process.nextTick(function() { next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
