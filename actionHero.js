@@ -38,9 +38,14 @@ actionHero.prototype.start = function(params, next){
       fs.readdirSync(folder).sort().forEach( function(file) {
         if (file[0] != "."){
           var initalizer = file.split(".")[0];
-          delete require.cache[require.resolve(initializerFolders[i] + file)];
-          initializerMethods.push(initalizer);
-          self.initalizers[initalizer] = require(initializerFolders[i] + file)[initalizer];
+          var ext = file.split('.')[1];
+          if (ext === 'js') {
+            if(require.cache[require.resolve(initializerFolders[i] + file)] !== null){
+              delete require.cache[require.resolve(initializerFolders[i] + file)];
+            }
+            initializerMethods.push(initalizer);
+            self.initalizers[initalizer] = require(initializerFolders[i] + file)[initalizer];
+          }
         }
       });
     }

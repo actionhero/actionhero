@@ -425,7 +425,9 @@ var tasks = function(api, next){
 						var realPath = readlinkSync(fullfFilePath);
 						loadFolder(realPath);
 					}else if(stats.isFile()){
-						api.tasks.load(fullfFilePath)
+            var ext = file.split('.')[1];
+            if (ext === 'js')
+              api.tasks.load(fullfFilePath);
 					}else{
 						api.log(file+" is a type of file I cannot read", "alert")
 					}
