@@ -98,7 +98,7 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load with options that extending expireTime should return cached item', function(done){
-    var expireTime = 10;
+    var expireTime = 100;
     apiObj.cache.save("testKey_slow","abc123",expireTime,function(err, save_resp){
       save_resp.should.equal(true);
       setTimeout(function(){
@@ -113,11 +113,11 @@ describe('Core: Cache', function(){
                   should.equal(null, load_resp);
                   done();
                 });
-              }, 8);
+              }, 80);
             });
-          }, 8);
+          }, 80);
         });
-      }, 8);
+      }, 80);
     });
   });  
 
