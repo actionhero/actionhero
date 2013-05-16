@@ -97,6 +97,30 @@ describe('Core: Cache', function(){
     });
   });
 
+  it('cache.load with options that extending expireTime should return cached item', function(done){
+    var expireTime = 10;
+    apiObj.cache.save("testKey_slow","abc123",expireTime,function(err, save_resp){
+      save_resp.should.equal(true);
+      setTimeout(function(){
+        apiObj.cache.load("testKey_slow",{expireTimeMS: expireTime},function(err, load_resp){
+          load_resp.should.equal("abc123");
+          setTimeout(function(){
+            apiObj.cache.load("testKey_slow",function(err, load_resp){
+              load_resp.should.equal("abc123");
+              setTimeout(function(){
+                apiObj.cache.load("testKey_slow",function(err, load_resp){
+                  String(err).should.equal("Error: Object expired")
+                  should.equal(null, load_resp);
+                  done();
+                });
+              }, 8);
+            });
+          }, 8);
+        });
+      }, 8);
+    });
+  });  
+
   it('cache.save works with arrays', function(done){
     apiObj.cache.save("array_key",[1,2,3],function(err, save_resp){
       save_resp.should.equal(true);
