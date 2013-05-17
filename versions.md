@@ -22,6 +22,7 @@
 - server types renamed to "web", "socket", "websocket" for claricy
 - serer types can have options about chatting and such
 - the param "file" replaces "fileName" when attempting to directly access the content of files
+- a new generator, `generateServer`, exists to help you make servers
 
 ** web server **
 

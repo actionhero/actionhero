@@ -41,6 +41,10 @@ Descriptions:
   will generate a new initializer in `initializers`
   [name] (required)
 
+* actionHero generateServer --name=[name]
+  will generate a new server in `servers`
+  [name] (required)
+
 * actionHero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
   will start a template actionHero server
   this is the respondant to `npm start`
