@@ -1,133 +1,112 @@
-
-<!-- Free web templates by http://www.templatesdock.com; released for free under a Creative Commons Attribution 3.0 License -->
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="content-language" content="en" />
   <meta name="description" content="actionHero.js" />
-  <link rel="stylesheet" media="screen,projection" type="text/css" href="/public/css/main.css" />
-  <link rel="stylesheet" media="screen,projection" type="text/css" href="/public/css/skin.css" /> 
+  <link href='http://fonts.googleapis.com/css?family=Merriweather+Sans:400,700,800,300' rel='stylesheet' type='text/css'>
   
-  <script type="text/javascript" src="/public/javascript/jquery.min.js"></script>
-  <script type="text/javascript" src="/public/javascript/app.js"></script>
-  <script type="text/javascript" src="/public/javascript/cufon-yui.js"></script>
-  <script type="text/javascript" src="/public/javascript/font.font.js"></script>
-  
-  <link href="/public/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
-  <script type="text/javascript" src="/public/google-code-prettify/prettify.js"></script>
-  
+  <style type="text/css">
+  body {
+    background-color: #04819E;
+    text-align: center;
+    font-family: 'Merriweather Sans', sans-serif;
+    color: black;
+  }
+
+  .body_container {
+    margin:0 auto;
+    width: 800px;
+    background-color: #FFB100;
+    border-radius: 15px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border: 5px solid #015367;
+  }
+
+  h1 {
+    font-weight: 800; 
+    font-size: 50px;
+    text-shadow: 4px 4px #A61300;
+    color: #FF1E00;
+  }
+
+  .server_info {
+    text-align: left;
+  }
+
+  .box{
+    border: 1px solid black;
+    clear: both;
+  }
+
+  .left {
+    padding-left: 10px;
+    width: 200px;
+    float: left;
+  }
+
+  .right {
+    padding-right: 10px;
+    width: 500px;
+    float: right;
+  }
+  </style>
+
   <script type="text/javascript">
-    Cufon.replace('h1, h2', {hover:true});
+  var actionsView = function(callback){
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function(){
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+        var response = JSON.parse(xmlhttp.responseText);
+        callback(response);
+      }
+    }
+    xmlhttp.open("GET", "/api/actionsView", true);
+    xmlhttp.send();
+  }
+
+  var populateServerInfo = function(){
+    actionsView(function(data){
+      document.getElementById("serverVersion").innerHTML = data.serverInformation.apiVersion;
+      document.getElementById("serverName").innerHTML = data.serverInformation.serverName;
+      data.actions.forEach(function(action){
+        var row = "";
+        row += "<div class=\"box\"><div class=\"left\">" + action.name + "</div><div class=\"right\">" + action.description + "</div></div>";
+        document.getElementById("actions").innerHTML += row;
+      });
+    });
+  }
   </script>
+
   <title>actionHero.js</title>
 </head>
 
-<body id="hp"> 
-  
-<a href="https://github.com/evantahler/actionHero"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+<body> 
 
-<div id="main">
-
-  <!-- HEADER -->
-  <div id="header" class="box">
-
-    <p id="logo"><a href="./" title="[Go to homepage]"><img src="/public/logo/actionHeroWordsWhite.png" width="120" alt="" /></a></p>
-
-    <!-- NAVIGATION -->
-    <ul id="nav">
-      <li><a href="http://actionherojs.com"><span>Homepage</span></a></li>
-      <li><a href="https://github.com/evantahler/actionHero"><span>GitHub</span></a></li>
-      <li><a href="https://npmjs.org/package/actionHero"><span>NPM</span></a></li>
-    </ul>   
-    
-  </div> <!-- /header -->
-
-  <!-- WELCOME -->
-  <div id="welcome" class="box">
-    <div id="welcome-inner">
-      <h2>If you can read me, that means you have an actionHero server up and running!</h2>
-      <p>You are awesome.</p>
-    </div> <!-- /welcome-inner -->
-    <!-- TWITTER -->
-    <div id="twitter" class="box">
-      <ul>
-        <li>- actionHero is for the node.js server.  Learn more here <a href="http://nodejs.org/">http://nodejs.org/</a></li>
-        <li>- actionHero is available in the NPM (node package manager).  Learn more <a href="http://search.npmjs.org/#/actionHero">here</a></li>
-        <li>&nbsp;</li>
-        <li>&nbsp;</li>
-      </ul>
-    </div> <!-- /twitter -->
-    <div id="imac">
-      <img src="/public/logo/actionHero.png" height="330" alt="ActionHero">
-    </div> <!-- /imac -->
-  </div> <!-- /welcome -->
-  
-
-  <div id="section" class="box">
-    <h2>What am I looking at?</h2>
-    <p>You are looking at a website being served by the actionHero API.  The static assets (This HTML file, the images, css, JS, etc) have been served to you as flat files, and if you look below, you will see the response of the `actionsView` action, which describes the capabilites of the API.</p>
-
-    <p>You can visit the API for <a href="/api/actionsView">actionsView directly</a>, check it out via terminal [[ telnet {this server} {port} ]], or via curl and webSockets.</p>
+  <div class="body_container">
+    <h1>actionHero.js</h1>
+    <img src="/public/logo/actionHero.png" width="400px"/>
+    <p><strong>Congratulations!</strong> Your server is up and working.</p>
   </div>
 
-  <hr />
+  <div class="body_container">
+    <h2>Server Information:</h2>
+    <div class="server_info">
+      <div class="box"><div class="left">Server Name:</div><div class="right" id="serverName"></div></div>
+      <div class="box"><div class="left">Server Version:</div><div class="right" id="serverVersion"></div></div>
+    </div>
+  </div>
 
-  <!-- COLUMNS -->
-  <div id="section" class="box">
-    <h1>Actions on this server:</h1>
-    <p>Determined by inspecting the actionsView action</p>
-    
-    <div id="apiContent">Loading...</div>
-    
-  </div> <!-- /section -->  
-
-  <!-- FOOTER -->
-  <div id="footer" class="box">
-    <p class="f-right t-right"><a href="http://www.templatesdock.com/">Free web templates</a> by TemplatesDock
-  </div> <!-- /footer -->
-</div> <!-- /main -->
-
-<script type="text/javascript"> 
-
-  Cufon.now(); 
-  $('#content').load("readme.html");
-  $('#aside').load("news.html");
-  
-  $(document).ready(function() {
-    app.apiRequest("actionsView", "actionsViewCallback", {}); 
-  });
-  
-  var actionsViewCallback = function(api){
-    var out = "";
-    for(var i in api.actions){
-      var action = api.actions[i];
-      out += "<h3>" + action.name + "</h3>";
-      out += "<p>" + action.description + "</p>";
+  <div class="body_container">
+    <h2>Actions:</h2>
+    <div class="server_info" id="actions">
       
-      out += "<b>Required Inputs:</b>"
-      out += "<ul>";
-      for (var a in action.inputs.required){
-        out += "<li> * " + action.inputs.required[a] + "</li>";
-      }
-      out += "</ul>";
-      
-      out += "<b>Optional Inputs:</b>"
-      out += "<ul>";
-      for (var a in action.inputs.optional){
-        out += "<li> * " + action.inputs.optional[a] + "</li>";
-      }
-      out += "</ul>";
-      
-      out += "<b>Example Output:</b><br />";
-      out += "<pre class=\"prettyprint lang-js\">";
-      out += JSON.stringify(action.outputExample, null, 4);
-      out += "</pre>";
-    }
-    
-    $("#apiContent").html(out);
-  }
+    </div>
+  </div>
 
-  
-</script>
+  <script type="text/javascript">
+    populateServerInfo();
+  </script>
+
 </body>
 </html>

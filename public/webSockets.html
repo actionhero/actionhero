@@ -1,42 +1,125 @@
-<script src="/faye/client.js"></script>
-<script src="/public/javascript/actionHeroWebSocket.js"></script>
-
-<h1>Websocket Example</h1>
-Open the Console for more information.
-
-<script>
-
-  var A = new actionHeroWebSocket;
-
-  A.events = {
-    disconnect: function(message){
-      A.log("DISCONNECTED");
-    },
-    reconnect: function(message){
-      A.log("RECONNECTED");
-      A.log("New ID: " + A.id);
-    },
-    say: function(message){
-      A.log("SAY:");
-      A.log(message)
-    },
-    welcome: function(message){
-      A.log("WELCOME:");
-      A.log(message);
-    },
-    alert: function(message){
-      A.log("ALERT:");
-      A.log(message);
-    }
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="actionHero.js" />
+  <link href='http://fonts.googleapis.com/css?family=Merriweather+Sans:400,700,800,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  body {
+    background-color: #04819E;
+    text-align: center;
+    font-family: 'Merriweather Sans', sans-serif;
+    color: black;
   }
 
-  A.connect(function(err, details){
-    if(err != null){
-      A.log(err);
-    }else{
-      A.log("CONNECTED");
-      A.log(details);
-    }
-  });
+  .body_container {
+    margin:0 auto;
+    width: 800px;
+    background-color: #FFB100;
+    border-radius: 15px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border: 5px solid #015367;
+  }
 
-</script>
+  h1 {
+    font-weight: 800; 
+    font-size: 50px;
+    text-shadow: 4px 4px #A61300;
+    color: #FF1E00;
+  }
+
+  .messages {
+    text-align: left;
+    font-size: 10px;
+  }
+
+  .box{
+    border: 1px solid black;
+    clear: both;
+  }
+
+  .left {
+    padding-left: 10px;
+    width: 200px;
+    float: left;
+  }
+
+  .right {
+    padding-right: 10px;
+    width: 500px;
+    float: right;
+  }
+  </style>
+
+  <title>actionHero.js</title>
+
+  <script src="/faye/client.js"></script>
+  <script src="/public/javascript/actionHeroWebSocket.js"></script>
+
+  <script>
+
+    var now = function(){
+      var now = new Date();
+      return now.getHours() + ":" + now.getMinutes();
+    }
+
+    var A = new actionHeroWebSocket;
+
+    A.log = function(message){
+      console.log(message);
+      document.getElementById("messages").innerHTML += "<div class=\"box\"><div class=\"left\">" + now() + "</div><div class=\"right\">" + JSON.stringify(message, null, 4) + "</div></div>";
+    }
+
+    A.events = {
+      disconnect: function(message){
+        A.log("DISCONNECTED");
+      },
+      reconnect: function(message){
+        A.log("RECONNECTED");
+        A.log("New ID: " + A.id);
+      },
+      say: function(message){
+        A.log("SAY:");
+        A.log(message)
+      },
+      welcome: function(message){
+        A.log("WELCOME:");
+        A.log(message);
+      },
+      alert: function(message){
+        A.log("ALERT:");
+        A.log(message);
+      }
+    }
+
+    A.connect(function(err, details){
+      if(err != null){
+        A.log(err);
+      }else{
+        A.log("CONNECTED");
+        A.log(details);
+      }
+    });
+
+  </script>
+</head>
+
+<body> 
+
+  <div class="body_container">
+    <h1>Websocket Test Page</h1>
+    <p>Be sure that the 'websocket' server is enabled</p>
+    <p>Open the console for more information</p>
+  </div>
+
+  <div class="body_container">
+    <h2>Messages:</h2>
+    <div class="messages" id="messages">
+      
+    </div>
+  </div>
+
+</body>
+</html>
