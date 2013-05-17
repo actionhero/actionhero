@@ -278,21 +278,38 @@
           <div class="span3">
             <h2>Web</h2>
             <p>actionHero can act as a HTTP or HTTPs API server.  With integrated routing, its easy to create RESTful resources.  actionHero also can serve static files.</p>
+            <pre>
+curl "http://127.0.0.1:8080/api/" -d "action=actionsView"
+            </pre>
           </div>
           <!-- /.span3 -->
           <div class="span3">
             <h2>Socket</h2>
             <p>actionHero ships with the abilty to be a line TCP or TLS server.  actionHero clients can speak a wire proticol or send lines of JSON.  Actions can be processed asynchonulsy and in parallel.  The API server and the built-in chat system provide all you need for a communication or game application</p>
+            <pre>
+> telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+{"welcome":"Hello! Welcome to the actionHero api}
+> actionsView
+            </pre>
           </div>
           <!-- /.span3 -->
           <div class="span3">
             <h2>Web Sockets</h2>
             <p>actionHero uses Faye to provied a robust and reliable websocket implamentation.  actionHero web socket clients can fall back to long-polling and other transports to ensure they are connectd.  actionHero does not require that a client stay connected to teh same node.</p>
+            <pre>
+var A = new actionHeroWebSocket;
+A.action("actionsView", function(data){ console.log(data); })
+            </pre>
           </div>
           <!-- /.span3 -->
           <div class="span3">
             <h2>Your Own</h2>
-            <p>Most importantly, actionHero's modular server achectecture allows you to define your own servers and proticols.  Learn how on the <a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a></p>
+            <p>Most importantly, actionHero's modular server achectecture allows you to define your own servers and proticols.
+              <br><br>
+              Learn how on the <a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a></p>
           </div>
           <!-- /.span3 -->
         </div>
