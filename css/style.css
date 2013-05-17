@@ -470,6 +470,12 @@ section#services .span3:hover {
 }
 /* Testimonials */
 
+#testimonials h1 {
+	font-size: 3em;
+	margin-bottom: 1em;
+	margin-top: 0.5em;
+}
+
 section#testimonials {
 	height:  647px;
 	background: url("../img/yellow_testimonial.png") repeat-x 0 0;

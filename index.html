@@ -58,9 +58,9 @@
                 <li><a title="portfolio" href="#portfolio">Features</a></li>
                 <li><a title="services" href="#services">Servers</a></li>
                 <li><a title="testimonials" href="#testimonials">Try</a></li>
-                <li><a title="news" href="#news">Examples</a></li>
                 <li><a title="contact" href="#contact">Community</a></li>
                 <li><a target="_blank" title="demo" href="http://demo.actionherojs.com/public">Demo</a></li>
+                <li><a target="_blank" title="demo" href="https://github.com/evantahler/actionhero">Github</a></li>
               </ul>
             </nav>
           </div>
@@ -276,27 +276,23 @@
         <!-- Four columns -->
         <div class="row">
           <div class="span3">
-            <div class="align"> <i class="icon-desktop sev_icon"></i> </div>
-            <h2>Web design</h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+            <h2>Web</h2>
+            <p>actionHero can act as a HTTP or HTTPs API server.  With integrated routing, its easy to create RESTful resources.  actionHero also can serve static files.</p>
           </div>
           <!-- /.span3 -->
           <div class="span3">
-            <div class="align"> <i class="icon-vector sev_icon"></i> </div>
-            <h2>Print Design</h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+            <h2>Socket</h2>
+            <p>actionHero ships with the abilty to be a line TCP or TLS server.  actionHero clients can speak a wire proticol or send lines of JSON.  Actions can be processed asynchonulsy and in parallel.  The API server and the built-in chat system provide all you need for a communication or game application</p>
           </div>
           <!-- /.span3 -->
           <div class="span3">
-            <div class="align"> <i class="icon-basket sev_icon"></i> </div>
-            <h2>Ecommerce</h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+            <h2>Web Sockets</h2>
+            <p>actionHero uses Faye to provied a robust and reliable websocket implamentation.  actionHero web socket clients can fall back to long-polling and other transports to ensure they are connectd.  actionHero does not require that a client stay connected to teh same node.</p>
           </div>
           <!-- /.span3 -->
           <div class="span3">
-            <div class="align"> <i class="icon-mobile-1 sev_icon"></i> </div>
-            <h2>Marketing</h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+            <h2>Your Own</h2>
+            <p>Most importantly, actionHero's modular server achectecture allows you to define your own servers and proticols.  Learn how on the <a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a></p>
           </div>
           <!-- /.span3 -->
         </div>
@@ -304,79 +300,26 @@
       </div>
       <!-- /.container -->
     </section>
-    <hr>
+
     <!--******************** Testimonials Section ********************-->
-    <section id="testimonials" class="single-page hidden-phone">
-    <!-- <section id="testimonials" class="single-page"> -->
+
+    <section id="testimonials" class="single-page scrollblock">
       <div class="container">
+        <h1>Get Started Now</h1>
         <div class="row">
-          <div class="blockquote-wrapper">
-            <blockquote class="mega">
-              <div class="span4">
-                <p class="cite">Get Started Now:</p>
-              </div>
-              <div class="span11">
-                <pre class="prettyprint linenums">
-                <p class="alignright">npm install actionHero</p>
-                <p class="alignright">./node_modules/.bin/actionHero generate</p>
-                <p class="alignright">./node_modules/.bin/actionHero start</p>
-                </pre>
-              </div>
-            </blockquote>
+          <div class="span12">
+            <pre class="">
+              <h1 class="alignleft">npm install actionHero</h1>
+              <h1 class="alignleft">./node_modules/.bin/actionHero generate</h1>
+              <h1 class="alignleft">./node_modules/.bin/actionHero start</h1>
+            </pre>
           </div>
-          <!-- /.blockquote-wrapper -->
+            <!-- ./span12 -->
         </div>
         <!-- /.row -->
       </div>
       <!-- /.container -->
     </section>
-    <hr>
-    <!--******************** News Section ********************-->
-    <section id="news" class="single-page scrollblock">
-      <div class="container">
-        <div class="align"><i class="icon-pencil-circled"></i></div>
-        <h1>Examples</h1>
-        <!-- Three columns -->
-        <div class="row">
-          <article class="span4 post"> <img class="img-news" src="img/blog_img-01.jpg" alt="">
-            <div class="inside">
-              <p class="post-date"><i class="icon-calendar"></i> March 17, 2013</p>
-              <h2>A girl running on a road</h2>
-              <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
-                <a href="#" class="more-link">read more</a> </div>
-            </div>
-            <!-- /.inside -->
-          </article>
-          <!-- /.span4 -->
-          <article class="span4 post"> <img class="img-news" src="img/blog_img-02.jpg" alt="">
-            <div class="inside">
-              <p class="post-date">February 28, 2013</p>
-              <h2>A bear sleeping on a tree</h2>
-              <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
-                <a href="#" class="more-link">read more</a> </div>
-            </div>
-            <!-- /.inside -->
-          </article>
-          <!-- /.span4 -->
-          <article class="span4 post"> <img class="img-news" src="img/blog_img-03.jpg" alt="">
-            <div class="inside">
-              <p class="post-date">February 06, 2013</p>
-              <h2>A Panda playing with his baby</h2>
-              <div class="entry-content">
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. &hellip;</p>
-                <a href="#" class="more-link">read more</a> </div>
-            </div>
-            <!-- /.inside -->
-          </article>
-          <!-- /.span4 -->
-        </div>
-        <!-- /.row -->
-        <a href="#" class="btn btn-large">Go to our blog</a> </div>
-      <!-- /.container -->
-    </section>
-    <hr>
 
     <!--******************** Contact Section ********************-->
     <section id="contact" class="single-page scrollblock">
@@ -384,16 +327,16 @@
         <div class="align"><i class="icon-mail-2"></i></div>
         <h1>Join the Community</h1>
         <div class="row">
-          <div class="span12">
-            <ul>
-              <li><h2><a target="_blank" href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js">Mailing List</a><small>: actionHero's Google Group & Mailing List</small></h2></li>
-              <li><h2><a target="_blank" href="https://twitter.com/actionherojs">Twitter</a><small>: quick news updates</small></h2></li>
-              <li><h2><a target="_blank" href="https://npmjs.org/package/actionHero">NPM</a><small>: the Node Package Manager</small></h2></li>
-              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero">Github</a><small>: check out the latest code and current issues</small></h2></li>
-              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a><small>: documentation and examples</small></h2></li>
-              <li><h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki/API-Methods">API Methods</a><small>: quick refrences for actionHero's exposed methods for developers</small></h2></li>
-              <li><h2><a target="_blank" href="https://github.com/evantahler/actionhero_client">Client</a><small>: ndoe.js client example for consuming a actionHero API</small></h2></li>
-            </ul>
+          <div class="span12" align="center">
+
+            <h2><a target="_blank" href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js">Mailing List</a><small><br /> actionHero's Google Group & Mailing List</small></h2>
+            <h2><a target="_blank" href="https://twitter.com/actionherojs">Twitter</a><small><br />  quick news updates</small></h2>
+            <h2><a target="_blank" href="https://npmjs.org/package/actionHero">NPM</a><small><br />  the Node Package Manager</small></h2>
+            <h2><a target="_blank" href="https://github.com/evantahler/actionHero">Github</a><small><br />  check out the latest code and current issues</small></h2>
+            <h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki">actionHero WIKI</a><small><br />  documentation and examples</small></h2>
+            <h2><a target="_blank" href="https://github.com/evantahler/actionHero/wiki/API-Methods">API Methods</a><small><br />  quick refrences for actionHero's exposed methods for developers</small></h2>
+            <h2><a target="_blank" href="https://github.com/evantahler/actionhero_client">Client</a><small><br />  ndoe.js client example for consuming a actionHero API</small></h2>
+            <br />
           </div>
           <!-- ./span12 -->
         </div>
@@ -405,7 +348,9 @@
     <div class="footer-wrapper">
       <div class="container">
         <footer>
-          <small>&copy; 2013 <a target="_blank" href="http://evantahler.com">Evan Tahler</a>.</small>
+          <small>&copy; 2013 <a target="_blank" href="http://evantahler.com">Evan Tahler</a>.</small><br />
+          <small>Hosted @ <a href="http://pages.github.com/" target="_blank" >Githib Pages</a></small><br />
+          <small>Site Template by <a href="http://www.dzyngiri.com/legend-free-responsive-one-page-template/" target="_blank">Dzyngirl</a></small><br />
         </footer>
       </div>
       <!-- ./container -->
