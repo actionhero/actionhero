@@ -102,24 +102,26 @@ var taskProcessor = function(api, next){
                 api.stats.increment("tasks:ranTasks:" + self.currentTask.name);
                 self.currentTask.run(function(){
                   api.stats.increment("tasks:tasksCurrentlyRunning", -1);
-                  var deltaSeconds = Math.round((new Date().getTime() - startTime) / 1000)
-                  if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + " (" + deltaSeconds + "s), " + self.currentTask.id); }
-                  if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
-                    self.currentTask.runAt = null;
-                    api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
-                      self.currentTask.enqueue(function(error){
-                        api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
-                          if(error != null){ self.log(error); }
-                          delete self.currentTask;
-                          callback(null, taskIdReturned);
+                  if(self.currentTask != null){
+                    var deltaSeconds = Math.round((new Date().getTime() - startTime) / 1000)
+                    if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + " (" + deltaSeconds + "s), " + self.currentTask.id); }
+                    if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
+                      self.currentTask.runAt = null;
+                      api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
+                        self.currentTask.enqueue(function(error){
+                          api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
+                            if(error != null){ self.log(error); }
+                            delete self.currentTask;
+                            callback(null, taskIdReturned);
+                          });
                         });
                       });
-                    });
-                  }else{
-                    api.tasks.clearTaskData(self.currentTask.id, function(){
-                      delete self.currentTask;
-                      callback(null, taskIdReturned);
-                    });
+                    }else{
+                      api.tasks.clearTaskData(self.currentTask.id, function(){
+                        delete self.currentTask;
+                        callback(null, taskIdReturned);
+                      });
+                    }
                   }
                 });
               });
