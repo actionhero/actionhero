@@ -36,16 +36,18 @@ var chatRooms = function(api, next){
       var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user", sentAt: message.sentAt };
       for(var i in api.connections.connections){
         var thisConnection = api.connections.connections[i];
-        if(thisConnection.room == message.connection.room || thisConnection.additionalListeningRooms.indexOf(message.connection.room) > -1){
-          if(message.connection == null || thisConnection.id != message.connection.id){
-            var matched = false;
-            if(message.connection.roomMatchKey == null){
-              matched = true;
-            }else if(thisConnection[message.connection.roomMatchKey] == message.connection.roomMatchValue){
+        if(thisConnection.canChat === true){
+          if(thisConnection.room == message.connection.room || thisConnection.additionalListeningRooms.indexOf(message.connection.room) > -1){
+            if(message.connection == null || thisConnection.id != message.connection.id){
+              var matched = false;
+              if(message.connection.roomMatchKey == null){
                 matched = true;
-            }
-            if(matched == true){
-              thisConnection.sendMessage(messagePayload, 'say');
+              }else if(thisConnection[message.connection.roomMatchKey] == message.connection.roomMatchValue){
+                  matched = true;
+              }
+              if(matched == true){
+                thisConnection.sendMessage(messagePayload, 'say');
+              }
             }
           }
         }

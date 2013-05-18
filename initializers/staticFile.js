@@ -36,14 +36,19 @@ var staticFile = function(api, next){
         }else{
           var mime = Mime.lookup(file);
           var length = stats.size;
-          var fileStream = fs.createReadStream(file, {'flags': 'r'});
+          var fileStream = fs.createReadStream(file);
           var start = new Date().getTime();
-          fileStream.addListener("close", function(){
+          fileStream.on("close", function(){
             api.stats.increment("staticFiles:filesSent");
             var duration = new Date().getTime() - start;
             self.logRequest(file, connection, length, duration, true);
           });
-          callback(connection, null, fileStream, mime, length);
+          fileStream.on('error', function(err){
+            api.log(err)
+          });
+          process.nextTick(function(){
+            callback(connection, null, fileStream, mime, length);
+          })
         }
       });
     },

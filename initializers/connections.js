@@ -78,7 +78,8 @@ var connections = function(api, next){
       additionalListeningRooms: [],
       roomMatchKey: null,
       roomMatchValue: null,
-      room: api.configData.general.defaultChatRoom
+      room: api.configData.general.defaultChatRoom,
+      canChat: false,
     }
 
     for(var i in connectionDefaults){
@@ -98,10 +99,9 @@ var connections = function(api, next){
     var self = this;
     api.stats.increment("connections:totalActiveConnections", -1, function(){
       api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
-        api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
-          delete api.connections.connections[self.id];
-          if(typeof callback == "function"){ callback(); }
-        }); 
+        if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
+        delete api.connections.connections[self.id];
+        if(typeof callback == "function"){ callback(); }
       });
     });
   }
