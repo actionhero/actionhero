@@ -12,16 +12,16 @@ describe('Action: actionsView', function(){
   });
 
   it('actions should be returned', function(done){
-    specHelper.apiTest.get('/actionsView', 0, {}, function(response){
-      response.body.actions.should.be.an.instanceOf(Array);
+    specHelper.apiTest.get('/actionsView', 0, {}, function(response, json){
+      json.actions.should.be.an.instanceOf(Array);
       done();
     });
   });
 
   it('should have actions with all the right parts', function(done){
-    specHelper.apiTest.get('/actionsView', 0, {}, function(response){
-      for(var i in response.body.actions){
-        var action = response.body.actions[i];
+    specHelper.apiTest.get('/actionsView', 0, {}, function(response, json){
+      for(var i in json.actions){
+        var action = json.actions[i];
         action.name.should.be.a('string'); 
         action.description.should.be.a('string'); 
         action.inputs.should.be.a('object'); 

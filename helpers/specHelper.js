@@ -208,8 +208,9 @@ specHelper.apiTest = {
     }
 
     specHelper.request(params,function(req, res){
-      try{ res.body = JSON.parse(res.body); }catch(e){ console.log(e) };
-      cb( res );
+      var json = null;
+      try{ json = JSON.parse(res.body); }catch(e){ };
+      cb( res, json );
     })
   },
   get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },

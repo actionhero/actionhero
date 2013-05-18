@@ -16,22 +16,22 @@ describe('Server: Web', function(){
   });
 
   it('Server should be up and return data', function(done){
-    specHelper.apiTest.get('', 0, {}, function(response){
-      response.body.should.be.an.instanceOf(Object);
+    specHelper.apiTest.get('', 0, {}, function(response, json){
+      json.should.be.an.instanceOf(Object);
       done();
     });
   });
 
   it('Server basic response should be JSON and have basic data', function(done){
-    specHelper.apiTest.get('', 0, {}, function(response){
-      response.body.should.be.an.instanceOf(Object);
-      response.body.requestorInformation.should.be.an.instanceOf(Object);
+    specHelper.apiTest.get('', 0, {}, function(response, json){
+      json.should.be.an.instanceOf(Object);
+      json.requestorInformation.should.be.an.instanceOf(Object);
       done();
     });
   });
 
   it('But I can get XML if I want', function(done){
-    specHelper.apiTest.get('', 0, {outputType: "xml"}, function(response){
+    specHelper.apiTest.get('', 0, {outputType: "xml"}, function(response, json){
       response.body.should.be.a('string');
       response.body.should.include('<?xml version="1.0" encoding="utf-8"?>');
       response.body.should.include('<XML>');
@@ -42,67 +42,67 @@ describe('Server: Web', function(){
   });
 
   it('params work', function(done){
-    specHelper.apiTest.get('/testAction/', 0, {}, function(response){
-      response.body.requestorInformation.receivedParams.action.should.equal('testAction')
+    specHelper.apiTest.get('/testAction/', 0, {}, function(response, json){
+      json.requestorInformation.receivedParams.action.should.equal('testAction')
       done();
     });
   });
 
   it('params are ignored unless they are in the whitelist', function(done){
-    specHelper.apiTest.get('/testAction/?crazyParam123=something', 0, {}, function(response){
-      response.body.requestorInformation.receivedParams.action.should.equal('testAction');
-      should.not.exist(response.body.requestorInformation.receivedParams['crazyParam123']);
+    specHelper.apiTest.get('/testAction/?crazyParam123=something', 0, {}, function(response, json){
+      json.requestorInformation.receivedParams.action.should.equal('testAction');
+      should.not.exist(json.requestorInformation.receivedParams['crazyParam123']);
       done();
     });
   });
 
   it('limit and offset should have defaults', function(done){
-    specHelper.apiTest.get('/', 0, {}, function(response){
-      response.body.requestorInformation.receivedParams.limit.should.equal(100)
-      response.body.requestorInformation.receivedParams.offset.should.equal(0)
+    specHelper.apiTest.get('/', 0, {}, function(response, json){
+      json.requestorInformation.receivedParams.limit.should.equal(100)
+      json.requestorInformation.receivedParams.offset.should.equal(0)
       done();
     });
   });
 
   it('gibberish actions have the right response', function(done){
-    specHelper.apiTest.get('/IAMNOTANACTION', 0, {}, function(response){
-      response.body.error.should.equal('Error: IAMNOTANACTION is not a known action.')
+    specHelper.apiTest.get('/IAMNOTANACTION', 0, {}, function(response, json){
+      json.error.should.equal('Error: IAMNOTANACTION is not a known action.')
       done();
     });
   });
 
   it('real actions do not have an error response', function(done){
-    specHelper.apiTest.get('/actionsView', 0, {}, function(response){
+    specHelper.apiTest.get('/actionsView', 0, {}, function(response, json){
       // response.body.error.should.equal('OK')
-      should.not.exist(response.body.error);
+      should.not.exist(json.error);
       done();
     });
   });
 
   it('HTTP Verbs should work: GET', function(done){
-    specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-      response.body.randomNumber.should.be.within(0,1)
+    specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      json.randomNumber.should.be.within(0,1)
       done();
     });
   });
 
   it('HTTP Verbs should work: PUT', function(done){
-    specHelper.apiTest.put('/randomNumber', 0, {}, function(response){
-      response.body.randomNumber.should.be.within(0,10)
+    specHelper.apiTest.put('/randomNumber', 0, {}, function(response, json){
+      json.randomNumber.should.be.within(0,10)
       done();
     });
   });
 
   it('HTTP Verbs should work: POST', function(done){
-    specHelper.apiTest.post('/randomNumber', 0, {}, function(response){
-      response.body.randomNumber.should.be.within(0,100)
+    specHelper.apiTest.post('/randomNumber', 0, {}, function(response, json){
+      json.randomNumber.should.be.within(0,100)
       done();
     });
   });
 
   it('HTTP Verbs should work: DELETE', function(done){
-    specHelper.apiTest.del('/randomNumber', 0, {}, function(response){
-      response.body.randomNumber.should.be.within(0,1000)
+    specHelper.apiTest.del('/randomNumber', 0, {}, function(response, json){
+      json.randomNumber.should.be.within(0,1000)
       done();
     });
   });
@@ -117,7 +117,7 @@ describe('Server: Web', function(){
   });
 
   it('returnErrorCodes false should still have a status of 200', function(done){
-    specHelper.apiTest.del('/', 0, {}, function(response){
+    specHelper.apiTest.del('/', 0, {}, function(response, json){
       response.statusCode.should.eql(200);
       done();
     });
@@ -138,8 +138,8 @@ describe('Server: Web', function(){
         callback(false);
       }
 
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-        response.body.error.should.equal("failed: preProcessor");
+      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+        json.error.should.equal("failed: preProcessor");
         done();
       });
     });
@@ -172,7 +172,7 @@ describe('Server: Web', function(){
     })
 
     it('duplicate cookies should be removed (in favor of the last set)', function(done){
-      specHelper.apiTest.del('/headerTestAction', 0, {}, function(response){
+      specHelper.apiTest.del('/headerTestAction', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
         response.headers['thing'].should.eql("C");
         done();
@@ -180,7 +180,7 @@ describe('Server: Web', function(){
     });
 
     it('but duplicate set-cookie requests should be allowed', function(done){
-      specHelper.apiTest.del('/headerTestAction', 0, {}, function(response){
+      specHelper.apiTest.del('/headerTestAction', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
         response.headers['set-cookie'].length.should.eql(2);
         response.headers['set-cookie'][1].should.eql('value 1');
@@ -219,30 +219,30 @@ describe('Server: Web', function(){
     });
 
     it('actions that do not exists should return 404', function(done){
-      specHelper.apiTest.del('/aFakeAction', 0, {}, function(response){
+      specHelper.apiTest.del('/aFakeAction', 0, {}, function(response, json){
         response.statusCode.should.eql(404);
         done();
       });
     });
 
     it('missing params result in a 422', function(done){
-      specHelper.apiTest.del('/statusTestAction', 0, {}, function(response){
+      specHelper.apiTest.del('/statusTestAction', 0, {}, function(response, json){
         response.statusCode.should.eql(422);
         done();
       });
     });
 
     it('status codes can be set for errrors', function(done){
-      specHelper.apiTest.del('/statusTestAction', 0, {key: 'bannana'}, function(response){
-        response.body.error.should.eql('key != value');
+      specHelper.apiTest.del('/statusTestAction', 0, {key: 'bannana'}, function(response, json){
+        json.error.should.eql('key != value');
         response.statusCode.should.eql(402);
         done();
       });
     });
 
     it('status code should still be 200 if everything is OK', function(done){
-      specHelper.apiTest.del('/statusTestAction', 0, {key: 'value'}, function(response){
-        response.body.good.should.eql(true);
+      specHelper.apiTest.del('/statusTestAction', 0, {key: 'value'}, function(response, json){
+        json.good.should.eql(true);
         response.statusCode.should.eql(200);
         done();
       });
@@ -288,92 +288,92 @@ describe('Server: Web', function(){
     })
   
     it('unknwon actions are still unknwon', function(done){
-      specHelper.apiTest.get('/a_crazy_action', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('a_crazy_action')
-        response.body.error.should.equal('Error: a_crazy_action is not a known action.')
+      specHelper.apiTest.get('/a_crazy_action', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('a_crazy_action')
+        json.error.should.equal('Error: a_crazy_action is not a known action.')
         done();
       });
     });
 
     it('explicit action declarations still override routed actions, if the defined action is real', function(done){
-      specHelper.apiTest.get('/user/123?action=randomNumber', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('randomNumber')
+      specHelper.apiTest.get('/user/123?action=randomNumber', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('randomNumber')
         done();
       });
     });
 
     it('route actions will override explicit actions, if the defined action is null', function(done){
-      specHelper.apiTest.get('/user/123?action=someFakeAction', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('user')
+      specHelper.apiTest.get('/user/123?action=someFakeAction', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('user')
         done();
       });
     });
 
     it('Routes should be mapped for GET (simple)', function(done){
-      specHelper.apiTest.get('/users', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('usersList')
+      specHelper.apiTest.get('/users', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('usersList')
         done();
       });
     });
 
     it('Routes should be mapped for GET (complex)', function(done){
-      specHelper.apiTest.get('/user/1234', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('user')
-        response.body.requestorInformation.receivedParams.userID.should.equal('1234')
+      specHelper.apiTest.get('/user/1234', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('user')
+        json.requestorInformation.receivedParams.userID.should.equal('1234')
         done();
       });
     });
 
     it('Routes should be mapped for POST', function(done){
-      specHelper.apiTest.post('/user/1234?key=value', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('user')
-        response.body.requestorInformation.receivedParams.userID.should.equal('1234')
-        response.body.requestorInformation.receivedParams.key.should.equal('value')
+      specHelper.apiTest.post('/user/1234?key=value', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('user')
+        json.requestorInformation.receivedParams.userID.should.equal('1234')
+        json.requestorInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('Routes should be mapped for PUT', function(done){
-      specHelper.apiTest.put('/user/1234?key=value', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('user')
-        response.body.requestorInformation.receivedParams.userID.should.equal('1234')
-        response.body.requestorInformation.receivedParams.key.should.equal('value')
+      specHelper.apiTest.put('/user/1234?key=value', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('user')
+        json.requestorInformation.receivedParams.userID.should.equal('1234')
+        json.requestorInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('Routes should be mapped for DELETE', function(done){
-      specHelper.apiTest.del('/user/1234?key=value', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('user')
-        response.body.requestorInformation.receivedParams.userID.should.equal('1234')
-        response.body.requestorInformation.receivedParams.key.should.equal('value')
+      specHelper.apiTest.del('/user/1234?key=value', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('user')
+        json.requestorInformation.receivedParams.userID.should.equal('1234')
+        json.requestorInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('route params trump explicit params', function(done){
-      specHelper.apiTest.get('/search/SeachTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('search')
-        response.body.requestorInformation.receivedParams.term.should.equal('SeachTerm')
-        response.body.requestorInformation.receivedParams.limit.should.equal(123)
-        response.body.requestorInformation.receivedParams.offset.should.equal(456)
+      specHelper.apiTest.get('/search/SeachTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('search')
+        json.requestorInformation.receivedParams.term.should.equal('SeachTerm')
+        json.requestorInformation.receivedParams.limit.should.equal(123)
+        json.requestorInformation.receivedParams.offset.should.equal(456)
         done();
       });
     });
 
     it('regexp matches will provide proper variables', function(done){
-      specHelper.apiTest.post('/login/123', 0, {}, function(response){
-        response.body.requestorInformation.receivedParams.action.should.equal('login');
-        response.body.requestorInformation.receivedParams.userID.should.equal('123');
+      specHelper.apiTest.post('/login/123', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('login');
+        json.requestorInformation.receivedParams.userID.should.equal('123');
         done();
       });
     });
 
     it('regexp match failures will be rejected', function(done){
-      specHelper.apiTest.post('/login/1234', 0, {}, function(response){
-        response.body.error.should.equal("Error: login is not a known action.");
-        response.body.requestorInformation.receivedParams.action.should.equal('login');
-        should.not.exist(response.body.requestorInformation.receivedParams.userID);
+      specHelper.apiTest.post('/login/1234', 0, {}, function(response, json){
+        json.error.should.equal("Error: login is not a known action.");
+        json.requestorInformation.receivedParams.action.should.equal('login');
+        should.not.exist(json.requestorInformation.receivedParams.userID);
         done();
       });
     });

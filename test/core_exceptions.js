@@ -43,8 +43,8 @@ describe('Core: Exceptions', function(){
   });
 
   it('the bad action should fail gracefully', function(done){
-    specHelper.apiTest.get('/badAction', 0, {} , function(response){
-      response.body.error.should.equal("Error: The server experienced an internal error");
+    specHelper.apiTest.get('/badAction', 0, {} , function(response, json){
+      json.error.should.equal("Error: The server experienced an internal error");
       done();
     });
   });

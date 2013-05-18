@@ -46,9 +46,9 @@ describe('Core: Developer Mode', function(){
   });
 
   it('random numbers work initially', function(done){
-    specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
-      should.not.exist(response.body.error);
-      response.body.randomNumber.should.be.within(0,1);
+    specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      should.not.exist(json.error);
+      json.randomNumber.should.be.within(0,1);
       done();
     });
   });
@@ -57,9 +57,9 @@ describe('Core: Developer Mode', function(){
     this.timeout(10000) // these are slow tests :(
       specHelper.fs.writeFile(original_file, new_file_content, function(err) {
       setTimeout(function(){
-        specHelper.apiTest.get('/randomNumber', 0, {}, function(response){
+        specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
           apiObj.actions.actions.randomNumber.description.should.equal("HACK");
-          response.body.randomNumber.should.equal("not a number!");
+          json.randomNumber.should.equal("not a number!");
           done();
         });
       }, 1001 * 8); //file read timer is 1 second; time to notice the change + 3x time to reaload API
