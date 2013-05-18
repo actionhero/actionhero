@@ -28,7 +28,7 @@ describe('Core: Static File', function(){
   it('file: an HTML file', function(done){
     specHelper.apiTest.get('/public/' + "simple.html", 0, {}, function(response){
       response.statusCode.should.equal(200);
-      response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/index.html<br />');
+      response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
       done();
     });
   });
@@ -36,7 +36,7 @@ describe('Core: Static File', function(){
   it('file: ?filename should work like a path', function(done){
     specHelper.apiTest.get("/public/" + "?file=simple.html", 0, {}, function(response){
       response.statusCode.should.equal(200);
-      response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/index.html<br />');
+      response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
       done();
     });
   });
