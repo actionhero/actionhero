@@ -13,7 +13,11 @@ A generic imaplmentation of a server:
 
       var type = "myServer"
       var attributes = {
-        canChat: true
+        canChat: true,
+        logConnections: true,
+        logExits: true,
+        sendWelcomeMessage: true,
+        verbs: [],
       }
 
       var server = new api.genericServer(type, options, attributes);

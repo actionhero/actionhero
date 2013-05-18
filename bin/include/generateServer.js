@@ -12,6 +12,10 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('  var type = "' + binary.argv['name'] + '"');
   templateLines.push('  var attributes = {');
   templateLines.push('    canChat: true');
+  templateLines.push('    logConnections: true,');
+  templateLines.push('    logExits: true,');
+  templateLines.push('    sendWelcomeMessage: true,');
+  templateLines.push('    verbs: [],');
   templateLines.push('  }');
   templateLines.push('');
   templateLines.push('  var server = new api.genericServer(type, options, attributes);');
