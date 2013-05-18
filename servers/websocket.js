@@ -50,7 +50,7 @@ var websocket = function(api, options, next){
     if(message.context == null){ message.context = 'response'; }
     if(messageCount == null){ messageCount = connection.messageCount; }
     if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
-    var channel = server.attributes.fayeChannelPrefix + connection.rawConnection.clientId;
+    var channel = server.attributes.fayeChannelPrefix + connection.rawConnection.uuid;
     api.faye.client.publish(channel, message);
   }
 
@@ -60,8 +60,8 @@ var websocket = function(api, options, next){
 
   server.goodbye = function(connection, reason){
     server.sendMessage(connection, {status: "Bye!", context: "api", reason: reason});
+    delete this.connectionsMap[connection.rawConnection.uuid];
     server.destroyConnection(connection);
-    delete this.connectionsMap[connection.rawConnection.clientId];
   };
 
   ////////////
@@ -69,7 +69,7 @@ var websocket = function(api, options, next){
   ////////////
 
   server.on("connection", function(connection){
-    server.connectionsMap[connection.rawConnection.clientId] = connection;
+    server.connectionsMap[connection.rawConnection.uuid] = connection;
   });
 
   server.on("actionComplete", function(connection, toRender, messageCount){
@@ -84,14 +84,17 @@ var websocket = function(api, options, next){
   /////////////
 
   api.faye.disconnectHandlers.push(function(clientId){
-    var connection = server.connectionsMap[clientId];
-    if (connection != null){
-      server.goodbye(connection);
+    for(var uuid in server.connectionsMap){
+      if(server.connectionsMap[uuid].rawConnection.clientId == clientId){
+        server.goodbye(server.connectionsMap[uuid]);
+        break;
+      }
     }
   });
 
   api.faye.extensions.push({
     incoming: function(message, callback){
+      // messages for this server (and not AH internals)
       if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
         if(message.clientId === api.faye.client._clientId){
           callback(message);
@@ -101,11 +104,15 @@ var websocket = function(api, options, next){
         }
       }else if(message.channel.indexOf('/meta/subscribe') === 0){
         if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
-          if(message.clientId != message.subscription.split("/")[4]){
+          var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, "");
+          if(server.connectionsMap[uuid] != null){
             message.error = "You cannot subscribe to another client's channel";
           }else{
             server.buildConnection({
-              rawConnection  : { clientId: message.clientId }, 
+              rawConnection  : { 
+                clientId: message.clientId,
+                uuid: uuid,
+              }, 
               remoteAddress  : 0, // to be filled in by a later verb
               remotePort     : 0  // to be filled in by a later verb
             }); // will emit "connection"
@@ -119,8 +126,8 @@ var websocket = function(api, options, next){
   });
 
   var incommingMessage = function(message){
-    var clientId = message.channel.split("/")[4];
-    var connection = server.connectionsMap[clientId];
+    var uuid = message.channel.split("/")[4];
+    var connection = server.connectionsMap[uuid];
     if(connection != null){
       var data = message.data;
       var verb = data.event;
@@ -140,7 +147,7 @@ var websocket = function(api, options, next){
           if(error == null){
             var message = {status: "OK", context: "response", data: data};
             if(verb === "setIP" || verb === "setPort"){
-              server.log(clientId + " " + verb + " from " + words[0]);
+              server.log(uuid + " " + verb + " from " + words[0]);
             }
             server.sendMessage(connection, message);
           }else{

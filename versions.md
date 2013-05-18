@@ -35,6 +35,8 @@
 
 ** websocket server ** 
 
+- we will now use a client-generated UUID as the communication channel rather than faye's clientId.  This is more secure, and will be checked for uniqueness on the server.
+
 ** Other **
 
 - `config.js` drastically simplified (no more `commonWeb`, servers block, etc)
