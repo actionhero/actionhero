@@ -208,7 +208,7 @@ specHelper.apiTest = {
     }
 
     specHelper.request(params,function(req, res){
-      try{ res.body = JSON.parse(res.body); }catch(e){};
+      try{ res.body = JSON.parse(res.body); }catch(e){ console.log(e) };
       cb( res );
     })
   },
