@@ -42,3 +42,8 @@ h1 {
   width: 500px;
   float: right;
 }
+
+.messages {
+  font-size: 10px;
+  text-align: left;
+}
