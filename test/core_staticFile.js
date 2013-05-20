@@ -31,6 +31,7 @@ describe('Core: Static File', function(){
     this.timeout(5000);
     specHelper.apiTest.get('/public/' + "simple.html", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
+      console.log(response)
       response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
       done();
     });
