@@ -69,10 +69,11 @@ var web = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message){
+    var stringResponse = String(message);
+    connection.rawConnection.responseHeaders.push(['Content-Length', stringResponse.length]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-    var stringResponse = String(message)
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
     connection.rawConnection.res.end(stringResponse);
     server.destroyConnection(connection);
@@ -80,6 +81,7 @@ var web = function(api, options, next){
 
   server.sendFile = function(connection, error, fileStream, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
+    connection.rawConnection.responseHeaders.push(['Content-Length', length]);
     connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
     connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.servers.web.flatFileCacheDuration + ", must-revalidate"]);
     cleanHeaders(connection);

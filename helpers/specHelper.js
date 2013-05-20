@@ -207,10 +207,10 @@ specHelper.apiTest = {
       }
     }
 
-    specHelper.request(params,function(req, res){
+    specHelper.request(params, function(err, response, body){
       var json = null;
-      try{ json = JSON.parse(res.body); }catch(e){ };
-      cb( res, json );
+      try{ json = JSON.parse(response.body); }catch(e){ };
+      cb( response, json );
     })
   },
   get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },

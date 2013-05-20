@@ -12,7 +12,6 @@ describe('Core: Static File', function(){
   });
 
   it('file: response is NOT json', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get('/public/' + "someRandomFile", 0, {}, function(response, json){
       should.not.exist(json);
       done();
@@ -20,7 +19,6 @@ describe('Core: Static File', function(){
   });
 
   it('file: 404 pages', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get('/public/' + "someRandomFile", 0, {}, function(response, json){
       response.statusCode.should.equal(404)
       done();
@@ -28,17 +26,14 @@ describe('Core: Static File', function(){
   });
 
   it('file: an HTML file', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get('/public/' + "simple.html", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
-      console.log(response)
       response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
       done();
     });
   });
 
   it('file: ?filename should work like a path', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get("/public/" + "?file=simple.html", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
@@ -47,7 +42,6 @@ describe('Core: Static File', function(){
   });
 
   it('I should not see files outsite of the public dir', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get("/public/" + "?file=../config.json", 0, {}, function(response, json){
       response.statusCode.should.equal(404);
       response.body.should.equal(apiObj.configData.general.flatFileNotFoundMessage);
@@ -56,7 +50,6 @@ describe('Core: Static File', function(){
   });
 
   it('file: index page should be served when requesting a path', function(done){
-    this.timeout(5000);
     specHelper.apiTest.get("/public/", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       response.body.should.be.a('string');
@@ -65,16 +58,14 @@ describe('Core: Static File', function(){
   });
 
   it('file: sub paths should work', function(done){
-    this.timeout(5000);
-    specHelper.apiTest.get("/public/" + "/logo/actionHero.png", 0, {}, function(response, json){
+    specHelper.apiTest.get("/public/" + "logo/actionHero.png", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       done();
     });
   });
 
   it('file: binary files should also work', function(done){
-    this.timeout(5000);
-    specHelper.apiTest.get("/public/" + "/logo/actionHero.png", 0, {}, function(response, json){
+    specHelper.apiTest.get("/public/" + "logo/actionHero.png", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       response.body.length.should.be.within(136836, 136920);
       done();
