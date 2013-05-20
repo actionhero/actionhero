@@ -29,23 +29,23 @@
   },
   "dependencies": {
     "browser_fingerprint": "0.0.x",
-    "async": "0.1.x",
-    "validator": "0.4.x",
+    "async": "0.2.x",
+    "validator": "1.1.x",
     "formidable": "1.0.x",
     "data2xml": "0.8.x",
     "mime": "1.2.x",
     "redis": "0.8.x",
-    "optimist": "0.3.x",
+    "optimist": "0.5.x",
     "winston": "0.6.x",
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
     "faye": "0.8.x",
-    "faye-redis": "0.1.2"
+    "faye-redis": "0.1.x"
   },
   "devDependencies": {
-    "mocha": "1.7.x",
+    "mocha": "1.9.x",
     "should": "1.2.x",
-    "request": "2.12.x"
+    "request": "2.21.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
