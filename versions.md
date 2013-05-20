@@ -4,21 +4,19 @@
 
 ** Modular & Prototypical Servers ** 
 
-- "engines" for servers
-  - all "sever-specific" logic moved only into servers; no more "if type == 'web'" shenanigans
-  - you can make your own
-  - config.js chnges
-  - prototypical server which must be extended
+- This release adds generic & prototypical servers
+  - It is now easy & possible to write your own servers for actionHero.  
+  - we have moved all existing servers (web, websocket, socket) to this new achetecture
+  - connections specivic verbs (ie: setParam, roomView) have been homogonized and shared
+  - all "sever-specific" logic moved only into servers; no more `if type == 'web'` shenanigans
+  - significang `config.js` chnges.  Please see the example for updates
   - many responses and params have been homogenized
     - remoteIP 
     - "data" returned from verbs
-  - preparing to seperate into seperate NPM packages
-- connections have "verbs"
-  - optional to use
-  - homogenized between all server types
-  - you can't use thier names in actions
+  - preparing to seperate into seperate NPM packages  
 - the file-sending middleware is renamed to 'staticFile'
   - much simpler API, appropriate for more server types
+  - uniforn response api which uses file handlers / `pipe`
 - server types renamed to "web", "socket", "websocket" for claricy
 - serer types can have options about chatting and such
 - the param "file" replaces "fileName" when attempting to directly access the content of files
@@ -42,6 +40,8 @@
 - `config.js` drastically simplified (no more `commonWeb`, servers block, etc)
 - winston logger object will now be passed into loger config methods
 - speed improvments and tests added for the stats module (thanks @jacobbubu)
+- wiki updates to refelect the above
+- static site updates to reflect the above
 
 ## Version 5.1.3
 

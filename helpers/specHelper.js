@@ -207,11 +207,13 @@ specHelper.apiTest = {
       }
     }
 
-    specHelper.request(params, function(err, response, body){
-      var json = null;
-      try{ json = JSON.parse(response.body); }catch(e){ };
-      cb( response, json );
-    })
+    process.nextTick(function(){
+      specHelper.request(params, function(err, response, body){
+        var json = null;
+        try{ json = JSON.parse(response.body); }catch(e){ };
+        cb( response, json );
+      });
+    });
   },
   get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
   post: function( url, serverID, data, cb ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
