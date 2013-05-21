@@ -11,15 +11,15 @@
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is the actionHero?
-actionHero is a [node.js](http://nodejs.org) **API framework** for many types of clients.  The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
+actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
 
 Currently actionHero supports:
 
-- [Web Clients](https://github.com/evantahler/actionHero/wiki/Web-Clients): HTTP, HTTPS
-- [Socket Clients](https://github.com/evantahler/actionHero/wiki/TCP-Clients): TCP (telnet), TLS
-- [Web Socket (Faye) clients](https://github.com/evantahler/actionHero/wiki/Web-Socket-Clients): HTTP, HTTPS
+- [Web Clients](https://github.com/evantahler/actionHero/wiki/web): HTTP, HTTPS
+- [Socket Clients](https://github.com/evantahler/actionHero/wiki/socket): TCP (telnet), TLS
+- [Web Socket (Faye) clients](https://github.com/evantahler/actionHero/wiki/websocket): HTTP, HTTPS
 
-actionHero is ideal for large game projects (MMOs), heavily trafficked APIs, and even API-driver websites.  actionHero servers can process both requests and [tasks](https://github.com/evantahler/actionHero/wiki/Tasks) (delayed actions like `send e-mail` or other background jobs).  Taks can be enqued as a delayed job, or run periodically.  actionHero servers can also run in a cluster (on the [same](https://github.com/evantahler/actionHero/wiki/Running-ActionHero) or [multiple machines](https://github.com/evantahler/actionHero/wiki/actionCluster)) to work in concert to handle your load.  Tasks can be alocated to run on `any` or `all` of the servers in yoru cluster.
+[You can also make your own servers and transports.](https://github.com/evantahler/actionHero/wiki/Servers)
 
 ## Quick Start
 
