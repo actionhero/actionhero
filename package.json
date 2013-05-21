@@ -53,7 +53,7 @@
   "scripts": {
     "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
-    "test": "fakeredis=false node ./node_modules/.bin/mocha --globals CookieAccessInfo,Cookie,CookieJar --reporter spec && fakeredis=true node ./node_modules/.bin/mocha --globals CookieAccessInfo,Cookie,CookieJar --reporter spec",
+    "test": "fakeredis=false node ./node_modules/.bin/mocha --reporter spec && fakeredis=true node ./node_modules/.bin/mocha --reporter spec",
     "start": "node ./bin/actionHero"
   },
   "subdomain": "actionhero",
