@@ -26,7 +26,7 @@
       document.getElementById("serverName").innerHTML = data.serverInformation.serverName;
       data.actions.forEach(function(action){
         var row = "";
-        row += "<div class=\"box\"><div class=\"left\">" + action.name + "</div><div class=\"right\">" + action.description + "</div></div>";
+        row += "<div class=\"box\"><div class=\"left\"><a href=\"/api/" + action.name + "\" >" + action.name + "</a></div><div class=\"right\">" + action.description + "</div></div>";
         document.getElementById("actions").innerHTML += row;
       });
     });
