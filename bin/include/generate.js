@@ -45,7 +45,7 @@
   documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
   documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
   documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
-  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/examples/clients/web/actionHeroWebSocket.js");
+  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
@@ -103,7 +103,7 @@
   binary.utils.create_dir_safely(binary.paths.project_root + "/initializers");
   binary.utils.create_dir_safely(binary.paths.project_root + "/log");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public");
-  binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascripts");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascript");
   binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
 
   // make files
@@ -116,7 +116,7 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
   binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
-  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascripts/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
 
   binary.log("");
