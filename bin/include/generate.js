@@ -103,6 +103,7 @@
   binary.utils.create_dir_safely(binary.paths.project_root + "/initializers");
   binary.utils.create_dir_safely(binary.paths.project_root + "/log");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/servers");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascript");
   binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
 

@@ -36,8 +36,8 @@ var servers = function(api, next){
   // Load the servers
 
   var serverFolders = [ 
-    process.cwd() + "/servers/", 
-    __dirname + "/servers/"
+    __dirname + "/../servers/",
+    process.cwd() + "/servers/"
   ];
     
   var inits = {}
