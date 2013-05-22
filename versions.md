@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 6.0.1
+
+** bugs **
+
+- `utils.hashMerge` will no loner mangle arrays
+- initilizers will now load custom code over base code, allowing ovverwrites
+
 ## Version 6.0.0
 
 ** Modular & Prototypical Servers ** 
