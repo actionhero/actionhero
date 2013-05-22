@@ -27,8 +27,8 @@ actionHero.prototype.start = function(params, next){
   self.api._startingParams = self.startingParams;
 
   var initializerFolders = [ 
-    process.cwd() + "/initializers/", 
-    __dirname + "/initializers/"
+    __dirname + "/initializers/",
+    process.cwd() + "/initializers/"
   ];
     
   var initializerMethods = [];
