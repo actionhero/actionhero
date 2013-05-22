@@ -58,14 +58,14 @@ var utils = function(api, next){
   api.utils.hashMerge = function(a, b) {
     var c = {};
     for(var i in a){
-      if(typeof a[i] === 'object' && a[i] != null){
+      if(typeof a[i] === 'object' && !Array.isArray(a[i]) && a[i] != null){
         c[i] = api.utils.hashMerge(c[i], a[i]);
       }else{
         c[i] = a[i];
       }
     }
     for(var i in b){
-      if(typeof b[i] === 'object' && b[i] != null){
+      if(typeof b[i] === 'object' && !Array.isArray(b[i]) && b[i] != null){
         c[i] = api.utils.hashMerge(c[i], b[i]);
       }else{
         c[i] = b[i];
