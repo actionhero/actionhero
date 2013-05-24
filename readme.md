@@ -1,6 +1,5 @@
-# actionHero API Framework
-
-
+# actionHero.js 
+## The Reusable, Scalable, and Quick node.js API Server
 
 **Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/evantahler/actionHero/wiki) | [API Methods](https://github.com/evantahler/actionHero/wiki/API-Methods) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
 
@@ -11,7 +10,7 @@
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is the actionHero?
-actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).
+actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks. The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).  actionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
 Currently actionHero supports:
 
