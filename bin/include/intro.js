@@ -1,5 +1,5 @@
 exports['intro'] = function(binary, next){
-  binary.log("\r\n**********\r\n");
+  binary.log("\n**********\n");
   binary.log("You have installed actionHero!  Hooray!".green);
   binary.log("You can use the command:");
   binary.log("  ./node_modules/.bin/actionHero generate".bold)
@@ -9,7 +9,7 @@ exports['intro'] = function(binary, next){
   binary.log("This will let you use the commands `actionHero start` and `actionHero generateAction` etc");
   binary.log("");
   binary.log("Documentation and more can be found @ " + "http://actionherojs.com".bold.blue);
-  binary.log("\r\n**********\r\n");
+  binary.log("\n**********\n");
 
   next(null, true);
 }
