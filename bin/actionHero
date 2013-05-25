@@ -125,7 +125,7 @@ if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
   binary.paths.actionHero_root = binary.path.normalize(__dirname + "/..");
 }
 
-binary.argv = require(binary.paths.actionHero_root + '/node_modules/optimist/').argv;
+binary.argv = require('optimist').argv;
 
 binary.actions = {};
 
