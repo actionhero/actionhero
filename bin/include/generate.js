@@ -92,6 +92,8 @@
   <p><strong>Good Job!</strong></p>\n\
   ";
 
+  documents.git_ignore = "log\npids\nnode_modules";
+
   //////// LOGIC ////////
 
   binary.log("Generating a new actionHero project...");
@@ -108,6 +110,7 @@
   binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
 
   // make files
+  binary.utils.create_file_safely(binary.paths.project_root + '/.gitignore', documents.git_ignore);
   binary.utils.create_file_safely(binary.paths.project_root + '/config.js', documents.config_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/routes.js', documents.routes_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/package.json', documents.package_json);
