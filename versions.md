@@ -1,5 +1,12 @@
 # Action Hero API Versions
 
+## Version 6.0.2
+
+** bugs **
+
+- remove explicit path to optimist in binary.  This should solve package conflicts
+- remove windows like breaks from generators
+
 ## Version 6.0.1
 
 ** bugs **
