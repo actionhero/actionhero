@@ -62,7 +62,7 @@
     \"main\": \"app.js\",\n\
     \"keywords\": \"\",\n\
     \"engines\": {\n\
-      \"node\": \">=0.6.0\"\n\
+      \"node\": \">=0.8.0\"\n\
     },\n\
     \"dependencies\": {\n\
       \"actionHero\": \""+AHversionNumber+"\"\n\
