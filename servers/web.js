@@ -91,6 +91,7 @@ var web = function(api, options, next){
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
     if(error != null){
       connection.rawConnection.res.end(String(error));
+      server.destroyConnection(connection);
     }else{
       process.nextTick(function(){
         fileStream.pipe(connection.rawConnection.res);
