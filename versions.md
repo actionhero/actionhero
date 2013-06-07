@@ -1,5 +1,11 @@
 # Action Hero API Versions
 
+## Version 6.0.3
+
+** bugs **
+
+- fix a bug when reloading a task in development mode
+
 ## Version 6.0.2
 
 ** bugs **
