@@ -364,9 +364,8 @@ var tasks = function(api, next){
                   }
 
                   delete require.cache[require.resolve(cleanPath)];
-                  delete api.actions.actions[actionName];
-                  api.actions.load(fullfFilePath, true);
-                  api.params.buildPostVariables();
+                  delete api.tasks.tasks[taskName]
+                  api.tasks.load(fullfFilePath, true);
                 }
               });
             }
