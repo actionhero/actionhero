@@ -70,7 +70,7 @@ var web = function(api, options, next){
 
   server.sendMessage = function(connection, message){
     var stringResponse = String(message);
-    connection.rawConnection.responseHeaders.push(['Content-Length', stringResponse.length]);
+    connection.rawConnection.responseHeaders.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
