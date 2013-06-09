@@ -64,6 +64,7 @@ var web = function(api, options, next){
   }
 
   server._teardown = function(next){
+    // long-lasting connections will be terminated by process.exit from the startServer manager's timeout
     server.server.close();
     next();
   }
