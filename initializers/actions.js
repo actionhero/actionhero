@@ -4,6 +4,9 @@ var actions = function(api, next){
   api.actions = {};
   api.actions.actions = {};
 
+  api.actions.preProcessors = [];
+  api.actions.postProcessors = [];
+
   api.actions.load = function(fullFilePath, reload){
     if(reload == null){ reload = false; }
 

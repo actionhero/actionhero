@@ -1,4 +1,5 @@
 var domain = require("domain");
+var async = require('async');
 
 var actionProcessor = function(api, next){
 
@@ -79,9 +80,45 @@ var actionProcessor = function(api, next){
     }
   }
 
-  api.actionProcessor.prototype.preProcessAction = function(api, connection, actionTemplate, callback){
-    // You probably want to overwite me and make your own `preProcessAction`
-    callback(true);
+  api.actionProcessor.prototype.preProcessAction = function(actionTemplate, toProcess, callback){
+    var self = this;
+    if(api.actions.preProcessors.length == 0){
+      callback(toProcess);
+    }else{
+      var processors = [];
+      api.actions.preProcessors.forEach(function(processor){
+        processors.push(function(next){ 
+          if(toProcess === true){
+            processor(self.connection, actionTemplate, function(connection, localToProcess){
+              self.connection = connection
+              toProcess = localToProcess
+              next();
+            });
+          }else{ next(toProcess) }
+        })
+      });
+      processors.push( function(){ callback(toProcess) });
+      async.series(processors);
+    }
+  }
+
+  api.actionProcessor.prototype.postProcessAction = function(actionTemplate, callback){
+    var self = this;
+    if(api.actions.postProcessors.length == 0){
+      callback();
+    }else{
+      var processors = [];
+      api.actions.postProcessors.forEach(function(processor){
+        processors.push(function(next){ 
+          processor(self.connection, actionTemplate, function(connection){
+            self.connection = connection;
+            next();
+          });
+        })
+      });
+      processors.push( function(){ callback() });
+      async.series(processors);
+    }
   }
 
   api.actionProcessor.prototype.processAction = function(){ 
@@ -122,12 +159,15 @@ var actionProcessor = function(api, next){
             });
           });
           actionDomain.run(function(){
-            self.preProcessAction(api, self.connection, actionTemplate, function(toContinue){
-              if(toContinue === true){
+            var toProcess = true;
+            self.preProcessAction(actionTemplate, toProcess, function(toProcess){
+              if(toProcess === true){
                 actionTemplate.run(api, self.connection, function(connection, toRender){
                   self.connection = connection;
                   // actionDomain.dispose();
-                  self.completeAction(null, toRender);
+                  self.postProcessAction(actionTemplate, function(){
+                    self.completeAction(null, toRender);
+                  });
                 }); 
               }else{
                 self.completeAction(null, true);
