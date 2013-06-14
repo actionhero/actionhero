@@ -8,7 +8,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  apiVersion: "6.0.4",
+  apiVersion: "6.1.0",
   serverName: "actionHero API",
   // id: "myActionHeroServer",                                    // id can be set here, or generated dynamically.  be sure that every server you run as a unique ID (which will happen when genrated dynamically)
   serverToken: "change-me",                                       // A unique token to your application which servers will use to authenticate to eachother

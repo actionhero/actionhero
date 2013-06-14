@@ -1,6 +1,6 @@
 # Action Hero API Versions
 
-## Version 6.0.4
+## Version 6.1.0
 
 ** middleware **
 This replaces `api.actionProcessor.prototype.preProcessAction`
