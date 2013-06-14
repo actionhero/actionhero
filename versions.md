@@ -1,5 +1,7 @@
 # Action Hero API Versions
 
+## Version 6.0.4
+
 ## Version 6.0.3
 
 ** bugs **
