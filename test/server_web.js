@@ -123,53 +123,6 @@ describe('Server: Web', function(){
     });
   });
 
-  describe('actionPreprocessor', function(){
-
-    after(function(done){
-      rawApi.actions.preProcessors  = [];
-      rawApi.actions.postProcessors = [];
-      done();
-    });
-
-    it('I can define an action preProcessor and it can append the connection', function(done){
-      rawApi.actions.preProcessors.push(function(connection, actionTemplate, next){
-        connection.response._preProcessorNote = "note"
-        next(connection, true);
-      });
-
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
-        json._preProcessorNote.should.equal("note");
-        done();
-      });
-    });
-
-    it("postProcessors can append the connection", function(done){
-      rawApi.actions.postProcessors.push(function(connection, actionTemplate, next){
-        connection.response._postProcessorNote = "note"
-        next(connection, true);
-      });
-
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
-        json._postProcessorNote.should.equal("note");
-        done();
-      });
-    })
-
-    it("preProcessors can block actions", function(done){
-      rawApi.actions.preProcessors.push(function(connection, actionTemplate, next){
-        connection.error = "BLOCKED"
-        next(connection, false);
-      });
-
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
-        json.error.should.equal("BLOCKED");
-        should.not.exist(json.randomNumber);
-        done();
-      });
-    })
-
-  });
-
   describe('http header', function(){
 
     before(function(done){
