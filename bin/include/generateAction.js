@@ -16,6 +16,7 @@ exports['generateAction'] = function(binary, next){
   templateLines.push('  },');
   templateLines.push('  blockedConnectionTypes: [],');
   templateLines.push('  outputExample: {},');
+  templateLines.push('  version: 1.0,');
   templateLines.push('  run: function(api, connection, next){');
   templateLines.push('    // your logic here');
   templateLines.push('    next(connection, true);');

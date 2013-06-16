@@ -138,7 +138,7 @@ var web = function(api, options, next){
     
       if(connection.response.error != null){
         if(api.configData.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
-          if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action.") > 0){
+          if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action or that is not a valid apiVersion.") > 0){
             connection.rawConnection.responseHttpCode = 404;
           }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
             connection.rawConnection.responseHttpCode = 422;

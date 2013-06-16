@@ -30,13 +30,16 @@ action.outputExample = {
 action.run = function(api, connection, next){
   connection.response.actions = [];
   for(var i in api.actions.actions){
-    var action = api.actions.actions[i];
-    connection.response.actions.push({
-      name: action.name,
-      description: action.description,
-      inputs: action.inputs,
-      outputExample: action.outputExample
-    });
+    for(var j in api.actions.actions[i]){
+      var action = api.actions.actions[i][j];
+      connection.response.actions.push({
+        name: action.name,
+        version: action.version,
+        description: action.description,
+        inputs: action.inputs,
+        outputExample: action.outputExample
+      });
+    }
   }
   connection.response.actions.sort(function compare(a,b) {
     if (a.name < b.name)

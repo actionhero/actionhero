@@ -35,7 +35,7 @@ describe('Server: Web', function(){
       response.body.should.be.a('string');
       response.body.should.include('<?xml version="1.0" encoding="utf-8"?>');
       response.body.should.include('<XML>');
-      response.body.should.include('<error>Error: {no action} is not a known action.</error>');
+      response.body.should.include('<error>Error: {no action} is not a known action or that is not a valid apiVersion.</error>');
       response.body.should.include('<apiVersion>'+apiObj.configData.general.apiVersion+'</apiVersion>');
       done();
     });
@@ -66,7 +66,7 @@ describe('Server: Web', function(){
 
   it('gibberish actions have the right response', function(done){
     specHelper.apiTest.get('/IAMNOTANACTION', 0, {}, function(response, json){
-      json.error.should.equal('Error: IAMNOTANACTION is not a known action.')
+      json.error.should.equal('Error: IAMNOTANACTION is not a known action or that is not a valid apiVersion.')
       done();
     });
   });
@@ -127,17 +127,21 @@ describe('Server: Web', function(){
 
     before(function(done){
       rawApi.configData.servers.web.returnErrorCodes = true;
+      rawApi.actions.versions.headerTestAction = [1]
       rawApi.actions.actions.headerTestAction = {
-        name: "headerTestAction",
-        description: "I am a test",
-        inputs: { required: [], optional: [] }, outputExample: {},
-        run:function(api, connection, next){
-          connection.rawConnection.responseHeaders.push(['thing', "A"]);
-          connection.rawConnection.responseHeaders.push(['thing', "B"]);
-          connection.rawConnection.responseHeaders.push(['thing', "C"]);
-          connection.rawConnection.responseHeaders.push(['set-cookie', "value 1"]);
-          connection.rawConnection.responseHeaders.push(['set-cookie', "value 2"]);
-          next(connection, true);
+        "1": {
+          name: "headerTestAction",
+          description: "I am a test",
+          version: 1,
+          inputs: { required: [], optional: [] }, outputExample: {},
+          run:function(api, connection, next){
+            connection.rawConnection.responseHeaders.push(['thing', "A"]);
+            connection.rawConnection.responseHeaders.push(['thing', "B"]);
+            connection.rawConnection.responseHeaders.push(['thing', "C"]);
+            connection.rawConnection.responseHeaders.push(['set-cookie', "value 1"]);
+            connection.rawConnection.responseHeaders.push(['set-cookie', "value 2"]);
+            next(connection, true);
+          }
         }
       }
       done();
@@ -145,6 +149,7 @@ describe('Server: Web', function(){
 
     after(function(done){
       delete rawApi.actions.actions['headerTestAction'];
+      delete rawApi.actions.versions['headerTestAction'];
       done();
     })
 
@@ -172,18 +177,21 @@ describe('Server: Web', function(){
 
     before(function(done){
       rawApi.configData.servers.web.returnErrorCodes = true;
+      rawApi.actions.versions.statusTestAction = [1]
       rawApi.actions.actions.statusTestAction = {
-        name: "statusTestAction",
-        description: "I am a test",
-        inputs: { required: ["key"], optional: [] }, outputExample: {},
-        run:function(api, connection, next){
-          if(connection.params.key != 'value'){
-            connection.error = "key != value";
-            connection.rawConnection.responseHttpCode = 402;
-          }else{
-            connection.response.good = true;
+        "1": {
+          name: "statusTestAction",
+          description: "I am a test",
+          inputs: { required: ["key"], optional: [] }, outputExample: {},
+          run:function(api, connection, next){
+            if(connection.params.key != 'value'){
+              connection.error = "key != value";
+              connection.rawConnection.responseHttpCode = 402;
+            }else{
+              connection.response.good = true;
+            }
+            next(connection, true);
           }
-          next(connection, true);
         }
       }
       done();
@@ -191,6 +199,7 @@ describe('Server: Web', function(){
 
     after(function(done){
       rawApi.configData.servers.web.returnErrorCodes = false;
+      delete rawApi.actions.versions['statusTestAction'];
       delete rawApi.actions.actions['statusTestAction'];
       done();
     });
@@ -209,7 +218,7 @@ describe('Server: Web', function(){
       });
     });
 
-    it('status codes can be set for errrors', function(done){
+    it('status codes can be set for errors', function(done){
       specHelper.apiTest.del('/statusTestAction', 0, {key: 'bannana'}, function(response, json){
         json.error.should.eql('key != value');
         response.statusCode.should.eql(402);
@@ -267,7 +276,7 @@ describe('Server: Web', function(){
     it('unknwon actions are still unknwon', function(done){
       specHelper.apiTest.get('/a_crazy_action', 0, {}, function(response, json){
         json.requestorInformation.receivedParams.action.should.equal('a_crazy_action')
-        json.error.should.equal('Error: a_crazy_action is not a known action.')
+        json.error.should.equal('Error: a_crazy_action is not a known action or that is not a valid apiVersion.')
         done();
       });
     });
@@ -348,7 +357,7 @@ describe('Server: Web', function(){
 
     it('regexp match failures will be rejected', function(done){
       specHelper.apiTest.post('/login/1234', 0, {}, function(response, json){
-        json.error.should.equal("Error: login is not a known action.");
+        json.error.should.equal("Error: login is not a known action or that is not a valid apiVersion.");
         json.requestorInformation.receivedParams.action.should.equal('login');
         should.not.exist(json.requestorInformation.receivedParams.userID);
         done();

@@ -3,6 +3,7 @@ var fs = require('fs');
 var actions = function(api, next){
   api.actions = {};
   api.actions.actions = {};
+  api.actions.versions = {};
 
   api.actions.preProcessors = [];
   api.actions.postProcessors = [];
@@ -10,11 +11,11 @@ var actions = function(api, next){
   api.actions.load = function(fullFilePath, reload){
     if(reload == null){ reload = false; }
 
-    var loadMessage = function(loadedActionName){
+    var loadMessage = function(action){
       if(reload){
-        loadMessage = "action (re)loaded: " + loadedActionName + ", " + fullFilePath;
+        loadMessage = "action (re)loaded: " + action.name + " @ v" + action.version + ", " + fullFilePath;
       }else{
-        var loadMessage = "action loaded: " + loadedActionName + ", " + fullFilePath;
+        var loadMessage = "action loaded: " + action.name + " @ v" + action.version + ", " + fullFilePath;
       }
       api.log(loadMessage, "debug");
     }
@@ -50,24 +51,33 @@ var actions = function(api, next){
       }
     }
 
+    var loadInAction = function(object){
+      if(action.version == null){ action.version = 1.0; }
+      if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {}; }
+      api.actions.actions[action.name][action.version] = action;
+      if(api.actions.versions[action.name] == null){
+        api.actions.versions[action.name] = [];
+      }
+      api.actions.versions[action.name].push(action.version);
+      api.actions.versions[action.name].sort();
+      validateAction(api.actions.actions[action.name][action.version]);
+      loadMessage(action);
+    }
+
     try{
       var collection = require(fullFilePath);
       if(api.utils.hashLength(collection) == 1){
-        action = require(fullFilePath).action;
-        api.actions.actions[action.name] = action;
-        validateAction(api.actions.actions[action.name]);
-        loadMessage(action.name);
+        var action = collection.action
+        loadInAction(action);
       }else{
         for(var i in collection){
           var action = collection[i];
-          api.actions.actions[action.name] = action;
-          validateAction(api.actions.actions[action.name]);
-          loadMessage(action.name);
+          loadInAction(action);
         }
       }       
     }catch(err){
       api.exceptionHandlers.loader(fullFilePath, err);
-      delete api.actions.actions[actionName];
+      delete api.actions.actions[action.name][action.version];
     }
   }
 

@@ -2,6 +2,31 @@
 
 ## Version 6.1.0
 
+** API Versions **
+
+ActionHero can now support multiple versions of the same action.  This will allow you to support actions/routes of the same name with upgraded functionality.
+
+- actions now have the `action.version` attribute
+  - If actions don't have `action.version`, they will be defaulted to version 1.
+- a new reserverd param, `apiVersion` has been introduced.  This is used to directly specify the version of an action a client may request
+- if a client doesn't specify an `apiVersion`, they will be directed to the higest numerical version
+- you can optionally create routes to handle your API versioning:
+
+```javascript
+exports.routes = {
+  all: [
+    // creates routes like `/api/myAction/1/` and `/api/myAction/2/`
+    // will also default `/api/myAction` to the latest version
+    { path: "/myAction/:apiVersion", action: "myAction" },
+
+    // creates routes like `/api/1/myAction/` and `/api/2/myAction/`
+    // will also default `/api/myAction` to the latest version
+    { path: "/:apiVersion/myAction", action: "myAction" },
+  ]
+};
+
+```
+
 ** middleware **
 This replaces `api.actionProcessor.prototype.preProcessAction`
 

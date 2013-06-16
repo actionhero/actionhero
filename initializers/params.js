@@ -8,6 +8,7 @@ var params = function(api, next){
   api.params.buildPostVariables = function(){
     var postVariables = [
       "file",
+      "apiVersion",
       "callback",
       "action",
       "limit",
@@ -17,15 +18,17 @@ var params = function(api, next){
       "roomMatchValue"
     ];
     for(var i in api.actions.actions){
-      var action = api.actions.actions[i];
-      if(action.inputs.required.length > 0){
-        for(var j in action.inputs.required){
-          postVariables.push(action.inputs.required[j]);
+      for(var j in api.actions.actions[i]){
+        var action = api.actions.actions[i][j];
+        if(action.inputs.required.length > 0){
+          for(var k in action.inputs.required){
+            postVariables.push(action.inputs.required[k]);
+          }
         }
-      }
-      if(action.inputs.optional.length > 0){
-        for(var j in action.inputs.optional){
-          postVariables.push(action.inputs.optional[j]);
+        if(action.inputs.optional.length > 0){
+          for(var k in action.inputs.optional){
+            postVariables.push(action.inputs.optional[k]);
+          }
         }
       }
     }

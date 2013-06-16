@@ -78,6 +78,10 @@ var actionProcessor = function(api, next){
     }else{ 
       this.connection.params.offset = parseFloat(this.connection.params.offset); 
     }
+    if(this.connection.params.apiVersion != null){ 
+      this.connection.params.apiVersion = parseFloat(this.connection.params.apiVersion); 
+      if(isNaN(this.connection.params.apiVersion)){ this.connection.params.apiVersion = null; }
+    }
   }
 
   api.actionProcessor.prototype.preProcessAction = function(actionTemplate, toProcess, callback){
@@ -129,7 +133,12 @@ var actionProcessor = function(api, next){
     self.sanitizeLimitAndOffset();
 
     self.connection.action = self.connection.params["action"];
-    var actionTemplate = api.actions.actions[self.connection.action];
+    if (api.actions.versions[self.connection.action] != null){
+      if(self.connection.params.apiVersion == null){
+        self.connection.params.apiVersion = api.actions.versions[self.connection.action][api.actions.versions[self.connection.action].length - 1];
+      }
+      var actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
+    }
     api.stats.increment("actions:actionsCurrentlyProcessing");
 
     if(api.running != true){
@@ -141,7 +150,7 @@ var actionProcessor = function(api, next){
     }else if(self.connection.action == null || actionTemplate == null){
       api.stats.increment("actions:actionsNotFound");
       if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
-      self.connection.error = new Error(self.connection.action + " is not a known action.");
+      self.connection.error = new Error(self.connection.action + " is not a known action or that is not a valid apiVersion.");
       self.completeAction();
     }else if(actionTemplate.blockedConnectionTypes != null && actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
       self.connection.error = new Error("this action does not support the " + self.connection.type + " connection type");

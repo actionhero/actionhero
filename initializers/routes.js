@@ -50,7 +50,7 @@ var routes = function(api, next){
           return response;
         }
       }else{
-        if(urlParts[i].toLowerCase() != matchParts[i].toLowerCase()){
+        if(urlParts[i] == null || urlParts[i].toLowerCase() != matchParts[i].toLowerCase()){
           return response;
         }
       }

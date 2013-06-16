@@ -58,7 +58,7 @@ describe('Core: Developer Mode', function(){
       specHelper.fs.writeFile(original_file, new_file_content, function(err) {
       setTimeout(function(){
         specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
-          apiObj.actions.actions.randomNumber.description.should.equal("HACK");
+          apiObj.actions.actions.randomNumber["1"].description.should.equal("HACK");
           json.randomNumber.should.equal("not a number!");
           done();
         });
