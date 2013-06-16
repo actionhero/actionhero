@@ -56,6 +56,7 @@ var web = function(api, options, next){
     server.server.on("error", function(e){
       server.log("cannot start web server @ " + options.bindIP + ":" + options.port + "; exiting.", "emerg");
       server.log(e, "error");
+      process.exit(1);
     });
 
     server.server.listen(options.port, options.bindIP, function(){
