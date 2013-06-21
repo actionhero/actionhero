@@ -146,7 +146,7 @@
 
     else if(message.welcome != null && message.context == "api"){
       self.welcomeMessage = message.welcome;
-      if(typeof self.events.say === 'function'){
+      if(typeof self.events.say === 'function' && typeof self.events.welcome == "function"){
         self.events.welcome(message);
       }
     }
