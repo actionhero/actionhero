@@ -11,7 +11,7 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('');
   templateLines.push('  var type = "' + binary.argv['name'] + '"');
   templateLines.push('  var attributes = {');
-  templateLines.push('    canChat: true');
+  templateLines.push('    canChat: true,');
   templateLines.push('    logConnections: true,');
   templateLines.push('    logExits: true,');
   templateLines.push('    sendWelcomeMessage: true,');
