@@ -3,7 +3,7 @@ var action = {};
 /////////////////////////////////////////////////////////////////////
 // metadata
 action.name = "actionsView";
-action.description = "I will return an array of all the action accessable to uses of this API";
+action.description = "I will return an array of all the actions available for consumers of this API";
 action.inputs = {
   "required" : [],
   "optional" : []
