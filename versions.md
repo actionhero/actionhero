@@ -1,5 +1,24 @@
 # Action Hero API Versions
 
+## Version 6.2.0
+
+** actionHero run **
+
+This version introduces the ability to run actionHero's methods from the command line.  This is similar to Ruby's `rake` command.  the new `actionHero run` command has the api object in scope.  
+
+For example, 
+
+- we can set a cache object: `actionHero run --method="api.cache.save" --args=test,123`
+- then read it back: `actionHero run --method="api.cache.load" --args=test`
+
+The response of the `run` command will be an ordered list of all the arguments passed to the callback (if it has one), or the function's return value (if the method is synchronous).
+
+For safety, you can not run arbitrary code from `actionHero run`, so you will need to define first define the method you wish to call in an initializer, and append it to the `api` object
+
+Run `actionHero help` for more information.
+
+This version also formally separates `actionHero.start` into `actionHero.initialize` (loads your initializers) and `actionHero.start` (runs the `_start` methods and starts the various servers).  Don't worry, you can still call `actionHero.start` without `actionHero.initialize` (it will run `initialize` for you).
+
 ## Version 6.1.0
 
 ** API Versions **
