@@ -2,23 +2,19 @@ actionHero - a node.js API framework for both tcp sockets, web sockets, and http
 
 Binary options:
 * help (default)
-* helpSmall
+* start
+* startCluster
+* run
 * generate
 * generateAction
 * generateTask
 * generateInitializer
 * generateServer
-* actionHeroServer
-* actionHeroCluster
 
 Descriptions:
 
 * actionHero help
   will display this document
-
-* actionHero helpSmall
-  will display a short (and colored) message
-  this shows upon `npm install of actionHero`
 
 * actionHero generate
   will prepare an empty directory with a template actionHero project
@@ -64,5 +60,11 @@ Descriptions:
   [workerTitlePrefix] (optional) default actionHero-worker
   [config] (optional) path to config.js, defaults to `process.cwd() + "/" + config.js`
   [daemon] (optional) to fork and run as a new background process defalts to false
+
+* actionnHero run --command=[method] --args=[args] --log=[log]
+  will run javascipt provided in `command`
+  [method] (required) 
+  [args] (optional) argumets the the method.  comma seperated list
+  [log] (optional) use the logger defaults?
 
 More Help & the actionHero wiki can be found @ http://actionherojs.com
