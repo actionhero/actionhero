@@ -10,9 +10,11 @@ var async = require('async');
 var actionHero = function(){
   var self = this;
   self.initalizers = {};
-  self.api = {};
-  self.initialized = false;
-  self.api.running = false;
+  self.api = {
+    running: false,
+    initialized: false,
+    shuttingDown: false,
+  };
 };
   
 actionHero.prototype.initialize = function(params, callback){
@@ -153,9 +155,9 @@ actionHero.prototype.start = function(params, callback){
 actionHero.prototype.stop = function(callback){ 
   var self = this;
   if(self.api.running === true){
-    self.shuttingDown = true;
+    self.api.shuttingDown = true;
     self.api.running = false;
-    self.initialized = false;
+    self.api.initialized = false;
     self.api.log("Shutting down open servers and stopping task processing", "alert");
 
     var orderedTeardowns = {};
@@ -194,12 +196,12 @@ actionHero.prototype.stop = function(callback){
       self.api.pids.clearPidFile();
       self.api.log("The actionHero has been stopped", "alert");
       self.api.log("***", "debug");
-      delete self.shuttingDown;
+      delete self.api.shuttingDown;
       if(typeof callback == "function"){ callback(null, self.api); }
     };
 
     async.series(orderedTeardowns);
-  }else if(self.shuttingDown === true){
+  }else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   }else{
     self.api.log("Cannot shut down (not running any servers)", "info");
