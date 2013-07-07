@@ -31,7 +31,7 @@ Currently actionHero supports:
 - [Getting Started](https://github.com/evantahler/actionHero/wiki/Getting-Started)
 - [Running actionHero](https://github.com/evantahler/actionHero/wiki/Running-ActionHero)
 - [Read the documentation on the wiki](https://github.com/evantahler/actionHero/wiki)
-- [Check out the project history](https://github.com/evantahler/actionHero/blob/master/versions.md)
+- [View the release history](https://github.com/evantahler/actionHero/releases/)
 
 ## Who?
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/evantahler/actionHero/graphs/contributors)
