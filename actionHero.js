@@ -95,7 +95,7 @@ actionHero.prototype.initialize = function(params, callback){
   });
 
   orderedInitializers['_complete'] = function(){ 
-    self.initialized = true;
+    self.api.initialized = true;
     callback(null, self.api);
   };
 
@@ -143,7 +143,7 @@ actionHero.prototype.start = function(params, callback){
     }
   }
 
-  if(self.initialized === true){
+  if(self.api.initialized === true){
     start()
   }else{
     self.initialize(params, function(err){
