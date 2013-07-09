@@ -51,7 +51,7 @@ var actions = function(api, next){
       }
     }
 
-    var loadInAction = function(object){
+    var loadInAction = function(action){
       if(action.version == null){ action.version = 1.0; }
       if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {}; }
       api.actions.actions[action.name][action.version] = action;
@@ -105,7 +105,7 @@ var actions = function(api, next){
       fail("Action "+action.name+" has no outputExample");
     }else if(typeof action.run != "function"){
       fail("Action "+action.name+" has no run method");
-    }else if(api.connections.allowedVerbs.indexOf(action.name) >= 0){
+    }else if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
       fail(action.name+" is a reserved verb for connections. choose a new name");
     }
   }
