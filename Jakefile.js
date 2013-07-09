@@ -1,4 +1,3 @@
-desc("This is the default task.");
-task("default", function() {
-  console.log("There is no default jake task.  You can run `jake -T` to see a list of options");
-});
+// Add your porject's tasks here
+// For examples on loading the actionHero environment, visit https://github.com/evantahler/actionHero/wiki/Jake
+// More information about Jake can be found at https://github.com/mde/jake/

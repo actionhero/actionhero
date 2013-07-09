@@ -9,7 +9,6 @@ var redis = function(api, next){
   - `actionHero:cache` [] the common shared cache object
   - `actionHero:stats` [] the common shared stats object
   - `actionHero:roomMembers-{roomName}` [] a list of the folks in a given socket room
-  - `actionHero:webMessages:{client.id}` [] an array of messages for a http(s) client (expires)
   - `actionHero:tasks:global` [] a list of tasks to be completed.  Any memeber can push to the queue; all workers will pull one at a time from the queue
   - `actionHero:tasks:delayed` [] a list of tasks to to be completed in the future
   - `actionHero:tasks:{serverID}` [] a list of tasks to be completed by only this node.  This queue will be drained at a lower priority than the regular task queue
