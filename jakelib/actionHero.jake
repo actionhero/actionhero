@@ -23,7 +23,7 @@ var file_exists = function(file){
 }
 
 var api = function(){
-  return jake.Task["actionHero:envrionment"].value;
+  return jake.Task["actionHero:environment"].value;
 }
 
 var exitWithError = function(error){
@@ -38,8 +38,8 @@ var exitWithError = function(error){
 ///////////
 
 namespace("actionHero", function(){
-  desc("I will load and init an actionHero envrionment");
-  task("envrionment", {async: true}, function() {
+  desc("I will load and init an actionHero environment");
+  task("environment", {async: true}, function() {
     if(file_exists(__dirname + "/../actionHero.js")){
       // in the actionHero project itself
       var actionHero_root = __dirname + "/..";
@@ -68,7 +68,7 @@ namespace("actionHero", function(){
   namespace("actions", function(){
 
     desc("List your actions and metadata");
-    task("list", ["actionHero:envrionment"], {async: true}, function(){
+    task("list", ["actionHero:environment"], {async: true}, function(){
       for(var collection in api().actions.actions){
         console.log(collection)
         for(var version in api().actions.actions[collection]){
@@ -79,6 +79,7 @@ namespace("actionHero", function(){
           console.log("    " + "optional inputs: " + action.inputs.optional.join(", "));
         }
       };
+      complete(process.exit());
     });
 
   });
@@ -88,11 +89,11 @@ namespace("actionHero", function(){
   namespace("redis", function(){
 
     desc("This will clear the entire actionHero redis database");
-    task("flush", ["actionHero:envrionment"], {async: true}, function(){
+    task("flush", ["actionHero:environment"], {async: true}, function(){
       api().redis.client.flushdb(function(error, data){
         exitWithError(error);
         console.log("flushed")
-        complete();
+        complete(process.exit());
       });
     });
 
@@ -103,19 +104,19 @@ namespace("actionHero", function(){
   namespace("cache", function(){
 
     desc("This will clear actionHero's cache");
-    task("clear", ["actionHero:envrionment"], {async: true}, function(){
+    task("clear", ["actionHero:environment"], {async: true}, function(){
       api().cache.size(function(error, count){
         exitWithError(error);
         api().redis.client.del(api().cache.redisCacheKey, function(error){
           exitWithError(error);
           console.log("cleared " + count + " items from the cache");
-          complete();
+          complete(process.exit());
         });
       });
     });
 
     desc("This will save the current cache as a JSON object");
-    task("dump", ["actionHero:envrionment"], {async: true}, function(file){
+    task("dump", ["actionHero:environment"], {async: true}, function(file){
       if(file == null){ file = "cache.dump"; }
       api().cache.size(function(error, count){
         exitWithError(error);
@@ -123,13 +124,13 @@ namespace("actionHero", function(){
           exitWithError(error);
           fs.writeFileSync(file, JSON.stringify(data));
           console.log("dumped " + count + " items from the cache");
-          complete();
+          complete(process.exit());
         });
       });
     });
 
     desc("This will load (and overwrite) the cache from a file");
-    task("load", ["actionHero:envrionment"], {async: true}, function(file){
+    task("load", ["actionHero:environment"], {async: true}, function(file){
       if(file == null){ file = "cache.dump"; }
         var data = JSON.parse( fs.readFileSync(file) );
         api().redis.client.hmset(api().cache.redisCacheKey, data, function(error, data){
@@ -137,7 +138,7 @@ namespace("actionHero", function(){
           api().cache.size(function(error, count){
             exitWithError(error);    
             console.log("loaded " + count + " items into the cache");
-            complete();
+            complete(process.exit());
           });
         });
     });
