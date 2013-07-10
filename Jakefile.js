@@ -7,4 +7,5 @@ desc("my actionHero jake task");
 task("myTask", {async: true}, function(){
   var api = jake.Task["actionHero:envrionment"].value;
   // your logic here
+  complete(process.exit());
 }); */
