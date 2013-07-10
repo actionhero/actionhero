@@ -4,7 +4,6 @@ Binary options:
 * help (default)
 * start
 * startCluster
-* run
 * generate
 * generateAction
 * generateTask
@@ -60,11 +59,5 @@ Descriptions:
   [workerTitlePrefix] (optional) default actionHero-worker
   [config] (optional) path to config.js, defaults to `process.cwd() + "/" + config.js`
   [daemon] (optional) to fork and run as a new background process defalts to false
-
-* actionnHero run --command=[method] --args=[args] --log=[log]
-  will run javascipt provided in `command`
-  [method] (required) 
-  [args] (optional) argumets the the method.  comma seperated list
-  [log] (optional) use the logger defaults?
 
 More Help & the actionHero wiki can be found @ http://actionherojs.com

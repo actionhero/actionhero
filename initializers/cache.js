@@ -3,7 +3,7 @@ var cache = function(api, next){
   api.cache = {};
   api.cache.sweeperTimer = null;
   api.cache.sweeperTimeout = 10 * 1000;
-  var redisCacheKey = "actionHero:cache";
+  api.cache.redisCacheKey = "actionHero:cache";
 
   api.cache._start = function(api, callback){
     api.cache.runSweeper();
@@ -31,7 +31,7 @@ var cache = function(api, next){
     
   api.cache.size = function(next){
     var domain = api.cache.prepareDomain();
-    api.redis.client.hlen(redisCacheKey, domain.bind(function(err, count){
+    api.redis.client.hlen(api.cache.redisCacheKey, domain.bind(function(err, count){
       next(null, count);
     }));
   }
@@ -42,7 +42,7 @@ var cache = function(api, next){
       options = {}
     }
     var domain = api.cache.prepareDomain();
-    api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
+    api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
       if(err != null){ api.log(err, "error"); }
       try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
       if(cacheObj == null){
@@ -53,7 +53,7 @@ var cache = function(api, next){
         cacheObj.readAt = new Date().getTime();
         if ( cacheObj.expireTimestamp != null && options.expireTimeMS ) 
           cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
-        api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
+        api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
           if(typeof next == "function"){  
             process.nextTick(function() { next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
           }
@@ -68,7 +68,7 @@ var cache = function(api, next){
 
   api.cache.destroy = function(key, next){
     var domain = api.cache.prepareDomain();
-    api.redis.client.hdel(redisCacheKey, key, domain.bind(function(err, count){
+    api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
       api.stats.increment("cache:cachedObjects", -1 );
       if(err != null){ api.log(err, "error"); }
       var resp = true;
@@ -79,17 +79,17 @@ var cache = function(api, next){
 
   api.cache.sweeper = function(next){
     var domain = api.cache.prepareDomain();
-    api.redis.client.hkeys(redisCacheKey, domain.bind(function(err, keys){
+    api.redis.client.hkeys(api.cache.redisCacheKey, domain.bind(function(err, keys){
       var started = 0;
       var sweepedKeys = [];
       keys.forEach(function(key){
         started++;
-        api.redis.client.hget(redisCacheKey, key, domain.bind(function(err, cacheObj){
+        api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
           if(err != null){ api.log(err, "error"); }
           try{ var cacheObj = JSON.parse(cacheObj); }catch(e){ }
           if(cacheObj != null){
             if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
-              api.redis.client.hdel(redisCacheKey, key, domain.bind(function(err, count){
+              api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
                 sweepedKeys.push(key);
                 started--;
                 if(started == 0 && typeof next == "function"){ next(err, sweepedKeys); }
@@ -128,7 +128,7 @@ var cache = function(api, next){
       createdAt: new Date().getTime(),
       readAt: null
     }
-    api.redis.client.hset(redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
+    api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
       if(typeof next == "function"){ process.nextTick(function() { next(null, true); }); }
     }));
   };
