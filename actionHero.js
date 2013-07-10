@@ -10,13 +10,18 @@ var async = require('async');
 var actionHero = function(){
   var self = this;
   self.initalizers = {};
-  self.api = {};
+  self.api = {
+    running: false,
+    initialized: false,
+    shuttingDown: false,
+  };
 };
   
-actionHero.prototype.start = function(params, next){
+actionHero.prototype.initialize = function(params, callback){
   var self = this;
   self.api._self = self;
   self.api._commands = {
+    initialize: self.initialize,
     start: self.start,
     stop: self.stop,
     restart: self.restart
@@ -90,28 +95,37 @@ actionHero.prototype.start = function(params, next){
   });
 
   orderedInitializers['_complete'] = function(){ 
+    self.api.initialized = true;
+    callback(null, self.api);
+  };
+
+  async.series(orderedInitializers);
+};
+
+actionHero.prototype.start = function(params, callback){
+  var self = this;
+
+  var start = function(){
     if(self.api.configData.general.developmentMode == true){
       self.api.log("running in development mode", "notice")
     }
     self.api.running = true;
-    var starters = [];
+    self._starters = [];
     for(var i in self.api){
       if(typeof self.api[i]._start == "function"){
-        starters.push(i);
+        self._starters.push(i);
       }
     }
 
     var started = 0;
     var successMessage = "*** Server Started @ " + self.api.utils.sqlDateTime() + " ***";
-    if(starters.length == 0){
+    if(self._starters.length == 0){
       self.api.bootTime = new Date().getTime();
       self.api.log("server ID: " + self.api.id, "notice");
       self.api.log(successMessage, "notice");
-      if(next !== null){ 
-        next(null, self.api);
-      }
+      if(callback !== null){ callback(null, self.api); }
     }else{
-      starters.forEach(function(starter){
+      self._starters.forEach(function(starter){
         started++;
         self.api[starter]._start(self.api, function(){
           process.nextTick(function(){
@@ -121,35 +135,39 @@ actionHero.prototype.start = function(params, next){
               self.api.bootTime = new Date().getTime();
               self.api.log("server ID: " + self.api.id, "notice");
               self.api.log(successMessage, "notice");
-              if(next !== null){ 
-                next(null, self.api);
-              }
+              if(callback !== null){ callback(null, self.api); }
             }
           });
         });
       });
     }
-  };
+  }
 
-  async.series(orderedInitializers);
-};
+  if(self.api.initialized === true){
+    start()
+  }else{
+    self.initialize(params, function(err){
+      start();
+    })
+  }
+}
 
-actionHero.prototype.stop = function(next){ 
+actionHero.prototype.stop = function(callback){ 
   var self = this;
   if(self.api.running === true){
-    self.shuttingDown = true;
+    self.api.shuttingDown = true;
     self.api.running = false;
+    self.api.initialized = false;
     self.api.log("Shutting down open servers and stopping task processing", "alert");
 
     var orderedTeardowns = {};
-    var thing = [
+    [
       "webServer", 
       "faye", 
       "webSocketServer", 
       "socketServer", 
       "taskProcessor"
-    ]
-    thing.forEach(function(terdown){
+    ].forEach(function(terdown){
       if(self.api[terdown] != null && typeof self.api[terdown]._teardown == "function"){
         (function(name) {
           orderedTeardowns[name] = function(next){ 
@@ -178,33 +196,33 @@ actionHero.prototype.stop = function(next){
       self.api.pids.clearPidFile();
       self.api.log("The actionHero has been stopped", "alert");
       self.api.log("***", "debug");
-      delete self.shuttingDown;
-      if(typeof next == "function"){ next(null, self.api); }
+      delete self.api.shuttingDown;
+      if(typeof callback == "function"){ callback(null, self.api); }
     };
 
     async.series(orderedTeardowns);
-  }else if(self.shuttingDown === true){
+  }else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   }else{
     self.api.log("Cannot shut down (not running any servers)", "info");
-    if(typeof next == "function"){ next(null, self.api); }
+    if(typeof callback == "function"){ callback(null, self.api); }
   }
 };
 
-actionHero.prototype.restart = function(next){
+actionHero.prototype.restart = function(callback){
   var self = this;
 
   if(self.api.running === true){
     self.stop(function(err){
       self.start(self.startingParams, function(err, api){
         api.log('actionHero restarted', "notice");
-        if(typeof next == "function"){ next(null, self.api); } 
+        if(typeof callback == "function"){ callback(null, self.api); } 
       });
     });
   }else{
     self.start(self.startingParams, function(err, api){
       api.log('actionHero restarted', "notice");
-      if(typeof next == "function"){ next(null, self.api); } 
+      if(typeof callback == "function"){ callback(null, self.api); } 
     });
   }
 };

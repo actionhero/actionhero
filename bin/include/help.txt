@@ -2,23 +2,18 @@ actionHero - a node.js API framework for both tcp sockets, web sockets, and http
 
 Binary options:
 * help (default)
-* helpSmall
+* start
+* startCluster
 * generate
 * generateAction
 * generateTask
 * generateInitializer
 * generateServer
-* actionHeroServer
-* actionHeroCluster
 
 Descriptions:
 
 * actionHero help
   will display this document
-
-* actionHero helpSmall
-  will display a short (and colored) message
-  this shows upon `npm install of actionHero`
 
 * actionHero generate
   will prepare an empty directory with a template actionHero project

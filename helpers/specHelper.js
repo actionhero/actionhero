@@ -37,7 +37,6 @@ specHelper.params[0] = {
   logger: {
     levels: winston.config.syslog.levels,
     transports: null,
-    // transports: [],
   },
   redis : redisConfig,
   servers: {

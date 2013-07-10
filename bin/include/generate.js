@@ -32,10 +32,11 @@
   |- tasks\n\
   |-- (your tasks)\n\
   |\n\
-  | readme.md\n\
-  | routes.js\n\
-  | config.js\n\
-  | package.json (be sure to include 'actionHero':'x')\n\
+  readme.md\n\
+  routes.js\n\
+  config.js\n\
+  Jakefile.js\n\
+  package.json (be sure to include 'actionHero':'x')\n\
   ";
 
   documents.config_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/config.js");
@@ -45,6 +46,8 @@
   documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
   documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
   documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
+  documents.jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
+  documents.ah_jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
   documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
@@ -104,10 +107,11 @@
   binary.utils.create_dir_safely(binary.paths.project_root + "/certs");
   binary.utils.create_dir_safely(binary.paths.project_root + "/initializers");
   binary.utils.create_dir_safely(binary.paths.project_root + "/log");
-  binary.utils.create_dir_safely(binary.paths.project_root + "/public");
   binary.utils.create_dir_safely(binary.paths.project_root + "/servers");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascript");
   binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/jakelib");
 
   // make files
   binary.utils.create_file_safely(binary.paths.project_root + '/.gitignore', documents.git_ignore);
@@ -122,6 +126,8 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
+  binary.utils.create_file_safely(binary.paths.project_root + '/Jakefile.js', documents.jakefile);
+  binary.utils.create_file_safely(binary.paths.project_root + '/jakelib/actionHero.jake', documents.ah_jakefile);
 
   binary.log("");
   binary.log("Generation Complete.  Your project directory should look like this:\n" + documents.projectMap);
