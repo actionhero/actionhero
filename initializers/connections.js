@@ -225,8 +225,8 @@ var connections = function(api, next){
       var processors = [];
       api.connections.postSetupProcessors.forEach(function(processor){
         processors.push(function(next){ 
-          processor(self.connection, function(connection){
-            self.connection = connection
+          processor(self, function(connection){
+            self = connection
             next();
           });
         })
@@ -234,7 +234,7 @@ var connections = function(api, next){
       if(typeof callback == "function"){
         processors.push( function(){ callback() });
       }
-      async.parallel(processors);
+      async.series(processors);
     }
   }
 
@@ -248,8 +248,8 @@ var connections = function(api, next){
       var processors = [];
       api.connections.preDestroyProcessors.forEach(function(processor){
         processors.push(function(next){ 
-          processor(self.connection, function(connection){
-            self.connection = connection;
+          processor(self, function(connection){
+            self = connection;
             next();
           });
         })
@@ -257,7 +257,7 @@ var connections = function(api, next){
       if(typeof callback == "function"){
         processors.push( function(){ callback() });
       }
-      async.parallel(processors);
+      async.series(processors);
     }
   }
 
