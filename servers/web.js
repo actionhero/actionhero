@@ -153,7 +153,7 @@ var web = function(api, options, next){
         }
       }
       
-      var stringResponse = JSON.stringify(connection.response); 
+      var stringResponse = JSON.stringify(connection.response, null, 2); 
       if(typeof connection.params.outputType === "string"){
         if(connection.params.outputType.toLowerCase() == "xml"){
           stringResponse = data2xml()('XML', connection.response);
