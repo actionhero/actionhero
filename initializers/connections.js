@@ -1,4 +1,5 @@
 var uuid = require("node-uuid");
+var async = require('async');
 
 var connections = function(api, next){
 
@@ -40,7 +41,10 @@ var connections = function(api, next){
       "setPort"
     ],
 
-    connections: {}
+    connections: {},
+
+    postSetupProcessors: [],
+    preDestroyProcessors: []
   };
   
 
@@ -85,6 +89,8 @@ var connections = function(api, next){
     for(var i in connectionDefaults){
       self[i] = connectionDefaults[i];
     }
+
+    self.postSetupConnection();
   }
 
   api.connection.prototype.generateID = function(){
@@ -97,11 +103,13 @@ var connections = function(api, next){
 
   api.connection.prototype.destroy = function(callback){
     var self = this;
-    api.stats.increment("connections:totalActiveConnections", -1, function(){
-      api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
-        if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
-        delete api.connections.connections[self.id];
-        if(typeof callback == "function"){ callback(); }
+    self.preDestroyConnection(function() {
+      api.stats.increment("connections:totalActiveConnections", -1, function(){
+        api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
+          if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
+          delete api.connections.connections[self.id];
+          if(typeof callback == "function"){ callback(); }
+        });
       });
     });
   }
@@ -204,6 +212,52 @@ var connections = function(api, next){
         }
     }else{
       callback("verb not found or not allowed", null);
+    }
+  }
+
+  api.connection.prototype.postSetupConnection = function(callback){
+    var self = this;
+    if(api.connections.postSetupProcessors.length == 0){
+      if(typeof callback == "function"){
+        callback();
+      }
+    }else{
+      var processors = [];
+      api.connections.postSetupProcessors.forEach(function(processor){
+        processors.push(function(next){ 
+          processor(self, function(connection){
+            self = connection
+            next();
+          });
+        })
+      });
+      if(typeof callback == "function"){
+        processors.push( function(){ callback() });
+      }
+      async.series(processors);
+    }
+  }
+
+  api.connection.prototype.preDestroyConnection = function(callback){
+    var self = this;
+    if(api.connections.preDestroyProcessors.length == 0){
+      if(typeof callback == "function"){
+        callback();
+      }
+    }else{
+      var processors = [];
+      api.connections.preDestroyProcessors.forEach(function(processor){
+        processors.push(function(next){ 
+          processor(self, function(connection){
+            self = connection;
+            next();
+          });
+        })
+      });
+      if(typeof callback == "function"){
+        processors.push( function(){ callback() });
+      }
+      async.series(processors);
     }
   }
 

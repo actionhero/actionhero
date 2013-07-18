@@ -17,6 +17,8 @@ describe('Core: Middlware', function(){
   after(function(done){
     rawApi.actions.preProcessors  = [];
     rawApi.actions.postProcessors = [];
+    rawApi.connections.postSetupProcessors  = [];
+    rawApi.connections.preDestroyProcessors = [];
     done();
   });
 
@@ -27,9 +29,44 @@ describe('Core: Middlware', function(){
     });
   });
 
+
+  it('I can define an connection postSetupProcessors and it can append the connection', function(done){
+    rawApi.connections.postSetupProcessors.push(function(connection, next){
+      connection._postSetupProcessors = "note";
+      next(connection);
+    });
+
+    rawApi.actions.preProcessors.push(function(connection, actionTemplate, next){
+      connection.response._postSetupProcessors = connection._postSetupProcessors;
+      next(connection, true);
+    });
+
+    specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      json._postSetupProcessors.should.equal("note");
+      done();
+    });
+  });
+
+  it('I can define an connection preDestroyProcessors and it can append the connection', function(done){
+    rawApi.connections.preDestroyProcessors.push(function(connection, next){
+      rawApi.cache.save("preDestroyProcessors","note",null,function(err, resp){
+        should.not.exist(err);
+        resp.should.equal(true);
+        next(connection);
+      });
+    });
+
+    specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      rawApi.cache.load("preDestroyProcessors",function(err, resp){
+        resp.should.equal("note");
+        done();
+      });
+    });
+  });
+
   it('I can define an action preProcessor and it can append the connection', function(done){
     rawApi.actions.preProcessors.push(function(connection, actionTemplate, next){
-      connection.response._preProcessorNote = "note"
+      connection.response._preProcessorNote = "note";
       next(connection, true);
     });
 
@@ -41,7 +78,7 @@ describe('Core: Middlware', function(){
 
   it("postProcessors can append the connection", function(done){
     rawApi.actions.postProcessors.push(function(connection, actionTemplate, next){
-      connection.response._postProcessorNote = "note"
+      connection.response._postProcessorNote = "note";
       next(connection, true);
     });
 
@@ -53,7 +90,7 @@ describe('Core: Middlware', function(){
 
   it("preProcessors can block actions", function(done){
     rawApi.actions.preProcessors.push(function(connection, actionTemplate, next){
-      connection.error = "BLOCKED"
+      connection.error = "BLOCKED";
       next(connection, false);
     });
 
