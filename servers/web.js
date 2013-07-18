@@ -182,6 +182,8 @@ var web = function(api, options, next){
       for(var i in cookieHash){
         responseHeaders.push([i, cookieHash[i]]);
       }
+
+      responseHeaders.push(['Transfer-Encoding', 'Chunked']); // https://github.com/evantahler/actionHero/issues/189
       responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
       responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
 
