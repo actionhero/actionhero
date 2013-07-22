@@ -17,6 +17,7 @@ var websocket = function(api, options, next){
       "setIP",
       "quit",
       "exit",
+      "documentation",
       "roomChange",
       "roomView",
       "listenToRoom",

@@ -9,7 +9,7 @@
   <title>actionHero.js</title>
 
   <script type="text/javascript">
-  var actionsView = function(callback){
+  var documentation = function(callback){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function(){
       if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
@@ -17,19 +17,22 @@
         callback(response);
       }
     }
-    xmlhttp.open("GET", "/api/actionsView", true);
+    xmlhttp.open("GET", "/api", true);
     xmlhttp.send();
   }
 
   var populateServerInfo = function(){
-    actionsView(function(data){
+    documentation(function(data){
       document.getElementById("serverVersion").innerHTML = data.serverInformation.apiVersion;
       document.getElementById("serverName").innerHTML = data.serverInformation.serverName;
-      data.actions.forEach(function(action){
-        var row = "";
-        row += "<div class=\"box\"><div class=\"left\"><a href=\"/api/" + action.name + "\" >" + action.name + "</a></div><div class=\"right\">" + action.description + "</div></div>";
-        document.getElementById("actions").innerHTML += row;
-      });
+      for(var actionName in data.documentation){
+        for(var version in data.documentation[actionName]){
+          var action = data.documentation[actionName][version];
+          var row = "";
+          row += "<div class=\"box\"><div class=\"left\"><a href=\"/api/" + action.name + "?apiVersion=" + version + "\" >" + action.name + " v" + version + "</a></div><div class=\"right\">" + action.description + "</div></div>";
+          document.getElementById("actions").innerHTML += row;
+        }
+      };
     });
   }
   </script>

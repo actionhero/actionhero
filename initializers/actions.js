@@ -91,9 +91,9 @@ var actions = function(api, next){
       process.exit();
     }
 
-    if(typeof action.name != "string" && action.name.length < 1){
+    if(typeof action.name != "string" || action.name.length < 1){
       fail("an action is missing `action.name`");
-    }else if(typeof action.description != "string" && action.name.description < 1){
+    }else if(typeof action.description != "string" || action.description.length < 1){
       fail("Action "+action.name+" is missing `action.description`");
     }else if(typeof action.inputs != "object"){
       fail("Action "+action.name+" has no inputs");

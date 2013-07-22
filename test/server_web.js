@@ -72,7 +72,7 @@ describe('Server: Web', function(){
   });
 
   it('real actions do not have an error response', function(done){
-    specHelper.apiTest.get('/actionsView', 0, {}, function(response, json){
+    specHelper.apiTest.get('/status', 0, {}, function(response, json){
       // response.body.error.should.equal('OK')
       should.not.exist(json.error);
       done();

@@ -238,6 +238,10 @@
     this.send({event: 'silenceRoom', room: room}, callback);
   }
 
+  actionHeroWebSocket.prototype.documentation = function(callback){
+    this.send({event: 'documentation'}, callback);
+  }
+
   actionHeroWebSocket.prototype.disconnect = function(){
     this.client.disconnect();
   }
