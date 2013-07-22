@@ -17,13 +17,24 @@ if( process.env['fakeredis'] != null){
 }
 console.log("\r\n>>> running test sute with fakeredis=" + toFakeRedis + " <<<");
 
-var redisConfig = {
-  "fake": toFakeRedis,
-  "host": "127.0.0.1",
-  "port": 6379,
-  "password": null,
-  "options": null,
-  "DB": 2
+if(process.env.TDDIUM_REDIS_HOST != null){
+  var redisConfig = {
+    "fake": toFakeRedis,
+    "host": process.env.TDDIUM_REDIS_HOST,
+    "port": process.env.TDDIUM_REDIS_PORT,
+    "password": process.env.TDDIUM_REDIS_PASSWORD,
+    "options": null,
+    "DB": process.env.TDDIUM_REDIS_DB
+  }
+}else{
+  var redisConfig = {
+    "fake": toFakeRedis,
+    "host": "127.0.0.1",
+    "port": 6379,
+    "password": null,
+    "options": null,
+    "DB": 2
+  }
 }
 
 var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;

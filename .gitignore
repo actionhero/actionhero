@@ -9,3 +9,5 @@ npm-debug.log
 dump.rdb
 cluster_pidfile
 cache.dump
+.tddium*
+.rbenv-version
