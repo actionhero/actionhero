@@ -25,6 +25,7 @@ var connections = function(api, next){
     allowedVerbs: [
       "quit", 
       "exit",
+      "documentation",
       "paramAdd",
       "paramDelete",
       "paramView",
@@ -194,6 +195,9 @@ var connections = function(api, next){
           details.totalActions = self.totalActions;
           details.pendingActions = self.pendingActions;
           callback(null, details);
+
+        }else if(verb === "documentation"){
+          callback(null, api.documentation.documentation);
 
         }else if(verb === "say"){
           api.chatRoom.socketRoomBroadcast(self, words.join(" "));
