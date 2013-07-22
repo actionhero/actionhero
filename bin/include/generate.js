@@ -42,9 +42,7 @@
   documents.config_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/config.js");
   documents.package_json = binary.fs.readFileSync(binary.paths.actionHero_root + "/package.json");
   documents.routes_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/routes.js");
-  documents.action_actions_view = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/actionsView.js");
   documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
-  documents.action_chat = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/chat.js");
   documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
   documents.jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
   documents.ah_jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
@@ -118,9 +116,7 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/config.js', documents.config_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/routes.js', documents.routes_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/package.json', documents.package_json);
-  binary.utils.create_file_safely(binary.paths.project_root + '/actions/actionsView.js', documents.action_actions_view);
   binary.utils.create_file_safely(binary.paths.project_root + '/actions/status.js', documents.action_status);
-  binary.utils.create_file_safely(binary.paths.project_root + '/actions/chat.js', documents.action_chat);
   binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
   binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);

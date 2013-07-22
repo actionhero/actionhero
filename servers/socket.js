@@ -18,6 +18,7 @@ var socket = function(api, options, next){
     verbs: [
       "quit",
       "exit",
+      "documentation",
       "paramAdd", 
       "paramDelete",
       "paramView",

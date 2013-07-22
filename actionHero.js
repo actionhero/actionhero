@@ -71,6 +71,7 @@ actionHero.prototype.initialize = function(params, callback){
     'cache',
     'connections',
     'actions',
+    'documentation',
     'actionProcessor',
     'params',
     'staticFile',

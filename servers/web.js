@@ -138,7 +138,12 @@ var web = function(api, options, next){
       };
     
       if(connection.response.error != null){
-        if(api.configData.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
+        if(shouldSendDocumentation(connection)){
+          connection.response.documentation = api.documentation.documentation;
+          delete connection.error;
+          delete connection.response.error;
+
+        }else if(api.configData.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
           if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action or that is not a valid apiVersion.") > 0){
             connection.rawConnection.responseHttpCode = 404;
           }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
@@ -281,6 +286,17 @@ var web = function(api, options, next){
         connection.params[postVar] = varsHash[postVar]; 
       }
     });
+  }
+
+  var shouldSendDocumentation = function(connection){
+    if(connection.action != "{no action}"){ return false; }
+    if(connection.rawConnection.req.method.toUpperCase() != "GET"){ return false; }
+    var params = api.utils.objClone(connection.params);
+    delete params.action;
+    delete params.limit;
+    delete params.offset;
+    if(api.utils.hashLength(params) !== 0){ return false; }
+    return true;
   }
 
   var cleanHeaders = function(connection){
