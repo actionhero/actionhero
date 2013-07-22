@@ -13,11 +13,10 @@ describe('Core: API', function(){
     })
   });
 
-  it('should have an api object with propper parts', function(done){
+  it('should have an api object with proper parts', function(done){
     [
       apiObj.actions.actions,
       apiObj.actions.versions,
-      apiObj.actions.actions.actionsView["1"],
       apiObj.actions.actions.cacheTest["1"],
       apiObj.actions.actions.randomNumber["1"],
       apiObj.actions.actions.status["1"],
@@ -26,7 +25,6 @@ describe('Core: API', function(){
     });
 
     [
-      apiObj.actions.actions.actionsView["1"].run,
       apiObj.actions.actions.cacheTest["1"].run,
       apiObj.actions.actions.randomNumber["1"].run,
       apiObj.actions.actions.status["1"].run,
