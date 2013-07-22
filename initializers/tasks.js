@@ -398,9 +398,9 @@ var tasks = function(api, next){
 			api.log(msg + "; exiting.", "emerg");
 			process.exit();
 		}
-		if(typeof task.name != "string" && task.name.length < 1){
+		if(typeof task.name != "string" || task.name.length < 1){
 			fail("a task is missing `task.name`");
-		}else if(typeof task.description != "string" && task.name.description < 1){
+		}else if(typeof task.description != "string" || task.description.length < 1){
 			fail("Task "+task.name+" is missing `task.description`");
 		}else if(typeof task.scope != "string"){
 			fail("Task "+task.name+" has no scope");
