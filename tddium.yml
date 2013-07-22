@@ -1,0 +1,7 @@
+:tddium:
+  :hooks:
+    :pre: npm install
+  :nodejs:
+    :version: '0.10.10'
+  :tests:
+    - npm test
