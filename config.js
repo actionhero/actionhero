@@ -8,7 +8,7 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  apiVersion: "6.2.2",
+  apiVersion: "6.2.3",
   serverName: "actionHero API",
   // id: "myActionHeroServer",                                    // id can be set here, or generated dynamically.  be sure that every server you run as a unique ID (which will happen when genrated dynamically)
   serverToken: "change-me",                                       // A unique token to your application which servers will use to authenticate to eachother
@@ -110,15 +110,15 @@ configData.servers = {
     returnErrorCodes: false              // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.  You can also set connection.responseHttpCode to specify a code per request.
 
   },
-  // "socket" : {
-  //   secure: false,                        // TCP or TLS?
-  //   port: 5000,                           // Port or Socket
-  //   bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
-  //   keyFile: "./certs/server-key.pem",    // only for secure = true
-  //   certFile: "./certs/server-cert.pem"   // only for secure = true
-  // },
-  // "websocket" : {
-  // },
+  "socket" : {
+    secure: false,                        // TCP or TLS?
+    port: 5000,                           // Port or Socket
+    bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
+    keyFile: "./certs/server-key.pem",    // only for secure = true
+    certFile: "./certs/server-cert.pem"   // only for secure = true
+  },
+  "websocket" : {
+  },
 }
 
 //////////////////////////////////
