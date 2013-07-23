@@ -113,7 +113,7 @@ var actions = function(api, next){
   var actionsPath = process.cwd() + "/actions/";
   fs.exists(actionsPath, function (exists) {
     if(!exists){
-      var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
+      var defaultActionsPath = process.cwd() + "/node_modules/actionhero/actions/";
       api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "warning");
       actionsPath = defaultActionsPath;
     }

@@ -2,7 +2,7 @@ describe('Core: actionCluster', function(){
   var specHelper = require('../helpers/specHelper.js').specHelper;
   var apis = [];
   var should = require("should");
-  var externalIP = 'actionHero';
+  var externalIP = 'actionhero';
 
   var stopAllServers = function(done){
     specHelper.stopServer(0, function(){
@@ -77,8 +77,8 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #1 can see all other peers in the cluster", function(done){
-    apis[0].redis.client.llen("actionHero:peers", function(err, length){
-      apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+    apis[0].redis.client.llen("actionhero:peers", function(err, length){
+      apis[0].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
         peers.should.include("test-server-1");
         peers.should.include("test-server-2");
         peers.should.include("test-server-3");
@@ -88,8 +88,8 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #2 can see all other peers in the cluster", function(done){
-    apis[1].redis.client.llen("actionHero:peers", function(err, length){
-      apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+    apis[1].redis.client.llen("actionhero:peers", function(err, length){
+      apis[1].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
         peers.should.include("test-server-1");
         peers.should.include("test-server-2");
         peers.should.include("test-server-3");
@@ -99,8 +99,8 @@ describe('Core: actionCluster', function(){
     });
 
     it("Peer #3 can see all other peers in the cluster", function(done){
-    apis[2].redis.client.llen("actionHero:peers", function(err, length){
-      apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+    apis[2].redis.client.llen("actionhero:peers", function(err, length){
+      apis[2].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
          peers.should.include("test-server-1");
          peers.should.include("test-server-2");
          peers.should.include("test-server-3");
@@ -121,8 +121,8 @@ describe('Core: actionCluster', function(){
     it("cluster members notice when a peer goes away", function(done){
       specHelper.stopServer(1, function(){
         specHelper.stopServer(2, function(){
-          apis[0].redis.client.llen("actionHero:peers", function(err, length){
-          apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+          apis[0].redis.client.llen("actionhero:peers", function(err, length){
+          apis[0].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
             peers.length.should.equal(1);
             peers.should.include("test-server-1");
             peers.should.not.include("test-server-2");
@@ -140,8 +140,8 @@ describe('Core: actionCluster', function(){
         apis[1] = api;
         specHelper.restartServer(2, function(api){
           apis[2] = api;
-          apis[0].redis.client.llen("actionHero:peers", function(err, length){
-            apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+          apis[0].redis.client.llen("actionhero:peers", function(err, length){
+            apis[0].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
               peers.should.include("test-server-1");
               peers.should.include("test-server-2");
               peers.should.include("test-server-3");
@@ -154,8 +154,8 @@ describe('Core: actionCluster', function(){
 
     it("Peer #2 can see all other peers in the cluster again", function(done){
       this.timeout(5000);
-      apis[1].redis.client.llen("actionHero:peers", function(err, length){
-        apis[1].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+      apis[1].redis.client.llen("actionhero:peers", function(err, length){
+        apis[1].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
           peers.should.include("test-server-1");
           peers.should.include("test-server-2");
           peers.should.include("test-server-3");
@@ -166,8 +166,8 @@ describe('Core: actionCluster', function(){
 
     it("Peer #3 can see all other peers in the cluster again", function(done){
       this.timeout(5000);
-      apis[2].redis.client.llen("actionHero:peers", function(err, length){
-        apis[2].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+      apis[2].redis.client.llen("actionhero:peers", function(err, length){
+        apis[2].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
           peers.should.include("test-server-1");
           peers.should.include("test-server-2");
           peers.should.include("test-server-3");
@@ -189,9 +189,9 @@ describe('Core: actionCluster', function(){
         var sleepTime = (apis[0].redis.lostPeerCheckTime * 2) + 1;
         setTimeout(function(){
           apis[0].redis.checkForDroppedPeers(function(){
-            apis[0].redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-              apis[0].redis.client.llen("actionHero:peers", function(err, length){
-                apis[0].redis.client.lrange("actionHero:peers", 0, length, function(err, peers){
+            apis[0].redis.client.hgetall("actionhero:peerPings", function (err, peerPings){
+              apis[0].redis.client.llen("actionhero:peers", function(err, length){
+                apis[0].redis.client.lrange("actionhero:peers", 0, length, function(err, peers){
                   var count = 0;
                   for (var i in peerPings){
                     count++;

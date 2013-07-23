@@ -2,8 +2,8 @@ var stats = function(api, next){
   api.stats = {};
   api.stats.data = {};
   api.stats.collections = {
-    local: 'actionHero:stats:' + api.id.replace(/:/g, "-"),
-    global: 'actionHero:stats:global'
+    local: 'actionhero:stats:' + api.id.replace(/:/g, "-"),
+    global: 'actionhero:stats:global'
   }
 
   api.stats.increment = function(key, count, next){

@@ -70,7 +70,7 @@ var faye = function(api, next){
     incoming: function(message, callback){
       if(message.channel.indexOf('/meta/subscribe') === 0){
         if(message.subscription.indexOf("*") >= 0){
-          message.error = "actionHero does not allow wildcard subscriptions";
+          message.error = "actionhero does not allow wildcard subscriptions";
         }
         callback(message);
       }else{

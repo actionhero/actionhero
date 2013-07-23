@@ -1,8 +1,8 @@
 var chatRooms = function(api, next){
 
   api.chatRoom = {};
-  api.chatRoom.redisDataPrefix = "actionHero:roomMembers:";
-  api.chatRoom.fayeChannel = "/actionHero/chat";
+  api.chatRoom.redisDataPrefix = "actionhero:roomMembers:";
+  api.chatRoom.fayeChannel = "/actionhero/chat";
 
   ////////////////////////////////////////////////////////////////////////////
   // broadcast a message to all connections in a room

@@ -5,10 +5,10 @@ describe('Server: Web Sockets', function(){
   var should = require("should");
   var socketURL = "http://localhost:9000";
   var faye = require("faye");
-  var actionHeroWebSocket = require(process.cwd() + "/public/javascript/actionHeroWebSocket.js").actionHeroWebSocket;
-  var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
-  var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
-  var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+  var actionheroWebSocket = require(process.cwd() + "/public/javascript/actionheroWebSocket.js").actionheroWebSocket;
+  var client_1 = new actionheroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+  var client_2 = new actionheroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+  var client_3 = new actionheroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
 
   function countWebSocketConnections(){
     var found = 0;
@@ -46,7 +46,7 @@ describe('Server: Web Sockets', function(){
       data.context.should.equal("response");
       data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
-      client_1.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_1.welcomeMessage.should.equal("Hello! Welcome to the actionhero api");
       done();
     });
   });
@@ -57,7 +57,7 @@ describe('Server: Web Sockets', function(){
       data.context.should.equal("response");
       data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
-      client_2.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_2.welcomeMessage.should.equal("Hello! Welcome to the actionhero api");
       done();
     });
   });
@@ -68,7 +68,7 @@ describe('Server: Web Sockets', function(){
       data.context.should.equal("response");
       data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
-      client_3.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_3.welcomeMessage.should.equal("Hello! Welcome to the actionhero api");
       done();
     });
   });

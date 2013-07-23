@@ -1,12 +1,12 @@
 exports['start'] = function(binary, next){
 
   var cluster = require('cluster');
-  var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
-  var actionHero = new actionHeroPrototype();
-  var shutdownTimeout = 1000 * 60 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
+  var actionheroPrototype = require(binary.paths.actionhero_root + "/actionhero.js").actionheroPrototype;
+  var actionhero = new actionheroPrototype();
+  var shutdownTimeout = 1000 * 60 // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
   var api = {};
 
-  // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.
+  // if there is no config.js file in the application's root, then actionhero will load in a collection of default params.
   // You can overwrite them with params.configChanges
   var params = {
     configChanges: {}
@@ -14,7 +14,7 @@ exports['start'] = function(binary, next){
 
   var startServer = function(next){
     if(cluster.isWorker){ process.send("starting"); }
-    actionHero.start(params, function(err, api_from_callback){
+    actionhero.start(params, function(err, api_from_callback){
       if(err){
         console.log(err);
         process.exit();
@@ -29,14 +29,14 @@ exports['start'] = function(binary, next){
   }
 
   var stopServer = function(next){
-    actionHero.stop(function(err, api_from_callback){
+    actionhero.stop(function(err, api_from_callback){
       api = null;
       if(typeof next == "function"){ next(api); }
     });
   }
 
   var restartServer = function(next){
-    actionHero.restart(function(err, api_from_callback){
+    actionhero.restart(function(err, api_from_callback){
       api = api_from_callback;
       if(typeof next == "function"){ next(api); }
     });

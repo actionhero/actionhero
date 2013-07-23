@@ -16,9 +16,9 @@ var pids = function(api, next){
   }else if(process.env["title"] != null){
     api.pids.title = process.env["title"];
   }else if(cluster.isMaster){
-    api.pids.title = "actionHero-" + api.id.replace(new RegExp(':', 'g'), '-');
+    api.pids.title = "actionhero-" + api.id.replace(new RegExp(':', 'g'), '-');
   }else{
-    api.pids.title = "actionHeroWorker-" + new Date().getTime();
+    api.pids.title = "actionheroWorker-" + new Date().getTime();
   }
 
   try { fs.mkdirSync(api.configData.general.pidFileDirectory, "777") } catch(e) {};

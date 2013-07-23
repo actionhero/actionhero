@@ -5,7 +5,7 @@ specHelper.net = require('net');
 specHelper.should = require('should');
 specHelper.request = require('request');
 specHelper.apis = [];
-specHelper.actionHeroes = [];
+specHelper.actionheroes = [];
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 var winston = require('winston');
@@ -37,7 +37,7 @@ if(process.env.TDDIUM_REDIS_HOST != null){
   }
 }
 
-var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
+var actionheroPrototype = require(__dirname + "/../actionhero.js").actionheroPrototype;
 
 specHelper.params[0] = {
   general: {
@@ -146,7 +146,7 @@ specHelper.tables = [ "Logs" ];
 specHelper.prepare = function(serverID, next){
   if(serverID == null){serverID = 0};
   specHelper.clearRedis(serverID, function(){
-    if(specHelper.actionHeroes[serverID] != null){
+    if(specHelper.actionheroes[serverID] != null){
       specHelper.restartServer(serverID, function(api){
         next(api);
       });
@@ -168,8 +168,8 @@ specHelper.startServer = function(serverID, next){
   });
   conn.on('error', function(err) { 
     if(err.code == "ECONNREFUSED"){
-      specHelper.actionHeroes[serverID] = new actionHeroPrototype();
-      specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(err, api){
+      specHelper.actionheroes[serverID] = new actionheroPrototype();
+      specHelper.actionheroes[serverID].start({configChanges: specHelper.params[serverID]}, function(err, api){
         specHelper.apis[serverID] = api;
         conn.destroy();
         next(specHelper.apis[serverID]);
@@ -183,8 +183,8 @@ specHelper.startServer = function(serverID, next){
 
 specHelper.stopServer = function(serverID, next){
   if(serverID == null){serverID = 0};
-  if(specHelper.actionHeroes[serverID] != null){
-    specHelper.actionHeroes[serverID].stop(function(err, api){
+  if(specHelper.actionheroes[serverID] != null){
+    specHelper.actionheroes[serverID].stop(function(err, api){
       specHelper.apis[serverID] = api;
       next(specHelper.apis[serverID]);
     });
@@ -195,7 +195,7 @@ specHelper.stopServer = function(serverID, next){
 
 specHelper.restartServer = function(serverID, next){
   if(serverID == null){serverID = 0};
-  specHelper.actionHeroes[serverID].restart(function(err, api){
+  specHelper.actionheroes[serverID].restart(function(err, api){
     specHelper.apis[serverID] = api;
     next(specHelper.apis[serverID]);
   });

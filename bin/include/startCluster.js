@@ -2,10 +2,10 @@ exports['startCluster'] = function(binary, next){
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   // 
-  // TO START IN CONSOLE: `./bin/actionHero startCluster`
-  // TO DAMEONIZE: `forever ./bin/actionHero startCluster` 
+  // TO START IN CONSOLE: `./bin/actionhero startCluster`
+  // TO DAMEONIZE: `forever ./bin/actionhero startCluster` 
   // 
-  // ** Producton-ready actionHero cluster **
+  // ** Producton-ready actionhero cluster **
   // - be sure to enable redis so that workers can share state
   // - workers which die will be restarted
   // - maser/manager specific logging
@@ -17,7 +17,7 @@ exports['startCluster'] = function(binary, next){
   // - WINCH to stop all workers
   // - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
   // - Can be run as a daemon or in-console
-  //   -- Lazy Dameon: `nohup ./bin/actionHero startCluster &`
+  //   -- Lazy Dameon: `nohup ./bin/actionhero startCluster &`
   //   -- you may want to explore `forever` as a dameonizing option
   //
   // * Setting process titles does not work on windows or OSX
@@ -35,7 +35,7 @@ exports['startCluster'] = function(binary, next){
       binary.numCPUs = require('os').cpus().length
       binary.numWorkers = binary.numCPUs - 2;
       if (binary.numWorkers < 2){ binary.numWorkers = 2};
-      binary.execCMD = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+      binary.execCMD = binary.path.normalize(binary.paths.actionhero_root + "/bin/actionhero");
       next();
     },
     pids: function(next){
@@ -59,8 +59,8 @@ exports['startCluster'] = function(binary, next){
         workers: binary.numWorkers,
         pidfile: binary.pidPath + "/cluster_pidfile",
         log: process.cwd() + "/log/cluster.log",
-        title: "actionHero-master",
-        workerTitlePrefix: "actionHero-worker",
+        title: "actionhero-master",
+        workerTitlePrefix: "actionhero-worker",
         silent: true // don't pass stdout/err to the master
       };
 

@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////
-// actionHero Framweork in node.js
+// actionhero Framweork in node.js
 // evan@evantahler.com 
-// https://github.com/evantahler/actionHero
+// https://github.com/evantahler/actionhero
 
 var fs = require("fs");
 var path = require("path");
 var async = require('async');
 
-var actionHero = function(){
+var actionhero = function(){
   var self = this;
   self.initalizers = {};
   self.api = {
@@ -17,7 +17,7 @@ var actionHero = function(){
   };
 };
   
-actionHero.prototype.initialize = function(params, callback){
+actionhero.prototype.initialize = function(params, callback){
   var self = this;
   self.api._self = self;
   self.api._commands = {
@@ -103,7 +103,7 @@ actionHero.prototype.initialize = function(params, callback){
   async.series(orderedInitializers);
 };
 
-actionHero.prototype.start = function(params, callback){
+actionhero.prototype.start = function(params, callback){
   var self = this;
 
   var start = function(){
@@ -153,7 +153,7 @@ actionHero.prototype.start = function(params, callback){
   }
 }
 
-actionHero.prototype.stop = function(callback){ 
+actionhero.prototype.stop = function(callback){ 
   var self = this;
   if(self.api.running === true){
     self.api.shuttingDown = true;
@@ -195,7 +195,7 @@ actionHero.prototype.stop = function(callback){
         fs.unwatchFile(self.api.watchedFiles[i]);
       }
       self.api.pids.clearPidFile();
-      self.api.log("The actionHero has been stopped", "alert");
+      self.api.log("The actionhero has been stopped", "alert");
       self.api.log("***", "debug");
       delete self.api.shuttingDown;
       if(typeof callback == "function"){ callback(null, self.api); }
@@ -210,22 +210,22 @@ actionHero.prototype.stop = function(callback){
   }
 };
 
-actionHero.prototype.restart = function(callback){
+actionhero.prototype.restart = function(callback){
   var self = this;
 
   if(self.api.running === true){
     self.stop(function(err){
       self.start(self.startingParams, function(err, api){
-        api.log('actionHero restarted', "notice");
+        api.log('actionhero restarted', "notice");
         if(typeof callback == "function"){ callback(null, self.api); } 
       });
     });
   }else{
     self.start(self.startingParams, function(err, api){
-      api.log('actionHero restarted', "notice");
+      api.log('actionhero restarted', "notice");
       if(typeof callback == "function"){ callback(null, self.api); } 
     });
   }
 };
 
-exports.actionHeroPrototype = actionHero;
+exports.actionheroPrototype = actionhero;

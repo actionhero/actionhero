@@ -1,4 +1,4 @@
-// actionHero Config File
+// actionhero Config File
 // I will be loded into api.configData
 
 var configData = {};
@@ -8,11 +8,11 @@ var configData = {};
 /////////////////////////
 
 configData.general = {
-  apiVersion: "6.2.3",
-  serverName: "actionHero API",
+  apiVersion: "6.3.0",
+  serverName: "actionhero API",
   // id: "myActionHeroServer",                                    // id can be set here, or generated dynamically.  be sure that every server you run as a unique ID (which will happen when genrated dynamically)
   serverToken: "change-me",                                       // A unique token to your application which servers will use to authenticate to eachother
-  welcomeMessage : "Hello! Welcome to the actionHero api",        // The welcome message seen by TCP and webSocket clients upon connection
+  welcomeMessage : "Hello! Welcome to the actionhero api",        // The welcome message seen by TCP and webSocket clients upon connection
   flatFileDirectory: __dirname + "/public/",                      // The directory which will be the root for the /public route
   flatFileNotFoundMessage: "Sorry, that file is not found :(",    // The body message to acompany 404 (file not found) errors regading flat files
   serverErrorMessage: "The server experienced an internal error", // The message to acompany 500 errors (internal server errors)
@@ -91,7 +91,7 @@ configData.servers = {
     bindIP: "0.0.0.0",                   // which IP to listen on (use 0.0.0.0 for all)
     keyFile: "./certs/server-key.pem",   // only for secure = true
     certFile: "./certs/server-cert.pem", // only for secure = true
-    httpHeaders : { },                   // Any additional headers you want actionHero to respond with
+    httpHeaders : { },                   // Any additional headers you want actionhero to respond with
     urlPathForActions : "api",           // route which actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
     urlPathForFiles : "public",          // route which static files will be served from; path (relitive to your project root) to server static content from
     rootEndpointType : "api",            // when visiting the root URL, should visitors see "api" or "file"? visitors can always visit /api and /public as normal

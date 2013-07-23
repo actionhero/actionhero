@@ -12,12 +12,12 @@ var tasks = function(api, next){
   api.tasks.cycleTimeMS = 200;
 
   api.tasks.queues = {
-    globalQueue: 'actionHero:tasks:global',
-    delayedQueuePrefix: 'actionHero:tasks:delayed',
-    localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
-    data: 'actionHero:tasks:data', // actually a hash
-    workerStatus: 'actionHero:tasks:workerStatus', // actually a hash
-    enqueuedPeriodicTasks: 'actionHero:tasks:enqueuedPeriodicTasks'
+    globalQueue: 'actionhero:tasks:global',
+    delayedQueuePrefix: 'actionhero:tasks:delayed',
+    localQueue: 'actionhero:tasks:' + api.id.replace(/:/g,'-'),
+    data: 'actionhero:tasks:data', // actually a hash
+    workerStatus: 'actionhero:tasks:workerStatus', // actually a hash
+    enqueuedPeriodicTasks: 'actionhero:tasks:enqueuedPeriodicTasks'
   }
 
   api.tasks._start = function(api, next){
@@ -57,10 +57,10 @@ var tasks = function(api, next){
   }
 
   api.tasks.getAllLocalQueues = function(callback){
-    api.redis.client.lrange("actionHero:peers",0,-1,function(err,peers){
+    api.redis.client.lrange("actionhero:peers",0,-1,function(err,peers){
       var allLocalQueues = [];
       for(var i in peers){
-        allLocalQueues.push("actionHero:tasks:" + peers[i].replace(/:/g,"-"));
+        allLocalQueues.push("actionhero:tasks:" + peers[i].replace(/:/g,"-"));
       }
       if(typeof callback == "function"){ callback(null, allLocalQueues); }
     });
