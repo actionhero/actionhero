@@ -111,37 +111,37 @@ binary.utils.hashLength = function(obj) {
 
 binary.paths = {
   project_root: process.cwd(),
-  actionHero_root: null,
+  actionhero_root: null,
 }
 
-if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
-  // in the actionHero project itself
-  binary.paths.actionHero_root = __dirname + "/..";
-}else if(binary.utils.file_exists(__dirname + "/../node_modules/actionHero/actionHero.js")){
-  // running from a project's node_modules (bin or actionHero)
-  binary.paths.actionHero_root = __dirname + "/../node_modules/actionHero";
+if(binary.utils.file_exists(__dirname + "/../actionhero.js")){
+  // in the actionhero project itself
+  binary.paths.actionhero_root = __dirname + "/..";
+}else if(binary.utils.file_exists(__dirname + "/../node_modules/actionhero/actionhero.js")){
+  // running from a project's node_modules (bin or actionhero)
+  binary.paths.actionhero_root = __dirname + "/../node_modules/actionhero";
 }else{
   // installed globally
-  binary.paths.actionHero_root = binary.path.normalize(__dirname + "/..");
+  binary.paths.actionhero_root = binary.path.normalize(__dirname + "/..");
 }
 
 binary.argv = require('optimist').argv;
 
 binary.actions = {};
 
-binary.fs.readdirSync(binary.paths.actionHero_root + "/bin/include/").sort().forEach(function(file){
+binary.fs.readdirSync(binary.paths.actionhero_root + "/bin/include/").sort().forEach(function(file){
   if(file.indexOf(".js") > 0){
     var action = file.split(".")[0];
-    binary.actions[action] = require(binary.paths.actionHero_root + "/bin/include/" + file)[action];
+    binary.actions[action] = require(binary.paths.actionhero_root + "/bin/include/" + file)[action];
   }
 });
 
 binary.mainAction = binary.argv["_"][0];
 if(binary.mainAction == null){ binary.mainAction = "start"; }
 
-binary.log("actionHero >> " + binary.mainAction);
+binary.log("actionhero >> " + binary.mainAction);
 binary.log("project_root >> " + binary.path.normalize(binary.paths.project_root + "/"))
-binary.log("actionHero_root >> " + binary.path.normalize(binary.paths.actionHero_root + "/"))
+binary.log("actionhero_root >> " + binary.path.normalize(binary.paths.actionhero_root + "/"))
 
 if(binary.argv['isDaemon'] == 'true'){
   binary.isDaemon = true;
@@ -160,7 +160,7 @@ if(binary.actions[binary.mainAction] != null){
       }
     }
     args.push('--isDaemon=true')
-    var command = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+    var command = binary.path.normalize(binary.paths.actionhero_root + "/bin/actionhero");
     var child = binary.spawn(command, args, {detached: true, stdio: 'ignore'});
     child.unref();
     process.nextTick(function(){

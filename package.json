@@ -1,14 +1,14 @@
 {
   "author": "Evan Tahler <evantahler@gmail.com>",
-  "name": "actionHero",
-  "description": "actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks",
-  "version": "6.2.3",
+  "name": "actionhero",
+  "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks",
+  "version": "6.3.0",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
-    "url": "git://github.com/evantahler/actionHero.git"
+    "url": "git://github.com/evantahler/actionhero.git"
   },
-  "main": "actionHero.js",
+  "main": "actionhero.js",
   "keywords": [
     "socket",
     "http",
@@ -49,13 +49,13 @@
     "request": "2.21.x"
   },
   "bin": {
-    "actionHero": "./bin/actionHero"
+    "actionhero": "./bin/actionhero"
   },
   "scripts": {
-    "postinstall": "node ./bin/actionHero intro",
-    "help": "node ./bin/actionHero help",
+    "postinstall": "node ./bin/actionhero intro",
+    "help": "node ./bin/actionhero help",
     "test": "fakeredis=false node ./node_modules/.bin/mocha --reporter spec && fakeredis=true node ./node_modules/.bin/mocha --reporter spec",
-    "start": "node ./bin/actionHero"
+    "start": "node ./bin/actionhero"
   },
   "subdomain": "actionhero",
   "domains": ["demo.actionherojs.com", "actionherojs.com"]

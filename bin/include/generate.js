@@ -18,7 +18,7 @@
   |-- (default location for logs)\n\
   |\n\
   |- node_modules\n\
-  |-- (your modules, actionHero should be npm installed in here)\n\
+  |-- (your modules, actionhero should be npm installed in here)\n\
   |\n\
   |- initializers\n\
   |-- (your initializers, to be loaded in before the project boots)\n\
@@ -36,23 +36,23 @@
   routes.js\n\
   config.js\n\
   Jakefile.js\n\
-  package.json (be sure to include 'actionHero':'x')\n\
+  package.json (be sure to include 'actionhero':'x')\n\
   ";
 
-  documents.config_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/config.js");
-  documents.package_json = binary.fs.readFileSync(binary.paths.actionHero_root + "/package.json");
-  documents.routes_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/routes.js");
-  documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
-  documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
-  documents.jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
-  documents.ah_jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
-  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
+  documents.config_js = binary.fs.readFileSync(binary.paths.actionhero_root + "/config.js");
+  documents.package_json = binary.fs.readFileSync(binary.paths.actionhero_root + "/package.json");
+  documents.routes_js = binary.fs.readFileSync(binary.paths.actionhero_root + "/routes.js");
+  documents.action_status = binary.fs.readFileSync(binary.paths.actionhero_root + "/actions/status.js");
+  documents.task_runAction = binary.fs.readFileSync(binary.paths.actionhero_root + "/tasks/runAction.js");
+  documents.jakefile = binary.fs.readFileSync(binary.paths.actionhero_root + "/Jakefile.js");
+  documents.ah_jakefile = binary.fs.readFileSync(binary.paths.actionhero_root + "/jakelib/actionhero.jake");
+  documents.public_actionheroWebSocket = binary.fs.readFileSync(binary.paths.actionhero_root + "/public/javascript/actionheroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
   documents.package_json = "{\n\
     \"author\": \"YOU <YOU@example.com>\",\n\
-    \"name\": \"my_actionHero_project\",\n\
+    \"name\": \"my_actionhero_project\",\n\
     \"description\": \"\",\n\
     \"version\": \"0.0.1\",\n\
     \"homepage\": \"\",\n\
@@ -66,30 +66,30 @@
       \"node\": \">=0.8.0\"\n\
     },\n\
     \"dependencies\": {\n\
-      \"actionHero\": \""+AHversionNumber+"\"\n\
+      \"actionhero\": \""+AHversionNumber+"\"\n\
     },\n\
     \"devDependencies\": {},\n\
     \"scripts\": {\n\
-      \"start\": \"node ./node_modules/.bin/actionHero start\",\n\
-      \"startCluster\": \"node ./node_modules/.bin/actionHero startCluster\",\n\
-      \"actionHero\": \"node ./node_modules/.bin/actionHero\",\n\
-      \"help\": \"node ./node_modules/.bin/actionHero help\"\n\
+      \"start\": \"node ./node_modules/.bin/actionhero start\",\n\
+      \"startCluster\": \"node ./node_modules/.bin/actionhero startCluster\",\n\
+      \"actionhero\": \"node ./node_modules/.bin/actionhero\",\n\
+      \"help\": \"node ./node_modules/.bin/actionhero help\"\n\
     }\n\
   }\n\
   ";
 
   documents._project_js = "exports._project = function(api, next){\n\
   // modify / append the api global variable\n\
-  // I will be run as part of actionHero\'s boot process\n\
+  // I will be run as part of actionhero\'s boot process\n\
 \n\
   next();\n\
 }\
 ";
 
-  documents.readme_md = "# My actionHero Project\nreadme"; 
+  documents.readme_md = "# My actionhero Project\nreadme"; 
 
-  documents.index_html = "<h1>Hello from actionHero!</h1>\n\
-  <p>If you are reading this, your actionHero project is working.</p>\n\
+  documents.index_html = "<h1>Hello from actionhero!</h1>\n\
+  <p>If you are reading this, your actionhero project is working.</p>\n\
   <p><strong>Good Job!</strong></p>\n\
   ";
 
@@ -97,7 +97,7 @@
 
   //////// LOGIC ////////
 
-  binary.log("Generating a new actionHero project...");
+  binary.log("Generating a new actionhero project...");
 
   // make directories
   binary.utils.create_dir_safely(binary.paths.project_root + "/actions");
@@ -120,15 +120,15 @@
   binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
   binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
-  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionheroWebSocket.js', documents.public_actionheroWebSocket);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
   binary.utils.create_file_safely(binary.paths.project_root + '/Jakefile.js', documents.jakefile);
-  binary.utils.create_file_safely(binary.paths.project_root + '/jakelib/actionHero.jake', documents.ah_jakefile);
+  binary.utils.create_file_safely(binary.paths.project_root + '/jakelib/actionhero.jake', documents.ah_jakefile);
 
   binary.log("");
   binary.log("Generation Complete.  Your project directory should look like this:\n" + documents.projectMap);
   binary.log("");
-  binary.log("run `./node_modules/.bin/actionHero start` to start your server");
+  binary.log("run `./node_modules/.bin/actionhero start` to start your server");
 
   next();
 

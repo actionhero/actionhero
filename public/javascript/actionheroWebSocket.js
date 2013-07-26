@@ -1,6 +1,6 @@
 (function(exports){
 
-  var actionHeroWebSocket = function(options, callback){
+  var actionheroWebSocket = function(options, callback){
     var self = this;
     if(callback == null && typeof options == "function"){
       callback = options; options = null;
@@ -25,7 +25,7 @@
     }
   }
 
-  actionHeroWebSocket.prototype.defaults = function(){
+  actionheroWebSocket.prototype.defaults = function(){
     var host;
     if(typeof window != 'undefined'){ host = window.location.origin; }
     return {
@@ -38,7 +38,7 @@
     }
   }
 
-  actionHeroWebSocket.prototype.log = function(message){
+  actionheroWebSocket.prototype.log = function(message){
     if(console && console.log){
       if(typeof message != "string"){ message = JSON.stringify(message); }
       var date = new Date();
@@ -50,7 +50,7 @@
     }
   }
 
-  actionHeroWebSocket.prototype.connect = function(callback){
+  actionheroWebSocket.prototype.connect = function(callback){
     var self = this;
     self.startupCallback = callback;
     self.client = new self.faye.Client(self.options.host + self.options.path);    
@@ -77,7 +77,7 @@
     });
   }
 
-  actionHeroWebSocket.prototype.setupConnection = function(callback){
+  actionheroWebSocket.prototype.setupConnection = function(callback){
     var self = this;
     setTimeout(function(){
       var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
@@ -110,7 +110,7 @@
     },self.options.connectionDelay);
   }
 
-  actionHeroWebSocket.prototype.completeConnect = function(details){
+  actionheroWebSocket.prototype.completeConnect = function(details){
     var self = this;
     if(typeof self.startupCallback == "function"){
       self.startupCallback(null, details);
@@ -118,7 +118,7 @@
     }
   }
 
-  actionHeroWebSocket.prototype.send = function(args, callback){
+  actionheroWebSocket.prototype.send = function(args, callback){
     var self = this;
     if(typeof callback === "function"){
       self.messageCount++;
@@ -129,7 +129,7 @@
     });
   };
 
-  actionHeroWebSocket.prototype.handleMessage = function(message){
+  actionheroWebSocket.prototype.handleMessage = function(message){
     var self = this;
     if(message.context === "response"){
       if(typeof self.callbacks[message.messageCount] === 'function'){
@@ -158,7 +158,7 @@
     }
   };
 
-  actionHeroWebSocket.prototype.createUUID = function(){
+  actionheroWebSocket.prototype.createUUID = function(){
     // http://www.ietf.org/rfc/rfc4122.txt
     var s = [];
     var hexDigits = "0123456789abcdef";
@@ -173,7 +173,7 @@
     return uuid;
   }
 
-  actionHeroWebSocket.prototype.setIP = function(callback){
+  actionheroWebSocket.prototype.setIP = function(callback){
     var self = this;
     try{
       var xmlhttp = new XMLHttpRequest();
@@ -197,7 +197,7 @@
     }
   }
 
-  actionHeroWebSocket.prototype.action = function(action, params, callback){
+  actionheroWebSocket.prototype.action = function(action, params, callback){
     if(callback == null && typeof params == 'function'){
       callback = params;
       params = null;
@@ -210,42 +210,42 @@
     }, callback);
   }
 
-  actionHeroWebSocket.prototype.say = function(message, callback){
+  actionheroWebSocket.prototype.say = function(message, callback){
     this.send({
       event: 'say', 
       message: message,
     }, callback);
   }
 
-  actionHeroWebSocket.prototype.detailsView = function(callback){
+  actionheroWebSocket.prototype.detailsView = function(callback){
     this.send({event: 'detailsView'}, callback);
   }
 
-  actionHeroWebSocket.prototype.roomView = function(callback){
+  actionheroWebSocket.prototype.roomView = function(callback){
     this.send({event: 'roomView'}, callback);
   }
 
-  actionHeroWebSocket.prototype.roomChange = function(room, callback){
+  actionheroWebSocket.prototype.roomChange = function(room, callback){
     this.room = room;
     this.send({event: 'roomChange', room: room}, callback);
   }
 
-  actionHeroWebSocket.prototype.listenToRoom = function(room, callback){
+  actionheroWebSocket.prototype.listenToRoom = function(room, callback){
     this.send({event: 'listenToRoom', room: room}, callback);
   }
 
-  actionHeroWebSocket.prototype.silenceRoom = function(room, callback){
+  actionheroWebSocket.prototype.silenceRoom = function(room, callback){
     this.send({event: 'silenceRoom', room: room}, callback);
   }
 
-  actionHeroWebSocket.prototype.documentation = function(callback){
+  actionheroWebSocket.prototype.documentation = function(callback){
     this.send({event: 'documentation'}, callback);
   }
 
-  actionHeroWebSocket.prototype.disconnect = function(){
+  actionheroWebSocket.prototype.disconnect = function(){
     this.client.disconnect();
   }
 
-  exports.actionHeroWebSocket = actionHeroWebSocket;
+  exports.actionheroWebSocket = actionheroWebSocket;
 
 })(typeof exports === 'undefined' ? window : exports);

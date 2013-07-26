@@ -1,4 +1,4 @@
-// A collection of helpful JAKE scripts for actionHero. 
+// A collection of helpful JAKE scripts for actionhero. 
 // You can create your own jake scripts in your project's Jakefile.js
 // More information about Jake can be found at https://github.com/mde/jake/
 
@@ -23,7 +23,7 @@ var file_exists = function(file){
 }
 
 var api = function(){
-  return jake.Task["actionHero:environment"].value;
+  return jake.Task["actionhero:environment"].value;
 }
 
 var exitWithError = function(error){
@@ -37,38 +37,38 @@ var exitWithError = function(error){
 // TASKS //
 ///////////
 
-namespace("actionHero", function(){
-  desc("I will load and init an actionHero environment");
+namespace("actionhero", function(){
+  desc("I will load and init an actionhero environment");
   task("environment", {async: true}, function() {
-    if(file_exists(__dirname + "/../actionHero.js")){
-      // in the actionHero project itself
-      var actionHero_root = __dirname + "/..";
-    }else if(file_exists(__dirname + "/../node_modules/actionHero/actionHero.js")){
-      // running from a project's node_modules (bin or actionHero)
-      var actionHero_root = __dirname + "/../node_modules/actionHero";
+    if(file_exists(__dirname + "/../actionhero.js")){
+      // in the actionhero project itself
+      var actionhero_root = __dirname + "/..";
+    }else if(file_exists(__dirname + "/../node_modules/actionhero/actionhero.js")){
+      // running from a project's node_modules (bin or actionhero)
+      var actionhero_root = __dirname + "/../node_modules/actionhero";
     }else{
       // installed globally
-      var actionHero_root = path.normalize(__dirname + "/..");
+      var actionhero_root = path.normalize(__dirname + "/..");
     }
-    var actionHeroPrototype = require(actionHero_root + "/actionHero.js").actionHeroPrototype;
-    var actionHero = new actionHeroPrototype();
+    var actionheroPrototype = require(actionhero_root + "/actionhero.js").actionheroPrototype;
+    var actionhero = new actionheroPrototype();
 
     var configChanges = {
       logger: {
         transports: null,
       }
     }
-    actionHero.initialize({configChanges: configChanges}, function(err, api){
+    actionhero.initialize({configChanges: configChanges}, function(err, api){
       complete(api);   
     });
   });  
 });
 
-namespace("actionHero", function(){
+namespace("actionhero", function(){
   namespace("actions", function(){
 
     desc("List your actions and metadata");
-    task("list", ["actionHero:environment"], {async: true}, function(){
+    task("list", ["actionhero:environment"], {async: true}, function(){
       for(var collection in api().actions.actions){
         console.log(collection)
         for(var version in api().actions.actions[collection]){
@@ -85,11 +85,11 @@ namespace("actionHero", function(){
   });
 });
 
-namespace("actionHero", function(){
+namespace("actionhero", function(){
   namespace("redis", function(){
 
-    desc("This will clear the entire actionHero redis database");
-    task("flush", ["actionHero:environment"], {async: true}, function(){
+    desc("This will clear the entire actionhero redis database");
+    task("flush", ["actionhero:environment"], {async: true}, function(){
       api().redis.client.flushdb(function(error, data){
         exitWithError(error);
         console.log("flushed")
@@ -100,11 +100,11 @@ namespace("actionHero", function(){
   });
 });
 
-namespace("actionHero", function(){
+namespace("actionhero", function(){
   namespace("cache", function(){
 
-    desc("This will clear actionHero's cache");
-    task("clear", ["actionHero:environment"], {async: true}, function(){
+    desc("This will clear actionhero's cache");
+    task("clear", ["actionhero:environment"], {async: true}, function(){
       api().cache.size(function(error, count){
         exitWithError(error);
         api().redis.client.del(api().cache.redisCacheKey, function(error){
@@ -116,7 +116,7 @@ namespace("actionHero", function(){
     });
 
     desc("This will save the current cache as a JSON object");
-    task("dump", ["actionHero:environment"], {async: true}, function(file){
+    task("dump", ["actionhero:environment"], {async: true}, function(file){
       if(file == null){ file = "cache.dump"; }
       api().cache.size(function(error, count){
         exitWithError(error);
@@ -130,7 +130,7 @@ namespace("actionHero", function(){
     });
 
     desc("This will load (and overwrite) the cache from a file");
-    task("load", ["actionHero:environment"], {async: true}, function(file){
+    task("load", ["actionhero:environment"], {async: true}, function(file){
       if(file == null){ file = "cache.dump"; }
         var data = JSON.parse( fs.readFileSync(file) );
         api().redis.client.hmset(api().cache.redisCacheKey, data, function(error, data){

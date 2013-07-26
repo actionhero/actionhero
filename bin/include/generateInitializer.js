@@ -6,7 +6,7 @@ exports['generateInitializer'] = function(binary, next){
   templateLines.push('exports.'+binary.argv['name']+' = function(api, next){');
   templateLines.push('');
   templateLines.push('  // modify / append the api global variable');
-  templateLines.push('  // I will be run as part of actionHero\'s boot process');
+  templateLines.push('  // I will be run as part of actionhero\'s boot process');
   templateLines.push('');
   templateLines.push('  next();');
   templateLines.push('}');

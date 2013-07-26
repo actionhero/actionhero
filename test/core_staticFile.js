@@ -61,14 +61,14 @@ describe('Core: Static File', function(){
   });
 
   it('file: sub paths should work', function(done){
-    specHelper.apiTest.get("/public/" + "logo/actionHero.png", 0, {}, function(response, json){
+    specHelper.apiTest.get("/public/" + "logo/actionhero.png", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       done();
     });
   });
 
   it('file: binary files should also work', function(done){
-    specHelper.apiTest.get("/public/" + "logo/actionHero.png", 0, {}, function(response, json){
+    specHelper.apiTest.get("/public/" + "logo/actionhero.png", 0, {}, function(response, json){
       response.statusCode.should.equal(200);
       response.body.length.should.be.within(136836, 136920);
       done();

@@ -172,7 +172,7 @@ describe('Core: Tasks', function(){
         ( (['periodic_any', 'periodic_all'].indexOf(t.name) >= 0) ).should.be.true;
         t.periodic.should.equal(true);
         t.frequency.should.equal(1000);
-        t.queue.indexOf('actionHero:tasks:delayed').should.equal(0);
+        t.queue.indexOf('actionhero:tasks:delayed').should.equal(0);
         t.state.should.equal('delayed');
       }
       done();
@@ -330,7 +330,7 @@ describe('Core: Tasks', function(){
   //         rawAPI.tasks.changeQueue(rawAPI.tasks.queues.globalQueue, rawAPI.tasks.queues.processingQueue, function(err, task){
   //           task.name.should.equal('regular_any')
   //           rawAPI.tasks.setTaskData(task.id, {api_id: rawAPI.id, worker_id: 0, state: "processing"}, function(err, task){
-  //             task.queue.should.equal('actionHero:tasks:processing')
+  //             task.queue.should.equal('actionhero:tasks:processing')
   //             rawAPI.tasks.queueLength(rawAPI.tasks.queues.globalQueue, function(err, globalCount2){
   //               globalCount2.should.equal(0)
               

@@ -3,7 +3,7 @@ var cache = function(api, next){
   api.cache = {};
   api.cache.sweeperTimer = null;
   api.cache.sweeperTimeout = 10 * 1000;
-  api.cache.redisCacheKey = "actionHero:cache";
+  api.cache.redisCacheKey = "actionhero:cache";
 
   api.cache._start = function(api, callback){
     api.cache.runSweeper();
