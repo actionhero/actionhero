@@ -107,7 +107,7 @@ configData.servers = {
       keepExtensions: false,
       maxFieldsSize: 1024 * 1024 * 100
     },
-    returnErrorCodes: true              // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.  You can also set connection.responseHttpCode to specify a code per request.
+    returnErrorCodes: false              // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.  You can also set connection.responseHttpCode to specify a code per request.
 
   },
   // "socket" : {
