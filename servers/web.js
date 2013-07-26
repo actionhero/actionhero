@@ -119,6 +119,58 @@ var web = function(api, options, next){
   });
 
   server.on("actionComplete", function(connection, toRender, messageCount){
+    completeResponse(connection, toRender, messageCount);
+  });
+
+  /////////////
+  // HELPERS //
+  /////////////
+
+  var handleRequest = function(req, res){
+    browser_fingerprint.fingerprint(req, api.configData.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+      var responseHeaders = []
+      var cookies =  api.utils.parseCookies(req);
+      var responseHttpCode = 200;
+      var method = req.method;
+      var parsedURL = url.parse(req.url, true);
+      for(var i in cookieHash){
+        responseHeaders.push([i, cookieHash[i]]);
+      }
+
+      responseHeaders.push(['Transfer-Encoding', 'Chunked']); // https://github.com/evantahler/actionHero/issues/189
+      responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
+      responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
+
+      if(typeof(api.configData.servers.web.httpHeaders) != null){
+        for(var i in api.configData.servers.web.httpHeaders){
+          responseHeaders.push([i, api.configData.servers.web.httpHeaders[i]]);
+        }
+      }
+             
+      var remoteIP = req.connection.remoteAddress;
+      if(req.headers['x-forwarded-for'] != null){
+        var IPs = req.headers['x-forwarded-for'].split(",");
+        var remoteIP = IPs[0]; 
+      }
+
+      server.buildConnection({
+        rawConnection: {
+          req: req, 
+          res: res, 
+          method: method, 
+          cookies: cookies, 
+          responseHeaders: responseHeaders, 
+          responseHttpCode: responseHttpCode,
+          parsedURL: parsedURL
+        }, 
+        id: fingerprint, 
+        remoteAddress: remoteIP, 
+        remotePort: req.connection.remotePort}
+      ); // will emit "connection"
+    });
+  }
+
+  var completeResponse = function(connection, toRender, messageCount){
     if(toRender === true){
       var stopTime = new Date().getTime();
       connection.response.serverInformation = {
@@ -171,54 +223,6 @@ var web = function(api, options, next){
 
       server.sendMessage(connection, stringResponse);
     }
-  });
-
-  /////////////
-  // HELPERS //
-  /////////////
-
-  var handleRequest = function(req, res){
-    browser_fingerprint.fingerprint(req, api.configData.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
-      var responseHeaders = []
-      var cookies =  api.utils.parseCookies(req);
-      var responseHttpCode = 200;
-      var method = req.method;
-      var parsedURL = url.parse(req.url, true);
-      for(var i in cookieHash){
-        responseHeaders.push([i, cookieHash[i]]);
-      }
-
-      responseHeaders.push(['Transfer-Encoding', 'Chunked']); // https://github.com/evantahler/actionHero/issues/189
-      responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
-      responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
-
-      if(typeof(api.configData.servers.web.httpHeaders) != null){
-        for(var i in api.configData.servers.web.httpHeaders){
-          responseHeaders.push([i, api.configData.servers.web.httpHeaders[i]]);
-        }
-      }
-             
-      var remoteIP = req.connection.remoteAddress;
-      if(req.headers['x-forwarded-for'] != null){
-        var IPs = req.headers['x-forwarded-for'].split(",");
-        var remoteIP = IPs[0]; 
-      }
-
-      server.buildConnection({
-        rawConnection: {
-          req: req, 
-          res: res, 
-          method: method, 
-          cookies: cookies, 
-          responseHeaders: responseHeaders, 
-          responseHttpCode: responseHttpCode,
-          parsedURL: parsedURL
-        }, 
-        id: fingerprint, 
-        remoteAddress: remoteIP, 
-        remotePort: req.connection.remotePort}
-      ); // will emit "connection"
-    });
   }
 
   var determineRequestParams = function(connection, callback){
