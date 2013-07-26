@@ -106,21 +106,22 @@ var actionProcessor = function(api, next){
     }
   }
 
-  api.actionProcessor.prototype.postProcessAction = function(actionTemplate, callback){
+  api.actionProcessor.prototype.postProcessAction = function(actionTemplate, toRender, callback){
     var self = this;
     if(api.actions.postProcessors.length == 0){
-      callback();
+      callback(toRender);
     }else{
       var processors = [];
       api.actions.postProcessors.forEach(function(processor){
         processors.push(function(next){ 
-          processor(self.connection, actionTemplate, function(connection){
+          processor(self.connection, actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
+            toRender = localToRender;
             next();
           });
         })
       });
-      processors.push( function(){ callback() });
+      processors.push( function(){ callback(toRender) });
       async.series(processors);
     }
   }
@@ -174,7 +175,7 @@ var actionProcessor = function(api, next){
                 actionTemplate.run(api, self.connection, function(connection, toRender){
                   self.connection = connection;
                   // actionDomain.dispose();
-                  self.postProcessAction(actionTemplate, function(){
+                  self.postProcessAction(actionTemplate, toRender, function(toRender){
                     self.completeAction(null, toRender);
                   });
                 }); 

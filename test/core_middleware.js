@@ -14,10 +14,10 @@ describe('Core: Middlware', function(){
     })
   });
 
-  after(function(done){
+  afterEach(function(done){
     rawApi.actions.preProcessors  = [];
     rawApi.actions.postProcessors = [];
-    done();
+    process.nextTick(function(){ done(); });
   });
 
   it('Server should be up and return data', function(done){
@@ -40,7 +40,7 @@ describe('Core: Middlware', function(){
   });
 
   it("postProcessors can append the connection", function(done){
-    rawApi.actions.postProcessors.push(function(connection, actionTemplate, next){
+    rawApi.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
       connection.response._postProcessorNote = "note"
       next(connection, true);
     });
@@ -62,6 +62,19 @@ describe('Core: Middlware', function(){
       should.not.exist(json.randomNumber);
       done();
     });
+  })
+
+  it("postProcessors can modify toRender", function(done){
+    rawApi.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
+      next(connection, false);
+    });
+
+    specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      throw new Error("should not get a response");
+    });
+    setTimeout(function(){
+      done();
+    }, 200);
   })
 
 });
