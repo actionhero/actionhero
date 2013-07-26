@@ -95,11 +95,9 @@ var web = function(api, options, next){
       connection.rawConnection.res.end(String(error));
       server.destroyConnection(connection);
     }else{
-      process.nextTick(function(){
-        fileStream.pipe(connection.rawConnection.res);
-        fileStream.on("end", function(){
-          server.destroyConnection(connection);
-        });
+      fileStream.pipe(connection.rawConnection.res);
+      fileStream.on("end", function(){
+        server.destroyConnection(connection);
       });
     }
   };
