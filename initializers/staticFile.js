@@ -46,9 +46,7 @@ var staticFile = function(api, next){
           fileStream.on('error', function(err){
             api.log(err)
           });
-          process.nextTick(function(){
-            callback(connection, null, fileStream, mime, length);
-          })
+          callback(connection, null, fileStream, mime, length);
         }
       });
     },
