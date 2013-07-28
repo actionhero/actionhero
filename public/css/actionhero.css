@@ -31,6 +31,10 @@ h1 {
   clear: both;
 }
 
+.box-tall{
+  min-height: 85px;
+}
+
 .left {
   padding-left: 10px;
   width: 200px;

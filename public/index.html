@@ -29,7 +29,14 @@
         for(var version in data.documentation[actionName]){
           var action = data.documentation[actionName][version];
           var row = "";
-          row += "<div class=\"box\"><div class=\"left\"><a href=\"/api/" + action.name + "?apiVersion=" + version + "\" >" + action.name + " v" + version + "</a></div><div class=\"right\">" + action.description + "</div></div>";
+          row += "<div class=\"box box-tall\"><div class=\"left\">";
+          row += "<a href=\"/api/" + action.name + "?apiVersion=" + version + "\" >" + action.name + " (v" + version + ")</a></div>";
+          row += "<div class=\"right\">" + action.description;
+          row += "<br /><br />";
+          row += "required: " + action.inputs.required.join(",");
+          row += "<br />";
+          row += "optional: " + action.inputs.optional.join(",");
+          row += "</div></div>";
           document.getElementById("actions").innerHTML += row;
         }
       };
