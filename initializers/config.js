@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var argv = require('optimist').argv;
 
 var config = function(api, next){
@@ -10,11 +11,13 @@ var config = function(api, next){
   }
       
   if(argv["config"] != null){
-    var configFile = argv["config"];
+    if(argv["config"].charAt(0) == "/"){ var configFile = argv["config"]; }
+    else{ var configFile = path.resolve(process.cwd(), argv["config"]); }
   }else if(process.env.ACTIONHERO_CONFIG != null){
-    var configFile = process.env.ACTIONHERO_CONFIG;
+    if(process.env.ACTIONHERO_CONFIG.charAt(0) == "/"){ var configFile = process.env.ACTIONHERO_CONFIG; }
+    else{ var configFile = path.resolve(process.cwd(), process.env.ACTIONHERO_CONFIG); }
   }else if(fs.existsSync(process.cwd() + '/config.js')){
-    var configFile = process.cwd() + '/config.js';
+    var configFile = path.resolve(process.cwd(), "config.js");
   }else{
     throw new Error(configFile + "No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG");
     proces.exit(1);
