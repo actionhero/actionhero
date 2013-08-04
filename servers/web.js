@@ -26,7 +26,7 @@ var web = function(api, options, next){
   var server = new api.genericServer(type, options, attributes);
 
   if(["api", "file"].indexOf(api.configData.servers.web.rootEndpointType) < 0){
-    server.log('api.configData.servers.web.rootEndpointType can only be "api" or "file"', "fatal");
+    server.log('api.configData.servers.web.rootEndpointType can only be "api" or "file"', "emerg");
     process.exit();
   }
   if(api.configData.servers.web.flatFileCacheDuration == null){
