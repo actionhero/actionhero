@@ -243,7 +243,7 @@ var web = function(api, options, next){
     fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
     if(requestMode == 'api'){
       if(connection.rawConnection.req.method.toUpperCase() == 'POST'){ // POST params
-        if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
+        if(connection.rawConnection.req.headers['content-type'] == null){ // All keys are lowercase (http://nodejs.org/api/http.html#http_http)
           // not a legal post; bad headers
           api.routes.processRoute(connection);
           if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
@@ -260,6 +260,10 @@ var web = function(api, options, next){
             }else{
               fillParamsFromWebRequest(connection, files);
               fillParamsFromWebRequest(connection, fields);
+              // For JSON POST, we must maintain datastructure
+              if (connection.rawConnection.req.headers['content-type'].match(/json/i)) {
+                connection.params = fields;
+              }
             }
             api.routes.processRoute(connection);
             if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
