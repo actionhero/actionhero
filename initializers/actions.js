@@ -140,7 +140,7 @@ var actions = function(api, next){
           }
         });
       }else{
-        api.log("ao actions folder found", "warning");
+        api.log("no actions folder found", "warning");
       }
     }
 
