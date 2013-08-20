@@ -5,11 +5,11 @@
 
 <img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="300"/>
 
+[![Nodei stats](https://nodei.co/npm/actionHero.png?downloads=true)](https://npmjs.org/package/actionhero_client)
+
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionHero.png)](http://demo.actionherojs.com)
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
-
-[![Build Status](https://api.tddium.com/evantahler-personal/actionHero/badges/28324.png?badge_token=74af5fe1b52f1498e761e47311755b8906ab276a)](https://api.tddium.com/evantahler-personal/actionHero/suites/28324)
+[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero) [![Build Status](https://api.tddium.com/evantahler-personal/actionHero/badges/28324.png?badge_token=74af5fe1b52f1498e761e47311755b8906ab276a)](https://api.tddium.com/evantahler-personal/actionHero/suites/28324)
 
 ## Who is the actionHero?
 actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks. The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).  actionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
