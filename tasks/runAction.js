@@ -19,7 +19,7 @@ task.run = function(api, params, next){
     remoteIP: '0', 
     rawConnection: {}
   });
-  connection.params = params;
+  connection.params = params;  // params.action should be set
 
   var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
     if(connection.error){
