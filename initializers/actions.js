@@ -81,8 +81,8 @@ var actions = function(api, next){
     }
   }
 
-  if(api.configData.general.simultaniousActions == null){
-    api.configData.general.simultaniousActions = 5;
+  if(api.configData.general.simultaneousActions == null){
+    api.configData.general.simultaneousActions = 5;
   }
   
   var validateAction = function(action){

@@ -144,7 +144,7 @@ var actionProcessor = function(api, next){
 
     if(api.running != true){
       self.completeAction("the server is shutting down");
-    }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaniousActions){
+    }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaneousActions){
       self.completeAction("you have too many pending requests");
     }else if(self.connection.error !== null){
       self.completeAction();

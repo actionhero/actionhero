@@ -22,7 +22,7 @@ configData.general = {
   workers : 5,                                                    // The number of internal "workers" (timers) this node will have.
   developmentMode: false,                                         // watch for changes in actions and tasks, and reload/restart them on the fly
   pidFileDirectory: process.cwd() + "/pids/",                     // the location of the directory to keep pidfiles
-  simultaniousActions: 5                                          // how many pending actions can a single connection be working on 
+  simultaneousActions: 5                                          // how many pending actions can a single connection be working on 
 };
 
 /////////////
