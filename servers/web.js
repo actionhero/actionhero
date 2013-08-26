@@ -237,8 +237,11 @@ var web = function(api, options, next){
       }
       else if(pathParts[1] == api.configData.servers.web.urlPathForFiles || connection.rawConnection.parsedURL.pathname.indexOf(api.configData.servers.web.urlPathForFiles) === 0){ 
         requestMode = 'file'; 
-        for(var i in filePathParts){
+        filePathParts.shift();
+        var i = 1;
+        while(i < api.configData.servers.web.urlPathForFiles.split("/").length - 1){
           filePathParts.shift();
+          i++;
         }
       }
     }
