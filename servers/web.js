@@ -235,9 +235,11 @@ var web = function(api, options, next){
         requestMode = 'api'; 
         apiPathParts.shift();
       }
-      else if(pathParts[1] == api.configData.servers.web.urlPathForFiles){ 
+      else if(pathParts[1] == api.configData.servers.web.urlPathForFiles || connection.rawConnection.parsedURL.pathname.indexOf(api.configData.servers.web.urlPathForFiles) === 0){ 
         requestMode = 'file'; 
-        filePathParts.shift();
+        for(var i in filePathParts){
+          filePathParts.shift();
+        }
       }
     }
     fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
