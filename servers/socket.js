@@ -45,9 +45,7 @@ var socket = function(api, options, next){
         handleConnection(rawConnection);
       });
     }else{
-      var key = fs.readFileSync(options.keyFile);
-      var cert = fs.readFileSync(options.certFile);
-      server.server = tls.createServer({key: key, cert: cert}, function(rawConnection){
+      server.server = tls.createServer(api.configData.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
       });
     }

@@ -46,9 +46,7 @@ var web = function(api, options, next){
         handleRequest(req, res);
       });
     }else{
-      var key = fs.readFileSync(options.keyFile);
-      var cert = fs.readFileSync(options.certFile);
-      server.server = https.createServer({key: key, cert: cert}, function(req, res){
+      server.server = https.createServer(api.configData.servers.web.serverOptions, function(req, res){
         handleRequest(req, res);
       });
     }

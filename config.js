@@ -87,11 +87,10 @@ configData.faye = {
 configData.servers = {
   "web" : {
     secure: false,                       // HTTP or HTTPS?
+    serverOptions: {},                   // passed to https.createServer if secure=ture. Should contain SSL certificates
     port: 8080,                          // Port or Socket
     bindIP: "0.0.0.0",                   // which IP to listen on (use 0.0.0.0 for all)
-    keyFile: "./certs/server-key.pem",   // only for secure = true
-    certFile: "./certs/server-cert.pem", // only for secure = true
-    httpHeaders : { },                   // Any additional headers you want actionHero to respond with
+    httpHeaders : {},                    // Any additional headers you want actionHero to respond with
     urlPathForActions : "api",           // route which actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
     urlPathForFiles : "public",          // route which static files will be served from; path (relitive to your project root) to server static content from
     rootEndpointType : "api",            // when visiting the root URL, should visitors see "api" or "file"? visitors can always visit /api and /public as normal
@@ -108,14 +107,12 @@ configData.servers = {
       maxFieldsSize: 1024 * 1024 * 100
     },
     returnErrorCodes: false              // when enabled, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.  You can also set connection.responseHttpCode to specify a code per request.
-
   },
   // "socket" : {
   //   secure: false,                        // TCP or TLS?
+  //   serverOptions: {},                    // passed to tls.createServer if secure=ture. Should contain SSL certificates
   //   port: 5000,                           // Port or Socket
   //   bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
-  //   keyFile: "./certs/server-key.pem",    // only for secure = true
-  //   certFile: "./certs/server-cert.pem"   // only for secure = true
   // },
   // "websocket" : {
   // },
