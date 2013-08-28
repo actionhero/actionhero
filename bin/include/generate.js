@@ -20,14 +20,14 @@
   |- node_modules\n\
   |-- (your modules, actionHero should be npm installed in here)\n\
   |\n\
-  |- initializers\n\
-  |-- (your initializers, to be loaded in before the project boots)\n\
-  |\n\
   |- pids\n\
   |-- (pidfiles for your running servers)\n\
   |\n\
   |- public\n\
   |-- (your static assets to be served by /file)\n\
+  |\n\
+  |- servers\n\
+  |-- (custom servers you may make)\n\
   |\n\
   |- tasks\n\
   |-- (your tasks)\n\
