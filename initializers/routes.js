@@ -36,7 +36,9 @@ var routes = function(api, next){
     if(urlParts[0] == api.configData.servers.web.urlPathForActions){ urlParts.splice(0,1); }
     for(var i in matchParts){
       var part = matchParts[i];
-      if(part[0] === ":" && part.indexOf("(") < 0){
+      if (!urlParts[i]) {
+        return response;
+      }else if(part[0] === ":" && part.indexOf("(") < 0){
         var variable = part.replace(":","");
         response.params[variable] = urlParts[i];
       }else if(part[0] === ":" && part.indexOf("(") >= 0){
