@@ -5,7 +5,7 @@
 
 <img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="300"/>
 
-[![Nodei stats](https://nodei.co/npm/actionHero.png?downloads=true)](https://npmjs.org/package/actionhero_client)
+[![Nodei stats](https://nodei.co/npm/actionHero.png?downloads=true)](https://npmjs.org/package/actionHero)
 
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionHero.png)](http://demo.actionherojs.com)
 
