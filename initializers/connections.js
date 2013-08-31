@@ -36,9 +36,7 @@ var connections = function(api, next){
       "listenToRoom",
       "silenceRoom",
       "detailsView",
-      "say",
-      "setIP",
-      "setPort"
+      "say"
     ],
 
     connections: {}
@@ -115,14 +113,6 @@ var connections = function(api, next){
       server.log("verb", 'debug', {verb: verb, to: self.remoteIP, params: JSON.stringify(words)});
         if(verb === "quit" || verb === "exit"){
           server.goodbye(self, verb + " requested");
-
-        }else if(verb === "setIP"){
-          self.remoteIP = words[0];
-          callback(null, null);
-
-        }else if(verb === "setPort"){
-          self.remotePort = words[0];
-          callback(null, null);
 
         }else if(verb === "paramAdd"){
           if(words[0].indexOf("=") >= 0){

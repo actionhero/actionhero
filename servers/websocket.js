@@ -14,7 +14,6 @@ var websocket = function(api, options, next){
     sendWelcomeMessage: 200, // delay sending by 200ms
     fayeChannelPrefix: "/client/websocket/connection/",
     verbs: [
-      "setIP",
       "quit",
       "exit",
       "documentation",
@@ -109,13 +108,14 @@ var websocket = function(api, options, next){
           if(server.connectionsMap[uuid] != null){
             message.error = "You cannot subscribe to another client's channel";
           }else{
+            var details = remoteConnectionDetails(message.clientId);
             server.buildConnection({
               rawConnection  : { 
                 clientId: message.clientId,
                 uuid: uuid,
               }, 
-              remoteAddress  : 0, // to be filled in by a later verb
-              remotePort     : 0  // to be filled in by a later verb
+              remoteAddress  : details.remoteIp,
+              remotePort     : details.remotePort 
             }); // will emit "connection"
           }
         }
@@ -125,6 +125,17 @@ var websocket = function(api, options, next){
       }
     }
   });
+
+  var remoteConnectionDetails = function(clientId){
+    var remoteIp = "0.0.0.0"
+    var remotePort = 0
+    var fayeConnection = api.faye.server._server._engine._connections[clientId];
+    if(fayeConnection.socket != null){
+      remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
+      remotePort = fayeConnection.socket._socket._stream.remotePort
+    }
+    return {remoteIp: remoteIp, remotePort: remotePort};
+  }
 
   var incommingMessage = function(message){
     var uuid = message.channel.split("/")[4];
@@ -147,9 +158,6 @@ var websocket = function(api, options, next){
         connection.verbs(verb, words, function(error, data){
           if(error == null){
             var message = {status: "OK", context: "response", data: data};
-            if(verb === "setIP" || verb === "setPort"){
-              server.log(uuid + " " + verb + " from " + words[0]);
-            }
             server.sendMessage(connection, message);
           }else{
             var message = {status: error, context: "response", data: data}
