@@ -53,7 +53,7 @@
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
     self.startupCallback = callback;
-    self.client = new self.faye.Client(self.options.host + self.options.path);    
+    self.client = new self.faye.Client(self.options.host + self.options.path);   
     self.setupConnection(function(){
       if(typeof self.events.connect === 'function'){
         self.events.connect('connected');
@@ -91,14 +91,12 @@
         });
 
         setTimeout(function(){
-          self.setIP(function(err, ip){
-            self.detailsView(function(details){
-              if(self.room != null){
-                self.send({event: 'roomChange', room: self.room});
-              }
-              self.completeConnect(details);
-              callback();
-            });
+          self.detailsView(function(details){
+            if(self.room != null){
+              self.send({event: 'roomChange', room: self.room});
+            }
+            self.completeConnect(details);
+            callback();
           });
         },self.options.connectionDelay);
 
@@ -171,30 +169,6 @@
 
     var uuid = s.join("");
     return uuid;
-  }
-
-  actionHeroWebSocket.prototype.setIP = function(callback){
-    var self = this;
-    try{
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange=function(){
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-          var response = JSON.parse(xmlhttp.responseText);
-          self.ip = response.requestorInformation.remoteIP;
-          self.send({ event: 'setIP', ip: self.ip }, function(){
-            callback(null, self.ip);
-          });
-        }
-      }
-      xmlhttp.open("GET", self.options.host + self.options.apiPath, true);
-      xmlhttp.send();
-    }catch(e){
-      // can't make the ajax call, assume it's localhost...
-      self.ip = "127.0.0.1";
-      self.send({ event: 'setIP', ip: self.ip }, function(){
-        callback(null, self.ip);
-      });
-    }
   }
 
   actionHeroWebSocket.prototype.action = function(action, params, callback){
