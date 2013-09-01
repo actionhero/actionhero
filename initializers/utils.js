@@ -58,14 +58,14 @@ var utils = function(api, next){
   api.utils.hashMerge = function(a, b) {
     var c = {};
     for(var i in a){
-      if(typeof a[i] === 'object' && !Array.isArray(a[i]) && a[i] != null){
+      if(api.utils.isPlainObject(a[i])){
         c[i] = api.utils.hashMerge(c[i], a[i]);
       }else{
         c[i] = a[i];
       }
     }
     for(var i in b){
-      if(typeof b[i] === 'object' && !Array.isArray(b[i]) && b[i] != null){
+      if(api.utils.isPlainObject(b[i])){
         c[i] = api.utils.hashMerge(c[i], b[i]);
       }else{
         c[i] = b[i];
@@ -73,6 +73,17 @@ var utils = function(api, next){
     }
     return c;
   };
+
+  api.utils.isPlainObject = function(o){
+    var safeTypes = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
+    if (o == null){ return false; }
+    if ((o instanceof Object) == false){ return false; }
+    for(var i in safeTypes){
+      if(o instanceof safeTypes[i]){ return false; }
+    }
+    if(o.toString() != '[object Object]'){ return false; }
+    return true; 
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // unique-ify an array
