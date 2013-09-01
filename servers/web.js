@@ -1,5 +1,3 @@
-var http = require('http');
-var https = require('https');
 var url = require('url');
 var fs = require('fs');
 var formidable = require('formidable');
@@ -42,10 +40,12 @@ var web = function(api, options, next){
 
   server._start = function(next){
     if(options.secure == false){
+      var http = require('http');
       server.server = http.createServer(function(req, res){
         handleRequest(req, res);
       });
     }else{
+      var https = require('https');
       server.server = https.createServer(api.configData.servers.web.serverOptions, function(req, res){
         handleRequest(req, res);
       });

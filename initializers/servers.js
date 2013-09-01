@@ -73,15 +73,17 @@ var servers = function(api, next){
   var started = 0;
   for(var server in inits){
     started++;
-    var options = api.configData.servers[server];
-    inits[server](api, options, function(serverObject){
-      api.servers.servers[server] = serverObject;
-      api.log("initialized server: " + server, "debug");
-      process.nextTick(function(){
-        started--;
-        if(started == 0){ next(); }
+    (function(server){
+      var options = api.configData.servers[server];
+      inits[server](api, options, function(serverObject){
+        api.servers.servers[server] = serverObject;
+        api.log("initialized server: " + server, "debug");
+        process.nextTick(function(){
+          started--;
+          if(started == 0){ next(); }
+        });
       });
-    });
+    })(server)
   }
   if(started == 0){ next(); }
 }
