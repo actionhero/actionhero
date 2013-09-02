@@ -70,14 +70,14 @@ var taskProcessor = function(api, next){
     self.processLocalQueue(function(){
       self.processGlobalQueue(function(){
         self.processDelayedQueue(function(){
-          self.setWorkerStatus("idle", function(){
-            if(self.running == true){
+          if(self.running == true){
+            self.setWorkerStatus("idle", function(){
               self.timer = setTimeout(function(){
                 self.process();
-              }, self.cycleTimeMS); 
-            }
+              }, self.cycleTimeMS).unref(); 
+            });
             if(typeof callback == "function"){ callback(); }
-          });
+          }
         });
       });
     });
@@ -85,88 +85,100 @@ var taskProcessor = function(api, next){
 
   api.taskProcessor.prototype.processLocalQueue = function(callback){
     var self = this;
-    self.setWorkerStatus("warming:local", function(){
-      api.tasks.popFromQueue(api.tasks.queues.localQueue, function(err, taskIdReturned){
-        if(err != null){
-          callback(err, null);
-        }else if(taskIdReturned == null){
-          callback(null, null);
-        }else{
-          api.tasks.getTaskData(taskIdReturned, function(err, data){
-            self.currentTask = new api.task(data);
-            var startTime = new Date().getTime();
-            self.setWorkerStatus("working task: " + self.currentTask.id, function(){
-              api.tasks.setTaskData(self.currentTask.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
-                if(self.currentTask.toAnnounce != false){ self.log("starting task " + self.currentTask.name + ", " + self.currentTask.id, 'notice', self.currentTask.params); }
-                api.stats.increment("tasks:tasksCurrentlyRunning");
-                api.stats.increment("tasks:ranTasks:" + self.currentTask.name);
-                self.currentTask.run(function(){
-                  api.stats.increment("tasks:tasksCurrentlyRunning", -1);
-                  if(self.currentTask != null){
-                    var deltaSeconds = Math.round((new Date().getTime() - startTime) / 1000)
-                    if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + " (" + deltaSeconds + "s), " + self.currentTask.id); }
-                    if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
-                      self.currentTask.runAt = null;
-                      api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
-                        self.currentTask.enqueue(function(error){
-                          api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
-                            if(error != null){ self.log(error); }
-                            delete self.currentTask;
-                            callback(null, taskIdReturned);
+    if(self.running){
+      self.setWorkerStatus("warming:local", function(){
+        api.tasks.popFromQueue(api.tasks.queues.localQueue, function(err, taskIdReturned){
+          if(err != null){
+            callback(err, null);
+          }else if(taskIdReturned == null){
+            callback(null, null);
+          }else{
+            api.tasks.getTaskData(taskIdReturned, function(err, data){
+              self.currentTask = new api.task(data);
+              var startTime = new Date().getTime();
+              self.setWorkerStatus("working task: " + self.currentTask.id, function(){
+                api.tasks.setTaskData(self.currentTask.id, {api_id: api.id, worker_id: self.id, state: "processing"}, function(){
+                  if(self.currentTask.toAnnounce != false){ self.log("starting task " + self.currentTask.name + ", " + self.currentTask.id, 'notice', self.currentTask.params); }
+                  api.stats.increment("tasks:tasksCurrentlyRunning");
+                  api.stats.increment("tasks:ranTasks:" + self.currentTask.name);
+                  self.currentTask.run(function(){
+                    api.stats.increment("tasks:tasksCurrentlyRunning", -1);
+                    if(self.currentTask != null){
+                      var deltaSeconds = Math.round((new Date().getTime() - startTime) / 1000)
+                      if(self.currentTask.toAnnounce != false){ self.log("completed task " + self.currentTask.name + " (" + deltaSeconds + "s), " + self.currentTask.id); }
+                      if(self.currentTask.periodic == true && self.currentTask.isDuplicate === false){
+                        self.currentTask.runAt = null;
+                        api.tasks.denotePeriodicTaskAsClear(self.currentTask, function(){
+                          self.currentTask.enqueue(function(error){
+                            api.tasks.denotePeriodicTaskAsEnqueued(self.currentTask, function(error){
+                              if(error != null){ self.log(error); }
+                              delete self.currentTask;
+                              callback(null, taskIdReturned);
+                            });
                           });
                         });
-                      });
-                    }else{
-                      api.tasks.clearTaskData(self.currentTask.id, function(){
-                        delete self.currentTask;
-                        callback(null, taskIdReturned);
-                      });
+                      }else{
+                        api.tasks.clearTaskData(self.currentTask.id, function(){
+                          delete self.currentTask;
+                          callback(null, taskIdReturned);
+                        });
+                      }
                     }
-                  }
+                  });
                 });
               });
             });
-          });
-        }
+          }
+        });
       });
-    });
+    }else{
+      callback();
+    }
   }
 
   api.taskProcessor.prototype.processGlobalQueue = function(callback){
     var self = this;
-    self.setWorkerStatus("warming:global", function(){
-      api.tasks.changeQueue(api.tasks.queues.globalQueue, api.tasks.queues.localQueue, function(err, task){
-        if(task == null){
-          callback(null, null);
-        }else{
-          self.currentTask = task;
-          api.tasks.copyToReleventLocalQueues(task, function(){
-            delete self.currentTask;
-            callback(null, task.id);
-          });
-        }
+    if(self.running){
+      self.setWorkerStatus("warming:global", function(){
+        api.tasks.changeQueue(api.tasks.queues.globalQueue, api.tasks.queues.localQueue, function(err, task){
+          if(task == null){
+            callback(null, null);
+          }else{
+            self.currentTask = task;
+            api.tasks.copyToReleventLocalQueues(task, function(){
+              delete self.currentTask;
+              callback(null, task.id);
+            });
+          }
+        });
       });
-    });
+    }else{
+      callback();
+    }
   }
   
   api.taskProcessor.prototype.processDelayedQueue = function(callback){
     var self = this;
-    self.setWorkerStatus("warming:delayed", function(){
-      self.setWorkerStatus("checking delayed queue", function(){
-        api.tasks.promoteFromDelayedQueue(function(err, task){
-          if(task != null){ 
-            self.currentTask = task;
-            if(self.currentTask.toAnnounce != false){
-              self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug");
-            } 
-            delete self.currentTask;
-            callback(null, task.id);
-          }else{
-            callback(null, null);
-          }
+    if(self.running){
+      self.setWorkerStatus("warming:delayed", function(){
+        self.setWorkerStatus("checking delayed queue", function(){
+          api.tasks.promoteFromDelayedQueue(function(err, task){
+            if(task != null){ 
+              self.currentTask = task;
+              if(self.currentTask.toAnnounce != false){
+                self.log("time to process delayed task: " + task.name + " ( " + task.id + " )", "debug");
+              } 
+              delete self.currentTask;
+              callback(null, task.id);
+            }else{
+              callback(null, null);
+            }
+          });
         });
       });
-    });
+    }else{
+      callback();
+    }
   }
 
   api.taskProcessor.prototype.start = function(){
