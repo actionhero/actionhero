@@ -33,11 +33,21 @@ var redis = function(api, next){
   }
 
   api.redis._start = function(api, next){
-    api.redis.ping(function(){
-      api.redis.checkForDroppedPeers(function(){
-        next();
+    if(api.redis['client'] == null){
+      api.redis.initialize(function(){
+        api.redis.ping(function(){
+          api.redis.checkForDroppedPeers(function(){
+            next();
+          });
+        });
       });
-    });
+    }else{
+      api.redis.ping(function(){
+        api.redis.checkForDroppedPeers(function(){
+          next();
+        });
+      });
+    }
   }
 
   api.redis._teardown = function(api, next){
@@ -46,41 +56,42 @@ var redis = function(api, next){
       if(count != 1){ api.log("Error removing myself from the peers list", "error"); }
       api.redis.client.hdel("actionHero:peerPings", api.id, function(){
         api.redis.client.quit();
+        delete api.redis['client'];
         process.nextTick(function(){ next(); });
       });
     });
   }
     
   api.redis.initialize = function(callback){
-      api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
-      api.redis.client.on("error", function (err) {
-        api.log("Redis Error: " + err, "emerg");
-        process.exit();  // redis is really important...
-      });
+    api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
+    api.redis.client.on("error", function (err) {
+      api.log("Redis Error: " + err, "emerg");
+      process.exit();  // redis is really important...
+    });
 
-      api.redis.client.on("connect", function (err) {
-        api.log("connected to redis", "debug");
-      });
+    api.redis.client.on("connect", function (err) {
+      api.log("connected to redis", "debug");
+    });
 
-      if(api.configData.redis.password != null){
-        api.redis.client.auth(api.configData.redis.password, function(){
-          api.redis.client.select(api.configData.redis.DB, function(err){
-            if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
-              api.redis.initPeers(callback);
-          });
-        }); 
-      }else if(api.configData.redis.fake != true){
-        process.nextTick(function(){
-          api.redis.client.select(api.configData.redis.DB, function(err){
-            if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
+    if(api.configData.redis.password != null){
+      api.redis.client.auth(api.configData.redis.password, function(){
+        api.redis.client.select(api.configData.redis.DB, function(err){
+          if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
             api.redis.initPeers(callback);
-          });
         });
-      }else{
-        process.nextTick(function(){
+      }); 
+    }else if(api.configData.redis.fake != true){
+      process.nextTick(function(){
+        api.redis.client.select(api.configData.redis.DB, function(err){
+          if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
           api.redis.initPeers(callback);
         });
-      }
+      });
+    }else{
+      process.nextTick(function(){
+        api.redis.initPeers(callback);
+      });
+    }
   };
 
   api.redis.initPeers = function(callback){

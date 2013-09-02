@@ -4,12 +4,22 @@ describe('Core: actionCluster', function(){
   var should = require("should");
   var externalIP = 'actionHero';
 
+  var startAllServers = function(done){
+    specHelper.startServer(0, function(){
+      specHelper.startServer(1, function(){
+        specHelper.startServer(2, function(){
+          done();
+        });
+      });
+    });
+  }
+
   var stopAllServers = function(done){
     specHelper.stopServer(0, function(){
-        specHelper.stopServer(1, function(){
-          specHelper.stopServer(2, function(){
-            done();
-          });
+      specHelper.stopServer(1, function(){
+        specHelper.stopServer(2, function(){
+          done();
+        });
       });
     });
   }
@@ -35,7 +45,7 @@ describe('Core: actionCluster', function(){
   });
 
   after(function(done){
-    this.timeout(5000);
+    this.timeout(10000);
     stopAllServers(function(){
       setTimeout(done, 1000);
     });
@@ -263,7 +273,15 @@ describe('Core: actionCluster', function(){
       client3 = net.connect(specHelper.params[2].servers.socket.port);
       client3.setEncoding('utf8');
       client3.on("data", connnectedClient);
+    });
 
+    after(function(done){
+      client1.destroy();
+      client2.destroy();
+      client3.destroy();
+      setTimeout(function(){
+        done();
+      }, 500)
     });
 
     it("all connections should be in the default room and client #1 can see them", function(done){

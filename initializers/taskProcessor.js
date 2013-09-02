@@ -75,7 +75,9 @@ var taskProcessor = function(api, next){
               self.timer = setTimeout(function(){
                 self.process();
               }, self.cycleTimeMS).unref(); 
+              if(typeof callback == "function"){ callback(); }
             });
+          }else{
             if(typeof callback == "function"){ callback(); }
           }
         });
@@ -85,7 +87,7 @@ var taskProcessor = function(api, next){
 
   api.taskProcessor.prototype.processLocalQueue = function(callback){
     var self = this;
-    if(self.running){
+    if(api.running){
       self.setWorkerStatus("warming:local", function(){
         api.tasks.popFromQueue(api.tasks.queues.localQueue, function(err, taskIdReturned){
           if(err != null){
@@ -138,7 +140,7 @@ var taskProcessor = function(api, next){
 
   api.taskProcessor.prototype.processGlobalQueue = function(callback){
     var self = this;
-    if(self.running){
+    if(api.running){
       self.setWorkerStatus("warming:global", function(){
         api.tasks.changeQueue(api.tasks.queues.globalQueue, api.tasks.queues.localQueue, function(err, task){
           if(task == null){
@@ -159,7 +161,7 @@ var taskProcessor = function(api, next){
   
   api.taskProcessor.prototype.processDelayedQueue = function(callback){
     var self = this;
-    if(self.running){
+    if(api.running){
       self.setWorkerStatus("warming:delayed", function(){
         self.setWorkerStatus("checking delayed queue", function(){
           api.tasks.promoteFromDelayedQueue(function(err, task){
