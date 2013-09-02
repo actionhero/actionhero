@@ -45,48 +45,42 @@ var redis = function(api, next){
     api.redis.client.lrem("actionHero:peers", 1, api.id, function(err, count){
       if(count != 1){ api.log("Error removing myself from the peers list", "error"); }
       api.redis.client.hdel("actionHero:peerPings", api.id, function(){
-        next();
+        api.redis.client.quit();
+        process.nextTick(function(){ next(); });
       });
     });
   }
     
   api.redis.initialize = function(callback){
-    var started = 0;
-    ['client', 'clientSubscriber'].forEach(function(client){
-      started++;
-      api.redis[client] = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
-      api.redis[client].on("error", function (err) {
+      api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
+      api.redis.client.on("error", function (err) {
         api.log("Redis Error: " + err, "emerg");
         process.exit();  // redis is really important...
       });
 
-      api.redis[client].on("connect", function (err) {
-        api.log("connected to redis ("+client+")", "debug");
+      api.redis.client.on("connect", function (err) {
+        api.log("connected to redis", "debug");
       });
 
       if(api.configData.redis.password != null){
-        api.redis[client].auth(api.configData.redis.password, function(){
-          api.redis[client].select(api.configData.redis.DB, function(err){
+        api.redis.client.auth(api.configData.redis.password, function(){
+          api.redis.client.select(api.configData.redis.DB, function(err){
             if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
-            started--;
-            if(started == 0){ api.redis.initPeers(callback); }
+              api.redis.initPeers(callback);
           });
         }); 
       }else if(api.configData.redis.fake != true){
         process.nextTick(function(){
-          api.redis[client].select(api.configData.redis.DB, function(err){
+          api.redis.client.select(api.configData.redis.DB, function(err){
             if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
-            started--;
-            if(started == 0){ api.redis.initPeers(callback); }
+            api.redis.initPeers(callback);
           });
         });
       }else{
         process.nextTick(function(){
-          started--;
-          if(started == 0){ api.redis.initPeers(callback); }
+          api.redis.initPeers(callback);
         });
       }
-    });
   };
 
   api.redis.initPeers = function(callback){
