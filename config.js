@@ -48,15 +48,12 @@ if(cluster.isMaster){
 }
 
 // file logger
+try{ 
+  fs.mkdirSync("./log");
+}catch(e){
+  if(e.code != "EEXIST"){ console.log(e); process.exit(); }
+}
 configData.logger.transports.push(function(api, winston){
-  try{ 
-    fs.mkdirSync("./log");
-    console.log("created ./log directory");
-  }catch(e){
-    if(e.code != "EEXIST"){
-      console.log(e); process.exit();
-    }
-  }
   return new (winston.transports.File)({
     filename: './log/' + api.pids.title + '.log',
     level: "info",
