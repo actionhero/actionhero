@@ -11,15 +11,13 @@ var faye = function(api, next){
   api.faye._start = function(api, next){
 
     var options = api.configData.faye;
-    if(api.redis.fake != true){
-      options.engine = {
-        type: require('faye-redis'),
-        host: api.configData.redis.host,
-        port: api.configData.redis.port,
-        password: api.configData.redis.password,
-        database: api.configData.redis.DB,
-        namespace: "faye:",
-      }
+    options.engine = {
+      type: require('faye-redis'),
+      host: api.configData.redis.host,
+      port: api.configData.redis.port,
+      password: api.configData.redis.password,
+      database: api.configData.redis.DB,
+      namespace: "faye:",
     }
 
     api.faye.server = new fayePackage.NodeAdapter(options);
@@ -55,6 +53,8 @@ var faye = function(api, next){
 
   api.faye._teardown = function(api, next){
     api.faye.server.getClient().disconnect();
+    api.faye.server._server._engine._engine._redis.quit();
+    api.faye.server._server._engine._engine._subscriber.quit();
     next();
   }
 
