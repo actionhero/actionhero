@@ -33,21 +33,11 @@ var redis = function(api, next){
   }
 
   api.redis._start = function(api, next){
-    if(api.redis['client'] == null){
-      api.redis.initialize(function(){
-        api.redis.ping(function(){
-          api.redis.checkForDroppedPeers(function(){
-            next();
-          });
-        });
+    api.redis.ping(function(){
+      api.redis.checkForDroppedPeers(function(){
+        next();
       });
-    }else{
-      api.redis.ping(function(){
-        api.redis.checkForDroppedPeers(function(){
-          next();
-        });
-      });
-    }
+    });
   }
 
   api.redis._teardown = function(api, next){
@@ -55,8 +45,6 @@ var redis = function(api, next){
     api.redis.client.lrem("actionHero:peers", 1, api.id, function(err, count){
       if(count != 1){ api.log("Error removing myself from the peers list", "error"); }
       api.redis.client.hdel("actionHero:peerPings", api.id, function(){
-        api.redis.client.quit();
-        delete api.redis['client'];
         process.nextTick(function(){ next(); });
       });
     });

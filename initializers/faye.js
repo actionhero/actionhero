@@ -53,8 +53,6 @@ var faye = function(api, next){
 
   api.faye._teardown = function(api, next){
     api.faye.server.getClient().disconnect();
-    api.faye.server._server._engine._engine._redis.quit();
-    api.faye.server._server._engine._engine._subscriber.quit();
     next();
   }
 
