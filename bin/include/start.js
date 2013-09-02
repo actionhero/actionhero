@@ -3,7 +3,7 @@ exports['start'] = function(binary, next){
   var cluster = require('cluster');
   var actionHeroPrototype = require(binary.paths.actionHero_root + "/actionHero.js").actionHeroPrototype;
   var actionHero = new actionHeroPrototype();
-  var shutdownTimeout = 1000 * 60 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
+  var shutdownTimeout = 1000 * 10 // number of ms to wait to do a forcible shutdown if actionHero won't stop gracefully
   var api = {};
 
   // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.
@@ -13,7 +13,6 @@ exports['start'] = function(binary, next){
   };
 
   var startServer = function(next){
-    if(cluster.isWorker){ process.send("starting"); }
     actionHero.start(params, function(err, api_from_callback){
       if(err){
         console.log(err);
@@ -21,7 +20,6 @@ exports['start'] = function(binary, next){
       }else{
         api = api_from_callback;
         if(typeof next == "function"){
-          if(cluster.isWorker){ process.send("started"); }
           next(api);
         }
       }
@@ -42,20 +40,29 @@ exports['start'] = function(binary, next){
     });
   }
 
-  // handle signals from master if running in cluster
+  var stopProcess = function(callback){
+    var finalTimer = setTimeout(process.exit, shutdownTimeout).unref();
+    stopServer(function(){
+      if(typeof callback == "function"){ callback(); }
+      process.nextTick(function(){
+        process.exit();
+      });
+    });
+  }
+
   if(cluster.isWorker){
     process.on('message', function(msg) {
       if(msg == "start"){
+        process.send("starting");
         startServer(function(){ 
-          //
+          process.send("started");
         });
       }
       else if(msg == "stop"){
         process.send("stopping");
-        stopServer(function(){
+        stopProcess(function(){
           process.send("stopped");
-          setTimeout(process.exit, 500);
-        })
+        });
       }
       else if(msg == "restart"){
         process.send("restarting");
@@ -64,18 +71,12 @@ exports['start'] = function(binary, next){
         });
       }
     });
-    process.on('SIGINT', function(){}); // catch to ignore
   }else{
     process.on('SIGINT', function(){
-      setTimeout(process.exit, shutdownTimeout);
-      stopServer(function(){
-        setTimeout(process.exit, 500);
-      });
+      stopProcess();
     });
     process.on('SIGTERM', function(){
-      stopServer(function(){
-        setTimeout(process.exit, 500);
-      });
+      stopProcess();
     });
     process.on('SIGUSR2', function(){
       restartServer();
