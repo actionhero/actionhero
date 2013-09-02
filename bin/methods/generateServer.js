@@ -1,6 +1,6 @@
 exports['generateServer'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.hardError("name is a required input"); }
+  if(binary.argv.name == null){ binary.utils.hardError("name is a required input"); }
 
   var templateLines = [];
   templateLines.push('var ' + binary.argv['name'] + ' = function(api, options, next){');

@@ -1,30 +1,41 @@
 #!/usr/bin/env node
 
+var cluster = require('cluster');
+var fs = require('fs');
+var winston = require('winston');
+var path = require('path');
+var fork = require('child_process').fork
+
 var binary = {};
 
-binary.fs = require('fs');
-winston = require('winston');
-binary.path = require('path');
-binary.async = require('async');
-binary.spawn = require('child_process').spawn
-binary.fork = require('child_process').fork
-binary.readLine = require("readline");
+////////////
+// logger //
+////////////
 
-///////////////
-// utilities //
-///////////////
+// TODO We need to manually make these levels until winston switches the order back
+binary.logLevels = { 
+  emerg: 7,
+  alert: 6,
+  crit: 5,
+  error: 4,
+  warning: 3,
+  notice: 2,
+  info: 1,
+  debug: 0 
+}
 
-binary.utils = {};
+var transports = []
+if(cluster.isMaster){
+  transports.push(new (winston.transports.Console)({
+      colorize: true, 
+      timestamp: true,
+  }))
+}
 
 binary.logger = new (winston.Logger)({
-  transports: [
-    new (winston.transports.Console)({
-      colorize: true, 
-      level: 'debug'
-    }),
-  ] 
+  levels: binary.logLevels,
+  transports: transports
 });
-binary.logger.setLevels(winston.config.syslog.levels);
 
 binary.log = function(message, severity){
   if(binary.argv['silent'] != 'true'){
@@ -33,76 +44,76 @@ binary.log = function(message, severity){
   }
 }
 
-binary.hardError = function(err){
-  binary.log(err, "error");
-  process.exit(1);
-}
+///////////////
+// utilities //
+///////////////
 
-binary.utils.stringifyInputList = function(list){
-  var s = "";
-  if(list == null){ return s; }
-  arr = list.split(",");
-  var used = 0;
-  for(var i in arr){
-    if(used > 0){ s+= ", ";}
-    if(arr[i].length > 0){
-      s += '"' + arr[i] + '"';
-      used++;
+binary.utils = {
+  ardError: function(err){
+    binary.log(err, "error");
+    process.exit(1);
+  },
+  stringifyInputList: function(list){
+    var s = "";
+    if(list == null){ return s; }
+    arr = list.split(",");
+    var used = 0;
+    for(var i in arr){
+      if(used > 0){ s+= ", ";}
+      if(arr[i].length > 0){
+        s += '"' + arr[i] + '"';
+        used++;
+      }
     }
-  }
-  return s;
-}
-
-binary.utils.dir_exists = function(dir){
-  try{
-    var stats = binary.fs.lstatSync(dir);
-    if(stats.isDirectory() || stats.isSymbolicLink()){
-      return true;
-    }else{
+    return s;
+  },
+  dir_exists: function(dir){
+    try{
+      var stats = fs.lstatSync(dir);
+      if(stats.isDirectory() || stats.isSymbolicLink()){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
       return false;
     }
-  }catch(e){
-    return false;
-  }
-}
-
-binary.utils.file_exists = function(file){
-  try{
-    var stats = binary.fs.lstatSync(file);
-    if(stats.isFile() || stats.isSymbolicLink()){
-      return true;
-    }else{
+  },
+  file_exists: function(file){
+    try{
+      var stats = fs.lstatSync(file);
+      if(stats.isFile() || stats.isSymbolicLink()){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
       return false;
     }
-  }catch(e){
-    return false;
+  },
+  create_dir_safely: function(dir){
+    if(binary.utils.dir_exists(dir)){
+      binary.log(" - directory `"+path.normalize(dir)+"` already exists, skipping");
+    }else{
+      binary.log(" - creating directory `"+path.normalize(dir)+"`");
+      fs.mkdirSync(dir , 0766);
+    }
+  },
+  create_file_safely: function(file, data){
+    if(binary.utils.file_exists(file)){
+      binary.log(" - file `"+path.normalize(file)+"` already exists, skipping");
+    }else{
+      binary.log(" - wrote file `"+path.normalize(file)+"`");
+      fs.writeFileSync(file, data);
+    }
+  },
+  hashLength: function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
   }
-}
-
-binary.utils.create_dir_safely = function(dir){
-  if(binary.utils.dir_exists(dir)){
-    binary.log(" - directory `"+binary.path.normalize(dir)+"` already exists, skipping");
-  }else{
-    binary.log(" - creating directory `"+binary.path.normalize(dir)+"`");
-    binary.fs.mkdirSync(dir , 0766);
-  }
-}
-
-binary.utils.create_file_safely = function(file, data){
-  if(binary.utils.file_exists(file)){
-    binary.log(" - file `"+binary.path.normalize(file)+"` already exists, skipping");
-  }else{
-    binary.log(" - wrote file `"+binary.path.normalize(file)+"`");
-    binary.fs.writeFileSync(file, data);
-  }
-}
-
-binary.utils.hashLength = function(obj) {
-  var size = 0, key;
-  for (key in obj) {
-      if (obj.hasOwnProperty(key)) size++;
-  }
-  return size;
 };
 
 //////////
@@ -122,30 +133,25 @@ if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
   binary.paths.actionHero_root = __dirname + "/../node_modules/actionHero";
 }else{
   // installed globally
-  binary.paths.actionHero_root = binary.path.normalize(__dirname + "/..");
+  binary.paths.actionHero_root = path.normalize(__dirname + "/..");
 }
 
 binary.argv = require('optimist').argv;
 
 binary.actions = {};
 
-binary.fs.readdirSync(binary.paths.actionHero_root + "/bin/include/").sort().forEach(function(file){
+fs.readdirSync(binary.paths.actionHero_root + "/bin/methods/").sort().forEach(function(file){
   if(file.indexOf(".js") > 0){
     var action = file.split(".")[0];
-    binary.actions[action] = require(binary.paths.actionHero_root + "/bin/include/" + file)[action];
+    binary.actions[action] = require(binary.paths.actionHero_root + "/bin/methods/" + file)[action];
   }
 });
 
 binary.mainAction = binary.argv["_"][0];
 if(binary.mainAction == null){ binary.mainAction = "start"; }
 
-binary.log("actionHero >> " + binary.mainAction);
-binary.log("project_root >> " + binary.path.normalize(binary.paths.project_root + "/"))
-binary.log("actionHero_root >> " + binary.path.normalize(binary.paths.actionHero_root + "/"))
-
 if(binary.argv['isDaemon'] == 'true'){
   binary.isDaemon = true;
-  binary.logger.remove(winston.transports.Console);
 }else{
   binary.isDaemon = false;
 }
@@ -160,14 +166,21 @@ if(binary.actions[binary.mainAction] != null){
       }
     }
     args.push('--isDaemon=true')
-    var command = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
-    var child = binary.spawn(command, args, {detached: true, stdio: 'ignore'});
+    var command = path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+    var child = fork(command, args, {silent: true});
     child.unref();
     process.nextTick(function(){
-      binary.log("spawned child process with pid "+ child.pid);
+      binary.log(command + args.join(" "), "debug");
+      binary.log("spawned child process with pid "+ child.pid, "notice");
       setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
     });
+  }else if(binary.argv['isDaemon'] != null){
+    winston.remove(winston.transports.Console);   
+    binary.actions[binary.mainAction](binary, function(){});
   }else{
+    binary.log("actionHero >> " + binary.mainAction);
+    binary.log("project_root >> " + path.normalize(binary.paths.project_root + "/"));
+    binary.log("actionHero_root >> " + path.normalize(binary.paths.actionHero_root + "/"));
     binary.actions[binary.mainAction](binary, function(){});
   }
 }else{
