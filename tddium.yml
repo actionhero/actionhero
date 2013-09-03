@@ -5,3 +5,6 @@
     :version: '0.10.10'
   :tests:
     - npm test
+  :redis:
+    :version '2.6.7'
+
