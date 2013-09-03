@@ -4,7 +4,7 @@ var cluster = require('cluster');
 var fs = require('fs');
 var winston = require('winston');
 var path = require('path');
-var fork = require('child_process').fork
+var spawn = require('child_process').spawn
 
 var binary = {};
 
@@ -167,15 +167,13 @@ if(binary.actions[binary.mainAction] != null){
     }
     args.push('--isDaemon=true')
     var command = path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
-    var child = fork(command, args, {silent: true});
+    var child = spawn(command, args, {detached: true, stdio: 'ignore' });
     child.unref();
-    process.nextTick(function(){
-      binary.log(command + args.join(" "), "debug");
-      binary.log("spawned child process with pid "+ child.pid, "notice");
-      setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
-    });
+    binary.log(command + " " + args.join(' '), "info");
+    binary.log("spawned child process with pid "+ child.pid, "notice");
+    setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
   }else if(binary.argv['isDaemon'] != null){
-    winston.remove(winston.transports.Console);   
+    binary.logger.remove(winston.transports.Console);   
     binary.actions[binary.mainAction](binary, function(){});
   }else{
     binary.log("actionHero >> " + binary.mainAction);
