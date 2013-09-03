@@ -204,6 +204,7 @@ describe('Core: Tasks', function(){
     })
 
     it('general task flow works (normal)', function(done){
+      this.timeout(5000);
       var worker = new rawAPI.taskProcessor({id: 1});
       var task = new rawAPI.task({name: 'regular_any'});
       task.enqueue(function(err, resp){
