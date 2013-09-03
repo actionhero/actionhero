@@ -1,6 +1,9 @@
 // actionHero Config File
 // I will be loded into api.configData
 
+var fs = require('fs');
+var cluster = require('cluster');
+
 var configData = {};
 
 /////////////////////////
@@ -30,32 +33,33 @@ configData.general = {
 /////////////
 
 configData.logger = {
-  transports: [
-    function(api, winston){
-      return new (winston.transports.Console)({
-        colorize: true, 
-        level: "debug", 
-        timestamp: api.utils.sqlDateTime
-      });
-    },
-    function(api, winston){
-      var fs = require('fs');
-      try{ 
-        fs.mkdirSync("./log");
-        console.log("created ./log directory");
-      }catch(e){
-        if(e.code != "EEXIST"){
-          console.log(e); process.exit();
-        }
-      }
-      return new (winston.transports.File)({
-        filename: './log/' + api.pids.title + '.log',
-        level: "info",
-        timestamp: true
-      });
-    }
-  ]
+  transports: []
 };
+
+// console logger
+if(cluster.isMaster){
+  configData.logger.transports.push(function(api, winston){
+    return new (winston.transports.Console)({
+      colorize: true, 
+      level: "debug", 
+      timestamp: api.utils.sqlDateTime
+    });
+  });
+}
+
+// file logger
+try{ 
+  fs.mkdirSync("./log");
+}catch(e){
+  if(e.code != "EEXIST"){ console.log(e); process.exit(); }
+}
+configData.logger.transports.push(function(api, winston){
+  return new (winston.transports.File)({
+    filename: './log/' + api.pids.title + '.log',
+    level: "info",
+    timestamp: true
+  });
+});
 
 ///////////
 // Redis //

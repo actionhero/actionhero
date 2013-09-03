@@ -1,53 +1,58 @@
-exports['startCluster'] = function(binary, next){
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// TO START IN CONSOLE: `./bin/actionHero startCluster`
+// TO DAMEONIZE: `forever ./bin/actionHero startCluster` 
+// 
+// ** Producton-ready actionHero cluster **
+// - be sure to enable redis so that workers can share state
+// - workers which die will be restarted
+// - maser/manager specific logging
+// - pidfile for master
+// - USR2 restarts (graceful reload of workers while handling requets)
+//   -- Note, socket/websocket clients will be disconnected, but there will always be a worker to handle them
+//   -- HTTP, HTTPS, and TCP clients will be allowed to finish the action they are working on before the server goes down
+// - TTOU and TTIN signals to subtract/add workers
+// - WINCH to stop all workers
+// - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
+// - Can be run as a daemon or in-console
+//   -- Lazy Dameon: `nohup ./bin/actionHero startCluster &`
+//   -- you may want to explore `forever` as a dameonizing option
+//
+// * Setting process titles does not work on windows or OSX
+// 
+// This example was heavily inspired by Ruby Unicorns [[ http://unicorn.bogomips.org/ ]]
+// 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////
-  // 
-  // TO START IN CONSOLE: `./bin/actionHero startCluster`
-  // TO DAMEONIZE: `forever ./bin/actionHero startCluster` 
-  // 
-  // ** Producton-ready actionHero cluster **
-  // - be sure to enable redis so that workers can share state
-  // - workers which die will be restarted
-  // - maser/manager specific logging
-  // - pidfile for master
-  // - USR2 restarts (graceful reload of workers while handling requets)
-  //   -- Note, socket/websocket clients will be disconnected, but there will always be a worker to handle them
-  //   -- HTTP, HTTPS, and TCP clients will be allowed to finish the action they are working on before the server goes down
-  // - TTOU and TTIN signals to subtract/add workers
-  // - WINCH to stop all workers
-  // - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
-  // - Can be run as a daemon or in-console
-  //   -- Lazy Dameon: `nohup ./bin/actionHero startCluster &`
-  //   -- you may want to explore `forever` as a dameonizing option
-  //
-  // * Setting process titles does not work on windows or OSX
-  // 
-  // This example was heavily inspired by Ruby Unicorns [[ http://unicorn.bogomips.org/ ]]
-  // 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////
+var fs = require('fs');
+var cluster = require('cluster');
+var path = require('path');
+var async = require('async');
+var readline = require('readline');
+
+exports['startCluster'] = function(binary, next){
 
   var loopSleep = 1500;
 
-  var cluster = require('cluster');
-
-  binary.async.series({
+  async.series({
     setup: function(next){
       binary.numCPUs = require('os').cpus().length
       binary.numWorkers = binary.numCPUs - 2;
+      binary.claimedWorkerIds = [];
       if (binary.numWorkers < 2){ binary.numWorkers = 2};
-      binary.execCMD = binary.path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
+      binary.execCMD = path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
       next();
     },
     pids: function(next){
       binary.pidPath = process.cwd() + "/pids";
       try{
-        stats = binary.fs.lstatSync(binary.pidPath);
+        stats = fs.lstatSync(binary.pidPath);
         if(!stats.isDirectory()){
-          binary.fs.mkdirSync(binary.pidPath);
+          fs.mkdirSync(binary.pidPath);
         }
       }catch(e){
         try{
-          binary.fs.mkdirSync(binary.pidPath);
+          fs.mkdirSync(binary.pidPath);
         }catch(e){ }
       }
       next();
@@ -61,7 +66,6 @@ exports['startCluster'] = function(binary, next){
         log: process.cwd() + "/log/cluster.log",
         title: "actionHero-master",
         workerTitlePrefix: "actionHero-worker",
-        silent: true // don't pass stdout/err to the master
       };
 
       for(var i in binary.clusterConfig){
@@ -71,14 +75,12 @@ exports['startCluster'] = function(binary, next){
       }
 
       if(binary.argv["config"] != null){ binary.clusterConfig.args += " --config=" + binary.argv["config"]; }
-      if(binary.clusterConfig.silent == "false"){ binary.clusterConfig.silent = false; }
-      if(binary.clusterConfig.silent == "true"){ binary.clusterConfig.silent = true; }
 
       next();
     },
     log: function(next){
       var winston = require('winston');
-      binary.logger.add(winston.transports.File, { filename: binary.clusterConfig.log, level: 'debug' });
+      binary.logger.add(winston.transports.File, { filename: binary.clusterConfig.log });
 
       next();
     },
@@ -95,14 +97,34 @@ exports['startCluster'] = function(binary, next){
     },
     pidFile: function(next){
       if(binary.clusterConfig.pidfile != null){
-        binary.fs.writeFileSync(binary.clusterConfig.pidfile, process.pid.toString(), 'ascii');
+        fs.writeFileSync(binary.clusterConfig.pidfile, process.pid.toString(), 'ascii');
       }
 
       next();
     },
     workerMethods: function(next){
+      binary.claimWorkerId = function(){
+        var runningWorkersCount = (binary.utils.hashLength(cluster.workers));
+        var expectedWorkerIds = []
+        var i = 1;
+        while(i <= binary.workersExpected){
+          expectedWorkerIds.push(i);
+          i++;
+        }
+        for(var i in binary.claimedWorkerIds){
+          var thisWorkerId = binary.claimedWorkerIds[i];
+          expectedWorkerIds.splice(expectedWorkerIds.indexOf(thisWorkerId),1);
+        }
+        var workerId = expectedWorkerIds[0];
+        binary.claimedWorkerIds.push(workerId);
+        return workerId;
+      },
+      binary.releaseWorkerId = function(thisWorkerId){
+        binary.claimedWorkerIds.splice(binary.claimedWorkerIds.indexOf(thisWorkerId),1);
+      }
       binary.startAWorker = function(){
         var workerID = (binary.utils.hashLength(cluster.workers)) + 1;
+        var workerID = binary.claimWorkerId();
         if(binary.workerRestartArray.length > 0){
           workerID = workerID - binary.workerRestartArray.length;
         }
@@ -122,7 +144,7 @@ exports['startCluster'] = function(binary, next){
         binary.log("Cluster manager quitting", "warning");
         binary.log("Stopping each worker...", "info");
         for(var i in cluster.workers){
-          cluster.workers[i].send('stop');
+          cluster.workers[i].send('stopProcess');
         }
         setTimeout(binary.loopUntilNoWorkers, loopSleep);
       }
@@ -134,7 +156,7 @@ exports['startCluster'] = function(binary, next){
         }else{
           binary.log("all workers gone", "info");
           if(binary.clusterConfig.pidfile != null){
-            try{ binary.fs.unlinkSync(binary.clusterConfig.pidfile); }catch(e){ }
+            try{ fs.unlinkSync(binary.clusterConfig.pidfile); }catch(e){ }
           }
           setTimeout(process.exit, 500);
         }
@@ -155,7 +177,7 @@ exports['startCluster'] = function(binary, next){
         }
         if(binary.workerRestartArray.length > 0){
           var worker = binary.workerRestartArray.pop();
-          worker.send("stop");
+          worker.send("stopProcess");
         }
       }
 
@@ -202,7 +224,7 @@ exports['startCluster'] = function(binary, next){
           binary.workersExpected = 0;
           for (var i in cluster.workers){
             var worker = cluster.workers[i];
-            worker.send("stop");
+            worker.send("stopProcess");
           }
         }
       });
@@ -218,17 +240,17 @@ exports['startCluster'] = function(binary, next){
         binary.workersExpected--;
         for (var i in cluster.workers){
           var worker = cluster.workers[i];
-          worker.send("stop");
+          worker.send("stopProcess");
           break;
         }
       });
       process.on("exit", function(){
         binary.workersExpected = 0;
-        binary.log("Bye!")
+        binary.log("cluster complete, Bye!", 'notice')
       });
 
       if (process.platform === "win32"){
-        var rl = binary.readLine.createInterface ({
+        var rl = readLine.createInterface ({
             input: process.stdin,
             output: process.stdout
         });
@@ -243,20 +265,20 @@ exports['startCluster'] = function(binary, next){
       cluster.setupMaster({
         exec : binary.clusterConfig.exec,
         args: binary.clusterConfig.args.split(" "),
-        silent : binary.clusterConfig.silent
       });
 
       for (var i = 0; i < binary.clusterConfig.workers; i++) {
         binary.workersExpected++;
       }
       cluster.on('fork', function(worker) {
-        binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has spawned", "notice");
+        binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has spawned", "info");
       });
       cluster.on('listening', function(worker, address) {
         //
       });
       cluster.on('exit', function(worker, code, signal) {
-        binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has exited", "warning");
+        binary.log("worker " + worker.process.pid + " (#"+worker.workerID+") has exited", "alert");
+        binary.releaseWorkerId(worker.workerID);
         setTimeout(binary.reloadAWorker, loopSleep / 2); // to prevent CPU-splsions if crashing too fast
       });
 

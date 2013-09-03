@@ -1,4 +1,6 @@
-  exports['generate'] = function(binary, next){
+var fs = require('fs');
+
+exports['generate'] = function(binary, next){
 
   //////// DOCUMENTS ////////
 
@@ -39,14 +41,14 @@
   package.json (be sure to include 'actionHero':'x')\n\
   ";
 
-  documents.config_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/config.js");
-  documents.package_json = binary.fs.readFileSync(binary.paths.actionHero_root + "/package.json");
-  documents.routes_js = binary.fs.readFileSync(binary.paths.actionHero_root + "/routes.js");
-  documents.action_status = binary.fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
-  documents.task_runAction = binary.fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
-  documents.jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
-  documents.ah_jakefile = binary.fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
-  documents.public_actionHeroWebSocket = binary.fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
+  documents.config_js = fs.readFileSync(binary.paths.actionHero_root + "/config.js");
+  documents.package_json = fs.readFileSync(binary.paths.actionHero_root + "/package.json");
+  documents.routes_js = fs.readFileSync(binary.paths.actionHero_root + "/routes.js");
+  documents.action_status = fs.readFileSync(binary.paths.actionHero_root + "/actions/status.js");
+  documents.task_runAction = fs.readFileSync(binary.paths.actionHero_root + "/tasks/runAction.js");
+  documents.jakefile = fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
+  documents.ah_jakefile = fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
+  documents.public_actionHeroWebSocket = fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 

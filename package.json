@@ -37,7 +37,7 @@
     "mime": "1.2.x",
     "redis": "0.8.x",
     "optimist": "0.5.x",
-    "winston": "0.6.x",
+    "winston": "0.7.2",
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
     "faye": "0.8.x",

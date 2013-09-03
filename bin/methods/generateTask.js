@@ -1,6 +1,6 @@
 exports['generateTask'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.hardError("name is a required input"); }
+  if(binary.argv.name == null){ binary.utils.hardError("name is a required input"); }
   if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
   if(binary.argv.scope == null){ binary.argv.scope = "any"; }
   if(binary.argv.frequency == null){ binary.argv.frequency = 0; }

@@ -7,6 +7,7 @@ var servers = function(api, next){
 
   api.servers._start = function(api, next){
     var started = 0;
+    if(api.utils.hashLength(api.configData.servers) == 0){ next(); }
     for(var server in api.configData.servers){
       started++;
       api.log("starting server: " + server, "notice");
@@ -21,6 +22,7 @@ var servers = function(api, next){
 
   api.servers._teardown = function(api, next){
     var started = 0;
+    if(api.utils.hashLength(api.servers.servers) == 0){ next(); }
     for(var server in api.servers.servers){
       started++;
       api.log("stopping server: " + server, "notice");

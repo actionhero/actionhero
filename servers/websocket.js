@@ -130,7 +130,7 @@ var websocket = function(api, options, next){
     var remoteIp = "0.0.0.0"
     var remotePort = 0
     var fayeConnection = api.faye.server._server._engine._connections[clientId];
-    if(fayeConnection.socket != null){
+    if(fayeConnection && fayeConnection.socket != null){
       remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
       remotePort = fayeConnection.socket._socket._stream.remotePort
     }
