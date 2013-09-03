@@ -15,7 +15,17 @@ var logger = function(api, next){
   }
 
   api.logger = new (winston.Logger)({
-    levels: winston.config.syslog.levels,
+    // TODO We need to manually make these levels until winston switches the order back
+    levels: { 
+      emerg: 7,
+      alert: 6,
+      crit: 5,
+      error: 4,
+      warning: 3,
+      notice: 2,
+      info: 1,
+      debug: 0 
+    },
     transports: transports
   });
 
@@ -26,7 +36,11 @@ var logger = function(api, next){
   api.log = function(message, severity, data){
     if(severity == null){ severity = "info"; }
     if(api.logger.levels[severity] == null){ severity = "info"; }
-    api.logger.log(severity, message, data);
+    if(data != null){
+      api.logger.log(severity, message, data);
+    }else{
+      api.logger.log(severity, message);
+    }
   }
 
   var logLevels = [];
