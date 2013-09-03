@@ -46,7 +46,8 @@
   "devDependencies": {
     "mocha": "1.9.x",
     "should": "1.2.x",
-    "request": "2.21.x"
+    "request": "2.21.x",
+    "uglify-js": "2.4.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
@@ -57,6 +58,7 @@
     "test": "fakeredis=false node ./node_modules/.bin/mocha --reporter spec && fakeredis=true node ./node_modules/.bin/mocha --reporter spec",
     "start": "node ./bin/actionHero"
   },
+  "prepublish": "./node_modules/.bin/uglifyjs ./public/javascript/actionHeroWebSocket.js --lint -o ./public/javascript/actionHeroWebSocket.min.js",
   "subdomain": "actionhero",
   "domains": ["demo.actionherojs.com", "actionherojs.com"]
 }
