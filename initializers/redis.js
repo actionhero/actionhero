@@ -61,7 +61,7 @@ var redis = function(api, next){
       api.log("connected to redis", "debug");
     });
 
-    if(api.configData.redis.password != null){
+    if(api.configData.redis.password != null && api.configData.redis.password != ""){
       api.redis.client.auth(api.configData.redis.password, function(){
         api.redis.client.select(api.configData.redis.DB, function(err){
           if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
