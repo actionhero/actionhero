@@ -74,7 +74,7 @@ var taskProcessor = function(api, next){
             self.setWorkerStatus("idle", function(){
               self.timer = setTimeout(function(){
                 self.process();
-              }, self.cycleTimeMS).unref(); 
+              }, self.cycleTimeMS) 
               if(typeof callback == "function"){ callback(); }
             });
           }else{

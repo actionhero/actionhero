@@ -58,7 +58,8 @@ exports['start'] = function(binary, next){
 
   var stopProcess = function(){
     if(state == "started"){
-      var finalTimer = setTimeout(process.exit, shutdownTimeout).unref();
+      var finalTimer = setTimeout(process.exit, shutdownTimeout)
+      // finalTimer.unref();
       stopServer(function(){
         process.nextTick(function(){
           process.exit();
