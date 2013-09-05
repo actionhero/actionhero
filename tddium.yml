@@ -2,7 +2,7 @@
   :hooks:
     :pre: npm install
   :nodejs:
-    :version: '0.10.10'
+    :version: '0.10.18'
   :tests:
     - npm test
   :redis:
