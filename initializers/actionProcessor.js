@@ -56,7 +56,11 @@ var actionProcessor = function(api, next){
         self.callback(self.connection._original_connection, toRender, self.messageCount);
       }
 
-      api.log("[ action @ " + self.connection.type + " ]", "info", {
+      var logLevel = "info";
+      if(self.actionTemplate != null && self.actionTemplate.logLevel != null){ 
+        logLevel = self.actionTemplate.logLevel; 
+      }
+      api.log("[ action @ " + self.connection.type + " ]", logLevel, {
         to: self.connection.remoteIP,
         action: self.connection.action,
         params: JSON.stringify(self.connection.params),
@@ -84,7 +88,7 @@ var actionProcessor = function(api, next){
     }
   }
 
-  api.actionProcessor.prototype.preProcessAction = function(actionTemplate, toProcess, callback){
+  api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
     var self = this;
     if(api.actions.preProcessors.length == 0){
       callback(toProcess);
@@ -93,7 +97,7 @@ var actionProcessor = function(api, next){
       api.actions.preProcessors.forEach(function(processor){
         processors.push(function(next){ 
           if(toProcess === true){
-            processor(self.connection, actionTemplate, function(connection, localToProcess){
+            processor(self.connection, self.actionTemplate, function(connection, localToProcess){
               self.connection = connection
               toProcess = localToProcess
               next();
@@ -106,7 +110,7 @@ var actionProcessor = function(api, next){
     }
   }
 
-  api.actionProcessor.prototype.postProcessAction = function(actionTemplate, toRender, callback){
+  api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
     var self = this;
     if(api.actions.postProcessors.length == 0){
       callback(toRender);
@@ -114,7 +118,7 @@ var actionProcessor = function(api, next){
       var processors = [];
       api.actions.postProcessors.forEach(function(processor){
         processors.push(function(next){ 
-          processor(self.connection, actionTemplate, toRender, function(connection, localToRender){
+          processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
             toRender = localToRender;
             next();
@@ -138,7 +142,7 @@ var actionProcessor = function(api, next){
       if(self.connection.params.apiVersion == null){
         self.connection.params.apiVersion = api.actions.versions[self.connection.action][api.actions.versions[self.connection.action].length - 1];
       }
-      var actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
+      self.actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
     }
     api.stats.increment("actions:actionsCurrentlyProcessing");
 
@@ -148,16 +152,16 @@ var actionProcessor = function(api, next){
       self.completeAction("you have too many pending requests");
     }else if(self.connection.error !== null){
       self.completeAction();
-    }else if(self.connection.action == null || actionTemplate == null){
+    }else if(self.connection.action == null || self.actionTemplate == null){
       api.stats.increment("actions:actionsNotFound");
       if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
       self.connection.error = new Error(self.connection.action + " is not a known action or that is not a valid apiVersion.");
       self.completeAction();
-    }else if(actionTemplate.blockedConnectionTypes != null && actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
+    }else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
       self.connection.error = new Error("this action does not support the " + self.connection.type + " connection type");
       self.completeAction();
     }else{
-      api.params.requiredParamChecker(self.connection, actionTemplate.inputs.required);
+      api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
       if(self.connection.error === null){
         process.nextTick(function() { 
           api.stats.increment("actions:totalProcessedActions");
@@ -170,12 +174,12 @@ var actionProcessor = function(api, next){
           });
           actionDomain.run(function(){
             var toProcess = true;
-            self.preProcessAction(actionTemplate, toProcess, function(toProcess){
+            self.preProcessAction(toProcess, function(toProcess){
               if(toProcess === true){
-                actionTemplate.run(api, self.connection, function(connection, toRender){
+                self.actionTemplate.run(api, self.connection, function(connection, toRender){
                   self.connection = connection;
                   // actionDomain.dispose();
-                  self.postProcessAction(actionTemplate, toRender, function(toRender){
+                  self.postProcessAction(toRender, function(toRender){
                     self.completeAction(null, toRender);
                   });
                 }); 
