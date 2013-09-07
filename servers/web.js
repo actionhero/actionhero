@@ -245,7 +245,7 @@ var web = function(api, options, next){
     }
     fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
     if(requestMode == 'api'){
-      if(connection.rawConnection.req.method.toUpperCase() == 'POST'){ // POST params
+      if(connection.rawConnection.req.method.toUpperCase() != 'GET'){ // POST/DELETE/PUT params
         if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
           // not a legal post; bad headers
           api.routes.processRoute(connection);
