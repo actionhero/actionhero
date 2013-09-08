@@ -5,18 +5,23 @@ var params = function(api, next){
   api.params = {};
 
   // special params we will always accept
+  api.params.globalSafeParams = [
+    "file",
+    "apiVersion",
+    "callback",
+    "action",
+    "limit",
+    "offset",
+    "outputType",
+    "roomMatchKey",
+    "roomMatchValue"
+  ];
+
   api.params.buildPostVariables = function(){
-    var postVariables = [
-      "file",
-      "apiVersion",
-      "callback",
-      "action",
-      "limit",
-      "offset",
-      "outputType",
-      "roomMatchKey",
-      "roomMatchValue"
-    ];
+    var postVariables = [];
+    api.params.globalSafeParams.forEach(function(p){
+      postVariables.push(p);
+    });
     for(var i in api.actions.actions){
       for(var j in api.actions.actions[i]){
         var action = api.actions.actions[i][j];

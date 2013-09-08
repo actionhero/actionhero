@@ -130,6 +130,19 @@ var actionProcessor = function(api, next){
     }
   }
 
+  api.actionProcessor.prototype.reduceParams = function(){
+    var self = this;
+    for(var p in self.connection.params){
+      if (
+        api.params.globalSafeParams.indexOf(p) < 0 
+        && self.actionTemplate.inputs.required.indexOf(p) < 0 
+        && self.actionTemplate.inputs.optional.indexOf(p) < 0
+      ){
+        delete self.connection.params[p];
+      }
+    }
+  }
+
   api.actionProcessor.prototype.processAction = function(){ 
     var self = this;
     self.actionStartTime = new Date().getTime();
@@ -161,6 +174,7 @@ var actionProcessor = function(api, next){
       self.connection.error = new Error("this action does not support the " + self.connection.type + " connection type");
       self.completeAction();
     }else{
+      self.reduceParams();
       api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
       if(self.connection.error === null){
         process.nextTick(function() { 
