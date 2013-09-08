@@ -72,6 +72,7 @@ configData.redis = {
   password: null,
   options: null,
   DB: 0,
+  lostPeerCheckTime:5000
 };
 
 //////////
