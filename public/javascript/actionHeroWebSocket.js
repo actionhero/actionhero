@@ -54,6 +54,7 @@
     var self = this;
     self.startupCallback = callback;
     self.client = new self.faye.Client(self.options.host + self.options.path);   
+    // self.client.disable('websocket');
     self.setupConnection(function(){
       if(typeof self.events.connect === 'function'){
         self.events.connect('connected');
@@ -79,31 +80,21 @@
 
   actionHeroWebSocket.prototype.setupConnection = function(callback){
     var self = this;
+  
+    self.id = self.createUUID();
+    self.channel = self.options.channelPrefix + self.id;
+
+    self.subscription = self.client.subscribe(self.channel, function(message) {
+      self.handleMessage(message);
+    });
+
     setTimeout(function(){
-      var initialMessage = self.client.publish(self.options.setupChannel, 'hello');
-      
-      initialMessage.callback(function() {
-        self.id = self.createUUID();
-        self.channel = self.options.channelPrefix + self.id;
-
-        self.subscription = self.client.subscribe(self.channel, function(message) {
-          self.handleMessage(message);
-        });
-
-        setTimeout(function(){
-          self.detailsView(function(details){
-            if(self.room != null){
-              self.send({event: 'roomChange', room: self.room});
-            }
-            self.completeConnect(details);
-            callback();
-          });
-        },self.options.connectionDelay);
-
-      });
-
-      initialMessage.errback(function(error) {
-        callback(error, null);
+      self.detailsView(function(details){
+        if(self.room != null){
+          self.send({event: 'roomChange', room: self.room});
+        }
+        self.completeConnect(details);
+        callback();
       });
     },self.options.connectionDelay);
   }
