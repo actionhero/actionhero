@@ -158,6 +158,7 @@ var websocket = function(api, options, next){
     var remotePort = 0;
 
     setTimeout(function(){
+      // TODO: This will always be localhost (or the proxy's IP) if you front this with nginx, haproxy, etc.
       var fayeConnection = api.faye.server._server._engine._connections[clientId];
       if(fayeConnection && fayeConnection.socket != null){
         remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
