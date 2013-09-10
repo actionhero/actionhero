@@ -109,8 +109,8 @@
 
   actionHeroWebSocket.prototype.send = function(args, callback){
     var self = this;
+    self.messageCount++;
     if(typeof callback === "function"){
-      self.messageCount++;
       self.callbacks[self.messageCount] = callback;
     }
     self.client.publish(self.channel, args).errback(function(err){
