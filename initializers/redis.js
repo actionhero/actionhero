@@ -20,7 +20,7 @@ var redis = function(api, next){
   api.redis.fake = api.configData.redis.fake;
 
   api.redis.pingTime = 1000;
-  api.redis.lostPeerCheckTime = 5000;
+  api.redis.lostPeerCheckTime = api.configData.redis.lostPeerCheckTime;
   if(api.configData.redis.DB == null){ api.configData.redis.DB = 0; }
   api.redis.channelHandlers = {};
 
