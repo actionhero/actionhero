@@ -49,7 +49,7 @@ binary.log = function(message, severity){
 ///////////////
 
 binary.utils = {
-  ardError: function(err){
+  hardError: function(err){
     binary.log(err, "error");
     process.exit(1);
   },
