@@ -128,15 +128,16 @@ var websocket = function(api, options, next){
         if(server.connectionsMap[uuid] != null){
           message.error = "You cannot subscribe to another client's channel";
         }else{
-          var details = remoteConnectionDetails(message.clientId);
-          server.buildConnection({
-            rawConnection  : { 
-              clientId: message.clientId,
-              uuid: uuid,
-            }, 
-            remoteAddress  : details.remoteIp,
-            remotePort     : details.remotePort 
-          }); // will emit "connection"
+          remoteConnectionDetails(message.clientId, function(details){
+            server.buildConnection({
+              rawConnection  : { 
+                clientId: message.clientId,
+                uuid: uuid,
+              }, 
+              remoteAddress  : details.remoteIp,
+              remotePort     : details.remotePort 
+            }); // will emit "connection"
+          });
         }
       }
     }
@@ -152,21 +153,18 @@ var websocket = function(api, options, next){
     }
   }
 
-  var remoteConnectionDetails = function(clientId){
+  var remoteConnectionDetails = function(clientId, callback){
     var remoteIp = "0.0.0.0";
     var remotePort = 0;
 
-    // websocket
-    var fayeConnection = api.faye.server._server._engine._connections[clientId];
-    if(fayeConnection && fayeConnection.socket != null){
-      remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
-      remotePort = fayeConnection.socket._socket._stream.remotePort;
-    }
-
-    // long-polling
-    // TODO
-
-    return {remoteIp: remoteIp, remotePort: remotePort};
+    setTimeout(function(){
+      var fayeConnection = api.faye.server._server._engine._connections[clientId];
+      if(fayeConnection && fayeConnection.socket != null){
+        remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
+        remotePort = fayeConnection.socket._socket._stream.remotePort; 
+      }
+      callback({remoteIp: remoteIp, remotePort: remotePort});
+    }, 50); // should be enough time for the connection to establish?
   }
 
   var incommingMessage = function(connection, message){

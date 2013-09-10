@@ -34,7 +34,7 @@
       setupChannel: "/_welcome",
       channelPrefix: "/client/websocket/connection/",
       apiPath: "/api",
-      connectionDelay: 100,
+      connectionDelay: 500,
     }
   }
 
