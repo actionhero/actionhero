@@ -3,6 +3,9 @@ var uuid = require("node-uuid");
 var connections = function(api, next){
 
   api.connections = {
+
+    createCallbacks: [],
+    destroyCallbacks: [],
     
     resetLocalConnectionStats : function(next){
       api.stats.set("connections:totalActiveConnections", 0);
@@ -52,6 +55,9 @@ var connections = function(api, next){
     api.stats.increment("connections:totalConnections");
     api.stats.increment("connections:connections:" + this.type);
     api.connections.connections[this.id] = this;
+    for(var i in api.connections.createCallbacks){
+      api.connections.createCallbacks[i](this);
+    }
   }
 
   api.connection.prototype.setup = function(data){
@@ -96,6 +102,9 @@ var connections = function(api, next){
 
   api.connection.prototype.destroy = function(callback){
     var self = this;
+    for(var i in api.connections.destroyCallbacks){
+      api.connections.destroyCallbacks[i](self);
+    }
     api.stats.increment("connections:totalActiveConnections", -1, function(){
       api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
         if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
