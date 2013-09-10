@@ -77,7 +77,19 @@ var faye = function(api, next){
         callback(message);
       }
     }
-  })
+  });
+
+  api.faye.extensions.push({
+    incoming: function(message, callback){
+      if(message.channel.indexOf('/actionHero') === 0){
+        if(message.data.serverToken != api.configData.general.serverToken){
+          message.error = "message token miss-match on protected actionHero channel";
+          api.log(message.error, "warning", message);
+        }
+      }
+      callback(message);
+    }
+  });
 
   next();
 }

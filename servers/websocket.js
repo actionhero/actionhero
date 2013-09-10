@@ -97,7 +97,7 @@ var websocket = function(api, options, next){
     }
   });
 
-  var fayeExtansion = function(message, callback){
+  var messagingFayeExtansion = function(message, callback){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId === api.faye.client._clientId){
@@ -108,11 +108,21 @@ var websocket = function(api, options, next){
         if(connection != null){
           incommingMessage(connection, message);
         }else{
-          api.faye.client.publish(rebroadcastChannel, {originalMessage: message});
+          api.faye.client.publish(rebroadcastChannel, {
+            serverId: api.id,
+            serverToken: api.configData.general.serverToken,
+            originalMessage: message,
+          });
         }
         if(typeof callback == "function"){ callback(null); }
       }
-    }else if(message.channel.indexOf('/meta/subscribe') === 0){
+    }else{
+      if(typeof callback == "function"){ callback(message); }
+    } 
+  };
+
+  var subscriptionFayeExtansion = function(message, callback){
+    if(message.channel.indexOf('/meta/subscribe') === 0){
       if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
         var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, "");
         if(server.connectionsMap[uuid] != null){
@@ -129,18 +139,16 @@ var websocket = function(api, options, next){
           }); // will emit "connection"
         }
       }
-      if(typeof callback == "function"){ callback(message); }
-    }else{
-      if(typeof callback == "function"){ callback(message); }
     }
-  }
+    if(typeof callback == "function"){ callback(message); }
+  };
 
   var incommingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
     var uuid = originalMessage.channel.split("/")[4];
     var connection = server.connectionsMap[uuid];
     if(connection != null){
-      fayeExtansion(originalMessage);
+      messagingFayeExtansion(originalMessage);
     }
   }
 
@@ -191,7 +199,11 @@ var websocket = function(api, options, next){
   }
 
   api.faye.extensions.push({
-    incoming: fayeExtansion
+    incoming: messagingFayeExtansion
+  });
+
+  api.faye.extensions.push({
+    incoming: subscriptionFayeExtansion
   });
 
   next(server);
