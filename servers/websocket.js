@@ -47,8 +47,13 @@ var websocket = function(api, options, next){
   }
 
   server._teardown = function(next){
-    // nothing to do; faye is handled by core and the http server will shut down on its own
-    next();
+    server.connections().forEach(function(connection){
+      console.log("kill " + connection.id)
+      server.goodbye(server.connectionsMap[connection.rawConnection.uuid], "server shutting down");
+    });
+    setTimeout(function(){
+      next();
+    }, 500);
   }
 
   server.sendMessage = function(connection, message, messageCount){
@@ -128,6 +133,7 @@ var websocket = function(api, options, next){
         if(server.connectionsMap[uuid] != null){
           message.error = "You cannot subscribe to another client's channel";
         }else{
+          // let the server generate a new connection.id, don't use client-generated UUID
           remoteConnectionDetails(message.clientId, function(details){
             server.buildConnection({
               rawConnection  : { 

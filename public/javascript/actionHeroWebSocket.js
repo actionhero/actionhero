@@ -81,8 +81,7 @@
   actionHeroWebSocket.prototype.setupConnection = function(callback){
     var self = this;
   
-    self.id = self.createUUID();
-    self.channel = self.options.channelPrefix + self.id;
+    self.channel = self.options.channelPrefix + self.createUUID();
 
     self.subscription = self.client.subscribe(self.channel, function(message) {
       self.handleMessage(message);
@@ -93,6 +92,7 @@
         if(self.room != null){
           self.send({event: 'roomChange', room: self.room});
         }
+        self.id = details.data.id;
         self.completeConnect(details);
         callback();
       });
