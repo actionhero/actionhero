@@ -121,11 +121,23 @@ binary.utils = {
 //////////
 
 binary.paths = {
-  project_root: process.cwd(),
+  project_root: null,
   actionHero_root: null,
 }
 
-if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
+if(process.env.project_root != null){
+  binary.paths.project_root = process.env.project_root;
+}else if(process.env.PROJECT_ROOT != null){
+  binary.paths.project_root = process.env.PROJECT_ROOT;
+}else{
+  binary.paths.project_root = process.cwd();
+}
+
+if(process.env.actionHero_root != null){
+  binary.paths.actionHero_root = process.env.actionHero_root;
+}else if (process.env.ACTIONHERO_ROOT != null){
+  binary.paths.actionHero_root = process.env.ACTIONHERO_ROOT ;
+}else if(binary.utils.file_exists(__dirname + "/../actionHero.js")){
   // in the actionHero project itself
   binary.paths.actionHero_root = __dirname + "/..";
 }else if(binary.utils.file_exists(__dirname + "/../node_modules/actionHero/actionHero.js")){

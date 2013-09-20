@@ -27,13 +27,21 @@ actionHero.prototype.initialize = function(params, callback){
     restart: self.restart
   };
 
+  if(process.env.project_root != null){
+    self.api.project_root = process.env.project_root;
+  }else if(process.env.PROJECT_ROOT != null){
+    self.api.project_root = process.env.PROJECT_ROOT;
+  }else{
+    self.api.project_root = process.cwd();
+  }
+
   if (params === null){ params = {}; }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
   var initializerFolders = [ 
     __dirname + "/initializers/",
-    process.cwd() + "/initializers/"
+    self.project_root + "/initializers/"
   ];
     
   var initializerMethods = [];

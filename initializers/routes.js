@@ -67,7 +67,7 @@ var routes = function(api, next){
     api.routes.routes = { "get": [], "post": [], "put": [], "delete": [] };
     
     if(rawRoutes == null){
-      var routesFile = process.cwd() + '/routes.js';
+      var routesFile = api.project_root + '/routes.js';
       if(fs.existsSync(routesFile)){
         delete require.cache[require.resolve(routesFile)];
         var rawRoutes = require(routesFile).routes;
@@ -102,7 +102,7 @@ var routes = function(api, next){
   };
 
   if(api.configData.general.developmentMode == true){
-    var routesFile = process.cwd() + '/routes.js';
+    var routesFile = api.project_root + '/routes.js';
     fs.watchFile(routesFile, {interval:1000}, function(curr, prev){
       if(curr.mtime > prev.mtime){
         process.nextTick(function(){

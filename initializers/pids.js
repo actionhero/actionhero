@@ -8,7 +8,7 @@ var pids = function(api, next){
   api.pids.pid = process.pid;
 
   if(api.configData.general.pidFileDirectory == null){
-    api.configData.general.pidFileDirectory = process.cwd() + "/pids/";
+    api.configData.general.pidFileDirectory = api.project_root + "/pids/";
   }
 
   if(argv["title"] != null){

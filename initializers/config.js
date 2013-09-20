@@ -9,15 +9,15 @@ var config = function(api, next){
   if(api._startingParams.api != null){
     api.utils.hashMerge(api, api._startingParams.api);
   }
-      
+
   if(argv["config"] != null){
     if(argv["config"].charAt(0) == "/"){ var configFile = argv["config"]; }
-    else{ var configFile = path.resolve(process.cwd(), argv["config"]); }
+    else{ var configFile = path.resolve(api.project_root, argv["config"]); }
   }else if(process.env.ACTIONHERO_CONFIG != null){
     if(process.env.ACTIONHERO_CONFIG.charAt(0) == "/"){ var configFile = process.env.ACTIONHERO_CONFIG; }
-    else{ var configFile = path.resolve(process.cwd(), process.env.ACTIONHERO_CONFIG); }
-  }else if(fs.existsSync(process.cwd() + '/config.js')){
-    var configFile = path.resolve(process.cwd(), "config.js");
+    else{ var configFile = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG); }
+  }else if(fs.existsSync(api.project_root + '/config.js')){
+    var configFile = path.resolve(api.project_root, "config.js");
   }else{
     throw new Error(configFile + "No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG");
     proces.exit(1);
