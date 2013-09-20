@@ -41,7 +41,7 @@ actionHero.prototype.initialize = function(params, callback){
 
   var initializerFolders = [ 
     __dirname + "/initializers/",
-    self.project_root + "/initializers/"
+    self.api.project_root + "/initializers/"
   ];
     
   var initializerMethods = [];
