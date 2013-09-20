@@ -48,7 +48,6 @@ var websocket = function(api, options, next){
 
   server._teardown = function(next){
     server.connections().forEach(function(connection){
-      console.log("kill " + connection.id)
       server.goodbye(server.connectionsMap[connection.rawConnection.uuid], "server shutting down");
     });
     setTimeout(function(){
