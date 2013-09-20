@@ -167,7 +167,7 @@ if(binary.actions[binary.mainAction] != null){
     }
     args.push('--isDaemon=true')
     var command = path.normalize(binary.paths.actionHero_root + "/bin/actionHero");
-    var child = spawn(command, args, {detached: true, stdio: 'ignore' });
+    var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
     // child.unref();
     binary.log(command + " " + args.join(' '), "info");
     binary.log("spawned child process with pid "+ child.pid, "notice");

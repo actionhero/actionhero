@@ -265,6 +265,7 @@ exports['startCluster'] = function(binary, next){
       cluster.setupMaster({
         exec : binary.clusterConfig.exec,
         args: binary.clusterConfig.args.split(" "),
+        silent: true
       });
 
       for (var i = 0; i < binary.clusterConfig.workers; i++) {

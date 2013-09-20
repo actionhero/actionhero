@@ -21,7 +21,7 @@ exports['start'] = function(binary, next){
     actionHero.start(params, function(err, api_from_callback){
       if(err){
         if(cluster.isWorker){ process.send("failed_to_boot"); }
-        console.log(err);
+        binary.log(err);
         process.exit();
       }else{
         state = "started";
