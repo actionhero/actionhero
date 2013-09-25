@@ -250,7 +250,7 @@ exports['startCluster'] = function(binary, next){
       });
 
       if (process.platform === "win32"){
-        var rl = readLine.createInterface ({
+        var rl = readline.createInterface ({
             input: process.stdin,
             output: process.stdout
         });
