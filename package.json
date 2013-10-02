@@ -30,6 +30,7 @@
   "dependencies": {
     "jake": "latest",
     "browser_fingerprint": "0.0.x",
+    "action_resque": "0.1.x",
     "async": "0.2.x",
     "validator": "1.1.x",
     "formidable": "1.0.x",

@@ -85,8 +85,7 @@ actionHero.prototype.initialize = function(params, callback){
     'staticFile',
     'chatRooms',
     'tasks',
-    'task',
-    'taskProcessor',
+    'resque',
     'routes',
     'genericServer',
     'servers'
@@ -175,7 +174,6 @@ actionHero.prototype.stop = function(callback){
       "faye", 
       "webSocketServer", 
       "socketServer", 
-      "taskProcessor"
     ].forEach(function(terdown){
       if(self.api[terdown] != null && typeof self.api[terdown]._teardown == "function"){
         (function(name) {

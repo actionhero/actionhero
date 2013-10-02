@@ -22,7 +22,6 @@ configData.general = {
   defaultChatRoom: "defaultRoom",                                 // The chatRoom that TCP and webSocket clients are joined to when the connect
   defaultLimit: 100,                                              // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultOffset: 0,
-  workers : 5,                                                    // The number of internal "workers" (timers) this node will have.
   developmentMode: false,                                         // Watch for changes in actions and tasks, and reload/restart them on the fly
   pidFileDirectory: process.cwd() + "/pids/",                     // The location of the directory to keep pidfiles
   simultaneousActions: 5                                          // How many pending actions can a single connection be working on 
@@ -66,7 +65,7 @@ configData.logger.transports.push(function(api, winston) {
 ///////////
 
 configData.redis = {
-  fake: true,
+  fake: false,
   host: "127.0.0.1",
   port: 6379,
   password: null,
@@ -83,6 +82,24 @@ configData.faye = {
   timeout: 45,
   ping: null,
 };
+
+///////////
+// TASKS //
+///////////
+
+configData.tasks = {
+  scheduler: false, // Should this node run a scheduler to promote delayed tasks?
+  queues: [],       // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue
+  redis: {          // What redis server should we connet to for tasks / delayed jobs?
+    fake: false,
+    host: "127.0.0.1",
+    port: 6379,
+    password: null,
+    options: null,
+    // namespace: 'resque',
+    DB: 0,
+  },
+}
 
 /////////////
 // SERVERS //
