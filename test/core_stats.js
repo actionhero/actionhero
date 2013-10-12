@@ -1,5 +1,5 @@
 describe('Core: Stats', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
   var testCounterName = 'testCounterName';

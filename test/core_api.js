@@ -1,5 +1,5 @@
 describe('Core: API', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var rawApi = {}
   var should = require("should");

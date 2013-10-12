@@ -1,5 +1,5 @@
 describe('Core: Static File', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
 
