@@ -7,10 +7,6 @@ var pids = function(api, next){
   api.pids = {};
   api.pids.pid = process.pid;
 
-  if(api.configData.general.pidFileDirectory == null){
-    api.configData.general.pidFileDirectory = api.project_root + "/pids/";
-  }
-
   if(argv["title"] != null){
     api.pids.title = argv["title"];
   }else if(process.env["title"] != null){
@@ -21,14 +17,14 @@ var pids = function(api, next){
     api.pids.title = "actionHeroWorker-" + new Date().getTime();
   }
 
-  try { fs.mkdirSync(api.configData.general.pidFileDirectory, "777") } catch(e) {};
+  try { fs.mkdirSync(api.configData.general.paths.pid, "777") } catch(e) {};
 
   api.pids.writePidFile = function(){
-    fs.writeFileSync(api.configData.general.pidFileDirectory + api.pids.title, api.pids.pid.toString(), 'ascii');
+    fs.writeFileSync(api.configData.general.paths.pid + api.pids.title, api.pids.pid.toString(), 'ascii');
   }
 
   api.pids.clearPidFile = function(){
-    fs.unlinkSync(api.configData.general.pidFileDirectory + api.pids.title);
+    fs.unlinkSync(api.configData.general.paths.pid + api.pids.title);
   }
 
   api.pids._start = function(api, next){

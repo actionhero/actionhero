@@ -39,33 +39,9 @@ actionHero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
-  var initializerFolders = [ 
-    __dirname + "/initializers/",
-    self.api.project_root + "/initializers/"
-  ];
-    
-  var initializerMethods = [];
-  for(var i in initializerFolders){
-    var folder = initializerFolders[i];
-    if(fs.existsSync(folder)){
-      fs.readdirSync(folder).sort().forEach( function(file) {
-        if (file[0] != "."){
-          var initalizer = file.split(".")[0];
-          var ext = file.split('.')[1];
-          if (ext === 'js') {
-            if(require.cache[require.resolve(initializerFolders[i] + file)] !== null){
-              delete require.cache[require.resolve(initializerFolders[i] + file)];
-            }
-            initializerMethods.push(initalizer);
-            self.initalizers[initalizer] = require(initializerFolders[i] + file)[initalizer];
-          }
-        }
-      });
-    }
-  }
-
   // run the initializers
   var orderedInitializers = {};
+
   [
     'utils',
     'config',
@@ -89,19 +65,47 @@ actionHero.prototype.initialize = function(params, callback){
     'taskProcessor',
     'routes',
     'genericServer',
-    'servers'
-  ].forEach(function(I){
-    orderedInitializers[I] = function(next){ self.initalizers[I](self.api, next) };
+    'servers',
+  ].forEach(function(initializer){
+    var file = __dirname + "/initializers/" + initializer + ".js";
+    if(require.cache[require.resolve(file)] !== null){
+      delete require.cache[require.resolve(file)];
+    }
+    self.initalizers[initializer] = require(file)[initializer];
+    orderedInitializers[initializer] = function(next){ 
+      self.initalizers[initializer](self.api, next) 
+    };
   });
 
-  initializerMethods.forEach(function(method){
-    if(typeof orderedInitializers[method] != "function"){
-      orderedInitializers[method] = function(next){ 
-        self.api.log("running custom initalizer: " + method, "info");
-        self.initalizers[method](self.api, next);
-      };
+  orderedInitializers['_projectInitializers'] = function(next){
+    var projectInitializers = {};
+    if(path.resolve(self.api.configData.general.paths.initializer) != path.resolve(__dirname + "/initializers")){
+      var fileSet = fs.readdirSync(path.resolve(self.api.configData.general.paths.initializer)).sort();
+      for(var i in fileSet){
+        var file = path.resolve(self.api.configData.general.paths.initializer + "/" + fileSet[i]);
+        if (file[0] != "."){
+          var initializer = fileSet[i].split(".")[0];
+          var ext = fileSet[i].split('.')[1];
+          if (ext === 'js') {
+            if(require.cache[require.resolve(file)] !== null){
+              delete require.cache[require.resolve(file)];
+            }
+            self.initalizers[initializer] = require(file)[initializer];
+            projectInitializers[initializer] = function(next){ 
+              self.api.log("running custom initializer: " + initializer, "info");
+              self.initalizers[initializer](self.api, next);
+            };
+          }
+        }
+      }
     }
-  });
+
+    projectInitializers['_complete'] = function(){
+      process.nextTick(function(){ next(); });
+    }
+
+    async.series(projectInitializers);
+  }
 
   orderedInitializers['_complete'] = function(){ 
     self.api.initialized = true;
