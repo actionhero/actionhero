@@ -110,42 +110,32 @@ var actions = function(api, next){
     }
   }
 
-  var actionsPath = process.cwd() + "/actions/";
-  fs.exists(actionsPath, function (exists) {
+  fs.exists(api.configData.general.paths.action, function (exists) {
     if(!exists){
-      var defaultActionsPath = process.cwd() + "/node_modules/actionHero/actions/";
-      api.log("no ./actions path in project, loading defaults from "+defaultActionsPath, "warning");
-      actionsPath = defaultActionsPath;
-    }
-
-    function loadFolder(path){
-      if(fs.existsSync(path)){
-        fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != "/"){ path += "/"; } 
-          var fullFilePath = path + file;
-          if (file[0] != "."){
-            var stats = fs.statSync(fullFilePath);
-            if(stats.isDirectory()){
-              loadFolder(fullFilePath);
-            }else if(stats.isSymbolicLink()){
-              var realPath = readlinkSync(fullFilePath);
-              loadFolder(realPath);
-            }else if(stats.isFile()){
-              var ext = file.split('.')[1];
-              if (ext === 'js')
-                api.actions.load(fullFilePath);
-            }else{
-              api.log(file+" is a type of file I cannot read", "error")
-            }
+      api.log(api.configData.general.paths.action + " defeined as action path, but does not exist", 'warning');
+    }else{
+      var path = api.configData.general.paths.action;
+      fs.readdirSync(path).forEach( function(file) {
+        if(path[path.length - 1] != "/"){ path += "/"; } 
+        var fullFilePath = path + file;
+        if (file[0] != "."){
+          var stats = fs.statSync(fullFilePath);
+          if(stats.isDirectory()){
+            loadFolder(fullFilePath);
+          }else if(stats.isSymbolicLink()){
+            var realPath = readlinkSync(fullFilePath);
+            loadFolder(realPath);
+          }else if(stats.isFile()){
+            var ext = file.split('.')[1];
+            if (ext === 'js')
+              api.actions.load(fullFilePath);
+          }else{
+            api.log(file+" is a type of file I cannot read", "error")
           }
-        });
-      }else{
-        api.log("no actions folder found", "warning");
-      }
+        }
+      });
     }
 
-    loadFolder(actionsPath);
-    
     next();
   });
 }
