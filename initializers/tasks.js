@@ -333,21 +333,21 @@ var tasks = function(api, next){
   // LOADERS //
   /////////////  
 
-	api.tasks.load = function(fullfFilePath, reload){
-		if(reload == null){ reload = false; }
+  api.tasks.load = function(fullfFilePath, reload){
+    if(reload == null){ reload = false; }
 
-		var loadMessage = function(loadedTaskName){
-			if(reload){
-				loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullfFilePath;
-			}else{
-				var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
-			}
-			api.log(loadMessage, "debug");
-		}
+    var loadMessage = function(loadedTaskName){
+      if(reload){
+        loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullfFilePath;
+      }else{
+        var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
+      }
+      api.log(loadMessage, "debug");
+    }
 
-		var parts = fullfFilePath.split("/");
-		var file = parts[(parts.length - 1)];
-		var taskName = file.split(".")[0];
+    var parts = fullfFilePath.split("/");
+    var file = parts[(parts.length - 1)];
+    var taskName = file.split(".")[0];
     if(!reload){
       if(api.configData.general.developmentMode == true){
         api.watchedFiles.push(fullfFilePath);
@@ -373,73 +373,70 @@ var tasks = function(api, next){
         })();
       }
     }
-		try{
-			var collection = require(fullfFilePath);
-			if(api.utils.hashLength(collection) == 1){
-				api.tasks.tasks[taskName] = require(fullfFilePath).task;
-				validateTask(api.tasks.tasks[taskName]);
-				loadMessage(taskName);
-			}else{
-				for(var i in collection){
-					var task = collection[i];
-					api.tasks.tasks[task.name] = task;
-					validateTask(api.tasks.tasks[task.name]);
-					loadMessage(task.name);
-				}
-			}
-		}catch(err){
-			api.exceptionHandlers.loader(fullfFilePath, err);
-			delete api.tasks.tasks[taskName];
-		}
-	}
+    try{
+      var collection = require(fullfFilePath);
+      if(api.utils.hashLength(collection) == 1){
+        api.tasks.tasks[taskName] = require(fullfFilePath).task;
+        validateTask(api.tasks.tasks[taskName]);
+        loadMessage(taskName);
+      }else{
+        for(var i in collection){
+          var task = collection[i];
+          api.tasks.tasks[task.name] = task;
+          validateTask(api.tasks.tasks[task.name]);
+          loadMessage(task.name);
+        }
+      }
+    }catch(err){
+      api.exceptionHandlers.loader(fullfFilePath, err);
+      delete api.tasks.tasks[taskName];
+    }
+  }
 
-	var validateTask = function(task){
-		var fail = function(msg){
-			api.log(msg + "; exiting.", "emerg");
-			process.exit();
-		}
-		if(typeof task.name != "string" || task.name.length < 1){
-			fail("a task is missing `task.name`");
-		}else if(typeof task.description != "string" || task.description.length < 1){
-			fail("Task "+task.name+" is missing `task.description`");
-		}else if(typeof task.scope != "string"){
-			fail("Task "+task.name+" has no scope");
-		}else if(typeof task.frequency != "number"){
-			fail("Task "+task.name+" has no frequency");  
-		}else if(typeof task.run != "function"){
-			fail("Task "+task.name+" has no run method");
-		}
-	}
-	
-	var loadFolder = function(path){
-		if(fs.existsSync(path)){
-			fs.readdirSync(path).forEach( function(file) {
-				if(path[path.length - 1] != "/"){ path += "/"; } 
-				var fullfFilePath = path + file;
-				if (file[0] != "."){
-					var stats = fs.statSync(fullfFilePath);
-					if(stats.isDirectory()){
-						loadFolder(fullfFilePath);
-					}else if(stats.isSymbolicLink()){
-						var realPath = readlinkSync(fullfFilePath);
-						loadFolder(realPath);
-					}else if(stats.isFile()){
-            var ext = file.split('.')[1];
-            if (ext === 'js')
-              api.tasks.load(fullfFilePath);
-					}else{
-						api.log(file+" is a type of file I cannot read", "alert")
-					}
-				}
-			});
-		}else{
-			api.log("no tasks folder found, skipping", "debug");
-		}
-	}
+  var validateTask = function(task){
+    var fail = function(msg){
+      api.log(msg + "; exiting.", "emerg");
+      process.exit();
+    }
+    if(typeof task.name != "string" || task.name.length < 1){
+      fail("a task is missing `task.name`");
+    }else if(typeof task.description != "string" || task.description.length < 1){
+      fail("Task "+task.name+" is missing `task.description`");
+    }else if(typeof task.scope != "string"){
+      fail("Task "+task.name+" has no scope");
+    }else if(typeof task.frequency != "number"){
+      fail("Task "+task.name+" has no frequency");  
+    }else if(typeof task.run != "function"){
+      fail("Task "+task.name+" has no run method");
+    }
+  }
+  
+  var path = api.configData.general.paths.task
+  if(fs.existsSync(path)){
+    fs.readdirSync(path).forEach( function(file) {
+      if(path[path.length - 1] != "/"){ path += "/"; } 
+      var fullfFilePath = path + file;
+      if (file[0] != "."){
+        var stats = fs.statSync(fullfFilePath);
+        if(stats.isDirectory()){
+          loadFolder(fullfFilePath);
+        }else if(stats.isSymbolicLink()){
+          var realPath = readlinkSync(fullfFilePath);
+          loadFolder(realPath);
+        }else if(stats.isFile()){
+          var ext = file.split('.')[1];
+          if (ext === 'js')
+            api.tasks.load(fullfFilePath);
+        }else{
+          api.log(file+" is a type of file I cannot read", "alert")
+        }
+      }
+    });
+  }else{
+    api.log("no tasks folder found ("+path+"), skipping", "warning");
+  }
 
-	var tasksPath = process.cwd() + "/tasks/";
-	loadFolder(tasksPath);
-	next();
+  next();
 
 }
 
