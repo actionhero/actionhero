@@ -38,12 +38,22 @@ if(process.env.TDDIUM_REDIS_HOST != null){
 }
 
 var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
+var paths = {              
+    "action":      __dirname + "/../actions",
+    "task":        __dirname + "/../tasks",
+    "public":      __dirname + "/../public",
+    "pid":         __dirname + "/../pids",
+    "log":         __dirname + "/../log",
+    "server":      __dirname + "/../servers",
+    "initializer": __dirname + "/../initializers",
+  }
 
 specHelper.params[0] = {
   general: {
     id: "test-server-1",
     workers: 1,
-    developmentMode: false
+    developmentMode: false,
+    paths: paths,
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -67,7 +77,8 @@ specHelper.params[1] = {
   general: {
     id: "test-server-2",
     workers: 1,
-    developmentMode: false
+    developmentMode: false,
+    paths: paths,
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -91,7 +102,8 @@ specHelper.params[2] = {
   general: {
     id: "test-server-3",
     workers: 1,
-    developmentMode: false
+    developmentMode: false,
+    paths: paths,
   },
   logger: {
     levels: winston.config.syslog.levels,

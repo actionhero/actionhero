@@ -28,7 +28,7 @@ configData.general = {
     "action":      __dirname + "/actions",
     "task":        __dirname + "/tasks",
     "public":      __dirname + "/public",
-    "pids":        __dirname + "/pids",
+    "pid":         __dirname + "/pids",
     "log":         __dirname + "/log",
     "server":      __dirname + "/servers",
     "initializer": __dirname + "/initializers",
