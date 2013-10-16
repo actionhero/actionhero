@@ -81,11 +81,11 @@ actionHero.prototype.initialize = function(params, callback){
     var projectInitializers = {};
     if(path.resolve(self.api.configData.general.paths.initializer) != path.resolve(__dirname + "/initializers")){
       var fileSet = fs.readdirSync(path.resolve(self.api.configData.general.paths.initializer)).sort();
-      for(var i in fileSet){
-        var file = path.resolve(self.api.configData.general.paths.initializer + "/" + fileSet[i]);
+      fileSet.forEach(function(f){
+        var file = path.resolve(self.api.configData.general.paths.initializer + "/" + f);
         if (file[0] != "."){
-          var initializer = fileSet[i].split(".")[0];
-          var ext = fileSet[i].split('.')[1];
+          var initializer = f.split(".")[0];
+          var ext = f.split('.')[1];
           if (ext === 'js') {
             if(require.cache[require.resolve(file)] !== null){
               delete require.cache[require.resolve(file)];
@@ -97,7 +97,7 @@ actionHero.prototype.initialize = function(params, callback){
             };
           }
         }
-      }
+      });
     }
 
     projectInitializers['_complete'] = function(){
