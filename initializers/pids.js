@@ -1,17 +1,12 @@
 var fs = require('fs');
 var cluster = require('cluster');
-var argv = require('optimist').argv;
 
 var pids = function(api, next){
   
   api.pids = {};
   api.pids.pid = process.pid;
 
-  if(argv["title"] != null){
-    api.pids.title = argv["title"];
-  }else if(process.env["title"] != null){
-    api.pids.title = process.env["title"];
-  }else if(cluster.isMaster){
+  if(cluster.isMaster){
     api.pids.title = "actionHero-" + api.id.replace(new RegExp(':', 'g'), '-');
   }else{
     api.pids.title = "actionHeroWorker-" + new Date().getTime();
@@ -20,11 +15,11 @@ var pids = function(api, next){
   try { fs.mkdirSync(api.configData.general.paths.pid, "777") } catch(e) {};
 
   api.pids.writePidFile = function(){
-    fs.writeFileSync(api.configData.general.paths.pid + api.pids.title, api.pids.pid.toString(), 'ascii');
+    fs.writeFileSync(api.configData.general.paths.pid + "/" + api.pids.title, api.pids.pid.toString(), 'ascii');
   }
 
   api.pids.clearPidFile = function(){
-    fs.unlinkSync(api.configData.general.paths.pid + api.pids.title);
+    fs.unlinkSync(api.configData.general.paths.pid + "/" + api.pids.title);
   }
 
   api.pids._start = function(api, next){
