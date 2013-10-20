@@ -6,7 +6,6 @@
       callback = options; options = null;
     }
 
-    self.messageCount = 0;
     self.callbacks = {};
     self.id = null;
     self.events = {};
@@ -52,6 +51,7 @@
 
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
+    self.messageCount = 0;
     self.startupCallback = callback;
     self.client = new self.faye.Client(self.options.host + self.options.path);   
     // self.client.disable('websocket');
@@ -61,18 +61,19 @@
       }
 
       self.client.bind('transport:down', function() {
+        self.disconnect();
         if(typeof self.events.disconnect === 'function'){
           self.events.disconnect('disconnected');
         }
-      });
-
-      self.client.bind('transport:up', function() {
-        self.messageCount = 0;
-        self.setupConnection(function(){
+        self.connect(function(){
           if(typeof self.events.reconnect === 'function'){
             self.events.reconnect('reconnected');
           }
         });
+      });
+
+      self.client.bind('transport:up', function() {
+        //
       });
 
     });
@@ -80,7 +81,6 @@
 
   actionHeroWebSocket.prototype.setupConnection = function(callback){
     var self = this;
-  
     self.channel = self.options.channelPrefix + self.createUUID();
 
     self.subscription = self.client.subscribe(self.channel, function(message) {
