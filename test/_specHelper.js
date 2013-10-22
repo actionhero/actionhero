@@ -64,6 +64,10 @@ specHelper.params[0] = {
     web: {
       secure: false, 
       port: 9000,    
+      metadataOptions: {
+        serverInformation: true,
+        requestorInformation: true
+      }
     },
     socket: {
       secure: false, 
@@ -89,6 +93,10 @@ specHelper.params[1] = {
     web: {
       secure: false, 
       port: 9001,    
+      metadataOptions: {
+        serverInformation: true,
+        requestorInformation: true
+      }
     },
     socket: {
       secure: false, 
@@ -114,6 +122,10 @@ specHelper.params[2] = {
     web: {
       secure: false, 
       port: 9002,    
+      metadataOptions: {
+        serverInformation: true,
+        requestorInformation: true
+      }
     },
     socket: {
       secure: false, 
