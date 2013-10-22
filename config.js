@@ -103,7 +103,11 @@ configData.servers = {
     serverOptions: {},                   // Passed to https.createServer if secure=ture. Should contain SSL certificates
     port: 8080,                          // Port or Socket
     bindIP: "0.0.0.0",                   // Which IP to listen on (use 0.0.0.0 for all)
-    httpHeaders : {},                    // Any additional headers you want actionHero to respond with
+    httpHeaders : {                      // Any additional headers you want actionHero to respond with
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    },    
     urlPathForActions : "api",           // Route that actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
     urlPathForFiles : "public",          // Route that static files will be served from; path (relitive to your project root) to server static content from
     rootEndpointType : "api",            // When visiting the root URL, should visitors see "api" or "file"? Visitors can always visit /api and /public as normal
