@@ -168,23 +168,27 @@ var web = function(api, options, next){
 
   var completeResponse = function(connection, toRender, messageCount){
     if(toRender === true){
-      var stopTime = new Date().getTime();
-      connection.response.serverInformation = {
-        serverName: api.configData.general.serverName,
-        apiVersion: api.configData.general.apiVersion,
-        requestDuration: (stopTime - connection.connectedAt),
-        currentTime: stopTime,
-      };
-          
-      connection.response.requestorInformation = {
-        id: connection.id,
-        remoteIP: connection.remoteIP,
-        receivedParams: {},
-      };
-      for(var k in connection.params){
-        connection.response.requestorInformation.receivedParams[k] = connection.params[k] ;
-      };
-    
+      if(api.configData.servers.web.metadataOptions.serverInformation){
+        var stopTime = new Date().getTime();
+        connection.response.serverInformation = {
+          serverName: api.configData.general.serverName,
+          apiVersion: api.configData.general.apiVersion,
+          requestDuration: (stopTime - connection.connectedAt),
+          currentTime: stopTime,
+        };
+      }
+
+      if(api.configData.servers.web.metadataOptions.requestorInformation){
+        connection.response.requestorInformation = {
+          id: connection.id,
+          remoteIP: connection.remoteIP,
+          receivedParams: {},
+        };
+        for(var k in connection.params){
+          connection.response.requestorInformation.receivedParams[k] = connection.params[k];
+        }
+      }
+
       if(connection.response.error != null){
         if(shouldSendDocumentation(connection)){
           connection.response.documentation = api.documentation.documentation;
