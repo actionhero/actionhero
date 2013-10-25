@@ -48,7 +48,7 @@ var websocket = function(api, options, next){
 
   server._teardown = function(next){
     server.connections().forEach(function(connection){
-      server.goodbye(server.connectionsMap[connection.rawConnection.uuid], "server shutting down");
+      server.goodbye(connection, "server shutting down");
     });
     setTimeout(function(){
       next();
@@ -105,7 +105,7 @@ var websocket = function(api, options, next){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId === api.faye.client._clientId){
-        if(typeof callback == "function"){ callback(message); }
+        callback(message);
       }else{
         var uuid = message.channel.split("/")[4];
         var connection = server.connectionsMap[uuid];
@@ -118,10 +118,10 @@ var websocket = function(api, options, next){
             originalMessage: message,
           });
         }
-        if(typeof callback == "function"){ callback(null); }
+        callback(message);
       }
     }else{
-      if(typeof callback == "function"){ callback(message); }
+      callback(message);
     } 
   };
 
@@ -146,7 +146,7 @@ var websocket = function(api, options, next){
         }
       }
     }
-    if(typeof callback == "function"){ callback(message); }
+    callback(message);
   };
 
   var incommingRebroadcast = function(message){
