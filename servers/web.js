@@ -1,8 +1,8 @@
 var url = require('url');
 var fs = require('fs');
 var formidable = require('formidable');
-var data2xml = require('data2xml');
 var browser_fingerprint = require('browser_fingerprint');
+var Mime = require('mime');
 
 var web = function(api, options, next){
   
@@ -211,10 +211,9 @@ var web = function(api, options, next){
       }
       
       var stringResponse = JSON.stringify(connection.response, null, 2); 
-      if(typeof connection.params.outputType === "string"){
-        if(connection.params.outputType.toLowerCase() == "xml"){
-          stringResponse = data2xml()('XML', connection.response);
-        }
+      if(connection.response.error == null && connection.extension != null && api.configData.servers.web.matchExtensionMime === true){
+        var mime = Mime.lookup("x." + connection.extension);
+        connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
       }
       if(connection.params.callback != null){
         connection.rawConnection.responseHeaders.push(['Content-Type', "application/javascript"]);
@@ -230,6 +229,10 @@ var web = function(api, options, next){
     var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var apiPathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var filePathParts = connection.rawConnection.parsedURL.pathname.split("/");
+    var extensionParts = connection.rawConnection.parsedURL.pathname.split(".");
+    if (extensionParts.length > 1){
+      connection.extension = extensionParts[(extensionParts.length - 1)];
+    }
     filePathParts.shift();
     apiPathParts.shift();
     if(pathParts.length > 0){

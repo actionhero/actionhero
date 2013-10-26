@@ -30,17 +30,6 @@ describe('Server: Web', function(){
     });
   });
 
-  it('But I can get XML if I want', function(done){
-    specHelper.apiTest.get('', 0, {outputType: "xml"}, function(response, json){
-      response.body.should.be.a('string');
-      response.body.should.include('<?xml version="1.0" encoding="utf-8"?>');
-      response.body.should.include('<XML>');
-      response.body.should.include('<error>Error: {no action} is not a known action or that is not a valid apiVersion.</error>');
-      response.body.should.include('<apiVersion>'+apiObj.configData.general.apiVersion+'</apiVersion>');
-      done();
-    });
-  });
-
   it('params work', function(done){
     specHelper.apiTest.get('/testAction/', 0, {}, function(response, json){
       json.requestorInformation.receivedParams.action.should.equal('testAction')
@@ -362,6 +351,14 @@ describe('Server: Web', function(){
         should.not.exist(json.requestorInformation.receivedParams.userID);
         done();
       });
+    });
+
+    describe('file extensions + routes', function(){
+
+      it('can read extensions within actions');
+
+      it('will change header information based on extension (when active)');
+
     });
 
   });
