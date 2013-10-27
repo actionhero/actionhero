@@ -235,6 +235,7 @@ describe('Server: Web', function(){
         get: [
           { path: "/users", action: "usersList" },
           { path: "/search/:term/limit/:limit/offset/:offset", action: "search" },
+          { path: "/cacheTest/:key/:value", action: "cacheTest" },
         ],
         post: [
           { path: "/login/:userID(^\\d{3}$)", action: "login" }
@@ -355,9 +356,20 @@ describe('Server: Web', function(){
 
     describe('file extensions + routes', function(){
 
-      it('can read extensions within actions');
+      it('will change header information based on extension (when active)', function(done){
+        specHelper.apiTest.get('/cacheTest/key/val.png', 0, {}, function(response, json){
+          response.headers['content-type'].should.equal('image/png');
+          done();
+        });
+      });
 
-      it('will change header information based on extension (when active)');
+      it('will not change header information if there is a connection.error', function(done){
+        specHelper.apiTest.get('/cacheTest/val.png', 0, {}, function(response, json){
+          response.headers['content-type'].should.equal('application/json');
+          json.error.should.equal("Error: key is a required parameter for this action");
+          done();
+        });
+      });
 
     });
 
