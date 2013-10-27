@@ -30,17 +30,6 @@ describe('Server: Web', function(){
     });
   });
 
-  it('But I can get XML if I want', function(done){
-    specHelper.apiTest.get('', 0, {outputType: "xml"}, function(response, json){
-      response.body.should.be.a('string');
-      response.body.should.include('<?xml version="1.0" encoding="utf-8"?>');
-      response.body.should.include('<XML>');
-      response.body.should.include('<error>Error: {no action} is not a known action or that is not a valid apiVersion.</error>');
-      response.body.should.include('<apiVersion>'+apiObj.configData.general.apiVersion+'</apiVersion>');
-      done();
-    });
-  });
-
   it('params work', function(done){
     specHelper.apiTest.get('/testAction/', 0, {}, function(response, json){
       json.requestorInformation.receivedParams.action.should.equal('testAction')
@@ -246,6 +235,7 @@ describe('Server: Web', function(){
         get: [
           { path: "/users", action: "usersList" },
           { path: "/search/:term/limit/:limit/offset/:offset", action: "search" },
+          { path: "/cacheTest/:key/:value", action: "cacheTest" },
         ],
         post: [
           { path: "/login/:userID(^\\d{3}$)", action: "login" }
@@ -362,6 +352,25 @@ describe('Server: Web', function(){
         should.not.exist(json.requestorInformation.receivedParams.userID);
         done();
       });
+    });
+
+    describe('file extensions + routes', function(){
+
+      it('will change header information based on extension (when active)', function(done){
+        specHelper.apiTest.get('/cacheTest/key/val.png', 0, {}, function(response, json){
+          response.headers['content-type'].should.equal('image/png');
+          done();
+        });
+      });
+
+      it('will not change header information if there is a connection.error', function(done){
+        specHelper.apiTest.get('/cacheTest/val.png', 0, {}, function(response, json){
+          response.headers['content-type'].should.equal('application/json');
+          json.error.should.equal("Error: key is a required parameter for this action");
+          done();
+        });
+      });
+
     });
 
   });

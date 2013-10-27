@@ -33,7 +33,6 @@
     "async": "0.2.x",
     "validator": "1.1.x",
     "formidable": "1.0.x",
-    "data2xml": "0.8.x",
     "mime": "1.2.x",
     "redis": "0.8.x",
     "optimist": "0.5.x",

@@ -104,7 +104,7 @@ configData.servers = {
     port: 8080,                          // Port or Socket
     bindIP: "0.0.0.0",                   // Which IP to listen on (use 0.0.0.0 for all)
     httpHeaders : {                      // Any additional headers you want actionHero to respond with
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin' : '*',
       'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
     },    
@@ -113,6 +113,7 @@ configData.servers = {
     rootEndpointType : "api",            // When visiting the root URL, should visitors see "api" or "file"? Visitors can always visit /api and /public as normal
     directoryFileType : "index.html",    // The default filetype to server when a user requests a directory
     flatFileCacheDuration : 60,          // The header which will be returned for all flat file served from /public; defined in seconds
+    matchExtensionMime: true,            // If the URL has an extension (and no connection.error), should the response match the mime-type?
     fingerprintOptions : {               // Settings for determining the id of an http(s) requset (browser-fingerprint)
       cookieKey: "sessionID",
       toSetCookie: true,
