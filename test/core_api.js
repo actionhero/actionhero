@@ -52,7 +52,6 @@ describe('Core: API', function(){
       "action",
       "limit",
       "offset",
-      "outputType",
       "key", // from action
       "value", // from action
     ].forEach(function(item){
