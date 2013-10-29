@@ -27,9 +27,6 @@ var routes = function(api, next){
   api.routes.matchURL = function(url, match){
     var response = {match: false, params: {} }
     var urlParts = url.split("/");
-    for(var i in urlParts){
-      urlParts[i] = urlParts[i].split(".")[0];
-    }
     var matchParts = match.split("/");
     var regexp = "";
     if(urlParts[0] == ""){ urlParts.splice(0,1); }
