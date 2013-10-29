@@ -13,8 +13,8 @@ var staticFile = function(api, next){
       if(connection.params.file == null){
         self.sendFileNotFound(connection, "file is a required param to send a file", callback);
       }else{
-        var file = path.normalize(api.configData.general.flatFileDirectory + "/" + connection.params.file);
-        if(file.indexOf(path.normalize(api.configData.general.flatFileDirectory)) != 0){
+        var file = path.normalize(api.configData.general.paths.public + "/" + connection.params.file);
+        if(file.indexOf(path.normalize(api.configData.general.paths.public)) != 0){
           self.sendFileNotFound(connection, "that is not a valid file path", callback);
         }else{
           self.checkExistance(file, function(exists){

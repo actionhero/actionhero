@@ -86,21 +86,24 @@ var tasks = function(api, next){
 
     jobWrapper: function(taskName){
       var self = this;
-      return function(){
-        var args = Array.prototype.slice.call(arguments);
-        var cb = args.pop();
-        if(args.length == 0){
-          args.push({}); // empty params array
-        }
-        args.push(
-          function(resp){
-            self.enqueueRecurrentJob(taskName, function(){
-              cb(resp);
-            });
+      return { 
+        
+        'perform': function(){
+          var args = Array.prototype.slice.call(arguments);
+          var cb = args.pop();
+          if(args.length == 0){
+            args.push({}); // empty params array
           }
-        );
-        args.splice(0, 0, api);
-        api.tasks.tasks[taskName].run.apply(null, args);
+          args.push(
+            function(resp){
+              self.enqueueRecurrentJob(taskName, function(){
+                cb(resp);
+              });
+            }
+          );
+          args.splice(0, 0, api);
+          api.tasks.tasks[taskName].run.apply(null, args);
+        }
       }
     },
 
@@ -186,5 +189,6 @@ var tasks = function(api, next){
   api.tasks.loadFolder(api.tasks.tasksPath());
   next();
 };
+
 
 exports.tasks = tasks;

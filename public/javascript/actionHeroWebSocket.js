@@ -6,10 +6,10 @@
       callback = options; options = null;
     }
 
-    self.messageCount = 0;
     self.callbacks = {};
     self.id = null;
     self.events = {};
+    self.state = 'disconnected';
 
     self.options = self.defaults();
     for(var i in options){
@@ -35,6 +35,8 @@
       channelPrefix: "/client/websocket/connection/",
       apiPath: "/api",
       connectionDelay: 500,
+      timeout: 60,
+      retry: 10,
     }
   }
 
@@ -52,40 +54,46 @@
 
   actionHeroWebSocket.prototype.connect = function(callback){
     var self = this;
+    
     self.startupCallback = callback;
-    self.client = new self.faye.Client(self.options.host + self.options.path);   
-    // self.client.disable('websocket');
-    self.setupConnection(function(){
-      if(typeof self.events.connect === 'function'){
-        self.events.connect('connected');
-      }
-
-      self.client.bind('transport:down', function() {
-        if(typeof self.events.disconnect === 'function'){
-          self.events.disconnect('disconnected');
-        }
-      });
-
-      self.client.bind('transport:up', function() {
-        self.messageCount = 0;
-        self.setupConnection(function(){
-          if(typeof self.events.reconnect === 'function'){
-            self.events.reconnect('reconnected');
-          }
-        });
-      });
-
-    });
-  }
-
-  actionHeroWebSocket.prototype.setupConnection = function(callback){
-    var self = this;
-  
+    self.client = new self.faye.Client(self.options.host + self.options.path, {
+      retry: self.options.retry,
+      timeout: self.options.timeout,
+    });   
     self.channel = self.options.channelPrefix + self.createUUID();
 
     self.subscription = self.client.subscribe(self.channel, function(message) {
       self.handleMessage(message);
     });
+
+    // self.client.disable('websocket');
+
+    self.client.on('transport:down', function() {
+      self.state = 'reconnecting';
+      if(typeof self.events.connect === 'disconnect'){
+        self.events.disconnect('connected');
+      }
+    });
+
+    self.client.on('transport:up', function() {
+      var previousState = self.state;
+      self.state = 'connected';
+      self.setupConnection(function(details){
+        if(previousState == 'reconnecting' && typeof self.events.reconnect === 'function'){
+          self.events.reconnect('reconnected');
+        }else{
+          if(typeof self.events.connect === 'function'){
+            self.events.connect('connected');
+          }
+          self.completeConnect(details);
+        }
+      });
+    });
+  }
+
+  actionHeroWebSocket.prototype.setupConnection = function(callback){
+    var self = this;
+    self.messageCount = 0;
 
     setTimeout(function(){
       self.detailsView(function(details){
@@ -93,8 +101,7 @@
           self.send({event: 'roomChange', room: self.room});
         }
         self.id = details.data.id;
-        self.completeConnect(details);
-        callback();
+        callback(details);
       });
     },self.options.connectionDelay);
   }
@@ -103,19 +110,22 @@
     var self = this;
     if(typeof self.startupCallback == "function"){
       self.startupCallback(null, details);
-      delete self.startupCallback;
     }
   }
 
   actionHeroWebSocket.prototype.send = function(args, callback){
     var self = this;
-    self.messageCount++;
-    if(typeof callback === "function"){
-      self.callbacks[self.messageCount] = callback;
+    if(self.state == "connected"){
+      self.messageCount++;
+      if(typeof callback === "function"){
+        self.callbacks[self.messageCount] = callback;
+      }
+      self.client.publish(self.channel, args).errback(function(err){
+        self.log(err);
+      });
+    }else{
+      if(typeof callback == 'function'){ callback({error: "not connected", state: self.state}); }
     }
-    self.client.publish(self.channel, args).errback(function(err){
-      self.log(err);
-    });
   };
 
   actionHeroWebSocket.prototype.handleMessage = function(message){
@@ -133,6 +143,12 @@
       }
     }
 
+    else if(message.context === "alert"){
+      if(typeof self.events.api === 'function'){
+        self.events.api(message);
+      }
+    }
+
     else if(message.welcome != null && message.context == "api"){
       self.welcomeMessage = message.welcome;
       if(typeof self.events.say === 'function' && typeof self.events.welcome == "function"){
@@ -140,9 +156,9 @@
       }
     }
 
-    else{
-      if(typeof self.events.alert === 'function'){
-        self.events.alert(message);
+    else if(message.context === "api"){
+      if(typeof self.events.api === 'function'){
+        self.events.api(message);
       }
     }
   };
@@ -208,6 +224,7 @@
   }
 
   actionHeroWebSocket.prototype.disconnect = function(){
+    this.state = 'disconnected';
     this.client.disconnect();
   }
 

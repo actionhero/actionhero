@@ -1,5 +1,5 @@
 describe('Core: API', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var rawApi = {}
   var should = require("should");
@@ -52,7 +52,6 @@ describe('Core: API', function(){
       "action",
       "limit",
       "offset",
-      "outputType",
       "key", // from action
       "value", // from action
     ].forEach(function(item){
@@ -65,7 +64,7 @@ describe('Core: API', function(){
   describe("api versions", function(){
 
     before(function(done){
-      rawApi.actions.versions.versionedAction = [1,2]
+      rawApi.actions.versions.versionedAction = [1,2,3]
       rawApi.actions.actions.versionedAction = {
         "1": {
           name: "versionedAction",
@@ -84,6 +83,19 @@ describe('Core: API', function(){
           inputs: { required: [], optional: [] }, outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
+            next(connection, true);
+          }
+        },
+        "3": {
+          name: "versionedAction",
+          description: "I am a test",
+          version: 3,
+          inputs: { required: [], optional: [] }, outputExample: {},
+          run:function(api, connection, next){
+            connection.response.version = 1;
+            connection.error = {
+              "a" : {"complex": "error"}
+            }
             next(connection, true);
           }
         }
@@ -116,14 +128,21 @@ describe('Core: API', function(){
 
     it("will default clients to the latest version of the action", function(done){
       specHelper.apiTest.get('/versionedAction/', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.apiVersion.should.equal(2)
+        json.requestorInformation.receivedParams.apiVersion.should.equal(3)
         done();
       });
     });
 
     it("will fail on a missing action + version", function(done){
-      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 3}, function(response, json){
+      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 10}, function(response, json){
         json.error.should.equal("Error: versionedAction is not a known action or that is not a valid apiVersion.");
+        done();
+      });
+    });
+
+    it("can return complex error responses", function(done){
+      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 3}, function(response, json){
+        json.error.a.complex.should.equal('error');
         done();
       });
     });

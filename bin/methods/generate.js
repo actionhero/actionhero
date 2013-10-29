@@ -10,9 +10,6 @@ exports['generate'] = function(binary, next){
   |- actions\n\
   |-- (your actions)\n\
   |\n\
-  |- certs\n\
-  |-- (your https certs for your domain)\n\
-  |\n\
   |- initializers\n\
   |-- (any additional initializers you want)\n\
   |\n\

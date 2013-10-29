@@ -38,8 +38,11 @@ var actionProcessor = function(api, next){
   api.actionProcessor.prototype.completeAction = function(error, toRender){
     var self = this;
     if(error != null){ self.connection.error = error; }
+    if(self.connection.error instanceof Error){
+      self.connection.error = String(self.connection.error);
+    }
     if(self.connection.error != null && self.connection.response.error == null ){ 
-      self.connection.response.error = String(self.connection.error); 
+      self.connection.response.error = self.connection.error; 
     }
     if(toRender == null){ toRender = true; }
     self.incramentPendingActions(-1);
@@ -60,12 +63,19 @@ var actionProcessor = function(api, next){
       if(self.actionTemplate != null && self.actionTemplate.logLevel != null){ 
         logLevel = self.actionTemplate.logLevel; 
       }
+      var stringifiedError = ""
+      try{
+        stringifiedError = JSON.stringify(self.connection.error);
+      }catch(e){
+        stringifiedError = String(self.connection.error)
+      }
+      
       api.log("[ action @ " + self.connection.type + " ]", logLevel, {
         to: self.connection.remoteIP,
         action: self.connection.action,
         params: JSON.stringify(self.connection.params),
         duration: self.duration,
-        error: String(self.connection.error)
+        error: stringifiedError
       });
 
     });

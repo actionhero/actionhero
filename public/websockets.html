@@ -26,15 +26,19 @@
     }
 
     A.events = {
-      disconnect: function(message){
+      disconnect: function(){
         A.log("DISCONNECTED");
       },
-      reconnect: function(message){
+      reconnect: function(){
         A.log("RECONNECTED");
         A.log("New ID: " + A.id);
       },
       say: function(message){
         A.log("SAY:");
+        A.log(message)
+      },
+      api: function(message){
+        A.log("API:");
         A.log(message)
       },
       welcome: function(message){

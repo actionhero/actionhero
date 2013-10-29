@@ -1,8 +1,8 @@
 var url = require('url');
 var fs = require('fs');
 var formidable = require('formidable');
-var data2xml = require('data2xml');
 var browser_fingerprint = require('browser_fingerprint');
+var Mime = require('mime');
 
 var web = function(api, options, next){
   
@@ -168,23 +168,27 @@ var web = function(api, options, next){
 
   var completeResponse = function(connection, toRender, messageCount){
     if(toRender === true){
-      var stopTime = new Date().getTime();
-      connection.response.serverInformation = {
-        serverName: api.configData.general.serverName,
-        apiVersion: api.configData.general.apiVersion,
-        requestDuration: (stopTime - connection.connectedAt),
-        currentTime: stopTime,
-      };
-          
-      connection.response.requestorInformation = {
-        id: connection.id,
-        remoteIP: connection.remoteIP,
-        receivedParams: {},
-      };
-      for(var k in connection.params){
-        connection.response.requestorInformation.receivedParams[k] = connection.params[k] ;
-      };
-    
+      if(api.configData.servers.web.metadataOptions.serverInformation){
+        var stopTime = new Date().getTime();
+        connection.response.serverInformation = {
+          serverName: api.configData.general.serverName,
+          apiVersion: api.configData.general.apiVersion,
+          requestDuration: (stopTime - connection.connectedAt),
+          currentTime: stopTime,
+        };
+      }
+
+      if(api.configData.servers.web.metadataOptions.requestorInformation){
+        connection.response.requestorInformation = {
+          id: connection.id,
+          remoteIP: connection.remoteIP,
+          receivedParams: {},
+        };
+        for(var k in connection.params){
+          connection.response.requestorInformation.receivedParams[k] = connection.params[k];
+        }
+      }
+
       if(connection.response.error != null){
         if(shouldSendDocumentation(connection)){
           connection.response.documentation = api.documentation.documentation;
@@ -207,10 +211,9 @@ var web = function(api, options, next){
       }
       
       var stringResponse = JSON.stringify(connection.response, null, 2); 
-      if(typeof connection.params.outputType === "string"){
-        if(connection.params.outputType.toLowerCase() == "xml"){
-          stringResponse = data2xml()('XML', connection.response);
-        }
+      if(connection.response.error == null && connection.extension != null && api.configData.servers.web.matchExtensionMime === true){
+        var mime = Mime.lookup("x." + connection.extension);
+        connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
       }
       if(connection.params.callback != null){
         connection.rawConnection.responseHeaders.push(['Content-Type', "application/javascript"]);
@@ -226,6 +229,10 @@ var web = function(api, options, next){
     var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var apiPathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var filePathParts = connection.rawConnection.parsedURL.pathname.split("/");
+    var extensionParts = connection.rawConnection.parsedURL.pathname.split(".");
+    if (extensionParts.length > 1){
+      connection.extension = extensionParts[(extensionParts.length - 1)];
+    }
     filePathParts.shift();
     apiPathParts.shift();
     if(pathParts.length > 0){

@@ -1,5 +1,5 @@
 describe('Server: Socket', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var net = require('net');
   var apiObj = {};
   var rawAPI = {};

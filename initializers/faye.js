@@ -72,10 +72,8 @@ var faye = function(api, next){
         if(message.subscription.indexOf("*") >= 0){
           message.error = "actionHero does not allow wildcard subscriptions";
         }
-        callback(message);
-      }else{
-        callback(message);
       }
+      callback(message);
     }
   });
 

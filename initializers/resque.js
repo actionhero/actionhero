@@ -15,7 +15,7 @@ var resque = function(api, next){
       if(self.connectionDetails.fake == true){
         self.connectionDetails.package = require('fakeredis');
       }
-      self.queue = new AR.queue({connection: self.connectionDetails}, function(){
+      self.queue = new AR.queue({connection: self.connectionDetails}, api.tasks.jobs, function(){
         self.startScheduler(function(){
           self.startWorkers(function(){
             next();
@@ -39,8 +39,8 @@ var resque = function(api, next){
       var self = this;
       if(api.configData.tasks.scheduler === true){
         self.scheduler = new AR.scheduler({connection: self.connectionDetails, timeout: 500}, function(){
-          self.scheduler.on('start',             function(){               api.log("resque scheduler started", "debug"); })
-          self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "debug");   })
+          self.scheduler.on('start',             function(){               api.log("resque scheduler started", "info"); })
+          self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "info");   })
           // self.scheduler.on('poll',             function(){               api.log("resque scheduler polling", "debug"); })
           self.scheduler.on('working_timestamp', function(timestamp){      api.log("resque scheduler working timestamp " + timestamp, "debug"); })
           self.scheduler.on('transfered_job',    function(timestamp, job){ api.log("resque scheduler enquing job " + timestamp, "debug", job); })
@@ -79,8 +79,8 @@ var resque = function(api, next){
           (function(i){
             var name = os.hostname() + ":" + process.pid + ":" + (i+1);
             var worker = new AR.worker({connection: self.connectionDetails, name: name, queues: api.configData.tasks.queues[i]}, api.tasks.jobs, function(){
-              worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started", "debug"); })
-              worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "debug"); })
+              worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
+              worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "info"); })
               worker.on('cleaning_worker', function(worker, pid){        api.log("resque cleaning old worker " + worker, "info"); })
               // worker.on('poll',            function(queue){              api.log("resque worker #"+(i+1)+" polling " + queue, "debug"); })
               worker.on('job',             function(queue, job){         api.log("resque worker #"+(i+1)+" working job " + queue, "debug", job); })
@@ -105,7 +105,7 @@ var resque = function(api, next){
 
     stopWorkers: function(callback){
       var self = this;
-      if(self.workers === 0){
+      if(self.workers.length === 0){
         callback();
       }else{
         var ended = 0;

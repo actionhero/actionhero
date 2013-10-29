@@ -1,5 +1,5 @@
 describe('Core: actionCluster', function(){
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apis = [];
   var should = require("should");
   var externalIP = 'actionHero';

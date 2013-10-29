@@ -1,6 +1,6 @@
 describe('Server: Web Sockets', function(){
 
-  var specHelper = require('../helpers/specHelper.js').specHelper;
+  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var should = require("should");
   var socketURL = "http://localhost:9000";

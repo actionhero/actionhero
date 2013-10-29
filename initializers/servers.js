@@ -38,8 +38,8 @@ var servers = function(api, next){
   // Load the servers
 
   var serverFolders = [ 
-    __dirname + "/../servers/",
-    process.cwd() + "/servers/"
+    __dirname + "/../servers",
+    api.configData.general.paths.server,
   ];
     
   var inits = {}
@@ -47,7 +47,7 @@ var servers = function(api, next){
     var folder = serverFolders[i];
     if(fs.existsSync(folder)){
       fs.readdirSync(folder).sort().forEach(function(file){
-        var fullFilePath = serverFolders[i] + file;
+        var fullFilePath = serverFolders[i] + "/" + file;
         var ext = file.split('.')[1];
         if (file[0] != "." && ext === 'js'){
           var server = file.split(".")[0];

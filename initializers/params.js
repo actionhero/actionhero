@@ -12,7 +12,6 @@ var params = function(api, next){
     "action",
     "limit",
     "offset",
-    "outputType",
     "roomMatchKey",
     "roomMatchValue"
   ];
