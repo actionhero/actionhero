@@ -211,8 +211,8 @@ var web = function(api, options, next){
       }
       
       var stringResponse = JSON.stringify(connection.response, null, 2); 
-      if(connection.response.error == null && connection.extension != null && api.configData.servers.web.matchExtensionMime === true){
-        var mime = Mime.lookup("x." + connection.extension);
+      if(connection.response.error == null && connection.action != null && connection.params.apiVersion != null && api.actions.actions[connection.action][connection.params.apiVersion].matchExtensionMimeType === true){
+        var mime = Mime.lookup(connection.extension);
         connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
       }
       if(connection.params.callback != null){
