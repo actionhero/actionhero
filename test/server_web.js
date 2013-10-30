@@ -227,7 +227,7 @@ describe('Server: Web', function(){
 
   describe('routes', function(){
     
-    beforeEach(function(done){
+    before(function(done){
       rawApi.routes.loadRoutes({
         all: [
           { path: "/user/:userID", action: "user" }
@@ -235,18 +235,34 @@ describe('Server: Web', function(){
         get: [
           { path: "/users", action: "usersList" },
           { path: "/search/:term/limit/:limit/offset/:offset", action: "search" },
-          { path: "/cacheTest/:key/:value", action: "cacheTest" },
+          { path: "/c/:key/:value", action: "cacheTest" },
+          { path: "/mimeTestAction/:key", action: "mimeTestAction" },
         ],
         post: [
           { path: "/login/:userID(^\\d{3}$)", action: "login" }
         ]
       });
 
+      rawApi.actions.versions.mimeTestAction = [1]
+      rawApi.actions.actions.mimeTestAction = {
+        "1": {
+          name: "mimeTestAction",
+          description: "I am a test",
+          matchExtensionMimeType: true,
+          inputs: { required: ["key"], optional: [] }, outputExample: {},
+          run:function(api, connection, next){
+            next(connection, true);
+          }
+        }
+      }
+
       done();
     });
 
-    afterEach(function(done){
+    after(function(done){
       rawApi.routes.routes = {};
+      delete rawApi.actions.versions['mimeTestAction'];
+      delete rawApi.actions.actions['mimeTestAction'];
       done();
     });
 
@@ -345,6 +361,14 @@ describe('Server: Web', function(){
       });
     });
 
+    it('regexp matches will still work with parmas with periods and other wacky chars', function(done){
+      specHelper.apiTest.get('/c/key/log_me-in.com$123.jpg', 0, {}, function(response, json){
+        json.requestorInformation.receivedParams.action.should.equal('cacheTest');
+        json.requestorInformation.receivedParams.value.should.equal('log_me-in.com$123.jpg');
+        done();
+      });
+    });
+
     it('regexp match failures will be rejected', function(done){
       specHelper.apiTest.post('/login/1234', 0, {}, function(response, json){
         json.error.should.equal("Error: login is not a known action or that is not a valid apiVersion.");
@@ -357,14 +381,14 @@ describe('Server: Web', function(){
     describe('file extensions + routes', function(){
 
       it('will change header information based on extension (when active)', function(done){
-        specHelper.apiTest.get('/cacheTest/key/val.png', 0, {}, function(response, json){
+        specHelper.apiTest.get('/mimeTestAction/val.png', 0, {}, function(response, json){
           response.headers['content-type'].should.equal('image/png');
           done();
         });
       });
 
       it('will not change header information if there is a connection.error', function(done){
-        specHelper.apiTest.get('/cacheTest/val.png', 0, {}, function(response, json){
+        specHelper.apiTest.get('/mimeTestAction', 0, {}, function(response, json){
           response.headers['content-type'].should.equal('application/json');
           json.error.should.equal("Error: key is a required parameter for this action");
           done();

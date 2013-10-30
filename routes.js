@@ -42,9 +42,3 @@ example:
 ////////////
 
 exports.routes = {};
-
-exports.routes = {
-  get: [
-    { path: "/:thing/:stuff", action: "mimeTest" }, // (GET) /api/users
-  ]
-};
