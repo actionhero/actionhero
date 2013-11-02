@@ -1,8 +1,10 @@
 var task = {
-  name:        "runAction",
-  description: "I will run an action and return the connection object",
-  queue:       "default",
-  frequency:   0,
+  name:          "runAction",
+  description:   "I will run an action and return the connection object",
+  queue:         "default",
+  plugins:       [], 
+  pluginOptions: [], 
+  frequency:     0,
   run: function(api, params, next){
     if(params == null){params = {};}
 

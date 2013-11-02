@@ -10,8 +10,10 @@ exports['generateTask'] = function(binary, next){
   templateLines.push('exports.task = {');
   templateLines.push('  name: "' + binary.argv['name'] + '",');
   templateLines.push('  description: "' + binary.argv['description'] + '",');
-  templateLines.push('  queue: "' + binary.argv['queue'] + '",');
   templateLines.push('  frequency: ' + binary.argv['frequency'] + ',');
+  templateLines.push('  queue: "' + binary.argv['queue'] + '",');
+  templateLines.push('  plugins: [],');
+  templateLines.push('  pluginOptions: {},');
   templateLines.push('  run: function(api, params, next){');
   templateLines.push('    // your logic here');
   templateLines.push('    next();');

@@ -86,8 +86,16 @@ var tasks = function(api, next){
 
     jobWrapper: function(taskName){
       var self = this;
+      var task = api.tasks.tasks[taskName];
+      var plugins = task.plugins || [];
+      var pluginOptions = task.pluginOptions || [];
+      if(task.frequency > 0){
+        plugins.push('jobLock');
+        plugins.push('queueLock');
+      }
       return { 
-        
+        'plugins': plugins,
+        'pluginOptions': pluginOptions,
         'perform': function(){
           var args = Array.prototype.slice.call(arguments);
           var cb = args.pop();
@@ -116,10 +124,10 @@ var tasks = function(api, next){
         fail("a task is missing `task.name`");
       }else if(typeof task.description != "string" || task.description.length < 1){
         fail("Task "+task.name+" is missing `task.description`");
-      }else if(typeof task.queue != "string"){
-        fail("Task "+task.name+" has no queue");
       }else if(typeof task.frequency != "number"){
-        fail("Task "+task.name+" has no frequency");  
+        fail("Task "+task.name+" has no frequency"); 
+      }else if(typeof task.queue != "string"){
+        fail("Task "+task.name+" has no queue");  
       }else if(typeof task.run != "function"){
         fail("Task "+task.name+" has no run method");
       }
@@ -184,10 +192,30 @@ var tasks = function(api, next){
       }
     },
 
+    enqueueAllRecurentJobs: function(callback){
+      var self = this;
+      var started = 0;
+      var loadedTasks = []
+      for(var taskName in self.tasks){
+        var task = self.tasks[taskName];
+        if(task.frequency > 0){
+          started++;
+          loadedTasks.push(taskName);
+          api.log("enqueuing periodic task: " + taskName, 'info');
+          self.enqueueIn(task.frequency, taskName, function(){
+            started--;
+            if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+          })
+        }
+      }
+      if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+    }
+
   }
 
   api.tasks.loadFolder(api.tasks.tasksPath());
   next();
+  
 };
 
 
