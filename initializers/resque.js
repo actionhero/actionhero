@@ -23,9 +23,9 @@ var resque = function(api, next){
 
     _teardown: function(api, next){
       var self = this;
-      self.queue.end(function(){
-        self.stopScheduler(function(){
-          self.stopWorkers(function(){
+      self.stopScheduler(function(){
+        self.stopWorkers(function(){
+          self.queue.end(function(){
             next();
           });
         });
@@ -81,7 +81,8 @@ var resque = function(api, next){
       }else{
         while(i < api.configData.tasks.queues.length){
           (function(i){
-            var name = os.hostname() + ":" + process.pid + ":" + (i+1);
+            var name = os.hostname() + ":" + process.pid + "+" + (i+1);
+            // var name = os.hostname() + ":" + process.pid;
             var worker = new AR.worker({connection: self.connectionDetails, name: name, queues: api.configData.tasks.queues[i]}, api.tasks.jobs, function(){
               worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
               worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "info"); })

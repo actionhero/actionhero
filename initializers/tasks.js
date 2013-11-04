@@ -8,7 +8,9 @@ var tasks = function(api, next){
     jobs: {},
 
     _start: function(api, next){
-      next();
+      api.tasks.enqueueAllRecurentJobs(function(){
+        next();
+      });
     },
 
     _teardown: function(api, next){
@@ -92,6 +94,7 @@ var tasks = function(api, next){
       if(task.frequency > 0){
         plugins.push('jobLock');
         plugins.push('queueLock');
+        plugins.push('delayQueueLock');
       }
       return { 
         'plugins': plugins,
@@ -201,8 +204,8 @@ var tasks = function(api, next){
         if(task.frequency > 0){
           started++;
           loadedTasks.push(taskName);
-          api.log("enqueuing periodic task: " + taskName, 'info');
-          self.enqueueIn(task.frequency, taskName, function(){
+          self.enqueue(taskName, function(err, toRun){
+            if(toRun === true){ api.log("enqueuing periodic task: " + taskName, 'info'); }
             started--;
             if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
           })
@@ -214,9 +217,8 @@ var tasks = function(api, next){
   }
 
   api.tasks.loadFolder(api.tasks.tasksPath());
-  next();
+    next();
   
 };
-
 
 exports.tasks = tasks;

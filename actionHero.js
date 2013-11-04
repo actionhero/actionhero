@@ -174,6 +174,8 @@ actionHero.prototype.stop = function(callback){
 
     var orderedTeardowns = {};
     [
+      "task",
+      "resque",
       "webServer", 
       "faye", 
       "webSocketServer", 

@@ -102,7 +102,7 @@ namespace("actionHero", function(){
     task("enqueuePeriodicTask", ["actionHero:environment"], {async: true}, function(taskName){
       var task = api().tasks.tasks[taskName];
       api().resque.startQueue(function(){
-        api().tasks.enqueueIn(task.frequency, taskName, function(error){
+        api().tasks.enqueue(taskName, function(error){ // enqueue to run ASAP
           console.log("loaded task: " + taskName);
           complete(process.exit());
         });

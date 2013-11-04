@@ -113,31 +113,33 @@ var redis = function(api, next){
 
   api.redis.checkForDroppedPeers = function(next){
     clearTimeout(api.redis.lostPeerTimer);
-    var allowedOffset = ( api.redis.pingTime * 2 ) + 1;
-    api.redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-      api.stats.set("redis:numberOfPeers", api.utils.hashLength(peerPings))
-      var peerID = null;
-      for(var i in peerPings){
-        if( new Date().getTime() - parseInt(peerPings[i]) > allowedOffset){
-          peerID = i;
-          break; // do one at a time
+    if(api.running === true){
+      var allowedOffset = ( api.redis.pingTime * 2 ) + 1;
+      api.redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
+        api.stats.set("redis:numberOfPeers", api.utils.hashLength(peerPings))
+        var peerID = null;
+        for(var i in peerPings){
+          if( new Date().getTime() - parseInt(peerPings[i]) > allowedOffset){
+            peerID = i;
+            break; // do one at a time
+          }
         }
-      }
-      if(peerID != null){
-        api.log("peer: " + peerID + " has gone away", "error");
-        api.redis.client.hdel("actionHero:peerPings", peerID, function(){
-          api.redis.client.lrem("actionHero:peers", 1, peerID, function(){
-            if(api.running){
-              api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-            }
-            if (typeof next == "function"){ next(); }
+        if(peerID != null){
+          api.log("peer: " + peerID + " has gone away", "error");
+          api.redis.client.hdel("actionHero:peerPings", peerID, function(){
+            api.redis.client.lrem("actionHero:peers", 1, peerID, function(){
+              if(api.running){
+                api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+              }
+              if (typeof next == "function"){ next(); }
+            });
           });
-        });
-      }else{
-        api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
-        if (typeof next == "function"){ next(); }
-      }
-    });
+        }else{
+          api.redis.lostPeerTimer = setTimeout(api.redis.checkForDroppedPeers, api.redis.lostPeerCheckTime, api);
+          if (typeof next == "function"){ next(); }
+        }
+      });
+    }
   }
 
   api.redis.initialize(function(){
