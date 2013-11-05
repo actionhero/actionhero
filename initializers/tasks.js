@@ -57,8 +57,6 @@ var tasks = function(api, next){
                     }
 
                     delete require.cache[require.resolve(cleanPath)];
-                    delete api.tasks.tasks[taskName]
-                    delete api.tasks.jobs[taskName]
                     self.load(fullfFilePath, true);
                   }
                 });
@@ -69,19 +67,12 @@ var tasks = function(api, next){
       }
       try{
         var collection = require(fullfFilePath);
-        if(api.utils.hashLength(collection) == 1){
-          api.tasks.tasks[taskName] = require(fullfFilePath).task;
-          self.validateTask(api.tasks.tasks[taskName]);
+        for(var i in collection){
+          var task = collection[i];
+          api.tasks.tasks[task.name] = task;
+          self.validateTask(api.tasks.tasks[task.name]);
           api.tasks.jobs[taskName] = self.jobWrapper(taskName);
-          loadMessage(taskName);
-        }else{
-          for(var i in collection){
-            var task = collection[i];
-            api.tasks.tasks[task.name] = task;
-            self.validateTask(api.tasks.tasks[task.name]);
-            api.tasks.jobs[taskName] = self.jobWrapper(taskName);
-            loadMessage(task.name);
-          }
+          loadMessage(task.name);
         }
       }catch(err){
         api.exceptionHandlers.loader(fullfFilePath, err);
@@ -238,7 +229,6 @@ var tasks = function(api, next){
         }
       });
     },
-
   }
 
   api.tasks.loadFolder(api.tasks.tasksPath());
