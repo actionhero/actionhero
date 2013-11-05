@@ -1,5 +1,5 @@
 var os = require("os");
-var AR = require('node-resque');
+var NR = require('node-resque');
 
 var resque = function(api, next){  
 
@@ -34,7 +34,7 @@ var resque = function(api, next){
 
     startQueue: function(callback){
       var self = this;
-      self.queue = new AR.queue({connection: self.connectionDetails}, api.tasks.jobs, function(){
+      self.queue = new NR.queue({connection: self.connectionDetails}, api.tasks.jobs, function(){
         callback();
       });
     },
@@ -42,7 +42,8 @@ var resque = function(api, next){
     startScheduler: function(callback){
       var self = this;
       if(api.configData.tasks.scheduler === true){
-        self.scheduler = new AR.scheduler({connection: self.connectionDetails, timeout: 500}, function(){
+        self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: 500}, function(){
+          
           self.scheduler.on('start',             function(){               api.log("resque scheduler started", "info"); })
           self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "info");   })
           // self.scheduler.on('poll',             function(){               api.log("resque scheduler polling", "debug"); })
@@ -83,7 +84,7 @@ var resque = function(api, next){
           (function(i){
             var name = os.hostname() + ":" + process.pid + "+" + (i+1);
             // var name = os.hostname() + ":" + process.pid;
-            var worker = new AR.worker({connection: self.connectionDetails, name: name, queues: api.configData.tasks.queues[i]}, api.tasks.jobs, function(){
+            var worker = new NR.worker({connection: self.connectionDetails, name: name, queues: api.configData.tasks.queues[i]}, api.tasks.jobs, function(){
               worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
               worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "info"); })
               worker.on('cleaning_worker', function(worker, pid){        api.log("resque cleaning old worker " + worker, "info"); })

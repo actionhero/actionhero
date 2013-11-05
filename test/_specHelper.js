@@ -51,7 +51,6 @@ var paths = {
 specHelper.params[0] = {
   general: {
     id: "test-server-1",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -60,6 +59,11 @@ specHelper.params[0] = {
     transports: null,
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    queues: [],
+    redis: redisConfig,
+  },
   servers: {
     web: {
       secure: false, 
@@ -81,7 +85,6 @@ specHelper.params[0] = {
 specHelper.params[1] = {
   general: {
     id: "test-server-2",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -90,6 +93,11 @@ specHelper.params[1] = {
     transports: null
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    queues: [],
+    redis: redisConfig,
+  },
   servers: {
     web: {
       secure: false, 
@@ -111,7 +119,6 @@ specHelper.params[1] = {
 specHelper.params[2] = {
   general: {
     id: "test-server-3",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -120,6 +127,11 @@ specHelper.params[2] = {
     transports: null
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    queues: [],
+    redis: redisConfig,
+  },
   servers: {
     web: {
       secure: false, 

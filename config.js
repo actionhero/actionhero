@@ -95,17 +95,9 @@ configData.faye = {
 ///////////
 
 configData.tasks = {
-  scheduler: true, // Should this node run a scheduler to promote delayed tasks?
-  queues: ['*'],       // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
-  redis: {          // What redis server should we connet to for tasks / delayed jobs?
-    fake: false,
-    host: "127.0.0.1",
-    port: 6379,
-    password: null,
-    options: null,
-    // namespace: 'resque',
-    DB: 0,
-  },
+  scheduler: false,       // Should this node run a scheduler to promote delayed tasks?
+  queues: [],             // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
+  redis: configData.redis // What redis server should we connet to for tasks / delayed jobs?
 }
 
 /////////////

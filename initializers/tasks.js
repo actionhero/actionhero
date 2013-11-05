@@ -8,9 +8,13 @@ var tasks = function(api, next){
     jobs: {},
 
     _start: function(api, next){
-      api.tasks.enqueueAllRecurentJobs(function(){
+      if(api.configData.tasks.scheduler === true){
+        api.tasks.enqueueAllRecurentJobs(function(){
+          next();
+        });
+      }else{
         next();
-      });
+      }
     },
 
     _teardown: function(api, next){
@@ -163,21 +167,21 @@ var tasks = function(api, next){
       }
     },
 
-    enqueue: function(taskName, params, callback){
-      if(typeof params === "function" && callback == null){ callback = params; params = {}; }
-      var queue = this.tasks[taskName].queue;
+    enqueue: function(taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueue(queue, taskName, params, callback);
     },
 
-    enqueueAt: function(timestamp, taskName, params, callback){
-      if(typeof params === "function" && callback == null){ callback = params; params = {}; }
-      var queue = this.tasks[taskName].queue;
+    enqueueAt: function(timestamp, taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback);
     },
 
-    enqueueIn: function(time, taskName, params, callback){
-      if(typeof params === "function" && callback == null){ callback = params; params = {}; }
-      var queue = this.tasks[taskName].queue;
+    enqueueIn: function(time, taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
     },
 
@@ -212,7 +216,28 @@ var tasks = function(api, next){
         }
       }
       if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
-    }
+    },
+
+    details: function(callback){
+      var self = this;
+      var details = {'queues': {}};
+      api.resque.queue.queues(function(err, queues){
+        if(queues.length == 0){ callback(null, details); }
+        else{
+          var started = 0;
+          queues.forEach(function(queue){
+            started++;
+            api.resque.queue.length(queue, function(err, length){
+              details['queues'][queue] = {
+                length: length,
+              }
+              started--;
+              if(started == 0){ callback(null, details); }
+            });
+          });
+        }
+      });
+    },
 
   }
 
