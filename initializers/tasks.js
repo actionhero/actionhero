@@ -375,17 +375,11 @@ var tasks = function(api, next){
     }
     try{
       var collection = require(fullfFilePath);
-      if(api.utils.hashLength(collection) == 1){
-        api.tasks.tasks[taskName] = require(fullfFilePath).task;
-        validateTask(api.tasks.tasks[taskName]);
-        loadMessage(taskName);
-      }else{
-        for(var i in collection){
-          var task = collection[i];
-          api.tasks.tasks[task.name] = task;
-          validateTask(api.tasks.tasks[task.name]);
-          loadMessage(task.name);
-        }
+      for(var i in collection){
+        var task = collection[i];
+        api.tasks.tasks[task.name] = task;
+        validateTask(api.tasks.tasks[task.name]);
+        loadMessage(task.name);
       }
     }catch(err){
       api.exceptionHandlers.loader(fullfFilePath, err);
