@@ -15,7 +15,7 @@ exports['generateTask'] = function(binary, next){
   templateLines.push('  frequency: ' + binary.argv['frequency'] + ',');
   templateLines.push('  toAnnounce: ' + binary.argv['toAnnounce'] + ',');
   templateLines.push('  run: function(api, params, next){');
-  templateLines.push('    if(params == null){ prams = {}; }');
+  templateLines.push('    if(params == null){ params = {}; }');
   templateLines.push('    var error = null;');
   templateLines.push('    // your logic here');
   templateLines.push('    next(error, true);');
