@@ -22,7 +22,6 @@ var actions = function(api, next){
 
     var parts = fullFilePath.split("/");
     var file = parts[(parts.length - 1)];
-    var actionName = file.split(".")[0];
     
     if(!reload){
       if(api.configData.general.developmentMode == true){
@@ -40,7 +39,6 @@ var actions = function(api, next){
                   }
 
                   delete require.cache[require.resolve(cleanPath)];
-                  delete api.actions.actions[actionName];
                   api.actions.load(fullFilePath, true);
                   api.params.buildPostVariables();
                 }

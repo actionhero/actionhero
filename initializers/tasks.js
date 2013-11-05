@@ -347,7 +347,7 @@ var tasks = function(api, next){
 
     var parts = fullfFilePath.split("/");
     var file = parts[(parts.length - 1)];
-    var taskName = file.split(".")[0];
+
     if(!reload){
       if(api.configData.general.developmentMode == true){
         api.watchedFiles.push(fullfFilePath);
@@ -364,7 +364,6 @@ var tasks = function(api, next){
                   }
 
                   delete require.cache[require.resolve(cleanPath)];
-                  delete api.tasks.tasks[taskName]
                   api.tasks.load(fullfFilePath, true);
                 }
               });
