@@ -120,7 +120,6 @@ var redis = function(api, next){
     clearTimeout(api.redis.lostPeerTimer);
     var allowedOffset = ( api.redis.pingTime * 2 ) + 1;
     api.redis.client.hgetall("actionHero:peerPings", function (err, peerPings){
-      api.stats.set("redis:numberOfPeers", api.utils.hashLength(peerPings))
       var peerID = null;
       for(var i in peerPings){
         if( new Date().getTime() - parseInt(peerPings[i]) > allowedOffset){

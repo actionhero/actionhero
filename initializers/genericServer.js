@@ -92,10 +92,8 @@ var genericServer = function(api, next){
         this.attributes[key] = this.options[key];
       }
     }
-
-    api.stats.set("connections:connections:" + this.type, 0);
-    api.stats.set("connections:activeConnections:" + this.type, 0);
   }
+
   util.inherits(api.genericServer, EventEmitter);
 
   api.genericServer.prototype.buildConnection = function(data){
