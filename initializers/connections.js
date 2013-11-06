@@ -6,24 +6,6 @@ var connections = function(api, next){
 
     createCallbacks: [],
     destroyCallbacks: [],
-    
-    resetLocalConnectionStats : function(next){
-      api.stats.set("connections:totalActiveConnections", 0);
-      api.stats.set("connections:totalConnections", 0);
-      next();
-    },
-
-    _start: function(api, next){
-      api.connections.resetLocalConnectionStats(function(){
-        next();
-      });
-    },
-
-    _teardown: function(api, next){
-      api.connections.resetLocalConnectionStats(function(){
-        next();
-      });
-    },
 
     allowedVerbs: [
       "quit", 
@@ -105,13 +87,11 @@ var connections = function(api, next){
     for(var i in api.connections.destroyCallbacks){
       api.connections.destroyCallbacks[i](self);
     }
-    api.stats.increment("connections:totalActiveConnections", -1, function(){
-      api.stats.increment("connections:activeConnections:" + self.type, -1, function(){
-        if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
-        delete api.connections.connections[self.id];
-        if(typeof callback == "function"){ callback(); }
-      });
-    });
+    api.stats.increment("connections:totalActiveConnections", -1);
+    api.stats.increment("connections:activeConnections:" + self.type, -1);
+    if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
+    delete api.connections.connections[self.id];
+    if(typeof callback == "function"){ callback(); }
   }
 
   api.connection.prototype.verbs = function(verb, words, callback){

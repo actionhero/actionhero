@@ -13,17 +13,14 @@ describe('Action: status', function(){
 
   it('stats should be returned and make sense', function(done){
     specHelper.apiTest.get('/status', 0, {}, function(response, json){
-      specHelper.apiTest.get('/status', 0, {}, function(response, json){
-        response.statusCode.should.equal(200);
+      response.statusCode.should.equal(200);
 
-        json.uptime.should.be.above(0);
-        json.id.length.should.be.above(0);
+      json.uptime.should.be.above(0);
+      json.id.length.should.be.above(0);
 
-        json.stats.local.actions.actionsCurrentlyProcessing.should.be.above(0);
-        json.stats.local.actions.totalProcessedActions.should.be.above(0);
-        
-        done();
-      });
+      should.exist(json.stats);
+      
+      done();
     });
   });
 
