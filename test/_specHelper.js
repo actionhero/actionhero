@@ -60,7 +60,7 @@ specHelper.params[0] = {
     transports: null,
   },
   stats: {
-    witeFrequency: 0, 
+    writeFrequency: 0, 
     keys: [], 
   },
   redis : redisConfig,
@@ -94,7 +94,7 @@ specHelper.params[1] = {
     transports: null
   },
   stats: {
-    witeFrequency: 0, 
+    writeFrequency: 0, 
     keys: [], 
   },
   redis : redisConfig,
@@ -128,7 +128,7 @@ specHelper.params[2] = {
     transports: null
   },
   stats: {
-    witeFrequency: 0, 
+    writeFrequency: 0, 
     keys: [], 
   },
   redis : redisConfig,

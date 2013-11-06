@@ -4,8 +4,8 @@ var stats = function(api, next){
   api.stats.pendingIncrements = {};
 
   api.stats._start = function(api, next){
-    if(api.configData.stats.witeFrequency > 0){
-      setTimeout(api.stats.writeIncrements, api.configData.stats.witeFrequency );
+    if(api.configData.stats.writeFrequency > 0){
+      setTimeout(api.stats.writeIncrements, api.configData.stats.writeFrequency );
     }
     next();
   }
@@ -41,14 +41,14 @@ var stats = function(api, next){
           multi.exec(function(){
             started--;
             if(started == 0){
-              setTimeout(api.stats.writeIncrements, api.configData.stats.witeFrequency );
+              setTimeout(api.stats.writeIncrements, api.configData.stats.writeFrequency );
               if(typeof next == 'function'){ next(); }
             }
           });
         })(collection);
       }
     }else{
-      setTimeout(api.stats.writeIncrements, api.configData.stats.witeFrequency );
+      setTimeout(api.stats.writeIncrements, api.configData.stats.writeFrequency );
       if(typeof next == 'function'){ next(); }
     }
   }
