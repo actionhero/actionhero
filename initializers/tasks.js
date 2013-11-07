@@ -333,7 +333,7 @@ var tasks = function(api, next){
   // LOADERS //
   /////////////  
 
-  api.tasks.load = function(fullfFilePath, reload){
+  api.tasks.loadFile = function(fullfFilePath, reload){
     if(reload == null){ reload = false; }
 
     var loadMessage = function(loadedTaskName){
@@ -364,7 +364,7 @@ var tasks = function(api, next){
                   }
 
                   delete require.cache[require.resolve(cleanPath)];
-                  api.tasks.load(fullfFilePath, true);
+                  api.tasks.loadFile(fullfFilePath, true);
                 }
               });
             }
@@ -372,12 +372,13 @@ var tasks = function(api, next){
         })();
       }
     }
+
     try{
       var collection = require(fullfFilePath);
       for(var i in collection){
         var task = collection[i];
         api.tasks.tasks[task.name] = task;
-        validateTask(api.tasks.tasks[task.name]);
+        api.tasks.validateTask(api.tasks.tasks[task.name]);
         loadMessage(task.name);
       }
     }catch(err){
@@ -386,7 +387,7 @@ var tasks = function(api, next){
     }
   }
 
-  var validateTask = function(task){
+  api.tasks.validateTask = function(task){
     var fail = function(msg){
       api.log(msg + "; exiting.", "emerg");
       process.exit();
@@ -404,31 +405,35 @@ var tasks = function(api, next){
     }
   }
   
-  var path = api.configData.general.paths.task
-  if(fs.existsSync(path)){
+  api.tasks.loadDirectory = function(path){
+    if(path == null){
+      path = api.configData.general.paths.task;
+      if(!fs.existsSync(api.configData.general.paths.task)){
+        api.log("no tasks folder found ("+path+"), skipping", "warning");
+      }
+    }
     fs.readdirSync(path).forEach( function(file) {
       if(path[path.length - 1] != "/"){ path += "/"; } 
       var fullfFilePath = path + file;
       if (file[0] != "."){
         var stats = fs.statSync(fullfFilePath);
         if(stats.isDirectory()){
-          loadFolder(fullfFilePath);
+          api.tasks.loadDirectory(fullfFilePath);
         }else if(stats.isSymbolicLink()){
           var realPath = readlinkSync(fullfFilePath);
-          loadFolder(realPath);
+          api.tasks.loadDirectory(realPath);
         }else if(stats.isFile()){
           var ext = file.split('.')[1];
           if (ext === 'js')
-            api.tasks.load(fullfFilePath);
+            api.tasks.loadFile(fullfFilePath);
         }else{
           api.log(file+" is a type of file I cannot read", "alert")
         }
       }
     });
-  }else{
-    api.log("no tasks folder found ("+path+"), skipping", "warning");
   }
 
+  api.tasks.loadDirectory();
   next();
 
 }
