@@ -48,7 +48,8 @@ var servers = function(api, next){
     if(fs.existsSync(folder)){
       fs.readdirSync(folder).sort().forEach(function(file){
         var fullFilePath = serverFolders[i] + "/" + file;
-        var ext = file.split('.')[1];
+        var fileParts = file.split('.');
+        var ext = fileParts[(fileParts.length - 1)];
         if (file[0] != "." && ext === 'js'){
           var server = file.split(".")[0];
           if(api.configData.servers[server] != null){

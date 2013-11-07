@@ -423,7 +423,8 @@ var tasks = function(api, next){
           var realPath = readlinkSync(fullfFilePath);
           api.tasks.loadDirectory(realPath);
         }else if(stats.isFile()){
-          var ext = file.split('.')[1];
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
           if (ext === 'js')
             api.tasks.loadFile(fullfFilePath);
         }else{

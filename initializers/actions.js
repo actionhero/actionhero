@@ -55,7 +55,8 @@ var actions = function(api, next){
           var realPath = readlinkSync(fullFilePath);
           api.actions.loadDirectory(realPath);
         }else if(stats.isFile()){
-          var ext = file.split('.')[1];
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
           if (ext === 'js')
             api.actions.loadFile(fullFilePath);
         }else{
