@@ -232,8 +232,9 @@ var tasks = function(api, next){
   }
 
   api.tasks.loadFolder(api.tasks.tasksPath());
-    next();
+  next();
   
 };
+
 
 exports.tasks = tasks;

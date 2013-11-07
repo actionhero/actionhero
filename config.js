@@ -68,6 +68,17 @@ configData.logger.transports.push(function(api, winston) {
 });
 
 ///////////
+// Stats //
+///////////
+
+configData.stats = {
+  writeFrequency: 1000, // how often should the server write its stats to redis?
+  keys: [              // what redis key(s) [hash] should be used to store stats? provide no key if you do not want to store stats
+    'actionHero:stats',
+  ], 
+}
+
+///////////
 // Redis //
 ///////////
 

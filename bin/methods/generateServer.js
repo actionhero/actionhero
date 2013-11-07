@@ -58,8 +58,8 @@ exports['generateServer'] = function(binary, next){
   for(var i in templateLines){
     data += templateLines[i] + "\n";
   }
-  var partialPath = "/servers/" + binary.argv['name'] + ".js";
-  binary.utils.create_file_safely(binary.paths.project_root + partialPath, data);
+
+  binary.utils.create_file_safely(binary.paths.configData.server + "/" + binary.argv['name'] + ".js", data);
 
   next();
 

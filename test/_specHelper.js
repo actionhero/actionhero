@@ -58,6 +58,10 @@ specHelper.params[0] = {
     levels: winston.config.syslog.levels,
     transports: null,
   },
+  stats: {
+    writeFrequency: 0, 
+    keys: [], 
+  },
   redis : redisConfig,
   tasks : {
     scheduler: false, 
@@ -92,6 +96,10 @@ specHelper.params[1] = {
     levels: winston.config.syslog.levels,
     transports: null
   },
+  stats: {
+    writeFrequency: 0, 
+    keys: [], 
+  },
   redis : redisConfig,
   tasks : {
     scheduler: false, 
@@ -125,6 +133,10 @@ specHelper.params[2] = {
   logger: {
     levels: winston.config.syslog.levels,
     transports: null
+  },
+  stats: {
+    writeFrequency: 0, 
+    keys: [], 
   },
   redis : redisConfig,
   tasks : {

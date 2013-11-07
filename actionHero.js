@@ -84,7 +84,8 @@ actionHero.prototype.initialize = function(params, callback){
         var file = path.resolve(self.api.configData.general.paths.initializer + "/" + f);
         if (file[0] != "."){
           var initializer = f.split(".")[0];
-          var ext = f.split('.')[1];
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
           if (ext === 'js') {
             if(require.cache[require.resolve(file)] !== null){
               delete require.cache[require.resolve(file)];
