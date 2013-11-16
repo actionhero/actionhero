@@ -1,7 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // TO START IN CONSOLE: `./bin/actionHero startCluster`
-// TO DAMEONIZE: `forever ./bin/actionHero startCluster` 
 // 
 // ** Producton-ready actionHero cluster **
 // - be sure to enable redis so that workers can share state
