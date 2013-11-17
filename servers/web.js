@@ -108,8 +108,12 @@ var web = function(api, options, next){
     determineRequestParams(connection, function(requestMode){
       if(requestMode == "api"){
         server.processAction(connection);
-      }else{
+      }else if(requestMode == "file"){
         server.processFile(connection);
+      }else if(requestMode == "options"){
+        respondToOptions(connection);
+      }else if(requestMode == "trace"){
+        respondToTrace(connection);
       }
     });
   });
@@ -179,14 +183,7 @@ var web = function(api, options, next){
       }
 
       if(api.configData.servers.web.metadataOptions.requestorInformation){
-        connection.response.requestorInformation = {
-          id: connection.id,
-          remoteIP: connection.remoteIP,
-          receivedParams: {},
-        };
-        for(var k in connection.params){
-          connection.response.requestorInformation.receivedParams[k] = connection.params[k];
-        }
+        connection.response.requestorInformation = buildRequestorInformation(connection);
       }
 
       if(connection.response.error != null){
@@ -224,6 +221,24 @@ var web = function(api, options, next){
     }
   }
 
+  var respondToOptions = function(connection){
+    if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null){
+      var methods = 'PUT, GET, POST, DELETE, OPTIONS, TRACE';
+      connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
+    }
+    if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null){
+      var origin =  '*';
+      connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
+    }
+    server.sendMessage(connection, "");
+  }
+
+  var respondToTrace= function(connection){
+    var data = buildRequestorInformation(connection);
+    var stringResponse = JSON.stringify(data, null, 2); 
+    server.sendMessage(connection, stringResponse);
+  }
+
   var determineRequestParams = function(connection, callback){
     var requestMode = api.configData.servers.web.rootEndpointType; // api or public
     var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
@@ -252,7 +267,16 @@ var web = function(api, options, next){
     }
     fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
     if(requestMode == 'api'){
-      if(connection.rawConnection.req.method.toUpperCase() != 'GET'){ // POST/DELETE/PUT params
+      var httpMethod = connection.rawConnection.req.method.toUpperCase();
+      if(httpMethod == 'OPTIONS'){
+        requestMode = 'options'
+        callback(requestMode);
+      }else if(httpMethod == 'GET'){
+        api.routes.processRoute(connection);
+        if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
+        callback(requestMode);
+      }else{ // POST/DELETE/PUT params
+        if(httpMethod == "TRACE"){ requestMode = 'trace'; }
         if(connection.rawConnection.req.headers['content-type'] == null && connection.rawConnection.req.headers['Content-Type'] == null){
           // not a legal post; bad headers
           api.routes.processRoute(connection);
@@ -276,10 +300,6 @@ var web = function(api, options, next){
             callback(requestMode);
           });
         }
-      }else{
-        api.routes.processRoute(connection);
-        if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
-        callback(requestMode);
       }
     }else{
       if(connection.params["file"] == null){
@@ -309,6 +329,18 @@ var web = function(api, options, next){
     delete params.offset;
     if(api.utils.hashLength(params) !== 0){ return false; }
     return true;
+  }
+
+  var buildRequestorInformation = function(connection){
+    var requestorInformation = {
+      id: connection.id,
+      remoteIP: connection.remoteIP,
+      receivedParams: {},
+    };
+    for(var k in connection.params){
+      requestorInformation.receivedParams[k] = connection.params[k];
+    }
+    return requestorInformation;
   }
 
   var cleanHeaders = function(connection){

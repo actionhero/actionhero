@@ -160,6 +160,26 @@ describe('Server: Web', function(){
       });
     });
 
+    it('should respond to OPTIONS with only HTTP headers', function(done){
+      specHelper.apiTest.options('/x', 0, {}, function(response, json){
+        response.statusCode.should.eql(200);
+        response.headers['access-control-allow-methods'].should.equal('PUT, GET, POST, DELETE, OPTIONS, TRACE');
+        response.headers['access-control-allow-origin'].should.equal('*');
+        response.headers['content-length'].should.equal('0');
+        done();
+      });
+    });
+
+    it('should respond to TRACE with parsed params recieved', function(done){
+      specHelper.apiTest.trace('/api/x', 0, {key: 'someKey', value: 'someValue'}, function(response, json){
+        response.statusCode.should.eql(200);
+        json.receivedParams.action.should.equal('x');
+        json.receivedParams.key.should.equal('someKey');
+        json.receivedParams.value.should.equal('someValue');
+        done();
+      });
+    });
+
   });
 
   describe('http returnErrorCodes true', function(){

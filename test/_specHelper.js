@@ -264,10 +264,12 @@ specHelper.apiTest = {
       });
     });
   },
-  get: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
-  post: function( url, serverID, data, cb ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
-  put: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb    )  },
-  del: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  }
+  get:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb    )  },
+  post:    function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb   )  },
+  put:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb    )  },
+  del:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb )  },
+  trace:   function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'TRACE', serverID, url, data, cb )   },
+  options: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'OPTIONS', serverID, url, data, cb ) },
 }
 
 specHelper.resetCookieJar = function(){
