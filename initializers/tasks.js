@@ -21,10 +21,6 @@ var tasks = function(api, next){
       next();
     },
 
-    tasksPath: function(){
-      return process.cwd() + "/tasks/";
-    },
-
     load: function(fullfFilePath, reload){
       var self = this;
       if(reload == null){ reload = false; }
@@ -40,7 +36,6 @@ var tasks = function(api, next){
 
       var parts = fullfFilePath.split("/");
       var file = parts[(parts.length - 1)];
-      var taskName = file.split(".")[0];
       if(!reload){
         if(api.configData.general.developmentMode == true){
           api.watchedFiles.push(fullfFilePath);
@@ -71,13 +66,13 @@ var tasks = function(api, next){
           var task = collection[i];
           api.tasks.tasks[task.name] = task;
           self.validateTask(api.tasks.tasks[task.name]);
-          api.tasks.jobs[taskName] = self.jobWrapper(taskName);
+          api.tasks.jobs[task.name] = self.jobWrapper(task.name);
           loadMessage(task.name);
         }
       }catch(err){
         api.exceptionHandlers.loader(fullfFilePath, err);
-        delete api.tasks.tasks[taskName];
-        delete api.tasks.jobs[taskName];
+        delete api.tasks.tasks[task.name];
+        delete api.tasks.jobs[task.name];
       }
     },
 
@@ -133,6 +128,11 @@ var tasks = function(api, next){
     
     loadFolder: function(path){
       var self = this;
+
+      if(path == null){
+        path = api.configData.general.paths.task;
+      }
+      
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
           if(path[path.length - 1] != "/"){ path += "/"; } 
@@ -231,7 +231,7 @@ var tasks = function(api, next){
     },
   }
 
-  api.tasks.loadFolder(api.tasks.tasksPath());
+  api.tasks.loadFolder();
   next();
   
 };
