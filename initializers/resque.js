@@ -82,9 +82,16 @@ var resque = function(api, next){
       }else{
         while(i < api.configData.tasks.queues.length){
           (function(i){
+            var timeout = api.configData.tasks.timeout;
+            if(timeout == null){ timeout = 5000; }
             var name = os.hostname() + ":" + process.pid + "+" + (i+1);
             // var name = os.hostname() + ":" + process.pid;
-            var worker = new NR.worker({connection: self.connectionDetails, name: name, queues: api.configData.tasks.queues[i]}, api.tasks.jobs, function(){
+            var worker = new NR.worker({
+              connection: self.connectionDetails, 
+              name: name, 
+              queues: api.configData.tasks.queues[i], 
+              timeout: timeout
+            }, api.tasks.jobs, function(){
               worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
               worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "info"); })
               worker.on('cleaning_worker', function(worker, pid){        api.log("resque cleaning old worker " + worker, "info"); })

@@ -34,8 +34,6 @@ var tasks = function(api, next){
         api.log(loadMessage, "debug");
       }
 
-      var parts = fullfFilePath.split("/");
-      var file = parts[(parts.length - 1)];
       if(!reload){
         if(api.configData.general.developmentMode == true){
           api.watchedFiles.push(fullfFilePath);
@@ -176,13 +174,20 @@ var tasks = function(api, next){
       api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
     },
 
+    del: function(q, func, args, count, callback){
+      api.resque.queue.del(q, func, args, count, callback);
+    },
+
+    delDelayed: function(q, func, args, callback){
+      api.resque.queue.delDelayed(q, func, args, callback);
+    },
+
     enqueueRecurrentJob: function(taskName, callback){
       var self = this;
       var task = self.tasks[taskName];
       if(task.frequency <= 0){
         callback();
       }else{
-        // TODO: Uniquify and 'claim' recurrent jobs?
         self.enqueueIn(task.frequency, taskName, function(){
           api.log("re-enqueued reccurent job " + taskName, "debug");
           callback();

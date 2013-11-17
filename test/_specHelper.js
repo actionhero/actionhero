@@ -6,6 +6,7 @@ specHelper.should = require('should');
 specHelper.request = require('request');
 specHelper.apis = [];
 specHelper.actionHeroes = [];
+specHelper.queue = "testQueue";
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 var winston = require('winston');
@@ -24,7 +25,7 @@ if(process.env.TDDIUM_REDIS_HOST != null){
     "port": process.env.TDDIUM_REDIS_PORT,
     "password": process.env.TDDIUM_REDIS_PASSWORD,
     "options": null,
-    "DB": process.env.TDDIUM_REDIS_DB
+    "database": process.env.TDDIUM_REDIS_DB
   }
 }else{
   var redisConfig = {
@@ -33,7 +34,7 @@ if(process.env.TDDIUM_REDIS_HOST != null){
     "port": 6379,
     "password": null,
     "options": null,
-    "DB": 2
+    "database": 2
   }
 }
 
@@ -65,6 +66,7 @@ specHelper.params[0] = {
   redis : redisConfig,
   tasks : {
     scheduler: false, 
+    timeout: 100,
     queues: [],
     redis: redisConfig,
   },
@@ -103,6 +105,7 @@ specHelper.params[1] = {
   redis : redisConfig,
   tasks : {
     scheduler: false, 
+    timeout: 100,
     queues: [],
     redis: redisConfig,
   },
@@ -141,6 +144,7 @@ specHelper.params[2] = {
   redis : redisConfig,
   tasks : {
     scheduler: false, 
+    timeout: 100,
     queues: [],
     redis: redisConfig,
   },
@@ -177,7 +181,7 @@ specHelper.clearRedis = function(serverID, next){
       var redis = require('redis');
       var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
       client.on("ready", function (err) {
-        client.select(redisConfig.DB, function(){
+        client.select(redisConfig.database, function(){
           client.flushdb(function(){
             next();
           });

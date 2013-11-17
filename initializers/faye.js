@@ -17,7 +17,7 @@ var faye = function(api, next){
         host: api.configData.redis.host,
         port: api.configData.redis.port,
         password: api.configData.redis.password,
-        database: api.configData.redis.DB,
+        database: api.configData.redis.database,
         namespace: "faye:",
       }
     }

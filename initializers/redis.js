@@ -12,7 +12,7 @@ var redis = function(api, next){
   api.redis = {};
   api.redis.fake = api.configData.redis.fake;
 
-  if(api.configData.redis.DB == null){ api.configData.redis.DB = 0; }
+  if(api.configData.redis.database == null){ api.configData.redis.database = 0; }
 
   if(api.redis.fake == true){
     api.log("running with fakeredis", "warning");
@@ -43,15 +43,15 @@ var redis = function(api, next){
 
     if(api.configData.redis.password != null && api.configData.redis.password != ""){
       api.redis.client.auth(api.configData.redis.password, function(){
-        api.redis.client.select(api.configData.redis.DB, function(err){
-          if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
+        api.redis.client.select(api.configData.redis.database, function(err){
+          if(err){ api.log("Error selecting database #"+api.configData.redis.database+" on redis.  exiting", "emerg"); }
             callback();
         });
       }); 
     }else if(api.configData.redis.fake != true){
       process.nextTick(function(){
-        api.redis.client.select(api.configData.redis.DB, function(err){
-          if(err){ api.log("Error selecting DB #"+api.configData.redis.DB+" on redis.  exiting", "emerg"); }
+        api.redis.client.select(api.configData.redis.database, function(err){
+          if(err){ api.log("Error selecting database #"+api.configData.redis.database+" on redis.  exiting", "emerg"); }
           callback();
         });
       });
