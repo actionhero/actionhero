@@ -52,7 +52,7 @@ var actions = function(api, next){
         if(stats.isDirectory()){
           api.actions.loadDirectory(fullFilePath);
         }else if(stats.isSymbolicLink()){
-          var realPath = readlinkSync(fullFilePath);
+          var realPath = fs.readlinkSync(fullFilePath);
           api.actions.loadDirectory(realPath);
         }else if(stats.isFile()){
           var fileParts = file.split('.');
@@ -78,9 +78,6 @@ var actions = function(api, next){
       api.log(loadMessage, "debug");
     }
 
-    var parts = fullFilePath.split("/");
-    var file = parts[(parts.length - 1)];
-    
     if(!reload){
       if(api.configData.general.developmentMode == true){
         api.watchedFiles.push(fullFilePath);
