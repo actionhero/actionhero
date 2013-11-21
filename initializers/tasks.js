@@ -420,7 +420,7 @@ var tasks = function(api, next){
         if(stats.isDirectory()){
           api.tasks.loadDirectory(fullfFilePath);
         }else if(stats.isSymbolicLink()){
-          var realPath = readlinkSync(fullfFilePath);
+          var realPath = fs.readlinkSync(fullfFilePath);
           api.tasks.loadDirectory(realPath);
         }else if(stats.isFile()){
           var fileParts = file.split('.');
