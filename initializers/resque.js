@@ -42,13 +42,13 @@ var resque = function(api, next){
     startScheduler: function(callback){
       var self = this;
       if(api.configData.tasks.scheduler === true){
-        self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: 500}, function(){
+        self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.configData.tasks.timeout}, function(){
           
           self.scheduler.on('start',             function(){               api.log("resque scheduler started", "info"); })
           self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "info");   })
-          // self.scheduler.on('poll',             function(){               api.log("resque scheduler polling", "debug"); })
+          // self.scheduler.on('poll',              function(){               api.log("resque scheduler polling", "debug"); })
           self.scheduler.on('working_timestamp', function(timestamp){      api.log("resque scheduler working timestamp " + timestamp, "debug"); })
-          self.scheduler.on('transferred_job',    function(timestamp, job){ api.log("resque scheduler enquing job " + timestamp, "debug", job); })
+          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log("resque scheduler enquing job " + timestamp, "debug", job); })
 
           self.scheduler.start();
 
@@ -83,7 +83,6 @@ var resque = function(api, next){
         while(i < api.configData.tasks.queues.length){
           (function(i){
             var timeout = api.configData.tasks.timeout;
-            if(timeout == null){ timeout = 5000; }
             var name = os.hostname() + ":" + process.pid + "+" + (i+1);
             // var name = os.hostname() + ":" + process.pid;
             var worker = new NR.worker({

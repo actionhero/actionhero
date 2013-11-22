@@ -204,11 +204,13 @@ var tasks = function(api, next){
         if(task.frequency > 0){
           started++;
           loadedTasks.push(taskName);
-          self.enqueue(taskName, function(err, toRun){
-            if(toRun === true){ api.log("enqueuing periodic task: " + taskName, 'info'); }
-            started--;
-            if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
-          })
+          (function(taskName){
+            self.enqueue(taskName, function(err, toRun){
+              if(toRun === true){ api.log("enqueuing periodic task: " + taskName, 'info'); }
+              started--;
+              if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+            });
+          })(taskName)
         }
       }
       if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
