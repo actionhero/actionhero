@@ -163,7 +163,7 @@ describe('Server: Web', function(){
     it('should respond to OPTIONS with only HTTP headers', function(done){
       specHelper.apiTest.options('/x', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
-        response.headers['access-control-allow-methods'].should.equal('PUT, GET, POST, DELETE, OPTIONS, TRACE');
+        response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE');
         response.headers['access-control-allow-origin'].should.equal('*');
         response.headers['content-length'].should.equal('0');
         done();
@@ -176,6 +176,14 @@ describe('Server: Web', function(){
         json.receivedParams.action.should.equal('x');
         json.receivedParams.key.should.equal('someKey');
         json.receivedParams.value.should.equal('someValue');
+        done();
+      });
+    });
+
+    it('should respond to HEAD requets just like GET, but with no body', function(done){
+      specHelper.apiTest.head('/randomNumber', 0, {}, function(response, json){
+        response.statusCode.should.eql(200);
+        should.not.exist(json);
         done();
       });
     });

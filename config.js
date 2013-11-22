@@ -126,7 +126,7 @@ configData.servers = {
     bindIP: "0.0.0.0",                   // Which IP to listen on (use 0.0.0.0 for all)
     httpHeaders : {                      // Any additional headers you want actionHero to respond with
       'Access-Control-Allow-Origin' : '*',
-      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS, TRACE',
+      'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE',
       'Access-Control-Allow-Headers': 'Content-Type'
     },    
     urlPathForActions : "api",           // Route that actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/

@@ -69,7 +69,11 @@ var web = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message){
-    var stringResponse = String(message);
+    if (connection.rawConnection.req.method.toUpperCase() == "HEAD"){
+      var stringResponse = '';
+    }else{
+      var stringResponse = String(message);
+    }
     connection.rawConnection.responseHeaders.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
@@ -223,7 +227,7 @@ var web = function(api, options, next){
 
   var respondToOptions = function(connection){
     if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null){
-      var methods = 'PUT, GET, POST, DELETE, OPTIONS, TRACE';
+      var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
     if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null){
@@ -271,7 +275,7 @@ var web = function(api, options, next){
       if(httpMethod == 'OPTIONS'){
         requestMode = 'options'
         callback(requestMode);
-      }else if(httpMethod == 'GET'){
+      }else if(httpMethod == 'GET' || httpMethod == 'HEAD'){
         api.routes.processRoute(connection);
         if(connection.params["action"] == null){ connection.params["action"] = apiPathParts[0]; }
         callback(requestMode);
@@ -352,6 +356,8 @@ var web = function(api, options, next){
       var value = originalHeaders[i][1];
       if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
         // ignore, it's a duplicate
+      }else if(connection.rawConnection.req.method.toUpperCase() == "HEAD" && key == "Transfer-Encoding"){
+        // ignore, we can't send this header for HEAD requests
       }else{
         foundHeaders.push(key.toLowerCase());
         cleanedHeaders.push([key, value]);

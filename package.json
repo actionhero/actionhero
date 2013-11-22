@@ -46,7 +46,7 @@
   "devDependencies": {
     "mocha": "1.9.x",
     "should": "1.2.x",
-    "request": "2.21.x",
+    "request": "2.x.x",
     "uglify-js": "2.4.x"
   },
   "bin": {

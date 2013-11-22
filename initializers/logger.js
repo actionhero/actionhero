@@ -1,6 +1,4 @@
-var fs = require('fs');
 var winston = require('winston');
-var cluster = require('cluster');
 
 var logger = function(api, next){
 

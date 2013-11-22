@@ -20,7 +20,6 @@ var config = function(api, next){
     var configFile = path.resolve(api.project_root, "config.js");
   }else{
     throw new Error(configFile + "No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG");
-    proces.exit(1);
   }
 
   try{
