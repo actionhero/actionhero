@@ -216,6 +216,24 @@ var tasks = function(api, next){
       if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
     },
 
+    stopRecurrentJob: function(taskName, callback){
+      // find the jobs in either the normal queue or delayed queues
+      var self = this;
+      var task = self.tasks[taskName];
+      if(task.frequency <= 0){
+        callback();
+      }else{
+        var removedCount = 0;
+        self.del(task.queue, task.name, {}, 1, function(err, count){
+          removedCount = removedCount + count; 
+          self.delDelayed(task.queue, task.name, {}, function(err, timestamps){
+            removedCount = removedCount + timestamps.length; 
+            callback(err, removedCount);
+          });
+        });
+      }
+    },
+
     details: function(callback){
       var self = this;
       var details = {'queues': {}};

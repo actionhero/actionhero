@@ -109,6 +109,16 @@ namespace("actionHero", function(){
       });
     });
 
+    desc("This will remove an enqueued periodic task");
+    task("stopPeriodicTask", ["actionHero:environment"], {async: true}, function(taskName){
+      var task = api().tasks.tasks[taskName];
+      api().resque.startQueue(function(){
+        api().tasks.stopRecurrentJob(taskName, function(error, count){ 
+          console.log("removed " + count + " instances of " + taskName);
+          complete(process.exit());
+        });
+      });
+    });
   });
 });
 

@@ -27,7 +27,7 @@ describe('Core: Tasks', function(){
         }
 
         rawAPI.tasks.tasks['periodic_task'] = {
-          name: 'periodic_any',
+          name: 'periodic_task',
           description: 'task: ' + this.name,
           queue: specHelper.queue,
           frequency: 500,
@@ -169,7 +169,15 @@ describe('Core: Tasks', function(){
   });
 
   it('I can remove and stop a recurring task', function(done){
-
+    // enqueue the delayed job 2x, one in each type of queue
+    rawAPI.tasks.enqueue('periodic_task', {}, function(err){
+      rawAPI.tasks.enqueueIn(1000, 'periodic_task', {}, function(err){
+        rawAPI.tasks.stopRecurrentJob('periodic_task', function(err, count){
+          count.should.equal(2);
+          done();
+        });
+      });
+    });    
   });
 
   it('will clear crashed wokrers when booting'); //TODO
