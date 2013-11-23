@@ -109,18 +109,24 @@ var tasks = function(api, next){
     validateTask: function(task){
       var fail = function(msg){
         api.log(msg + "; exiting.", "emerg");
-        process.exit();
       }
       if(typeof task.name != "string" || task.name.length < 1){
         fail("a task is missing `task.name`");
+        return false;
       }else if(typeof task.description != "string" || task.description.length < 1){
         fail("Task "+task.name+" is missing `task.description`");
+        return false;
       }else if(typeof task.frequency != "number"){
-        fail("Task "+task.name+" has no frequency"); 
+        fail("Task "+task.name+" has no frequency");
+        return false;
       }else if(typeof task.queue != "string"){
-        fail("Task "+task.name+" has no queue");  
+        fail("Task "+task.name+" has no queue");
+        return false;
       }else if(typeof task.run != "function"){
         fail("Task "+task.name+" has no run method");
+        return false;
+      }else{
+        return true;
       }
     },
     

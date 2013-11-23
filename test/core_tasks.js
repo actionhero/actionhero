@@ -30,11 +30,11 @@ describe('Core: Tasks', function(){
           name: 'periodic_task',
           description: 'task: ' + this.name,
           queue: specHelper.queue,
-          frequency: 500,
+          frequency: 100,
           plugins: [],
           pluginOptions: {},
           run: function(api, params, next){
-            taskOutput.push(params.word);
+            taskOutput.push('periodic_task');
             next();
           }
         }
@@ -70,12 +70,30 @@ describe('Core: Tasks', function(){
     });
   })
 
-  it('setup worked', function(done){
-    rawAPI.utils.hashLength(rawAPI.tasks.tasks).should.equal(2 + 1);
+  it('will clear crashed wokrers when booting', function(done){
+    var badTask = {
+      name: 'badTask',
+      description: 'task',
+      // queue: specHelper.queue, // No Queue
+      frequency: 100,
+      plugins: [],
+      pluginOptions: {},
+      run: function(api, params, next){
+        next();
+      }
+    };
+
+    var response = rawAPI.tasks.validateTask(badTask);
+    response.should.equal(false);
     done();
   });
 
   it('a bad task definition causes an exception'); //TODO
+
+  it('setup worked', function(done){
+    rawAPI.utils.hashLength(rawAPI.tasks.tasks).should.equal(2 + 1);
+    done();
+  });
 
   it('all queues should start empty', function(done){
     rawAPI.resque.queue.length(specHelper.queue, function(err, length){
@@ -144,8 +162,8 @@ describe('Core: Tasks', function(){
         length.should.equal(1);
         rawAPI.tasks.del(specHelper.queue, 'regular_task', {word: 'first'}, function(err, count){
           count.should.equal(1);
-          rawAPI.tasks.del(specHelper.queue, 'regular_task', {word: 'first'}, function(err, count){
-            count.should.equal(0);
+          rawAPI.resque.queue.length(specHelper.queue, function(err, length){
+            length.should.equal(0);
             done();
           });
         });
@@ -180,9 +198,7 @@ describe('Core: Tasks', function(){
     });    
   });
 
-  it('will clear crashed wokrers when booting'); //TODO
-
-  describe('full worker flow', function(){
+  describe('full worker flow', function(done){
     
     it('normal tasks work', function(done){
       rawAPI.tasks.enqueue('regular_task', {word: 'first'}, function(err){
@@ -196,11 +212,58 @@ describe('Core: Tasks', function(){
       }); 
     });
 
-    it('delayed tasks work');
+    it('delayed tasks work', function(done){
+      this.timeout(3000);
+      rawAPI.tasks.enqueueIn(100, 'regular_task', {word: 'delayed'}, function(err){
+        rawAPI.configData.tasks.queues = ["*"];
+        rawAPI.configData.tasks.scheduler = true;
+        rawAPI.resque.startScheduler(function(){
+          rawAPI.resque.startWorkers(function(){
+            setTimeout(function(){
+              taskOutput[0].should.equal('delayed');
+              done();
+            }, 1500);
+          });
+        });
+      }); 
+    });
 
-    it('recurrent tasks work');
+    it('recurrent tasks work', function(done){
+      this.timeout(3000);
+      rawAPI.tasks.enqueueRecurrentJob('periodic_task', function(){
+        rawAPI.configData.tasks.queues = ["*"];
+        rawAPI.configData.tasks.scheduler = true;
+        rawAPI.resque.startScheduler(function(){
+          rawAPI.resque.startWorkers(function(){
+            setTimeout(function(){
+              taskOutput[0].should.equal('periodic_task');
+              taskOutput[1].should.equal('periodic_task');
+              taskOutput[2].should.equal('periodic_task');
+              // the task may have run more than 3 times, we just want to ensure that it happened more than once
+              done();
+            }, 1500);
+          });
+        });
+      }); 
+    });
 
-    it('poping an unknown job will throw an error, but not crash the server');
+    it('poping an unknown job will throw an error, but not crash the server', function(done){
+      this.timeout(3000);
+      rawAPI.resque.queue.enqueue(specHelper.queue, 'someCrazyTask', {}, function(){
+        rawAPI.configData.tasks.queues = ["*"];
+        rawAPI.resque.startWorkers(function(){
+          var listner = function(queue, job, error){
+            queue.should.equal(specHelper.queue);
+            should.not.exist(job);
+            String(error).should.equal("Error: No job defined for class 'someCrazyTask'");
+            rawAPI.resque.workers[0].removeListener('error', listner);
+            done();
+          }
+
+          rawAPI.resque.workers[0].on('error', listner);
+        });
+      });
+    });
 
   });
 

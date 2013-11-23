@@ -34,7 +34,6 @@ var redis = function(api, next){
     api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
     api.redis.client.on("error", function (err) {
       api.log("Redis Error: " + err, "emerg");
-      process.exit();  // redis is really important...
     });
 
     api.redis.client.on("connect", function (err) {

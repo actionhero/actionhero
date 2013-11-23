@@ -15,25 +15,34 @@ var actions = function(api, next){
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + "; exiting.", "emerg");
-      process.exit();
     }
 
     if(typeof action.name != "string" || action.name.length < 1){
       fail("an action is missing `action.name`");
+      return false;
     }else if(typeof action.description != "string" || action.description.length < 1){
       fail("Action "+action.name+" is missing `action.description`");
+      return false;
     }else if(typeof action.inputs != "object"){
       fail("Action "+action.name+" has no inputs");
+      return false;
     }else if(typeof action.inputs.required != "object"){
       fail("Action "+action.name+" has no required inputs");
+      return false;
     }else if(typeof action.inputs.optional != "object"){
       fail("Action "+action.name+" has no optional inputs");
+      return false;
     }else if(typeof action.outputExample != "object"){
       fail("Action "+action.name+" has no outputExample");
+      return false;
     }else if(typeof action.run != "function"){
       fail("Action "+action.name+" has no run method");
+      return false;
     }else if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
       fail(action.name+" is a reserved verb for connections. choose a new name");
+      return false;
+    }else{
+      return true;
     }
   }
 

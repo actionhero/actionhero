@@ -107,8 +107,8 @@ configData.faye = {
 
 configData.tasks = {
   // see https://github.com/taskrabbit/node-resque for more information / options
-  scheduler: true,       // Should this node run a scheduler to promote delayed tasks?
-  queues: ['*'],             // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
+  scheduler: false,       // Should this node run a scheduler to promote delayed tasks?
+  queues: [],             // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
   timeout: 5000,          // how long to sleep between jobs / scheduler checks
   redis: configData.redis // What redis server should we connet to for tasks / delayed jobs?
 }
