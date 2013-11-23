@@ -180,12 +180,12 @@ var tasks = function(api, next){
       api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
     },
 
-    del: function(q, func, args, count, callback){
-      api.resque.queue.del(q, func, args, count, callback);
+    del: function(q, taskName, args, count, callback){
+      api.resque.queue.del(q, taskName, args, count, callback);
     },
 
-    delDelayed: function(q, func, args, callback){
-      api.resque.queue.delDelayed(q, func, args, callback);
+    delDelayed: function(q, taskName, args, callback){
+      api.resque.queue.delDelayed(q, taskName, args, callback);
     },
 
     enqueueRecurrentJob: function(taskName, callback){
