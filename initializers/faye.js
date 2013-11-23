@@ -11,14 +11,14 @@ var faye = function(api, next){
   api.faye._start = function(api, next){
 
     var options = api.configData.faye;
-    if(api.redis.fake != true){
+    if(api.configData.faye.redis.fake != true){
       options.engine = {
-        type: require('faye-redis'),
-        host: api.configData.redis.host,
-        port: api.configData.redis.port,
-        password: api.configData.redis.password,
-        database: api.configData.redis.DB,
-        namespace: "faye:",
+        type:      require('faye-redis'),
+        host:      api.configData.faye.redis.host,
+        port:      api.configData.faye.redis.port,
+        password:  api.configData.faye.redis.password,
+        database:  api.configData.faye.redis.DB,
+        namespace: api.configData.faye.namespace,
       }
     }
 

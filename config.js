@@ -21,7 +21,7 @@ configData.general = {
   defaultChatRoom: "defaultRoom",                                 // The chatRoom that TCP and webSocket clients are joined to when the connect
   defaultLimit: 100,                                              // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultOffset: 0,
-  workers : 5,                                                    // The number of internal "workers" (timers) this node will have.
+  workers : 1,                                                    // The number of internal "workers" (timers) this node will have.
   developmentMode: false,                                         // Watch for changes in actions and tasks, and reload/restart them on the fly
   simultaneousActions: 5,                                         // How many pending actions can a single connection be working on 
   paths: {                                                        // configuration for your actionHero project structure
@@ -97,9 +97,11 @@ configData.redis = {
 //////////
 
 configData.faye = {
-  mount: "/faye",
-  timeout: 45,
-  ping: null,
+  mount: "/faye",          // faye's URL mountpoint.  Be sure to not overlap with an action or route
+  timeout: 45,             // idle timeout for clients
+  ping: null,              // should clients ping the server?
+  redis: configData.redis, // What redis server should we connet to for faye?
+  namespace: "faye:"       // redis prefix for faye keys
 };
 
 /////////////
