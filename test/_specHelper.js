@@ -18,24 +18,13 @@ if( process.env['fakeredis'] != null){
 }
 console.log("\r\n>>> running test sute with fakeredis=" + toFakeRedis + " <<<");
 
-if(process.env.TDDIUM_REDIS_HOST != null){
-  var redisConfig = {
-    "fake": toFakeRedis,
-    "host": process.env.TDDIUM_REDIS_HOST,
-    "port": process.env.TDDIUM_REDIS_PORT,
-    "password": process.env.TDDIUM_REDIS_PASSWORD,
-    "options": null,
-    "database": process.env.TDDIUM_REDIS_DB
-  }
-}else{
-  var redisConfig = {
-    "fake": toFakeRedis,
-    "host": "127.0.0.1",
-    "port": 6379,
-    "password": null,
-    "options": null,
-    "database": 2
-  }
+var redisConfig = {
+  "fake": toFakeRedis,
+  "host": "127.0.0.1",
+  "port": 6379,
+  "password": null,
+  "options": null,
+  "DB": 2
 }
 
 var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
@@ -69,6 +58,13 @@ specHelper.params[0] = {
     timeout: 100,
     queues: [],
     redis: redisConfig,
+  },
+  faye: { 
+    mount: '/faye',
+    timeout: 45,
+    ping: null,
+    redis: redisConfig,
+    namespace: 'faye:' 
   },
   servers: {
     web: {
@@ -109,6 +105,13 @@ specHelper.params[1] = {
     queues: [],
     redis: redisConfig,
   },
+  faye: { 
+    mount: '/faye',
+    timeout: 45,
+    ping: null,
+    redis: redisConfig,
+    namespace: 'faye:' 
+  },
   servers: {
     web: {
       secure: false, 
@@ -147,6 +150,13 @@ specHelper.params[2] = {
     timeout: 100,
     queues: [],
     redis: redisConfig,
+  },
+  faye: { 
+    mount: '/faye',
+    timeout: 45,
+    ping: null,
+    redis: redisConfig,
+    namespace: 'faye:' 
   },
   servers: {
     web: {
