@@ -80,9 +80,9 @@ var tasks = function(api, next){
       var plugins = task.plugins || [];
       var pluginOptions = task.pluginOptions || [];
       if(task.frequency > 0){
-        plugins.push('jobLock');
-        plugins.push('queueLock');
-        plugins.push('delayQueueLock');
+        if(plugins.indexOf('jobLock') < 0)       { plugins.push('jobLock'); }
+        if(plugins.indexOf('queueLock') < 0)     { plugins.push('queueLock'); }
+        if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
       }
       return { 
         'plugins': plugins,
