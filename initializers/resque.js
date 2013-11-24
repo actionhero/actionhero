@@ -122,6 +122,7 @@ var resque = function(api, next){
       }else{
         var ended = 0;
         self.workers.forEach(function(worker){
+          api.log('stopping worker: ' + worker.name, 'debug');
           worker.end(function(){
             ended++;
             if(ended === self.workers.length){

@@ -10,7 +10,9 @@ var config = function(api, next){
       api.watchedFiles.push(file); 
       fs.watchFile(file, {interval: 1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
-          callback();
+          process.nextTick(function(){
+            callback();
+          });
         }
       });
     }

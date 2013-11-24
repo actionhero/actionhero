@@ -182,9 +182,13 @@ var tasks = function(api, next){
       if(task.frequency <= 0){
         callback();
       }else{
-        self.enqueueIn(task.frequency, taskName, function(){
-          api.log("re-enqueued reccurent job " + taskName, "debug");
-          callback();
+        self.del(task.queue, taskName, {}, function(){
+          self.delDelayed(task.queue, taskName, {}, function(){
+            self.enqueueIn(task.frequency, taskName, function(){
+              api.log("re-enqueued reccurent job " + taskName, "debug");
+              callback();
+            });
+          });
         });
       }
     },
