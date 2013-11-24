@@ -72,7 +72,11 @@ actionHero.prototype.initialize = function(params, callback){
     }
     self.initalizers[initializer] = require(file)[initializer];
     orderedInitializers[initializer] = function(next){ 
-      self.initalizers[initializer](self.api, next) 
+      self.initalizers[initializer](self.api, next);
+      self.api.watchFileAndAct(file, function(){
+        self.api.log("\r\n\r\n*** rebooting due to initializer change ("+file+") ***\r\n\r\n", "info");
+        self.api._commands.restart.call(self.api._self);
+      });
     };
   });
 
@@ -94,6 +98,10 @@ actionHero.prototype.initialize = function(params, callback){
             projectInitializers[initializer] = function(next){ 
               self.api.log("running custom initializer: " + initializer, "info");
               self.initalizers[initializer](self.api, next);
+              self.api.watchFileAndAct(file, function(){
+                self.api.log("\r\n\r\n*** rebooting due to initializer change ("+file+") ***\r\n\r\n", "info");
+                self.api._commands.restart.call(self.api._self);
+              });
             };
           }
         }
@@ -204,9 +212,7 @@ actionHero.prototype.stop = function(callback){
     }
 
     orderedTeardowns['_complete'] = function(){ 
-      for(var i in self.api.watchedFiles){
-        fs.unwatchFile(self.api.watchedFiles[i]);
-      }
+      self.api.unWatchAllFiles();
       self.api.pids.clearPidFile();
       self.api.log("The actionHero has been stopped", "alert");
       self.api.log("***", "debug");

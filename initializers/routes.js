@@ -4,6 +4,7 @@ var routes = function(api, next){
 
   api.routes = {};
   api.routes.routes = {};
+  api.routes.routesFile = api.project_root + '/routes.js';
 
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
@@ -67,10 +68,9 @@ var routes = function(api, next){
     api.routes.routes = { "get": [], "post": [], "put": [], "delete": [] };
     
     if(rawRoutes == null){
-      var routesFile = api.project_root + '/routes.js';
-      if(fs.existsSync(routesFile)){
-        delete require.cache[require.resolve(routesFile)];
-        var rawRoutes = require(routesFile).routes;
+      if(fs.existsSync(api.routes.routesFile)){
+        delete require.cache[require.resolve(api.routes.routesFile)];
+        var rawRoutes = require(api.routes.routesFile).routes;
       }else{
         api.log("no routes file found, skipping", "debug");
         return;
@@ -98,21 +98,12 @@ var routes = function(api, next){
       }
     }
     api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
-    api.log(counter + " routes loaded from " + routesFile, "debug", api.routes.routes);
+    api.log(counter + " routes loaded from " + api.routes.routesFile, "debug", api.routes.routes);
   };
 
-  if(api.configData.general.developmentMode == true){
-    var routesFile = api.project_root + '/routes.js';
-    fs.watchFile(routesFile, {interval:1000}, function(curr, prev){
-      if(curr.mtime > prev.mtime){
-        process.nextTick(function(){
-          if(fs.readFileSync(routesFile).length > 0){
-            api.routes.loadRoutes();
-          }
-        });
-      }
-    });
-  };
+  api.watchFileAndAct(api.routes.routesFile, function(){
+    api.routes.loadRoutes();
+  });
 
   api.routes.loadRoutes();
   next();

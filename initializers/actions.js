@@ -87,31 +87,18 @@ var actions = function(api, next){
       api.log(loadMessage, "debug");
     }
 
-    if(!reload){
-      if(api.configData.general.developmentMode == true){
-        api.watchedFiles.push(fullFilePath);
-        (function() {
-          fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
-            if(curr.mtime > prev.mtime){
-              process.nextTick(function(){
-                if(fs.readFileSync(fullFilePath).length > 0){
-                  var cleanPath;
-                  if(process.platform === 'win32'){
-                    cleanPath = fullFilePath.replace(/\//g, "\\");
-                  } else {
-                    cleanPath = fullFilePath;
-                  }
-
-                  delete require.cache[require.resolve(cleanPath)];
-                  api.actions.loadFile(fullFilePath, true);
-                  api.params.buildPostVariables();
-                }
-              });
-            }
-          });
-        })();
+    api.watchFileAndAct(fullFilePath, function(){
+      var cleanPath;
+      if(process.platform === 'win32'){
+        cleanPath = fullFilePath.replace(/\//g, "\\");
+      } else {
+        cleanPath = fullFilePath;
       }
-    }
+
+      delete require.cache[require.resolve(cleanPath)];
+      api.actions.loadFile(fullFilePath, true);
+      api.params.buildPostVariables();
+    })
 
     try{
       var collection = require(fullFilePath);

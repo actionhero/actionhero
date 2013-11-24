@@ -21,45 +21,33 @@ var tasks = function(api, next){
       next();
     },
 
-    load: function(fullfFilePath, reload){
+    load: function(fullFilePath, reload){
       var self = this;
       if(reload == null){ reload = false; }
 
       var loadMessage = function(loadedTaskName){
         if(reload){
-          loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullfFilePath;
+          loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullFilePath;
         }else{
-          var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
+          var loadMessage = "task loaded: " + loadedTaskName + ", " + fullFilePath;
         }
         api.log(loadMessage, "debug");
       }
 
-      if(!reload){
-        if(api.configData.general.developmentMode == true){
-          api.watchedFiles.push(fullfFilePath);
-          (function() {
-            fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-              if(curr.mtime > prev.mtime){
-                process.nextTick(function(){
-                  if(fs.readFileSync(fullfFilePath).length > 0){
-                    var cleanPath;
-                    if(process.platform === 'win32'){
-                      cleanPath = fullfFilePath.replace(/\//g, "\\");
-                    } else {
-                      cleanPath = fullfFilePath;
-                    }
-
-                    delete require.cache[require.resolve(cleanPath)];
-                    self.load(fullfFilePath, true);
-                  }
-                });
-              }
-            });
-          })();
+      api.watchFileAndAct(fullFilePath, function(){
+        var cleanPath;
+        if(process.platform === 'win32'){
+          cleanPath = fullFilePath.replace(/\//g, "\\");
+        } else {
+          cleanPath = fullFilePath;
         }
-      }
+
+        delete require.cache[require.resolve(cleanPath)];
+        self.load(fullFilePath, true);
+      });
+
       try{
-        var collection = require(fullfFilePath);
+        var collection = require(fullFilePath);
         for(var i in collection){
           var task = collection[i];
           api.tasks.tasks[task.name] = task;
@@ -68,7 +56,7 @@ var tasks = function(api, next){
           loadMessage(task.name);
         }
       }catch(err){
-        api.exceptionHandlers.loader(fullfFilePath, err);
+        api.exceptionHandlers.loader(fullFilePath, err);
         delete api.tasks.tasks[task.name];
         delete api.tasks.jobs[task.name];
       }
@@ -140,18 +128,18 @@ var tasks = function(api, next){
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
           if(path[path.length - 1] != "/"){ path += "/"; } 
-          var fullfFilePath = path + file;
+          var fullFilePath = path + file;
           if (file[0] != "."){
-            var stats = fs.statSync(fullfFilePath);
+            var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
-              self.loadFolder(fullfFilePath);
+              self.loadFolder(fullFilePath);
             }else if(stats.isSymbolicLink()){
-              var realPath = readlinkSync(fullfFilePath);
+              var realPath = readlinkSync(fullFilePath);
               self.loadFolder(realPath);
             }else if(stats.isFile()){
               var ext = file.split('.')[1];
               if (ext === 'js')
-                api.tasks.load(fullfFilePath);
+                api.tasks.load(fullFilePath);
             }else{
               api.log(file+" is a type of file I cannot read", "alert")
             }

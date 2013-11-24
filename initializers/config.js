@@ -5,6 +5,22 @@ var argv = require('optimist').argv;
 var config = function(api, next){
 
   api.watchedFiles = [];
+  api.watchFileAndAct = function(file, callback){
+    if(api.configData.general.developmentMode == true && api.watchedFiles.indexOf(file) < 0){
+      api.watchedFiles.push(file); 
+      fs.watchFile(file, {interval: 1000}, function(curr, prev){
+        if(curr.mtime > prev.mtime){
+          callback();
+        }
+      });
+    }
+  };  
+  api.unWatchAllFiles = function(){
+    for(var i in api.watchedFiles){
+      fs.unwatchFile(api.watchedFiles[i]);
+    }
+    api.watchedFiles = [];
+  };
 
   if(api._startingParams.api != null){
     api.utils.hashMerge(api, api._startingParams.api);
@@ -33,18 +49,11 @@ var config = function(api, next){
     api.configData = api.utils.hashMerge(api.configData, api._startingParams.configChanges);
   }
 
-  if(api.configData.general.developmentMode == true){
-    api.watchedFiles.push(configFile);
-    (function() {
-      fs.watchFile(configFile, {interval:1000}, function(curr, prev){
-        if(curr.mtime > prev.mtime){
-          api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n", "info");
-          delete require.cache[require.resolve(configFile)];
-          api._commands.restart.call(api._self);
-        }
-      });
-    })();
-  }
+  api.watchFileAndAct(configFile, function(){
+    api.log("\r\n\r\n*** rebooting due to config change ***\r\n\r\n", "info");
+    delete require.cache[require.resolve(configFile)];
+    api._commands.restart.call(api._self);
+  });
 
   next();
 }
