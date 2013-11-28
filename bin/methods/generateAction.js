@@ -18,6 +18,7 @@ exports['generateAction'] = function(binary, next){
   templateLines.push('  outputExample: {},');
   templateLines.push('  matchExtensionMimeType: false,');
   templateLines.push('  version: 1.0,');
+  templateLines.push('  toDocument: true,');
   templateLines.push('  run: function(api, connection, next){');
   templateLines.push('    // your logic here');
   templateLines.push('    next(connection, true);');
