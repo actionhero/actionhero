@@ -142,13 +142,13 @@ configData.servers = {
     },
     returnErrorCodes: false              // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null. You can also set connection.responseHttpCode to specify a code per request.
   },
+  "websocket" : {
+  },
   // "socket" : {
   //   secure: false,                        // TCP or TLS?
   //   serverOptions: {},                    // passed to tls.createServer if secure=ture. Should contain SSL certificates
   //   port: 5000,                           // Port or Socket
   //   bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
-  // },
-  // "websocket" : {
   // },
 };
 
