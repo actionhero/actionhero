@@ -46,6 +46,7 @@ exports['generate'] = function(binary, next){
   documents.jakefile = fs.readFileSync(binary.paths.actionHero_root + "/Jakefile.js");
   documents.ah_jakefile = fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
   documents.public_actionHeroWebSocket = fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
+  documents.public_actionHeroWebSocketMin = fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.min.js");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
@@ -120,6 +121,7 @@ exports['generate'] = function(binary, next){
   binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.min.js', documents.public_actionHeroWebSocketMin);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
   binary.utils.create_file_safely(binary.paths.project_root + '/Jakefile.js', documents.jakefile);
   binary.utils.create_file_safely(binary.paths.project_root + '/jakelib/actionHero.jake', documents.ah_jakefile);
