@@ -86,6 +86,43 @@ namespace("actionHero", function(){
 });
 
 namespace("actionHero", function(){
+  namespace("tasks", function(){
+
+    desc("This will enqueue all periodic tasks (could lead to duplicates)");
+    task("enqueueAllPeriodicTasks", ["actionHero:environment"], {async: true}, function(){
+      api().resque.startQueue(function(){
+        api().tasks.enqueueAllRecurentJobs(function(loadedTasks){
+          console.log("loaded tasks: " + loadedTasks.join(", "));
+          complete(process.exit());
+        });
+      });
+    });
+
+    desc("This will enqueue a periodic task");
+    task("enqueuePeriodicTask", ["actionHero:environment"], {async: true}, function(taskName){
+      var task = api().tasks.tasks[taskName];
+      api().resque.startQueue(function(){
+        api().tasks.enqueue(taskName, function(error){ // enqueue to run ASAP
+          console.log("loaded task: " + taskName);
+          complete(process.exit());
+        });
+      });
+    });
+
+    desc("This will remove an enqueued periodic task");
+    task("stopPeriodicTask", ["actionHero:environment"], {async: true}, function(taskName){
+      var task = api().tasks.tasks[taskName];
+      api().resque.startQueue(function(){
+        api().tasks.stopRecurrentJob(taskName, function(error, count){ 
+          console.log("removed " + count + " instances of " + taskName);
+          complete(process.exit());
+        });
+      });
+    });
+  });
+});
+
+namespace("actionHero", function(){
   namespace("redis", function(){
 
     desc("This will clear the entire actionHero redis database");

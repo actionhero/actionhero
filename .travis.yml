@@ -22,4 +22,3 @@ notifications:
     on_failure: never
 after_failure: 
   - "cat /home/travis/builds/evantahler/actionHero/npm-debug.log"
-  

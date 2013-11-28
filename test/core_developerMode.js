@@ -41,7 +41,7 @@ describe('Core: Developer Mode', function(){
     specHelper.fs.writeFile(original_file, String(original_content), function(err){
       setTimeout(function(){
         done();
-      },1001 * 8);
+      },1001 * 3);
     });
   });
 
@@ -62,7 +62,7 @@ describe('Core: Developer Mode', function(){
           json.randomNumber.should.equal("not a number!");
           done();
         });
-      }, 1001 * 8); //file read timer is 1 second; time to notice the change + 3x time to reaload API
+      }, 1001 * 3); //file read timer is 1 second; time to notice the change + 3x time to reaload API
     });
   });
 

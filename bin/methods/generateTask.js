@@ -2,23 +2,21 @@ exports['generateTask'] = function(binary, next){
 
   if(binary.argv.name == null){ binary.utils.hardError("name is a required input"); }
   if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
-  if(binary.argv.scope == null){ binary.argv.scope = "any"; }
+  if(binary.argv.queue == null){ binary.argv.queue = "defualt"; }
   if(binary.argv.frequency == null){ binary.argv.frequency = 0; }
-  if(binary.argv.toAnnounce == null){ binary.argv.toAnnounce = 'true'; }
 
   var templateLines = [];
 
   templateLines.push('exports.task = {');
   templateLines.push('  name: "' + binary.argv['name'] + '",');
   templateLines.push('  description: "' + binary.argv['description'] + '",');
-  templateLines.push('  scope: "' + binary.argv['scope'] + '",');
   templateLines.push('  frequency: ' + binary.argv['frequency'] + ',');
-  templateLines.push('  toAnnounce: ' + binary.argv['toAnnounce'] + ',');
+  templateLines.push('  queue: "' + binary.argv['queue'] + '",');
+  templateLines.push('  plugins: [],');
+  templateLines.push('  pluginOptions: {},');
   templateLines.push('  run: function(api, params, next){');
-  templateLines.push('    if(params == null){ params = {}; }');
-  templateLines.push('    var error = null;');
   templateLines.push('    // your logic here');
-  templateLines.push('    next(error, true);');
+  templateLines.push('    next();');
   templateLines.push('  }');
   templateLines.push('};');
 

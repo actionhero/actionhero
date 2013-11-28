@@ -21,7 +21,6 @@ configData.general = {
   defaultChatRoom: "defaultRoom",                                 // The chatRoom that TCP and webSocket clients are joined to when the connect
   defaultLimit: 100,                                              // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultOffset: 0,
-  workers : 1,                                                    // The number of internal "workers" (timers) this node will have.
   developmentMode: false,                                         // Watch for changes in actions and tasks, and reload/restart them on the fly
   simultaneousActions: 5,                                         // How many pending actions can a single connection be working on 
   paths: {                                                        // configuration for your actionHero project structure
@@ -89,7 +88,7 @@ configData.redis = {
   port: 6379,
   password: null,
   options: null,
-  DB: 0,
+  database: 0,
 };
 
 //////////
@@ -103,6 +102,18 @@ configData.faye = {
   redis: configData.redis, // What redis server should we connet to for faye?
   namespace: "faye:"       // redis prefix for faye keys
 };
+
+///////////
+// TASKS //
+///////////
+
+configData.tasks = {
+  // see https://github.com/taskrabbit/node-resque for more information / options
+  scheduler: false,       // Should this node run a scheduler to promote delayed tasks?
+  queues: [],             // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
+  timeout: 5000,          // how long to sleep between jobs / scheduler checks
+  redis: configData.redis // What redis server should we connet to for tasks / delayed jobs?
+}
 
 /////////////
 // SERVERS //

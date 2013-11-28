@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionHero",
   "description": "actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks",
-  "version": "6.4.4",
+  "version": "7.0.0",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   "dependencies": {
     "jake": "latest",
     "browser_fingerprint": "0.0.x",
+    "node-resque": "0.2.x",
     "async": "0.2.x",
     "validator": "1.1.x",
     "formidable": "1.0.x",
@@ -54,7 +55,7 @@
   "scripts": {
     "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
-    "test": "fakeredis=true node ./node_modules/.bin/mocha --reporter spec && fakeredis=false node ./node_modules/.bin/mocha --reporter spec",
+    "test": "fakeredis=true node ./node_modules/.bin/mocha && fakeredis=false node ./node_modules/.bin/mocha",
     "start": "node ./bin/actionHero"
   },
   "prepublish": "./node_modules/.bin/uglifyjs ./public/javascript/actionHeroWebSocket.js --lint -o ./public/javascript/actionHeroWebSocket.min.js",

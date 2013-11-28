@@ -1,4 +1,5 @@
 var fs = require("fs");
+var path = require("path");
 
 var servers = function(api, next){
 
@@ -47,7 +48,7 @@ var servers = function(api, next){
     var folder = serverFolders[i];
     if(fs.existsSync(folder)){
       fs.readdirSync(folder).sort().forEach(function(file){
-        var fullFilePath = serverFolders[i] + "/" + file;
+        var fullFilePath = path.resolve(serverFolders[i] + "/" + file);
         var fileParts = file.split('.');
         var ext = fileParts[(fileParts.length - 1)];
         if (file[0] != "." && ext === 'js'){
@@ -56,18 +57,11 @@ var servers = function(api, next){
             inits[server] = require(fullFilePath)[server];
           }
 
-          if(api.configData.general.developmentMode == true){
-            api.watchedFiles.push(fullFilePath);
-            (function() {
-              fs.watchFile(fullFilePath, {interval:1000}, function(curr, prev){
-                if(curr.mtime > prev.mtime){
-                  api.log("\r\n\r\n*** rebooting due to server change ***\r\n\r\n", "info");
-                  delete require.cache[require.resolve(fullFilePath)];
-                  api._commands.restart.call(api._self);
-                }
-              });
-            })();
-          }
+          api.watchFileAndAct(fullFilePath, function(){
+            api.log("\r\n\r\n*** rebooting due to server ("+fullFilePath+") change ***\r\n\r\n", "info");
+            delete require.cache[require.resolve(fullFilePath)];
+            api._commands.restart.call(api._self);
+          });
         }
       });
     }

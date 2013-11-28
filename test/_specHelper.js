@@ -6,6 +6,7 @@ specHelper.should = require('should');
 specHelper.request = require('request');
 specHelper.apis = [];
 specHelper.actionHeroes = [];
+specHelper.queue = "testQueue";
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
 var winston = require('winston');
@@ -40,7 +41,6 @@ var paths = {
 specHelper.params[0] = {
   general: {
     id: "test-server-1",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -53,6 +53,12 @@ specHelper.params[0] = {
     keys: [], 
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    timeout: 100,
+    queues: [],
+    redis: redisConfig,
+  },
   faye: { 
     mount: '/faye',
     timeout: 45,
@@ -81,7 +87,6 @@ specHelper.params[0] = {
 specHelper.params[1] = {
   general: {
     id: "test-server-2",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -94,6 +99,12 @@ specHelper.params[1] = {
     keys: [], 
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    timeout: 100,
+    queues: [],
+    redis: redisConfig,
+  },
   faye: { 
     mount: '/faye',
     timeout: 45,
@@ -122,7 +133,6 @@ specHelper.params[1] = {
 specHelper.params[2] = {
   general: {
     id: "test-server-3",
-    workers: 1,
     developmentMode: false,
     paths: paths,
   },
@@ -135,6 +145,12 @@ specHelper.params[2] = {
     keys: [], 
   },
   redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    timeout: 100,
+    queues: [],
+    redis: redisConfig,
+  },
   faye: { 
     mount: '/faye',
     timeout: 45,
@@ -175,7 +191,7 @@ specHelper.clearRedis = function(serverID, next){
       var redis = require('redis');
       var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
       client.on("ready", function (err) {
-        client.select(redisConfig.DB, function(){
+        client.select(redisConfig.database, function(){
           client.flushdb(function(){
             next();
           });

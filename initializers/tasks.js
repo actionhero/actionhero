@@ -1,444 +1,263 @@
 var fs = require('fs');
 
 var tasks = function(api, next){
-  
-  //////////////////////////
-  // The tasks themselves //
-  //////////////////////////
 
-  api.tasks = {};
-  api.tasks.tasks = {};
-  api.tasks.taskProcessors = [];
-  api.tasks.cycleTimeMS = 200;
+  api.tasks = {
 
-  api.tasks.queues = {
-    globalQueue: 'actionHero:tasks:global',
-    delayedQueuePrefix: 'actionHero:tasks:delayed',
-    localQueue: 'actionHero:tasks:' + api.id.replace(/:/g,'-'),
-    data: 'actionHero:tasks:data', // actually a hash
-    workerStatus: 'actionHero:tasks:workerStatus', // actually a hash
-    enqueuedPeriodicTasks: 'actionHero:tasks:enqueuedPeriodicTasks'
-  }
+    tasks: {},
+    jobs: {},
 
-  api.tasks._start = function(api, next){
-    api.tasks.clearWorkerStatus(function(){
-      api.tasks.seedPeriodicTasks(function(){
+    _start: function(api, next){
+      if(api.configData.tasks.scheduler === true){
+        api.tasks.enqueueAllRecurentJobs(function(){
+          next();
+        });
+      }else{
         next();
+      }
+    },
+
+    _teardown: function(api, next){
+      next();
+    },
+
+    load: function(fullFilePath, reload){
+      var self = this;
+      if(reload == null){ reload = false; }
+
+      var loadMessage = function(loadedTaskName){
+        if(reload){
+          loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullFilePath;
+        }else{
+          var loadMessage = "task loaded: " + loadedTaskName + ", " + fullFilePath;
+        }
+        api.log(loadMessage, "debug");
+      }
+
+      api.watchFileAndAct(fullFilePath, function(){
+        var cleanPath;
+        if(process.platform === 'win32'){
+          cleanPath = fullFilePath.replace(/\//g, "\\");
+        } else {
+          cleanPath = fullFilePath;
+        }
+
+        delete require.cache[require.resolve(cleanPath)];
+        self.load(fullFilePath, true);
       });
-    });
-  }
 
-  api.tasks.getWorkerStatuses = function(callback){
-    api.redis.client.hgetall(api.tasks.queues.workerStatus, function(err, workerStatuses){
-      callback(err, workerStatuses);
-    });
-  }
-
-  api.tasks.clearWorkerStatus = function(callback){
-    api.redis.client.hgetall(api.tasks.queues.workerStatus, function(err, data){
-      var started = 0;
-      for(var key in data){
-        var id = key.split("#")[0];
-        if(id == api.id){
-          started++;
-          api.log('clearing worker status: ' + key, 'debug');
-          api.redis.client.hdel(api.tasks.queues.workerStatus, key, function(err){
-            started--;
-            if(started == 0){
-              if(typeof callback == "function"){ callback(null, null); }
-            }
-          });
-        }
-      }
-      if(started == 0){
-        if(typeof callback == "function"){ callback(null, null); }
-      }
-    });
-  }
-
-  api.tasks.getAllLocalQueues = function(callback){
-    api.redis.client.lrange("actionHero:peers",0,-1,function(err,peers){
-      var allLocalQueues = [];
-      for(var i in peers){
-        allLocalQueues.push("actionHero:tasks:" + peers[i].replace(/:/g,"-"));
-      }
-      if(typeof callback == "function"){ callback(null, allLocalQueues); }
-    });
-  }
-
-  api.tasks.copyToReleventLocalQueues = function(task, callback){
-    api.tasks.getAllLocalQueues(function(err, allLocalQueues){
-      var releventLocalQueues = []
-      if(task.scope == "any"){
-        // already moved
-      }else{
-        releventLocalQueues = allLocalQueues
-      }
-      if(releventLocalQueues.length == 0){
-        if(typeof callback == "function"){ callback(); }
-      }else{
-        var started = 0;
-        for(var i in releventLocalQueues){
-          started++;
-          var queue = releventLocalQueues[i];
-          if(queue != api.tasks.queues.localQueue){
-            var taskCopy = task.duplicate();
-            taskCopy.enqueue(queue, function(err){
-              if(err != null){ api.log(err, "error") }
-              started--;
-              if(started == 0){ if(typeof callback == "function"){ callback(); } }
-            }); 
-          }else{
-            process.nextTick(function(){
-              started--;
-              if(started == 0){ if(typeof callback == "function"){ callback(); } }
-            });
-          }
-        }
-      }
-    });
-  }
-
-  api.tasks.getAllTasks = function(nameToMatch, callback){
-    if(callback == null && typeof nameToMatch == "function"){
-      callback = nameToMatch;
-      nameToMatch = null;
-    }
-    api.redis.client.hgetall(api.tasks.queues.data, function(err, data){
-      var parsedData = {}
-      for(var i in data){
-        parsedData[i] = JSON.parse(data[i])
-      }
-      if(nameToMatch == null){
-        if(typeof callback == "function"){ callback(err, parsedData); }
-      }else{
-        var results = {};
-        for(var i in parsedData){
-          if(parsedData[i].name == nameToMatch){
-            results[i] = parsedData[i];
-          }
-        }
-        if(typeof callback == "function"){ callback(err, results); }
-      }
-    });
-  }
-
-  api.tasks.setTaskData = function(taskId, data, callback){
-    api.tasks.getTaskData(taskId, function(err, muxedData){
-      if(muxedData == null && err == null){
-        muxedData = {};
-      }
-      for(var i in data){
-        muxedData[i] = data[i];
-      }
-      api.redis.client.hset(api.tasks.queues.data, taskId, JSON.stringify(muxedData), function(err){
-        if(typeof callback == "function"){ callback(err, muxedData); }
-      });
-    });
-  }
-
-  api.tasks.getTaskData = function(taskId, callback){
-    api.redis.client.hget(api.tasks.queues.data, taskId, function(err, data){
       try{
-        data = JSON.parse(data);
-      }catch(e){ 
-        data = {}; 
-      }
-      if(typeof callback == "function"){ callback(err, data); }
-    });
-  }
-
-  api.tasks.clearTaskData = function(taskId, callback){
-    api.redis.client.hdel(api.tasks.queues.data, taskId, function(err){
-      if(typeof callback == "function"){ callback(err); }
-    });
-  }
-
-  api.tasks.placeInQueue = function(taskId, queue, callback){
-    api.tasks.setTaskData(taskId, {queue: queue}, function(err){
-      if(queue != api.tasks.queues.delayedQueue){
-        api.redis.client.rpush(queue, taskId, function(err){
-          if(typeof callback == "function"){ callback(err); }
-        });
-      }else{
-        api.tasks.getTaskData(taskId, function(err, data){
-          var delayedQueue = api.tasks.queues.delayedQueuePrefix + "@" + data.runAt;
-          api.tasks.setTaskData(taskId, {queue: delayedQueue}, function(err){
-            api.redis.client.lpush(delayedQueue, taskId, function(err){
-              if(typeof callback == "function"){ callback(err); }
-            });
-          });
-        });
-      }
-    });
-  }
-
-  api.tasks.queueLength = function(queue, callback){
-    api.redis.client.llen(queue, function(err, length){
-      if(typeof callback == "function"){ callback(err, length); }
-    });
-  }
-
-  api.tasks.countDelayedTasks = function(callback){
-    api.tasks.getAllTasks(function(err, allTasks){
-      var delayedTasks = 0;
-      for(var i in allTasks){
-        var task = allTasks[i];
-        if(task.state == "delayed"){
-          delayedTasks++;
+        var collection = require(fullFilePath);
+        for(var i in collection){
+          var task = collection[i];
+          api.tasks.tasks[task.name] = task;
+          self.validateTask(api.tasks.tasks[task.name]);
+          api.tasks.jobs[task.name] = self.jobWrapper(task.name);
+          loadMessage(task.name);
         }
+      }catch(err){
+        api.exceptionHandlers.loader(fullFilePath, err);
+        delete api.tasks.tasks[task.name];
+        delete api.tasks.jobs[task.name];
       }
-      callback(err, delayedTasks)
-    });
-  }
+    },
 
-  api.tasks.removeFromQueue = function(taskId, queue, callback){
-    api.tasks.clearTaskData(taskId, function(err){
-      api.redis.client.lrem(queue, 1, taskId, function(err, count){
-        if(typeof callback == "function"){ callback(err, count); }
-      });
-    });
-  }
-
-  api.tasks.popFromQueue = function(queue, callback){
-    api.redis.client.lpop(queue, function(err, taskIdReturned){
-      callback(err, taskIdReturned);
-    });
-  }
-
-  api.tasks.changeQueue = function(startQueue, endQueue, callback){
-    api.tasks.popFromQueue(startQueue, function(err, taskIdReturned){
-      if(taskIdReturned == null){
-        callback(err, null);
-      }else{
-        api.tasks.placeInQueue(taskIdReturned, endQueue, function(err){
-          api.tasks.getTaskData(taskIdReturned, function(err, data){
-            try{
-              var task = new api.task(data)
-              callback(err, task);
-            }catch(e){
-              api.log(e, 'error');
-              api.tasks.removeFromQueue(data.id, endQueue, function(){
-                callback(err, null);
-              });
-            }
-          });
-        });
+    jobWrapper: function(taskName){
+      var self = this;
+      var task = api.tasks.tasks[taskName];
+      var plugins = task.plugins || [];
+      var pluginOptions = task.pluginOptions || [];
+      if(task.frequency > 0){
+        if(plugins.indexOf('jobLock') < 0)       { plugins.push('jobLock'); }
+        if(plugins.indexOf('queueLock') < 0)     { plugins.push('queueLock'); }
+        if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
       }
-    });
-  }
-
-  api.tasks.getOldestDelayedQueue = function(callback){
-    var oldestTimestamp = null;
-    var oldestQueue = null;
-    api.redis.client.keys(api.tasks.queues.delayedQueuePrefix + "*", function(err, queues){
-      for(var i in queues){
-        var queue = queues[i];
-        var timestamp = parseFloat(queue.split("@")[1]);
-        if(oldestTimestamp == null || timestamp < oldestTimestamp){
-          oldestTimestamp = timestamp;
-          oldestQueue = queue;
-        }
-      }
-      callback(null, oldestQueue);
-    });
-  }
-
-  api.tasks.promoteFromDelayedQueue = function(callback){
-    api.tasks.getOldestDelayedQueue(function(err, oldestQueue){
-      if(oldestQueue == null){
-        if(typeof callback == 'function'){ callback(); }
-      }else{
-        var queueTimestamp = parseFloat(oldestQueue.split("@")[1]);
-        if(queueTimestamp > new Date().getTime()){
-          if(typeof callback == 'function'){ callback(); }
-        }else{
-          api.tasks.changeQueue(oldestQueue, api.tasks.queues.globalQueue, function(err, task){
-            if(task == null){
-              api.redis.client.del(oldestQueue, function(err){
-                if(typeof callback == 'function'){ callback(err, task); }
-              });
-            }else{
-              api.tasks.setTaskData(task.id, {state: 'pending' }, function(err){
-                if(typeof callback == 'function'){ callback(err, task); }
-              });
-            }
-          });
-        }
-      }
-    });
-  }
-
-  api.tasks.getEnqueuedPeriodicTasks = function(callback){
-    api.redis.client.lrange(api.tasks.queues.enqueuedPeriodicTasks, 0, -1, function(err, enqueuedPeriodicTasks){
-      callback(null, enqueuedPeriodicTasks);
-    });
-  }
-
-  api.tasks.denotePeriodicTaskAsEnqueued = function(task, callback){
-    api.redis.client.lpush(api.tasks.queues.enqueuedPeriodicTasks, task.name, function(err){
-      callback(err);
-    });
-  }
-
-  api.tasks.denotePeriodicTaskAsClear = function(task, callback){
-    api.redis.client.lrem(api.tasks.queues.enqueuedPeriodicTasks, 1, task.name, function(err){
-      callback(err);
-    });
-  }
-
-  api.tasks.seedPeriodicTasks = function(callback){
-    if(api.utils.hashLength(api.tasks.tasks) == 0){
-      callback();
-    }else{
-      var started = 0;
-      for(var i in api.tasks.tasks){
-        started++;
-        var taskTemplate = api.tasks.tasks[i];
-        (function(taskTemplate){
-          if(taskTemplate.frequency > 0){
-            var task = new api.task({
-              name: taskTemplate.name,
-              toAnnounce: taskTemplate.toAnnounce,
-            });
-            task.enqueue(function(err, resp){
-              if(err != null){ 
-                api.log(String(err).replace('Error: ', ""), 'info'); 
-                process.nextTick(function(){ 
-                  started--;
-                  if(started == 0){ callback(); }
-                })
-              }else{
-                api.tasks.denotePeriodicTaskAsEnqueued(task, function(err){
-                  api.log("seeded periodic task " + task.name, "notice");
-                  process.nextTick(function(){ 
-                    started--;
-                    if(started == 0){ callback(); }
-                  })
-                });
-              }
-            });
-          }else{
-            process.nextTick(function(){ 
-              started--;
-              if(started == 0){ callback(); }
-            })
+      return { 
+        'plugins': plugins,
+        'pluginOptions': pluginOptions,
+        'perform': function(){
+          var args = Array.prototype.slice.call(arguments);
+          var cb = args.pop();
+          if(args.length == 0){
+            args.push({}); // empty params array
           }
-        })(taskTemplate)
-      }
-    }
-  }
-
-  /////////////
-  // LOADERS //
-  /////////////  
-
-  api.tasks.loadFile = function(fullfFilePath, reload){
-    if(reload == null){ reload = false; }
-
-    var loadMessage = function(loadedTaskName){
-      if(reload){
-        loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullfFilePath;
-      }else{
-        var loadMessage = "task loaded: " + loadedTaskName + ", " + fullfFilePath;
-      }
-      api.log(loadMessage, "debug");
-    }
-
-    var parts = fullfFilePath.split("/");
-    var file = parts[(parts.length - 1)];
-
-    if(!reload){
-      if(api.configData.general.developmentMode == true){
-        api.watchedFiles.push(fullfFilePath);
-        (function() {
-          fs.watchFile(fullfFilePath, {interval:1000}, function(curr, prev){
-            if(curr.mtime > prev.mtime){
-              process.nextTick(function(){
-                if(fs.readFileSync(fullfFilePath).length > 0){
-                  var cleanPath;
-                  if(process.platform === 'win32'){
-                    cleanPath = fullfFilePath.replace(/\//g, "\\");
-                  } else {
-                    cleanPath = fullfFilePath;
-                  }
-
-                  delete require.cache[require.resolve(cleanPath)];
-                  api.tasks.loadFile(fullfFilePath, true);
-                }
+          args.push(
+            function(resp){
+              self.enqueueRecurrentJob(taskName, function(){
+                cb(resp);
               });
             }
-          });
-        })();
-      }
-    }
-
-    try{
-      var collection = require(fullfFilePath);
-      for(var i in collection){
-        var task = collection[i];
-        api.tasks.tasks[task.name] = task;
-        api.tasks.validateTask(api.tasks.tasks[task.name]);
-        loadMessage(task.name);
-      }
-    }catch(err){
-      api.exceptionHandlers.loader(fullfFilePath, err);
-      delete api.tasks.tasks[taskName];
-    }
-  }
-
-  api.tasks.validateTask = function(task){
-    var fail = function(msg){
-      api.log(msg + "; exiting.", "emerg");
-      process.exit();
-    }
-    if(typeof task.name != "string" || task.name.length < 1){
-      fail("a task is missing `task.name`");
-    }else if(typeof task.description != "string" || task.description.length < 1){
-      fail("Task "+task.name+" is missing `task.description`");
-    }else if(typeof task.scope != "string"){
-      fail("Task "+task.name+" has no scope");
-    }else if(typeof task.frequency != "number"){
-      fail("Task "+task.name+" has no frequency");  
-    }else if(typeof task.run != "function"){
-      fail("Task "+task.name+" has no run method");
-    }
-  }
-  
-  api.tasks.loadDirectory = function(path){
-    if(path == null){
-      path = api.configData.general.paths.task;
-      if(!fs.existsSync(api.configData.general.paths.task)){
-        api.log("no tasks folder found ("+path+"), skipping", "warning");
-      }
-    }
-    fs.readdirSync(path).forEach( function(file) {
-      if(path[path.length - 1] != "/"){ path += "/"; } 
-      var fullfFilePath = path + file;
-      if (file[0] != "."){
-        var stats = fs.statSync(fullfFilePath);
-        if(stats.isDirectory()){
-          api.tasks.loadDirectory(fullfFilePath);
-        }else if(stats.isSymbolicLink()){
-          var realPath = fs.readlinkSync(fullfFilePath);
-          api.tasks.loadDirectory(realPath);
-        }else if(stats.isFile()){
-          var fileParts = file.split('.');
-          var ext = fileParts[(fileParts.length - 1)];
-          if (ext === 'js')
-            api.tasks.loadFile(fullfFilePath);
-        }else{
-          api.log(file+" is a type of file I cannot read", "alert")
+          );
+          args.splice(0, 0, api);
+          api.tasks.tasks[taskName].run.apply(null, args);
         }
       }
-    });
+    },
+
+    validateTask: function(task){
+      var fail = function(msg){
+        api.log(msg + "; exiting.", "emerg");
+      }
+      if(typeof task.name != "string" || task.name.length < 1){
+        fail("a task is missing `task.name`");
+        return false;
+      }else if(typeof task.description != "string" || task.description.length < 1){
+        fail("Task "+task.name+" is missing `task.description`");
+        return false;
+      }else if(typeof task.frequency != "number"){
+        fail("Task "+task.name+" has no frequency");
+        return false;
+      }else if(typeof task.queue != "string"){
+        fail("Task "+task.name+" has no queue");
+        return false;
+      }else if(typeof task.run != "function"){
+        fail("Task "+task.name+" has no run method");
+        return false;
+      }else{
+        return true;
+      }
+    },
+    
+    loadFolder: function(path){
+      var self = this;
+
+      if(path == null){
+        path = api.configData.general.paths.task;
+      }
+      
+      if(fs.existsSync(path)){
+        fs.readdirSync(path).forEach( function(file) {
+          if(path[path.length - 1] != "/"){ path += "/"; } 
+          var fullFilePath = path + file;
+          if (file[0] != "."){
+            var stats = fs.statSync(fullFilePath);
+            if(stats.isDirectory()){
+              self.loadFolder(fullFilePath);
+            }else if(stats.isSymbolicLink()){
+              var realPath = readlinkSync(fullFilePath);
+              self.loadFolder(realPath);
+            }else if(stats.isFile()){
+              var ext = file.split('.')[1];
+              if (ext === 'js')
+                api.tasks.load(fullFilePath);
+            }else{
+              api.log(file+" is a type of file I cannot read", "alert")
+            }
+          }
+        });
+      }else{
+        api.log("no tasks folder found, skipping", "debug");
+      }
+    },
+
+    enqueue: function(taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      api.resque.queue.enqueue(queue, taskName, params, callback);
+    },
+
+    enqueueAt: function(timestamp, taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback);
+    },
+
+    enqueueIn: function(time, taskName, params, queue, callback){
+      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
+    },
+
+    del: function(q, taskName, args, count, callback){
+      api.resque.queue.del(q, taskName, args, count, callback);
+    },
+
+    delDelayed: function(q, taskName, args, callback){
+      api.resque.queue.delDelayed(q, taskName, args, callback);
+    },
+
+    enqueueRecurrentJob: function(taskName, callback){
+      var self = this;
+      var task = self.tasks[taskName];
+      if(task.frequency <= 0){
+        callback();
+      }else{
+        self.del(task.queue, taskName, {}, function(){
+          self.delDelayed(task.queue, taskName, {}, function(){
+            self.enqueueIn(task.frequency, taskName, function(){
+              api.log("re-enqueued reccurent job " + taskName, "debug");
+              callback();
+            });
+          });
+        });
+      }
+    },
+
+    enqueueAllRecurentJobs: function(callback){
+      var self = this;
+      var started = 0;
+      var loadedTasks = []
+      for(var taskName in self.tasks){
+        var task = self.tasks[taskName];
+        if(task.frequency > 0){
+          started++;
+          loadedTasks.push(taskName);
+          (function(taskName){
+            self.enqueue(taskName, function(err, toRun){
+              if(toRun === true){ api.log("enqueuing periodic task: " + taskName, 'info'); }
+              started--;
+              if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+            });
+          })(taskName)
+        }
+      }
+      if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+    },
+
+    stopRecurrentJob: function(taskName, callback){
+      // find the jobs in either the normal queue or delayed queues
+      var self = this;
+      var task = self.tasks[taskName];
+      if(task.frequency <= 0){
+        callback();
+      }else{
+        var removedCount = 0;
+        self.del(task.queue, task.name, {}, 1, function(err, count){
+          removedCount = removedCount + count; 
+          self.delDelayed(task.queue, task.name, {}, function(err, timestamps){
+            removedCount = removedCount + timestamps.length; 
+            callback(err, removedCount);
+          });
+        });
+      }
+    },
+
+    details: function(callback){
+      var self = this;
+      var details = {'queues': {}};
+      api.resque.queue.queues(function(err, queues){
+        if(queues.length == 0){ callback(null, details); }
+        else{
+          var started = 0;
+          queues.forEach(function(queue){
+            started++;
+            api.resque.queue.length(queue, function(err, length){
+              details['queues'][queue] = {
+                length: length,
+              }
+              started--;
+              if(started == 0){ callback(null, details); }
+            });
+          });
+        }
+      });
+    },
   }
 
-  api.tasks.loadDirectory();
+  api.tasks.loadFolder();
   next();
+  
+};
 
-}
 
-/////////////////////////////////////////////////////////////////////
-// exports
 exports.tasks = tasks;
