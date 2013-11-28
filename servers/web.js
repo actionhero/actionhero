@@ -151,10 +151,14 @@ var web = function(api, options, next){
         }
       }
              
-      var remoteIP = req.connection.remoteAddress;
+      var remoteIP = req.connection.remoteAddress,
+          remotePort = req.connection.remotePort;
+
       if(req.headers['x-forwarded-for'] != null){
-        var IPs = req.headers['x-forwarded-for'].split(",");
-        var remoteIP = IPs[0]; 
+        var IP = req.headers['x-forwarded-for'].split(",")[0].split(":");
+
+        remoteIP = IP[0]; 
+        remotePort = IP[1];
       }
 
       server.buildConnection({
@@ -169,7 +173,7 @@ var web = function(api, options, next){
         }, 
         id: fingerprint, 
         remoteAddress: remoteIP, 
-        remotePort: req.connection.remotePort}
+        remotePort: remotePort}
       ); // will emit "connection"
     });
   }
