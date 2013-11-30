@@ -47,6 +47,10 @@ exports['generate'] = function(binary, next){
   documents.ah_jakefile = fs.readFileSync(binary.paths.actionHero_root + "/jakelib/actionHero.jake");
   documents.public_actionHeroWebSocket = fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.js");
   documents.public_actionHeroWebSocketMin = fs.readFileSync(binary.paths.actionHero_root + "/public/javascript/actionHeroWebSocket.min.js");
+  documents.public_index = fs.readFileSync(binary.paths.actionHero_root + "/public/index.html");
+  documents.public_chat = fs.readFileSync(binary.paths.actionHero_root + "/public/chat.html");
+  documents.public_logo = fs.readFileSync(binary.paths.actionHero_root + "/public/logo/actionHero.png");
+  documents.public_css = fs.readFileSync(binary.paths.actionHero_root + "/public/css/actionhero.css");
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
@@ -60,8 +64,6 @@ exports['generate'] = function(binary, next){
       \"type\": \"\",\n\
       \"url\": \"\"\n\
     },\n\
-    \"main\": \"app.js\",\n\
-    \"keywords\": \"\",\n\
     \"engines\": {\n\
       \"node\": \">=0.8.0\"\n\
     },\n\
@@ -88,11 +90,6 @@ exports['generate'] = function(binary, next){
 
   documents.readme_md = "# My actionHero Project\nreadme"; 
 
-  documents.index_html = "<h1>Hello from actionHero!</h1>\n\
-  <p>If you are reading this, your actionHero project is working.</p>\n\
-  <p><strong>Good Job!</strong></p>\n\
-  ";
-
   documents.git_ignore = "log\npids\nnode_modules";
 
   //////// LOGIC ////////
@@ -108,6 +105,8 @@ exports['generate'] = function(binary, next){
   binary.utils.create_dir_safely(binary.paths.project_root + "/servers");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public");
   binary.utils.create_dir_safely(binary.paths.project_root + "/public/javascript");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public/css");
+  binary.utils.create_dir_safely(binary.paths.project_root + "/public/logo");
   binary.utils.create_dir_safely(binary.paths.project_root + "/tasks");
   binary.utils.create_dir_safely(binary.paths.project_root + "/jakelib");
 
@@ -119,7 +118,10 @@ exports['generate'] = function(binary, next){
   binary.utils.create_file_safely(binary.paths.project_root + '/actions/status.js', documents.action_status);
   binary.utils.create_file_safely(binary.paths.project_root + '/tasks/runAction.js', documents.task_runAction);
   binary.utils.create_file_safely(binary.paths.project_root + '/initializers/_project.js', documents._project_js);
-  binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.index_html);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/index.html', documents.public_index);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/chat.html', documents.public_chat);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/css/actionhero.css', documents.public_css);
+  binary.utils.create_file_safely(binary.paths.project_root + '/public/logo/actionHero.png', documents.public_logo);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.min.js', documents.public_actionHeroWebSocketMin);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);

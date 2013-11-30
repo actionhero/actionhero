@@ -60,5 +60,8 @@
   },
   "prepublish": "./node_modules/.bin/uglifyjs ./public/javascript/actionHeroWebSocket.js --lint -o ./public/javascript/actionHeroWebSocket.min.js",
   "subdomain": "actionhero",
-  "domains": ["demo.actionherojs.com", "actionherojs.com"]
+  "domains": [
+    "demo.actionherojs.com",
+    "actionherojs.com"
+  ]
 }

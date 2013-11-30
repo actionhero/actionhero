@@ -134,7 +134,7 @@ configData.servers = {
     },    
     urlPathForActions : "api",           // Route that actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/
     urlPathForFiles : "public",          // Route that static files will be served from; path (relitive to your project root) to server static content from
-    rootEndpointType : "api",            // When visiting the root URL, should visitors see "api" or "file"? Visitors can always visit /api and /public as normal
+    rootEndpointType : "file",           // When visiting the root URL, should visitors see "api" or "file"? Visitors can always visit /api and /public as normal
     directoryFileType : "index.html",    // The default filetype to server when a user requests a directory
     flatFileCacheDuration : 60,          // The header which will be returned for all flat file served from /public; defined in seconds
     fingerprintOptions : {               // Settings for determining the id of an http(s) requset (browser-fingerprint)

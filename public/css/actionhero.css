@@ -1,7 +1,7 @@
 body {
   background-color: #04819E;
   text-align: center;
-  font-family: 'Merriweather Sans', sans-serif;
+  font-family: sans-serif;
   color: black;
 }
 
@@ -16,6 +16,7 @@ body {
 }
 
 h1 {
+  font-family: 'Impact', sans-serif;
   font-weight: 800; 
   font-size: 50px;
   text-shadow: 4px 4px #A61300;
