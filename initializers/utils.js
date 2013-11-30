@@ -31,16 +31,13 @@ var utils = function(api, next){
 
   ////////////////////////////////////////////////////////////////////////////
   // generate a random string
-  api.utils.randomString = function(bits){
-    var chars,rand,i,ret
-    chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    ret=''
-      while(bits > 0)
-    {
-       rand=Math.floor(Math.random()*0x100000000) // 32-bit integer
-       for(i=26; i>0 && bits>0; i-=6, bits-=6) ret+=chars[0x3F & rand >>> i]
+  api.utils.randomString = function(length, chars){
+    var result = '';
+    if(chars == null){
+      chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
     }
-    return ret
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////
