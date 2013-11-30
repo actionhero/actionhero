@@ -21,7 +21,7 @@ describe('Core: Middlware', function(){
   });
 
   it('Server should be up and return data', function(done){
-    specHelper.apiTest.get('', 0, {}, function(response, json){
+    specHelper.apiTest.get('/api/', 0, {}, function(response, json){
       json.should.be.an.instanceOf(Object);
       done();
     });
@@ -35,7 +35,7 @@ describe('Core: Middlware', function(){
         next(connection, true);
       });
 
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         json._preProcessorNote.should.equal("note");
         done();
       });
@@ -47,7 +47,7 @@ describe('Core: Middlware', function(){
         next(connection, true);
       });
 
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         json._postProcessorNote.should.equal("note");
         done();
       });
@@ -59,7 +59,7 @@ describe('Core: Middlware', function(){
         next(connection, false);
       });
 
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         json.error.should.equal("BLOCKED");
         should.not.exist(json.randomNumber);
         done();
@@ -71,7 +71,7 @@ describe('Core: Middlware', function(){
         next(connection, false);
       });
 
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         throw new Error("should not get a response");
       });
       setTimeout(function(){
@@ -99,7 +99,7 @@ describe('Core: Middlware', function(){
       rawApi.connections.createCallbacks.push(function(c){
         done();
       });
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         //
       });
     });
@@ -108,7 +108,7 @@ describe('Core: Middlware', function(){
       rawApi.connections.destroyCallbacks.push(function(c){
         done();
       });
-      specHelper.apiTest.get('/randomNumber', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
         //
       });
     })

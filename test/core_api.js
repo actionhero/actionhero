@@ -110,16 +110,16 @@ describe('Core: API', function(){
     })
 
     it("will default actions to version 1", function(done){
-      specHelper.apiTest.get('/randomNumber/', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/randomNumber/', 0, {}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(1)
         done();
       });
     });
 
     it("can specify an apiVersion", function(done){
-      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 1}, function(response, json){
+      specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 1}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(1)
-        specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 2}, function(response, json){
+        specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 2}, function(response, json){
           json.requestorInformation.receivedParams.apiVersion.should.equal(2)
           done();
         });
@@ -127,21 +127,21 @@ describe('Core: API', function(){
     });
 
     it("will default clients to the latest version of the action", function(done){
-      specHelper.apiTest.get('/versionedAction/', 0, {}, function(response, json){
+      specHelper.apiTest.get('/api/versionedAction/', 0, {}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(3)
         done();
       });
     });
 
     it("will fail on a missing action + version", function(done){
-      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 10}, function(response, json){
+      specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 10}, function(response, json){
         json.error.should.equal("Error: versionedAction is not a known action or that is not a valid apiVersion.");
         done();
       });
     });
 
     it("can return complex error responses", function(done){
-      specHelper.apiTest.get('/versionedAction/', 0, {apiVersion: 3}, function(response, json){
+      specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 3}, function(response, json){
         json.error.a.complex.should.equal('error');
         done();
       });

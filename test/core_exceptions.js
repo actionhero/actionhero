@@ -47,14 +47,14 @@ describe('Core: Exceptions', function(){
   });
 
   it('the bad action should fail gracefully', function(done){
-    specHelper.apiTest.get('/badAction', 0, {} , function(response, json){
+    specHelper.apiTest.get('/api/badAction', 0, {} , function(response, json){
       json.error.should.equal("Error: The server experienced an internal error");
       done();
     });
   });
 
   it('other actions still work', function(done){
-    specHelper.apiTest.get('/randomNumber', 0, {} , function(response){
+    specHelper.apiTest.get('/api/randomNumber', 0, {} , function(response){
       should.not.exist(response.body.error);
       done();
     });
