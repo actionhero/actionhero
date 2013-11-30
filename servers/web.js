@@ -151,14 +151,13 @@ var web = function(api, options, next){
         }
       }
              
-      var remoteIP = req.connection.remoteAddress,
-          remotePort = req.connection.remotePort;
+      var remoteIP = req.connection.remoteAddress;
+      var remotePort = req.connection.remotePort;
 
       if(req.headers['x-forwarded-for'] != null){
         var IP = req.headers['x-forwarded-for'].split(",")[0].split(":");
-
-        remoteIP = IP[0]; 
-        remotePort = IP[1];
+        if(IP[0] != null){ remoteIP = IP[0]; }
+        if(IP[1] != null){ remotePort = IP[1]; }
       }
 
       server.buildConnection({
