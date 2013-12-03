@@ -59,7 +59,7 @@ actionHero.prototype.initialize = function(params, callback){
     'actionProcessor',
     'params',
     'staticFile',
-    'chatRooms',
+    'chatRoom',
     'resque',
     'tasks',
     'routes',

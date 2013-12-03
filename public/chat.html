@@ -34,6 +34,7 @@
         A.log(err);
       }else{
         A.log("CONNECTED");
+        A.roomChange("defaultRoom");
         document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(A.id)) + "\">" + A.id + "</span>"
         A.listenToRoom("twitter")
       }

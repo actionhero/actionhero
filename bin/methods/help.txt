@@ -22,8 +22,8 @@ Descriptions:
   will generate a new action in `actions`
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
-  [inputsRequired] (optional) should be a comma-sepperated list IE: "userName,password"
-  [inputsOptional] (optional) should be a comma-sepperated list IE: "userName,password"
+  [inputsRequired] (optional) should be a comma-separated list IE: "userName,password"
+  [inputsOptional] (optional) should be a comma-separated list IE: "userName,password"
 
 * actionHero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
   will generate a new task in `tasks`
@@ -49,7 +49,7 @@ Descriptions:
 
 * actionHero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
   will launch a actionHero cluster (using node-s cluster module)
-  [exec] (optional) command for the custer-master to run to stat the workers
+  [exec] (optional) command for the cluster-master to run to stat the workers
   [workers] (optional) number of workers (defaults to # CPUs - 2)
   [pidfile] (optional) pidfile localtion (defaults to process.cwd() + /pids)
   [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
