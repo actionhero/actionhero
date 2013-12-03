@@ -44,7 +44,6 @@ describe('Server: Web Sockets', function(){
     client_1.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
       client_1.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
@@ -55,7 +54,6 @@ describe('Server: Web Sockets', function(){
     client_2.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
       client_2.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
@@ -66,7 +64,6 @@ describe('Server: Web Sockets', function(){
     client_3.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
       data.context.should.equal("response");
-      data.data.room.should.equal("defaultRoom");
       data.data.totalActions.should.equal(0);
       client_3.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
       done();
@@ -77,21 +74,9 @@ describe('Server: Web Sockets', function(){
     client_1.detailsView(function(response){
       response.should.be.an.instanceOf(Object);
       response.data.connectedAt.should.be.within(0, new Date().getTime())
-      response.data.room.should.equal("defaultRoom");
       response.data.remoteIP.should.equal("127.0.0.1");
       done()
     });
-  });
-
-  it('Clients can talk to each other', function(done){
-    client_1.events.say = function(response){
-      delete client_1.events.say;
-      response.should.be.an.instanceOf(Object);
-      response.context.should.equal('user');
-      response.message.should.equal('hello from client 2');
-      done();
-    }
-    client_2.say("hello from client 2", function(){}); // TODO: why does this block without a callback?
   });
 
   it('can run actions with errors', function(done){
@@ -133,65 +118,93 @@ describe('Server: Web Sockets', function(){
       }
       done();
     }, 2000);
-
   });
 
-  it('can change rooms and get room details', function(done){
-    client_1.roomChange("otherRoom", function(){
-      client_1.detailsView(function(response){
-        response.should.be.an.instanceOf(Object);
-        should.not.exist(response.error);
-        response.data.room.should.equal("otherRoom")
-        done();
+  describe('chat', function(){
+
+    beforeEach(function(done){
+      client_1.roomChange('defaultRoom',function(response){
+        client_2.roomChange('defaultRoom',function(response){
+          client_3.roomChange('defaultRoom',function(response){
+            done();
+          });
+        });
       });
     });
-  });
 
-  it('I can register for messages from rooms I am not in; and then unregister', function(done){
-    this.timeout(5000)
-    client_1.roomChange("room1", function(){
-      client_2.roomChange("room2", function(){
-        
-        setTimeout(function(){
-          client_1.listenToRoom("room2", function(){
-            client_1.events.say = function(response){
-              delete client_1.events.say;
-              response.should.be.an.instanceOf(Object);
-              response.context.should.equal('user');
-              response.message.should.equal('hello in room2');
-              
-              client_1.silenceRoom("room2");
-              
+    it('can change rooms and get room details', function(done){
+      client_1.roomChange("otherRoom", function(){
+        client_1.detailsView(function(response){
+          response.should.be.an.instanceOf(Object);
+          should.not.exist(response.error);
+          response.data.room.should.equal("otherRoom")
+          done();
+        });
+      });
+    });
+
+    it('Clients can talk to each other', function(done){
+      client_1.events.say = function(response){
+        delete client_1.events.say;
+        response.should.be.an.instanceOf(Object);
+        response.context.should.equal('user');
+        response.message.should.equal('hello from client 2');
+        done();
+      }
+      client_2.say("hello from client 2"); // TODO: why does this block without a callback?
+    });
+
+    it('I can register for messages from rooms I am not in; and then unregister', function(done){
+      this.timeout(5000)
+      client_1.roomChange("defaultRoom", function(){
+        client_2.roomChange("otherRoom", function(){
+          
+          setTimeout(function(){
+            client_1.listenToRoom("otherRoom", function(){
               client_1.events.say = function(response){
                 delete client_1.events.say;
-                throw new Error("I should not have gotten this message: " + response);
+                response.should.be.an.instanceOf(Object);
+                response.context.should.equal('user');
+                response.message.should.equal('hello in otherRoom');
+                
+                client_1.silenceRoom("otherRoom");
+                
+                client_1.events.say = function(response){
+                  delete client_1.events.say;
+                  throw new Error("I should not have gotten this message: " + response);
+                }
+                setTimeout(function(){
+                  delete client_1.events.say;
+                  done(); // yay!
+                }, 1000)
+                setTimeout(function(){
+                  client_2.say("hello in otherRoom");
+                }, 500);
+
               }
-              setTimeout(function(){
-                delete client_1.events.say;
-                done(); // yay!
-              }, 1000)
-              setTimeout(function(){
-                client_2.say("hello in room2");
-              }, 500);
+              client_2.say("hello in otherRoom");
+            });
+          }, 500);
 
-            }
-            client_2.say("hello in room2");
-          });
-        }, 500);
-
+        });
       });
     });
+
   });
 
-  it('can disconnect', function(done){
-    countWebSocketConnections().should.equal(3);
-    client_1.disconnect();
-    client_2.disconnect();
-    client_3.disconnect();
-    setTimeout(function(){
-      countWebSocketConnections().should.equal(0);
-      done();
-    }, 500);
-  });
+  describe('disconnect', function(){
+
+    it('can disconnect', function(done){
+      countWebSocketConnections().should.equal(3);
+      client_1.disconnect();
+      client_2.disconnect();
+      client_3.disconnect();
+      setTimeout(function(){
+        countWebSocketConnections().should.equal(0);
+        done();
+      }, 500);
+    });
+
+  })
 
 });

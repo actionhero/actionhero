@@ -153,13 +153,13 @@ var connections = function(api, next){
 
         }else if(verb === "listenToRoom"){
           var room = words[0];
-          api.chatRoom.listenToRoom(connection, room, function(err, didHappen){
+          api.chatRoom.listenToRoom(self, room, function(err, didHappen){
             callback(err, didHappen);
           });
 
         }else if(verb === "silenceRoom"){
           var room = words[0];
-          api.chatRoom.silenceRoom(connection, room, function(err, didHappen){
+          api.chatRoom.silenceRoom(self, room, function(err, didHappen){
             callback(err, didHappen);
           });
 

@@ -107,7 +107,7 @@ describe('Core: actionCluster', function(){
           process.exit()
         }
         thisClient.removeListener('data', rsp); 
-        cb(parsed); 
+        if(typeof cb == 'function'){ cb(parsed); }
       };
       thisClient.on('data', rsp);
       thisClient.write(message + "\r\n");
@@ -128,14 +128,17 @@ describe('Core: actionCluster', function(){
       client1 = net.connect(specHelper.params[0].servers.socket.port);
       client1.setEncoding('utf8');
       client1.on("data", connnectedClient);
+      makeSocketRequest(client1, "roomChange defaultRoom");
 
       client2 = net.connect(specHelper.params[1].servers.socket.port);
       client2.setEncoding('utf8');
       client2.on("data", connnectedClient);
+      makeSocketRequest(client2, "roomChange defaultRoom");
 
       client3 = net.connect(specHelper.params[2].servers.socket.port);
       client3.setEncoding('utf8');
       client3.on("data", connnectedClient);
+      makeSocketRequest(client3, "roomChange defaultRoom");
     });
 
     after(function(done){
@@ -147,32 +150,32 @@ describe('Core: actionCluster', function(){
       }, 500)
     });
 
-    it("all connections should be in the default room and client #1 can see them", function(done){
+    it("all connections can join the default room and client #1 can see them", function(done){
       this.timeout(10000)
       makeSocketRequest(client1, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.data.members.length.should.equal(3);
+        response.data.membersCount.should.equal(3);
         done();
       });
     });
 
-    it("all connections should be in the default room and client #2 can see them", function(done){
+    it("all connections can join the default room and client #2 can see them", function(done){
       this.timeout(10000)
       makeSocketRequest(client2, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.data.members.length.should.equal(3);
+        response.data.membersCount.should.equal(3);
         done();
       });
     });
 
-    it("all connections should be in the default room and client #3 can see them", function(done){
+    it("all connections can join the default room and client #3 can see them", function(done){
       this.timeout(10000)
       makeSocketRequest(client3, "roomView", function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
-        response.data.members.length.should.equal(3);
+        response.data.membersCount.should.equal(3);
         done();
       });
     });

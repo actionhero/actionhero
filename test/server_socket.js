@@ -94,8 +94,8 @@ describe('Server: Socket', function(){
     var msg = {
       action: 'cacheTest',
       params: {
-        key: apiObj.utils.randomString(16384),
-        value: apiObj.utils.randomString(16384)
+        key: apiObj.utils.randomString(100),
+        value: apiObj.utils.randomString(500)
       }
     }
     makeSocketRequest(client, JSON.stringify(msg), function(response){
@@ -213,140 +213,148 @@ describe('Server: Socket', function(){
     client.on('data', checkResponses);
   });
 
-  it('clients start in the default room', function(done){
-    makeSocketRequest(client, "roomView", function(response){
-      response.data.room.should.equal(apiObj.configData.general.defaultChatRoom);
-      done();
-    });
-  });
+  describe("chat", function(done){
 
-  it('clients can view additional info about rooms they are in', function(done){
-    makeSocketRequest(client, "roomView", function(response){
-      response.data.membersCount.should.equal(3)
-      done();
-    });
-  });
-
-  it('rooms can be changed', function(done){
-    makeSocketRequest(client, "roomChange otherRoom", function(response){
-      response.status.should.equal("OK")
-      makeSocketRequest(client, "roomView", function(response){
-        response.data.room.should.equal('otherRoom');
+    beforeEach(function(done){
+      makeSocketRequest(client, "roomChange defaultRoom");
+      makeSocketRequest(client2, "roomChange defaultRoom");
+      makeSocketRequest(client3, "roomChange defaultRoom");
+      setTimeout(function(){
         done();
-      })
-    });
-  });
+      }, 100);
+    })
 
-  it('connections in the first room see the count go down', function(done){
-    makeSocketRequest(client2, "roomView", function(response){
-      response.data.room.should.equal(apiObj.configData.general.defaultChatRoom);
-      response.data.membersCount.should.equal(2)
-      done();
+    it('clients are in the default room', function(done){
+      makeSocketRequest(client, "roomView", function(response){
+        response.data.room.should.equal('defaultRoom');
+        done();
+      });
     });
-  });
 
-  it('folks in my room hear what I say (and say works)', function(done){
-    makeSocketRequest(client3, "", function(response){
-      response.message.should.equal("hello?");
-      done();
+    it('clients can view additional info about rooms they are in', function(done){
+      makeSocketRequest(client, "roomView", function(response){
+        response.data.membersCount.should.equal(3)
+        done();
+      });
     });
-    makeSocketRequest(client2, "say hello?" + "\r\n");
-  });
 
-  it('folks NOT in my room DON\'T hear what I say', function(done){
-    makeSocketRequest(client, "", function(response){
-      should.not.exist(response);
-      done();
+    it('rooms can be changed', function(done){
+      makeSocketRequest(client, "roomChange otherRoom", function(response){
+        response.status.should.equal("OK")
+        makeSocketRequest(client, "roomView", function(response){
+          response.data.room.should.equal('otherRoom');
+          done();
+        })
+      });
     });
-    makeSocketRequest(client2, "say hello?" + "\r\n");
-  });
 
-  it('Folks are notified when I join a room', function(done){
-    makeSocketRequest(client, "", function(response){
-      response.message.should.equal("I have entered the room");
-      response.from.should.equal(client_2_details.id);
-      done();
+    it('connections in the first room see the count go down', function(done){
+      makeSocketRequest(client, "roomChange otherRoom", function(response){
+        makeSocketRequest(client2, "roomView", function(response){
+          response.data.room.should.equal('defaultRoom');
+          response.data.membersCount.should.equal(2)
+          done();
+        });
+      });
     });
-    makeSocketRequest(client2, "roomChange otherRoom" + "\r\n");
-  });
 
-  it('Folks are notified when I leave a room', function(done){
-    makeSocketRequest(client, "", function(response){
-      response.message.should.equal("I have left the room");
-      response.from.should.equal(client_2_details.id);
-      done();
+    it('folks in my room hear what I say (and say works)', function(done){
+      makeSocketRequest(client3, "", function(response){
+        response.message.should.equal("hello?");
+        done();
+      });
+      makeSocketRequest(client2, "say hello?" + "\r\n");
     });
-    makeSocketRequest(client2, "roomChange " + apiObj.configData.general.defaultChatRoom + "\r\n");
-  });
 
-  it('I can register for messages from rooms I am not in', function(done){
-    this.timeout(5000);
-    makeSocketRequest(client, "roomChange room1", function(response){
-      makeSocketRequest(client2, "roomChange room2", function(response){
-        makeSocketRequest(client, "listenToRoom room2", function(response){
+    it('folks NOT in my room DON\'T hear what I say', function(done){
+      makeSocketRequest(client, "roomChange otherRoom", function(response){
+        makeSocketRequest(client, "", function(response){
+          should.not.exist(response);
+          done();
+        });
+        makeSocketRequest(client2, "say hello?" + "\r\n");
+      });
+    });
+
+    it('Folks are notified when I join a room', function(done){
+      makeSocketRequest(client, "roomChange otherRoom", function(response){
+        setTimeout(function(){
           makeSocketRequest(client, "", function(response){
-            response.message.should.eql("hello in room2")
+            response.message.should.equal("I have entered the room");
+            response.from.should.equal(client_2_details.id);
             done();
           });
-          makeSocketRequest(client2, "say hello in room2\r\n");
-        });
+          makeSocketRequest(client2, "roomChange otherRoom" + "\r\n");
+        }, 500);
       });
     });
-  });
 
-  it('I can unregister for messages from rooms I am not in', function(done){
-    this.timeout(5000);
-    makeSocketRequest(client, "roomChange room1", function(response){
-      makeSocketRequest(client2, "roomChange room2", function(response){
-        makeSocketRequest(client, "listenToRoom room2", function(response){
-          makeSocketRequest(client, "silenceRoom room2", function(response){
-            makeSocketRequest(client, "", function(response){
-              should.not.exist(response);
-              done();
-            });
-            makeSocketRequest(client2, "say hello in room2\r\n");
-          });
-        });
-      });
-    });
-  });
-
-  it('I can get my id', function(done){
-    makeSocketRequest(client, "detailsView" + "\r\n", function(response){
-      client_details = response.data;
-      done();
-    });
-  });
-
-  it('can send auth\'d messages', function(done){
-    rawAPI.connections.connections[client_details.id].auth = 'true';
-    client2.write("paramAdd roomMatchKey=auth\r\n");
-    client2.write("paramAdd roomMatchValue=true\r\n");
-    client2.write("roomChange secretRoom\r\n");
-    client.write("roomChange secretRoom\r\n");
-    setTimeout(function(){
+    it('Folks are notified when I leave a room', function(done){
       makeSocketRequest(client, "", function(response){
-        response.message.should.equal("secretAuthTest");
+        response.message.should.equal("I have left the room");
         response.from.should.equal(client_2_details.id);
         done();
       });
-      makeSocketRequest(client2, "say secretAuthTest" + "\r\n");
-    },500) 
-  });
+      makeSocketRequest(client2, "roomChange otherRoom\r\n");
+    });
 
-  it('doesn\'t send messages to people who are not authed', function(done){
-    rawAPI.connections.connections[client_details.id].auth = 'false';
-    client2.write("paramAdd roomMatchKey=auth\r\n");
-    client2.write("paramAdd roomMatchValue=true\r\n");
-    client2.write("roomChange secretRoom\r\n");
-    client.write("roomChange secretRoom\r\n");
-    setTimeout(function(){
-      makeSocketRequest(client, "", function(response){
-        should.not.exist(response);
+    it('I can register for messages from rooms I am not in', function(done){
+      this.timeout(5000);
+      makeSocketRequest(client, "roomChange defaultRoom", function(response){
+        makeSocketRequest(client2, "roomChange otherRoom", function(response){
+          makeSocketRequest(client, "listenToRoom otherRoom", function(response){
+            makeSocketRequest(client, "", function(response){
+              response.message.should.eql("hello in otherRoom")
+              done();
+            });
+            makeSocketRequest(client2, "say hello in otherRoom\r\n");
+          });
+        });
+      });
+    });
+
+    it('I can unregister for messages from rooms I am not in', function(done){
+      this.timeout(5000);
+      makeSocketRequest(client, "roomChange defaultRoom", function(response){
+        makeSocketRequest(client2, "roomChange otherRoom", function(response){
+          makeSocketRequest(client, "listenToRoom otherRoom", function(response){
+            makeSocketRequest(client, "silenceRoom otherRoom", function(response){
+              makeSocketRequest(client, "", function(response){
+                should.not.exist(response);
+                done();
+              });
+              makeSocketRequest(client2, "say hello in otherRoom\r\n");
+            });
+          });
+        });
+      });
+    });
+
+    it('I can get my id', function(done){
+      makeSocketRequest(client, "detailsView" + "\r\n", function(response){
+        client_details = response.data;
         done();
       });
-      makeSocketRequest(client2, "say secretAuthTest" + "\r\n");
-    },500) 
+    });
+
+    it('can join secure rooms when applicable', function(done){
+      rawAPI.connections.connections[client_details.id].authorized = true;
+      makeSocketRequest(client, "roomChange secureRoom", function(response){
+        response.data.should.equal(true);
+        response.status.should.equal('OK');
+        done();
+      });
+    });
+
+    it('cannot join secure rooms when missing attributes', function(done){
+      rawAPI.connections.connections[client_details.id].authorized = false;
+      makeSocketRequest(client, "roomChange secureRoom", function(response){
+        response.data.should.equal(false);
+        response.status.should.equal('not authorized to join room');
+        done();
+      });
+    });
+  
   });
 
 });

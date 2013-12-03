@@ -211,6 +211,10 @@
     this.send({event: 'roomChange', room: room}, callback);
   }
 
+  actionHeroWebSocket.prototype.roomLeave = function(callback){
+    this.send({event: 'roomLeave'}, callback);
+  }
+
   actionHeroWebSocket.prototype.listenToRoom = function(room, callback){
     this.send({event: 'listenToRoom', room: room}, callback);
   }

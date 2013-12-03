@@ -208,7 +208,7 @@ var chatRoom = function(api, next){
   }
 
   api.chatRoom.listenToRoom = function(connection, room, callback){
-    if(connection.listeningRooms.indexOf(words[0]) < 0){
+    if(connection.listeningRooms.indexOf(room) < 0){
       api.chatRoom.exists(room, function(err, found){
         if(err == null && found === true){
           api.chatRoom.authorize(connection, room, function(err, authorized){
@@ -229,9 +229,9 @@ var chatRoom = function(api, next){
   }
 
   api.chatRoom.silenceRoom = function(connection, room, callback){
-    if(connection.listeningRooms.indexOf(words[0]) >= 0){
-      var index = connection.listeningRooms.indexOf(words[0]);
-      self.listeningRooms.splice(index, 1);
+    if(connection.listeningRooms.indexOf(room) >= 0){
+      var index = connection.listeningRooms.indexOf(room);
+      connection.listeningRooms.splice(index, 1);
       if(typeof callback == "function"){ callback(null, true); }
     }else{
       if(typeof callback == "function"){ callback("connection not listening to this room", false); }
