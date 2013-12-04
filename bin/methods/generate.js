@@ -8,8 +8,8 @@ exports['generate'] = function(binary, next){
 
   documents.projectMap = "/\n\
   |- config\n\
-  | -- config.js
-  | -- environments
+  | -- config.js\n\
+  | -- environments\n\
   |-- (project settings)\n\
   |\n\
   |- actions\n\
