@@ -155,9 +155,15 @@ var web = function(api, options, next){
       var remotePort = req.connection.remotePort;
 
       if(req.headers['x-forwarded-for'] != null){
-        var IP = req.headers['x-forwarded-for'].split(",")[0].split(":");
-        if(IP[0] != null){ remoteIP = IP[0]; }
-        if(IP[1] != null){ remotePort = IP[1]; }
+        var ip = req.headers['x-forwarded-for'].split(",")[0].split(":");
+        if(ip[0] != null){ 
+          remoteIP = ip[0]; 
+        }
+        if(ip[1] != null){ 
+          remotePort = ip[1]; 
+        }else if(req.headers['x-forwarded-port'] != null){
+          remotePort = req.headers['x-forwarded-port'];
+        }
       }
 
       server.buildConnection({
