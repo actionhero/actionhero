@@ -126,7 +126,6 @@ var genericServer = function(api, next){
     }
     if(self.attributes.canChat === true){
       connection.canChat = true;
-      api.chatRoom.roomAddMember(connection);
     }
   }
 

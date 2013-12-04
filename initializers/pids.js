@@ -19,7 +19,11 @@ var pids = function(api, next){
   }
 
   api.pids.clearPidFile = function(){
-    fs.unlinkSync(api.configData.general.paths.pid + "/" + api.pids.title);
+    try{
+      fs.unlinkSync(api.configData.general.paths.pid + "/" + api.pids.title);
+    }catch(e){
+      api.log('unable to remove pidfile', 'error');
+    }
   }
 
   api.pids._start = function(api, next){

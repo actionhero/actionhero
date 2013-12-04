@@ -25,6 +25,7 @@ var socket = function(api, options, next){
       "paramsView",
       "paramsDelete",
       "roomChange",
+      "roomLeave",
       "roomView",
       "listenToRoom",
       "silenceRoom",

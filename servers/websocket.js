@@ -18,6 +18,7 @@ var websocket = function(api, options, next){
       "exit",
       "documentation",
       "roomChange",
+      "roomLeave",
       "roomView",
       "listenToRoom",
       "silenceRoom",

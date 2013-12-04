@@ -43,6 +43,11 @@ specHelper.params[0] = {
     id: "test-server-1",
     developmentMode: false,
     paths: paths,
+    startingChatRooms: {
+      'defaultRoom': {}, 
+      'otherRoom': {}, 
+      'secureRoom': {authorized: true},
+    }
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -89,6 +94,11 @@ specHelper.params[1] = {
     id: "test-server-2",
     developmentMode: false,
     paths: paths,
+    startingChatRooms: {
+      'defaultRoom': {}, 
+      'otherRoom': {}, 
+      'secureRoom': {authorized: true},
+    }
   },
   logger: {
     levels: winston.config.syslog.levels,
@@ -135,6 +145,11 @@ specHelper.params[2] = {
     id: "test-server-3",
     developmentMode: false,
     paths: paths,
+    startingChatRooms: {
+      'defaultRoom': {}, 
+      'otherRoom': {}, 
+      'secureRoom': {authorized: true},
+    }
   },
   logger: {
     levels: winston.config.syslog.levels,

@@ -17,6 +17,7 @@ var connections = function(api, next){
       "paramsView",
       "paramsDelete",
       "roomChange",
+      "roomLeave",
       "roomView",
       "listenToRoom",
       "silenceRoom",
@@ -62,7 +63,7 @@ var connections = function(api, next){
       pendingActions: 0,
       totalActions: 0,
       messageCount: 0,
-      additionalListeningRooms: [],
+      listeningRooms: [],
       roomMatchKey: null,
       roomMatchValue: null,
       room: api.configData.general.defaultChatRoom,
@@ -89,7 +90,7 @@ var connections = function(api, next){
     }
     api.stats.increment("connections:totalActiveConnections", -1);
     api.stats.increment("connections:activeConnections:" + self.type, -1);
-    if(self.canChat === true){ api.chatRoom.roomRemoveMember(self); }
+    if(self.canChat === true){ api.chatRoom.removeMember(self); }
     delete api.connections.connections[self.id];
     if(typeof callback == "function"){ callback(); }
   }
@@ -135,33 +136,32 @@ var connections = function(api, next){
           callback(null, null);
 
         }else if(verb === "roomChange"){
-          api.chatRoom.roomRemoveMember(self, function(err, wasRemoved){
-            self.room = words[0];
-            api.chatRoom.roomAddMember(self);
-            callback(null, wasRemoved);
+          var room = words[0];
+          api.chatRoom.addMember(self, room, function(err, didHappen){
+            callback(err, didHappen);
+          });
+
+        }else if(verb === "roomLeave"){
+          api.chatRoom.removeMember(self, function(err, didHappen){
+            callback(err, didHappen);
           });
 
         }else if(verb === "roomView"){
-          api.chatRoom.socketRoomStatus(self.room, function(err, roomStatus){
-            callback(null, roomStatus);
+          api.chatRoom.roomStatus(self.room, function(err, roomStatus){
+            callback(err, roomStatus);
           });
 
         }else if(verb === "listenToRoom"){
-          if(self.additionalListeningRooms.indexOf(words[0]) >= 0){
-            callback("alredy listening to this room", null);
-          }else{
-            self.additionalListeningRooms.push(words[0]);
-            callback(null, null);
-          }
+          var room = words[0];
+          api.chatRoom.listenToRoom(self, room, function(err, didHappen){
+            callback(err, didHappen);
+          });
 
         }else if(verb === "silenceRoom"){
-          if(self.additionalListeningRooms.indexOf(words[0]) >= 0){
-            var index = self.additionalListeningRooms.indexOf(words[0]);
-            self.additionalListeningRooms.splice(index, 1);
-            callback(null, null);
-          }else{
-            callback("you are not listening to this room", null);
-          }
+          var room = words[0];
+          api.chatRoom.silenceRoom(self, room, function(err, didHappen){
+            callback(err, didHappen);
+          });
 
         }else if(verb === "detailsView"){
           var details = {}
@@ -179,8 +179,9 @@ var connections = function(api, next){
           callback(null, api.documentation.documentation);
 
         }else if(verb === "say"){
-          api.chatRoom.socketRoomBroadcast(self, words.join(" "));
-          callback(null, null);
+          api.chatRoom.socketRoomBroadcast(self, words.join(" "), function(err){
+            callback(err);
+          });
 
         }else{
           callback("I do not know know to perform this verb", null);
