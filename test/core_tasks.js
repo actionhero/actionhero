@@ -202,7 +202,7 @@ describe('Core: Tasks', function(){
     
     it('normal tasks work', function(done){
       rawAPI.tasks.enqueue('regular_task', {word: 'first'}, function(err){
-        rawAPI.configData.tasks.queues = ["*"];
+        rawAPI.config.tasks.queues = ["*"];
         rawAPI.resque.startWorkers(function(){
           setTimeout(function(){
             taskOutput[0].should.equal('first');
@@ -215,8 +215,8 @@ describe('Core: Tasks', function(){
     it('delayed tasks work', function(done){
       this.timeout(3000);
       rawAPI.tasks.enqueueIn(100, 'regular_task', {word: 'delayed'}, function(err){
-        rawAPI.configData.tasks.queues = ["*"];
-        rawAPI.configData.tasks.scheduler = true;
+        rawAPI.config.tasks.queues = ["*"];
+        rawAPI.config.tasks.scheduler = true;
         rawAPI.resque.startScheduler(function(){
           rawAPI.resque.startWorkers(function(){
             setTimeout(function(){
@@ -231,8 +231,8 @@ describe('Core: Tasks', function(){
     it('recurrent tasks work', function(done){
       this.timeout(3000);
       rawAPI.tasks.enqueueRecurrentJob('periodic_task', function(){
-        rawAPI.configData.tasks.queues = ["*"];
-        rawAPI.configData.tasks.scheduler = true;
+        rawAPI.config.tasks.queues = ["*"];
+        rawAPI.config.tasks.scheduler = true;
         rawAPI.resque.startScheduler(function(){
           rawAPI.resque.startWorkers(function(){
             setTimeout(function(){
@@ -250,7 +250,7 @@ describe('Core: Tasks', function(){
     it('poping an unknown job will throw an error, but not crash the server', function(done){
       this.timeout(3000);
       rawAPI.resque.queue.enqueue(specHelper.queue, 'someCrazyTask', {}, function(){
-        rawAPI.configData.tasks.queues = ["*"];
+        rawAPI.config.tasks.queues = ["*"];
         rawAPI.resque.startWorkers(function(){
           var listner = function(queue, job, error){
             queue.should.equal(specHelper.queue);

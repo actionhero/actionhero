@@ -1,5 +1,4 @@
 var specHelper = {}
-var showLogs = false;
 specHelper.fs = require('fs');
 specHelper.net = require('net');
 specHelper.should = require('should');
@@ -9,13 +8,15 @@ specHelper.actionHeroes = [];
 specHelper.queue = "testQueue";
 specHelper.url = "127.0.0.1";
 specHelper.params = [];
-var winston = require('winston');
+specHelper.startingWebPort = 9000;
+specHelper.startingSocketPort = 8000;
 
 var toFakeRedis = false;
-if( process.env['fakeredis'] != null){
+if(process.env['fakeredis'] != null){
   if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
   if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
 }
+
 console.log("\r\n>>> running test sute with fakeredis=" + toFakeRedis + " <<<");
 
 var redisConfig = {
@@ -28,168 +29,6 @@ var redisConfig = {
 }
 
 var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
-var paths = {              
-    "action":      __dirname + "/../actions",
-    "task":        __dirname + "/../tasks",
-    "public":      __dirname + "/../public",
-    "pid":         __dirname + "/../pids",
-    "log":         __dirname + "/../log",
-    "server":      __dirname + "/../servers",
-    "initializer": __dirname + "/../initializers",
-  }
-
-specHelper.params[0] = {
-  general: {
-    id: "test-server-1",
-    developmentMode: false,
-    paths: paths,
-    startingChatRooms: {
-      'defaultRoom': {}, 
-      'otherRoom': {}, 
-      'secureRoom': {authorized: true},
-    }
-  },
-  logger: {
-    levels: winston.config.syslog.levels,
-    transports: null,
-  },
-  stats: {
-    writeFrequency: 0, 
-    keys: [], 
-  },
-  redis : redisConfig,
-  tasks : {
-    scheduler: false, 
-    timeout: 100,
-    queues: [],
-    redis: redisConfig,
-  },
-  faye: { 
-    mount: '/faye',
-    timeout: 45,
-    ping: null,
-    redis: redisConfig,
-    namespace: 'faye:' 
-  },
-  servers: {
-    web: {
-      secure: false, 
-      port: 9000,    
-      matchExtensionMime: true,
-      metadataOptions: {
-        serverInformation: true,
-        requestorInformation: true
-      }
-    },
-    socket: {
-      secure: false, 
-      port: 8000, 
-    },
-    websocket: { }
-  }
-};
-
-specHelper.params[1] = {
-  general: {
-    id: "test-server-2",
-    developmentMode: false,
-    paths: paths,
-    startingChatRooms: {
-      'defaultRoom': {}, 
-      'otherRoom': {}, 
-      'secureRoom': {authorized: true},
-    }
-  },
-  logger: {
-    levels: winston.config.syslog.levels,
-    transports: null
-  },
-  stats: {
-    writeFrequency: 0, 
-    keys: [], 
-  },
-  redis : redisConfig,
-  tasks : {
-    scheduler: false, 
-    timeout: 100,
-    queues: [],
-    redis: redisConfig,
-  },
-  faye: { 
-    mount: '/faye',
-    timeout: 45,
-    ping: null,
-    redis: redisConfig,
-    namespace: 'faye:' 
-  },
-  servers: {
-    web: {
-      secure: false, 
-      port: 9001,    
-      matchExtensionMime: true,
-      metadataOptions: {
-        serverInformation: true,
-        requestorInformation: true
-      }
-    },
-    socket: {
-      secure: false, 
-      port: 8001, 
-    },
-    websocket: { }
-  }
-};
-
-specHelper.params[2] = {
-  general: {
-    id: "test-server-3",
-    developmentMode: false,
-    paths: paths,
-    startingChatRooms: {
-      'defaultRoom': {}, 
-      'otherRoom': {}, 
-      'secureRoom': {authorized: true},
-    }
-  },
-  logger: {
-    levels: winston.config.syslog.levels,
-    transports: null
-  },
-  stats: {
-    writeFrequency: 0, 
-    keys: [], 
-  },
-  redis : redisConfig,
-  tasks : {
-    scheduler: false, 
-    timeout: 100,
-    queues: [],
-    redis: redisConfig,
-  },
-  faye: { 
-    mount: '/faye',
-    timeout: 45,
-    ping: null,
-    redis: redisConfig,
-    namespace: 'faye:' 
-  },
-  servers: {
-    web: {
-      secure: false, 
-      port: 9002,    
-      matchExtensionMime: true,
-      metadataOptions: {
-        serverInformation: true,
-        requestorInformation: true
-      }
-    },
-    socket: {
-      secure: false, 
-      port: 8002, 
-    },
-    websocket: { }
-  }
-};
 
 specHelper.clearRedis = function(serverID, next){
   if(serverID != 0){
@@ -242,14 +81,24 @@ specHelper.prepare = function(serverID, next){
 // Start Test Server
 specHelper.startServer = function(serverID, next){
   if(serverID == null){serverID = 0};
-  var conn = specHelper.net.createConnection(specHelper.params[serverID].servers.web.port, specHelper.url, function(){
+  var port = specHelper.startingSocketPort + serverID;
+  var conn = specHelper.net.createConnection(port, specHelper.url, function(){
     next(specHelper.apis[serverID]);
     conn.destroy();
   });
   conn.on('error', function(err) { 
     if(err.code == "ECONNREFUSED"){
       specHelper.actionHeroes[serverID] = new actionHeroPrototype();
-      specHelper.actionHeroes[serverID].start({configChanges: specHelper.params[serverID]}, function(err, api){
+      var configChanges = {
+        general: {
+          id: 'test-server-' + (serverID + 1),
+        },
+        servers: {
+          web:    {port: (specHelper.startingWebPort + serverID)},
+          socket: {port: (specHelper.startingSocketPort + serverID)},
+        }
+      }
+      specHelper.actionHeroes[serverID].start({configChanges: configChanges}, function(err, api){
         specHelper.apis[serverID] = api;
         conn.destroy();
         next(specHelper.apis[serverID]);
@@ -286,12 +135,13 @@ specHelper.restartServer = function(serverID, next){
 specHelper.apiTest = {
   general: function(method, serverID, url, data, cb){
     if(serverID == null){serverID = 0};
+    var port = (specHelper.startingWebPort + serverID);
     var params = {}
     params.method = method;
     if(url.indexOf("?") > -1){
-      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].servers.web.port + (url||'');
+      params.url = "http://"  + specHelper.url + ":" + port + (url||'');
     }else{
-      params.url = "http://"  + specHelper.url + ":" + specHelper.params[serverID].servers.web.port + (url||'') + "?";
+      params.url = "http://"  + specHelper.url + ":" + port + (url||'') + "?";
       for(var i in data){
         params.url += i + "=" + data[i] + "&";
       }
@@ -326,7 +176,7 @@ specHelper.cleanAPIObject = function(api){
   cleanAPI["actions"] = api["actions"];
   cleanAPI["tasks"] = api["tasks"];
   cleanAPI["utils"] = api["utils"];
-  cleanAPI["configData"] = api["configData"];
+  cleanAPI["config"] = api["config"];
   cleanAPI["stats"] = api["stats"];
   cleanAPI["cache"] = api["cache"];
   cleanAPI["redis"] = api["redis"];

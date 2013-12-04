@@ -25,7 +25,6 @@ describe('Core: Developer Mode', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.params[0].general.developmentMode = true;
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       setTimeout(function(){
@@ -37,7 +36,7 @@ describe('Core: Developer Mode', function(){
   after(function(done){
     // ensure original file content is put back
     this.timeout(10000) // these are slow tests :(
-    specHelper.params[0].general.developmentMode = false;
+    specHelper.developmentMode = false;
     specHelper.fs.writeFile(original_file, String(original_content), function(err){
       setTimeout(function(){
         done();

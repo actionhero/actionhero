@@ -23,15 +23,15 @@ var web = function(api, options, next){
 
   var server = new api.genericServer(type, options, attributes);
 
-  if(["api", "file"].indexOf(api.configData.servers.web.rootEndpointType) < 0){
-    server.log('api.configData.servers.web.rootEndpointType can only be "api" or "file"', "emerg");
+  if(["api", "file"].indexOf(api.config.servers.web.rootEndpointType) < 0){
+    server.log('api.config.servers.web.rootEndpointType can only be "api" or "file"', "emerg");
     process.exit();
   }
-  if(api.configData.servers.web.flatFileCacheDuration == null){
-    api.configData.servers.web.flatFileCacheDuration = 0;
+  if(api.config.servers.web.flatFileCacheDuration == null){
+    api.config.servers.web.flatFileCacheDuration = 0;
   }
-  if(api.configData.servers.web.directoryFileType == null){
-    api.configData.servers.web.directoryFileType = "index.html";
+  if(api.config.servers.web.directoryFileType == null){
+    api.config.servers.web.directoryFileType = "index.html";
   }
   
   //////////////////////
@@ -46,7 +46,7 @@ var web = function(api, options, next){
       });
     }else{
       var https = require('https');
-      server.server = https.createServer(api.configData.servers.web.serverOptions, function(req, res){
+      server.server = https.createServer(api.config.servers.web.serverOptions, function(req, res){
         handleRequest(req, res);
       });
     }
@@ -86,8 +86,8 @@ var web = function(api, options, next){
   server.sendFile = function(connection, error, fileStream, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     connection.rawConnection.responseHeaders.push(['Content-Length', length]);
-    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.configData.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
-    connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.configData.servers.web.flatFileCacheDuration + ", must-revalidate"]);
+    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
+    connection.rawConnection.responseHeaders.push(['Cache-Control', "max-age=" + api.config.servers.web.flatFileCacheDuration + ", must-revalidate"]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error != null){ connection.rawConnection.responseHttpCode = 404; }
@@ -131,7 +131,7 @@ var web = function(api, options, next){
   /////////////
 
   var handleRequest = function(req, res){
-    browser_fingerprint.fingerprint(req, api.configData.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
+    browser_fingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
       var responseHeaders = []
       var cookies =  api.utils.parseCookies(req);
       var responseHttpCode = 200;
@@ -143,11 +143,11 @@ var web = function(api, options, next){
 
       responseHeaders.push(['Transfer-Encoding', 'Chunked']); // https://github.com/evantahler/actionHero/issues/189
       responseHeaders.push(['Content-Type', "application/json"]); // a sensible default; can be replaced
-      responseHeaders.push(['X-Powered-By', api.configData.general.serverName]);
+      responseHeaders.push(['X-Powered-By', api.config.general.serverName]);
 
-      if(typeof(api.configData.servers.web.httpHeaders) != null){
-        for(var i in api.configData.servers.web.httpHeaders){
-          responseHeaders.push([i, api.configData.servers.web.httpHeaders[i]]);
+      if(typeof(api.config.servers.web.httpHeaders) != null){
+        for(var i in api.config.servers.web.httpHeaders){
+          responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
         }
       }
              
@@ -185,17 +185,17 @@ var web = function(api, options, next){
 
   var completeResponse = function(connection, toRender, messageCount){
     if(toRender === true){
-      if(api.configData.servers.web.metadataOptions.serverInformation){
+      if(api.config.servers.web.metadataOptions.serverInformation){
         var stopTime = new Date().getTime();
         connection.response.serverInformation = {
-          serverName: api.configData.general.serverName,
-          apiVersion: api.configData.general.apiVersion,
+          serverName: api.config.general.serverName,
+          apiVersion: api.config.general.apiVersion,
           requestDuration: (stopTime - connection.connectedAt),
           currentTime: stopTime,
         };
       }
 
-      if(api.configData.servers.web.metadataOptions.requestorInformation){
+      if(api.config.servers.web.metadataOptions.requestorInformation){
         connection.response.requestorInformation = buildRequestorInformation(connection);
       }
 
@@ -205,14 +205,14 @@ var web = function(api, options, next){
           delete connection.error;
           delete connection.response.error;
 
-        }else if(api.configData.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
+        }else if(api.config.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
           if(connection.action == "{no action}" || String(connection.error).indexOf("is not a known action or that is not a valid apiVersion.") > 0){
             connection.rawConnection.responseHttpCode = 404;
           }else if(String(connection.error).indexOf("is a required parameter for this action") > 0){
             connection.rawConnection.responseHttpCode = 422;
           }else if(String(connection.error).indexOf("none of the required params for this action were provided") > 0){
             connection.rawConnection.responseHttpCode = 422;
-          }else if("Error: " + String(connection.response.error) == api.configData.general.serverErrorMessage){
+          }else if("Error: " + String(connection.response.error) == api.config.general.serverErrorMessage){
             connection.rawConnection.responseHttpCode = 500;
           }else{
             connection.rawConnection.responseHttpCode = 400;
@@ -235,11 +235,11 @@ var web = function(api, options, next){
   }
 
   var respondToOptions = function(connection){
-    if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null){
       var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
-    if(api.configData.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null){
       var origin =  '*';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }
@@ -253,7 +253,7 @@ var web = function(api, options, next){
   }
 
   var determineRequestParams = function(connection, callback){
-    var requestMode = api.configData.servers.web.rootEndpointType; // api or public
+    var requestMode = api.config.servers.web.rootEndpointType; // api or public
     var pathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var apiPathParts = connection.rawConnection.parsedURL.pathname.split("/");
     var filePathParts = connection.rawConnection.parsedURL.pathname.split("/");
@@ -264,15 +264,15 @@ var web = function(api, options, next){
     filePathParts.shift();
     apiPathParts.shift();
     if(pathParts.length > 0){
-      if(pathParts[1] == api.configData.servers.web.urlPathForActions){ 
+      if(pathParts[1] == api.config.servers.web.urlPathForActions){ 
         requestMode = 'api'; 
         apiPathParts.shift();
       }
-      else if(pathParts[1] == api.configData.servers.web.urlPathForFiles || connection.rawConnection.parsedURL.pathname.indexOf(api.configData.servers.web.urlPathForFiles) === 0){ 
+      else if(pathParts[1] == api.config.servers.web.urlPathForFiles || connection.rawConnection.parsedURL.pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0){ 
         requestMode = 'file'; 
         filePathParts.shift();
         var i = 1;
-        while(i < api.configData.servers.web.urlPathForFiles.split("/").length - 1){
+        while(i < api.config.servers.web.urlPathForFiles.split("/").length - 1){
           filePathParts.shift();
           i++;
         }
@@ -297,8 +297,8 @@ var web = function(api, options, next){
           callback(requestMode);
         }else{
           var form = new formidable.IncomingForm();
-          for(var i in api.configData.servers.web.formOptions){
-            form[i] = api.configData.servers.web.formOptions[i];
+          for(var i in api.config.servers.web.formOptions){
+            form[i] = api.config.servers.web.formOptions[i];
           }
           form.parse(connection.rawConnection.req, function(err, fields, files) {
             if(err){
@@ -318,7 +318,7 @@ var web = function(api, options, next){
       if(connection.params["file"] == null){
         connection.params["file"] = filePathParts.join("/");
         if (connection.params["file"] == "" || connection.params["file"][connection.params["file"].length - 1] == "/"){
-          connection.params["file"] = api.configData.servers.web.directoryFileType;
+          connection.params["file"] = api.config.servers.web.directoryFileType;
         }
       }
       callback(requestMode);

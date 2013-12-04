@@ -97,7 +97,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: Post with Form', function(done){
-    var postURL = 'http://' + specHelper.url + ":" + specHelper.params[0].servers.web.port + "/api/cacheTest";
+    var postURL = 'http://' + specHelper.url + ":" + (specHelper.startingWebPort + 0) + "/api/cacheTest";
     specHelper.request.post(postURL, {form: {key:'key', value: 'value'}}, function(err, response, body){
       body = JSON.parse(body);
       body.cacheTestResults.saveResp.should.eql(true);
@@ -115,7 +115,7 @@ describe('Server: Web', function(){
   describe('http header', function(){
 
     before(function(done){
-      rawApi.configData.servers.web.returnErrorCodes = true;
+      rawApi.config.servers.web.returnErrorCodes = true;
       rawApi.actions.versions.headerTestAction = [1]
       rawApi.actions.actions.headerTestAction = {
         "1": {
@@ -193,7 +193,7 @@ describe('Server: Web', function(){
   describe('http returnErrorCodes true', function(){
 
     before(function(done){
-      rawApi.configData.servers.web.returnErrorCodes = true;
+      rawApi.config.servers.web.returnErrorCodes = true;
       rawApi.actions.versions.statusTestAction = [1]
       rawApi.actions.actions.statusTestAction = {
         "1": {
@@ -215,7 +215,7 @@ describe('Server: Web', function(){
     });
 
     after(function(done){
-      rawApi.configData.servers.web.returnErrorCodes = false;
+      rawApi.config.servers.web.returnErrorCodes = false;
       delete rawApi.actions.versions['statusTestAction'];
       delete rawApi.actions.actions['statusTestAction'];
       done();

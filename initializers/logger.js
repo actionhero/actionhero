@@ -3,8 +3,8 @@ var winston = require('winston');
 var logger = function(api, next){
 
   var transports = [];
-  for(var i in api.configData.logger.transports){
-    var t = api.configData.logger.transports[i];
+  for(var i in api.config.logger.transports){
+    var t = api.config.logger.transports[i];
     if(typeof t == "function"){
       transports.push( t(api, winston) );
     }else{
@@ -27,7 +27,7 @@ var logger = function(api, next){
     transports: transports
   });
 
-  if(api.configData.logger.levels != null){
+  if(api.config.logger.levels != null){
     api.logger.setLevels(winston.config.syslog.levels);
   }
 

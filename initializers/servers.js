@@ -8,8 +8,8 @@ var servers = function(api, next){
 
   api.servers._start = function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.configData.servers) == 0){ next(); }
-    for(var server in api.configData.servers){
+    if(api.utils.hashLength(api.config.servers) == 0){ next(); }
+    for(var server in api.config.servers){
       started++;
       api.log("starting server: " + server, "notice");
       api.servers.servers[server]._start(function(){
@@ -40,7 +40,7 @@ var servers = function(api, next){
 
   var serverFolders = [ 
     __dirname + "/../servers",
-    api.configData.general.paths.server,
+    api.config.general.paths.server,
   ];
     
   var inits = {}
@@ -53,7 +53,7 @@ var servers = function(api, next){
         var ext = fileParts[(fileParts.length - 1)];
         if (file[0] != "." && ext === 'js'){
           var server = file.split(".")[0];
-          if(api.configData.servers[server] != null){
+          if(api.config.servers[server] != null){
             inits[server] = require(fullFilePath)[server];
           }
 
@@ -71,7 +71,7 @@ var servers = function(api, next){
   for(var server in inits){
     started++;
     (function(server){
-      var options = api.configData.servers[server];
+      var options = api.config.servers[server];
       inits[server](api, options, function(serverObject){
         api.servers.servers[server] = serverObject;
         api.log("initialized server: " + server, "debug");

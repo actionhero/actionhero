@@ -16,7 +16,7 @@ exports['generateInitializer'] = function(binary, next){
     data += templateLines[i] + "\n";
   }
   
-  binary.utils.create_file_safely(binary.paths.configData.initializer + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.initializer + "/" + binary.argv['name'] + ".js", data);
 
   next();
 

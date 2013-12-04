@@ -38,7 +38,7 @@ var websocket = function(api, options, next){
   server._start = function(next){
     var webserver = api.servers.servers["web"];
     api.faye.server.attach(webserver.server);
-    api.log("webSockets bound to " + webserver.options.bindIP + ":" + webserver.options.port + " mounted at " + api.configData.faye.mount, "notice"); 
+    api.log("webSockets bound to " + webserver.options.bindIP + ":" + webserver.options.port + " mounted at " + api.config.faye.mount, "notice"); 
 
     server.subscription = api.faye.client.subscribe(rebroadcastChannel, function(message) {
       incommingRebroadcast(message);
@@ -115,7 +115,7 @@ var websocket = function(api, options, next){
         }else{
           api.faye.client.publish(rebroadcastChannel, {
             serverId: api.id,
-            serverToken: api.configData.general.serverToken,
+            serverToken: api.config.general.serverToken,
             originalMessage: message,
           });
         }

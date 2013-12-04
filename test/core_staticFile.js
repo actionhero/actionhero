@@ -47,7 +47,7 @@ describe('Core: Static File', function(){
   it('I should not see files outsite of the public dir', function(done){
     specHelper.apiTest.get("/public/" + "?file=../config.json", 0, {}, function(response, json){
       response.statusCode.should.equal(404);
-      response.body.should.equal(apiObj.configData.general.flatFileNotFoundMessage);
+      response.body.should.equal(apiObj.config.general.flatFileNotFoundMessage);
       done();
     });
   });

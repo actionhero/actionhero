@@ -30,7 +30,7 @@ exports['generateAction'] = function(binary, next){
     data += templateLines[i] + "\n";
   }
 
-  binary.utils.create_file_safely(binary.paths.configData.action + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.action + "/" + binary.argv['name'] + ".js", data);
 
   next();
 }

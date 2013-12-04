@@ -149,9 +149,9 @@ if(process.env.actionHero_root != null){
 }
 
 try{
-  binary.paths.configData = require(binary.paths.project_root + "/config.js").configData.general.paths
+  binary.paths.confg = require(binary.paths.project_root + "/config/config.js").confg.general.paths
 }catch(e){
-  binary.paths.configData = { 
+  binary.paths.confg = { 
     "action":      binary.paths.project_root + "/actions",
     "task":        binary.paths.project_root + "/tasks",
     "public":      binary.paths.project_root + "/public",

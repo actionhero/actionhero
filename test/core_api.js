@@ -39,7 +39,7 @@ describe('Core: API', function(){
       item.should.be.a('string');
     });
 
-    apiObj.configData.should.be.an.instanceOf(Object);
+    apiObj.config.should.be.an.instanceOf(Object);
     apiObj.stats.should.be.an.instanceOf(Object);
 
     done();

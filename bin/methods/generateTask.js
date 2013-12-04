@@ -25,7 +25,7 @@ exports['generateTask'] = function(binary, next){
     data += templateLines[i] + "\n";
   }
 
-  binary.utils.create_file_safely(binary.paths.configData.task + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.task + "/" + binary.argv['name'] + ".js", data);
 
   next();
 

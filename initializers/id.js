@@ -7,7 +7,7 @@ var id = function(api, next){
     api.id = argv["title"];
   }else if(process.env["ACTIONHERO_TITLE"] != null){
     api.id = process.env["ACTIONHERO_TITLE"];
-  }else if(api.configData.general.id == null){
+  }else if(api.config.general.id == null){
     var externalIP = api.utils.getExternalIPAddress();
     if(externalIP == false){
       var message = " * Error fetching this host's external IP address; setting id base to 'actionHero'"
@@ -22,7 +22,7 @@ var id = function(api, next){
     api.id = externalIP;
     if(cluster.isWorker){ api.id += ":" + process.pid; }
   }else{
-    api.id = api.configData.general.id;
+    api.id = api.config.general.id;
   }
   
   next();

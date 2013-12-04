@@ -43,11 +43,11 @@ describe('Server: Socket', function(){
       rawAPI = api;
       apiObj = specHelper.cleanAPIObject(api);
       
-        client = net.connect(specHelper.params[0].servers.socket.port, function(){
+        client = net.connect((specHelper.startingSocketPort + 0), function(){
           client.setEncoding('utf8');
-          client2 = net.connect(specHelper.params[0].servers.socket.port, function(){
+          client2 = net.connect((specHelper.startingSocketPort + 0), function(){
             client2.setEncoding('utf8');
-            client3 = net.connect(specHelper.params[0].servers.socket.port, function(){
+            client3 = net.connect((specHelper.startingSocketPort + 0), function(){
               client3.setEncoding('utf8');
               setTimeout(function(){ // This timeout is to wait-out all the 
                 done();

@@ -125,17 +125,17 @@ describe('Core: actionCluster', function(){
         }
       };
 
-      client1 = net.connect(specHelper.params[0].servers.socket.port);
+      client1 = net.connect((specHelper.startingSocketPort + 0));
       client1.setEncoding('utf8');
       client1.on("data", connnectedClient);
       makeSocketRequest(client1, "roomChange defaultRoom");
 
-      client2 = net.connect(specHelper.params[1].servers.socket.port);
+      client2 = net.connect((specHelper.startingSocketPort + 1));
       client2.setEncoding('utf8');
       client2.on("data", connnectedClient);
       makeSocketRequest(client2, "roomChange defaultRoom");
 
-      client3 = net.connect(specHelper.params[2].servers.socket.port);
+      client3 = net.connect((specHelper.startingSocketPort + 2));
       client3.setEncoding('utf8');
       client3.on("data", connnectedClient);
       makeSocketRequest(client3, "roomChange defaultRoom");
@@ -182,7 +182,7 @@ describe('Core: actionCluster', function(){
 
     it("clients can communicate across the cluster", function(done){
       this.timeout(5000);
-      if(apis[0].configData.redis.fake == true){
+      if(apis[0].config.redis.fake == true){
         // you can't communicte across the cluster with fakeredis!
         done();
       }else{
