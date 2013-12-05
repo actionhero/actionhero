@@ -155,13 +155,15 @@ var web = function(api, options, next){
       var remotePort = req.connection.remotePort;
 
       if(req.headers['x-forwarded-for'] != null){
-        var ip = req.headers['x-forwarded-for'].split(",")[0].split(":");
-        if(ip[0] != null){ 
-          remoteIP = ip[0]; 
+        // all IPv4 address have 0 colons (127.0.0.1) and IPv6 addresses can have 3 ([::ffff:127.0.0.1]) or 7 ([0:0:0:0:0:0:0:1])
+        // any other number indicates the presence of an appended port
+        var parts = req.headers['x-forwarded-for'].split(",")[0].split(":");
+        if([1,4,8].indexOf(parts.length) < 0){
+          remotePort = parts.pop();
         }
-        if(ip[1] != null){ 
-          remotePort = ip[1]; 
-        }else if(req.headers['x-forwarded-port'] != null){
+        remoteIP = parts.join(":");
+
+        if(req.headers['x-forwarded-port'] != null){
           remotePort = req.headers['x-forwarded-port'];
         }
       }

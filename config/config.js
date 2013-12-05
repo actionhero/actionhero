@@ -129,7 +129,7 @@ config.servers = {
     secure: false,                       // HTTP or HTTPS?
     serverOptions: {},                   // Passed to https.createServer if secure=ture. Should contain SSL certificates
     port: 8080,                          // Port or Socket
-    bindIP: "0.0.0.0",                   // Which IP to listen on (use 0.0.0.0 for all)
+    bindIP: "0.0.0.0",                   // Which IP to listen on (use '0.0.0.0' for all; '::' for all on ipv4 and ipv6)
     httpHeaders : {                      // Any additional headers you want actionHero to respond with
       'Access-Control-Allow-Origin' : '*',
       'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE',
