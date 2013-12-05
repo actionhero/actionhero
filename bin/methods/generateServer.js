@@ -59,7 +59,7 @@ exports['generateServer'] = function(binary, next){
     data += templateLines[i] + "\n";
   }
 
-  binary.utils.create_file_safely(binary.paths.configData.server + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.server + "/" + binary.argv['name'] + ".js", data);
 
   next();
 

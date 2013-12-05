@@ -10,9 +10,9 @@ var redis = function(api, next){
   */
 
   api.redis = {};
-  api.redis.fake = api.configData.redis.fake;
+  api.redis.fake = api.config.redis.fake;
 
-  if(api.configData.redis.database == null){ api.configData.redis.database = 0; }
+  if(api.config.redis.database == null){ api.config.redis.database = 0; }
 
   if(api.redis.fake == true){
     api.log("running with fakeredis", "warning");
@@ -31,7 +31,7 @@ var redis = function(api, next){
   }
     
   api.redis.initialize = function(callback){
-    api.redis.client = redisPackage.createClient(api.configData.redis.port, api.configData.redis.host, api.configData.redis.options);
+    api.redis.client = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
     api.redis.client.on("error", function (err) {
       api.log("Redis Error: " + err, "emerg");
     });
@@ -40,17 +40,17 @@ var redis = function(api, next){
       api.log("connected to redis", "debug");
     });
 
-    if(api.configData.redis.password != null && api.configData.redis.password != ""){
-      api.redis.client.auth(api.configData.redis.password, function(){
-        api.redis.client.select(api.configData.redis.database, function(err){
-          if(err){ api.log("Error selecting database #"+api.configData.redis.database+" on redis.  exiting", "emerg"); }
+    if(api.config.redis.password != null && api.config.redis.password != ""){
+      api.redis.client.auth(api.config.redis.password, function(){
+        api.redis.client.select(api.config.redis.database, function(err){
+          if(err){ api.log("Error selecting database #"+api.config.redis.database+" on redis.  exiting", "emerg"); }
             callback();
         });
       }); 
-    }else if(api.configData.redis.fake != true){
+    }else if(api.config.redis.fake != true){
       process.nextTick(function(){
-        api.redis.client.select(api.configData.redis.database, function(err){
-          if(err){ api.log("Error selecting database #"+api.configData.redis.database+" on redis.  exiting", "emerg"); }
+        api.redis.client.select(api.config.redis.database, function(err){
+          if(err){ api.log("Error selecting database #"+api.config.redis.database+" on redis.  exiting", "emerg"); }
           callback();
         });
       });

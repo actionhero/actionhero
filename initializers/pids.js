@@ -12,15 +12,15 @@ var pids = function(api, next){
     api.pids.title = "actionHeroWorker-" + new Date().getTime();
   }
 
-  try { fs.mkdirSync(api.configData.general.paths.pid, "777") } catch(e) {};
+  try { fs.mkdirSync(api.config.general.paths.pid, "777") } catch(e) {};
 
   api.pids.writePidFile = function(){
-    fs.writeFileSync(api.configData.general.paths.pid + "/" + api.pids.title, api.pids.pid.toString(), 'ascii');
+    fs.writeFileSync(api.config.general.paths.pid + "/" + api.pids.title, api.pids.pid.toString(), 'ascii');
   }
 
   api.pids.clearPidFile = function(){
     try{
-      fs.unlinkSync(api.configData.general.paths.pid + "/" + api.pids.title);
+      fs.unlinkSync(api.config.general.paths.pid + "/" + api.pids.title);
     }catch(e){
       api.log('unable to remove pidfile', 'error');
     }

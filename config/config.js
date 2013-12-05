@@ -1,16 +1,16 @@
 // actionHero Config File
-// I will be loded into api.configData
+// I will be loded into api.config
 
 var fs = require('fs');
 var cluster = require('cluster');
 
-var configData = {};
+var config = {};
 
 /////////////////////////
 // General Information //
 /////////////////////////
 
-configData.general = {
+config.general = {
   apiVersion: "0.0.1",
   serverName: "actionHero API",
   // id: "myActionHeroServer",                                    // id can be set here, or it will be generated dynamically.  Be sure that every server you run has a unique ID (which will happen when genrated dynamically)
@@ -20,16 +20,16 @@ configData.general = {
   serverErrorMessage: "The server experienced an internal error", // The message to accompany 500 errors (internal server errors)
   defaultLimit: 100,                                              // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultOffset: 0,
-  developmentMode: false,                                         // Watch for changes in actions and tasks, and reload/restart them on the fly
+  developmentMode: true,                                          // Watch for changes in actions and tasks, and reload/restart them on the fly
   simultaneousActions: 5,                                         // How many pending actions can a single connection be working on 
   paths: {                                                        // configuration for your actionHero project structure
-    "action":      __dirname + "/actions",
-    "task":        __dirname + "/tasks",
-    "public":      __dirname + "/public",
-    "pid":         __dirname + "/pids",
-    "log":         __dirname + "/log",
-    "server":      __dirname + "/servers",
-    "initializer": __dirname + "/initializers",
+    "action":      __dirname + "/../actions",
+    "task":        __dirname + "/../tasks",
+    "public":      __dirname + "/../public",
+    "pid":         __dirname + "/../pids",
+    "log":         __dirname + "/../log",
+    "server":      __dirname + "/../servers",
+    "initializer": __dirname + "/../initializers",
   },
   startingChatRooms: {                                            // hash containaing chat rooms you wish to be created at server boot 
     'defaultRoom': {},                                            // format is {roomName: {authKey, authValue}}
@@ -41,13 +41,13 @@ configData.general = {
 // logging //
 /////////////
 
-configData.logger = {
+config.logger = {
   transports: []
 };
 
 // console logger
 if(cluster.isMaster){
-  configData.logger.transports.push(function(api, winston){
+  config.logger.transports.push(function(api, winston){
     return new (winston.transports.Console)({
       colorize: true,
       level: "debug",
@@ -62,9 +62,9 @@ try{
 } catch(e) {
   if(e.code != "EEXIST"){ console.log(e); process.exit(); }
 }
-configData.logger.transports.push(function(api, winston) {
+config.logger.transports.push(function(api, winston) {
   return new (winston.transports.File)({
-    filename: configData.general.paths.log + "/" + api.pids.title + '.log',
+    filename: config.general.paths.log + "/" + api.pids.title + '.log',
     level: "info",
     timestamp: true
   });
@@ -74,7 +74,7 @@ configData.logger.transports.push(function(api, winston) {
 // Stats //
 ///////////
 
-configData.stats = {
+config.stats = {
   writeFrequency: 1000, // how often should the server write its stats to redis?
   keys: [              // what redis key(s) [hash] should be used to store stats? provide no key if you do not want to store stats
     'actionHero:stats',
@@ -85,7 +85,7 @@ configData.stats = {
 // Redis //
 ///////////
 
-configData.redis = {
+config.redis = {
   fake: true,
   host: "127.0.0.1",
   port: 6379,
@@ -98,11 +98,11 @@ configData.redis = {
 // FAYE //
 //////////
 
-configData.faye = {
+config.faye = {
   mount: "/faye",          // faye's URL mountpoint.  Be sure to not overlap with an action or route
   timeout: 45,             // idle timeout for clients
   ping: null,              // should clients ping the server?
-  redis: configData.redis, // What redis server should we connet to for faye?
+  redis: config.redis, // What redis server should we connet to for faye?
   namespace: "faye:"       // redis prefix for faye keys
 };
 
@@ -110,12 +110,12 @@ configData.faye = {
 // TASKS //
 ///////////
 
-configData.tasks = {
+config.tasks = {
   // see https://github.com/taskrabbit/node-resque for more information / options
   scheduler: false,       // Should this node run a scheduler to promote delayed tasks?
   queues: [],             // what queues should the workers work and how many to spawn? "['*']" is one worker working the * queue; "['high,low']" is one worker woring 2 queues
   timeout: 5000,          // how long to sleep between jobs / scheduler checks
-  redis: configData.redis // What redis server should we connet to for tasks / delayed jobs?
+  redis: config.redis // What redis server should we connet to for tasks / delayed jobs?
 }
 
 /////////////
@@ -124,7 +124,7 @@ configData.tasks = {
 
 // uncomment the section to enable the server
 
-configData.servers = {
+config.servers = {
   "web" : {
     secure: false,                       // HTTP or HTTPS?
     serverOptions: {},                   // Passed to https.createServer if secure=ture. Should contain SSL certificates
@@ -168,4 +168,4 @@ configData.servers = {
 
 //////////////////////////////////
 
-exports.configData = configData;
+exports.config = config;

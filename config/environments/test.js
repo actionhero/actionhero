@@ -1,0 +1,70 @@
+// I override settings in ../config.js for this environment
+// these changes will be merged on top of those in config.js
+
+var toFakeRedis = false;
+if(process.env['fakeredis'] != null){
+  if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
+  if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
+}
+
+var redisConfig = {
+  "fake": toFakeRedis,
+  "host": "127.0.0.1",
+  "port": 6379,
+  "password": null,
+  "options": null,
+  "DB": 2
+}
+
+var config = {
+  general: {
+    // id: "test-server-1",
+    developmentMode: true,
+    startingChatRooms: {
+      'defaultRoom': {}, 
+      'otherRoom': {}, 
+      'secureRoom': {authorized: true},
+    }
+  },
+  logger: {
+    transports: null,
+  },
+  stats: {
+    writeFrequency: 0, 
+    keys: ['test:stats'], 
+  },
+  redis : redisConfig,
+  tasks : {
+    scheduler: false, 
+    timeout: 100,
+    queues: [],
+    redis: redisConfig,
+  },
+  faye: { 
+    mount: '/faye',
+    timeout: 45,
+    ping: null,
+    redis: redisConfig,
+    namespace: 'faye:' 
+  },
+  servers: {
+    web: {
+      secure: false, 
+      // port: 9000,    
+      matchExtensionMime: true,
+      metadataOptions: {
+        serverInformation: true,
+        requestorInformation: true
+      }
+    },
+    socket: {
+      secure: false, 
+      // port: 8000, 
+    },
+    websocket: { }
+  }
+};
+
+//
+
+exports.config = config;

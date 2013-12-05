@@ -66,7 +66,7 @@ var connections = function(api, next){
       listeningRooms: [],
       roomMatchKey: null,
       roomMatchValue: null,
-      room: api.configData.general.defaultChatRoom,
+      room: api.config.general.defaultChatRoom,
       canChat: false,
     }
 

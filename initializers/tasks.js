@@ -8,7 +8,7 @@ var tasks = function(api, next){
     jobs: {},
 
     _start: function(api, next){
-      if(api.configData.tasks.scheduler === true){
+      if(api.config.tasks.scheduler === true){
         api.tasks.enqueueAllRecurentJobs(function(){
           next();
         });
@@ -122,7 +122,7 @@ var tasks = function(api, next){
       var self = this;
 
       if(path == null){
-        path = api.configData.general.paths.task;
+        path = api.config.general.paths.task;
       }
       
       if(fs.existsSync(path)){

@@ -35,7 +35,12 @@ actionHero.prototype.initialize = function(params, callback){
     self.api.project_root = process.cwd();
   }
 
-  if (params === null){ params = {}; }
+  if(callback == null && typeof params == 'function'){
+    callback = params; params = {}; 
+  }
+  if (params === null){ 
+    params = {}; 
+  }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
@@ -44,7 +49,7 @@ actionHero.prototype.initialize = function(params, callback){
 
   [
     'utils',
-    'config',
+    'configLoader',
     'id',
     'pids',
     'logger',
@@ -67,9 +72,7 @@ actionHero.prototype.initialize = function(params, callback){
     'servers',
   ].forEach(function(initializer){
     var file = __dirname + "/initializers/" + initializer + ".js";
-    if(require.cache[require.resolve(file)] !== null){
-      delete require.cache[require.resolve(file)];
-    }
+    delete require.cache[require.resolve(file)];
     self.initalizers[initializer] = require(file)[initializer];
     orderedInitializers[initializer] = function(next){ 
       self.initalizers[initializer](self.api, next);
@@ -82,10 +85,10 @@ actionHero.prototype.initialize = function(params, callback){
 
   orderedInitializers['_projectInitializers'] = function(next){
     var projectInitializers = {};
-    if(path.resolve(self.api.configData.general.paths.initializer) != path.resolve(__dirname + "/initializers")){
-      var fileSet = fs.readdirSync(path.resolve(self.api.configData.general.paths.initializer)).sort();
+    if(path.resolve(self.api.config.general.paths.initializer) != path.resolve(__dirname + "/initializers")){
+      var fileSet = fs.readdirSync(path.resolve(self.api.config.general.paths.initializer)).sort();
       fileSet.forEach(function(f){
-        var file = path.resolve(self.api.configData.general.paths.initializer + "/" + f);
+        var file = path.resolve(self.api.config.general.paths.initializer + "/" + f);
         if (file[0] != "."){
           var initializer = f.split(".")[0];
           var fileParts = file.split('.');
@@ -126,8 +129,12 @@ actionHero.prototype.initialize = function(params, callback){
 actionHero.prototype.start = function(params, callback){
   var self = this;
 
+  if(callback == null && typeof params == 'function'){
+    callback = params; params = {}; 
+  }
+
   var start = function(){
-    if(self.api.configData.general.developmentMode == true){
+    if(self.api.config.general.developmentMode == true){
       self.api.log("running in development mode", "notice")
     }
     self.api.running = true;

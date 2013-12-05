@@ -23,7 +23,7 @@ var exceptions = function(api, next){
     }
     api.exceptionHandlers.renderConnection(connection);
     api.exceptionHandlers.renderError(err);
-    connection.error = new Error(api.configData.general.serverErrorMessage);
+    connection.error = new Error(api.config.general.serverErrorMessage);
     connection.response = {}; // no partial responses
     // domain.dispose();
     next(connection, true);

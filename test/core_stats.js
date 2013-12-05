@@ -8,7 +8,6 @@ describe('Core: Stats', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.params[0].stats.keys = [testKey];
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
       done();
@@ -27,7 +26,6 @@ describe('Core: Stats', function(){
   })
 
   after(function(done){
-    specHelper.params[0].stats.keys = [];
     done();
   });
 
@@ -85,11 +83,11 @@ describe('Core: Stats', function(){
   describe('multiple stats keys', function(){
 
     before(function(){
-      apiObj.configData.stats.keys = ['test:stats1', 'test:stats2'];
+      apiObj.config.stats.keys = ['test:stats1', 'test:stats2'];
     });
 
     after(function(done){
-      apiObj.configData.stats.keys = [testKey];
+      apiObj.config.stats.keys = [testKey];
       apiObj.redis.client.del('test:stats1', function(){
         apiObj.redis.client.del('test:stats2', function(){
           done();

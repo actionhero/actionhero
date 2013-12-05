@@ -113,12 +113,12 @@ var genericServer = function(api, next){
       self.log("new connection", 'info', {to: connection.remoteIP});
     }
     if(self.attributes.sendWelcomeMessage === true){
-      connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"})
+      connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: "api"})
     }
     if(typeof self.attributes.sendWelcomeMessage === "number"){
       setTimeout(function(){
         try{
-          connection.sendMessage({welcome: api.configData.general.welcomeMessage, room: connection.room, context: "api"})
+          connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: "api"})
         }catch(e){
           api.log(e, "error");
         }

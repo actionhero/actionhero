@@ -9,16 +9,10 @@ exports['start'] = function(binary, next){
   var api = {};
   var state;
 
-  // if there is no config.js file in the application's root, then actionHero will load in a collection of default params.
-  // You can overwrite them with params.configChanges
-  var params = {
-    configChanges: {}
-  };
-
   var startServer = function(next){
     state = "starting";
     if(cluster.isWorker){ process.send(state); }
-    actionHero.start(params, function(err, api_from_callback){
+    actionHero.start(function(err, api_from_callback){
       if(err){
         if(cluster.isWorker){ process.send("failed_to_boot"); }
         binary.log(err);

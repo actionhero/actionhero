@@ -55,7 +55,7 @@
   "scripts": {
     "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
-    "test": "fakeredis=true node ./node_modules/.bin/mocha && fakeredis=false node ./node_modules/.bin/mocha",
+    "test": "fakeredis=true NODE_ENV=test node ./node_modules/.bin/mocha && fakeredis=false NODE_ENV=test node ./node_modules/.bin/mocha",
     "start": "node ./bin/actionHero"
   },
   "prepublish": "./node_modules/.bin/uglifyjs ./public/javascript/actionHeroWebSocket.js --lint -o ./public/javascript/actionHeroWebSocket.min.js",

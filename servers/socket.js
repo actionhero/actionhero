@@ -46,7 +46,7 @@ var socket = function(api, options, next){
         handleConnection(rawConnection);
       });
     }else{
-      server.server = tls.createServer(api.configData.servers.socket.serverOptions, function(rawConnection){
+      server.server = tls.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
       });
     }
@@ -106,8 +106,8 @@ var socket = function(api, options, next){
 
   server.on("connection", function(connection){
     connection.params = {
-      limit:  api.configData.general.defaultLimit,
-      offset: api.configData.general.defaultOffset
+      limit:  api.config.general.defaultLimit,
+      offset: api.config.general.defaultOffset
     }
 
     connection.rawConnection.on("data", function(chunk){

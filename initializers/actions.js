@@ -8,8 +8,8 @@ var actions = function(api, next){
   api.actions.preProcessors = [];
   api.actions.postProcessors = [];
 
-  if(api.configData.general.simultaneousActions == null){
-    api.configData.general.simultaneousActions = 5;
+  if(api.config.general.simultaneousActions == null){
+    api.config.general.simultaneousActions = 5;
   }
 
   api.actions.validateAction = function(action){
@@ -48,9 +48,9 @@ var actions = function(api, next){
 
   api.actions.loadDirectory = function(path){
     if(path == null){ 
-      path = api.configData.general.paths.action;
-      if(!fs.existsSync(api.configData.general.paths.action)){
-        api.log(api.configData.general.paths.action + " defeined as action path, but does not exist", 'warning');
+      path = api.config.general.paths.action;
+      if(!fs.existsSync(api.config.general.paths.action)){
+        api.log(api.config.general.paths.action + " defeined as action path, but does not exist", 'warning');
       }
     }
     fs.readdirSync(path).forEach( function(file) {

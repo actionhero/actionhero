@@ -12,14 +12,14 @@ var chatRoom = function(api, next){
     api.chatRoom.subscription = api.faye.client.subscribe(api.chatRoom.fayeChannel, function(message) {
       api.chatRoom.incommingMessage(message);
     });
-    if(api.configData.general.startingChatRooms != null){
-      for(var room in api.configData.general.startingChatRooms){
+    if(api.config.general.startingChatRooms != null){
+      for(var room in api.config.general.startingChatRooms){
         api.log("ensuring the existance of the chatRoom: " + room);
         api.chatRoom.add(room, function(err){
           if(err != null){ api.log(err, 'crit'); }
-          if(api.configData.general.startingChatRooms[room] != null){
-            for(authKey in api.configData.general.startingChatRooms[room]){
-              var authValue = api.configData.general.startingChatRooms[room][authKey];
+          if(api.config.general.startingChatRooms[room] != null){
+            for(authKey in api.config.general.startingChatRooms[room]){
+              var authValue = api.config.general.startingChatRooms[room][authKey];
               api.chatRoom.setAuthenticationPatern(room, authKey, authValue);
             }
           }
@@ -41,7 +41,7 @@ var chatRoom = function(api, next){
       api.stats.increment("chatRoom:messagesSent");
       api.stats.increment("chatRoom:messagesSent:" + connection.room);
       var payload = {
-        serverToken: api.configData.general.serverToken,
+        serverToken: api.config.general.serverToken,
         serverId: api.id,
         message: message,
         sentAt: new Date().getTime(),

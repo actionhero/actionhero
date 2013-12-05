@@ -8,7 +8,7 @@ var resque = function(api, next){
     queue: null,
     workers: [],
     scheduler: null,
-    connectionDetails: api.configData.tasks.redis,
+    connectionDetails: api.config.tasks.redis,
 
     _start: function(api, next){
       var self = this;
@@ -41,8 +41,8 @@ var resque = function(api, next){
 
     startScheduler: function(callback){
       var self = this;
-      if(api.configData.tasks.scheduler === true){
-        self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.configData.tasks.timeout}, function(){
+      if(api.config.tasks.scheduler === true){
+        self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
           
           self.scheduler.on('start',             function(){               api.log("resque scheduler started", "info"); })
           self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "info");   })
@@ -77,18 +77,18 @@ var resque = function(api, next){
       var self = this;
       var i = 0;
       var started = 0;
-      if(api.configData.tasks.queues == null || api.configData.tasks.queues.length === 0){
+      if(api.config.tasks.queues == null || api.config.tasks.queues.length === 0){
         callback();
       }else{
-        while(i < api.configData.tasks.queues.length){
+        while(i < api.config.tasks.queues.length){
           (function(i){
-            var timeout = api.configData.tasks.timeout;
+            var timeout = api.config.tasks.timeout;
             var name = os.hostname() + ":" + process.pid + "+" + (i+1);
             // var name = os.hostname() + ":" + process.pid;
             var worker = new NR.worker({
               connection: self.connectionDetails, 
               name: name, 
-              queues: api.configData.tasks.queues[i], 
+              queues: api.config.tasks.queues[i], 
               timeout: timeout
             }, api.tasks.jobs, function(){
               worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
@@ -105,7 +105,7 @@ var resque = function(api, next){
               self.workers[i] = worker;
 
               started++;
-              if(started === api.configData.tasks.queues.length){
+              if(started === api.config.tasks.queues.length){
                 callback();
               }
             });

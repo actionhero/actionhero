@@ -83,12 +83,12 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.sanitizeLimitAndOffset = function(){
     if(this.connection.params.limit == null){ 
-      this.connection.params.limit = api.configData.general.defaultLimit; 
+      this.connection.params.limit = api.config.general.defaultLimit; 
     }else{ 
       this.connection.params.limit = parseFloat(this.connection.params.limit); 
     }
     if(this.connection.params.offset == null){ 
-      this.connection.params.offset = api.configData.general.defaultOffset; 
+      this.connection.params.offset = api.config.general.defaultOffset; 
     }else{ 
       this.connection.params.offset = parseFloat(this.connection.params.offset); 
     }
@@ -171,7 +171,7 @@ var actionProcessor = function(api, next){
 
     if(api.running != true){
       self.completeAction("the server is shutting down");
-    }else if(self.getPendingActionCount(self.connection) > api.configData.general.simultaneousActions){
+    }else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
       self.completeAction("you have too many pending requests");
     }else if(self.connection.error !== null){
       self.completeAction();
