@@ -22,8 +22,10 @@
 
   var populateServerInfo = function(){
     documentation(function(data){
-      document.getElementById("serverVersion").innerHTML = data.serverInformation.apiVersion;
-      document.getElementById("serverName").innerHTML = data.serverInformation.serverName;
+      if(data.serverInformation != null){
+        document.getElementById("serverVersion").innerHTML = data.serverInformation.apiVersion;
+        document.getElementById("serverName").innerHTML = data.serverInformation.serverName;
+      }
       for(var actionName in data.documentation){
         for(var version in data.documentation[actionName]){
           var action = data.documentation[actionName][version];
