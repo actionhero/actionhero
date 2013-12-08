@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/SpellCheckingInspection.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/SpellCheckingInspection.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/SpellCheckingInspection.xml</file>
+    <line>1571</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/SpellCheckingInspection.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/UnnecessaryLocalVariableJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/UnnecessaryLocalVariableJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/UnnecessaryLocalVariableJS.xml</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/UnnecessaryLocalVariableJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSPotentiallyInvalidConstructorUsage.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSPotentiallyInvalidConstructorUsage.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSPotentiallyInvalidConstructorUsage.xml</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSPotentiallyInvalidConstructorUsage.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/OctalIntegerJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/OctalIntegerJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/OctalIntegerJS.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/OctalIntegerJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSHint.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSHint.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSHint.xml</file>
+    <line>15691</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSHint.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/LoopStatementThatDoesntLoopJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/LoopStatementThatDoesntLoopJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/LoopStatementThatDoesntLoopJS.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/LoopStatementThatDoesntLoopJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSLastCommaInArrayLiteral.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSLastCommaInArrayLiteral.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSLastCommaInArrayLiteral.xml</file>
+    <line>91</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSLastCommaInArrayLiteral.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/Annotator.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/Annotator.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/Annotator.xml</file>
+    <line>8859</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/Annotator.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/.descriptions.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/.descriptions.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSReferencingMutableVariableFromClosure.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSReferencingMutableVariableFromClosure.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSReferencingMutableVariableFromClosure.xml</file>
+    <line>51</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSReferencingMutableVariableFromClosure.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownTarget.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownTarget.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownTarget.xml</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownTarget.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlFormInputWithoutLabel.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlFormInputWithoutLabel.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlFormInputWithoutLabel.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlFormInputWithoutLabel.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CommaExpressionJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CommaExpressionJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CommaExpressionJS.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CommaExpressionJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedAssignment.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedAssignment.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedAssignment.xml</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedAssignment.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CssOptimizeSimilarProperties.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CssOptimizeSimilarProperties.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CssOptimizeSimilarProperties.xml</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CssOptimizeSimilarProperties.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSLastCommaInObjectLiteral.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSLastCommaInObjectLiteral.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSLastCommaInObjectLiteral.xml</file>
+    <line>307</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSLastCommaInObjectLiteral.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUndeclaredVariable.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUndeclaredVariable.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUndeclaredVariable.xml</file>
+    <line>51</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUndeclaredVariable.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownAttribute.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownAttribute.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownAttribute.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownAttribute.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnnecessarySemicolon.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnnecessarySemicolon.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnnecessarySemicolon.xml</file>
+    <line>107</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnnecessarySemicolon.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CssUnusedSymbol.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CssUnusedSymbol.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CssUnusedSymbol.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CssUnusedSymbol.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedGlobalSymbols.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedGlobalSymbols.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedGlobalSymbols.xml</file>
+    <line>99</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedGlobalSymbols.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/TrivialIfJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/TrivialIfJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/TrivialIfJS.xml</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/TrivialIfJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownTag.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownTag.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/HtmlUnknownTag.xml</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/HtmlUnknownTag.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnfilteredForInLoop.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnfilteredForInLoop.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnfilteredForInLoop.xml</file>
+    <line>1211</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnfilteredForInLoop.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/BadExpressionStatementJS.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/BadExpressionStatementJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/BadExpressionStatementJS.xml</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/BadExpressionStatementJS.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedLocalSymbols.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedLocalSymbols.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/JSUnusedLocalSymbols.xml</file>
+    <line>859</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/JSUnusedLocalSymbols.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CheckImageSize.xml</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CheckImageSize.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/inspections/CheckImageSize.xml</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/inspections/CheckImageSize.xml" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unbound XML namespace prefix</problem_class>
+    <description>Namespace is not bound</description>
+  </problem>
+</problems>
+
