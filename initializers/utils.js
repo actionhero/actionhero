@@ -8,11 +8,11 @@ var utils = function(api, next){
     if(time == null){ time = new Date(); }
     var dateStr = 
       api.utils.padDateDoubleStr(time.getFullYear()) +
-      "-" + api.utils.padDateDoubleStr(1 + time.getMonth()) +
-      "-" + api.utils.padDateDoubleStr(time.getDate()) +
-      " " + api.utils.padDateDoubleStr(time.getHours()) +
-      ":" + api.utils.padDateDoubleStr(time.getMinutes()) +
-      ":" + api.utils.padDateDoubleStr(time.getSeconds());
+      '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
+      '-' + api.utils.padDateDoubleStr(time.getDate()) +
+      ' ' + api.utils.padDateDoubleStr(time.getHours()) +
+      ':' + api.utils.padDateDoubleStr(time.getMinutes()) +
+      ':' + api.utils.padDateDoubleStr(time.getSeconds());
     return dateStr;
   };
 
@@ -20,13 +20,13 @@ var utils = function(api, next){
     if(time == null){ time = new Date(); }
     var dateStr = 
       api.utils.padDateDoubleStr(time.getFullYear()) +
-      "-" + api.utils.padDateDoubleStr(1 + time.getMonth()) +
-      "-" + api.utils.padDateDoubleStr(time.getDate());
+      '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
+      '-' + api.utils.padDateDoubleStr(time.getDate());
     return dateStr;
   };
 
   api.utils.padDateDoubleStr = function(i){
-      return (i < 10) ? "0" + i : "" + i;
+      return (i < 10) ? '0' + i : '' + i;
   };
 
   ////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ var utils = function(api, next){
   api.utils.randomString = function(length, chars){
     var result = '';
     if(chars == null){
-      chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
+      chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
     }
     for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
     return result;
@@ -147,7 +147,7 @@ var utils = function(api, next){
     for (var dev in ifaces) {
       var alias = 0;
       ifaces[dev].forEach(function(details){
-        if (details.family == 'IPv4' && details.address != "127.0.0.1") {
+        if (details.family == 'IPv4' && details.address != '127.0.0.1') {
           ip =  details.address;
         }
       });

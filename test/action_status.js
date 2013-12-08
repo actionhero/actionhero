@@ -1,7 +1,7 @@
 describe('Action: status', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
+  var should = require('should');
 
   before(function(done){
     this.timeout(5000);

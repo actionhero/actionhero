@@ -6,27 +6,27 @@ var websocket = function(api, options, next){
   // INIT //
   //////////
 
-  var type = "websocket"
+  var type = 'websocket'
   var attributes = {
     canChat: true,
     logConnections: true,
     logExits: true,
     sendWelcomeMessage: 200, // delay sending by 200ms
-    fayeChannelPrefix: "/client/websocket/connection/",
+    fayeChannelPrefix: '/client/websocket/connection/',
     verbs: [
-      "quit",
-      "exit",
-      "documentation",
-      "roomChange",
-      "roomLeave",
-      "roomView",
-      "listenToRoom",
-      "silenceRoom",
-      "detailsView",
-      "say",
+      'quit',
+      'exit',
+      'documentation',
+      'roomChange',
+      'roomLeave',
+      'roomView',
+      'listenToRoom',
+      'silenceRoom',
+      'detailsView',
+      'say',
     ]
   }
-  var rebroadcastChannel = "/actionHero/websockets/rebroadcast";
+  var rebroadcastChannel = '/actionHero/websockets/rebroadcast';
 
   var server = new api.genericServer(type, options, attributes);
   server.connectionsMap = {};
@@ -36,9 +36,9 @@ var websocket = function(api, options, next){
   //////////////////////
 
   server._start = function(next){
-    var webserver = api.servers.servers["web"];
+    var webserver = api.servers.servers['web'];
     api.faye.server.attach(webserver.server);
-    api.log("webSockets bound to " + webserver.options.bindIP + ":" + webserver.options.port + " mounted at " + api.config.faye.mount, "notice"); 
+    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.faye.mount, 'notice'); 
 
     server.subscription = api.faye.client.subscribe(rebroadcastChannel, function(message) {
       incommingRebroadcast(message);
@@ -49,7 +49,7 @@ var websocket = function(api, options, next){
 
   server._teardown = function(next){
     server.connections().forEach(function(connection){
-      server.goodbye(connection, "server shutting down");
+      server.goodbye(connection, 'server shutting down');
     });
     setTimeout(function(){
       next();
@@ -69,7 +69,7 @@ var websocket = function(api, options, next){
   };
 
   server.goodbye = function(connection, reason){
-    server.sendMessage(connection, {status: "Bye!", context: "api", reason: reason});
+    server.sendMessage(connection, {status: 'Bye!', context: 'api', reason: reason});
     delete this.connectionsMap[connection.rawConnection.uuid];
     server.destroyConnection(connection);
   };
@@ -78,11 +78,11 @@ var websocket = function(api, options, next){
   // EVENTS //
   ////////////
 
-  server.on("connection", function(connection){
+  server.on('connection', function(connection){
     server.connectionsMap[connection.rawConnection.uuid] = connection;
   });
 
-  server.on("actionComplete", function(connection, toRender, messageCount){
+  server.on('actionComplete', function(connection, toRender, messageCount){
     if(toRender != false){
       connection.response.messageCount = messageCount;
       server.sendMessage(connection, connection.response, messageCount)
@@ -108,7 +108,7 @@ var websocket = function(api, options, next){
       if(message.clientId === api.faye.client._clientId){
         callback(message);
       }else{
-        var uuid = message.channel.split("/")[4];
+        var uuid = message.channel.split('/')[4];
         var connection = server.connectionsMap[uuid];
         if(connection != null){
           incommingMessage(connection, message);
@@ -129,9 +129,9 @@ var websocket = function(api, options, next){
   var subscriptionFayeExtansion = function(message, callback){
     if(message.channel.indexOf('/meta/subscribe') === 0){
       if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
-        var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, "");
+        var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, '');
         if(server.connectionsMap[uuid] != null){
-          message.error = "You cannot subscribe to another client's channel";
+          message.error = 'You cannot subscribe to another client\'s channel';
         }else{
           // let the server generate a new connection.id, don't use client-generated UUID
           remoteConnectionDetails(message.clientId, function(details){
@@ -142,7 +142,7 @@ var websocket = function(api, options, next){
               }, 
               remoteAddress  : details.remoteIp,
               remotePort     : details.remotePort 
-            }); // will emit "connection"
+            }); // will emit 'connection'
           });
         }
       }
@@ -152,7 +152,7 @@ var websocket = function(api, options, next){
 
   var incommingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
-    var uuid = originalMessage.channel.split("/")[4];
+    var uuid = originalMessage.channel.split('/')[4];
     var connection = server.connectionsMap[uuid];
     if(connection != null){
       messagingFayeExtansion(originalMessage);
@@ -160,7 +160,7 @@ var websocket = function(api, options, next){
   }
 
   var remoteConnectionDetails = function(clientId, callback){
-    var remoteIp = "0.0.0.0";
+    var remoteIp = '0.0.0.0';
     var remotePort = 0;
 
     setTimeout(function(){
@@ -180,22 +180,22 @@ var websocket = function(api, options, next){
       var verb = data.event;
       delete data.event;
       connection.messageCount++;
-      if(verb == "action"){
+      if(verb == 'action'){
         connection.params = data.params;
         connection.error = null;
         connection.response = {};
         server.processAction(connection);
-      }else if(verb == "file"){
+      }else if(verb == 'file'){
         server.processFile(connection);
       }else{
         var words = []
         for(var i in data){ words.push(data[i]); }
         connection.verbs(verb, words, function(error, data){
           if(error == null){
-            var message = {status: "OK", context: "response", data: data};
+            var message = {status: 'OK', context: 'response', data: data};
             server.sendMessage(connection, message);
           }else{
-            var message = {status: error, context: "response", data: data}
+            var message = {status: error, context: 'response', data: data}
             server.sendMessage(connection, message);
           }
         });

@@ -27,17 +27,17 @@ var tasks = function(api, next){
 
       var loadMessage = function(loadedTaskName){
         if(reload){
-          loadMessage = "task (re)loaded: " + loadedTaskName + ", " + fullFilePath;
+          loadMessage = 'task (re)loaded: ' + loadedTaskName + ', ' + fullFilePath;
         }else{
-          var loadMessage = "task loaded: " + loadedTaskName + ", " + fullFilePath;
+          var loadMessage = 'task loaded: ' + loadedTaskName + ', ' + fullFilePath;
         }
-        api.log(loadMessage, "debug");
+        api.log(loadMessage, 'debug');
       }
 
       api.watchFileAndAct(fullFilePath, function(){
         var cleanPath;
         if(process.platform === 'win32'){
-          cleanPath = fullFilePath.replace(/\//g, "\\");
+          cleanPath = fullFilePath.replace(/\//g, '\\');
         } else {
           cleanPath = fullFilePath;
         }
@@ -96,22 +96,22 @@ var tasks = function(api, next){
 
     validateTask: function(task){
       var fail = function(msg){
-        api.log(msg + "; exiting.", "emerg");
+        api.log(msg + '; exiting.', 'emerg');
       }
-      if(typeof task.name != "string" || task.name.length < 1){
-        fail("a task is missing `task.name`");
+      if(typeof task.name != 'string' || task.name.length < 1){
+        fail('a task is missing \'task.name\'');
         return false;
-      }else if(typeof task.description != "string" || task.description.length < 1){
-        fail("Task "+task.name+" is missing `task.description`");
+      }else if(typeof task.description != 'string' || task.description.length < 1){
+        fail('Task '+task.name+' is missing \'task.description\'');
         return false;
-      }else if(typeof task.frequency != "number"){
-        fail("Task "+task.name+" has no frequency");
+      }else if(typeof task.frequency != 'number'){
+        fail('Task '+task.name+' has no frequency');
         return false;
-      }else if(typeof task.queue != "string"){
-        fail("Task "+task.name+" has no queue");
+      }else if(typeof task.queue != 'string'){
+        fail('Task '+task.name+' has no queue');
         return false;
-      }else if(typeof task.run != "function"){
-        fail("Task "+task.name+" has no run method");
+      }else if(typeof task.run != 'function'){
+        fail('Task '+task.name+' has no run method');
         return false;
       }else{
         return true;
@@ -127,9 +127,9 @@ var tasks = function(api, next){
       
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != "/"){ path += "/"; } 
+          if(path[path.length - 1] != '/'){ path += '/'; } 
           var fullFilePath = path + file;
-          if (file[0] != "."){
+          if (file[0] != '.'){
             var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
               self.loadFolder(fullFilePath);
@@ -141,30 +141,30 @@ var tasks = function(api, next){
               if (ext === 'js')
                 api.tasks.load(fullFilePath);
             }else{
-              api.log(file+" is a type of file I cannot read", "alert")
+              api.log(file+' is a type of file I cannot read', 'alert')
             }
           }
         });
       }else{
-        api.log("no tasks folder found, skipping", "debug");
+        api.log('no tasks folder found, skipping', 'debug');
       }
     },
 
     enqueue: function(taskName, params, queue, callback){
-      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueue(queue, taskName, params, callback);
     },
 
     enqueueAt: function(timestamp, taskName, params, queue, callback){
-      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback);
     },
 
     enqueueIn: function(time, taskName, params, queue, callback){
-      if(typeof queue === "function" && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === "function" && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
     },
 
@@ -185,7 +185,7 @@ var tasks = function(api, next){
         self.del(task.queue, taskName, {}, function(){
           self.delDelayed(task.queue, taskName, {}, function(){
             self.enqueueIn(task.frequency, taskName, function(){
-              api.log("re-enqueued reccurent job " + taskName, "debug");
+              api.log('re-enqueued reccurent job ' + taskName, 'debug');
               callback();
             });
           });
@@ -204,7 +204,7 @@ var tasks = function(api, next){
           loadedTasks.push(taskName);
           (function(taskName){
             self.enqueue(taskName, function(err, toRun){
-              if(toRun === true){ api.log("enqueuing periodic task: " + taskName, 'info'); }
+              if(toRun === true){ api.log('enqueuing periodic task: ' + taskName, 'info'); }
               started--;
               if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
             });

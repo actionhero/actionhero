@@ -2,7 +2,7 @@
 
   var actionHeroWebSocket = function(options, callback){
     var self = this;
-    if(callback == null && typeof options == "function"){
+    if(callback == null && typeof options == 'function'){
       callback = options; options = null;
     }
 
@@ -30,10 +30,10 @@
     if(typeof window != 'undefined'){ host = window.location.origin; }
     return {
       host: host,
-      path: "/faye",
-      setupChannel: "/_welcome",
-      channelPrefix: "/client/websocket/connection/",
-      apiPath: "/api",
+      path: '/faye',
+      setupChannel: '/_welcome',
+      channelPrefix: '/client/websocket/connection/',
+      apiPath: '/api',
       connectionDelay: 500,
       timeout: 60,
       retry: 10,
@@ -42,13 +42,13 @@
 
   actionHeroWebSocket.prototype.log = function(message){
     if(console && console.log){
-      if(typeof message != "string"){ message = JSON.stringify(message); }
+      if(typeof message != 'string'){ message = JSON.stringify(message); }
       var date = new Date();
       var times = [date.getHours().toString(), date.getMinutes().toString(), date.getSeconds().toString()];
       for(var i in times){
-        if(times[i].length < 2){ times[i] = "0" + times[i]; }
+        if(times[i].length < 2){ times[i] = '0' + times[i]; }
       }
-      console.log("[AH::client @ " + times.join(":") + "] " + message);
+      console.log('[AH::client @ ' + times.join(':') + '] ' + message);
     }
   }
 
@@ -108,55 +108,55 @@
 
   actionHeroWebSocket.prototype.completeConnect = function(details){
     var self = this;
-    if(typeof self.startupCallback == "function"){
+    if(typeof self.startupCallback == 'function'){
       self.startupCallback(null, details);
     }
   }
 
   actionHeroWebSocket.prototype.send = function(args, callback){
     var self = this;
-    if(self.state == "connected"){
+    if(self.state == 'connected'){
       self.messageCount++;
-      if(typeof callback === "function"){
+      if(typeof callback === 'function'){
         self.callbacks[self.messageCount] = callback;
       }
       self.client.publish(self.channel, args).errback(function(err){
         self.log(err);
       });
     }else{
-      if(typeof callback == 'function'){ callback({error: "not connected", state: self.state}); }
+      if(typeof callback == 'function'){ callback({error: 'not connected', state: self.state}); }
     }
   };
 
   actionHeroWebSocket.prototype.handleMessage = function(message){
     var self = this;
-    if(message.context === "response"){
+    if(message.context === 'response'){
       if(typeof self.callbacks[message.messageCount] === 'function'){
         self.callbacks[message.messageCount](message);
       }
       delete self.callbacks[message.messageCount];
     }
 
-    else if(message.context === "user"){
+    else if(message.context === 'user'){
       if(typeof self.events.say === 'function'){
         self.events.say(message);
       }
     }
 
-    else if(message.context === "alert"){
+    else if(message.context === 'alert'){
       if(typeof self.events.api === 'function'){
         self.events.api(message);
       }
     }
 
-    else if(message.welcome != null && message.context == "api"){
+    else if(message.welcome != null && message.context == 'api'){
       self.welcomeMessage = message.welcome;
-      if(typeof self.events.say === 'function' && typeof self.events.welcome == "function"){
+      if(typeof self.events.say === 'function' && typeof self.events.welcome == 'function'){
         self.events.welcome(message);
       }
     }
 
-    else if(message.context === "api"){
+    else if(message.context === 'api'){
       if(typeof self.events.api === 'function'){
         self.events.api(message);
       }
@@ -166,15 +166,15 @@
   actionHeroWebSocket.prototype.createUUID = function(){
     // http://www.ietf.org/rfc/rfc4122.txt
     var s = [];
-    var hexDigits = "0123456789abcdef";
+    var hexDigits = '0123456789abcdef';
     for (var i = 0; i < 36; i++) {
         s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
     }
-    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[14] = '4';  // bits 12-15 of the time_hi_and_version field to 0010
     s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-    s[8] = s[13] = s[18] = s[23] = "-";
+    s[8] = s[13] = s[18] = s[23] = '-';
 
-    var uuid = s.join("");
+    var uuid = s.join('');
     return uuid;
   }
 

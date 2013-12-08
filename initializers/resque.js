@@ -1,7 +1,7 @@
-var os = require("os");
+var os = require('os');
 var NR = require('node-resque');
 
-var resque = function(api, next){  
+var resque = function(api, next){
 
   api.resque = {
     connectionDetails: {},
@@ -44,11 +44,11 @@ var resque = function(api, next){
       if(api.config.tasks.scheduler === true){
         self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
           
-          self.scheduler.on('start',             function(){               api.log("resque scheduler started", "info"); })
-          self.scheduler.on('end',               function(){               api.log("resque scheduler ended", "info");   })
-          // self.scheduler.on('poll',              function(){               api.log("resque scheduler polling", "debug"); })
-          self.scheduler.on('working_timestamp', function(timestamp){      api.log("resque scheduler working timestamp " + timestamp, "debug"); })
-          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log("resque scheduler enquing job " + timestamp, "debug", job); })
+          self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info'); })
+          self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info');   })
+          //self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug'); })
+          self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug'); })
+          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enquing job ' + timestamp, 'debug', job); })
 
           self.scheduler.start();
 
@@ -56,7 +56,7 @@ var resque = function(api, next){
             callback();
           });
         });
-      }else{
+      } else {
         callback();
       }
     },
@@ -65,7 +65,7 @@ var resque = function(api, next){
       var self = this;
       if(self.scheduler == null){
         callback();
-      }else{
+      } else {
         self.scheduler.end(function(){
           delete self.scheduler;
           callback();
@@ -79,26 +79,26 @@ var resque = function(api, next){
       var started = 0;
       if(api.config.tasks.queues == null || api.config.tasks.queues.length === 0){
         callback();
-      }else{
+      } else {
         while(i < api.config.tasks.queues.length){
           (function(i){
             var timeout = api.config.tasks.timeout;
-            var name = os.hostname() + ":" + process.pid + "+" + (i+1);
-            // var name = os.hostname() + ":" + process.pid;
+            var name = os.hostname() + ':' + process.pid + '+' + (i+1);
+            // var name = os.hostname() + ':' + process.pid;
             var worker = new NR.worker({
-              connection: self.connectionDetails, 
-              name: name, 
-              queues: api.config.tasks.queues[i], 
+              connection: self.connectionDetails,
+              name: name,
+              queues: api.config.tasks.queues[i],
               timeout: timeout
             }, api.tasks.jobs, function(){
-              worker.on('start',           function(){                   api.log("resque worker #"+(i+1)+" started (queues: " + worker.options.queues + ")", "info"); })
-              worker.on('end',             function(){                   api.log("resque worker #"+(i+1)+" ended", "info"); })
-              worker.on('cleaning_worker', function(worker, pid){        api.log("resque cleaning old worker " + worker, "info"); })
-              // worker.on('poll',            function(queue){              api.log("resque worker #"+(i+1)+" polling " + queue, "debug"); })
-              worker.on('job',             function(queue, job){         api.log("resque worker #"+(i+1)+" working job " + queue, "debug", job); })
-              worker.on('success',         function(queue, job, result){ api.log("resque worker #"+(i+1)+" job success " + queue, "info", {job: job, result: result}); })
-              worker.on('error',           function(queue, job, error){  api.log("resque worker #"+(i+1)+" job failed " + queue, "error", {job: job, error: error.stack}); })
-              // worker.on('pause',           function(){                   api.log("resque worker #"+(i+1)+"  paused", "debug"); })
+              worker.on('start',           function(){                   api.log('resque worker #'+(i+1)+' started (queues: ' + worker.options.queues + ')', 'info'); })
+              worker.on('end',             function(){                   api.log('resque worker #'+(i+1)+' ended', 'info'); })
+              worker.on('cleaning_worker', function(worker, pid){        api.log('resque cleaning old worker ' + worker, 'info'); })
+              // worker.on('poll',            function(queue){              api.log('resque worker #'+(i+1)+' polling ' + queue, 'debug'); })
+              worker.on('job',             function(queue, job){         api.log('resque worker #'+(i+1)+' working job ' + queue, 'debug', job); })
+              worker.on('success',         function(queue, job, result){ api.log('resque worker #'+(i+1)+' job success ' + queue, 'info', {job: job, result: result}); })
+              worker.on('error',           function(queue, job, error){  api.log('resque worker #'+(i+1)+' job failed ' + queue, 'error', {job: job, error: error.stack}); })
+              // worker.on('pause',           function(){                   api.log('resque worker #'+(i+1)+'  paused', 'debug'); })
 
               worker.workerCleanup();
               worker.start();
@@ -119,7 +119,7 @@ var resque = function(api, next){
       var self = this;
       if(self.workers.length === 0){
         callback();
-      }else{
+      } else {
         var ended = 0;
         self.workers.forEach(function(worker){
           api.log('stopping worker: ' + worker.name, 'debug');
@@ -132,14 +132,14 @@ var resque = function(api, next){
           });
         });
       }
-    },  
-  } 
+    },
+  }
 
   if(api.resque.connectionDetails.fake == true){
     api.resque.connectionDetails.package = require('fakeredis');
   }
 
-  next();  
+  next();
 
 }
 

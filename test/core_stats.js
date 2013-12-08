@@ -1,7 +1,7 @@
 describe('Core: Stats', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
+  var should = require('should');
   var testCounterName = 'testCounterName';
   var oldValues = { global: 0, local: 0 };
   var testKey = 'test:stats'
@@ -38,9 +38,9 @@ describe('Core: Stats', function(){
   });
 
   it('incremnting enqueues items for later', function(done){
-    apiObj.stats.increment("thing", 1);
-    apiObj.stats.increment("thing");
-    apiObj.stats.increment("Otherthing", -1);
+    apiObj.stats.increment('thing', 1);
+    apiObj.stats.increment('thing');
+    apiObj.stats.increment('Otherthing', -1);
 
     apiObj.stats.pendingIncrements['thing'].should.equal(2);
     apiObj.stats.pendingIncrements['Otherthing'].should.equal(-1);
@@ -49,7 +49,7 @@ describe('Core: Stats', function(){
   });
 
   it('buffered stats can be written', function(done){
-    apiObj.stats.increment("thing", 1);
+    apiObj.stats.increment('thing', 1);
     apiObj.stats.writeIncrements(function(){
       apiObj.redis.client.hgetall(testKey, function(err, data){
         Number(data.thing).should.equal(1);
@@ -59,9 +59,9 @@ describe('Core: Stats', function(){
   });
 
   it('stats can be read', function(done){
-    apiObj.stats.increment("thing", 1);
+    apiObj.stats.increment('thing', 1);
     apiObj.stats.writeIncrements(function(){
-      apiObj.stats.get("thing", function(err, data){
+      apiObj.stats.get('thing', function(err, data){
         Number(data).should.equal(1);
         done();
       });
@@ -69,8 +69,8 @@ describe('Core: Stats', function(){
   });
 
   it('stats can be read all at once', function(done){
-    apiObj.stats.increment("thing", 1);
-    apiObj.stats.increment("otherThing", -1);
+    apiObj.stats.increment('thing', 1);
+    apiObj.stats.increment('otherThing', -1);
     apiObj.stats.writeIncrements(function(){
       apiObj.stats.getAll(function(err, data){
         Number(data[testKey].thing).should.equal(1);
@@ -96,7 +96,7 @@ describe('Core: Stats', function(){
     });
 
     it('buffered stats can be written (to multiple hashes)', function(done){
-      apiObj.stats.increment("somethingElse", 1);
+      apiObj.stats.increment('somethingElse', 1);
       apiObj.stats.writeIncrements(function(){
         apiObj.redis.client.hgetall('test:stats1', function(err, data1){
           apiObj.redis.client.hgetall('test:stats2', function(err, data2){

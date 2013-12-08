@@ -6,22 +6,22 @@ describe('Core: Developer Mode', function(){
 
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
+  var should = require('should');
 
-  var original_file = "./actions/randomNumber.js";
+  var original_file = './actions/randomNumber.js';
   var original_content = specHelper.fs.readFileSync(original_file);
 
-  var new_file_content = "";
-  new_file_content += "var action = {};";
-  new_file_content += "action.name = \"randomNumber\";";
-  new_file_content += "action.description = \"HACK\";";
-  new_file_content += "action.inputs = { \"required\" : [], \"optional\" : [] };";
-  new_file_content += "action.outputExample = {randomNumber: 123};";
-  new_file_content += "action.run = function(api, connection, next){";
-  new_file_content += "  connection.response.randomNumber = \"not a number!\";";
-  new_file_content += "  next(connection, true);";
-  new_file_content += "};";
-  new_file_content += "exports.action = action;";
+  var new_file_content = '';
+  new_file_content += 'var action = {};';
+  new_file_content += 'action.name = \'randomNumber\';';
+  new_file_content += 'action.description = \'HACK\';';
+  new_file_content += 'action.inputs = { \'required\' : [], \'optional\' : [] };';
+  new_file_content += 'action.outputExample = {randomNumber: 123};';
+  new_file_content += 'action.run = function(api, connection, next){';
+  new_file_content += '  connection.response.randomNumber = \'not a number!\';';
+  new_file_content += '  next(connection, true);';
+  new_file_content += '};';
+  new_file_content += 'exports.action = action;';
 
   before(function(done){
     this.timeout(5000);
@@ -57,8 +57,8 @@ describe('Core: Developer Mode', function(){
       specHelper.fs.writeFile(original_file, new_file_content, function(err) {
       setTimeout(function(){
         specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
-          apiObj.actions.actions.randomNumber["1"].description.should.equal("HACK");
-          json.randomNumber.should.equal("not a number!");
+          apiObj.actions.actions.randomNumber['1'].description.should.equal('HACK');
+          json.randomNumber.should.equal('not a number!');
           done();
         });
       }, 1001 * 3); //file read timer is 1 second; time to notice the change + 3x time to reaload API

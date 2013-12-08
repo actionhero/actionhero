@@ -1,9 +1,9 @@
 exports.action = {
-  name: "roomManager",
-  description: "I create and destroy chat rooms",
+  name: 'roomManager',
+  description: 'I create and destroy chat rooms',
   inputs: {
-    required: ["room", "direction"],
-    optional: ["authKey", "authValue"],
+    required: ['room', 'direction'],
+    optional: ['authKey', 'authValue'],
   },
   blockedConnectionTypes: [],
   outputExample: {},
@@ -17,12 +17,12 @@ exports.action = {
         api.chatRoom.setAuthenticationPatern(connection.params.room, connection.params.authKey, connection.params.authValue, function(){
           callback();
         })
-      }else{  
+      } else {
         callback();
       }
     }
 
-    if(connection.params.direction == "add"){
+    if(connection.params.direction == 'add'){
       api.chatRoom.add(connection.params.room, function(){
         handleAuth(function(){
           next(connection, true);
@@ -30,7 +30,7 @@ exports.action = {
       });
     }
 
-    else if(connection.params.direction == "remove"){
+    else if(connection.params.direction == 'remove'){
       api.chatRoom.del(connection.params.room, function(){
         handleAuth(function(){
           next(connection, true);
@@ -39,7 +39,7 @@ exports.action = {
     }
 
     else{
-      connection.error = "direction not understood";
+      connection.error = 'direction not understood';
       next(connection, true);
     }
     

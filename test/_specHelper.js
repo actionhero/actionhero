@@ -5,8 +5,8 @@ specHelper.should = require('should');
 specHelper.request = require('request');
 specHelper.apis = [];
 specHelper.actionHeroes = [];
-specHelper.queue = "testQueue";
-specHelper.url = "127.0.0.1";
+specHelper.queue = 'testQueue';
+specHelper.url = '127.0.0.1';
 specHelper.params = [];
 specHelper.startingWebPort = 9000;
 specHelper.startingSocketPort = 8000;
@@ -17,18 +17,18 @@ if(process.env['fakeredis'] != null){
   if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
 }
 
-console.log("\r\n>>> running test sute with fakeredis=" + toFakeRedis + " <<<");
+console.log('\r\n>>> running test sute with fakeredis=' + toFakeRedis + ' <<<');
 
 var redisConfig = {
-  "fake": toFakeRedis,
-  "host": "127.0.0.1",
-  "port": 6379,
-  "password": null,
-  "options": null,
-  "DB": 2
+  'fake': toFakeRedis,
+  'host': '127.0.0.1',
+  'port': 6379,
+  'password': null,
+  'options': null,
+  'DB': 2
 }
 
-var actionHeroPrototype = require(__dirname + "/../actionHero.js").actionHeroPrototype;
+var actionHeroPrototype = require(__dirname + '/../actionHero.js').actionHeroPrototype;
 
 specHelper.clearRedis = function(serverID, next){
   if(serverID != 0){
@@ -44,15 +44,15 @@ specHelper.clearRedis = function(serverID, next){
     }else{
       var redis = require('redis');
       var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
-      client.on("ready", function (err) {
+      client.on('ready', function (err) {
         client.select(redisConfig.database, function(){
           client.flushdb(function(){
             next();
           });
         });
       });
-      client.on("error", function (err) {
-          process.stdout.write("\r\n\r\n!! Redis Error: " + err + "\r\n\r\n");
+      client.on('error', function (err) {
+          process.stdout.write('\r\n\r\n!! Redis Error: ' + err + '\r\n\r\n');
           process.exit();  // redis is really important...
       });
     }
@@ -60,7 +60,7 @@ specHelper.clearRedis = function(serverID, next){
 }
 
 // tables to truncate each round of testing
-specHelper.tables = [ "Logs" ];
+specHelper.tables = [ 'Logs' ];
 
 specHelper.prepare = function(serverID, next){
   if(serverID == null){serverID = 0};
@@ -87,7 +87,7 @@ specHelper.startServer = function(serverID, next){
     conn.destroy();
   });
   conn.on('error', function(err) { 
-    if(err.code == "ECONNREFUSED"){
+    if(err.code == 'ECONNREFUSED'){
       specHelper.actionHeroes[serverID] = new actionHeroPrototype();
       var configChanges = {
         general: {
@@ -138,12 +138,12 @@ specHelper.apiTest = {
     var port = (specHelper.startingWebPort + serverID);
     var params = {}
     params.method = method;
-    if(url.indexOf("?") > -1){
-      params.url = "http://"  + specHelper.url + ":" + port + (url||'');
+    if(url.indexOf('?') > -1){
+      params.url = 'http://'  + specHelper.url + ':' + port + (url||'');
     }else{
-      params.url = "http://"  + specHelper.url + ":" + port + (url||'') + "?";
+      params.url = 'http://'  + specHelper.url + ':' + port + (url||'') + '?';
       for(var i in data){
-        params.url += i + "=" + data[i] + "&";
+        params.url += i + '=' + data[i] + '&';
       }
     }
 
@@ -173,17 +173,17 @@ specHelper.resetCookieJar = function(){
 // API object cleanup
 specHelper.cleanAPIObject = function(api){
   var cleanAPI = {}
-  cleanAPI["actions"] = api["actions"];
-  cleanAPI["tasks"] = api["tasks"];
-  cleanAPI["utils"] = api["utils"];
-  cleanAPI["config"] = api["config"];
-  cleanAPI["stats"] = api["stats"];
-  cleanAPI["cache"] = api["cache"];
-  cleanAPI["redis"] = api["redis"];
-  cleanAPI["params"] = api["params"];
-  cleanAPI["routes"] = api["routes"];
-  cleanAPI["connections"] = api["connections"];
-  cleanAPI["chatRoom"] = api["chatRoom"];
+  cleanAPI['actions'] = api['actions'];
+  cleanAPI['tasks'] = api['tasks'];
+  cleanAPI['utils'] = api['utils'];
+  cleanAPI['config'] = api['config'];
+  cleanAPI['stats'] = api['stats'];
+  cleanAPI['cache'] = api['cache'];
+  cleanAPI['redis'] = api['redis'];
+  cleanAPI['params'] = api['params'];
+  cleanAPI['routes'] = api['routes'];
+  cleanAPI['connections'] = api['connections'];
+  cleanAPI['chatRoom'] = api['chatRoom'];
   return cleanAPI
 }
 

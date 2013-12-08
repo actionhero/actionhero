@@ -2,11 +2,11 @@ var chatRoom = function(api, next){
 
   api.chatRoom = {};
   api.chatRoom.keys = { 
-    rooms:   "actionHero:chatRoom:rooms",    // set
-    members: "actionHero:chatRoom:members:", // prefix to hashes
-    auth:    "actionHero:chatRoom:auth",     // hash
+    rooms:   'actionHero:chatRoom:rooms',    // set
+    members: 'actionHero:chatRoom:members:', // prefix to hashes
+    auth:    'actionHero:chatRoom:auth',     // hash
   }
-  api.chatRoom.fayeChannel = "/actionHero/chat";
+  api.chatRoom.fayeChannel = '/actionHero/chat';
 
   api.chatRoom._start = function(api, next){
     api.chatRoom.subscription = api.faye.client.subscribe(api.chatRoom.fayeChannel, function(message) {
@@ -14,7 +14,7 @@ var chatRoom = function(api, next){
     });
     if(api.config.general.startingChatRooms != null){
       for(var room in api.config.general.startingChatRooms){
-        api.log("ensuring the existance of the chatRoom: " + room);
+        api.log('ensuring the existance of the chatRoom: ' + room);
         api.chatRoom.add(room, function(err){
           if(err != null){ api.log(err, 'crit'); }
           if(api.config.general.startingChatRooms[room] != null){
@@ -27,19 +27,19 @@ var chatRoom = function(api, next){
       }
     }
     next();
-  } 
+  }
 
   api.chatRoom._teardown = function(api, next){
     api.chatRoom.subscription.cancel();
     next();
-  } 
+  }
 
   api.chatRoom.socketRoomBroadcast = function(connection, message, callback){
     // connection.room is required
     if(connection.room != null){
       if(connection.id == null){ connection.id = 0; }
-      api.stats.increment("chatRoom:messagesSent");
-      api.stats.increment("chatRoom:messagesSent:" + connection.room);
+      api.stats.increment('chatRoom:messagesSent');
+      api.stats.increment('chatRoom:messagesSent:' + connection.room);
       var payload = {
         serverToken: api.config.general.serverToken,
         serverId: api.id,
@@ -51,15 +51,15 @@ var chatRoom = function(api, next){
         }
       };
       api.faye.client.publish(api.chatRoom.fayeChannel, payload);
-      if(typeof callback == "function"){ callback(null); }
-    }else{
-      if(typeof callback == "function"){ callback('connection not in a room'); }
+      if(typeof callback == 'function'){ callback(null); }
+    } else {
+      if(typeof callback == 'function'){ callback('connection not in a room'); }
     }
   }
 
   api.chatRoom.incommingMessage = function(message){
-    api.stats.increment("chatRoom:messagesRecieved");
-    var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: "user", sentAt: message.sentAt };
+    api.stats.increment('chatRoom:messagesRecieved');
+    var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: 'user', sentAt: message.sentAt };
     for(var i in api.connections.connections){
       var thisConnection = api.connections.connections[i];
       if(thisConnection.canChat === true){
@@ -74,7 +74,7 @@ var chatRoom = function(api, next){
 
   api.chatRoom.add = function(room, callback){
     api.redis.client.sadd(api.chatRoom.keys.rooms, room, function(err, count){
-      if(typeof callback == "function"){ callback(err, count); }
+      if(typeof callback == 'function'){ callback(err, count); }
     });
   }
 
@@ -88,7 +88,7 @@ var chatRoom = function(api, next){
       });
       api.redis.client.del(api.chatRoom.keys.members + room, function(err){
         api.chatRoom.setAuthenticationPatern(room, null, null, function(){
-          if(typeof callback == "function"){ callback(); }
+          if(typeof callback == 'function'){ callback(); }
         });
       });
     });
@@ -100,20 +100,20 @@ var chatRoom = function(api, next){
       if(bool === 1 || bool === true){
         found = true;
       }
-      if(typeof callback == "function"){ callback(err, found); }
+      if(typeof callback == 'function'){ callback(err, found); }
     });
   }
   
   api.chatRoom.setAuthenticationPatern = function(room, key, value, callback){
     if(key == null){
       api.redis.client.hdel(api.chatRoom.keys.auth, room, function(err){
-        if(typeof callback == "function"){ callback(err); }
+        if(typeof callback == 'function'){ callback(err); }
       });
-    }else{
+    } else {
       var data = {}
       data[key] = value;
       api.redis.client.hset(api.chatRoom.keys.auth, room, JSON.stringify(data), function(err){
-        if(typeof callback == "function"){ callback(err); }
+        if(typeof callback == 'function'){ callback(err); }
       });
     }
   }
@@ -128,7 +128,7 @@ var chatRoom = function(api, next){
           var data = JSON.parse(members[id])
           cleanedMembers[id] = {
             id: id,
-            joinedAt: data["joinedAt"],
+            joinedAt: data['joinedAt'],
           }
           count++;
         }
@@ -138,8 +138,8 @@ var chatRoom = function(api, next){
           membersCount: count
         });
       });
-    }else{
-      callback("room is required", null);
+    } else {
+      callback('room is required', null);
     }
   }
 
@@ -175,35 +175,35 @@ var chatRoom = function(api, next){
                   connection.room = null;
                   api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(err){
                     connection.room = room;
-                    api.stats.increment("chatRoom:roomMembers:" + connection.room);
+                    api.stats.increment('chatRoom:roomMembers:' + connection.room);
                     api.chatRoom.announceMember(connection, true);
-                    if(typeof callback == "function"){ callback(null, true); }
+                    if(typeof callback == 'function'){ callback(null, true); }
                   });
                 });
-              }else{
-                if(typeof callback == "function"){ callback("connection already in this room", false); }
+              } else {
+                if(typeof callback == 'function'){ callback('connection already in this room', false); }
               }
             });
-          }else{
-            if(typeof callback == "function"){ callback("not authorized to join room", false); }
+          } else {
+            if(typeof callback == 'function'){ callback('not authorized to join room', false); }
           }
         });
       }else{
-        if(typeof callback == "function"){ callback("room does not exist", false); }
+        if(typeof callback == 'function'){ callback('room does not exist', false); }
       }
     });
   }
 
   api.chatRoom.removeMember = function(connection, callback){
     if(connection.room != null){
-      api.stats.increment("chatRoom:roomMembers:" + connection.room, -1);
+      api.stats.increment('chatRoom:roomMembers:' + connection.room, -1);
       api.redis.client.hdel(api.chatRoom.keys.members + connection.room, connection.id, function(err){
         api.chatRoom.announceMember(connection, false);
         connection.room = null;
-        if(typeof callback == "function"){ callback(null, true); }
+        if(typeof callback == 'function'){ callback(null, true); }
       });
-    }else{
-      if(typeof callback == "function"){ callback(null, false); }
+    } else {
+      if(typeof callback == 'function'){ callback(null, false); }
     }
   }
 
@@ -214,17 +214,17 @@ var chatRoom = function(api, next){
           api.chatRoom.authorize(connection, room, function(err, authorized){
             if(authorized === true){
               connection.listeningRooms.push(room);
-              if(typeof callback == "function"){ callback(null, true); }
-            }else{
-              if(typeof callback == "function"){ callback("not authorized to join room", false); }
+              if(typeof callback == 'function'){ callback(null, true); }
+            } else {
+              if(typeof callback == 'function'){ callback('not authorized to join room', false); }
             }
           });
-        }else{
-          if(typeof callback == "function"){ callback("room does not exist", false); }
+        } else {
+          if(typeof callback == 'function'){ callback('room does not exist', false); }
         }
       });
-    }else{
-      if(typeof callback == "function"){ callback("connection alredy listening to this room", false); }
+    } else {
+      if(typeof callback == 'function'){ callback('connection alredy listening to this room', false); }
     }
   }
 
@@ -232,18 +232,18 @@ var chatRoom = function(api, next){
     if(connection.listeningRooms.indexOf(room) >= 0){
       var index = connection.listeningRooms.indexOf(room);
       connection.listeningRooms.splice(index, 1);
-      if(typeof callback == "function"){ callback(null, true); }
-    }else{
-      if(typeof callback == "function"){ callback("connection not listening to this room", false); }
+      if(typeof callback == 'function'){ callback(null, true); }
+    } else {
+      if(typeof callback == 'function'){ callback('connection not listening to this room', false); }
     }
   }
 
   api.chatRoom.announceMember = function(connection, direction){
-    var message = "I";
+    var message = 'I';
     if(direction == true){
-      message += " have entered the room";
-    }else{
-      message += " have left the room";
+      message += ' have entered the room';
+    } else {
+      message += ' have left the room';
     }
 
     api.chatRoom.socketRoomBroadcast(connection, message);

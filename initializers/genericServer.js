@@ -11,7 +11,7 @@ A generic imaplmentation of a server:
       // INIT //
       //////////
 
-      var type = "myServer"
+      var type = 'myServer'
       var attributes = {
         canChat: true,
         logConnections: true,
@@ -40,9 +40,9 @@ A generic imaplmentation of a server:
       // EVENTS //
       ////////////
 
-      server.on("connection", function(connection){});
+      server.on('connection', function(connection){});
 
-      server.on("actionComplete", function(connection, toRender, messageCount){});
+      server.on('actionComplete', function(connection, toRender, messageCount){});
 
       /////////////
       // HELPERS //
@@ -60,13 +60,13 @@ A generic imaplmentation of a server:
 var genericServer = function(api, next){
   // I am the prototypical generic server that all other types of servers inherit from.
   // I shouldn't actually be used by a client
-  // Note the methods in this template server, as they are all required for "real" servers
+  // Note the methods in this template server, as they are all required for 'real' servers
 
   ////////////////////
   // COMMON METHODS //
   ////////////////////
 
-  // options are meant to be configrable in `config.js`
+  // options are meant to be configrable in 'config.js'
   // attributes are descrptions of the server:
   /* 
 
@@ -99,28 +99,28 @@ var genericServer = function(api, next){
   api.genericServer.prototype.buildConnection = function(data){
     var self = this;
     var connection = new api.connection({
-      type: self.type, 
+      type: self.type,
       id: data.id,
-      remotePort: data.remotePort, 
-      remoteIP: data.remoteAddress, 
+      remotePort: data.remotePort,
+      remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection
     });
     connection.sendMessage = function(message){
       self.sendMessage(connection, message);
     }
-    self.emit("connection", connection);
+    self.emit('connection', connection);
     if(self.attributes.logConnections === true){
-      self.log("new connection", 'info', {to: connection.remoteIP});
+      self.log('new connection', 'info', {to: connection.remoteIP});
     }
     if(self.attributes.sendWelcomeMessage === true){
-      connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: "api"})
+      connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: 'api'})
     }
-    if(typeof self.attributes.sendWelcomeMessage === "number"){
+    if(typeof self.attributes.sendWelcomeMessage === 'number'){
       setTimeout(function(){
-        try{
-          connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: "api"})
-        }catch(e){
-          api.log(e, "error");
+        try {
+          connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: 'api'})
+        } catch(e){
+          api.log(e, 'error');
         }
       }, self.attributes.sendWelcomeMessage);
     }
@@ -132,7 +132,7 @@ var genericServer = function(api, next){
   api.genericServer.prototype.destroyConnection = function(connection){
     var self = this;
     if(self.attributes.logExits === true){
-      self.log("connection closed", 'info', {to: connection.remoteIP});
+      self.log('connection closed', 'info', {to: connection.remoteIP});
     }
     connection.destroy();
   }
@@ -140,9 +140,9 @@ var genericServer = function(api, next){
   api.genericServer.prototype.processAction = function(connection){
     var self = this;
     var actionProcessor = new api.actionProcessor({
-      connection: connection, 
+      connection: connection,
       callback: function(connection, toRender, messageCount){
-        self.emit("actionComplete", connection, toRender, messageCount);
+        self.emit('actionComplete', connection, toRender, messageCount);
       }
     });
     actionProcessor.processAction();
@@ -168,7 +168,7 @@ var genericServer = function(api, next){
   }
 
   api.genericServer.prototype.log = function(message, severity, data){
-    api.log("[server: " + this.type + "] " + message, severity, data);
+    api.log('[server: ' + this.type + '] ' + message, severity, data);
   }
 
   var methodNotDefined = function(){
@@ -185,7 +185,7 @@ var genericServer = function(api, next){
   // I am invoked as part of shutdown
   api.genericServer.prototype._teardown = function(next){ methodNotDefined(); }
 
-  // This method will be appended to the connection as `connection.sendMessage`
+  // This method will be appended to the connection as 'connection.sendMessage'
   api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined(); }
 
   // This method will be used to gracefully disconnect the client

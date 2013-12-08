@@ -24,7 +24,7 @@ var stats = function(api, next){
 
   api.stats.writeIncrements = function(next){
     clearTimeout(api.stats.timer);
-    // api.log("writing pending stats data", 'debug', api.stats.pendingIncrements);
+    // api.log('writing pending stats data', 'debug', api.stats.pendingIncrements);
     if(api.utils.hashLength(api.stats.pendingIncrements) > 0 && api.config.stats.keys.length > 0){
       var started = 0;
       var pendingIncrements = api.utils.objClone(api.stats.pendingIncrements);

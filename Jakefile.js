@@ -3,9 +3,9 @@
 // More information about Jake can be found at https://github.com/mde/jake/
 /* An example actionHero task:
 
-desc("my actionHero jake task");
-task("myTask", {async: true}, function(){
-  var api = jake.Task["actionHero:envrionment"].value;
+desc('my actionHero jake task');
+task('myTask', {async: true}, function(){
+  var api = jake.Task['actionHero:envrionment'].value;
   // your logic here
   complete(process.exit());
 }); */

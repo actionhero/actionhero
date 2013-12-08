@@ -3,11 +3,11 @@ describe('Server: Web', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var rawApi = {};
-  var should = require("should");
+  var should = require('should');
 
   before(function(done){
     this.timeout(5000)
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       rawApi = api;
       apiObj = specHelper.cleanAPIObject(api);
       specHelper.resetCookieJar();
@@ -97,7 +97,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: Post with Form', function(done){
-    var postURL = 'http://' + specHelper.url + ":" + (specHelper.startingWebPort + 0) + "/api/cacheTest";
+    var postURL = 'http://' + specHelper.url + ':' + (specHelper.startingWebPort + 0) + '/api/cacheTest';
     specHelper.request.post(postURL, {form: {key:'key', value: 'value'}}, function(err, response, body){
       body = JSON.parse(body);
       body.cacheTestResults.saveResp.should.eql(true);
@@ -118,17 +118,17 @@ describe('Server: Web', function(){
       rawApi.config.servers.web.returnErrorCodes = true;
       rawApi.actions.versions.headerTestAction = [1]
       rawApi.actions.actions.headerTestAction = {
-        "1": {
-          name: "headerTestAction",
-          description: "I am a test",
+        '1': {
+          name: 'headerTestAction',
+          description: 'I am a test',
           version: 1,
           inputs: { required: [], optional: [] }, outputExample: {},
           run:function(api, connection, next){
-            connection.rawConnection.responseHeaders.push(['thing', "A"]);
-            connection.rawConnection.responseHeaders.push(['thing', "B"]);
-            connection.rawConnection.responseHeaders.push(['thing', "C"]);
-            connection.rawConnection.responseHeaders.push(['set-cookie', "value 1"]);
-            connection.rawConnection.responseHeaders.push(['set-cookie', "value 2"]);
+            connection.rawConnection.responseHeaders.push(['thing', 'A']);
+            connection.rawConnection.responseHeaders.push(['thing', 'B']);
+            connection.rawConnection.responseHeaders.push(['thing', 'C']);
+            connection.rawConnection.responseHeaders.push(['set-cookie', 'value 1']);
+            connection.rawConnection.responseHeaders.push(['set-cookie', 'value 2']);
             next(connection, true);
           }
         }
@@ -145,7 +145,7 @@ describe('Server: Web', function(){
     it('duplicate cookies should be removed (in favor of the last set)', function(done){
       specHelper.apiTest.del('/api/headerTestAction', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
-        response.headers['thing'].should.eql("C");
+        response.headers['thing'].should.eql('C');
         done();
       });
     });
@@ -196,13 +196,13 @@ describe('Server: Web', function(){
       rawApi.config.servers.web.returnErrorCodes = true;
       rawApi.actions.versions.statusTestAction = [1]
       rawApi.actions.actions.statusTestAction = {
-        "1": {
-          name: "statusTestAction",
-          description: "I am a test",
-          inputs: { required: ["key"], optional: [] }, outputExample: {},
+        '1': {
+          name: 'statusTestAction',
+          description: 'I am a test',
+          inputs: { required: ['key'], optional: [] }, outputExample: {},
           run:function(api, connection, next){
             if(connection.params.key != 'value'){
-              connection.error = "key != value";
+              connection.error = 'key != value';
               connection.rawConnection.responseHttpCode = 402;
             }else{
               connection.response.good = true;
@@ -258,26 +258,26 @@ describe('Server: Web', function(){
     before(function(done){
       rawApi.routes.loadRoutes({
         all: [
-          { path: "/user/:userID", action: "user" }
+          { path: '/user/:userID', action: 'user' }
         ],
         get: [
-          { path: "/users", action: "usersList" },
-          { path: "/search/:term/limit/:limit/offset/:offset", action: "search" },
-          { path: "/c/:key/:value", action: "cacheTest" },
-          { path: "/mimeTestAction/:key", action: "mimeTestAction" },
+          { path: '/users', action: 'usersList' },
+          { path: '/search/:term/limit/:limit/offset/:offset', action: 'search' },
+          { path: '/c/:key/:value', action: 'cacheTest' },
+          { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
         ],
         post: [
-          { path: "/login/:userID(^\\d{3}$)", action: "login" }
+          { path: '/login/:userID(^\\d{3}$)', action: 'login' }
         ]
       });
 
       rawApi.actions.versions.mimeTestAction = [1]
       rawApi.actions.actions.mimeTestAction = {
-        "1": {
-          name: "mimeTestAction",
-          description: "I am a test",
+        '1': {
+          name: 'mimeTestAction',
+          description: 'I am a test',
           matchExtensionMimeType: true,
-          inputs: { required: ["key"], optional: [] }, outputExample: {},
+          inputs: { required: ['key'], optional: [] }, outputExample: {},
           run:function(api, connection, next){
             next(connection, true);
           }
@@ -295,14 +295,14 @@ describe('Server: Web', function(){
     });
 
     it('new params will be allowed in route definitions', function(done){
-      rawApi.params.postVariables.should.include("userID");
+      rawApi.params.postVariables.should.include('userID');
       done();
     });
 
-    it('"all" routes are duplicated properly', function(done){
-      ["get", "post", "put", "delete"].forEach(function(verb){
-        rawApi.routes.routes[verb][0].action.should.equal("user");
-        rawApi.routes.routes[verb][0].path.should.equal("/user/:userID");
+    it('\'all\' routes are duplicated properly', function(done){
+      ['get', 'post', 'put', 'delete'].forEach(function(verb){
+        rawApi.routes.routes[verb][0].action.should.equal('user');
+        rawApi.routes.routes[verb][0].path.should.equal('/user/:userID');
       });
       done();
     })
@@ -399,7 +399,7 @@ describe('Server: Web', function(){
 
     it('regexp match failures will be rejected', function(done){
       specHelper.apiTest.post('/api/login/1234', 0, {}, function(response, json){
-        json.error.should.equal("Error: login is not a known action or that is not a valid apiVersion.");
+        json.error.should.equal('Error: login is not a known action or that is not a valid apiVersion.');
         json.requestorInformation.receivedParams.action.should.equal('login');
         should.not.exist(json.requestorInformation.receivedParams.userID);
         done();
@@ -418,7 +418,7 @@ describe('Server: Web', function(){
       it('will not change header information if there is a connection.error', function(done){
         specHelper.apiTest.get('/api/mimeTestAction', 0, {}, function(response, json){
           response.headers['content-type'].should.equal('application/json');
-          json.error.should.equal("Error: key is a required parameter for this action");
+          json.error.should.equal('Error: key is a required parameter for this action');
           done();
         });
       });

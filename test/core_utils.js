@@ -1,13 +1,13 @@
 describe('Core: Utils', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
+  var should = require('should');
 
   before(function(done){
     this.timeout(5000);
     specHelper.prepare(0, function(api){ 
       apiObj = specHelper.cleanAPIObject(api);
-      var utilLoader = require("../initializers/utils.js").utils
+      var utilLoader = require('../initializers/utils.js').utils
       utilLoader(specHelper, function(){
         done();
       })
@@ -22,7 +22,7 @@ describe('Core: Utils', function(){
   it('utils.sqlDateTime specific time', function(done){
     var now = new Date(0); 
     var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-    specHelper.utils.sqlDateTime(now_utc).should.equal("1970-01-01 00:00:00");
+    specHelper.utils.sqlDateTime(now_utc).should.equal('1970-01-01 00:00:00');
     done();
   });
 
@@ -58,7 +58,7 @@ describe('Core: Utils', function(){
     done();
   });
 
-  describe("utils.hashMerge", function(){
+  describe('utils.hashMerge', function(){
     var A = {a: 1, b: 2};
     var B = {b: -2, c: 3};
     var C = {a: 1, b: {m: 10, n:11}};

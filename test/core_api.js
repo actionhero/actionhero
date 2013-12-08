@@ -2,7 +2,7 @@ describe('Core: API', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var rawApi = {}
-  var should = require("should");
+  var should = require('should');
 
   before(function(done){
     this.timeout(5000);
@@ -17,24 +17,24 @@ describe('Core: API', function(){
     [
       apiObj.actions.actions,
       apiObj.actions.versions,
-      apiObj.actions.actions.cacheTest["1"],
-      apiObj.actions.actions.randomNumber["1"],
-      apiObj.actions.actions.status["1"],
+      apiObj.actions.actions.cacheTest['1'],
+      apiObj.actions.actions.randomNumber['1'],
+      apiObj.actions.actions.status['1'],
     ].forEach(function(item){
       item.should.be.a('object');
     });
 
     [
-      apiObj.actions.actions.cacheTest["1"].run,
-      apiObj.actions.actions.randomNumber["1"].run,
-      apiObj.actions.actions.status["1"].run,
+      apiObj.actions.actions.cacheTest['1'].run,
+      apiObj.actions.actions.randomNumber['1'].run,
+      apiObj.actions.actions.status['1'].run,
     ].forEach(function(item){
       item.should.be.an.instanceOf(Function);
     });
 
     [
-      apiObj.actions.actions.randomNumber["1"].name,
-      apiObj.actions.actions.randomNumber["1"].description,
+      apiObj.actions.actions.randomNumber['1'].name,
+      apiObj.actions.actions.randomNumber['1'].description,
     ].forEach(function(item){
       item.should.be.a('string');
     });
@@ -48,12 +48,12 @@ describe('Core: API', function(){
   it('should have loaded postVariables properly', function(done){
 
     [
-      "callback",
-      "action",
-      "limit",
-      "offset",
-      "key", // from action
-      "value", // from action
+      'callback',
+      'action',
+      'limit',
+      'offset',
+      'key', // from action
+      'value', // from action
     ].forEach(function(item){
       apiObj.params.postVariables.should.include(item);
     });
@@ -61,14 +61,14 @@ describe('Core: API', function(){
     done();
   });
 
-  describe("api versions", function(){
+  describe('api versions', function(){
 
     before(function(done){
       rawApi.actions.versions.versionedAction = [1,2,3]
       rawApi.actions.actions.versionedAction = {
-        "1": {
-          name: "versionedAction",
-          description: "I am a test",
+        '1': {
+          name: 'versionedAction',
+          description: 'I am a test',
           version: 1,
           inputs: { required: [], optional: [] }, outputExample: {},
           run:function(api, connection, next){
@@ -76,9 +76,9 @@ describe('Core: API', function(){
             next(connection, true);
           }
         },
-        "2": {
-          name: "versionedAction",
-          description: "I am a test",
+        '2': {
+          name: 'versionedAction',
+          description: 'I am a test',
           version: 2,
           inputs: { required: [], optional: [] }, outputExample: {},
           run:function(api, connection, next){
@@ -86,15 +86,15 @@ describe('Core: API', function(){
             next(connection, true);
           }
         },
-        "3": {
-          name: "versionedAction",
-          description: "I am a test",
+        '3': {
+          name: 'versionedAction',
+          description: 'I am a test',
           version: 3,
           inputs: { required: [], optional: [] }, outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
             connection.error = {
-              "a" : {"complex": "error"}
+              'a' : {'complex': 'error'}
             }
             next(connection, true);
           }
@@ -109,14 +109,14 @@ describe('Core: API', function(){
       done();
     })
 
-    it("will default actions to version 1", function(done){
+    it('will default actions to version 1', function(done){
       specHelper.apiTest.get('/api/randomNumber/', 0, {}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(1)
         done();
       });
     });
 
-    it("can specify an apiVersion", function(done){
+    it('can specify an apiVersion', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 1}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(1)
         specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 2}, function(response, json){
@@ -126,21 +126,21 @@ describe('Core: API', function(){
       });
     });
 
-    it("will default clients to the latest version of the action", function(done){
+    it('will default clients to the latest version of the action', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {}, function(response, json){
         json.requestorInformation.receivedParams.apiVersion.should.equal(3)
         done();
       });
     });
 
-    it("will fail on a missing action + version", function(done){
+    it('will fail on a missing action + version', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 10}, function(response, json){
-        json.error.should.equal("Error: versionedAction is not a known action or that is not a valid apiVersion.");
+        json.error.should.equal('Error: versionedAction is not a known action or that is not a valid apiVersion.');
         done();
       });
     });
 
-    it("can return complex error responses", function(done){
+    it('can return complex error responses', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 3}, function(response, json){
         json.error.a.complex.should.equal('error');
         done();

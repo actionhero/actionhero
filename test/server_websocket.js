@@ -2,10 +2,10 @@ describe('Server: Web Sockets', function(){
 
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
-  var socketURL = "http://localhost:9000";
-  var faye = require("faye");
-  var actionHeroWebSocket = require(process.cwd() + "/public/javascript/actionHeroWebSocket.js").actionHeroWebSocket;
+  var should = require('should');
+  var socketURL = 'http://localhost:9000';
+  var faye = require('faye');
+  var actionHeroWebSocket = require(process.cwd() + '/public/javascript/actionHeroWebSocket.js').actionHeroWebSocket;
   var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
   var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
   var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
@@ -13,7 +13,7 @@ describe('Server: Web Sockets', function(){
   function countWebSocketConnections(){
     var found = 0;
     for(var i in apiObj.connections.connections){
-      if(apiObj.connections.connections[i].type == "websocket"){
+      if(apiObj.connections.connections[i].type == 'websocket'){
         found++;
       }
     }
@@ -29,23 +29,23 @@ describe('Server: Web Sockets', function(){
   });
 
   it('faye should work in general', function(done){
-    var client = new faye.Client(socketURL + "/faye");
+    var client = new faye.Client(socketURL + '/faye');
     client.subscribe('/test', function(message){
       message.message.should.equal('hello');
       done();
     });
 
     setTimeout(function(){
-      apiObj.faye.client.publish("/test", {message: 'hello'});
+      apiObj.faye.client.publish('/test', {message: 'hello'});
     }, 500);
   });
 
   it('socket client connections should work: client 1', function(done){
     client_1.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
-      data.context.should.equal("response");
+      data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
-      client_1.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_1.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
       done();
     });
   });
@@ -53,9 +53,9 @@ describe('Server: Web Sockets', function(){
   it('socket client connections should work: client 2', function(done){
     client_2.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
-      data.context.should.equal("response");
+      data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
-      client_2.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_2.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
       done();
     });
   });
@@ -63,9 +63,9 @@ describe('Server: Web Sockets', function(){
   it('socket client connections should work: client 3', function(done){
     client_3.connect(function(err, data){
       data.should.be.an.instanceOf(Object);
-      data.context.should.equal("response");
+      data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
-      client_3.welcomeMessage.should.equal("Hello! Welcome to the actionHero api");
+      client_3.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
       done();
     });
   });
@@ -74,7 +74,7 @@ describe('Server: Web Sockets', function(){
     client_1.detailsView(function(response){
       response.should.be.an.instanceOf(Object);
       response.data.connectedAt.should.be.within(0, new Date().getTime())
-      response.data.remoteIP.should.equal("127.0.0.1");
+      response.data.remoteIP.should.equal('127.0.0.1');
       done()
     });
   });
@@ -82,13 +82,13 @@ describe('Server: Web Sockets', function(){
   it('can run actions with errors', function(done){
     client_1.action('cacheTest', function(response){
       response.should.be.an.instanceOf(Object);
-      response.error.should.equal("Error: key is a required parameter for this action");
+      response.error.should.equal('Error: key is a required parameter for this action');
       done();
     });
   });
 
   it('can run actions properly', function(done){
-    client_1.action("cacheTest", {key: "test key", value: "test value"}, function(response){
+    client_1.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
       response.should.be.an.instanceOf(Object);
       should.not.exist(response.error);
       done();
@@ -111,8 +111,8 @@ describe('Server: Web Sockets', function(){
       for(var i in responses){
         var response = responses[i];
         if(i == 0){
-          response.error.should.eql("you have too many pending requests");
-        }else{
+          response.error.should.eql('you have too many pending requests');
+        } else {
           should.not.exist(response.error)
         }
       }
@@ -133,11 +133,11 @@ describe('Server: Web Sockets', function(){
     });
 
     it('can change rooms and get room details', function(done){
-      client_1.roomChange("otherRoom", function(){
+      client_1.roomChange('otherRoom', function(){
         client_1.detailsView(function(response){
           response.should.be.an.instanceOf(Object);
           should.not.exist(response.error);
-          response.data.room.should.equal("otherRoom")
+          response.data.room.should.equal('otherRoom')
           done();
         });
       });
@@ -151,38 +151,38 @@ describe('Server: Web Sockets', function(){
         response.message.should.equal('hello from client 2');
         done();
       }
-      client_2.say("hello from client 2"); // TODO: why does this block without a callback?
+      client_2.say('hello from client 2'); // TODO: why does this block without a callback?
     });
 
     it('I can register for messages from rooms I am not in; and then unregister', function(done){
       this.timeout(5000)
-      client_1.roomChange("defaultRoom", function(){
-        client_2.roomChange("otherRoom", function(){
+      client_1.roomChange('defaultRoom', function(){
+        client_2.roomChange('otherRoom', function(){
           
           setTimeout(function(){
-            client_1.listenToRoom("otherRoom", function(){
+            client_1.listenToRoom('otherRoom', function(){
               client_1.events.say = function(response){
                 delete client_1.events.say;
                 response.should.be.an.instanceOf(Object);
                 response.context.should.equal('user');
                 response.message.should.equal('hello in otherRoom');
                 
-                client_1.silenceRoom("otherRoom");
+                client_1.silenceRoom('otherRoom');
                 
                 client_1.events.say = function(response){
                   delete client_1.events.say;
-                  throw new Error("I should not have gotten this message: " + response);
+                  throw new Error('I should not have gotten this message: ' + response);
                 }
                 setTimeout(function(){
                   delete client_1.events.say;
                   done(); // yay!
                 }, 1000)
                 setTimeout(function(){
-                  client_2.say("hello in otherRoom");
+                  client_2.say('hello in otherRoom');
                 }, 500);
 
               }
-              client_2.say("hello in otherRoom");
+              client_2.say('hello in otherRoom');
             });
           }, 500);
 

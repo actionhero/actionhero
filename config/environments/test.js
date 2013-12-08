@@ -8,21 +8,21 @@ if(process.env['fakeredis'] != null){
 }
 
 var redisConfig = {
-  "fake": toFakeRedis,
-  "host": "127.0.0.1",
-  "port": 6379,
-  "password": null,
-  "options": null,
-  "DB": 2
+  'fake': toFakeRedis,
+  'host': '127.0.0.1',
+  'port': 6379,
+  'password': null,
+  'options': null,
+  'DB': 2
 }
 
 var config = {
   general: {
-    // id: "test-server-1",
+    //id: 'test-server-1',
     developmentMode: true,
     startingChatRooms: {
-      'defaultRoom': {}, 
-      'otherRoom': {}, 
+      'defaultRoom': {},
+      'otherRoom': {},
       'secureRoom': {authorized: true},
     }
   },
@@ -30,27 +30,27 @@ var config = {
     transports: null,
   },
   stats: {
-    writeFrequency: 0, 
+    writeFrequency: 0,
     keys: ['test:stats'], 
   },
   redis : redisConfig,
   tasks : {
-    scheduler: false, 
+    scheduler: false,
     timeout: 100,
     queues: [],
     redis: redisConfig,
   },
-  faye: { 
+  faye: {
     mount: '/faye',
     timeout: 45,
     ping: null,
     redis: redisConfig,
-    namespace: 'faye:' 
+    namespace: 'faye:'
   },
   servers: {
     web: {
-      secure: false, 
-      // port: 9000,    
+      secure: false,
+      //port: 9000,
       matchExtensionMime: true,
       metadataOptions: {
         serverInformation: true,
@@ -58,8 +58,8 @@ var config = {
       }
     },
     socket: {
-      secure: false, 
-      // port: 8000, 
+      secure: false,
+      //port: 8000,
     },
     websocket: { }
   }

@@ -1,6 +1,6 @@
 exports['generateServer'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError("name is a required input"); }
+  if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
 
   var templateLines = [];
   templateLines.push('var ' + binary.argv['name'] + ' = function(api, options, next){');
@@ -9,7 +9,7 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('  // INIT //');
   templateLines.push('  //////////');
   templateLines.push('');
-  templateLines.push('  var type = "' + binary.argv['name'] + '"');
+  templateLines.push('  var type = \'' + binary.argv['name'] + '\'');
   templateLines.push('  var attributes = {');
   templateLines.push('    canChat: true,');
   templateLines.push('    logConnections: true,');
@@ -38,9 +38,9 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('  // EVENTS //');
   templateLines.push('  ////////////');
   templateLines.push('');
-  templateLines.push('  server.on("connection", function(connection){});');
+  templateLines.push('  server.on(\'connection\', function(connection){});');
   templateLines.push('');
-  templateLines.push('  server.on("actionComplete", function(connection, toRender, messageCount){});');
+  templateLines.push('  server.on(\'actionComplete\', function(connection, toRender, messageCount){});');
   templateLines.push('');
   templateLines.push('  /////////////');
   templateLines.push('  // HELPERS //');
@@ -54,12 +54,12 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('exports.' + binary.argv['name'] + ' = ' + binary.argv['name'] + ';');
 
 
-  var data = "";
+  var data = '';
   for(var i in templateLines){
-    data += templateLines[i] + "\n";
+    data += templateLines[i] + '\n';
   }
 
-  binary.utils.create_file_safely(binary.paths.config.server + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.server + '/' + binary.argv['name'] + '.js', data);
 
   next();
 
