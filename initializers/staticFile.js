@@ -12,15 +12,15 @@ var staticFile = function(api, next){
       var self = this;
       if(connection.params.file == null){
         self.sendFileNotFound(connection, 'file is a required param to send a file', callback);
-      }else{
+      } else {
         var file = path.normalize(api.config.general.paths.public + '/' + connection.params.file);
         if(file.indexOf(path.normalize(api.config.general.paths.public)) != 0){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
-        }else{
+        } else {
           self.checkExistance(file, function(exists){
             if(exists){
-              self.sendFile(file, connection,callback);
-            }else{
+              self.sendFile(file, connection, callback);
+            } else {
               self.sendFileNotFound(connection, 'file not found', callback);
             }
           });
@@ -33,7 +33,7 @@ var staticFile = function(api, next){
       fs.stat(file, function(err, stats){
         if(err){
           self.sendFileNotFound(connection, 'error reading file: ' + String(err), callback);
-        }else{
+        } else {
           var mime = Mime.lookup(file);
           var length = stats.size;
           var fileStream = fs.createReadStream(file);
@@ -64,21 +64,21 @@ var staticFile = function(api, next){
       fs.stat(file, function(err, stats){
         if(err != null){
           callback(false);
-        }else{
+        } else {
           if(stats.isDirectory()){
             callback(false); // default file should have been appeneded by server
-          }else if(stats.isSymbolicLink()){
+          } else if(stats.isSymbolicLink()){
             fs.readLink(fileName, function(err, truePath){
               if(err != null){
                 callback(false);
-              }else{
+              } else {
                 truePath = path.normalize(truePath);
                 api.fileServer.checkExistance(truePath, callback);
               }
             });
-          }else if(stats.isFile()){
+          } else if(stats.isFile()){
             callback(true);
-          }else{
+          } else {
             callback(false);
           }
         }

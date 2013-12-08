@@ -5,7 +5,7 @@ var utils = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // sqlDateTime
   api.utils.sqlDateTime = function(time){
-    if(time == null){ time = new Date(); }
+    if(time == null){ time = new Date() }
     var dateStr = 
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
@@ -34,9 +34,9 @@ var utils = function(api, next){
   api.utils.randomString = function(length, chars){
     var result = '';
     if(chars == null){
-      chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+      chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     }
-    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    for(var i = length; i > 0; --i){ result += chars[Math.round(Math.random() * (chars.length - 1))] }
     return result;
   }
 
@@ -44,27 +44,27 @@ var utils = function(api, next){
   // count the number of elements in a hash
   api.utils.hashLength = function(obj) {
     var size = 0, key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
+    for(key in obj){
+      if(obj.hasOwnProperty(key)){ size++ }
     }
     return size;
   };
 
   ////////////////////////////////////////////////////////////////////////////
   // merge two hashes recursively 
-  api.utils.hashMerge = function(a, b) {
+  api.utils.hashMerge = function(a, b){
     var c = {};
     for(var i in a){
       if(api.utils.isPlainObject(a[i])){
         c[i] = api.utils.hashMerge(c[i], a[i]);
-      }else{
+      } else {
         c[i] = a[i];
       }
     }
     for(var i in b){
       if(api.utils.isPlainObject(b[i])){
         c[i] = api.utils.hashMerge(c[i], b[i]);
-      }else{
+      } else {
         c[i] = b[i];
       }
     }
@@ -73,23 +73,22 @@ var utils = function(api, next){
 
   api.utils.isPlainObject = function(o){
     var safeTypes = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
-    if (o == null){ return false; }
-    if ((o instanceof Object) == false){ return false; }
+    if(o == null){ return false }
+    if((o instanceof Object) == false){ return false }
     for(var i in safeTypes){
-      if(o instanceof safeTypes[i]){ return false; }
+      if(o instanceof safeTypes[i]){ return false }
     }
-    if(o.toString() != '[object Object]'){ return false; }
+    if(o.toString() != '[object Object]'){ return false }
     return true; 
   }
 
   ////////////////////////////////////////////////////////////////////////////
   // unique-ify an array
-  api.utils.arrayUniqueify = function(arr) {
+  api.utils.arrayUniqueify = function(arr){
     var a = [];
     for(var i=0; i<arr.length; i++) {
       for(var j=i+1; j<arr.length; j++) {
-        if (arr[i] === arr[j])
-          j = ++i;
+        if (arr[i] === arr[j]){ j = ++i }
       }
       a.push(arr[i]);
     }
@@ -105,21 +104,21 @@ var utils = function(api, next){
     var alarm;
     var startingMSeconds = now.getTime();
     while(sleeping){
-        alarm = new Date();
-        var alarmMSeconds = alarm.getTime();
-        if(alarmMSeconds - startingMSeconds > naptime){ sleeping = false; }
-    }        
+      alarm = new Date();
+      var alarmMSeconds = alarm.getTime();
+      if(alarmMSeconds - startingMSeconds > naptime){ sleeping = false }
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
   // randomly sort an array
-  api.utils.randomArraySort = function(a,b) {
-    return( parseInt( Math.random()*10 ) %2 );
+  api.utils.randomArraySort = function(a,b){
+    return(parseInt( Math.random()*10 ) %2);
   }
 
   ////////////////////////////////////////////////////////////////////////////
   // in the array?
-  api.utils.inArray = function(haystack, needle) {
+  api.utils.inArray = function(haystack, needle){
     var found = false;
     for(var i in haystack){
       if(haystack[i] === needle){
@@ -134,7 +133,7 @@ var utils = function(api, next){
   // object Clone
   api.utils.objClone = function(obj){
     return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
-       return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
+      return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
     }, {}));
   }
 
@@ -144,10 +143,10 @@ var utils = function(api, next){
     var os = require('os')
     var ifaces = os.networkInterfaces();
     var ip = false;
-    for (var dev in ifaces) {
+    for(var dev in ifaces){
       var alias = 0;
       ifaces[dev].forEach(function(details){
-        if (details.family == 'IPv4' && details.address != '127.0.0.1') {
+        if(details.family == 'IPv4' && details.address != '127.0.0.1'){
           ip =  details.address;
         }
       });
@@ -160,7 +159,7 @@ var utils = function(api, next){
   api.utils.parseCookies = function(req){
     var cookies = {};
     if(req.headers.cookie != null){
-      req.headers.cookie.split(';').forEach(function( cookie ) {
+      req.headers.cookie.split(';').forEach(function(cookie){
         var parts = cookie.split('=');
         cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
       });

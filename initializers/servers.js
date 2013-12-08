@@ -8,29 +8,29 @@ var servers = function(api, next){
 
   api.servers._start = function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.config.servers) == 0){ next(); }
+    if(api.utils.hashLength(api.config.servers) == 0){ next() }
     for(var server in api.config.servers){
       started++;
       api.log('starting server: ' + server, 'notice');
       api.servers.servers[server]._start(function(){
         process.nextTick(function(){
           started--;
-          if(started == 0){ next(); }
+          if(started == 0){ next() }
         });
       });
-    };    
+    };
   }
 
   api.servers._teardown = function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.servers.servers) == 0){ next(); }
+    if(api.utils.hashLength(api.servers.servers) == 0){ next() }
     for(var server in api.servers.servers){
       started++;
       api.log('stopping server: ' + server, 'notice');
-      api.servers.servers[server]._teardown(function(){        
+      api.servers.servers[server]._teardown(function(){
         process.nextTick(function(){
           started--;
-          if(started == 0){ next(); }
+          if(started == 0){ next() }
         });
       });
     };
@@ -38,9 +38,9 @@ var servers = function(api, next){
 
   // Load the servers
 
-  var serverFolders = [ 
+  var serverFolders = [
     __dirname + '/../servers',
-    api.config.general.paths.server,
+    api.config.general.paths.server
   ];
     
   var inits = {}
@@ -82,7 +82,7 @@ var servers = function(api, next){
       });
     })(server)
   }
-  if(started == 0){ next(); }
+  if(started == 0){ next() }
 }
 
 exports.servers = servers;

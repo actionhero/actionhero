@@ -1,20 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <problems>
   <problem>
-    <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>177</line>
+    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
+    <line>55</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused local variable finalTimer</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter api_from_callback</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused parameter err</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>243</line>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>125</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
+    <description>Unused local variable workerID</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>171</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter next</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>173</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused local variable i</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>263</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter next</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
@@ -34,23 +74,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>173</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable i</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>171</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter next</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>263</line>
+    <line>32</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -65,52 +89,20 @@
     <description>Unused local variable runningWorkersCount</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>125</line>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>243</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable workerID</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>32</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter next</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
-    <line>34</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter api_from_callback</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
-    <line>34</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused parameter err</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
-    <line>55</line>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>177</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable finalTimer</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>70</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable delta</description>
+    <description>Unused parameter err</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
@@ -145,32 +137,16 @@
     <description>Unused local variable delta</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
-    <line>126</line>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>70</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
-    <line>127</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
-    <line>128</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
+    <description>Unused local variable delta</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>232</line>
+    <line>415</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -178,7 +154,31 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>164</line>
+    <line>234</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter json</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>227</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter json</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>165</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter json</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>155</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -194,75 +194,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>412</line>
+    <line>147</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused parameter json</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>154</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter json</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>146</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter json</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_web.js</file>
-    <line>225</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter json</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>202</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>202</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter save_resp</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>7</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable startAllServers</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>5</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable externalIP</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>27</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable restartAllServers</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
@@ -281,56 +217,48 @@
     <description>Unused parameter err</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>252</line>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>202</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
+    <description>Unused parameter save_resp</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>202</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter err</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>27</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused local variable restartAllServers</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused local variable externalIP</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused local variable startAllServers</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>305</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>216</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter done</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>304</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>139</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>270</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>319</line>
+    <line>302</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -346,7 +274,63 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>138</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
     <line>303</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>251</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>317</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>269</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>304</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>319</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>279</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -361,38 +345,6 @@
     <description>Unused parameter response</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>321</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>280</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter response</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>148</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>204</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
     <line>192</line>
     <module>actionHero</module>
@@ -402,11 +354,27 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>7</line>
+    <line>11</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable queue</description>
+    <description>Unused parameter api</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>126</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter err</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>217</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter err</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
@@ -426,23 +394,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>217</line>
+    <line>201</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
+    <description>Unused parameter done</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>175</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>126</line>
+    <line>148</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -458,7 +418,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>125</line>
+    <line>204</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -474,27 +434,27 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>201</line>
+    <line>175</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter done</description>
+    <description>Unused parameter err</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
-    <line>11</line>
+    <line>125</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter api</description>
+    <description>Unused parameter err</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>47</line>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>7</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
+    <description>Unused local variable queue</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
@@ -505,10 +465,10 @@
     <description>Unused parameter body</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
-    <line>57</line>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>47</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused parameter err</description>
   </problem>
@@ -521,16 +481,40 @@
     <description>Unused parameter err</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
-    <line>56</line>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>57</line>
     <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter json</description>
+    <description>Unused parameter err</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>126</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>128</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>127</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter response</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
-    <line>71</line>
+    <line>40</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -546,6 +530,22 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
+    <line>25</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter json</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
+    <line>56</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter json</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
     <line>48</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
@@ -554,7 +554,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
-    <line>40</line>
+    <line>71</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -569,16 +569,8 @@
     <description>Unused parameter json</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
-    <line>25</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter json</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/test/core_middleware.js</file>
-    <line>99</line>
+    <line>108</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_middleware.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -594,19 +586,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_middleware.js</file>
-    <line>108</line>
+    <line>99</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_middleware.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused parameter c</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_stats.js</file>
-    <line>23</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_stats.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_stats.js</file>
@@ -615,6 +599,14 @@
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_stats.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
     <description>Unused local variable oldValues</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_stats.js</file>
+    <line>23</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_stats.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter err</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/tasks/runAction.js</file>
@@ -646,7 +638,7 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter length</description>
+    <description>Unused parameter mime</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/socket.js</file>
@@ -654,7 +646,7 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter mime</description>
+    <description>Unused parameter length</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
@@ -666,7 +658,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>176</line>
+    <line>174</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -674,7 +666,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>200</line>
+    <line>198</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter err</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>83</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -697,22 +697,6 @@
     <description>Unused local variable id</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>83</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter err</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>92</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter count</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
     <line>47</line>
     <module>actionHero</module>
@@ -722,7 +706,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>89</line>
+    <line>93</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter count</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
+    <line>90</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -730,7 +722,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>96</line>
+    <line>95</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -746,7 +738,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/redis.js</file>
-    <line>39</line>
+    <line>38</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/redis.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -754,15 +746,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>148</line>
+    <line>115</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused local variable alias</description>
+    <description>Unused parameter a</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>116</line>
+    <line>115</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -770,15 +762,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>116</line>
+    <line>147</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter a</description>
+    <description>Unused local variable alias</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>236</line>
+    <line>235</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
@@ -810,30 +802,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
-    <line>189</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter message</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
-    <line>189</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter connection</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
-    <line>186</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
-    <description>Unused parameter next</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
     <line>192</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
@@ -850,7 +818,31 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>189</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter message</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>189</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter connection</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
     <line>183</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>
+    <description>Unused parameter next</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>186</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript local symbol</problem_class>

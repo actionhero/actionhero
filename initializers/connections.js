@@ -52,7 +52,7 @@ var connections = function(api, next){
     }
     self.connectedAt = new Date().getTime();
     ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
-      if(data[req] == null){ throw new Error(req + ' is required to create a new connection object'); }
+      if(data[req] == null){ throw new Error(req + ' is required to create a new connection object') }
       self[req] = data[req];
     });
 
@@ -67,7 +67,7 @@ var connections = function(api, next){
       roomMatchKey: null,
       roomMatchValue: null,
       room: api.config.general.defaultChatRoom,
-      canChat: false,
+      canChat: false
     }
 
     for(var i in connectionDefaults){
@@ -92,7 +92,7 @@ var connections = function(api, next){
     api.stats.increment('connections:activeConnections:' + self.type, -1);
     if(self.canChat === true){ api.chatRoom.removeMember(self); }
     delete api.connections.connections[self.id];
-    if(typeof callback == 'function'){ callback(); }
+    if(typeof callback == 'function'){ callback() }
   }
 
   api.connection.prototype.verbs = function(verb, words, callback){

@@ -34,7 +34,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>209</line>
+    <line>208</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Referencing mutable variable from closure</problem_class>

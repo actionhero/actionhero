@@ -32,8 +32,8 @@ var logger = function(api, next){
   }
 
   api.log = function(message, severity, data){
-    if(severity == null){ severity = 'info'; }
-    if(api.logger.levels[severity] == null){ severity = 'info'; }
+    if(severity == null){ severity = 'info' }
+    if(api.logger.levels[severity] == null){ severity = 'info' }
     if(data != null){
       api.logger.log(severity, message, data);
     } else {
@@ -42,9 +42,7 @@ var logger = function(api, next){
   }
 
   var logLevels = [];
-  for(var i in api.logger.levels){
-    logLevels.push(i);
-  }
+  for(var i in api.logger.levels){ logLevels.push(i) }
   api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
 
   next();

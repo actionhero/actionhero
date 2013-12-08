@@ -57,11 +57,11 @@ var configLoader = function(api, next){
 
   var configFile = path.resolve(api.project_root, 'config/config.js');
   if(argv['config'] != null){
-    if(argv['config'].charAt(0) == '/'){ configFile = argv['config']; }
-    else { configFile = path.resolve(api.project_root, argv['config']); }
+    if(argv['config'].charAt(0) == '/'){ configFile = argv['config'] }
+    else { configFile = path.resolve(api.project_root, argv['config']) }
   } else if(process.env.ACTIONHERO_CONFIG != null){
-    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configFile = process.env.ACTIONHERO_CONFIG; }
-    else { configFile = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG); }
+    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configFile = process.env.ACTIONHERO_CONFIG }
+    else { configFile = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG) }
   } else if(!fs.existsSync(configFile)){
     throw new Error(configFile + 'No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
   }

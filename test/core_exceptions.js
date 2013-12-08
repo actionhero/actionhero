@@ -5,7 +5,7 @@ describe('Core: Exceptions', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = specHelper.cleanAPIObject(api);
       done();
     })
@@ -33,7 +33,7 @@ describe('Core: Exceptions', function(){
         name: 'badAction',
         description: 'I will break',
         inputs: { required: [], optional: [] },
-        outputExample: { },
+        outputExample: {},
         version: 1,
         run: function(api, connection, next){
           thing // undefined

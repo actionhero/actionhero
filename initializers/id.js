@@ -20,7 +20,7 @@ var id = function(api, next){
     }
 
     api.id = externalIP;
-    if(cluster.isWorker){ api.id += ':' + process.pid; }
+    if(cluster.isWorker){ api.id += ':' + process.pid }
   } else {
     api.id = api.config.general.id;
   }

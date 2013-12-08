@@ -24,14 +24,14 @@ describe('Core: actionCluster', function(){
     });
   }
 
-   var restartAllServers = function(done){
+  var restartAllServers = function(done){
     specHelper.restartServer(0, function(api){
       apis[0] = api;
       specHelper.restartServer(1, function(api){
         apis[1] = api;
         specHelper.restartServer(2, function(api){
           apis[2] = api;
-          done(); 
+          done();
         });
       });
     });
@@ -55,7 +55,7 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #1', function(done){
       this.timeout(5000);
-      specHelper.prepare(0, function(api){ 
+      specHelper.prepare(0, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal('test-server-1');
@@ -66,7 +66,7 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #2', function(done){
       this.timeout(5000);
-      specHelper.prepare(1, function(api){ 
+      specHelper.prepare(1, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal('test-server-2');
@@ -77,7 +77,7 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #3', function(done){
       this.timeout(5000);
-      specHelper.prepare(2, function(api){ 
+      specHelper.prepare(2, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
         api.id.should.equal('test-server-3');
@@ -95,19 +95,19 @@ describe('Core: actionCluster', function(){
     var net = require('net');
 
     function makeSocketRequest(thisClient, message, cb){
-      var rsp = function(d){ 
+      var rsp = function(d){
         d = d.split('\r\n')[0]
-        try{
+        try {
           var parsed = JSON.parse(d);
-        }catch(e){
+        } catch(e){
           console.log('Error Parsing:')
           console.log(d)
           console.log(typeof d)
           console.log(e)
           process.exit()
         }
-        thisClient.removeListener('data', rsp); 
-        if(typeof cb == 'function'){ cb(parsed); }
+        thisClient.removeListener('data', rsp);
+        if(typeof cb == 'function'){ cb(parsed) }
       };
       thisClient.on('data', rsp);
       thisClient.write(message + '\r\n');
@@ -185,7 +185,7 @@ describe('Core: actionCluster', function(){
       if(apis[0].config.redis.fake == true){
         // you can't communicte across the cluster with fakeredis!
         done();
-      }else{
+      } else {
         makeSocketRequest(client2, '', function(response){
           response.message.should.equal('Hi there!');
           done();
@@ -205,7 +205,7 @@ describe('Core: actionCluster', function(){
           done();
         })
       });
-    }); 
+    });
 
     it('peer 3 deletes and peer 1 cannot read any more', function(done){
       apis[2].cache.destroy('test_key', function(err, del_resp){

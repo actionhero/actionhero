@@ -180,16 +180,16 @@ var genericServer = function(api, next){
   ///////////////////////////////////////
 
   // I am invoked as part of boot
-  api.genericServer.prototype._start = function(next){ methodNotDefined(); }
+  api.genericServer.prototype._start = function(next){ methodNotDefined() }
 
   // I am invoked as part of shutdown
-  api.genericServer.prototype._teardown = function(next){ methodNotDefined(); }
+  api.genericServer.prototype._teardown = function(next){ methodNotDefined() }
 
   // This method will be appended to the connection as 'connection.sendMessage'
-  api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined(); }
+  api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined() }
 
   // This method will be used to gracefully disconnect the client
-  api.genericServer.prototype.goodbye = function(connection, reason){ methodNotDefined(); }
+  api.genericServer.prototype.goodbye = function(connection, reason){ methodNotDefined() }
 
   next();
 

@@ -13,9 +13,9 @@ describe('~~ Benchmarks', function(){
       if(parts.length > 2){
         response = parts[(parts.length - 1 )];
       }
-      try{
+      try {
         parsed = JSON.parse(response);
-      }catch(e){
+      } catch(e){
         parsed = {};
       }
       client.removeListener('data', rsp);

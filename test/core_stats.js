@@ -8,7 +8,7 @@ describe('Core: Stats', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = specHelper.cleanAPIObject(api);
       done();
     })
@@ -55,7 +55,7 @@ describe('Core: Stats', function(){
         Number(data.thing).should.equal(1);
         done();
       });
-    }); 
+    });
   });
 
   it('stats can be read', function(done){

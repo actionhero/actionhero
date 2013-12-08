@@ -26,7 +26,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/actions.js</file>
-    <line>120</line>
+    <line>119</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
@@ -34,7 +34,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/actions.js</file>
-    <line>120</line>
+    <line>119</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>

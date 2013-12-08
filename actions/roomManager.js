@@ -3,7 +3,7 @@ exports.action = {
   description: 'I create and destroy chat rooms',
   inputs: {
     required: ['room', 'direction'],
-    optional: ['authKey', 'authValue'],
+    optional: ['authKey', 'authValue']
   },
   blockedConnectionTypes: [],
   outputExample: {},
@@ -28,17 +28,13 @@ exports.action = {
           next(connection, true);
         });
       });
-    }
-
-    else if(connection.params.direction == 'remove'){
+    } else if(connection.params.direction == 'remove'){
       api.chatRoom.del(connection.params.room, function(){
         handleAuth(function(){
           next(connection, true);
         });
       });
-    }
-
-    else{
+    } else {
       connection.error = 'direction not understood';
       next(connection, true);
     }

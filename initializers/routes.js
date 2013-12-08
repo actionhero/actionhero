@@ -30,20 +30,20 @@ var routes = function(api, next){
     var urlParts = url.split('/');
     var matchParts = match.split('/');
     var regexp = '';
-    if(urlParts[0] == ''){ urlParts.splice(0,1); }
-    if(matchParts[0] == ''){ matchParts.splice(0,1); }
-    if(urlParts[(urlParts.length - 1)] == ''){ urlParts.pop(); }
-    if(matchParts[(matchParts.length - 1)] == ''){ matchParts.pop(); }
-    if(urlParts[0] == api.config.servers.web.urlPathForActions){ urlParts.splice(0,1); }
+    if(urlParts[0] == ''){ urlParts.splice(0, 1) }
+    if(matchParts[0] == ''){ matchParts.splice(0, 1) }
+    if(urlParts[(urlParts.length - 1)] == ''){ urlParts.pop() }
+    if(matchParts[(matchParts.length - 1)] == ''){ matchParts.pop() }
+    if(urlParts[0] == api.config.servers.web.urlPathForActions){ urlParts.splice(0, 1) }
     for(var i in matchParts){
       var part = matchParts[i];
       if(!urlParts[i]){
         return response;
       } else if(part[0] === ':' && part.indexOf('(') < 0){
-        var variable = part.replace(':','');
+        var variable = part.replace(':', '');
         response.params[variable] = urlParts[i];
       } else if(part[0] === ':' && part.indexOf('(') >= 0){
-        var variable = part.replace(':','').split('(')[0];
+        var variable = part.replace(':', '').split('(')[0];
         var regexp = part.split('(')[1];
         regexp = new RegExp(regexp.substring(0, regexp.length - 1), 'g');
         var matches = urlParts[i].match(regexp);
@@ -66,12 +66,12 @@ var routes = function(api, next){
   api.routes.loadRoutes = function(rawRoutes){
     var counter = 0;
     api.routes.routes = { 'get': [], 'post': [], 'put': [], 'delete': [] };
-    
+
     if(rawRoutes == null){
       if(fs.existsSync(api.routes.routesFile)){
         delete require.cache[require.resolve(api.routes.routesFile)];
         var rawRoutes = require(api.routes.routesFile).routes;
-      }else{
+      } else {
         api.log('no routes file found, skipping', 'debug');
         return;
       }
@@ -90,7 +90,7 @@ var routes = function(api, next){
         var words = route.path.split('/');
         words.forEach(function(word){
           if(word[0] === ':'){
-            var cleanedWord = word.replace(':','');
+            var cleanedWord = word.replace(':', '');
             api.params.postVariables.push(cleanedWord);
           }
         });

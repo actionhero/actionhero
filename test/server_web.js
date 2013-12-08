@@ -122,7 +122,8 @@ describe('Server: Web', function(){
           name: 'headerTestAction',
           description: 'I am a test',
           version: 1,
-          inputs: { required: [], optional: [] }, outputExample: {},
+          inputs: { required: [], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             connection.rawConnection.responseHeaders.push(['thing', 'A']);
             connection.rawConnection.responseHeaders.push(['thing', 'B']);
@@ -199,12 +200,13 @@ describe('Server: Web', function(){
         '1': {
           name: 'statusTestAction',
           description: 'I am a test',
-          inputs: { required: ['key'], optional: [] }, outputExample: {},
+          inputs: { required: ['key'], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             if(connection.params.key != 'value'){
               connection.error = 'key != value';
               connection.rawConnection.responseHttpCode = 402;
-            }else{
+            } else {
               connection.response.good = true;
             }
             next(connection, true);
@@ -264,7 +266,7 @@ describe('Server: Web', function(){
           { path: '/users', action: 'usersList' },
           { path: '/search/:term/limit/:limit/offset/:offset', action: 'search' },
           { path: '/c/:key/:value', action: 'cacheTest' },
-          { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
+          { path: '/mimeTestAction/:key', action: 'mimeTestAction' }
         ],
         post: [
           { path: '/login/:userID(^\\d{3}$)', action: 'login' }
@@ -277,7 +279,8 @@ describe('Server: Web', function(){
           name: 'mimeTestAction',
           description: 'I am a test',
           matchExtensionMimeType: true,
-          inputs: { required: ['key'], optional: [] }, outputExample: {},
+          inputs: { required: ['key'], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             next(connection, true);
           }

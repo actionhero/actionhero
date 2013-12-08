@@ -18,9 +18,9 @@
 
     if(options && options.faye != null){
       self.faye = options.faye;
-    }else if(window.Faye != null){
+    } else if(window.Faye != null){
       self.faye = window.Faye;
-    }else{
+    } else {
       self.faye = Faye;
     }
   }
@@ -59,7 +59,7 @@
     self.client = new self.faye.Client(self.options.host + self.options.path, {
       retry: self.options.retry,
       timeout: self.options.timeout,
-    });   
+    });
     self.channel = self.options.channelPrefix + self.createUUID();
 
     self.subscription = self.client.subscribe(self.channel, function(message) {
@@ -68,20 +68,20 @@
 
     // self.client.disable('websocket');
 
-    self.client.on('transport:down', function() {
+    self.client.on('transport:down', function(){
       self.state = 'reconnecting';
       if(typeof self.events.connect === 'disconnect'){
         self.events.disconnect('connected');
       }
     });
 
-    self.client.on('transport:up', function() {
+    self.client.on('transport:up', function(){
       var previousState = self.state;
       self.state = 'connected';
       self.setupConnection(function(details){
         if(previousState == 'reconnecting' && typeof self.events.reconnect === 'function'){
           self.events.reconnect('reconnected');
-        }else{
+        } else {
           if(typeof self.events.connect === 'function'){
             self.events.connect('connected');
           }
@@ -123,7 +123,7 @@
       self.client.publish(self.channel, args).errback(function(err){
         self.log(err);
       });
-    }else{
+    } else {
       if(typeof callback == 'function'){ callback({error: 'not connected', state: self.state}); }
     }
   };
@@ -168,7 +168,7 @@
     var s = [];
     var hexDigits = '0123456789abcdef';
     for (var i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
     }
     s[14] = '4';  // bits 12-15 of the time_hi_and_version field to 0010
     s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
@@ -186,14 +186,14 @@
     if(params == null){ params = {}; }
     params.action = action;
     this.send({
-      event: 'action', 
+      event: 'action',
       params: params,
     }, callback);
   }
 
   actionHeroWebSocket.prototype.say = function(message, callback){
     this.send({
-      event: 'say', 
+      event: 'say',
       message: message,
     }, callback);
   }

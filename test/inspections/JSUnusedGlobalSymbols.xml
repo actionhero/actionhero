@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <problems>
   <problem>
-    <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>70</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
-    <description>Unused property dir_exists</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>82</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
-    <description>Unused property file_exists</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
     <line>86</line>
     <module>actionHero</module>
@@ -39,22 +23,6 @@
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
     <description>Unused property workerMethods</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/public/websockets.html</file>
-    <line>48</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/websockets.html" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
-    <description>Unused property alert</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/public/chat.html</file>
-    <line>23</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/chat.html" />
-    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
-    <description>Unused property alert</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>

@@ -22,7 +22,7 @@ describe('Server: Web Sockets', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = api;
       done();
     })
@@ -99,12 +99,12 @@ describe('Server: Web Sockets', function(){
     this.timeout(5000);
 
     var responses = [];
-    client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response); })
-    client_1.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response); })
-    client_1.action('sleepTest', {sleepDuration: 700}, function(response){ responses.push(response); })
-    client_1.action('sleepTest', {sleepDuration: 800}, function(response){ responses.push(response); })
-    client_1.action('sleepTest', {sleepDuration: 900}, function(response){ responses.push(response); })
-    client_1.action('sleepTest', {sleepDuration: 1000}, function(response){ responses.push(response); })
+    client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 700}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 800}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 900}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 1000}, function(response){ responses.push(response) })
 
     setTimeout(function(){
       responses.length.should.equal(6);

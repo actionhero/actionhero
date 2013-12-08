@@ -10,14 +10,14 @@ var path = require('path');
 /////////////
 
 var file_exists = function(file){
-  try{
+  try {
     var stats = fs.lstatSync(file);
     if(stats.isFile() || stats.isSymbolicLink()){
       return true;
-    }else{
+    } else {
       return false;
     }
-  }catch(e){
+  } catch(e){
     return false;
   }
 }
@@ -43,10 +43,10 @@ namespace('actionHero', function(){
     if(file_exists(__dirname + '/../actionHero.js')){
       // in the actionHero project itself
       var actionHero_root = __dirname + '/..';
-    }else if(file_exists(__dirname + '/../node_modules/actionHero/actionHero.js')){
+    } else if(file_exists(__dirname + '/../node_modules/actionHero/actionHero.js')){
       // running from a project's node_modules (bin or actionHero)
       var actionHero_root = __dirname + '/../node_modules/actionHero';
-    }else{
+    } else {
       // installed globally
       var actionHero_root = path.normalize(__dirname + '/..');
     }
@@ -59,9 +59,9 @@ namespace('actionHero', function(){
       }
     }
     actionHero.initialize({configChanges: configChanges}, function(err, api){
-      complete(api);   
+      complete(api);
     });
-  });  
+  });
 });
 
 namespace('actionHero', function(){
@@ -78,7 +78,7 @@ namespace('actionHero', function(){
           console.log('    ' + 'required inputs: ' + action.inputs.required.join(', '));
           console.log('    ' + 'optional inputs: ' + action.inputs.optional.join(', '));
         }
-      };
+      }
       complete(process.exit());
     });
 
@@ -113,7 +113,7 @@ namespace('actionHero', function(){
     task('stopPeriodicTask', ['actionHero:environment'], {async: true}, function(taskName){
       var task = api().tasks.tasks[taskName];
       api().resque.startQueue(function(){
-        api().tasks.stopRecurrentJob(taskName, function(error, count){ 
+        api().tasks.stopRecurrentJob(taskName, function(error, count){
           console.log('removed ' + count + ' instances of ' + taskName);
           complete(process.exit());
         });
@@ -154,7 +154,7 @@ namespace('actionHero', function(){
 
     desc('This will save the current cache as a JSON object');
     task('dump', ['actionHero:environment'], {async: true}, function(file){
-      if(file == null){ file = 'cache.dump'; }
+      if(file == null){ file = 'cache.dump' }
       api().cache.size(function(error, count){
         exitWithError(error);
         api().redis.client.hgetall(api().cache.redisCacheKey, function(error, data){
@@ -168,18 +168,17 @@ namespace('actionHero', function(){
 
     desc('This will load (and overwrite) the cache from a file');
     task('load', ['actionHero:environment'], {async: true}, function(file){
-      if(file == null){ file = 'cache.dump'; }
-        var data = JSON.parse( fs.readFileSync(file) );
-        api().redis.client.hmset(api().cache.redisCacheKey, data, function(error, data){
-          exitWithError(error);      
-          api().cache.size(function(error, count){
-            exitWithError(error);    
-            console.log('loaded ' + count + ' items into the cache');
-            complete(process.exit());
-          });
+      if(file == null){ file = 'cache.dump' }
+      var data = JSON.parse( fs.readFileSync(file) );
+      api().redis.client.hmset(api().cache.redisCacheKey, data, function(error, data){
+        exitWithError(error);
+        api().cache.size(function(error, count){
+          exitWithError(error);
+          console.log('loaded ' + count + ' items into the cache');
+          complete(process.exit());
         });
+      });
     });
 
   });
 });
-

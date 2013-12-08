@@ -3,7 +3,7 @@ exports['generateInitializer'] = function(binary, next){
   if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
 
   var templateLines = [];
-  templateLines.push('exports.'+binary.argv['name']+' = function(api, next){');
+  templateLines.push('exports.' + binary.argv['name'] + ' = function(api, next){');
   templateLines.push('');
   templateLines.push('  // modify / append the api global variable');
   templateLines.push('  // I will be run as part of actionHero\'s boot process');

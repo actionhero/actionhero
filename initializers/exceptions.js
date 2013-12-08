@@ -1,6 +1,6 @@
 var exceptions = function(api, next){
-  api.exceptionHandlers = {};
 
+  api.exceptionHandlers = {};
   api.exceptionHandlers.renderError = function(err){
     var lines = err.stack.split('\n');
     lines.forEach(function(line){
@@ -30,14 +30,14 @@ var exceptions = function(api, next){
   };
   api.exceptionHandlers.task = function(domain, err, task, next){
     api.stats.increment('exceptions:tasks');
-    try{
+    try {
       api.log('! uncaught error from task: ' + task.name, 'alert');
-    }catch(e){
+    } catch(e){
       api.log('! uncaught error from task: ' + e.message, 'alert');
     }
     api.exceptionHandlers.renderError(err);
     // domain.dispose();
-    if(typeof next == 'function'){ next(false); }
+    if(typeof next == 'function'){ next(false) }
   };
   ///
   api.exceptionHandlers.renderConnection = function(connection){

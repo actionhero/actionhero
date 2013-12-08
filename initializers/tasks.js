@@ -23,12 +23,12 @@ var tasks = function(api, next){
 
     load: function(fullFilePath, reload){
       var self = this;
-      if(reload == null){ reload = false; }
+      if(reload == null){ reload = false }
 
       var loadMessage = function(loadedTaskName){
         if(reload){
           loadMessage = 'task (re)loaded: ' + loadedTaskName + ', ' + fullFilePath;
-        }else{
+        } else {
           var loadMessage = 'task loaded: ' + loadedTaskName + ', ' + fullFilePath;
         }
         api.log(loadMessage, 'debug');
@@ -46,7 +46,7 @@ var tasks = function(api, next){
         self.load(fullFilePath, true);
       });
 
-      try{
+      try {
         var collection = require(fullFilePath);
         for(var i in collection){
           var task = collection[i];
@@ -55,7 +55,7 @@ var tasks = function(api, next){
           api.tasks.jobs[task.name] = self.jobWrapper(task.name);
           loadMessage(task.name);
         }
-      }catch(err){
+      } catch(err){
         api.exceptionHandlers.loader(fullFilePath, err);
         delete api.tasks.tasks[task.name];
         delete api.tasks.jobs[task.name];
@@ -72,7 +72,7 @@ var tasks = function(api, next){
         if(plugins.indexOf('queueLock') < 0)     { plugins.push('queueLock'); }
         if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
       }
-      return { 
+      return {
         'plugins': plugins,
         'pluginOptions': pluginOptions,
         'perform': function(){
@@ -101,19 +101,19 @@ var tasks = function(api, next){
       if(typeof task.name != 'string' || task.name.length < 1){
         fail('a task is missing \'task.name\'');
         return false;
-      }else if(typeof task.description != 'string' || task.description.length < 1){
-        fail('Task '+task.name+' is missing \'task.description\'');
+      } else if(typeof task.description != 'string' || task.description.length < 1){
+        fail('Task ' + task.name + ' is missing \'task.description\'');
         return false;
-      }else if(typeof task.frequency != 'number'){
-        fail('Task '+task.name+' has no frequency');
+      } else if(typeof task.frequency != 'number'){
+        fail('Task ' + task.name + ' has no frequency');
         return false;
-      }else if(typeof task.queue != 'string'){
-        fail('Task '+task.name+' has no queue');
+      } else if(typeof task.queue != 'string'){
+        fail('Task ' + task.name + ' has no queue');
         return false;
-      }else if(typeof task.run != 'function'){
-        fail('Task '+task.name+' has no run method');
+      } else if(typeof task.run != 'function'){
+        fail('Task ' + task.name + ' has no run method');
         return false;
-      }else{
+      } else {
         return true;
       }
     },
@@ -127,21 +127,20 @@ var tasks = function(api, next){
       
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != '/'){ path += '/'; } 
+          if(path[path.length - 1] != '/'){ path += '/' }
           var fullFilePath = path + file;
-          if (file[0] != '.'){
+          if(file[0] != '.'){
             var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
               self.loadFolder(fullFilePath);
-            }else if(stats.isSymbolicLink()){
+            } else if(stats.isSymbolicLink()){
               var realPath = readlinkSync(fullFilePath);
               self.loadFolder(realPath);
-            }else if(stats.isFile()){
+            } else if(stats.isFile()){
               var ext = file.split('.')[1];
-              if (ext === 'js')
-                api.tasks.load(fullFilePath);
-            }else{
-              api.log(file+' is a type of file I cannot read', 'alert')
+              if(ext === 'js'){ api.tasks.load(fullFilePath) }
+            } else {
+              api.log(file + ' is a type of file I cannot read', 'alert')
             }
           }
         });
@@ -181,7 +180,7 @@ var tasks = function(api, next){
       var task = self.tasks[taskName];
       if(task.frequency <= 0){
         callback();
-      }else{
+      } else {
         self.del(task.queue, taskName, {}, function(){
           self.delDelayed(task.queue, taskName, {}, function(){
             self.enqueueIn(task.frequency, taskName, function(){
@@ -220,12 +219,12 @@ var tasks = function(api, next){
       var task = self.tasks[taskName];
       if(task.frequency <= 0){
         callback();
-      }else{
+      } else {
         var removedCount = 0;
         self.del(task.queue, task.name, {}, 1, function(err, count){
-          removedCount = removedCount + count; 
+          removedCount = removedCount + count;
           self.delDelayed(task.queue, task.name, {}, function(err, timestamps){
-            removedCount = removedCount + timestamps.length; 
+            removedCount = removedCount + timestamps.length;
             callback(err, removedCount);
           });
         });
@@ -237,7 +236,7 @@ var tasks = function(api, next){
       var details = {'queues': {}};
       api.resque.queue.queues(function(err, queues){
         if(queues.length == 0){ callback(null, details); }
-        else{
+        else {
           var started = 0;
           queues.forEach(function(queue){
             started++;

@@ -6,7 +6,7 @@ describe('Core: API', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       rawApi = api;
       apiObj = specHelper.cleanAPIObject(api);
       done();
@@ -19,7 +19,7 @@ describe('Core: API', function(){
       apiObj.actions.versions,
       apiObj.actions.actions.cacheTest['1'],
       apiObj.actions.actions.randomNumber['1'],
-      apiObj.actions.actions.status['1'],
+      apiObj.actions.actions.status['1']
     ].forEach(function(item){
       item.should.be.a('object');
     });
@@ -27,14 +27,14 @@ describe('Core: API', function(){
     [
       apiObj.actions.actions.cacheTest['1'].run,
       apiObj.actions.actions.randomNumber['1'].run,
-      apiObj.actions.actions.status['1'].run,
+      apiObj.actions.actions.status['1'].run
     ].forEach(function(item){
       item.should.be.an.instanceOf(Function);
     });
 
     [
       apiObj.actions.actions.randomNumber['1'].name,
-      apiObj.actions.actions.randomNumber['1'].description,
+      apiObj.actions.actions.randomNumber['1'].description
     ].forEach(function(item){
       item.should.be.a('string');
     });
@@ -53,7 +53,7 @@ describe('Core: API', function(){
       'limit',
       'offset',
       'key', // from action
-      'value', // from action
+      'value' // from action
     ].forEach(function(item){
       apiObj.params.postVariables.should.include(item);
     });
@@ -70,7 +70,8 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 1,
-          inputs: { required: [], optional: [] }, outputExample: {},
+          inputs: { required: [], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
             next(connection, true);
@@ -80,7 +81,8 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 2,
-          inputs: { required: [], optional: [] }, outputExample: {},
+          inputs: { required: [], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
             next(connection, true);
@@ -90,7 +92,8 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 3,
-          inputs: { required: [], optional: [] }, outputExample: {},
+          inputs: { required: [], optional: [] },
+          outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
             connection.error = {

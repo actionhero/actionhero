@@ -4,7 +4,7 @@ var async = require('async');
 var actionProcessor = function(api, next){
 
   api.actionProcessor = function(data){
-    if(data.connection == null){ throw new Error('data.connection is required'); }
+    if(data.connection == null){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
@@ -22,12 +22,12 @@ var actionProcessor = function(api, next){
   }
 
   api.actionProcessor.prototype.incrementTotalActions = function(count){
-    if(count == null){ count = 1; }
+    if(count == null){ count = 1 }
     this.connection._original_connection.totalActions = this.connection._original_connection.totalActions + count;
   }
 
   api.actionProcessor.prototype.incramentPendingActions = function(count){
-    if(count == null){ count = 1; }
+    if(count == null){ count = 1 }
     this.connection._original_connection.pendingActions = this.connection._original_connection.pendingActions + count;
   }
 
@@ -37,14 +37,14 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.completeAction = function(error, toRender){
     var self = this;
-    if(error != null){ self.connection.error = error; }
+    if(error != null){ self.connection.error = error }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
     }
     if(self.connection.error != null && self.connection.response.error == null){
-      self.connection.response.error = self.connection.error; 
+      self.connection.response.error = self.connection.error;
     }
-    if(toRender == null){ toRender = true; }
+    if(toRender == null){ toRender = true }
     self.incramentPendingActions(-1);
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
@@ -143,10 +143,9 @@ var actionProcessor = function(api, next){
   api.actionProcessor.prototype.reduceParams = function(){
     var self = this;
     for(var p in self.connection.params){
-      if(
-        api.params.globalSafeParams.indexOf(p) < 0 
-        && self.actionTemplate.inputs.required.indexOf(p) < 0 
-        && self.actionTemplate.inputs.optional.indexOf(p) < 0
+      if(api.params.globalSafeParams.indexOf(p) < 0 &&
+         self.actionTemplate.inputs.required.indexOf(p) < 0 &&
+         self.actionTemplate.inputs.optional.indexOf(p) < 0
       ){
         delete self.connection.params[p];
       }
@@ -180,7 +179,7 @@ var actionProcessor = function(api, next){
       if(self.connection.action == '' || self.connection.action == null){ self.connection.action = '{no action}'; }
       self.connection.error = new Error(self.connection.action + ' is not a known action or that is not a valid apiVersion.');
       self.completeAction();
-    } else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
+    } else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
       self.connection.error = new Error('this action does not support the ' + self.connection.type + ' connection type');
       self.completeAction();
     } else {

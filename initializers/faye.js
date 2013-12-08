@@ -18,7 +18,7 @@ var faye = function(api, next){
         port:      api.config.faye.redis.port,
         password:  api.config.faye.redis.password,
         database:  api.config.faye.redis.database,
-        namespace: api.config.faye.namespace,
+        namespace: api.config.faye.namespace
       }
     }
 

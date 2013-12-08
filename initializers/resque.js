@@ -43,12 +43,11 @@ var resque = function(api, next){
       var self = this;
       if(api.config.tasks.scheduler === true){
         self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
-          
-          self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info'); })
-          self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info');   })
-          //self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug'); })
-          self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug'); })
-          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enquing job ' + timestamp, 'debug', job); })
+          self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info') })
+          self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
+          //self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug') })
+          self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug') })
+          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enquing job ' + timestamp, 'debug', job) })
 
           self.scheduler.start();
 

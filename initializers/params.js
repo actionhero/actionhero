@@ -55,14 +55,17 @@ var params = function(api, next){
       var paramString = '';
       var found = false;
       required_params.forEach(function(param){
-        if(paramString != ''){paramString = paramString + ',';}
+        if(paramString != ''){ paramString = paramString + ',' }
         paramString = paramString + ' ' + param;
         if(connection.params[param] != null){
           found = true;
         }
       });
       if(found == false){
-        connection.error = new Error('none of the required params for this action were provided.  Any of the following are required: ' + paramString);
+        connection.error = new Error(
+          'none of the required params for this action were provided.  ' +
+          'Any of the following are required: ' + paramString
+        );
       }
     }
   }

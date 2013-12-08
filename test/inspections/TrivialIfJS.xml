@@ -26,7 +26,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>345</line>
+    <line>344</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant 'if' statement</problem_class>

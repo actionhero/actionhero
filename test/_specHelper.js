@@ -33,7 +33,7 @@ var actionHeroPrototype = require(__dirname + '/../actionHero.js').actionHeroPro
 specHelper.clearRedis = function(serverID, next){
   if(serverID != 0){
     next();
-  }else{
+  } else {
     if(toFakeRedis){
       var redis = require('fakeredis');
       var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
@@ -41,7 +41,7 @@ specHelper.clearRedis = function(serverID, next){
       client.flushdb(function(){
         next();
       });
-    }else{
+    } else {
       var redis = require('redis');
       var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
       client.on('ready', function (err) {
@@ -52,8 +52,8 @@ specHelper.clearRedis = function(serverID, next){
         });
       });
       client.on('error', function (err) {
-          process.stdout.write('\r\n\r\n!! Redis Error: ' + err + '\r\n\r\n');
-          process.exit();  // redis is really important...
+        process.stdout.write('\r\n\r\n!! Redis Error: ' + err + '\r\n\r\n');
+        process.exit();  // redis is really important...
       });
     }
   }
@@ -63,13 +63,13 @@ specHelper.clearRedis = function(serverID, next){
 specHelper.tables = [ 'Logs' ];
 
 specHelper.prepare = function(serverID, next){
-  if(serverID == null){serverID = 0};
+  if(serverID == null){ serverID = 0 }
   specHelper.clearRedis(serverID, function(){
     if(specHelper.actionHeroes[serverID] != null){
       specHelper.restartServer(serverID, function(api){
         next(api);
       });
-    }else{
+    } else {
       specHelper.startServer(serverID, function(api){
         next(api);
       });
@@ -80,22 +80,22 @@ specHelper.prepare = function(serverID, next){
 ////////////////////////////////////////////////////////////////////////////
 // Start Test Server
 specHelper.startServer = function(serverID, next){
-  if(serverID == null){serverID = 0};
+  if(serverID == null){ serverID = 0 }
   var port = specHelper.startingSocketPort + serverID;
   var conn = specHelper.net.createConnection(port, specHelper.url, function(){
     next(specHelper.apis[serverID]);
     conn.destroy();
   });
-  conn.on('error', function(err) { 
+  conn.on('error', function(err){
     if(err.code == 'ECONNREFUSED'){
       specHelper.actionHeroes[serverID] = new actionHeroPrototype();
       var configChanges = {
         general: {
-          id: 'test-server-' + (serverID + 1),
+          id: 'test-server-' + (serverID + 1)
         },
         servers: {
           web:    {port: (specHelper.startingWebPort + serverID)},
-          socket: {port: (specHelper.startingSocketPort + serverID)},
+          socket: {port: (specHelper.startingSocketPort + serverID)}
         }
       }
       specHelper.actionHeroes[serverID].start({configChanges: configChanges}, function(err, api){
@@ -103,27 +103,27 @@ specHelper.startServer = function(serverID, next){
         conn.destroy();
         next(specHelper.apis[serverID]);
       });
-    }else{
+    } else {
       conn.destroy();
       next(specHelper.apis[serverID]);
     }
-  }); 
+  });
 }
 
 specHelper.stopServer = function(serverID, next){
-  if(serverID == null){serverID = 0};
+  if(serverID == null){ serverID = 0 }
   if(specHelper.actionHeroes[serverID] != null){
     specHelper.actionHeroes[serverID].stop(function(err, api){
       specHelper.apis[serverID] = api;
       next(specHelper.apis[serverID]);
     });
-  }else{
+  } else {
     next(false);
   }
 };
 
 specHelper.restartServer = function(serverID, next){
-  if(serverID == null){serverID = 0};
+  if(serverID == null){ serverID = 0 }
   specHelper.actionHeroes[serverID].restart(function(err, api){
     specHelper.apis[serverID] = api;
     next(specHelper.apis[serverID]);
@@ -134,13 +134,13 @@ specHelper.restartServer = function(serverID, next){
 // API request
 specHelper.apiTest = {
   general: function(method, serverID, url, data, cb){
-    if(serverID == null){serverID = 0};
+    if(serverID == null){ serverID = 0 }
     var port = (specHelper.startingWebPort + serverID);
     var params = {}
     params.method = method;
     if(url.indexOf('?') > -1){
       params.url = 'http://'  + specHelper.url + ':' + port + (url||'');
-    }else{
+    } else {
       params.url = 'http://'  + specHelper.url + ':' + port + (url||'') + '?';
       for(var i in data){
         params.url += i + '=' + data[i] + '&';
@@ -150,18 +150,18 @@ specHelper.apiTest = {
     process.nextTick(function(){
       specHelper.request(params, function(err, response, body){
         var json = null;
-        try{ json = JSON.parse(response.body); }catch(e){ };
+        try { json = JSON.parse(response.body); } catch(e){}
         cb( response, json );
       });
     });
   },
-  get:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'GET', serverID, url, data, cb     ) },
-  post:    function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'POST', serverID, url, data, cb    ) },
-  put:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'PUT', serverID, url, data, cb     ) },
-  del:     function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'DELETE', serverID, url, data, cb  ) },
-  head:    function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'HEAD', serverID, url, data, cb    ) },
-  trace:   function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'TRACE', serverID, url, data, cb   ) },
-  options: function( url, serverID, data, cb  ){ specHelper.apiTest.general( 'OPTIONS', serverID, url, data, cb ) },
+  get:     function(url, serverID, data, cb){ specHelper.apiTest.general('GET',     serverID, url, data, cb) },
+  post:    function(url, serverID, data, cb){ specHelper.apiTest.general('POST',    serverID, url, data, cb) },
+  put:     function(url, serverID, data, cb){ specHelper.apiTest.general('PUT',     serverID, url, data, cb) },
+  del:     function(url, serverID, data, cb){ specHelper.apiTest.general('DELETE',  serverID, url, data, cb) },
+  head:    function(url, serverID, data, cb){ specHelper.apiTest.general('HEAD',    serverID, url, data, cb) },
+  trace:   function(url, serverID, data, cb){ specHelper.apiTest.general('TRACE',   serverID, url, data, cb) },
+  options: function(url, serverID, data, cb){ specHelper.apiTest.general('OPTIONS', serverID, url, data, cb) }
 }
 
 specHelper.resetCookieJar = function(){

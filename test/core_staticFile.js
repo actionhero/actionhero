@@ -5,7 +5,7 @@ describe('Core: Static File', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = specHelper.cleanAPIObject(api);
       //TODO: Why does travis-ci require the connection to be seeded like this?
       // It works locally on OSX and Ubuntu

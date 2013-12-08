@@ -43,16 +43,17 @@ var cache = function(api, next){
     }
     var domain = api.cache.prepareDomain();
     api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
-      if(err != null){ api.log(err, 'error'); }
-      try { var cacheObj = JSON.parse(cacheObj); } catch(e){}
+      if(err != null){ api.log(err, 'error') }
+      try { var cacheObj = JSON.parse(cacheObj) } catch(e){}
       if(cacheObj == null){
         if(typeof next == 'function'){
           process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
         }
       } else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null){
         cacheObj.readAt = new Date().getTime();
-        if(cacheObj.expireTimestamp != null && options.expireTimeMS)
+        if(cacheObj.expireTimestamp != null && options.expireTimeMS){
           cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
+        }
         api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
           if(typeof next == 'function'){
             process.nextTick(function(){ next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
@@ -72,8 +73,8 @@ var cache = function(api, next){
       api.stats.increment('cache:cachedObjects', -1 );
       if(err != null){ api.log(err, 'error'); }
       var resp = true;
-      if(count != 1){ resp = false; }
-      if(typeof next == 'function'){ process.nextTick(function(){ next(null, resp); }); }
+      if(count != 1){ resp = false }
+      if(typeof next == 'function'){ process.nextTick(function(){ next(null, resp) }) }
     }));
   };
 
@@ -85,26 +86,26 @@ var cache = function(api, next){
       keys.forEach(function(key){
         started++;
         api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
-          if(err != null){ api.log(err, 'error'); }
-          try { var cacheObj = JSON.parse(cacheObj); } catch(e){}
+          if(err != null){ api.log(err, 'error') }
+          try { var cacheObj = JSON.parse(cacheObj) } catch(e){}
           if(cacheObj != null){
             if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
               api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
                 sweepedKeys.push(key);
                 started--;
-                if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys); }
+                if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
               }));
             } else {
               started--;
-              if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys); }
+              if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
             }
           } else {
             started--;
-            if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys); }
+            if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
           }
         }));
       });
-      if(keys.length == 0 && typeof next == 'function'){ next(err, sweepedKeys); }
+      if(keys.length == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
     }));
   }
 
@@ -128,7 +129,7 @@ var cache = function(api, next){
       readAt: null
     }
     api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
-      if(typeof next == 'function'){ process.nextTick(function(){ next(null, true); }); }
+      if(typeof next == 'function'){ process.nextTick(function(){ next(null, true) }) }
     }));
   };
 

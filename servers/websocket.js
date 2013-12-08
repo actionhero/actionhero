@@ -1,7 +1,7 @@
 var faye = require('faye');
 
 var websocket = function(api, options, next){
-  
+
   //////////
   // INIT //
   //////////
@@ -23,7 +23,7 @@ var websocket = function(api, options, next){
       'listenToRoom',
       'silenceRoom',
       'detailsView',
-      'say',
+      'say'
     ]
   }
   var rebroadcastChannel = '/actionHero/websockets/rebroadcast';
@@ -107,23 +107,23 @@ var websocket = function(api, options, next){
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId === api.faye.client._clientId){
         callback(message);
-      }else{
+      } else {
         var uuid = message.channel.split('/')[4];
         var connection = server.connectionsMap[uuid];
         if(connection != null){
           incommingMessage(connection, message);
-        }else{
+        } else {
           api.faye.client.publish(rebroadcastChannel, {
-            serverId: api.id,
-            serverToken: api.config.general.serverToken,
-            originalMessage: message,
+            serverId:        api.id,
+            serverToken:     api.config.general.serverToken,
+            originalMessage: message
           });
         }
         callback(message);
       }
-    }else{
+    } else {
       callback(message);
-    } 
+    }
   };
 
   var subscriptionFayeExtansion = function(message, callback){
@@ -132,16 +132,16 @@ var websocket = function(api, options, next){
         var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, '');
         if(server.connectionsMap[uuid] != null){
           message.error = 'You cannot subscribe to another client\'s channel';
-        }else{
+        } else {
           // let the server generate a new connection.id, don't use client-generated UUID
           remoteConnectionDetails(message.clientId, function(details){
             server.buildConnection({
-              rawConnection  : { 
+              rawConnection  : {
                 clientId: message.clientId,
                 uuid: uuid,
-              }, 
+              },
               remoteAddress  : details.remoteIp,
-              remotePort     : details.remotePort 
+              remotePort     : details.remotePort
             }); // will emit 'connection'
           });
         }
@@ -167,8 +167,8 @@ var websocket = function(api, options, next){
       // TODO: This will always be localhost (or the proxy's IP) if you front this with nginx, haproxy, etc.
       var fayeConnection = api.faye.server._server._engine._connections[clientId];
       if(fayeConnection && fayeConnection.socket != null){
-        remoteIp =   fayeConnection.socket._socket._stream.remoteAddress;
-        remotePort = fayeConnection.socket._socket._stream.remotePort; 
+        remoteIp   = fayeConnection.socket._socket._stream.remoteAddress;
+        remotePort = fayeConnection.socket._socket._stream.remotePort;
       }
       callback({remoteIp: remoteIp, remotePort: remotePort});
     }, 50); // should be enough time for the connection to establish?
@@ -185,16 +185,16 @@ var websocket = function(api, options, next){
         connection.error = null;
         connection.response = {};
         server.processAction(connection);
-      }else if(verb == 'file'){
+      } else if(verb == 'file'){
         server.processFile(connection);
-      }else{
+      } else {
         var words = []
         for(var i in data){ words.push(data[i]); }
         connection.verbs(verb, words, function(error, data){
           if(error == null){
             var message = {status: 'OK', context: 'response', data: data};
             server.sendMessage(connection, message);
-          }else{
+          } else {
             var message = {status: error, context: 'response', data: data}
             server.sendMessage(connection, message);
           }

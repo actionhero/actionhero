@@ -11,7 +11,7 @@ var redis = function(api, next){
 
   api.redis = {};
   api.redis.fake = api.config.redis.fake;
-  if(api.config.redis.database == null){ api.config.redis.database = 0; }
+  if(api.config.redis.database == null){ api.config.redis.database = 0 }
 
   if(api.redis.fake == true){
     api.log('running with fakeredis', 'warning');

@@ -117,7 +117,7 @@ exports['startCluster'] = function(binary, next){
         var workerId = expectedWorkerIds[0];
         binary.claimedWorkerIds.push(workerId);
         return workerId;
-      },
+      }
       binary.releaseWorkerId = function(thisWorkerId){
         binary.claimedWorkerIds.splice(binary.claimedWorkerIds.indexOf(thisWorkerId),1);
       }
@@ -134,7 +134,7 @@ exports['startCluster'] = function(binary, next){
         binary.log('starting worker #' + worker.workerID, 'info');
         worker.on('message', function(message){
           if(worker.state != 'none'){
-            binary.log('Worker #' + worker.workerID + ' ['+worker.process.pid+']: ' + message, 'info');
+            binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: ' + message, 'info');
           }
         });
       }
@@ -271,7 +271,7 @@ exports['startCluster'] = function(binary, next){
         binary.workersExpected++;
       }
       cluster.on('fork', function(worker) {
-        binary.log('worker ' + worker.process.pid + ' (#'+worker.workerID+') has spawned', 'info');
+        binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has spawned', 'info');
       });
       cluster.on('listening', function(worker, address){
         //

@@ -8,8 +8,8 @@ describe('Core: Tasks', function(){
 
   before(function(done){
     this.timeout(10000)
-    specHelper.stopServer(0, function(api){ 
-      specHelper.prepare(0, function(api){ 
+    specHelper.stopServer(0, function(api){
+      specHelper.prepare(0, function(api){
         rawAPI = api;
         apiObj = specHelper.cleanAPIObject(api);
 
@@ -48,7 +48,7 @@ describe('Core: Tasks', function(){
   });
 
   after(function(done){
-    specHelper.stopServer(0, function(api){ 
+    specHelper.stopServer(0, function(api){
       delete rawAPI.tasks.tasks['regular_task'];
       delete rawAPI.tasks.tasks['periodic_task'];
       done();
@@ -195,11 +195,11 @@ describe('Core: Tasks', function(){
           done();
         });
       });
-    });    
+    });
   });
 
   describe('full worker flow', function(done){
-    
+
     it('normal tasks work', function(done){
       rawAPI.tasks.enqueue('regular_task', {word: 'first'}, function(err){
         rawAPI.config.tasks.queues = ['*'];
@@ -209,7 +209,7 @@ describe('Core: Tasks', function(){
             done();
           }, 500);
         });
-      }); 
+      });
     });
 
     it('delayed tasks work', function(done){
@@ -225,7 +225,7 @@ describe('Core: Tasks', function(){
             }, 1500);
           });
         });
-      }); 
+      });
     });
 
     it('recurrent tasks work', function(done){
@@ -244,7 +244,7 @@ describe('Core: Tasks', function(){
             }, 1500);
           });
         });
-      }); 
+      });
     });
 
     it('poping an unknown job will throw an error, but not crash the server', function(done){

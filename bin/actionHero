@@ -28,7 +28,7 @@ var transports = []
 if(cluster.isMaster){
   transports.push(new (winston.transports.Console)({
       colorize: true,
-      timestamp: true,
+      timestamp: true
   }))
 }
 
@@ -59,7 +59,7 @@ binary.utils = {
     arr = list.split(',');
     var used = 0;
     for(var i in arr){
-      if(used > 0){ s+= ', ';}
+      if(used > 0){ s += ', '; }
       if(arr[i].length > 0){
         s += '\'' + arr[i] + '\'';
         used++;
@@ -94,9 +94,9 @@ binary.utils = {
   create_dir_safely: function(dir){
     if(binary.utils.dir_exists(dir)){
       binary.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping');
-    }else{
+    } else {
       binary.log(' - creating directory \'' + path.normalize(dir) + '\'');
-      fs.mkdirSync(dir , 0766);
+      fs.mkdirSync(dir, 0766);
     }
   },
   create_file_safely: function(file, data){
@@ -122,7 +122,7 @@ binary.utils = {
 
 binary.paths = {
   project_root: null,
-  actionHero_root: null,
+  actionHero_root: null
 }
 
 if(process.env.project_root != null){
@@ -135,8 +135,8 @@ if(process.env.project_root != null){
 
 if(process.env.actionHero_root != null){
   binary.paths.actionHero_root = process.env.actionHero_root;
-} else if (process.env.ACTIONHERO_ROOT != null){
-  binary.paths.actionHero_root = process.env.ACTIONHERO_ROOT ;
+} else if(process.env.ACTIONHERO_ROOT != null){
+  binary.paths.actionHero_root = process.env.ACTIONHERO_ROOT;
 } else if(binary.utils.file_exists(__dirname + '/../actionHero.js')){
   // in the actionHero project itself
   binary.paths.actionHero_root = __dirname + '/..';
@@ -158,7 +158,7 @@ try {
     'pid':         binary.paths.project_root + '/pids',
     'log':         binary.paths.project_root + '/log',
     'server':      binary.paths.project_root + '/servers',
-    'initializer': binary.paths.project_root + '/initializers',
+    'initializer': binary.paths.project_root + '/initializers'
   }
 }
 
@@ -174,7 +174,7 @@ fs.readdirSync(binary.paths.actionHero_root + '/bin/methods/').sort().forEach(fu
 });
 
 binary.mainAction = binary.argv['_'][0];
-if(binary.mainAction == null){ binary.mainAction = 'start'; }
+if(binary.mainAction == null){ binary.mainAction = 'start' }
 
 if(binary.argv['isDaemon'] == 'true'){
   binary.isDaemon = true;
@@ -198,16 +198,16 @@ if(binary.actions[binary.mainAction] != null){
     binary.log(command + ' ' + args.join(' '), 'info');
     binary.log('spawned child process with pid ' + child.pid, 'notice');
     setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
-  }else if(binary.argv['isDaemon'] != null){
-    binary.logger.remove(winston.transports.Console);   
+  } else if(binary.argv['isDaemon'] != null){
+    binary.logger.remove(winston.transports.Console);
     binary.actions[binary.mainAction](binary, function(){});
-  }else{
+  } else {
     binary.log('actionHero >> ' + binary.mainAction);
     binary.log('project_root >> ' + path.normalize(binary.paths.project_root + '/'));
     binary.log('actionHero_root >> ' + path.normalize(binary.paths.actionHero_root + '/'));
     binary.actions[binary.mainAction](binary, function(){});
   }
-}else{
+} else {
   binary.actions['unknownInput'](binary, function(){});
   process.exit(1);
 }

@@ -51,7 +51,7 @@ Descriptions:
   will launch a actionHero cluster (using node-s cluster module)
   [exec] (optional) command for the cluster-master to run to stat the workers
   [workers] (optional) number of workers (defaults to # CPUs - 2)
-  [pidfile] (optional) pidfile localtion (defaults to process.cwd() + /pids)
+  [pidfile] (optional) pidfile localtion (defaults to process.cwd() + '/pids')
   [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
   [title] (optional) default actionHero-master  Does not work on OSX/Windows
   [workerTitlePrefix] (optional) default actionHero-worker

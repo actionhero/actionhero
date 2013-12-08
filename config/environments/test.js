@@ -23,22 +23,22 @@ var config = {
     startingChatRooms: {
       'defaultRoom': {},
       'otherRoom': {},
-      'secureRoom': {authorized: true},
+      'secureRoom': {authorized: true}
     }
   },
   logger: {
-    transports: null,
+    transports: null
   },
   stats: {
     writeFrequency: 0,
-    keys: ['test:stats'], 
+    keys: ['test:stats']
   },
   redis : redisConfig,
   tasks : {
     scheduler: false,
     timeout: 100,
     queues: [],
-    redis: redisConfig,
+    redis: redisConfig
   },
   faye: {
     mount: '/faye',
@@ -58,10 +58,10 @@ var config = {
       }
     },
     socket: {
-      secure: false,
       //port: 8000,
+      secure: false
     },
-    websocket: { }
+    websocket: {}
   }
 };
 

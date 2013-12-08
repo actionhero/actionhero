@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <problems>
   <problem>
-    <file>file://$PROJECT_DIR$/package.json</file>
-    <line>2</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unknown HTML tag</problem_class>
-    <description>Unknown html tag evantahler</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/bin/methods/generate.js</file>
     <line>63</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generate.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unknown HTML tag</problem_class>
     <description>Unknown html tag YOU</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/package.json</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/package.json" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unknown HTML tag</problem_class>
+    <description>Unknown html tag evantahler</description>
   </problem>
 </problems>
 

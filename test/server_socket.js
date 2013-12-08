@@ -29,7 +29,7 @@ describe('Server: Socket', function(){
       } catch(e){
         var parsed = null;
       }
-      thisClient.removeListener('data', rsp); 
+      thisClient.removeListener('data', rsp);
       if(typeof cb == 'function'){ cb(parsed); }
     }, 100);
 
@@ -39,23 +39,22 @@ describe('Server: Socket', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       rawAPI = api;
       apiObj = specHelper.cleanAPIObject(api);
-      
-        client = net.connect((specHelper.startingSocketPort + 0), function(){
-          client.setEncoding('utf8');
-          client2 = net.connect((specHelper.startingSocketPort + 0), function(){
-            client2.setEncoding('utf8');
-            client3 = net.connect((specHelper.startingSocketPort + 0), function(){
-              client3.setEncoding('utf8');
-              setTimeout(function(){ // This timeout is to wait-out all the 
-                done();
-              }, 1000);
-            });
-          }); 
-        }); 
 
+      client = net.connect((specHelper.startingSocketPort + 0), function(){
+        client.setEncoding('utf8');
+        client2 = net.connect((specHelper.startingSocketPort + 0), function(){
+          client2.setEncoding('utf8');
+          client3 = net.connect((specHelper.startingSocketPort + 0), function(){
+            client3.setEncoding('utf8');
+            setTimeout(function(){ // This timeout is to wait-out all the
+              done();
+            }, 1000);
+          });
+        });
+      });
     });
   });
 
@@ -99,7 +98,7 @@ describe('Server: Socket', function(){
       }
     }
     makeSocketRequest(client, JSON.stringify(msg), function(response){
-      response.cacheTestResults.loadResp.key.should.eql('cacheTest_'+msg.params.key);
+      response.cacheTestResults.loadResp.key.should.eql('cacheTest_' + msg.params.key);
       response.cacheTestResults.loadResp.value.should.eql(msg.params.value);
       done();
     });
@@ -202,7 +201,7 @@ describe('Server: Socket', function(){
           var response = responses[i];
           if(i == 0){
             response.error.should.eql('you have too many pending requests');
-          }else{
+          } else {
             should.not.exist(response.error)
           }
         }

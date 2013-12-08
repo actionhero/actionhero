@@ -6,14 +6,6 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">File reference problems</problem_class>
-    <description>Cannot resolve directory '&quot;'</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/public/index.html</file>
-    <line>34</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">File reference problems</problem_class>
     <description>Cannot resolve file 'api'</description>
   </problem>
   <problem>

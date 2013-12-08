@@ -25,7 +25,7 @@ describe('Core: Developer Mode', function(){
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = specHelper.cleanAPIObject(api);
       setTimeout(function(){
         done();
@@ -40,7 +40,7 @@ describe('Core: Developer Mode', function(){
     specHelper.fs.writeFile(original_file, String(original_content), function(err){
       setTimeout(function(){
         done();
-      },1001 * 3);
+      }, 1001 * 3);
     });
   });
 
@@ -54,7 +54,7 @@ describe('Core: Developer Mode', function(){
 
   it('I can change the file and new actions will be loaded up', function(done){
     this.timeout(10000) // these are slow tests :(
-      specHelper.fs.writeFile(original_file, new_file_content, function(err) {
+    specHelper.fs.writeFile(original_file, new_file_content, function(err){
       setTimeout(function(){
         specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
           apiObj.actions.actions.randomNumber['1'].description.should.equal('HACK');
