@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/chat.html</file>
+    <line>115</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/chat.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Form input without an associated label</problem_class>
+    <description>Form input without an associated label</description>
+  </problem>
+</problems>
+

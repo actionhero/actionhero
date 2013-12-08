@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>177</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant local variable</problem_class>
+    <description>Local variable 'uuid' is redundant</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>111</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant local variable</problem_class>
+    <description>Local variable 'value' is redundant</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>115</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant local variable</problem_class>
+    <description>Local variable 'value' is redundant</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant local variable</problem_class>
+    <description>Local variable 'dateStr' is redundant</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>21</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Redundant local variable</problem_class>
+    <description>Local variable 'dateStr' is redundant</description>
+  </problem>
+</problems>
+

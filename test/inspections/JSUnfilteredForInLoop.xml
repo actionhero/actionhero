@@ -1,0 +1,1212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>143</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>144</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>211</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>211</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>217</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>63</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>64</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>189</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>190</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generateInitializer.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generateInitializer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generateTask.js</file>
+    <line>25</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generateTask.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>71</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>72</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>72</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>91</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>114</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>146</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>206</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>215</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>225</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>241</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generateServer.js</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generateServer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generateAction.js</file>
+    <line>30</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generateAction.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>44</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>45</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>45</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>112</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>202</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>146</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_documentation.js</file>
+    <line>25</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_documentation.js</file>
+    <line>24</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_documentation.js</file>
+    <line>25</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>31</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>30</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>31</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>49</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>49</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>49</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>98</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>99</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>192</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>141</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>141</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>150</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>150</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>303</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>303</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>356</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>356</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>366</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>367</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>22</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>23</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>18</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>20</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>21</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>22</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>23</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>64</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>128</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>129</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>130</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>154</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>154</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>154</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>15</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>30</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>48</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>51</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>74</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>75</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>76</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>83</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/documentation.js</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/documentation.js</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/documentation.js</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>42</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>74</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>74</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>89</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>134</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
+    <line>47</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/exceptions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
+    <line>47</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/exceptions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
+    <line>48</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/exceptions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
+    <line>48</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/exceptions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/logger.js</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/logger.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/logger.js</file>
+    <line>46</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/logger.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>58</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>61</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>61</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>65</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>66</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>66</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>66</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>68</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>68</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>79</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>125</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>149</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>52</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>201</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>204</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>206</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>211</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actionProcessor.js</file>
+    <line>147</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actionProcessor.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actionProcessor.js</file>
+    <line>148</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actionProcessor.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actionProcessor.js</file>
+    <line>149</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actionProcessor.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actionProcessor.js</file>
+    <line>151</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actionProcessor.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/configLoader.js</file>
+    <line>42</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/configLoader.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>29</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>26</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>25</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>26</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/stats.js</file>
+    <line>38</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/stats.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/stats.js</file>
+    <line>39</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/stats.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/stats.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/stats.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/stats.js</file>
+    <line>73</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/stats.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actions.js</file>
+    <line>106</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>15</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>39</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>40</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>44</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>49</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>51</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>56</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>56</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>56</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>82</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>80</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>81</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>82</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>91</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>92</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>92</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>162</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/faye.js</file>
+    <line>29</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/faye.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/faye.js</file>
+    <line>35</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/faye.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/faye.js</file>
+    <line>44</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/faye.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+</problems>
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/css/actionhero.css</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/css/actionhero.css" />
+    <problem_class severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Properties can be replaced with shorthand</problem_class>
+    <description>Optimize margin properties</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/css/actionhero.css</file>
+    <line>13</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/css/actionhero.css" />
+    <problem_class severity="WEAK WARNING" attribute_key="INFO_ATTRIBUTES">Properties can be replaced with shorthand</problem_class>
+    <description>Optimize margin properties</description>
+  </problem>
+</problems>
+

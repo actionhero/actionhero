@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>41</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>114</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>66</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>83</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>114</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>126</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>137</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>153</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_documentation.js</file>
+    <line>33</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_documentation.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>21</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>36</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/pids.js</file>
+    <line>15</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/pids.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unnecessary semicolon</problem_class>
+    <description>Unnecessary semicolon #loc</description>
+  </problem>
+</problems>
+

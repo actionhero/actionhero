@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>72</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>198</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>267</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_api.js</file>
+    <line>22</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_api.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_api.js</file>
+    <line>30</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_api.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_api.js</file>
+    <line>37</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_api.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_api.js</file>
+    <line>56</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_api.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>80</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>26</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/socket.js</file>
+    <line>33</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/servers.js</file>
+    <line>43</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/servers.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Last comma in array literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+</problems>
+

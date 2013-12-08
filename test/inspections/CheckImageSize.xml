@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>54</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Image size mismatch</problem_class>
+    <description>Original image width is 1016</description>
+  </problem>
+</problems>
+

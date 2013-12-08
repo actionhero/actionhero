@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>31</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>125</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/actionHero</file>
+    <line>161</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>67</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>94</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>98</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>164</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>32</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>35</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>81</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>94</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>160</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>26</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>30</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>41</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>61</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/production.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/production.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/chat.html</file>
+    <line>80</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/chat.html" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>39</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>61</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>190</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>197</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actions/roomManager.js</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actions/roomManager.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>119</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>141</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>196</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>353</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>50</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>131</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>172</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/resque.js</file>
+    <line>135</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
+    <line>70</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>246</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>254</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/faye.js</file>
+    <line>21</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/faye.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Last comma in object literal</problem_class>
+    <description>Unneeded comma</description>
+  </problem>
+</problems>
+

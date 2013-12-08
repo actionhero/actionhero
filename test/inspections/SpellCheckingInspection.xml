@@ -1,0 +1,1572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Framweork'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>199</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'terdown'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/Jakefile.js</file>
+    <line>1</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Jakefile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'porject's'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/Jakefile.js</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/Jakefile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'envrionment'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/readme.md</file>
+    <line>15</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/readme.md" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'capabilites'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/routes.js</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/routes.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'defiend'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generateTask.js</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generateTask.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'defualt'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/help.txt</file>
+    <line>45</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/help.txt" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'respondant'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/help.txt</file>
+    <line>48</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/help.txt" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'defalts'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/help.txt</file>
+    <line>54</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/help.txt" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'localtion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/help.txt</file>
+    <line>59</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/help.txt" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'defalts'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Producton'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requets'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>17</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Dameon'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>18</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'dameonizing'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>187</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'trask'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>282</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'splsions'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/intro.js</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/intro.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'directoy'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/generate.js</file>
+    <line>60</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/generate.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Hversion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
+    <line>69</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'tatus'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_websocket.js</file>
+    <line>98</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'simultanious'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>173</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'recieved'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>183</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requets'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>239</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'bannana'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>310</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'unknwon'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>310</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'unknwon'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>375</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Seach'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>377</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Seach'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_web.js</file>
+    <line>392</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'parmas'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>91</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'seperate'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'bufferst'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>118</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'connnected'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>118</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'connnected'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>186</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'communicte'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>119</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'parmas'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>138</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'parmas'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>183</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'simultanious'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>73</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'wokrers'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>114</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'perioduc'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'enquing'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'periodc'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>250</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'poping'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>255</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'listner'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_tasks.js</file>
+    <line>255</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'listner'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>20</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'sute'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_documentation.js</file>
+    <line>1</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_documentation.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Documentaion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>32</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'stat'd'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>64</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'reaload'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_staticFile.js</file>
+    <line>47</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_staticFile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'outsite'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_middleware.js</file>
+    <line>1</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_middleware.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Middlware'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_middleware.js</file>
+    <line>98</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_middleware.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'callbackcks'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_middleware.js</file>
+    <line>107</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_middleware.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'callbackcks'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_stats.js</file>
+    <line>40</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_stats.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incremnting'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'MIIC'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'IBAAK'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Uidh'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Updpb'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'DOVM'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Gicy'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Iist'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Xnms'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'IDAQAB'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'HFZY'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Geeq'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'WRGDU'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Tbxm'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'BAZEZKL'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'KQON'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'pdsyx'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Eiiz'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'JKUQJBAP'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Urefs'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'xrkoo'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Mzwper'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'CQQDRY'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Ahfli'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'LZDW'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'LNPL'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'CRHEN'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Ekzxdik'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Kqth'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Awln'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'ATVJ'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Utomwzfr'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Uksr'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>13</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Ywhy'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>13</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Ebfq'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>14</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'NWCV'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-key.pem</file>
+    <line>14</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-key.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Pvex'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'MIICATCCA'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bgkqhki'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'BAQUFADBFM'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'CQYDVQQG'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'VTETMBEGA'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'UECBMKU'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'MYSW'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Nlow'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'MCQV'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Elud'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Vybm'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Gdpd'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bgkqhki'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'BAQEFAAO'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Hgrr'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'ltgck'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'fgzl'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'vxon'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'PIHS'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Lfjwh'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Dfzz'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bgkqhki'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'BAQUF'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Shtt'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Hvef'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Qcfte'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>11</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Zlyl'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Lstykf'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-cert.pem</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-cert.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Slgo'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'IBADBFM'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'CQYDVQQG'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'JBVTETMBEGA'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'UECBMKU'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'MYSW'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>3</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'DQEB'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'AQUAA'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'GNADC'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>4</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Uidh'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Updpb'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'DOVM'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Gicy'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Iist'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Xnms'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Ihvc'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>7</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bowzj'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Nwur'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>8</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Piuto'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Uqet'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Wlrtzat'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bsar'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>9</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Bsie'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/certs/server-csr.pem</file>
+    <line>10</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/certs/server-csr.pem" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Yxbqwl'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>2</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'loded'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'genrated'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'regading'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'containaing'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>105</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'connet'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>116</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'woring'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>118</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'connet'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>130</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'ture'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>139</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'relitive'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>143</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requset'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>148</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>148</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'uplaods'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>155</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/config.js</file>
+    <line>163</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'ture'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/test.js</file>
+    <line>57</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/test.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/config/environments/production.js</file>
+    <line>16</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/environments/production.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>12</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'xmlhttp'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/index.html</file>
+    <line>13</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/index.html" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'onreadystatechange'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/jakelib/actionHero.jake</file>
+    <line>94</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/jakelib/actionHero.jake" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Recurent'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>105</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Extansion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>105</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Extansion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>129</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Extansion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>129</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Extansion'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>153</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>153</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>177</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>177</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/socket.js</file>
+    <line>115</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'charecter'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/socket.js</file>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requset'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>350</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>349</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/web.js</file>
+    <line>349</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Requestor'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>17</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'existance'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>61</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Recieved'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>60</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incomming'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>107</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Patern'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>227</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'alredy'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
+    <line>84</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'sweeped'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
+    <line>138</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'sweeped'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/resque.js</file>
+    <line>51</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'enquing'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
+    <line>45</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/exceptions.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'relevent'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
+    <line>142</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'internface'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>188</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'reccurent'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>196</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Recurent'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>196</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Recurent'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actionProcessor.js</file>
+    <line>29</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actionProcessor.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'incrament'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/configLoader.js</file>
+    <line>52</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/configLoader.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'NOED'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/configLoader.js</file>
+    <line>53</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/configLoader.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'NOED'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>69</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'appeneded'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>62</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Existance'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>62</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'Existance'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actions.js</file>
+    <line>53</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'defeined'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>6</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'imaplmentation'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>69</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'configrable'</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/genericServer.js</file>
+    <line>70</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/genericServer.js" />
+    <problem_class severity="TYPO" attribute_key="TYPO">Typo</problem_class>
+    <description>Typo: In word 'descrptions'</description>
+  </problem>
+</problems>
+

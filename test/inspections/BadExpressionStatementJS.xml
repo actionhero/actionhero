@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_exceptions.js</file>
+    <line>39</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_exceptions.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Expression statement which is not assignment or call</problem_class>
+    <description>Expression statement is not assignment or call #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/chat.html</file>
+    <line>131</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/chat.html" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Expression statement which is not assignment or call</problem_class>
+    <description>Expression statement is not assignment or call #loc</description>
+  </problem>
+</problems>
+
