@@ -6,6 +6,7 @@ node_modules/*
 .DS_Store
 npm-debug.log
 /nbproject/*
+/.idea/*
 dump.rdb
 cluster_pidfile
 cache.dump

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>5</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
+    <description>The value assigned is never used #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>54</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
+    <description>Variable might not been initialized #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>53</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
+    <description>Variable might not been initialized #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actions.js</file>
+    <line>118</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
+    <description>Variable might not been initialized #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/actions.js</file>
+    <line>118</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
+    <description>Variable might not been initialized #loc</description>
+  </problem>
+</problems>
+

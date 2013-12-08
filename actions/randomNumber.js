@@ -2,11 +2,11 @@ var action = {};
 
 /////////////////////////////////////////////////////////////////////
 // metadata
-action.name = "randomNumber";
-action.description = "I am an API method which will generate a random number";
+action.name = 'randomNumber';
+action.description = 'I am an API method which will generate a random number';
 action.inputs = {
-  "required" : [],
-  "optional" : []
+  'required' : [],
+  'optional' : []
 };
 action.blockedConnectionTypes = [];
 action.outputExample = {

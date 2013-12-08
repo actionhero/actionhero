@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>241</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Loop statement that doesn't loop</problem_class>
+    <description>&lt;code&gt;for&lt;/code&gt; statement doesn't loop #loc</description>
+  </problem>
+</problems>
+

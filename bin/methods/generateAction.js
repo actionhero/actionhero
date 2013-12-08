@@ -1,6 +1,6 @@
 exports['generateAction'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError("name is a required input"); }
+  if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
   if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
 
   var req = binary.utils.stringifyInputList(binary.argv['inputsRequired']);
@@ -8,8 +8,8 @@ exports['generateAction'] = function(binary, next){
   var templateLines = [];
 
   templateLines.push('exports.action = {');
-  templateLines.push('  name: "' + binary.argv['name'] + '",');
-  templateLines.push('  description: "' + binary.argv['description'] + '",');
+  templateLines.push('  name: \'' + binary.argv['name'] + '\',');
+  templateLines.push('  description: \'' + binary.argv['description'] + '\',');
   templateLines.push('  inputs: {');
   templateLines.push('    required: [' + req + '],');
   templateLines.push('    optional: [' + optional + '],');
@@ -25,12 +25,12 @@ exports['generateAction'] = function(binary, next){
   templateLines.push('  }');
   templateLines.push('};');
 
-  var data = "";
+  var data = '';
   for(var i in templateLines){
-    data += templateLines[i] + "\n";
+    data += templateLines[i] + '\n';
   }
 
-  binary.utils.create_file_safely(binary.paths.config.action + "/" + binary.argv['name'] + ".js", data);
+  binary.utils.create_file_safely(binary.paths.config.action + '/' + binary.argv['name'] + '.js', data);
 
   next();
 }

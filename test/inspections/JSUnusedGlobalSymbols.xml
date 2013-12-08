@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problems>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>87</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property displaySetup</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>98</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property pidFile</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>105</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property workerMethods</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/websockets.html</file>
+    <line>48</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/websockets.html" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property alert</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/chat.html</file>
+    <line>23</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/chat.html" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property alert</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/resque.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property startQueue</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>31</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property sendFile</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>54</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property sendFileNotFound</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>62</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property checkExistence</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>89</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript global symbol</problem_class>
+    <description>Unused property logRequest</description>
+  </problem>
+</problems>
+

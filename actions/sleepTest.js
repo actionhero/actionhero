@@ -2,11 +2,11 @@ var action = {};
 
 /////////////////////////////////////////////////////////////////////
 // metadata
-action.name = "sleepTest";
-action.description = "I will sleep and then return";
+action.name = 'sleepTest';
+action.description = 'I will sleep and then return';
 action.inputs = {
-  "required" : [],
-  "optional" : ['sleepDuration']
+  'required' : [],
+  'optional' : ['sleepDuration']
 };
 action.blockedConnectionTypes = [];
 action.outputExample = {
@@ -26,7 +26,7 @@ var isNumber = function(n) {
 action.run = function(api, connection, next){
   var sleepDuration = connection.params.sleepDuration;
   if(!isNumber(sleepDuration)){
-    sleepDuration = 1000; 
+    sleepDuration = 1000;
   }else{
     sleepDuration = parseFloat(sleepDuration);
   }
