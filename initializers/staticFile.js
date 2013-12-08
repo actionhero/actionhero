@@ -59,21 +59,22 @@ var staticFile = function(api, next){
       callback(connection, api.config.general.flatFileNotFoundMessage, null, 'text/html', api.config.general.flatFileNotFoundMessage.length);
     },
 
-    checkExistance: function(file, callback){
+    checkExistence: function(file, callback){
       var self = this;
       fs.stat(file, function(err, stats){
         if(err != null){
           callback(false);
         } else {
           if(stats.isDirectory()){
-            callback(false); // default file should have been appeneded by server
+            // default file should have been appended by server
+            callback(false);
           } else if(stats.isSymbolicLink()){
-            fs.readLink(fileName, function(err, truePath){
+            fs.readLink(file, function(err, truePath){
               if(err != null){
                 callback(false);
               } else {
                 truePath = path.normalize(truePath);
-                api.fileServer.checkExistance(truePath, callback);
+                api.fileServer.checkExistence(truePath, callback);
               }
             });
           } else if(stats.isFile()){

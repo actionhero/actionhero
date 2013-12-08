@@ -30,7 +30,7 @@ var socket = function(api, options, next){
       'listenToRoom',
       'silenceRoom',
       'detailsView',
-      'say',
+      'say'
     ]
   }
 
@@ -112,7 +112,7 @@ var socket = function(api, options, next){
 
     connection.rawConnection.on('data', function(chunk){
       if(checkBreakChars(chunk)){
-        server.goodbye(connection, 'break-charecter');
+        server.goodbye(connection, 'break-character');
       } else {
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
         var index, line;
@@ -121,9 +121,9 @@ var socket = function(api, options, next){
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
           data.split('\n').forEach(function(line){
             if(line.length > 0){
-              // increment at the start of the requset so that responses can be caught in order on the client
+              // increment at the start of the request so that responses can be caught in order on the client
               // this is not handled by the genericServer
-              connection.messageCount++; 
+              connection.messageCount++;
               parseRequest(connection, line);
             }
           });
@@ -132,13 +132,13 @@ var socket = function(api, options, next){
     });
 
     connection.rawConnection.on('end', function(){
-      try { connection.rawConnection.end(); } catch(e){}
+      try { connection.rawConnection.end() } catch(e){}
       server.destroyConnection(connection);
     });
 
     connection.rawConnection.on('error', function(e){
       server.log('socket error: ' + e, 'error');
-      try { connection.rawConnection.end(); } catch(e){}
+      try { connection.rawConnection.end() } catch(e){}
       server.destroyConnection(connection);
     });
   });
@@ -165,10 +165,10 @@ var socket = function(api, options, next){
     } else {
       connection.verbs(verb, words, function(error, data){
         if(error == null){
-          var message = {status: 'OK', context: 'response', data: data}
-          server.sendMessage(connection, message);
+          server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
         } else if(error === 'verb not found or not allowed'){
-          try { // check for and attempt to check single-use params
+          // check for and attempt to check single-use params
+          try {
             var request_hash = JSON.parse(line);
             if(request_hash['params'] != null){
               connection.params = request_hash['params'];
@@ -183,8 +183,7 @@ var socket = function(api, options, next){
           connection.response = {};
           server.processAction(connection);
         } else {
-          var message = {status: error, context: 'response', data: data}
-          server.sendMessage(connection, message);
+          server.sendMessage(connection, {status: error, context: 'response', data: data});
         }
       });
     }
@@ -212,7 +211,7 @@ var socket = function(api, options, next){
   }
 
   var gracefulShutdown = function(next, alreadyShutdown){
-    if(alreadyShutdown == null || alreadyShutdown == false){ 
+    if(alreadyShutdown == null || alreadyShutdown == false){
       server.server.close();
     }
     var pendingConnections = 0;
@@ -233,9 +232,7 @@ var socket = function(api, options, next){
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    } else {
-      if(typeof next == 'function'){ next(); }
-    }
+    } else if(typeof next == 'function'){ next() }
   }
 
   next(server);

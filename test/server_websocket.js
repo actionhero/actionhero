@@ -95,7 +95,7 @@ describe('Server: Web Sockets', function(){
     });
   });
 
-  it('will limit how many simultanious connections I can have', function(done){
+  it('will limit how many simultaneous connections I can have', function(done){
     this.timeout(5000);
 
     var responses = [];

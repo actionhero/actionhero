@@ -9,7 +9,7 @@ var routes = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
   api.routes.processRoute = function(connection){
-    if(connection.params['action'] == null || (api.actions.actions[connection.params['action']] === undefined)){
+    if(connection.params['action'] == null || typeof api.actions.actions[connection.params['action']] === 'undefined'){
       var method = connection.rawConnection.method.toLowerCase();
       for(var i in api.routes.routes[method]){
         var route = api.routes.routes[method][i];
@@ -30,6 +30,7 @@ var routes = function(api, next){
     var urlParts = url.split('/');
     var matchParts = match.split('/');
     var regexp = '';
+    var variable = '';
     if(urlParts[0] == ''){ urlParts.splice(0, 1) }
     if(matchParts[0] == ''){ matchParts.splice(0, 1) }
     if(urlParts[(urlParts.length - 1)] == ''){ urlParts.pop() }
@@ -40,13 +41,12 @@ var routes = function(api, next){
       if(!urlParts[i]){
         return response;
       } else if(part[0] === ':' && part.indexOf('(') < 0){
-        var variable = part.replace(':', '');
+        variable = part.replace(':', '');
         response.params[variable] = urlParts[i];
       } else if(part[0] === ':' && part.indexOf('(') >= 0){
-        var variable = part.replace(':', '').split('(')[0];
-        var regexp = part.split('(')[1];
-        regexp = new RegExp(regexp.substring(0, regexp.length - 1), 'g');
-        var matches = urlParts[i].match(regexp);
+        variable = part.replace(':', '').split('(')[0];
+        regexp = part.split('(')[1];
+        var matches = urlParts[i].match(new RegExp(regexp.substring(0, regexp.length - 1), 'g'));
         if(matches != null){
           response.params[variable] = urlParts[i];
         } else {
@@ -70,7 +70,7 @@ var routes = function(api, next){
     if(rawRoutes == null){
       if(fs.existsSync(api.routes.routesFile)){
         delete require.cache[require.resolve(api.routes.routesFile)];
-        var rawRoutes = require(api.routes.routesFile).routes;
+        rawRoutes = require(api.routes.routesFile).routes;
       } else {
         api.log('no routes file found, skipping', 'debug');
         return;

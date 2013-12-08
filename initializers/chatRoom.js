@@ -2,25 +2,28 @@ var chatRoom = function(api, next){
 
   api.chatRoom = {};
   api.chatRoom.keys = {
-    rooms:   'actionHero:chatRoom:rooms',    // set
-    members: 'actionHero:chatRoom:members:', // prefix to hashes
-    auth:    'actionHero:chatRoom:auth'      // hash
+    // set
+    rooms:   'actionHero:chatRoom:rooms',
+    // prefix to hashes
+    members: 'actionHero:chatRoom:members:',
+    // hash
+    auth:    'actionHero:chatRoom:auth'
   }
   api.chatRoom.fayeChannel = '/actionHero/chat';
 
   api.chatRoom._start = function(api, next){
     api.chatRoom.subscription = api.faye.client.subscribe(api.chatRoom.fayeChannel, function(message){
-      api.chatRoom.incommingMessage(message);
+      api.chatRoom.incomingMessage(message);
     });
     if(api.config.general.startingChatRooms != null){
       for(var room in api.config.general.startingChatRooms){
-        api.log('ensuring the existance of the chatRoom: ' + room);
+        api.log('ensuring the existence of the chatRoom: ' + room);
         api.chatRoom.add(room, function(err){
           if(err != null){ api.log(err, 'crit') }
           if(api.config.general.startingChatRooms[room] != null){
-            for(authKey in api.config.general.startingChatRooms[room]){
+            for(var authKey in api.config.general.startingChatRooms[room]){
               var authValue = api.config.general.startingChatRooms[room][authKey];
-              api.chatRoom.setAuthenticationPatern(room, authKey, authValue);
+              api.chatRoom.setAuthenticationPattern(room, authKey, authValue);
             }
           }
         });
@@ -57,8 +60,8 @@ var chatRoom = function(api, next){
     }
   }
 
-  api.chatRoom.incommingMessage = function(message){
-    api.stats.increment('chatRoom:messagesRecieved');
+  api.chatRoom.incomingMessage = function(message){
+    api.stats.increment('chatRoom:messagesReceived');
     var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: 'user', sentAt: message.sentAt };
     for(var i in api.connections.connections){
       var thisConnection = api.connections.connections[i];
@@ -87,7 +90,7 @@ var chatRoom = function(api, next){
         }
       });
       api.redis.client.del(api.chatRoom.keys.members + room, function(err){
-        api.chatRoom.setAuthenticationPatern(room, null, null, function(){
+        api.chatRoom.setAuthenticationPattern(room, null, null, function(){
           if(typeof callback == 'function'){ callback() }
         });
       });
@@ -104,7 +107,7 @@ var chatRoom = function(api, next){
     });
   }
   
-  api.chatRoom.setAuthenticationPatern = function(room, key, value, callback){
+  api.chatRoom.setAuthenticationPattern = function(room, key, value, callback){
     if(key == null){
       api.redis.client.hdel(api.chatRoom.keys.auth, room, function(err){
         if(typeof callback == 'function'){ callback(err) }
@@ -222,7 +225,7 @@ var chatRoom = function(api, next){
         }
       });
     } else {
-      if(typeof callback == 'function'){ callback('connection alredy listening to this room', false) }
+      if(typeof callback == 'function'){ callback('connection already listening to this room', false) }
     }
   }
 

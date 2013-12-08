@@ -41,7 +41,7 @@ describe('Core: Exceptions', function(){
         }
       }
     }
-    apiObj.actions.versions['badAction'] = [ 1 ];
+    apiObj.actions.versions['badAction'] = [1];
     apiObj.actions.actions['badAction'].should.be.an.instanceOf(Object);
     done();
   });

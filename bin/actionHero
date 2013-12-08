@@ -26,10 +26,12 @@ binary.logLevels = {
 
 var transports = []
 if(cluster.isMaster){
-  transports.push(new (winston.transports.Console)({
+  transports.push(
+    new (winston.transports.Console)({
       colorize: true,
       timestamp: true
-  }))
+    })
+  )
 }
 
 binary.logger = new (winston.Logger)({
@@ -55,11 +57,11 @@ binary.utils = {
   },
   stringifyInputList: function(list){
     var s = '';
-    if(list == null){ return s; }
-    arr = list.split(',');
+    if(list == null){ return s }
+    var arr = list.split(',');
     var used = 0;
     for(var i in arr){
-      if(used > 0){ s += ', '; }
+      if(used > 0){ s += ', ' }
       if(arr[i].length > 0){
         s += '\'' + arr[i] + '\'';
         used++;
@@ -70,33 +72,21 @@ binary.utils = {
   dir_exists: function(dir){
     try {
       var stats = fs.lstatSync(dir);
-      if(stats.isDirectory() || stats.isSymbolicLink()){
-        return true;
-      } else {
-        return false;
-      }
-    } catch(e){
-      return false;
-    }
+      return (stats.isDirectory() || stats.isSymbolicLink());
+    } catch(e){ return false }
   },
   file_exists: function(file){
     try {
       var stats = fs.lstatSync(file);
-      if(stats.isFile() || stats.isSymbolicLink()){
-        return true;
-      } else {
-        return false;
-      }
-    } catch(e){
-      return false;
-    }
+      return (stats.isFile() || stats.isSymbolicLink());
+    } catch(e){ return false }
   },
   create_dir_safely: function(dir){
     if(binary.utils.dir_exists(dir)){
       binary.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping');
     } else {
       binary.log(' - creating directory \'' + path.normalize(dir) + '\'');
-      fs.mkdirSync(dir, 0766);
+      fs.mkdirSync(dir, '0766');
     }
   },
   create_file_safely: function(file, data){
@@ -110,7 +100,7 @@ binary.utils = {
   hashLength: function(obj){
     var size = 0, key;
     for(key in obj){
-      if(obj.hasOwnProperty(key)) size++;
+      if(obj.hasOwnProperty(key)){ size++ }
     }
     return size;
   }
@@ -149,9 +139,9 @@ if(process.env.actionHero_root != null){
 }
 
 try {
-  binary.paths.confg = require(binary.paths.project_root + '/config/config.js').confg.general.paths
+  binary.paths.config = require(binary.paths.project_root + '/config/config.js').config.general.paths
 } catch(e){
-  binary.paths.confg = {
+  binary.paths.config = {
     'action':      binary.paths.project_root + '/actions',
     'task':        binary.paths.project_root + '/tasks',
     'public':      binary.paths.project_root + '/public',
@@ -176,11 +166,7 @@ fs.readdirSync(binary.paths.actionHero_root + '/bin/methods/').sort().forEach(fu
 binary.mainAction = binary.argv['_'][0];
 if(binary.mainAction == null){ binary.mainAction = 'start' }
 
-if(binary.argv['isDaemon'] == 'true'){
-  binary.isDaemon = true;
-}else{
-  binary.isDaemon = false;
-}
+binary.isDaemon = (binary.argv['isDaemon'] == 'true');
 
 if(binary.actions[binary.mainAction] != null){
   if(binary.argv['daemon'] != null){

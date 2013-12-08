@@ -26,7 +26,7 @@ var actionProcessor = function(api, next){
     this.connection._original_connection.totalActions = this.connection._original_connection.totalActions + count;
   }
 
-  api.actionProcessor.prototype.incramentPendingActions = function(count){
+  api.actionProcessor.prototype.incrementPendingActions = function(count){
     if(count == null){ count = 1 }
     this.connection._original_connection.pendingActions = this.connection._original_connection.pendingActions + count;
   }
@@ -45,7 +45,7 @@ var actionProcessor = function(api, next){
       self.connection.response.error = self.connection.error;
     }
     if(toRender == null){ toRender = true }
-    self.incramentPendingActions(-1);
+    self.incrementPendingActions(-1);
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
 
@@ -156,7 +156,7 @@ var actionProcessor = function(api, next){
     var self = this;
     self.actionStartTime = new Date().getTime();
     self.incrementTotalActions();
-    self.incramentPendingActions();
+    self.incrementPendingActions();
     self.sanitizeLimitAndOffset();
 
     self.connection.action = self.connection.params['action'];

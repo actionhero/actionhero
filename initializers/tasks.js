@@ -9,7 +9,7 @@ var tasks = function(api, next){
 
     _start: function(api, next){
       if(api.config.tasks.scheduler === true){
-        api.tasks.enqueueAllRecurentJobs(function(){
+        api.tasks.enqueueAllRecurrentJobs(function(){
           next();
         });
       }else{
@@ -26,20 +26,13 @@ var tasks = function(api, next){
       if(reload == null){ reload = false }
 
       var loadMessage = function(loadedTaskName){
-        if(reload){
-          loadMessage = 'task (re)loaded: ' + loadedTaskName + ', ' + fullFilePath;
-        } else {
-          var loadMessage = 'task loaded: ' + loadedTaskName + ', ' + fullFilePath;
-        }
-        api.log(loadMessage, 'debug');
+        api.log('task ' + (reload?'(re)':'') + 'loaded: ' + loadedTaskName + ', ' + fullFilePath, 'debug');
       }
 
       api.watchFileAndAct(fullFilePath, function(){
-        var cleanPath;
+        var cleanPath = fullFilePath;
         if(process.platform === 'win32'){
           cleanPath = fullFilePath.replace(/\//g, '\\');
-        } else {
-          cleanPath = fullFilePath;
         }
 
         delete require.cache[require.resolve(cleanPath)];
@@ -134,7 +127,7 @@ var tasks = function(api, next){
             if(stats.isDirectory()){
               self.loadFolder(fullFilePath);
             } else if(stats.isSymbolicLink()){
-              var realPath = readlinkSync(fullFilePath);
+              var realPath = fs.readlinkSync(fullFilePath);
               self.loadFolder(realPath);
             } else if(stats.isFile()){
               var ext = file.split('.')[1];
@@ -144,7 +137,7 @@ var tasks = function(api, next){
             }
           }
         });
-      }else{
+      } else {
         api.log('no tasks folder found, skipping', 'debug');
       }
     },
@@ -184,7 +177,7 @@ var tasks = function(api, next){
         self.del(task.queue, taskName, {}, function(){
           self.delDelayed(task.queue, taskName, {}, function(){
             self.enqueueIn(task.frequency, taskName, function(){
-              api.log('re-enqueued reccurent job ' + taskName, 'debug');
+              api.log('re-enqueued recurrent job ' + taskName, 'debug');
               callback();
             });
           });
@@ -192,7 +185,7 @@ var tasks = function(api, next){
       }
     },
 
-    enqueueAllRecurentJobs: function(callback){
+    enqueueAllRecurrentJobs: function(callback){
       var self = this;
       var started = 0;
       var loadedTasks = []
@@ -203,14 +196,14 @@ var tasks = function(api, next){
           loadedTasks.push(taskName);
           (function(taskName){
             self.enqueue(taskName, function(err, toRun){
-              if(toRun === true){ api.log('enqueuing periodic task: ' + taskName, 'info'); }
+              if(toRun === true){ api.log('enqueuing periodic task: ' + taskName, 'info') }
               started--;
-              if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+              if(started == 0 && typeof callback == 'function'){ callback(loadedTasks) }
             });
           })(taskName)
         }
       }
-      if(started == 0 && typeof callback == 'function'){ callback(loadedTasks); }
+      if(started == 0 && typeof callback == 'function'){ callback(loadedTasks) }
     },
 
     stopRecurrentJob: function(taskName, callback){
@@ -235,22 +228,22 @@ var tasks = function(api, next){
       var self = this;
       var details = {'queues': {}};
       api.resque.queue.queues(function(err, queues){
-        if(queues.length == 0){ callback(null, details); }
+        if(queues.length == 0){ callback(null, details) }
         else {
           var started = 0;
           queues.forEach(function(queue){
             started++;
             api.resque.queue.length(queue, function(err, length){
               details['queues'][queue] = {
-                length: length,
+                length: length
               }
               started--;
-              if(started == 0){ callback(null, details); }
+              if(started == 0){ callback(null, details) }
             });
           });
         }
       });
-    },
+    }
   }
 
   api.tasks.loadFolder();

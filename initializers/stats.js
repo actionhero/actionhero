@@ -41,7 +41,7 @@ var stats = function(api, next){
           multi.exec(function(){
             started--;
             if(started == 0){
-              setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency );
+              setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
               if(typeof next == 'function'){ next() }
             }
           });

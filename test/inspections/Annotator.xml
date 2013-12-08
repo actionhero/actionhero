@@ -18,7 +18,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>29</line>
+    <line>30</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -26,7 +26,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>29</line>
+    <line>30</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -34,7 +34,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>35</line>
+    <line>37</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -42,7 +42,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>35</line>
+    <line>37</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -50,7 +50,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>72</line>
+    <line>74</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -58,7 +58,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>73</line>
+    <line>75</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -66,7 +66,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>73</line>
+    <line>75</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -74,7 +74,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>84</line>
+    <line>80</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -82,7 +82,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>85</line>
+    <line>81</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -90,7 +90,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>85</line>
+    <line>81</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -98,7 +98,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>99</line>
+    <line>89</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -106,7 +106,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>107</line>
+    <line>97</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -114,7 +114,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>130</line>
+    <line>120</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -122,7 +122,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>131</line>
+    <line>121</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -130,7 +130,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>138</line>
+    <line>128</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -138,7 +138,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>139</line>
+    <line>129</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -146,7 +146,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>169</line>
+    <line>159</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -154,7 +154,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>202</line>
+    <line>188</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -394,7 +394,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/start.js</file>
-    <line>92</line>
+    <line>78</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/start.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -410,7 +410,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>48</line>
+    <line>49</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -418,7 +418,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>49</line>
+    <line>50</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -426,7 +426,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>50</line>
+    <line>51</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -434,7 +434,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>54</line>
+    <line>55</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -442,7 +442,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>82</line>
+    <line>83</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -450,7 +450,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>99</line>
+    <line>100</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -458,7 +458,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>108</line>
+    <line>109</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -466,15 +466,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>113</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>125</line>
+    <line>114</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -490,7 +482,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>130</line>
+    <line>127</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Duplicate declaration #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>131</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -498,7 +498,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>158</line>
+    <line>159</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -506,7 +506,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>209</line>
+    <line>210</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -514,7 +514,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>252</line>
+    <line>253</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -522,19 +522,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>264</line>
+    <line>265</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method setupMaster() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>32</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable PROJECT_ROOT #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
@@ -546,7 +538,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>89</line>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable PROJECT_ROOT #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/actionHero.js</file>
+    <line>86</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -554,7 +554,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>149</line>
+    <line>146</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -562,7 +562,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>21</line>
+    <line>18</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -570,7 +570,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>24</line>
+    <line>21</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -578,7 +578,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>58</line>
+    <line>55</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -586,7 +586,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>66</line>
+    <line>63</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -594,7 +594,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>75</line>
+    <line>72</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -602,7 +602,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>88</line>
+    <line>85</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -610,7 +610,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>90</line>
+    <line>87</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -618,7 +618,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>84</line>
+    <line>81</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2506,15 +2506,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>109</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method removeListener() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>121</line>
+    <line>110</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2538,7 +2530,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>129</line>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method removeListener() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>130</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2546,7 +2546,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>134</line>
+    <line>135</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2554,7 +2554,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>139</line>
+    <line>140</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2562,7 +2562,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>116</line>
+    <line>117</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2570,7 +2570,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>144</line>
+    <line>145</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2578,7 +2578,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>156</line>
+    <line>157</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2586,7 +2586,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>156</line>
+    <line>157</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2594,19 +2594,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>156</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
     <line>157</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved function or method instanceOf() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
@@ -2618,7 +2610,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>153</line>
+    <line>159</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>154</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2626,7 +2626,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>166</line>
+    <line>167</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2634,7 +2634,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>166</line>
+    <line>167</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2642,19 +2642,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>166</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
     <line>167</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved function or method instanceOf() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
@@ -2666,7 +2658,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>163</line>
+    <line>169</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>164</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2674,7 +2674,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>176</line>
+    <line>177</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2682,7 +2682,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>176</line>
+    <line>177</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2690,19 +2690,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>176</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
     <line>177</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved function or method instanceOf() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
@@ -2714,15 +2706,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>173</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>190</line>
+    <line>179</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2730,7 +2714,23 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>183</line>
+    <line>174</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>191</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
+    <line>184</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2746,7 +2746,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>204</line>
+    <line>205</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2754,7 +2754,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>201</line>
+    <line>202</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2762,7 +2762,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>213</line>
+    <line>214</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2770,7 +2770,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>213</line>
+    <line>214</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2778,7 +2778,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>210</line>
+    <line>211</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2786,7 +2786,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_actionCluster.js</file>
-    <line>199</line>
+    <line>200</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_actionCluster.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2802,23 +2802,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>28</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>30</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>32</line>
+    <line>29</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2826,7 +2810,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>47</line>
+    <line>44</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2834,7 +2818,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>49</line>
+    <line>46</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2842,7 +2826,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>51</line>
+    <line>48</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2850,7 +2834,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>40</line>
+    <line>37</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2858,7 +2842,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>61</line>
+    <line>58</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2866,7 +2850,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>70</line>
+    <line>67</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2874,7 +2858,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>70</line>
+    <line>67</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2882,19 +2866,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>70</line>
+    <line>67</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>71</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -2902,11 +2878,19 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>65</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>78</line>
+    <line>75</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2914,7 +2898,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>78</line>
+    <line>75</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2922,19 +2906,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>78</line>
+    <line>75</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>79</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -2942,11 +2918,19 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>73</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>86</line>
+    <line>83</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2954,7 +2938,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>86</line>
+    <line>83</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -2962,19 +2946,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>86</line>
+    <line>83</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method instanceOf() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>87</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -2982,119 +2958,63 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>96</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Invalid number of parameters, expected 2 #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>97</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Invalid number of parameters, expected 2 #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>101</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method eql() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>102</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method eql() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>92</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>109</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>110</line>
+    <line>81</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable be #loc</description>
+    <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>110</line>
+    <line>93</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable an #loc</description>
+    <description>Invalid number of parameters, expected 2 #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>110</line>
+    <line>94</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method instanceOf() #loc</description>
+    <description>Invalid number of parameters, expected 2 #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>111</line>
+    <line>98</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable be #loc</description>
+    <description>Unresolved function or method eql() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>111</line>
+    <line>99</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable an #loc</description>
+    <description>Unresolved function or method eql() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>111</line>
+    <line>89</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method instanceOf() #loc</description>
+    <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>112</line>
+    <line>106</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable be #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>112</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method within() #loc</description>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3102,19 +3022,11 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>120</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved variable be #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>120</line>
+    <line>107</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3122,7 +3034,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>120</line>
+    <line>107</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3130,19 +3042,75 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>121</line>
+    <line>108</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved variable be #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>122</line>
+    <line>108</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved variable an #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>108</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method instanceOf() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>109</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable be #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>109</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method within() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>104</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>117</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable be #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>117</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable an #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>117</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method instanceOf() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3150,11 +3118,11 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>129</line>
+    <line>119</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3162,15 +3130,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>131</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>127</line>
+    <line>115</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3178,11 +3138,27 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>140</line>
+    <line>126</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>128</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>124</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3190,11 +3166,19 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>134</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>148</line>
+    <line>145</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3202,7 +3186,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>146</line>
+    <line>143</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3210,7 +3194,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>155</line>
+    <line>152</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3218,7 +3202,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>153</line>
+    <line>150</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3226,7 +3210,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>163</line>
+    <line>160</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3234,7 +3218,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>161</line>
+    <line>158</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3242,7 +3226,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>170</line>
+    <line>167</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3250,7 +3234,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>168</line>
+    <line>165</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3258,7 +3242,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>177</line>
+    <line>174</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3266,7 +3250,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>175</line>
+    <line>172</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3274,7 +3258,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>199</line>
+    <line>196</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3282,7 +3266,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>203</line>
+    <line>200</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3290,7 +3274,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>205</line>
+    <line>202</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3298,7 +3282,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>205</line>
+    <line>202</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3306,7 +3290,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>182</line>
+    <line>179</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3314,7 +3298,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>217</line>
+    <line>214</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3322,7 +3306,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>228</line>
+    <line>225</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3330,7 +3314,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>226</line>
+    <line>223</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3338,7 +3322,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>235</line>
+    <line>232</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3346,7 +3330,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>233</line>
+    <line>230</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3354,7 +3338,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>242</line>
+    <line>239</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3362,7 +3346,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>244</line>
+    <line>241</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3370,27 +3354,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>240</line>
+    <line>237</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>253</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>254</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3398,11 +3366,11 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>262</line>
+    <line>251</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3410,7 +3378,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>260</line>
+    <line>247</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3418,19 +3386,19 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>271</line>
+    <line>259</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable not #loc</description>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>271</line>
+    <line>257</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method exist() #loc</description>
+    <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3438,27 +3406,19 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
+    <description>Unresolved variable not #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>282</line>
+    <line>268</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
+    <description>Unresolved function or method exist() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>283</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>278</line>
+    <line>265</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3466,7 +3426,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>293</line>
+    <line>279</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3474,7 +3434,23 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>294</line>
+    <line>280</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>275</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>290</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3486,11 +3462,19 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>288</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>306</line>
+    <line>303</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3498,7 +3482,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>300</line>
+    <line>297</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3506,7 +3490,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>322</line>
+    <line>319</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3514,7 +3498,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>322</line>
+    <line>319</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3522,7 +3506,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>315</line>
+    <line>312</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -3530,27 +3514,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>332</line>
+    <line>329</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>342</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>343</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3558,23 +3526,23 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>340</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>336</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>351</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>352</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
@@ -3582,11 +3550,27 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>349</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/server_socket.js</file>
+    <line>345</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>215</line>
+    <line>212</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -4122,11 +4106,35 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>38</line>
+    <line>15</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
+    <description>Unresolved variable fakeredis #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>15</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable fakeredis #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>34</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method createClient() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
+    <line>36</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method flushdb() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
@@ -4138,15 +4146,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>39</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>41</line>
+    <line>42</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -4154,39 +4154,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>45</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>46</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method createClient() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>46</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>49</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method flushdb() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>85</line>
+    <line>76</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -4194,7 +4162,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>153</line>
+    <line>144</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -4850,14 +4818,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
-    <line>60</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
     <line>61</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
@@ -4866,7 +4826,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
-    <line>57</line>
+    <line>62</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_developerMode.js</file>
+    <line>58</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_developerMode.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5530,7 +5498,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>25</line>
+    <line>32</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5546,7 +5514,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>30</line>
+    <line>37</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5554,7 +5522,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>31</line>
+    <line>38</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5562,7 +5530,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>34</line>
+    <line>41</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5570,7 +5538,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>34</line>
+    <line>41</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5578,7 +5546,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>34</line>
+    <line>41</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5586,7 +5554,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>29</line>
+    <line>36</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5594,7 +5562,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>42</line>
+    <line>49</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5602,35 +5570,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>43</line>
+    <line>50</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>40</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>51</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable be #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>51</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method within() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
@@ -5642,7 +5586,31 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>57</line>
+    <line>58</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable be #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>58</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method within() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>54</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>64</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5650,7 +5618,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>55</line>
+    <line>62</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5658,35 +5626,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>69</line>
+    <line>76</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>70</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>71</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>67</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
@@ -5706,19 +5650,19 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>79</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>75</line>
+    <line>74</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>84</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
@@ -5738,23 +5682,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>87</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>88</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method equal() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>83</line>
+    <line>82</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5762,35 +5690,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>61</line>
+    <line>92</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method describe() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>94</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method eql() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>95</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method eql() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>96</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved function or method eql() #loc</description>
+    <description>Unresolved function or method equal() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
@@ -5798,11 +5702,43 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>94</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>95</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method equal() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>90</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method it() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>110</line>
+    <line>68</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method describe() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>101</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5810,15 +5746,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>112</line>
+    <line>102</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable not #loc</description>
+    <description>Unresolved function or method eql() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
-    <line>112</line>
+    <line>103</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -5827,6 +5763,38 @@
   <problem>
     <file>file://$PROJECT_DIR$/test/core_utils.js</file>
     <line>100</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method it() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>117</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method eql() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>119</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable not #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>119</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method eql() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/test/core_utils.js</file>
+    <line>107</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/core_utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6850,7 +6818,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>49</line>
+    <line>61</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6858,7 +6826,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>51</line>
+    <line>63</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6866,7 +6834,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>51</line>
+    <line>63</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6874,7 +6842,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>61</line>
+    <line>73</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6882,7 +6850,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>66</line>
+    <line>78</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6890,7 +6858,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/config/config.js</file>
-    <line>66</line>
+    <line>78</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/config/config.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6930,7 +6898,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>21</line>
+    <line>19</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable Faye #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
+    <line>20</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6942,19 +6918,11 @@
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable Faye #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>24</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved variable or type Faye #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>59</line>
+    <line>57</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6962,7 +6930,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>65</line>
+    <line>63</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6970,7 +6938,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>83</line>
+    <line>81</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6978,7 +6946,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>123</line>
+    <line>121</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -6986,7 +6954,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>123</line>
+    <line>121</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7034,7 +7002,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>168</line>
+    <line>169</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7042,7 +7010,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>168</line>
+    <line>169</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7050,7 +7018,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>168</line>
+    <line>169</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7058,22 +7026,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>170</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable _socket #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>170</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable _stream #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
     <line>171</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
@@ -7090,7 +7042,23 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>195</line>
+    <line>172</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable _socket #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>172</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved variable _stream #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/servers/websocket.js</file>
+    <line>196</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7098,7 +7066,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>198</line>
+    <line>199</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7129,22 +7097,6 @@
     <description>Unresolved function or method pipe() #loc</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/servers/socket.js</file>
-    <line>168</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/socket.js</file>
-    <line>186</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/socket.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
     <line>44</line>
     <module>actionHero</module>
@@ -7162,23 +7114,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>73</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>75</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>81</line>
+    <line>80</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7186,7 +7122,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>95</line>
+    <line>94</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7194,7 +7130,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>100</line>
+    <line>99</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7202,23 +7138,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>140</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>149</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>134</line>
+    <line>133</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7226,7 +7146,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>227</line>
+    <line>233</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7234,15 +7154,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>275</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>282</line>
+    <line>288</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7250,23 +7162,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>300</line>
+    <line>306</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved type IncomingForm #loc</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>301</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>12</line>
+    <line>15</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7274,7 +7178,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>53</line>
+    <line>56</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7282,7 +7186,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>76</line>
+    <line>79</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7290,7 +7194,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>84</line>
+    <line>87</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7298,7 +7202,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>83</line>
+    <line>86</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7306,7 +7210,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>98</line>
+    <line>101</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7314,7 +7218,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>109</line>
+    <line>112</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7322,7 +7226,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>115</line>
+    <line>118</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7330,7 +7234,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>124</line>
+    <line>127</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7338,7 +7242,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>147</line>
+    <line>150</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7346,7 +7250,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>174</line>
+    <line>177</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7354,7 +7258,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>165</line>
+    <line>168</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7362,7 +7266,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>198</line>
+    <line>201</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7394,14 +7298,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>47</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
     <line>57</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
@@ -7423,14 +7319,6 @@
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method hdel() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>90</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
@@ -7458,7 +7346,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>131</line>
+    <line>130</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7466,7 +7354,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/cache.js</file>
-    <line>144</line>
+    <line>143</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/cache.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7474,23 +7362,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>7</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>11</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>85</line>
+    <line>84</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7498,7 +7370,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>99</line>
+    <line>98</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7506,7 +7378,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>102</line>
+    <line>101</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7514,7 +7386,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/resque.js</file>
-    <line>87</line>
+    <line>86</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/resque.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7537,78 +7409,6 @@
     <description>Unresolved function or method v4() #loc</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>110</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>111</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>114</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>115</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>120</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>125</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>138</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>154</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>160</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/initializers/exceptions.js</file>
     <line>5</line>
     <module>actionHero</module>
@@ -7623,14 +7423,6 @@
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/id.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved variable isWorker #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/logger.js</file>
-    <line>6</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/logger.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/logger.js</file>
@@ -7665,32 +7457,8 @@
     <description>Unresolved function or method setLevels() #loc</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/initializers/logger.js</file>
-    <line>45</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/logger.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/initializers/redis.js</file>
-    <line>18</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/redis.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/redis.js</file>
-    <line>21</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/redis.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/redis.js</file>
-    <line>33</line>
+    <line>34</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/redis.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7698,23 +7466,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>57</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>64</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>144</line>
+    <line>143</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7722,7 +7474,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>149</line>
+    <line>148</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7730,7 +7482,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>149</line>
+    <line>148</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7738,7 +7490,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>150</line>
+    <line>149</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7746,7 +7498,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>128</line>
+    <line>121</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7754,7 +7506,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>129</line>
+    <line>122</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7762,7 +7514,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>133</line>
+    <line>126</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7770,7 +7522,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>134</line>
+    <line>127</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7778,7 +7530,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>136</line>
+    <line>129</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7786,7 +7538,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>137</line>
+    <line>130</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -7794,7 +7546,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>139</line>
+    <line>132</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -8001,22 +7753,6 @@
     <description>Unresolved function or method existsSync() #loc</description>
   </problem>
   <problem>
-    <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>28</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>33</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
     <file>file://$PROJECT_DIR$/initializers/stats.js</file>
     <line>36</line>
     <module>actionHero</module>
@@ -8047,6 +7783,14 @@
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/stats.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method hgetall() #loc</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
+    <line>20</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
+    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
+    <description>Unresolved function or method checkExistance() #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
@@ -8082,7 +7826,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
-    <line>70</line>
+    <line>71</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -8090,15 +7834,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
-    <line>71</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Unresolved variable or type fileName #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
-    <line>76</line>
+    <line>77</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -8106,7 +7842,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
-    <line>71</line>
+    <line>72</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -8114,7 +7850,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/staticFile.js</file>
-    <line>79</line>
+    <line>80</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/staticFile.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
@@ -8186,51 +7922,11 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>32</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>43</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>46</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>47</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
     <line>71</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
     <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
     <description>Unresolved function or method existsSync() #loc</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>73</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="ERROR" attribute_key="ERRORS_ATTRIBUTES">Annotator</problem_class>
-    <description>Duplicate declaration #loc</description>
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/routes.js</file>

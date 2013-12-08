@@ -64,29 +64,15 @@ exports['start'] = function(binary, next){
 
   if(cluster.isWorker){
     process.on('message', function(msg){
-      if(msg == 'start'){
-        startServer();
-      }
-      else if(msg == 'stop'){
-        stopServer();
-      }
-      else if(msg == 'stopProcess'){
-        stopProcess();
-      }
-      else if(msg == 'restart'){
-        restartServer();
-      }
+      if(msg == 'start'){ startServer() }
+      else if(msg == 'stop'){ stopServer() }
+      else if(msg == 'stopProcess'){ stopProcess() }
+      else if(msg == 'restart'){ restartServer() }
     });
   }
-  process.on('SIGINT', function(){
-    stopProcess();
-  });
-  process.on('SIGTERM', function(){
-    stopProcess();
-  });
-  process.on('SIGUSR2', function(){
-    restartServer();
-  });
+  process.on('SIGINT', function(){ stopProcess() });
+  process.on('SIGTERM', function(){ stopProcess() });
+  process.on('SIGUSR2', function(){ restartServer() });
 
   if(process.platform === 'win32'){
     var rl = readline.createInterface({

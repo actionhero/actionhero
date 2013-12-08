@@ -18,7 +18,7 @@ var servers = function(api, next){
           if(started == 0){ next() }
         });
       });
-    };
+    }
   }
 
   api.servers._teardown = function(api, next){
@@ -33,7 +33,7 @@ var servers = function(api, next){
           if(started == 0){ next() }
         });
       });
-    };
+    }
   }
 
   // Load the servers
@@ -77,7 +77,7 @@ var servers = function(api, next){
         api.log('initialized server: ' + server, 'debug');
         process.nextTick(function(){
           started--;
-          if(started == 0){ next(); }
+          if(started == 0){ next() }
         });
       });
     })(server)

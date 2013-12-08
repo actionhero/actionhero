@@ -21,16 +21,17 @@ var params = function(api, next){
     api.params.globalSafeParams.forEach(function(p){
       postVariables.push(p);
     });
-    for(var i in api.actions.actions){
-      for(var j in api.actions.actions[i]){
+    var i, j, k;
+    for(i in api.actions.actions){
+      for(j in api.actions.actions[i]){
         var action = api.actions.actions[i][j];
         if(action.inputs.required.length > 0){
-          for(var k in action.inputs.required){
+          for(k in action.inputs.required){
             postVariables.push(action.inputs.required[k]);
           }
         }
         if(action.inputs.optional.length > 0){
-          for(var k in action.inputs.optional){
+          for(k in action.inputs.optional){
             postVariables.push(action.inputs.optional[k]);
           }
         }
@@ -43,10 +44,10 @@ var params = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // api param checking
   api.params.requiredParamChecker = function(connection, required_params, mode){
-    if(mode == null){mode = 'all';}
+    if(mode == null){ mode = 'all' }
     if(mode == 'all'){
       required_params.forEach(function(param){
-        if(connection.error === null && (connection.params[param] === undefined || connection.params[param].length == 0)){
+        if(connection.error === null && (typeof connection.params[param] === 'undefined' || connection.params[param].length == 0)){
           connection.error = new Error(param + ' is a required parameter for this action');
         }
       });

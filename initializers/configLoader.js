@@ -49,8 +49,8 @@ var configLoader = function(api, next){
   }
 
   api.env = 'development'
-  if(argv['NOED_ENV'] != null){
-    api.env = argv['NOED_ENV'];
+  if(argv['NODE_ENV'] != null){
+    api.env = argv['NODE_ENV'];
   } else if(process.env.NODE_ENV != null){
     api.env = process.env.NODE_ENV;
   }

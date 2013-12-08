@@ -44,7 +44,7 @@ var cache = function(api, next){
     var domain = api.cache.prepareDomain();
     api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
       if(err != null){ api.log(err, 'error') }
-      try { var cacheObj = JSON.parse(cacheObj) } catch(e){}
+      try { cacheObj = JSON.parse(cacheObj) } catch(e){}
       if(cacheObj == null){
         if(typeof next == 'function'){
           process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
@@ -71,7 +71,7 @@ var cache = function(api, next){
     var domain = api.cache.prepareDomain();
     api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
       api.stats.increment('cache:cachedObjects', -1 );
-      if(err != null){ api.log(err, 'error'); }
+      if(err != null){ api.log(err, 'error') }
       var resp = true;
       if(count != 1){ resp = false }
       if(typeof next == 'function'){ process.nextTick(function(){ next(null, resp) }) }
@@ -82,30 +82,30 @@ var cache = function(api, next){
     var domain = api.cache.prepareDomain();
     api.redis.client.hkeys(api.cache.redisCacheKey, domain.bind(function(err, keys){
       var started = 0;
-      var sweepedKeys = [];
+      var sweptKeys = [];
       keys.forEach(function(key){
         started++;
         api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
           if(err != null){ api.log(err, 'error') }
-          try { var cacheObj = JSON.parse(cacheObj) } catch(e){}
+          try { cacheObj = JSON.parse(cacheObj) } catch(e){}
           if(cacheObj != null){
             if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
               api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
-                sweepedKeys.push(key);
+                sweptKeys.push(key);
                 started--;
-                if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
+                if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
               }));
             } else {
               started--;
-              if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
+              if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
             }
           } else {
             started--;
-            if(started == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
+            if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
           }
         }));
       });
-      if(keys.length == 0 && typeof next == 'function'){ next(err, sweepedKeys) }
+      if(keys.length == 0 && typeof next == 'function'){ next(err, sweptKeys) }
     }));
   }
 
@@ -117,10 +117,9 @@ var cache = function(api, next){
       next = expireTimeMS;
       expireTimeMS = null;
     }
-    if(expireTimeMS != null){
-      var expireTimestamp = new Date().getTime() + expireTimeMS;
-    } else {
-      expireTimestamp = null;
+    var expireTimestamp = null
+    if(null !== expireTimeMS){
+      expireTimestamp = new Date().getTime() + expireTimeMS;
     }
     var cacheObj = {
       value: value,
@@ -135,10 +134,10 @@ var cache = function(api, next){
 
   api.cache.runSweeper = function(){
     clearTimeout(api.cache.sweeperTimer);
-    api.cache.sweeper(function(err, sweepedKeys){
-      if(sweepedKeys.length > 0){
-        api.stats.increment('cache:cachedObjects', -1 * sweepedKeys.length);
-        api.log('cleaned ' + sweepedKeys.length + ' expired cache keys', 'debug');
+    api.cache.sweeper(function(err, sweptKeys){
+      if(sweptKeys.length > 0){
+        api.stats.increment('cache:cachedObjects', -1 * sweptKeys.length);
+        api.log('cleaned ' + sweptKeys.length + ' expired cache keys', 'debug');
       }
       if(api.running){
         api.cache.sweeperTimer = setTimeout(api.cache.runSweeper, api.cache.sweeperTimeout, api);

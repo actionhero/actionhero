@@ -1,4 +1,4 @@
-describe('Core: Documentaion', function(){
+describe('Core: Documentation', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
   var should = require('should');

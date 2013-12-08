@@ -2,8 +2,8 @@ var winston = require('winston');
 
 var logger = function(api, next){
 
-  var transports = [];
-  for(var i in api.config.logger.transports){
+  var transports = [], i;
+  for(i in api.config.logger.transports){
     var t = api.config.logger.transports[i];
     if(typeof t == 'function'){
       transports.push(t(api, winston));
@@ -32,8 +32,7 @@ var logger = function(api, next){
   }
 
   api.log = function(message, severity, data){
-    if(severity == null){ severity = 'info' }
-    if(api.logger.levels[severity] == null){ severity = 'info' }
+    if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
     if(data != null){
       api.logger.log(severity, message, data);
     } else {
@@ -42,7 +41,7 @@ var logger = function(api, next){
   }
 
   var logLevels = [];
-  for(var i in api.logger.levels){ logLevels.push(i) }
+  for(i in api.logger.levels){ logLevels.push(i) }
   api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
 
   next();

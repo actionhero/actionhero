@@ -70,7 +70,7 @@ describe('Core: Tasks', function(){
     });
   })
 
-  it('will clear crashed wokrers when booting', function(done){
+  it('will clear crashed workers when booting', function(done){
     var badTask = {
       name: 'badTask',
       description: 'task',
@@ -111,8 +111,8 @@ describe('Core: Tasks', function(){
     });
   });
 
-  it('all perioduc tasks can be enqueued at boot', function(done){
-    rawAPI.tasks.enqueueAllRecurentJobs(function(){
+  it('all periodic tasks can be enqueued at boot', function(done){
+    rawAPI.tasks.enqueueAllRecurrentJobs(function(){
       rawAPI.resque.queue.length(specHelper.queue, function(err, length){
         should.not.exist(err);
         length.should.equal(1);
@@ -121,7 +121,7 @@ describe('Core: Tasks', function(){
     });
   });
 
-  it('re-enquing a periodc task should not enqueue it again', function(done){
+  it('re-enqueuing a periodic task should not enqueue it again', function(done){
     rawAPI.tasks.enqueue('periodic_task', function(err){
       rawAPI.tasks.enqueue('periodic_task', function(err){
         rawAPI.resque.queue.length(specHelper.queue, function(err, length){
@@ -247,20 +247,20 @@ describe('Core: Tasks', function(){
       });
     });
 
-    it('poping an unknown job will throw an error, but not crash the server', function(done){
+    it('popping an unknown job will throw an error, but not crash the server', function(done){
       this.timeout(3000);
       rawAPI.resque.queue.enqueue(specHelper.queue, 'someCrazyTask', {}, function(){
         rawAPI.config.tasks.queues = ['*'];
         rawAPI.resque.startWorkers(function(){
-          var listner = function(queue, job, error){
+          var listener = function(queue, job, error){
             queue.should.equal(specHelper.queue);
             should.not.exist(job);
             String(error).should.equal('Error: No job defined for class \'someCrazyTask\'');
-            rawAPI.resque.workers[0].removeListener('error', listner);
+            rawAPI.resque.workers[0].removeListener('error', listener);
             done();
           }
 
-          rawAPI.resque.workers[0].on('error', listner);
+          rawAPI.resque.workers[0].on('error', listener);
         });
       });
     });

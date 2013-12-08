@@ -97,6 +97,7 @@ var connections = function(api, next){
 
   api.connection.prototype.verbs = function(verb, words, callback){
     var self = this;
+    var key,value,room;
     var server = api.servers.servers[self.type];
     var allowedVerbs = server.attributes.verbs;
     if(allowedVerbs.indexOf(verb) >= 0){
@@ -105,24 +106,22 @@ var connections = function(api, next){
         server.goodbye(self, verb + ' requested');
 
       } else if(verb === 'paramAdd'){
+        key = words[0];
+        value = words[1];
         if(words[0].indexOf('=') >= 0){
           var parts = words[0].split('=');
-          var key = parts[0];
-          var value = parts[1];
-          self.params[key] = value;
-        } else {
-          var key = words[0];
-          var value = words[1];
-          self.params[key] = value;
+          key = parts[0];
+          value = parts[1];
         }
+        self.params[key] = value;
         callback(null, null);
       } else if(verb === 'paramDelete'){
-        var key = words[0];
+        key = words[0];
         delete self.params[key];
         callback(null, null);
 
       } else if(verb === 'paramView'){
-        var key = words[0];
+        key = words[0];
         callback(null, self.params[key]);
 
       } else if(verb === 'paramsView'){
@@ -135,7 +134,7 @@ var connections = function(api, next){
         callback(null, null);
 
       } else if(verb === 'roomChange'){
-        var room = words[0];
+        room = words[0];
         api.chatRoom.addMember(self, room, function(err, didHappen){
           callback(err, didHappen);
         });
@@ -151,13 +150,13 @@ var connections = function(api, next){
         });
 
       } else if(verb === 'listenToRoom'){
-        var room = words[0];
+        room = words[0];
         api.chatRoom.listenToRoom(self, room, function(err, didHappen){
           callback(err, didHappen);
         });
 
       } else if(verb === 'silenceRoom'){
-        var room = words[0];
+        room = words[0];
         api.chatRoom.silenceRoom(self, room, function(err, didHappen){
           callback(err, didHappen);
         });

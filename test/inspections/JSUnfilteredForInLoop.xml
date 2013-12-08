@@ -2,7 +2,7 @@
 <problems>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>63</line>
+    <line>65</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -10,7 +10,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>64</line>
+    <line>66</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -18,7 +18,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>189</line>
+    <line>175</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -26,7 +26,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/actionHero</file>
-    <line>190</line>
+    <line>176</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/actionHero" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -66,14 +66,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>71</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
     <line>72</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
@@ -82,7 +74,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>72</line>
+    <line>73</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -90,7 +82,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>91</line>
+    <line>73</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -98,7 +90,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>114</line>
+    <line>92</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -106,7 +98,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>146</line>
+    <line>115</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -114,7 +106,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>206</line>
+    <line>147</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -122,7 +114,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>215</line>
+    <line>207</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -130,7 +122,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>225</line>
+    <line>216</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -138,7 +130,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
-    <line>241</line>
+    <line>226</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/bin/methods/startCluster.js</file>
+    <line>242</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/bin/methods/startCluster.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -146,7 +146,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>143</line>
+    <line>140</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -154,7 +154,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>144</line>
+    <line>141</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -162,7 +162,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>211</line>
+    <line>208</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -170,7 +170,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>211</line>
+    <line>208</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -178,7 +178,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/actionHero.js</file>
-    <line>217</line>
+    <line>214</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/actionHero.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -186,7 +186,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>43</line>
+    <line>40</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -194,7 +194,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>43</line>
+    <line>40</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -202,7 +202,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>44</line>
+    <line>41</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -210,7 +210,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>45</line>
+    <line>42</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -218,7 +218,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/zzz_benchmarks.js</file>
-    <line>45</line>
+    <line>42</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/zzz_benchmarks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -226,7 +226,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/server_socket.js</file>
-    <line>201</line>
+    <line>198</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/server_socket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -234,7 +234,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/test/_specHelper.js</file>
-    <line>146</line>
+    <line>137</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/test/_specHelper.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -322,7 +322,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>16</line>
+    <line>14</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -330,7 +330,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>16</line>
+    <line>14</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -338,7 +338,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>49</line>
+    <line>47</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -346,7 +346,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>49</line>
+    <line>47</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -354,7 +354,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>49</line>
+    <line>47</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -378,7 +378,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/websocket.js</file>
-    <line>192</line>
+    <line>193</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/websocket.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -402,7 +402,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>150</line>
+    <line>152</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -410,7 +410,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>150</line>
+    <line>152</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -418,7 +418,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>302</line>
+    <line>308</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -426,7 +426,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>302</line>
+    <line>308</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -434,7 +434,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>355</line>
+    <line>360</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -442,7 +442,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>355</line>
+    <line>360</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -450,7 +450,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>365</line>
+    <line>370</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -458,7 +458,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/servers/web.js</file>
-    <line>366</line>
+    <line>371</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/servers/web.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -466,7 +466,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>22</line>
+    <line>25</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -474,23 +474,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>23</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>18</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>20</line>
+    <line>26</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -506,14 +490,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>22</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
     <line>23</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
@@ -522,7 +498,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>64</line>
+    <line>24</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -530,7 +506,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>128</line>
+    <line>25</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -538,7 +514,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>129</line>
+    <line>26</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -546,7 +522,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>130</line>
+    <line>67</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -554,7 +530,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>152</line>
+    <line>131</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -562,7 +538,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>152</line>
+    <line>132</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -570,7 +546,31 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>152</line>
+    <line>133</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>155</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>155</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
+    <line>155</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -698,7 +698,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/connections.js</file>
-    <line>133</line>
+    <line>132</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/connections.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -746,7 +746,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/logger.js</file>
-    <line>45</line>
+    <line>44</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/logger.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -858,7 +858,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>124</line>
+    <line>123</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -866,7 +866,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/utils.js</file>
-    <line>148</line>
+    <line>147</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/utils.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -874,7 +874,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>52</line>
+    <line>45</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -882,7 +882,23 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>200</line>
+    <line>193</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>196</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
+    <line>198</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -891,22 +907,6 @@
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
     <line>203</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>205</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>210</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -954,7 +954,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>29</line>
+    <line>30</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -962,7 +962,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>34</line>
+    <line>35</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -970,15 +970,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>26</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/params.js</file>
-    <line>25</line>
+    <line>27</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -987,6 +979,14 @@
   <problem>
     <file>file://$PROJECT_DIR$/initializers/params.js</file>
     <line>26</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/params.js</file>
+    <line>27</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/params.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -1026,7 +1026,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/actions.js</file>
-    <line>105</line>
+    <line>104</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
@@ -1058,14 +1058,6 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>39</line>
-    <module>actionHero</module>
-    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
-    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
-    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
-  </problem>
-  <problem>
-    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
     <line>40</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
@@ -1074,7 +1066,15 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/routes.js</file>
-    <line>44</line>
+    <line>41</line>
+    <module>actionHero</module>
+    <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
+    <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>
+    <description>Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check</description>
+  </problem>
+  <problem>
+    <file>file://$PROJECT_DIR$/initializers/routes.js</file>
+    <line>45</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/routes.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Unfiltered for..in loop</problem_class>

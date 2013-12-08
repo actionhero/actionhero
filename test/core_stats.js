@@ -37,7 +37,7 @@ describe('Core: Stats', function(){
     done();
   });
 
-  it('incremnting enqueues items for later', function(done){
+  it('incrementing enqueues items for later', function(done){
     apiObj.stats.increment('thing', 1);
     apiObj.stats.increment('thing');
     apiObj.stats.increment('Otherthing', -1);

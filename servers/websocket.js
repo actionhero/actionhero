@@ -38,10 +38,10 @@ var websocket = function(api, options, next){
   server._start = function(next){
     var webserver = api.servers.servers['web'];
     api.faye.server.attach(webserver.server);
-    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.faye.mount, 'notice'); 
+    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.faye.mount, 'notice');
 
-    server.subscription = api.faye.client.subscribe(rebroadcastChannel, function(message) {
-      incommingRebroadcast(message);
+    server.subscription = api.faye.client.subscribe(rebroadcastChannel, function(message){
+      incomingRebroadcast(message);
     });
 
     next();
@@ -102,7 +102,7 @@ var websocket = function(api, options, next){
     }
   });
 
-  var messagingFayeExtansion = function(message, callback){
+  var messagingFayeExtension = function(message, callback){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId === api.faye.client._clientId){
@@ -111,7 +111,7 @@ var websocket = function(api, options, next){
         var uuid = message.channel.split('/')[4];
         var connection = server.connectionsMap[uuid];
         if(connection != null){
-          incommingMessage(connection, message);
+          incomingMessage(connection, message);
         } else {
           api.faye.client.publish(rebroadcastChannel, {
             serverId:        api.id,
@@ -126,23 +126,24 @@ var websocket = function(api, options, next){
     }
   };
 
-  var subscriptionFayeExtansion = function(message, callback){
+  var subscriptionFayeExtension = function(message, callback){
     if(message.channel.indexOf('/meta/subscribe') === 0){
       if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
         var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, '');
         if(server.connectionsMap[uuid] != null){
-          message.error = 'You cannot subscribe to another client\'s channel';
+          message.error = 'You cannot subscribe to another clients\' channel';
         } else {
           // let the server generate a new connection.id, don't use client-generated UUID
           remoteConnectionDetails(message.clientId, function(details){
             server.buildConnection({
+            // will emit 'connection'
               rawConnection  : {
                 clientId: message.clientId,
-                uuid: uuid,
+                uuid: uuid
               },
               remoteAddress  : details.remoteIp,
               remotePort     : details.remotePort
-            }); // will emit 'connection'
+            });
           });
         }
       }
@@ -150,12 +151,12 @@ var websocket = function(api, options, next){
     callback(message);
   };
 
-  var incommingRebroadcast = function(message){
+  var incomingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
     var uuid = originalMessage.channel.split('/')[4];
     var connection = server.connectionsMap[uuid];
     if(connection != null){
-      messagingFayeExtansion(originalMessage);
+      messagingFayeExtension(originalMessage);
     }
   }
 
@@ -164,7 +165,7 @@ var websocket = function(api, options, next){
     var remotePort = 0;
 
     setTimeout(function(){
-      // TODO: This will always be localhost (or the proxy's IP) if you front this with nginx, haproxy, etc.
+      // TODO: This will always be localhost (or the proxy IP) if you front this with nginx, haproxy, etc.
       var fayeConnection = api.faye.server._server._engine._connections[clientId];
       if(fayeConnection && fayeConnection.socket != null){
         remoteIp   = fayeConnection.socket._socket._stream.remoteAddress;
@@ -174,7 +175,7 @@ var websocket = function(api, options, next){
     }, 50); // should be enough time for the connection to establish?
   }
 
-  var incommingMessage = function(connection, message){
+  var incomingMessage = function(connection, message){
     if(connection != null){
       var data = message.data;
       var verb = data.event;
@@ -204,11 +205,11 @@ var websocket = function(api, options, next){
   }
 
   api.faye.extensions.push({
-    incoming: messagingFayeExtansion
+    incoming: messagingFayeExtension
   });
 
   api.faye.extensions.push({
-    incoming: subscriptionFayeExtansion
+    incoming: subscriptionFayeExtension
   });
 
   next(server);

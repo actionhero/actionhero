@@ -3,7 +3,7 @@ var util = require('util');
 
 /*
 
-A generic imaplmentation of a server:
+A generic implementation of a server:
 
     var myServer = function(api, options, next){
       
@@ -66,8 +66,8 @@ var genericServer = function(api, next){
   // COMMON METHODS //
   ////////////////////
 
-  // options are meant to be configrable in 'config.js'
-  // attributes are descrptions of the server:
+  // options are meant to be configurable in 'config.js'
+  // attributes are descriptions of the server:
   /* 
 
     attributes = {

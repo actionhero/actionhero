@@ -13,11 +13,8 @@ describe('~~ Benchmarks', function(){
       if(parts.length > 2){
         response = parts[(parts.length - 1 )];
       }
-      try {
-        parsed = JSON.parse(response);
-      } catch(e){
-        parsed = {};
-      }
+      var parsed = {};
+      try { parsed = JSON.parse(response) } catch(e){}
       client.removeListener('data', rsp);
       next(parsed);
     };
@@ -28,24 +25,24 @@ describe('~~ Benchmarks', function(){
     });
   }
 
-  function makeHTTPRequest(path, data, next){
+  var makeHTTPRequest = function(path, data, next){
     specHelper.apiTest.get(path, 0, data, next );
   }
 
-  function loopingTest(path, data, count, next){
+  var loopingTest = function(path, data, count, next){
     var counter = 0;
     var responses = 0;
     while(counter <= count){
       counter++;
       process.nextTick(function(){
-          var thisData = {}
-          for(var i in data){
-            thisData[i] = data[i];
-            if(typeof thisData[i] == 'function'){
-              thisData[i] = thisData[i]();
-            }
+        var thisData = {}
+        for(var i in data){
+          thisData[i] = data[i];
+          if(typeof thisData[i] == 'function'){
+            thisData[i] = thisData[i]();
           }
-          makeHTTPRequest(path, thisData, function(response){
+        }
+        makeHTTPRequest(path, thisData, function(response){
           responses++
           if(responses == count){
             next(false, response);
@@ -66,13 +63,13 @@ describe('~~ Benchmarks', function(){
   it('ask for status 1000 times', function(done){
     this.timeout(60000)
     startTime = new Date().getTime();
-    loopingTest('/api/tatus', {}, 1000, function(){
+    loopingTest('/api/status', {}, 1000, function(){
       var delta = new Date().getTime() - startTime
       done();
     });
   });
 
-  it('actionsView 1000 times', function(done){
+  it('ask for actionsView 1000 times', function(done){
     this.timeout(60000)
     startTime = new Date().getTime();
     loopingTest('/api/', {action: 'actionsView'}, 1000, function(){
@@ -81,7 +78,7 @@ describe('~~ Benchmarks', function(){
     });
   });
 
-  it('cacheTest 1000 times', function(done){
+  it('ask for cacheTest 1000 times', function(done){
     this.timeout(60000)
     startTime = new Date().getTime();
     loopingTest('/api/cacheTest', { key: function(){

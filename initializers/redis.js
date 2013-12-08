@@ -13,12 +13,13 @@ var redis = function(api, next){
   api.redis.fake = api.config.redis.fake;
   if(api.config.redis.database == null){ api.config.redis.database = 0 }
 
+  var redisPackage;
   if(api.redis.fake == true){
     api.log('running with fakeredis', 'warning');
-    var redisPackage = require('fakeredis');
+    redisPackage = require('fakeredis');
     redisPackage.fast = true;
   } else {
-    var redisPackage = require('redis');
+    redisPackage = require('redis');
   }
 
   api.redis._start = function(api, next){

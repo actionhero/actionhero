@@ -13,7 +13,7 @@ config.servers = {
   web: {
     metadataOptions: {
       serverInformation: false,
-      requestorInformation: false,
+      requesterInformation: false
     }
   }
 }

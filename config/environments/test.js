@@ -2,9 +2,8 @@
 // these changes will be merged on top of those in config.js
 
 var toFakeRedis = false;
-if(process.env['fakeredis'] != null){
-  if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
-  if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
+if(process.env['fakeredis'] != null && process.env['fakeredis'] == 'true'){
+	toFakeRedis = true
 }
 
 var redisConfig = {
@@ -54,7 +53,7 @@ var config = {
       matchExtensionMime: true,
       metadataOptions: {
         serverInformation: true,
-        requestorInformation: true
+        requesterInformation: true
       }
     },
     socket: {

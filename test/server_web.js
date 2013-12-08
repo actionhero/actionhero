@@ -25,30 +25,30 @@ describe('Server: Web', function(){
   it('Server basic response should be JSON and have basic data', function(done){
     specHelper.apiTest.get('/api/', 0, {}, function(response, json){
       json.should.be.an.instanceOf(Object);
-      json.requestorInformation.should.be.an.instanceOf(Object);
+      json.requesterInformation.should.be.an.instanceOf(Object);
       done();
     });
   });
 
   it('params work', function(done){
     specHelper.apiTest.get('/api/testAction/', 0, {}, function(response, json){
-      json.requestorInformation.receivedParams.action.should.equal('testAction')
+      json.requesterInformation.receivedParams.action.should.equal('testAction')
       done();
     });
   });
 
   it('params are ignored unless they are in the whitelist', function(done){
     specHelper.apiTest.get('/api/testAction/?crazyParam123=something', 0, {}, function(response, json){
-      json.requestorInformation.receivedParams.action.should.equal('testAction');
-      should.not.exist(json.requestorInformation.receivedParams['crazyParam123']);
+      json.requesterInformation.receivedParams.action.should.equal('testAction');
+      should.not.exist(json.requesterInformation.receivedParams['crazyParam123']);
       done();
     });
   });
 
   it('limit and offset should have defaults', function(done){
     specHelper.apiTest.get('/api/', 0, {}, function(response, json){
-      json.requestorInformation.receivedParams.limit.should.equal(100)
-      json.requestorInformation.receivedParams.offset.should.equal(0)
+      json.requesterInformation.receivedParams.limit.should.equal(100)
+      json.requesterInformation.receivedParams.offset.should.equal(0)
       done();
     });
   });
@@ -171,7 +171,7 @@ describe('Server: Web', function(){
       });
     });
 
-    it('should respond to TRACE with parsed params recieved', function(done){
+    it('should respond to TRACE with parsed params received', function(done){
       specHelper.apiTest.trace('/api/x', 0, {key: 'someKey', value: 'someValue'}, function(response, json){
         response.statusCode.should.eql(200);
         json.receivedParams.action.should.equal('x');
@@ -181,7 +181,7 @@ describe('Server: Web', function(){
       });
     });
 
-    it('should respond to HEAD requets just like GET, but with no body', function(done){
+    it('should respond to HEAD requests just like GET, but with no body', function(done){
       specHelper.apiTest.head('/api/randomNumber', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
         should.not.exist(json);
@@ -238,7 +238,7 @@ describe('Server: Web', function(){
     });
 
     it('status codes can be set for errors', function(done){
-      specHelper.apiTest.del('/api/statusTestAction', 0, {key: 'bannana'}, function(response, json){
+      specHelper.apiTest.del('/api/statusTestAction', 0, {key: 'banana'}, function(response, json){
         json.error.should.eql('key != value');
         response.statusCode.should.eql(402);
         done();
@@ -310,9 +310,9 @@ describe('Server: Web', function(){
       done();
     })
   
-    it('unknwon actions are still unknwon', function(done){
+    it('unknown actions are still unknown', function(done){
       specHelper.apiTest.get('/api/a_crazy_action', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('a_crazy_action')
+        json.requesterInformation.receivedParams.action.should.equal('a_crazy_action')
         json.error.should.equal('Error: a_crazy_action is not a known action or that is not a valid apiVersion.')
         done();
       });
@@ -320,82 +320,82 @@ describe('Server: Web', function(){
 
     it('explicit action declarations still override routed actions, if the defined action is real', function(done){
       specHelper.apiTest.get('/api/user/123?action=randomNumber', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('randomNumber')
+        json.requesterInformation.receivedParams.action.should.equal('randomNumber')
         done();
       });
     });
 
     it('route actions will override explicit actions, if the defined action is null', function(done){
       specHelper.apiTest.get('/api/user/123?action=someFakeAction', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('user')
+        json.requesterInformation.receivedParams.action.should.equal('user')
         done();
       });
     });
 
     it('Routes should be mapped for GET (simple)', function(done){
       specHelper.apiTest.get('/api/users', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('usersList')
+        json.requesterInformation.receivedParams.action.should.equal('usersList')
         done();
       });
     });
 
     it('Routes should be mapped for GET (complex)', function(done){
       specHelper.apiTest.get('/api/user/1234', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('user')
-        json.requestorInformation.receivedParams.userID.should.equal('1234')
+        json.requesterInformation.receivedParams.action.should.equal('user')
+        json.requesterInformation.receivedParams.userID.should.equal('1234')
         done();
       });
     });
 
     it('Routes should be mapped for POST', function(done){
       specHelper.apiTest.post('/api/user/1234?key=value', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('user')
-        json.requestorInformation.receivedParams.userID.should.equal('1234')
-        json.requestorInformation.receivedParams.key.should.equal('value')
+        json.requesterInformation.receivedParams.action.should.equal('user')
+        json.requesterInformation.receivedParams.userID.should.equal('1234')
+        json.requesterInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('Routes should be mapped for PUT', function(done){
       specHelper.apiTest.put('/api/user/1234?key=value', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('user')
-        json.requestorInformation.receivedParams.userID.should.equal('1234')
-        json.requestorInformation.receivedParams.key.should.equal('value')
+        json.requesterInformation.receivedParams.action.should.equal('user')
+        json.requesterInformation.receivedParams.userID.should.equal('1234')
+        json.requesterInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('Routes should be mapped for DELETE', function(done){
       specHelper.apiTest.del('/api/user/1234?key=value', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('user')
-        json.requestorInformation.receivedParams.userID.should.equal('1234')
-        json.requestorInformation.receivedParams.key.should.equal('value')
+        json.requesterInformation.receivedParams.action.should.equal('user')
+        json.requesterInformation.receivedParams.userID.should.equal('1234')
+        json.requesterInformation.receivedParams.key.should.equal('value')
         done();
       });
     });
 
     it('route params trump explicit params', function(done){
-      specHelper.apiTest.get('/api/search/SeachTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('search')
-        json.requestorInformation.receivedParams.term.should.equal('SeachTerm')
-        json.requestorInformation.receivedParams.limit.should.equal(123)
-        json.requestorInformation.receivedParams.offset.should.equal(456)
+      specHelper.apiTest.get('/api/search/SearchTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', 0, {}, function(response, json){
+        json.requesterInformation.receivedParams.action.should.equal('search')
+        json.requesterInformation.receivedParams.term.should.equal('SearchTerm')
+        json.requesterInformation.receivedParams.limit.should.equal(123)
+        json.requesterInformation.receivedParams.offset.should.equal(456)
         done();
       });
     });
 
     it('regexp matches will provide proper variables', function(done){
       specHelper.apiTest.post('/api/login/123', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('login');
-        json.requestorInformation.receivedParams.userID.should.equal('123');
+        json.requesterInformation.receivedParams.action.should.equal('login');
+        json.requesterInformation.receivedParams.userID.should.equal('123');
         done();
       });
     });
 
-    it('regexp matches will still work with parmas with periods and other wacky chars', function(done){
+    it('regexp matches will still work with params with periods and other wacky chars', function(done){
       specHelper.apiTest.get('/api/c/key/log_me-in.com$123.jpg', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.action.should.equal('cacheTest');
-        json.requestorInformation.receivedParams.value.should.equal('log_me-in.com$123.jpg');
+        json.requesterInformation.receivedParams.action.should.equal('cacheTest');
+        json.requesterInformation.receivedParams.value.should.equal('log_me-in.com$123.jpg');
         done();
       });
     });
@@ -403,8 +403,8 @@ describe('Server: Web', function(){
     it('regexp match failures will be rejected', function(done){
       specHelper.apiTest.post('/api/login/1234', 0, {}, function(response, json){
         json.error.should.equal('Error: login is not a known action or that is not a valid apiVersion.');
-        json.requestorInformation.receivedParams.action.should.equal('login');
-        should.not.exist(json.requestorInformation.receivedParams.userID);
+        json.requesterInformation.receivedParams.action.should.equal('login');
+        should.not.exist(json.requesterInformation.receivedParams.userID);
         done();
       });
     });

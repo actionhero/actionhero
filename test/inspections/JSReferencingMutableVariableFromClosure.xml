@@ -2,7 +2,7 @@
 <problems>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/chatRoom.js</file>
-    <line>20</line>
+    <line>23</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/chatRoom.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Referencing mutable variable from closure</problem_class>
@@ -34,7 +34,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>208</line>
+    <line>201</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="WARNING_ATTRIBUTES">Referencing mutable variable from closure</problem_class>

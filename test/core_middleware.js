@@ -1,4 +1,4 @@
-describe('Core: Middlware', function(){
+describe('Core: Middleware', function(){
 
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
@@ -95,7 +95,7 @@ describe('Core: Middlware', function(){
       done();
     })
 
-    it('can create callbackcks on connection creation', function(done){
+    it('can create callbacks on connection creation', function(done){
       rawApi.connections.createCallbacks.push(function(c){
         done();
       });
@@ -104,7 +104,7 @@ describe('Core: Middlware', function(){
       });
     });
 
-    it('can create callbackcks on connection destroy', function(done){
+    it('can create callbacks on connection destroy', function(done){
       rawApi.connections.destroyCallbacks.push(function(c){
         done();
       });

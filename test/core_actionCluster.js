@@ -88,17 +88,18 @@ describe('Core: actionCluster', function(){
   
   });
 
-  describe('say and clients on seperate peers', function(){
+  describe('say and clients on separate peers', function(){
     var client1 = {};
     var client2 = {};
     var client3 = {};
     var net = require('net');
 
-    function makeSocketRequest(thisClient, message, cb){
+    var makeSocketRequest = function(thisClient, message, cb){
       var rsp = function(d){
         d = d.split('\r\n')[0]
+        var parsed = null;
         try {
-          var parsed = JSON.parse(d);
+          parsed = JSON.parse(d);
         } catch(e){
           console.log('Error Parsing:')
           console.log(d)
@@ -115,29 +116,29 @@ describe('Core: actionCluster', function(){
 
     before(function(done){
       var connections = 0;
-      var connnectedClient = function(){
+      var connectedClient = function(){
         connections++;
         if(connections == 3){
-          client1.removeListener('data', connnectedClient);
-          client2.removeListener('data', connnectedClient);
-          client3.removeListener('data', connnectedClient);
-          setTimeout(done, 100); // time for streaming bufferst to clear
+          client1.removeListener('data', connectedClient);
+          client2.removeListener('data', connectedClient);
+          client3.removeListener('data', connectedClient);
+          setTimeout(done, 100); // time for streaming buffers to clear
         }
       };
 
       client1 = net.connect((specHelper.startingSocketPort + 0));
       client1.setEncoding('utf8');
-      client1.on('data', connnectedClient);
+      client1.on('data', connectedClient);
       makeSocketRequest(client1, 'roomChange defaultRoom');
 
       client2 = net.connect((specHelper.startingSocketPort + 1));
       client2.setEncoding('utf8');
-      client2.on('data', connnectedClient);
+      client2.on('data', connectedClient);
       makeSocketRequest(client2, 'roomChange defaultRoom');
 
       client3 = net.connect((specHelper.startingSocketPort + 2));
       client3.setEncoding('utf8');
-      client3.on('data', connnectedClient);
+      client3.on('data', connectedClient);
       makeSocketRequest(client3, 'roomChange defaultRoom');
     });
 
@@ -183,7 +184,7 @@ describe('Core: actionCluster', function(){
     it('clients can communicate across the cluster', function(done){
       this.timeout(5000);
       if(apis[0].config.redis.fake == true){
-        // you can't communicte across the cluster with fakeredis!
+        // you can't communicate across the cluster with fakeredis!
         done();
       } else {
         makeSocketRequest(client2, '', function(response){

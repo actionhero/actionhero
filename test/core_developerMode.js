@@ -29,7 +29,7 @@ describe('Core: Developer Mode', function(){
       apiObj = specHelper.cleanAPIObject(api);
       setTimeout(function(){
         done();
-      }, 1001) // allow the file to get stat'd once in the original state
+      }, 1001) // allow the file to get stat-ed once in the original state
     })
   });
 
@@ -53,7 +53,8 @@ describe('Core: Developer Mode', function(){
   });
 
   it('I can change the file and new actions will be loaded up', function(done){
-    this.timeout(10000) // these are slow tests :(
+    // these are slow tests :(
+    this.timeout(10000)
     specHelper.fs.writeFile(original_file, new_file_content, function(err){
       setTimeout(function(){
         specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
@@ -61,7 +62,7 @@ describe('Core: Developer Mode', function(){
           json.randomNumber.should.equal('not a number!');
           done();
         });
-      }, 1001 * 3); //file read timer is 1 second; time to notice the change + 3x time to reaload API
+      }, 1001 * 3); //file read timer is 1 second; time to notice the change + 3x time to reload API
     });
   });
 

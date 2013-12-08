@@ -23,14 +23,11 @@ describe('Server: Socket', function(){
 
     setTimeout(function(){
       var lastLine = lines[(lines.length - 1)];
-      if(lastLine == ''){ lastLine = lines[(lines.length - 2)]; }
-      try {
-        var parsed = JSON.parse(lastLine);
-      } catch(e){
-        var parsed = null;
-      }
+      if(lastLine == ''){ lastLine = lines[(lines.length - 2)] }
+      var parsed = null;
+      try { parsed = JSON.parse(lastLine) } catch(e){}
       thisClient.removeListener('data', rsp);
-      if(typeof cb == 'function'){ cb(parsed); }
+      if(typeof cb == 'function'){ cb(parsed) }
     }, 100);
 
     thisClient.on('data', rsp);
@@ -115,7 +112,7 @@ describe('Server: Socket', function(){
     });
   });
 
-  it('default parmas are set', function(done){
+  it('default params are set', function(done){
     makeSocketRequest(client, 'paramsView', function(response){
       response.should.be.an.instanceOf(Object)
       response.data.limit.should.equal(100)
@@ -134,7 +131,7 @@ describe('Server: Socket', function(){
     });
   });
 
-  it('actions will fail without proper parmas set to the connection', function(done){
+  it('actions will fail without proper params set to the connection', function(done){
     makeSocketRequest(client, 'paramDelete key', function(response){
       makeSocketRequest(client, 'cacheTest', function(response){
         response.error.should.equal('Error: key is a required parameter for this action')
@@ -179,7 +176,7 @@ describe('Server: Socket', function(){
     });
   });
 
-  it('will limit how many simultanious connections I can have', function(done){
+  it('will limit how many simultaneous connections I can have', function(done){
     this.timeout(5000)
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 500}}) + '\r\n');
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 600}}) + '\r\n');

@@ -10,7 +10,7 @@ var id = function(api, next){
   } else if(api.config.general.id == null){
     var externalIP = api.utils.getExternalIPAddress();
     if(externalIP == false){
-      var message = ' * Error fetching this host\'s external IP address; setting id base to \'actionHero\''
+      var message = ' * Error fetching this hosts external IP address; setting id base to \'actionHero\''
       try {
         api.log(message, 'crit');
       } catch(e){

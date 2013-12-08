@@ -50,11 +50,11 @@ var actions = function(api, next){
     if(path == null){
       path = api.config.general.paths.action;
       if(!fs.existsSync(api.config.general.paths.action)){
-        api.log(api.config.general.paths.action + ' defeined as action path, but does not exist', 'warning');
+        api.log(api.config.general.paths.action + ' defined as action path, but does not exist', 'warning');
       }
     }
     fs.readdirSync(path).forEach( function(file) {
-      if(path[path.length - 1] != '/'){ path += '/'; }
+      if(path[path.length - 1] != '/'){ path += '/' }
       var fullFilePath = path + file;
       if(file[0] != '.'){
         var stats = fs.statSync(fullFilePath);
@@ -78,20 +78,19 @@ var actions = function(api, next){
     if(reload == null){ reload = false; }
 
     var loadMessage = function(action){
+      var msgString = '';
       if(reload){
-        loadMessage = 'action (re)loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
+        msgString = 'action (re)loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
       } else {
-        var loadMessage = 'action loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
+        msgString = 'action loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
       }
-      api.log(loadMessage, 'debug');
+      api.log(msgString, 'debug');
     }
 
     api.watchFileAndAct(fullFilePath, function(){
-      var cleanPath;
-      if(process.platform === 'win32'){
+      var cleanPath = fullFilePath;
+      if('win32' === process.platform){
         cleanPath = fullFilePath.replace(/\//g, '\\');
-      } else {
-        cleanPath = fullFilePath;
       }
 
       delete require.cache[require.resolve(cleanPath)];
@@ -103,8 +102,8 @@ var actions = function(api, next){
       var collection = require(fullFilePath);
       for(var i in collection){
         var action = collection[i];
-        if(action.version == null){ action.version = 1.0; }
-        if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {}; }
+        if(action.version == null){ action.version = 1.0 }
+        if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {} }
         api.actions.actions[action.name][action.version] = action;
         if(api.actions.versions[action.name] == null){
           api.actions.versions[action.name] = [];

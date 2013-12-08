@@ -2,7 +2,7 @@
 <problems>
   <problem>
     <file>file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js</file>
-    <line>6</line>
+    <line>5</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/public/javascript/actionHeroWebSocket.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
@@ -10,7 +10,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>60</line>
+    <line>54</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
@@ -18,7 +18,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/tasks.js</file>
-    <line>61</line>
+    <line>53</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/tasks.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
@@ -26,7 +26,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/actions.js</file>
-    <line>119</line>
+    <line>118</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>
@@ -34,7 +34,7 @@
   </problem>
   <problem>
     <file>file://$PROJECT_DIR$/initializers/actions.js</file>
-    <line>119</line>
+    <line>118</line>
     <module>actionHero</module>
     <entry_point TYPE="file" FQNAME="file://$PROJECT_DIR$/initializers/actions.js" />
     <problem_class severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused JavaScript / ActionScript assignment</problem_class>

@@ -6,7 +6,7 @@ var utils = function(api, next){
   // sqlDateTime
   api.utils.sqlDateTime = function(time){
     if(time == null){ time = new Date() }
-    var dateStr = 
+    var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
       '-' + api.utils.padDateDoubleStr(time.getDate()) +
@@ -14,11 +14,11 @@ var utils = function(api, next){
       ':' + api.utils.padDateDoubleStr(time.getMinutes()) +
       ':' + api.utils.padDateDoubleStr(time.getSeconds());
     return dateStr;
-  };
+  }
 
   api.utils.sqlDate = function(time){
-    if(time == null){ time = new Date(); }
-    var dateStr = 
+    if(time == null){ time = new Date() }
+    var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
       '-' + api.utils.padDateDoubleStr(time.getDate());
@@ -26,8 +26,8 @@ var utils = function(api, next){
   };
 
   api.utils.padDateDoubleStr = function(i){
-      return (i < 10) ? '0' + i : '' + i;
-  };
+    return (i < 10) ? '0' + i : '' + i;
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // generate a random string
@@ -48,20 +48,20 @@ var utils = function(api, next){
       if(obj.hasOwnProperty(key)){ size++ }
     }
     return size;
-  };
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // merge two hashes recursively 
   api.utils.hashMerge = function(a, b){
-    var c = {};
-    for(var i in a){
+    var c = {}, i;
+    for(i in a){
       if(api.utils.isPlainObject(a[i])){
         c[i] = api.utils.hashMerge(c[i], a[i]);
       } else {
         c[i] = a[i];
       }
     }
-    for(var i in b){
+    for(i in b){
       if(api.utils.isPlainObject(b[i])){
         c[i] = api.utils.hashMerge(c[i], b[i]);
       } else {
@@ -69,7 +69,7 @@ var utils = function(api, next){
       }
     }
     return c;
-  };
+  }
 
   api.utils.isPlainObject = function(o){
     var safeTypes = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
@@ -78,8 +78,7 @@ var utils = function(api, next){
     for(var i in safeTypes){
       if(o instanceof safeTypes[i]){ return false }
     }
-    if(o.toString() != '[object Object]'){ return false }
-    return true; 
+    return (o.toString() == '[object Object]');
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -93,7 +92,7 @@ var utils = function(api, next){
       a.push(arr[i]);
     }
     return a;
-  };
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   // blocking sleep
@@ -138,7 +137,7 @@ var utils = function(api, next){
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  // get this server's external internface
+  // get this servers external interface
   api.utils.getExternalIPAddress = function(){
     var os = require('os')
     var ifaces = os.networkInterfaces();
@@ -147,7 +146,7 @@ var utils = function(api, next){
       var alias = 0;
       ifaces[dev].forEach(function(details){
         if(details.family == 'IPv4' && details.address != '127.0.0.1'){
-          ip =  details.address;
+          ip = details.address;
         }
       });
     }

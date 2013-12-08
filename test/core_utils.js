@@ -21,7 +21,14 @@ describe('Core: Utils', function(){
 
   it('utils.sqlDateTime specific time', function(done){
     var now = new Date(0);
-    var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+    var now_utc = new Date(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds()
+    );
     specHelper.utils.sqlDateTime(now_utc).should.equal('1970-01-01 00:00:00');
     done();
   });
@@ -46,7 +53,7 @@ describe('Core: Utils', function(){
 
   it('utils.sleepSync', function(done){
     var start = new Date();
-    specHelper.utils.sleepSync(.1)
+    specHelper.utils.sleepSync(0.1)
     var end = new Date();
     (end - start).should.be.within(100, 200);
     done();

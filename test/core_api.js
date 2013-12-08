@@ -114,16 +114,16 @@ describe('Core: API', function(){
 
     it('will default actions to version 1', function(done){
       specHelper.apiTest.get('/api/randomNumber/', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.apiVersion.should.equal(1)
+        json.requesterInformation.receivedParams.apiVersion.should.equal(1)
         done();
       });
     });
 
     it('can specify an apiVersion', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 1}, function(response, json){
-        json.requestorInformation.receivedParams.apiVersion.should.equal(1)
+        json.requesterInformation.receivedParams.apiVersion.should.equal(1)
         specHelper.apiTest.get('/api/versionedAction/', 0, {apiVersion: 2}, function(response, json){
-          json.requestorInformation.receivedParams.apiVersion.should.equal(2)
+          json.requesterInformation.receivedParams.apiVersion.should.equal(2)
           done();
         });
       });
@@ -131,7 +131,7 @@ describe('Core: API', function(){
 
     it('will default clients to the latest version of the action', function(done){
       specHelper.apiTest.get('/api/versionedAction/', 0, {}, function(response, json){
-        json.requestorInformation.receivedParams.apiVersion.should.equal(3)
+        json.requesterInformation.receivedParams.apiVersion.should.equal(3)
         done();
       });
     });

@@ -35,7 +35,7 @@ describe('Action: cacheTest', function(){
   it('gibberish param', function(done){
     specHelper.apiTest.get('/api/cacheTest', 0, {thingy: 'abc123'}, function(response, json){
       json.error.should.be.equal('Error: key is a required parameter for this action');
-      should.not.exist(json.requestorInformation.receivedParams['thingy']);
+      should.not.exist(json.requesterInformation.receivedParams['thingy']);
       done();
     });
   });
@@ -51,9 +51,9 @@ describe('Action: cacheTest', function(){
 
   it('extra params will be filtered out', function(done){
     specHelper.apiTest.get('/api/cacheTest', 0, {key: 'testKey', value: 'abc123', duration: 1}, function(response, json){
-      should.equal(json.requestorInformation.receivedParams.key, 'testKey');
-      should.equal(json.requestorInformation.receivedParams.value, 'abc123');
-      should.equal(json.requestorInformation.receivedParams.duration, null);
+      should.equal(json.requesterInformation.receivedParams.key, 'testKey');
+      should.equal(json.requesterInformation.receivedParams.value, 'abc123');
+      should.equal(json.requesterInformation.receivedParams.duration, null);
       done();
     });
   });

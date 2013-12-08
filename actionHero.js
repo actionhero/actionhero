@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-// actionHero Framweork in node.js
+// actionHero Framework in node.js
 // evan@evantahler.com 
 // https://github.com/evantahler/actionHero
 
@@ -27,20 +27,17 @@ actionHero.prototype.initialize = function(params, callback){
     restart: self.restart
   };
 
+  self.api.project_root = process.cwd();
   if(process.env.project_root != null){
     self.api.project_root = process.env.project_root;
   } else if(process.env.PROJECT_ROOT != null){
     self.api.project_root = process.env.PROJECT_ROOT;
-  } else {
-    self.api.project_root = process.cwd();
   }
 
   if(callback == null && typeof params == 'function'){
     callback = params; params = {};
   }
-  if(params === null){
-    params = {};
-  }
+  if(params === null){ params = {} }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
@@ -196,23 +193,23 @@ actionHero.prototype.stop = function(callback){
       'faye',
       'webSocketServer',
       'socketServer'
-    ].forEach(function(terdown){
-      if(self.api[terdown] != null && typeof self.api[terdown]._teardown == 'function'){
+    ].forEach(function(teardown){
+      if(self.api[teardown] != null && typeof self.api[teardown]._teardown == 'function'){
         (function(name) {
           orderedTeardowns[name] = function(next){
             self.api.log(' > teardown: ' + name, 'debug');
             self.api[name]._teardown(self.api, next);
           };
-        })(terdown);
+        })(teardown);
       }
     });
 
     for(var i in self.api){
       if(typeof self.api[i]._teardown == 'function' && orderedTeardowns[i] == null){
         (function(name) {
-          orderedTeardowns[name] = function(next){ 
+          orderedTeardowns[name] = function(next){
             self.api.log(' > teardown: ' + name, 'debug');
-            self.api[name]._teardown(self.api, next); 
+            self.api[name]._teardown(self.api, next);
           };
         })(i);
       }
@@ -228,11 +225,11 @@ actionHero.prototype.stop = function(callback){
     };
 
     async.series(orderedTeardowns);
-  }else if(self.api.shuttingDown === true){
+  } else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
-  }else{
+  } else {
     self.api.log('Cannot shut down (not running any servers)', 'info');
-    if(typeof callback == 'function'){ callback(null, self.api); }
+    if(typeof callback == 'function'){ callback(null, self.api) }
   }
 };
 
@@ -243,13 +240,13 @@ actionHero.prototype.restart = function(callback){
     self.stop(function(err){
       self.start(self.startingParams, function(err, api){
         api.log('actionHero restarted', 'notice');
-        if(typeof callback == 'function'){ callback(null, self.api); }
+        if(typeof callback == 'function'){ callback(null, self.api) }
       });
     });
   } else {
     self.start(self.startingParams, function(err, api){
       api.log('actionHero restarted', 'notice');
-      if(typeof callback == 'function'){ callback(null, self.api); }
+      if(typeof callback == 'function'){ callback(null, self.api) }
     });
   }
 };

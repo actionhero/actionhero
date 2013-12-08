@@ -42,10 +42,10 @@ var exceptions = function(api, next){
   ///
   api.exceptionHandlers.renderConnection = function(connection){
     api.log('! connection details:', 'error');
-    var releventDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
-    for(var i in releventDetails){
-      if(connection[releventDetails[i]] != null && typeof connection[releventDetails[i]] != 'function'){
-        api.log('!     ' + releventDetails[i] + ': ' + JSON.stringify(connection[releventDetails[i]]), 'error');
+    var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
+    for(var i in relevantDetails){
+      if(connection[relevantDetails[i]] != null && typeof connection[relevantDetails[i]] != 'function'){
+        api.log('!     ' + relevantDetails[i] + ': ' + JSON.stringify(connection[relevantDetails[i]]), 'error');
       }
     }
 

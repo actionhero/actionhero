@@ -4,11 +4,10 @@ var NR = require('node-resque');
 var resque = function(api, next){
 
   api.resque = {
-    connectionDetails: {},
     queue: null,
     workers: [],
     scheduler: null,
-    connectionDetails: api.config.tasks.redis,
+    connectionDetails: api.config.tasks.redis || {},
 
     _start: function(api, next){
       var self = this;
@@ -47,7 +46,7 @@ var resque = function(api, next){
           self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
           //self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug') })
           self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug') })
-          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enquing job ' + timestamp, 'debug', job) })
+          self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enqueuing job ' + timestamp, 'debug', job) })
 
           self.scheduler.start();
 
@@ -131,7 +130,7 @@ var resque = function(api, next){
           });
         });
       }
-    },
+    }
   }
 
   if(api.resque.connectionDetails.fake == true){

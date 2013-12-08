@@ -11,16 +11,8 @@ specHelper.params = [];
 specHelper.startingWebPort = 9000;
 specHelper.startingSocketPort = 8000;
 
-var toFakeRedis = false;
-if(process.env['fakeredis'] != null){
-  if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
-  if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
-}
-
-console.log('\r\n>>> running test sute with fakeredis=' + toFakeRedis + ' <<<');
-
 var redisConfig = {
-  'fake': toFakeRedis,
+  'fake': (null !== process.env.fakeredis && 'true' === process.env.fakeredis),
   'host': '127.0.0.1',
   'port': 6379,
   'password': null,
@@ -28,30 +20,29 @@ var redisConfig = {
   'DB': 2
 }
 
+console.log('\r\n>>> running test suite with fakeredis=' + redisConfig.fake + ' <<<');
+
 var actionHeroPrototype = require(__dirname + '/../actionHero.js').actionHeroPrototype;
 
 specHelper.clearRedis = function(serverID, next){
   if(serverID != 0){
     next();
   } else {
-    if(toFakeRedis){
-      var redis = require('fakeredis');
-      var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+    var redis, client;
+    if(redisConfig.fake){
+      redis = require('fakeredis');
+      client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
       redis.fast = true;
-      client.flushdb(function(){
-        next();
-      });
+      client.flushdb(function(){ next() });
     } else {
-      var redis = require('redis');
-      var client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
-      client.on('ready', function (err) {
+      redis = require('redis');
+      client = redis.createClient(redisConfig.port, redisConfig.host, redisConfig.options);
+      client.on('ready', function(err){
         client.select(redisConfig.database, function(){
-          client.flushdb(function(){
-            next();
-          });
+          client.flushdb(function(){ next() });
         });
       });
-      client.on('error', function (err) {
+      client.on('error', function(err){
         process.stdout.write('\r\n\r\n!! Redis Error: ' + err + '\r\n\r\n');
         process.exit();  // redis is really important...
       });
@@ -172,18 +163,19 @@ specHelper.resetCookieJar = function(){
 ////////////////////////////////////////////////////////////////////////////
 // API object cleanup
 specHelper.cleanAPIObject = function(api){
-  var cleanAPI = {}
-  cleanAPI['actions'] = api['actions'];
-  cleanAPI['tasks'] = api['tasks'];
-  cleanAPI['utils'] = api['utils'];
-  cleanAPI['config'] = api['config'];
-  cleanAPI['stats'] = api['stats'];
-  cleanAPI['cache'] = api['cache'];
-  cleanAPI['redis'] = api['redis'];
-  cleanAPI['params'] = api['params'];
-  cleanAPI['routes'] = api['routes'];
-  cleanAPI['connections'] = api['connections'];
-  cleanAPI['chatRoom'] = api['chatRoom'];
+  var cleanAPI = {
+    'actions':     api['actions'],
+    'tasks':       api['tasks'],
+    'utils':       api['utils'],
+    'config':      api['config'],
+    'stats':       api['stats'],
+    'cache':       api['cache'],
+    'redis':       api['redis'],
+    'params':      api['params'],
+    'routes':      api['routes'],
+    'connections': api['connections'],
+    'chatRoom':    api['chatRoom']
+  }
   return cleanAPI
 }
 

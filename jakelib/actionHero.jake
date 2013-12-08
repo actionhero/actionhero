@@ -12,14 +12,9 @@ var path = require('path');
 var file_exists = function(file){
   try {
     var stats = fs.lstatSync(file);
-    if(stats.isFile() || stats.isSymbolicLink()){
-      return true;
-    } else {
-      return false;
-    }
-  } catch(e){
-    return false;
-  }
+    if(stats.isFile() || stats.isSymbolicLink()){ return true }
+    else { return false }
+  } catch(e){ return false }
 }
 
 var api = function(){
@@ -55,7 +50,7 @@ namespace('actionHero', function(){
 
     var configChanges = {
       logger: {
-        transports: null,
+        transports: null
       }
     }
     actionHero.initialize({configChanges: configChanges}, function(err, api){
@@ -91,7 +86,7 @@ namespace('actionHero', function(){
     desc('This will enqueue all periodic tasks (could lead to duplicates)');
     task('enqueueAllPeriodicTasks', ['actionHero:environment'], {async: true}, function(){
       api().resque.startQueue(function(){
-        api().tasks.enqueueAllRecurentJobs(function(loadedTasks){
+        api().tasks.enqueueAllRecurrentJobs(function(loadedTasks){
           console.log('loaded tasks: ' + loadedTasks.join(', '));
           complete(process.exit());
         });

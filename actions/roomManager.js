@@ -14,7 +14,7 @@ exports.action = {
 
     var handleAuth = function(callback){
       if(connection.params.authKey != null && connection.params.authValue != null){
-        api.chatRoom.setAuthenticationPatern(connection.params.room, connection.params.authKey, connection.params.authValue, function(){
+        api.chatRoom.setAuthenticationPattern(connection.params.room, connection.params.authKey, connection.params.authValue, function(){
           callback();
         })
       } else {

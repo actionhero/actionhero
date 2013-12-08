@@ -3,7 +3,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="content-language" content="en" />
   <meta name="description" content="actionHero.js" />
-  <link href="/public/css/actionhero.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/public/css/actionhero.css" type="text/css">
   <link rel="icon" href="/public/favicon.ico">
   <title>actionHero.js</title>
 
@@ -11,7 +11,7 @@
   var documentation = function(callback){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function(){
-      if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+      if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
         var response = JSON.parse(xmlhttp.responseText);
         callback(response);
       }
@@ -40,7 +40,7 @@
           row += '</div></div>';
           document.getElementById('actions').innerHTML += row;
         }
-      };
+      }
     });
   }
   </script>

@@ -2,20 +2,20 @@
 // 
 // TO START IN CONSOLE: "./bin/actionHero startCluster"
 // 
-// ** Producton-ready actionHero cluster **
+// ** Production-ready actionHero cluster **
 // - be sure to enable redis so that workers can share state
 // - workers which die will be restarted
 // - maser/manager specific logging
 // - pidfile for master
-// - USR2 restarts (graceful reload of workers while handling requets)
+// - USR2 restarts (graceful reload of workers while handling requests)
 //   -- Note, socket/websocket clients will be disconnected, but there will always be a worker to handle them
-//   -- HTTP, HTTPS, and TCP clients will be allowed to finish the action they are working on before the server goes down
+//   -- HTTP/HTTPS/TCP clients will be allowed to finish the action they are working on before the server goes down
 // - TTOU and TTIN signals to subtract/add workers
 // - WINCH to stop all workers
-// - TCP, HTTP(s), and Web-socket clients will all be shared across the cluster
+// - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
-//   -- Lazy Dameon: "nohup ./bin/actionHero startCluster &"
-//   -- you may want to explore "forever" as a dameonizing option
+//   -- Lazy Daemon: "nohup ./bin/actionHero startCluster &"
+//   -- you may want to explore "forever" as a daemonizing option
 //
 // * Setting process titles does not work on windows or OSX
 // 
@@ -44,6 +44,7 @@ exports['startCluster'] = function(binary, next){
     },
     pids: function(next){
       binary.pidPath = process.cwd() + '/pids';
+      var stats = null;
       try {
         stats = fs.lstatSync(binary.pidPath);
         if(!stats.isDirectory()){
@@ -184,7 +185,7 @@ exports['startCluster'] = function(binary, next){
     },
     process: function(next){
       process.stdin.resume();
-      binary.workerRestartArray = []; // used to trask rolling restarts of workers
+      binary.workerRestartArray = []; // used to track rolling restarts of workers
       binary.workersExpected = 0;
 
       // signals
@@ -237,7 +238,7 @@ exports['startCluster'] = function(binary, next){
         binary.log('Signal: SIGTTOU', 'debug');
         binary.log('remove a worker', 'info');
         binary.workersExpected--;
-        for (var i in cluster.workers){
+        for(var i in cluster.workers){
           var worker = cluster.workers[i];
           worker.send('stopProcess');
           break;
@@ -279,7 +280,8 @@ exports['startCluster'] = function(binary, next){
       cluster.on('exit', function(worker, code, signal) {
         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has exited', 'alert');
         binary.releaseWorkerId(worker.workerID);
-        setTimeout(binary.reloadAWorker, loopSleep / 2); // to prevent CPU-splsions if crashing too fast
+        // to prevent CPU explosions if crashing too fast
+        setTimeout(binary.reloadAWorker, loopSleep / 2);
       });
 
       binary.loopUntilAllWorkers();
