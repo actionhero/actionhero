@@ -28,15 +28,7 @@ grunt.initConfig({
     }
   },
   projectUpdate: {
-    projectUpdate: {
-      options: {
-        commands: [
-          {cmd: 'npm', args: ['install']},
-          {cmd: 'npm', args: ['update']},
-          {cmd: 'npm', args: ['prune']}
-        ]
-      }
-    }
+    update: {}
   },
   uglify: {
     options: {

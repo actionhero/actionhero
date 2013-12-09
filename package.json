@@ -53,7 +53,7 @@
     "grunt-contrib-uglify": "0.2.x",
     "grunt-env": "0.4.x",
     "grunt-mocha-test": "0.8.x",
-    "grunt-project-update": "0.1.x"
+    "grunt-project-update": "0.2.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
