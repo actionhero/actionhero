@@ -70,7 +70,7 @@ var web = function(api, options, next){
 
   server.sendMessage = function(connection, message){
     var stringResponse = '';
-    if(connection.rawConnection.req.method.toUpperCase() == 'HEAD'){
+    if(connection.rawConnection.req.method.toUpperCase() != 'HEAD'){
       stringResponse = String(message);
     }
     connection.rawConnection.responseHeaders.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);

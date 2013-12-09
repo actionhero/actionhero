@@ -17,7 +17,7 @@ var staticFile = function(api, next){
         if(file.indexOf(path.normalize(api.config.general.paths.public)) != 0){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
         } else {
-          self.checkExistance(file, function(exists){
+          self.checkExistence(file, function(exists){
             if(exists){
               self.sendFile(file, connection, callback);
             } else {
