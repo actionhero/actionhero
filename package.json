@@ -61,7 +61,7 @@
   "scripts": {
     "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
-    "test": "grunt test",
+    "test": "grunt testFakeRedis && grunt testRealRedis",
     "start": "node ./bin/actionHero"
   },
   "prepublish": "grunt publish",
