@@ -113,4 +113,38 @@ describe('Core: Utils', function(){
     done();
   });
 
+  describe('#parseIPv6URI', function(){
+
+    it('address and port', function(){
+      var uri = '[2604:4480::5]:8080';
+      var parts = specHelper.utils.parseIPv6URI(uri);
+      parts.host.should.equal('2604:4480::5');
+      parts.port.should.equal(8080);
+    });
+
+    it('address without port', function(){
+      var uri = '2604:4480::5';
+      var parts = specHelper.utils.parseIPv6URI(uri);
+      parts.host.should.equal('2604:4480::5');
+      parts.port.should.equal(80);
+    });
+
+    it('full uri', function(){
+      var uri = 'http://[2604:4480::5]:8080/foo/bar';
+      var parts = specHelper.utils.parseIPv6URI(uri);
+      parts.host.should.equal('2604:4480::5');
+      parts.port.should.equal(8080);
+    });
+    
+    it('failing address', function(){
+      var uri = '[2604:4480:z:5]:80';
+      try{
+        var parts = specHelper.utils.parseIPv6URI(uri);
+      }catch(e){
+        e.message.should.equal('failed to parse address');
+      }
+    });
+
+  });
+
 });

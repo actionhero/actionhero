@@ -168,6 +168,26 @@ var utils = function(api, next){
     return cookies;
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  // parse an IPv6 addrss 
+  api.utils.parseIPv6URI = function(addr){
+    var host = '::1'
+      , port = '80'
+      , regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/)
+    //if we have brackets parse them and find a port
+    if(-1 < addr.indexOf('[') && -1 < addr.indexOf(']')){
+      var res = regexp.exec(addr)
+      if(null === res){
+        throw new Error('failed to parse address')
+      }
+      host = res[1]
+      port = res[2]
+    } else {
+      host = addr
+    }
+    return {host: host, port: parseInt(port,10)}
+  }
+
 ////////////////////////////////////////////////////////////////////////////
 // EXPORT
   next();
