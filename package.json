@@ -47,7 +47,13 @@
     "mocha": "1.9.x",
     "should": "1.2.x",
     "request": "2.x.x",
-    "uglify-js": "2.4.x"
+    "uglify-js": "2.4.x",
+    "grunt": "0.4.x",
+    "grunt-contrib-clean": "0.5.x",
+    "grunt-contrib-uglify": "0.2.x",
+    "grunt-env": "0.4.x",
+    "grunt-mocha-test": "0.8.x",
+    "grunt-project-update": "0.1.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
@@ -55,10 +61,10 @@
   "scripts": {
     "postinstall": "node ./bin/actionHero intro",
     "help": "node ./bin/actionHero help",
-    "test": "fakeredis=true NODE_ENV=test node ./node_modules/.bin/mocha && fakeredis=false NODE_ENV=test node ./node_modules/.bin/mocha",
+    "test": "grunt test",
     "start": "node ./bin/actionHero"
   },
-  "prepublish": "./node_modules/.bin/uglifyjs ./public/javascript/actionHeroWebSocket.js --lint -o ./public/javascript/actionHeroWebSocket.min.js",
+  "prepublish": "grunt publish",
   "subdomain": "actionhero",
   "domains": [
     "demo.actionherojs.com",
