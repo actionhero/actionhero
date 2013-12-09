@@ -127,8 +127,8 @@ describe('Server: Web', function(){
             connection.rawConnection.responseHeaders.push(['thing', "A"]);
             connection.rawConnection.responseHeaders.push(['thing', "B"]);
             connection.rawConnection.responseHeaders.push(['thing', "C"]);
-            connection.rawConnection.responseHeaders.push(['set-cookie', "value 1"]);
-            connection.rawConnection.responseHeaders.push(['set-cookie', "value 2"]);
+            connection.rawConnection.responseHeaders.push(['Set-Cookie', "value_1=1"]);
+            connection.rawConnection.responseHeaders.push(['Set-Cookie', "value_2=2"]);
             next(connection, true);
           }
         }
@@ -154,8 +154,8 @@ describe('Server: Web', function(){
       specHelper.apiTest.del('/api/headerTestAction', 0, {}, function(response, json){
         response.statusCode.should.eql(200);
         response.headers['set-cookie'].length.should.eql(2);
-        response.headers['set-cookie'][1].should.eql('value 1');
-        response.headers['set-cookie'][0].should.eql('value 2');
+        response.headers['set-cookie'][1].should.eql('value_1=1');
+        response.headers['set-cookie'][0].should.eql('value_2=2');
         done();
       });
     });
