@@ -1,5 +1,5 @@
-var net = require("net");
-var tls = require("tls");
+var net = require('net');
+var tls = require('tls');
 var fs = require('fs');
 
 var socket = function(api, options, next){
@@ -8,7 +8,7 @@ var socket = function(api, options, next){
   // INIT //
   //////////
 
-  var type = "socket"
+  var type = 'socket'
   var attributes = {
     canChat: true,
     logConnections: true,
@@ -16,21 +16,21 @@ var socket = function(api, options, next){
     pendingShutdownWaitLimit: 5000,
     sendWelcomeMessage: true,
     verbs: [
-      "quit",
-      "exit",
-      "documentation",
-      "paramAdd", 
-      "paramDelete",
-      "paramView",
-      "paramsView",
-      "paramsDelete",
-      "roomChange",
-      "roomLeave",
-      "roomView",
-      "listenToRoom",
-      "silenceRoom",
-      "detailsView",
-      "say",
+      'quit',
+      'exit',
+      'documentation',
+      'paramAdd',
+      'paramDelete',
+      'paramView',
+      'paramsView',
+      'paramsDelete',
+      'roomChange',
+      'roomLeave',
+      'roomView',
+      'listenToRoom',
+      'silenceRoom',
+      'detailsView',
+      'say'
     ]
   }
 
@@ -45,15 +45,15 @@ var socket = function(api, options, next){
       server.server = net.createServer(function(rawConnection){
         handleConnection(rawConnection);
       });
-    }else{
+    } else {
       server.server = tls.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
       });
     }
 
-    server.server.on("error", function(e){
-      api.log("Cannot start socket server @ " + options.bindIP + ":" + options.port + "; Exiting.", "emerg");
-      api.log(e, "error");
+    server.server.on('error', function(e){
+      api.log('Cannot start socket server @ ' + options.bindIP + ':' + options.port + '; Exiting.', 'emerg');
+      api.log(e, 'error');
       process.exit();
     });
     
@@ -70,32 +70,32 @@ var socket = function(api, options, next){
     if(connection.respondingTo != null){
       message.messageCount = messageCount;
       connection.respondingTo = null;
-    }else if(message.context == "response"){
+    } else if(message.context == 'response'){
       if(messageCount != null){
         message.messageCount = messageCount;
-      }else{
+      } else {
         message.messageCount = connection.messageCount;
       }
     }
-    try{
-      connection.rawConnection.write(JSON.stringify(message) + "\r\n");
-    }catch(e){
-      api.log("socket write error: "+e, "error");
-    } 
+    try {
+      connection.rawConnection.write(JSON.stringify(message) + '\r\n');
+    } catch(e){
+      api.log('socket write error: ' + e, 'error');
+    }
   }
 
   server.goodbye = function(connection, reason){
     if(reason == null){ reason = 'server shutdown' }
-    try{ 
-      connection.rawConnection.end(JSON.stringify({status: "Bye!", context: "api", reason: reason}) + "\r\n");
+    try {
+      connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api', reason: reason}) + '\r\n');
       server.destroyConnection(connection);
-    }catch(e){ }
+    } catch(e){}
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
     if(error != null){
       server.sendMessage(connection, error, connection.messageCount);
-    }else{
+    } else {
       fileStream.pipe(connection.rawConnection, {end: false});
     }
   };
@@ -104,26 +104,26 @@ var socket = function(api, options, next){
   // EVENTS //
   ////////////
 
-  server.on("connection", function(connection){
+  server.on('connection', function(connection){
     connection.params = {
       limit:  api.config.general.defaultLimit,
       offset: api.config.general.defaultOffset
     }
 
-    connection.rawConnection.on("data", function(chunk){
-      if(checkBreakChars(chunk)){ 
-        server.goodbye(connection, "break-charecter"); 
-      }else{
-        connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, "\n");
+    connection.rawConnection.on('data', function(chunk){
+      if(checkBreakChars(chunk)){
+        server.goodbye(connection, 'break-character');
+      } else {
+        connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
         var index, line;
         while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1) {
           var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          data.split("\n").forEach(function(line){
+          data.split('\n').forEach(function(line){
             if(line.length > 0){
-              // increment at the start of the requset so that responses can be caught in order on the client
+              // increment at the start of the request so that responses can be caught in order on the client
               // this is not handled by the genericServer
-              connection.messageCount++; 
+              connection.messageCount++;
               parseRequest(connection, line);
             }
           });
@@ -131,21 +131,21 @@ var socket = function(api, options, next){
       }
     });
 
-    connection.rawConnection.on("end", function () {        
-      try{ connection.rawConnection.end(); }catch(e){ }
+    connection.rawConnection.on('end', function(){
+      try { connection.rawConnection.end() } catch(e){}
       server.destroyConnection(connection);
     });
 
-    connection.rawConnection.on("error", function(e){
-      server.log("socket error: " + e, "error");
-      try{ connection.rawConnection.end(); }catch(e){ }
+    connection.rawConnection.on('error', function(e){
+      server.log('socket error: ' + e, 'error');
+      try { connection.rawConnection.end() } catch(e){}
       server.destroyConnection(connection);
     });
   });
 
-  server.on("actionComplete", function(connection, toRender, messageCount){
+  server.on('actionComplete', function(connection, toRender, messageCount){
     if(toRender === true){
-      connection.response.context = "response";
+      connection.response.context = 'response';
       server.sendMessage(connection, connection.response, messageCount);
     }
   });
@@ -155,72 +155,71 @@ var socket = function(api, options, next){
   /////////////
 
   var parseRequest = function(connection, line){
-    var words = line.split(" ");
+    var words = line.split(' ');
     var verb = words.shift();
-    if(verb == "file"){
-      if (words.length > 0){
+    if(verb == 'file'){
+      if(words.length > 0){
         connection.params.file = words[0];
       }
       server.processFile(connection);
-    }else{
+    } else {
       connection.verbs(verb, words, function(error, data){
         if(error == null){
-          var message = {status: "OK", context: "response", data: data}
-          server.sendMessage(connection, message);
-        }else if(error === "verb not found or not allowed"){
-          try{ // check for and attempt to check single-use params
+          server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
+        } else if(error === 'verb not found or not allowed'){
+          // check for and attempt to check single-use params
+          try {
             var request_hash = JSON.parse(line);
-            if(request_hash["params"] != null){
-              connection.params = request_hash["params"];
+            if(request_hash['params'] != null){
+              connection.params = request_hash['params'];
             }
-            if(request_hash["action"] != null){
-              connection.params["action"] = request_hash["action"];
+            if(request_hash['action'] != null){
+              connection.params['action'] = request_hash['action'];
             }
-          }catch(e){
+          } catch(e){
             connection.params.action = verb;
           }
           connection.error = null;
           connection.response = {};
           server.processAction(connection);
-        }else{
-          var message = {status: error, context: "response", data: data}
-          server.sendMessage(connection, message);
+        } else {
+          server.sendMessage(connection, {status: error, context: 'response', data: data});
         }
       });
     }
   }
 
   var handleConnection = function(rawConnection){
-    rawConnection.socketDataString = "";
+    rawConnection.socketDataString = '';
     server.buildConnection({
-      rawConnection  : rawConnection, 
-      remoteAddress  : rawConnection.remoteAddress, 
+      rawConnection  : rawConnection,
+      remoteAddress  : rawConnection.remoteAddress,
       remotePort     : rawConnection.remotePort
-    }); // will emit "connection"
+    }); // will emit 'connection'
   }
 
   // I check for ctrl+c in the stream
   var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
-    if(hexChunk == "fff4fffd06"){
+    if(hexChunk == 'fff4fffd06'){
       found = true // CTRL + C
-    }else if(hexChunk == "04"){
+    } else if(hexChunk == '04'){
       found = true // CTRL + D
     }
     return found
   }
 
   var gracefulShutdown = function(next, alreadyShutdown){
-    if(alreadyShutdown == null || alreadyShutdown == false){ 
+    if(alreadyShutdown == null || alreadyShutdown == false){
       server.server.close();
     }
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
       if(connection.pendingActions == 0){
         server.goodbye(connection);
-      }else{
-        pendingConnections++; 
+      } else {
+        pendingConnections++;
         if(connection.rawConnection.shutDownTimer == null){
           connection.rawConnection.shutDownTimer = setTimeout(function(){
             server.goodbye(connection);
@@ -229,14 +228,12 @@ var socket = function(api, options, next){
       }
     });
     if(pendingConnections > 0){
-      server.log("waiting on shutdown, there are still " + pendingConnections + " connected clients waiting on a response", "notice");
+      server.log('waiting on shutdown, there are still ' + pendingConnections + ' connected clients waiting on a response', 'notice');
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    }else{
-      if(typeof next == 'function'){ next(); }
-    }
-  }    
+    } else if(typeof next == 'function'){ next() }
+  }
 
   next(server);
 

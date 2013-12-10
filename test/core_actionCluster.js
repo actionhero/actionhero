@@ -1,7 +1,7 @@
 describe('Core: actionCluster', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apis = [];
-  var should = require("should");
+  var should = require('should');
   var externalIP = 'actionHero';
 
   var startAllServers = function(done){
@@ -24,14 +24,14 @@ describe('Core: actionCluster', function(){
     });
   }
 
-   var restartAllServers = function(done){
+  var restartAllServers = function(done){
     specHelper.restartServer(0, function(api){
       apis[0] = api;
       specHelper.restartServer(1, function(api){
         apis[1] = api;
         specHelper.restartServer(2, function(api){
           apis[2] = api;
-          done(); 
+          done();
         });
       });
     });
@@ -55,10 +55,10 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #1', function(done){
       this.timeout(5000);
-      specHelper.prepare(0, function(api){ 
+      specHelper.prepare(0, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        api.id.should.equal("test-server-1");
+        api.id.should.equal('test-server-1');
         apis[0] = api;
         done();
       });
@@ -66,10 +66,10 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #2', function(done){
       this.timeout(5000);
-      specHelper.prepare(1, function(api){ 
+      specHelper.prepare(1, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        api.id.should.equal("test-server-2");
+        api.id.should.equal('test-server-2');
         apis[1] = api;
         done();
       });
@@ -77,10 +77,10 @@ describe('Core: actionCluster', function(){
 
     it('Start cluster server #3', function(done){
       this.timeout(5000);
-      specHelper.prepare(2, function(api){ 
+      specHelper.prepare(2, function(api){
         api.should.be.an.instanceOf(Object);
         api.id.should.be.a('string');
-        api.id.should.equal("test-server-3");
+        api.id.should.equal('test-server-3');
         apis[2] = api;
         done();
       });
@@ -88,57 +88,58 @@ describe('Core: actionCluster', function(){
   
   });
 
-  describe('say and clients on seperate peers', function(){
+  describe('say and clients on separate peers', function(){
     var client1 = {};
     var client2 = {};
     var client3 = {};
     var net = require('net');
 
-    function makeSocketRequest(thisClient, message, cb){
-      var rsp = function(d){ 
-        d = d.split("\r\n")[0]
-        try{
-          var parsed = JSON.parse(d);
-        }catch(e){
-          console.log("Error Parsing:")
+    var makeSocketRequest = function(thisClient, message, cb){
+      var rsp = function(d){
+        d = d.split('\r\n')[0]
+        var parsed = null;
+        try {
+          parsed = JSON.parse(d);
+        } catch(e){
+          console.log('Error Parsing:')
           console.log(d)
           console.log(typeof d)
           console.log(e)
           process.exit()
         }
-        thisClient.removeListener('data', rsp); 
-        if(typeof cb == 'function'){ cb(parsed); }
+        thisClient.removeListener('data', rsp);
+        if(typeof cb == 'function'){ cb(parsed) }
       };
       thisClient.on('data', rsp);
-      thisClient.write(message + "\r\n");
+      thisClient.write(message + '\r\n');
     };
 
     before(function(done){
       var connections = 0;
-      var connnectedClient = function(){
+      var connectedClient = function(){
         connections++;
         if(connections == 3){
-          client1.removeListener('data', connnectedClient);
-          client2.removeListener('data', connnectedClient);
-          client3.removeListener('data', connnectedClient);
-          setTimeout(done, 100); // time for streaming bufferst to clear
+          client1.removeListener('data', connectedClient);
+          client2.removeListener('data', connectedClient);
+          client3.removeListener('data', connectedClient);
+          setTimeout(done, 100); // time for streaming buffers to clear
         }
       };
 
       client1 = net.connect((specHelper.startingSocketPort + 0));
       client1.setEncoding('utf8');
-      client1.on("data", connnectedClient);
-      makeSocketRequest(client1, "roomChange defaultRoom");
+      client1.on('data', connectedClient);
+      makeSocketRequest(client1, 'roomChange defaultRoom');
 
       client2 = net.connect((specHelper.startingSocketPort + 1));
       client2.setEncoding('utf8');
-      client2.on("data", connnectedClient);
-      makeSocketRequest(client2, "roomChange defaultRoom");
+      client2.on('data', connectedClient);
+      makeSocketRequest(client2, 'roomChange defaultRoom');
 
       client3 = net.connect((specHelper.startingSocketPort + 2));
       client3.setEncoding('utf8');
-      client3.on("data", connnectedClient);
-      makeSocketRequest(client3, "roomChange defaultRoom");
+      client3.on('data', connectedClient);
+      makeSocketRequest(client3, 'roomChange defaultRoom');
     });
 
     after(function(done){
@@ -150,9 +151,9 @@ describe('Core: actionCluster', function(){
       }, 500)
     });
 
-    it("all connections can join the default room and client #1 can see them", function(done){
+    it('all connections can join the default room and client #1 can see them', function(done){
       this.timeout(10000)
-      makeSocketRequest(client1, "roomView", function(response){
+      makeSocketRequest(client1, 'roomView', function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
         response.data.membersCount.should.equal(3);
@@ -160,9 +161,9 @@ describe('Core: actionCluster', function(){
       });
     });
 
-    it("all connections can join the default room and client #2 can see them", function(done){
+    it('all connections can join the default room and client #2 can see them', function(done){
       this.timeout(10000)
-      makeSocketRequest(client2, "roomView", function(response){
+      makeSocketRequest(client2, 'roomView', function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
         response.data.membersCount.should.equal(3);
@@ -170,9 +171,9 @@ describe('Core: actionCluster', function(){
       });
     });
 
-    it("all connections can join the default room and client #3 can see them", function(done){
+    it('all connections can join the default room and client #3 can see them', function(done){
       this.timeout(10000)
-      makeSocketRequest(client3, "roomView", function(response){
+      makeSocketRequest(client3, 'roomView', function(response){
         response.should.be.an.instanceOf(Object);
         response.data.room.should.equal('defaultRoom');
         response.data.membersCount.should.equal(3);
@@ -180,17 +181,17 @@ describe('Core: actionCluster', function(){
       });
     });
 
-    it("clients can communicate across the cluster", function(done){
+    it('clients can communicate across the cluster', function(done){
       this.timeout(5000);
       if(apis[0].config.redis.fake == true){
-        // you can't communicte across the cluster with fakeredis!
+        // you can't communicate across the cluster with fakeredis!
         done();
-      }else{
-        makeSocketRequest(client2, "", function(response){
-          response.message.should.equal("Hi there!");
+      } else {
+        makeSocketRequest(client2, '', function(response){
+          response.message.should.equal('Hi there!');
           done();
         });
-        client1.write("say Hi there!" + "\r\n");
+        client1.write('say Hi there!' + '\r\n');
       }
     });
 
@@ -198,18 +199,18 @@ describe('Core: actionCluster', function(){
 
   describe('shared cache', function(){
 
-    it("peer 1 writes and peer 2 should read", function(done){
-      apis[0].cache.save("test_key", "yay", null, function(err, save_resp){
-        apis[1].cache.load("test_key", function(err, value){
+    it('peer 1 writes and peer 2 should read', function(done){
+      apis[0].cache.save('test_key', 'yay', null, function(err, save_resp){
+        apis[1].cache.load('test_key', function(err, value){
           value.should.equal('yay');
           done();
         })
       });
-    }); 
+    });
 
-    it("peer 3 deletes and peer 1 cannot read any more", function(done){
-      apis[2].cache.destroy("test_key", function(err, del_resp){
-        apis[0].cache.load("test_key", function(err, value){
+    it('peer 3 deletes and peer 1 cannot read any more', function(done){
+      apis[2].cache.destroy('test_key', function(err, del_resp){
+        apis[0].cache.load('test_key', function(err, value){
           should.not.exist(value);
           done();
         })

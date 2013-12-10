@@ -1,11 +1,11 @@
-describe('Core: Documentaion', function(){
+describe('Core: Documentation', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var should = require("should");
+  var should = require('should');
 
   before(function(done){
     this.timeout(5000);
-    specHelper.prepare(0, function(api){ 
+    specHelper.prepare(0, function(api){
       apiObj = specHelper.cleanAPIObject(api);
       done();
     })
@@ -23,15 +23,15 @@ describe('Core: Documentaion', function(){
       for(var actionName in json.documentation){
         for(var version in json.documentation[actionName]){
           var action = json.documentation[actionName][version];
-          action.name.should.be.a('string'); 
-          action.description.should.be.a('string'); 
-          action.inputs.should.be.a('object'); 
+          action.name.should.be.a('string');
+          action.description.should.be.a('string');
+          action.inputs.should.be.a('object');
           action.inputs.required.should.be.an.instanceOf(Array)
           action.inputs.optional.should.be.an.instanceOf(Array)
-          action.outputExample.should.be.a('object'); 
+          action.outputExample.should.be.a('object');
         }
-      };
-    done();
+      }
+      done();
     });
   });
 

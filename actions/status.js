@@ -2,15 +2,15 @@ var action = {};
 
 /////////////////////////////////////////////////////////////////////
 // metadata
-action.name = "status";
-action.description = "I will return some basic information about the API";
+action.name = 'status';
+action.description = 'I will return some basic information about the API';
 action.inputs = {
-  "required" : [],
-  "optional" : []
+  'required' : [],
+  'optional' : []
 };
 action.blockedConnectionTypes = [];
 action.outputExample = {
-  status: "OK",
+  status: 'OK',
   uptime: 1234,
   stats: {}
 }
