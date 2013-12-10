@@ -1,10 +1,10 @@
-var domain = require("domain");
+var domain = require('domain');
 var async = require('async');
 
 var actionProcessor = function(api, next){
 
   api.actionProcessor = function(data){
-    if(data.connection == null){ throw new Error('data.connection is required'); }
+    if(data.connection == null){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
@@ -12,8 +12,8 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.buildProxyConnection = function(connection){
     var proxyConnection = {};
-    for (var i in connection) {
-      if (connection.hasOwnProperty(i)) {
+    for(var i in connection){
+      if(connection.hasOwnProperty(i)){
         proxyConnection[i] = connection[i];
       }
     }
@@ -22,12 +22,12 @@ var actionProcessor = function(api, next){
   }
 
   api.actionProcessor.prototype.incrementTotalActions = function(count){
-    if(count == null){ count = 1; }
+    if(count == null){ count = 1 }
     this.connection._original_connection.totalActions = this.connection._original_connection.totalActions + count;
   }
 
-  api.actionProcessor.prototype.incramentPendingActions = function(count){
-    if(count == null){ count = 1; }
+  api.actionProcessor.prototype.incrementPendingActions = function(count){
+    if(count == null){ count = 1 }
     this.connection._original_connection.pendingActions = this.connection._original_connection.pendingActions + count;
   }
 
@@ -37,16 +37,16 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.completeAction = function(error, toRender){
     var self = this;
-    if(error != null){ self.connection.error = error; }
+    if(error != null){ self.connection.error = error }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
     }
-    if(self.connection.error != null && self.connection.response.error == null ){ 
-      self.connection.response.error = self.connection.error; 
+    if(self.connection.error != null && self.connection.response.error == null){
+      self.connection.response.error = self.connection.error;
     }
-    if(toRender == null){ toRender = true; }
-    self.incramentPendingActions(-1);
-    api.stats.increment("actions:actionsCurrentlyProcessing", -1);
+    if(toRender == null){ toRender = true }
+    self.incrementPendingActions(-1);
+    api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
 
     process.nextTick(function(){
@@ -59,18 +59,18 @@ var actionProcessor = function(api, next){
         self.callback(self.connection._original_connection, toRender, self.messageCount);
       }
 
-      var logLevel = "info";
-      if(self.actionTemplate != null && self.actionTemplate.logLevel != null){ 
-        logLevel = self.actionTemplate.logLevel; 
+      var logLevel = 'info';
+      if(self.actionTemplate != null && self.actionTemplate.logLevel != null){
+        logLevel = self.actionTemplate.logLevel;
       }
-      var stringifiedError = ""
-      try{
+      var stringifiedError = ''
+      try {
         stringifiedError = JSON.stringify(self.connection.error);
-      }catch(e){
+      } catch(e){
         stringifiedError = String(self.connection.error)
       }
       
-      api.log("[ action @ " + self.connection.type + " ]", logLevel, {
+      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, {
         to: self.connection.remoteIP,
         action: self.connection.action,
         params: JSON.stringify(self.connection.params),
@@ -82,18 +82,18 @@ var actionProcessor = function(api, next){
   }
 
   api.actionProcessor.prototype.sanitizeLimitAndOffset = function(){
-    if(this.connection.params.limit == null){ 
-      this.connection.params.limit = api.config.general.defaultLimit; 
-    }else{ 
-      this.connection.params.limit = parseFloat(this.connection.params.limit); 
+    if(this.connection.params.limit == null){
+      this.connection.params.limit = api.config.general.defaultLimit;
+    } else {
+      this.connection.params.limit = parseFloat(this.connection.params.limit);
     }
-    if(this.connection.params.offset == null){ 
-      this.connection.params.offset = api.config.general.defaultOffset; 
-    }else{ 
-      this.connection.params.offset = parseFloat(this.connection.params.offset); 
+    if(this.connection.params.offset == null){
+      this.connection.params.offset = api.config.general.defaultOffset;
+    } else {
+      this.connection.params.offset = parseFloat(this.connection.params.offset);
     }
-    if(this.connection.params.apiVersion != null){ 
-      this.connection.params.apiVersion = parseFloat(this.connection.params.apiVersion); 
+    if(this.connection.params.apiVersion != null){
+      this.connection.params.apiVersion = parseFloat(this.connection.params.apiVersion);
       if(isNaN(this.connection.params.apiVersion)){ this.connection.params.apiVersion = null; }
     }
   }
@@ -102,20 +102,20 @@ var actionProcessor = function(api, next){
     var self = this;
     if(api.actions.preProcessors.length == 0){
       callback(toProcess);
-    }else{
+    } else {
       var processors = [];
       api.actions.preProcessors.forEach(function(processor){
-        processors.push(function(next){ 
+        processors.push(function(next){
           if(toProcess === true){
             processor(self.connection, self.actionTemplate, function(connection, localToProcess){
               self.connection = connection
               toProcess = localToProcess
               next();
             });
-          }else{ next(toProcess) }
+          } else { next(toProcess) }
         })
       });
-      processors.push( function(){ callback(toProcess) });
+      processors.push(function(){ callback(toProcess) });
       async.series(processors);
     }
   }
@@ -124,10 +124,10 @@ var actionProcessor = function(api, next){
     var self = this;
     if(api.actions.postProcessors.length == 0){
       callback(toRender);
-    }else{
+    } else {
       var processors = [];
       api.actions.postProcessors.forEach(function(processor){
-        processors.push(function(next){ 
+        processors.push(function(next){
           processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
             toRender = localToRender;
@@ -135,7 +135,7 @@ var actionProcessor = function(api, next){
           });
         })
       });
-      processors.push( function(){ callback(toRender) });
+      processors.push(function(){ callback(toRender) });
       async.series(processors);
     }
   }
@@ -143,60 +143,59 @@ var actionProcessor = function(api, next){
   api.actionProcessor.prototype.reduceParams = function(){
     var self = this;
     for(var p in self.connection.params){
-      if (
-        api.params.globalSafeParams.indexOf(p) < 0 
-        && self.actionTemplate.inputs.required.indexOf(p) < 0 
-        && self.actionTemplate.inputs.optional.indexOf(p) < 0
+      if(api.params.globalSafeParams.indexOf(p) < 0 &&
+         self.actionTemplate.inputs.required.indexOf(p) < 0 &&
+         self.actionTemplate.inputs.optional.indexOf(p) < 0
       ){
         delete self.connection.params[p];
       }
     }
   }
 
-  api.actionProcessor.prototype.processAction = function(){ 
+  api.actionProcessor.prototype.processAction = function(){
     var self = this;
     self.actionStartTime = new Date().getTime();
     self.incrementTotalActions();
-    self.incramentPendingActions();
+    self.incrementPendingActions();
     self.sanitizeLimitAndOffset();
 
-    self.connection.action = self.connection.params["action"];
-    if (api.actions.versions[self.connection.action] != null){
+    self.connection.action = self.connection.params['action'];
+    if(api.actions.versions[self.connection.action] != null){
       if(self.connection.params.apiVersion == null){
         self.connection.params.apiVersion = api.actions.versions[self.connection.action][api.actions.versions[self.connection.action].length - 1];
       }
       self.actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
     }
-    api.stats.increment("actions:actionsCurrentlyProcessing");
+    api.stats.increment('actions:actionsCurrentlyProcessing');
 
     if(api.running != true){
-      self.completeAction("the server is shutting down");
-    }else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
-      self.completeAction("you have too many pending requests");
-    }else if(self.connection.error !== null){
+      self.completeAction('the server is shutting down');
+    } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
+      self.completeAction('you have too many pending requests');
+    } else if(self.connection.error !== null){
       self.completeAction();
-    }else if(self.connection.action == null || self.actionTemplate == null){
-      api.stats.increment("actions:actionsNotFound");
-      if(self.connection.action == "" || self.connection.action == null){ self.connection.action = "{no action}"; }
-      self.connection.error = new Error(self.connection.action + " is not a known action or that is not a valid apiVersion.");
+    } else if(self.connection.action == null || self.actionTemplate == null){
+      api.stats.increment('actions:actionsNotFound');
+      if(self.connection.action == '' || self.connection.action == null){ self.connection.action = '{no action}'; }
+      self.connection.error = new Error(self.connection.action + ' is not a known action or that is not a valid apiVersion.');
       self.completeAction();
-    }else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0 ){
-      self.connection.error = new Error("this action does not support the " + self.connection.type + " connection type");
+    } else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
+      self.connection.error = new Error('this action does not support the ' + self.connection.type + ' connection type');
       self.completeAction();
-    }else{
+    } else {
       self.reduceParams();
       api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
       if(self.connection.error === null){
-        process.nextTick(function() { 
-          api.stats.increment("actions:totalProcessedActions");
-          api.stats.increment("actions:processedActions:" + self.connection.action);
-          var actionDomain = domain.create();
-          actionDomain.on("error", function(err){
-            api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
-              self.completeAction(null, true);
-            });
+        api.stats.increment('actions:totalProcessedActions');
+        api.stats.increment('actions:processedActions:' + self.connection.action);
+        var actionDomain = domain.create();
+        actionDomain.on('error', function(err){
+          api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
+            self.completeAction(null, true);
           });
-          actionDomain.run(function(){
+        });
+        actionDomain.run(function(){
+          process.nextTick(function(){
             var toProcess = true;
             self.preProcessAction(toProcess, function(toProcess){
               if(toProcess === true){
@@ -206,15 +205,15 @@ var actionProcessor = function(api, next){
                   self.postProcessAction(toRender, function(toRender){
                     self.completeAction(null, toRender);
                   });
-                }); 
-              }else{
+                });
+              } else {
                 self.completeAction(null, true);
               }
             });
           });
         });
-      }else{
-        self.completeAction(); 
+      } else {
+        self.completeAction();
       }
     }
   }

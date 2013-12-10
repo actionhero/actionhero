@@ -12,7 +12,7 @@
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)
 
 ## Who is the actionHero?
-actionHero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks. The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).  actionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
+actionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).  actionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
 Currently actionHero supports:
 
@@ -39,7 +39,5 @@ Currently actionHero supports:
 * The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/evantahler/actionHero/graphs/contributors)
 * Logo by [Ali Spagnola](http://alispagnola.com/)
 * If you want to contribute to actionHero, contribute to the conversation on [github](https://github.com/evantahler/actionHero)
-
-![trackBat](http://trackbat.com/api/track?tid=UA-29132597-1&dh=actionherojs.com&dp=/readme&dt=readme)
 
 ###
