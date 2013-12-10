@@ -11,21 +11,21 @@ describe('Core: Exceptions', function(){
     })
   });
 
-  var uncaughtExceptionHandlers;
-  beforeEach(function(done){
-    uncaughtExceptionHandlers = process.listeners("uncaughtException");
-    uncaughtExceptionHandlers.forEach(function(e){
-      process.removeListener("uncaughtException", e); 
-    });
-    done();
-  })
+  //var uncaughtExceptionHandlers;
+  //eforeEach(function(done){
+    //uncaughtExceptionHandlers = process.listeners("uncaughtException");
+    //uncaughtExceptionHandlers.forEach(function(e){
+      //process.removeListener("uncaughtException", e);
+    //});
+    //done();
+  //})
 
-  afterEach(function(done){
-    uncaughtExceptionHandlers.forEach(function(e){
-      process.on("uncaughtException", e);
-    });
-    done();
-  });
+  //afterEach(function(done){
+  //  uncaughtExceptionHandlers.forEach(function(e){
+  //    process.on("uncaughtException", e);
+  //  });
+  //  done();
+  //});
 
   it('I can inject a bad task that breaks', function(done){
     apiObj.actions.actions.badAction = {
