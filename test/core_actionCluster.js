@@ -108,7 +108,7 @@ describe('Core: actionCluster', function(){
           process.exit()
         }
         thisClient.removeListener('data', rsp);
-        if(typeof cb == 'function'){ cb(parsed) }
+        if('function' === typeof cb){ cb(parsed) }
       };
       thisClient.on('data', rsp);
       thisClient.write(message + '\r\n');
@@ -118,7 +118,7 @@ describe('Core: actionCluster', function(){
       var connections = 0;
       var connectedClient = function(){
         connections++;
-        if(connections == 3){
+        if(3 === connections){
           client1.removeListener('data', connectedClient);
           client2.removeListener('data', connectedClient);
           client3.removeListener('data', connectedClient);
@@ -183,7 +183,7 @@ describe('Core: actionCluster', function(){
 
     it('clients can communicate across the cluster', function(done){
       this.timeout(5000);
-      if(apis[0].config.redis.fake == true){
+      if(true === apis[0].config.redis.fake){
         // you can't communicate across the cluster with fakeredis!
         done();
       } else {

@@ -3,13 +3,13 @@ var argv = require('optimist').argv;
 
 var id = function(api, next){
 
-  if(argv['title'] != null){
+  if(null !== argv['title']){
     api.id = argv['title'];
-  } else if(process.env['ACTIONHERO_TITLE'] != null){
+  } else if(null !== process.env['ACTIONHERO_TITLE']){
     api.id = process.env['ACTIONHERO_TITLE'];
-  } else if(api.config.general.id == null){
+  } else if(null === api.config.general.id){
     var externalIP = api.utils.getExternalIPAddress();
-    if(externalIP == false){
+    if(false === externalIP){
       var message = ' * Error fetching this hosts external IP address; setting id base to \'actionHero\''
       try {
         api.log(message, 'crit');

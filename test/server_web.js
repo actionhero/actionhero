@@ -203,7 +203,7 @@ describe('Server: Web', function(){
           inputs: { required: ['key'], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
-            if(connection.params.key != 'value'){
+            if('value' !== connection.params.key){
               connection.error = 'key != value';
               connection.rawConnection.responseHttpCode = 402;
             } else {

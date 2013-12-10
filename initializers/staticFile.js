@@ -10,11 +10,11 @@ var staticFile = function(api, next){
     // callback is of the form: callback(connection, error, fileStream, mime, length)
     get: function(connection, callback){
       var self = this;
-      if(connection.params.file == null){
+      if(null === connection.params.file){
         self.sendFileNotFound(connection, 'file is a required param to send a file', callback);
       } else {
         var file = path.normalize(api.config.general.paths.public + '/' + connection.params.file);
-        if(file.indexOf(path.normalize(api.config.general.paths.public)) != 0){
+        if(0 !== file.indexOf(path.normalize(api.config.general.paths.public))){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
         } else {
           self.checkExistence(file, function(exists){
@@ -62,7 +62,7 @@ var staticFile = function(api, next){
     checkExistence: function(file, callback){
       var self = this;
       fs.stat(file, function(err, stats){
-        if(err != null){
+        if(null !== err){
           callback(false);
         } else {
           if(stats.isDirectory()){
@@ -70,7 +70,7 @@ var staticFile = function(api, next){
             callback(false);
           } else if(stats.isSymbolicLink()){
             fs.readLink(file, function(err, truePath){
-              if(err != null){
+              if(null !== err){
                 callback(false);
               } else {
                 truePath = path.normalize(truePath);

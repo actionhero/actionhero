@@ -5,7 +5,7 @@ var utils = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // sqlDateTime
   api.utils.sqlDateTime = function(time){
-    if(time == null){ time = new Date() }
+    if(null === time){ time = new Date() }
     var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
@@ -17,13 +17,13 @@ var utils = function(api, next){
   }
 
   api.utils.sqlDate = function(time){
-    if(time == null){ time = new Date() }
+    if(null === time){ time = new Date() }
     var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
       '-' + api.utils.padDateDoubleStr(time.getDate());
     return dateStr;
-  };
+  }
 
   api.utils.padDateDoubleStr = function(i){
     return (i < 10) ? '0' + i : '' + i;
@@ -73,12 +73,12 @@ var utils = function(api, next){
 
   api.utils.isPlainObject = function(o){
     var safeTypes = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
-    if(o == null){ return false }
-    if((o instanceof Object) == false){ return false }
+    if(null === o){ return false }
+    if(false === (o instanceof Object)){ return false }
     for(var i in safeTypes){
       if(o instanceof safeTypes[i]){ return false }
     }
-    return (o.toString() == '[object Object]');
+    return ('[object Object]' === o.toString())
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ var utils = function(api, next){
     for(var dev in ifaces){
       var alias = 0;
       ifaces[dev].forEach(function(details){
-        if(details.family == 'IPv4' && details.address != '127.0.0.1'){
+        if('IPv4' === details.family && '127.0.0.1' !== details.address){
           ip = details.address;
         }
       });
@@ -157,7 +157,7 @@ var utils = function(api, next){
   // cookie parse from headers of http(s) requests
   api.utils.parseCookies = function(req){
     var cookies = {};
-    if(req.headers.cookie != null){
+    if(null !== req.headers.cookie){
       req.headers.cookie.split(';').forEach(function(cookie){
         var parts = cookie.split('=');
         cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
@@ -171,4 +171,4 @@ var utils = function(api, next){
   next();
 }
 
-exports.utils = utils;
+exports.utils = utils;

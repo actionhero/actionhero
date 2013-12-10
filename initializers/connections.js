@@ -45,14 +45,14 @@ var connections = function(api, next){
 
   api.connection.prototype.setup = function(data){
     var self = this;
-    if(data.id != null){
+    if(null !== data.id){
       self.id = data.id;
     } else {
       self.id = self.generateID();
     }
     self.connectedAt = new Date().getTime();
     ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
-      if(data[req] == null){ throw new Error(req + ' is required to create a new connection object') }
+      if(null === data[req]){ throw new Error(req + ' is required to create a new connection object') }
       self[req] = data[req];
     });
 
@@ -92,7 +92,7 @@ var connections = function(api, next){
     api.stats.increment('connections:activeConnections:' + self.type, -1);
     if(self.canChat === true){ api.chatRoom.removeMember(self); }
     delete api.connections.connections[self.id];
-    if(typeof callback == 'function'){ callback() }
+    if('function' === typeof callback){ callback() }
   }
 
   api.connection.prototype.verbs = function(verb, words, callback){
@@ -102,10 +102,10 @@ var connections = function(api, next){
     var allowedVerbs = server.attributes.verbs;
     if(allowedVerbs.indexOf(verb) >= 0){
       server.log('verb', 'debug', {verb: verb, to: self.remoteIP, params: JSON.stringify(words)});
-      if(verb === 'quit' || verb === 'exit'){
+      if('quit' === verb || 'exit' === verb){
         server.goodbye(self, verb + ' requested');
 
-      } else if(verb === 'paramAdd'){
+      } else if('paramAdd' === verb){
         key = words[0];
         value = words[1];
         if(words[0].indexOf('=') >= 0){
@@ -115,53 +115,44 @@ var connections = function(api, next){
         }
         self.params[key] = value;
         callback(null, null);
-      } else if(verb === 'paramDelete'){
+      } else if('paramDelete' === verb){
         key = words[0];
         delete self.params[key];
         callback(null, null);
-
-      } else if(verb === 'paramView'){
+      } else if('paramView' === verb){
         key = words[0];
         callback(null, self.params[key]);
-
-      } else if(verb === 'paramsView'){
+      } else if('paramsView' === verb){
         callback(null, self.params);
-
-      } else if(verb === 'paramsDelete'){
+      } else if('paramsDelete' === verb){
         for(var i in self.params){
           delete self.params[i];
         }
         callback(null, null);
-
-      } else if(verb === 'roomChange'){
+      } else if('roomChange' === verb){
         room = words[0];
         api.chatRoom.addMember(self, room, function(err, didHappen){
           callback(err, didHappen);
         });
-
-      } else if(verb === 'roomLeave'){
+      } else if('roomLeave' === verb){
         api.chatRoom.removeMember(self, function(err, didHappen){
           callback(err, didHappen);
         });
-
-      } else if(verb === 'roomView'){
+      } else if('roomView' === verb){
         api.chatRoom.roomStatus(self.room, function(err, roomStatus){
           callback(err, roomStatus);
         });
-
-      } else if(verb === 'listenToRoom'){
+      } else if('listenToRoom' === verb){
         room = words[0];
         api.chatRoom.listenToRoom(self, room, function(err, didHappen){
           callback(err, didHappen);
         });
-
-      } else if(verb === 'silenceRoom'){
+      } else if('silenceRoom' === verb){
         room = words[0];
         api.chatRoom.silenceRoom(self, room, function(err, didHappen){
           callback(err, didHappen);
         });
-
-      } else if(verb === 'detailsView'){
+      } else if('detailsView' === verb){
         var details = {}
         details.id = self.id;
         details.remoteIP = self.remoteIP;
@@ -172,15 +163,12 @@ var connections = function(api, next){
         details.totalActions = self.totalActions;
         details.pendingActions = self.pendingActions;
         callback(null, details);
-
-      } else if(verb === 'documentation'){
+      } else if('documentation' === verb){
         callback(null, api.documentation.documentation);
-
-      } else if(verb === 'say'){
+      } else if('say' === verb){
         api.chatRoom.socketRoomBroadcast(self, words.join(' '), function(err){
           callback(err);
         });
-
       } else {
         callback('I do not know know to perform this verb', null);
       }

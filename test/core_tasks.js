@@ -267,4 +267,4 @@ describe('Core: Tasks', function(){
 
   });
 
-});
+});

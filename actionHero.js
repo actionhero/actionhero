@@ -28,16 +28,16 @@ actionHero.prototype.initialize = function(params, callback){
   };
 
   self.api.project_root = process.cwd();
-  if(process.env.project_root != null){
+  if(null !== process.env.project_root){
     self.api.project_root = process.env.project_root;
-  } else if(process.env.PROJECT_ROOT != null){
+  } else if(null !== process.env.PROJECT_ROOT){
     self.api.project_root = process.env.PROJECT_ROOT;
   }
 
-  if(callback == null && typeof params == 'function'){
+  if(null === callback && 'function' === typeof params){
     callback = params; params = {};
   }
-  if(params === null){ params = {} }
+  if(null === params){ params = {} }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
@@ -82,16 +82,16 @@ actionHero.prototype.initialize = function(params, callback){
 
   orderedInitializers['_projectInitializers'] = function(next){
     var projectInitializers = {};
-    if(path.resolve(self.api.config.general.paths.initializer) != path.resolve(__dirname + '/initializers')){
+    if(path.resolve(self.api.config.general.paths.initializer) !== path.resolve(__dirname + '/initializers')){
       var fileSet = fs.readdirSync(path.resolve(self.api.config.general.paths.initializer)).sort();
       fileSet.forEach(function(f){
         var file = path.resolve(self.api.config.general.paths.initializer + '/' + f);
-        if(file[0] != '.'){
+        if('.' !== file[0]){
           var initializer = f.split('.')[0];
           var fileParts = file.split('.');
           var ext = fileParts[(fileParts.length - 1)];
-          if(ext === 'js'){
-            if(require.cache[require.resolve(file)] !== null){
+          if('js' === ext){
+            if(null !== require.cache[require.resolve(file)]){
               delete require.cache[require.resolve(file)];
             }
             self.initalizers[initializer] = require(file)[initializer];
@@ -126,25 +126,25 @@ actionHero.prototype.initialize = function(params, callback){
 actionHero.prototype.start = function(params, callback){
   var self = this;
 
-  if(callback == null && typeof params == 'function'){
+  if(null === callback && 'function' === typeof params){
     callback = params; params = {};
   }
 
   var start = function(){
-    if(self.api.config.general.developmentMode == true){
+    if(true === self.api.config.general.developmentMode){
       self.api.log('running in development mode', 'notice')
     }
     self.api.running = true;
     self._starters = [];
     for(var i in self.api){
-      if(typeof self.api[i]._start == 'function'){
+      if('function' === typeof self.api[i]._start){
         self._starters.push(i);
       }
     }
 
     var started = 0;
     var successMessage = '*** Server Started @ ' + self.api.utils.sqlDateTime() + ' ***';
-    if(self._starters.length == 0){
+    if(0 === self._starters.length){
       self.api.bootTime = new Date().getTime();
       self.api.log('server ID: ' + self.api.id, 'notice');
       self.api.log(successMessage, 'notice');
@@ -156,7 +156,7 @@ actionHero.prototype.start = function(params, callback){
           process.nextTick(function(){
             self.api.log(' > start: ' + starter,'debug');
             started--;
-            if(started == 0){
+            if(0 === started){
               self.api.bootTime = new Date().getTime();
               self.api.log('server ID: ' + self.api.id, 'notice');
               self.api.log(successMessage, 'notice');
@@ -168,7 +168,7 @@ actionHero.prototype.start = function(params, callback){
     }
   }
 
-  if(self.api.initialized === true){
+  if(true === self.api.initialized){
     start()
   } else {
     self.initialize(params, function(err){
@@ -194,7 +194,7 @@ actionHero.prototype.stop = function(callback){
       'webSocketServer',
       'socketServer'
     ].forEach(function(teardown){
-      if(self.api[teardown] != null && typeof self.api[teardown]._teardown == 'function'){
+      if(null !== self.api[teardown] && 'function' === typeof self.api[teardown]._teardown){
         (function(name) {
           orderedTeardowns[name] = function(next){
             self.api.log(' > teardown: ' + name, 'debug');
@@ -205,7 +205,7 @@ actionHero.prototype.stop = function(callback){
     });
 
     for(var i in self.api){
-      if(typeof self.api[i]._teardown == 'function' && orderedTeardowns[i] == null){
+      if('function' === typeof self.api[i]._teardown && null === orderedTeardowns[i]){
         (function(name) {
           orderedTeardowns[name] = function(next){
             self.api.log(' > teardown: ' + name, 'debug');
@@ -221,7 +221,7 @@ actionHero.prototype.stop = function(callback){
       self.api.log('The actionHero has been stopped', 'alert');
       self.api.log('***', 'debug');
       delete self.api.shuttingDown;
-      if(typeof callback == 'function'){ callback(null, self.api) }
+      if('function' === typeof callback){ callback(null, self.api) }
     };
 
     async.series(orderedTeardowns);
@@ -229,24 +229,24 @@ actionHero.prototype.stop = function(callback){
     // double sigterm; ignore it
   } else {
     self.api.log('Cannot shut down (not running any servers)', 'info');
-    if(typeof callback == 'function'){ callback(null, self.api) }
+    if('function' === typeof callback){ callback(null, self.api) }
   }
 };
 
 actionHero.prototype.restart = function(callback){
   var self = this;
 
-  if(self.api.running === true){
+  if(true === self.api.running){
     self.stop(function(err){
       self.start(self.startingParams, function(err, api){
         api.log('actionHero restarted', 'notice');
-        if(typeof callback == 'function'){ callback(null, self.api) }
+        if('function' === typeof callback){ callback(null, self.api) }
       });
     });
   } else {
     self.start(self.startingParams, function(err, api){
       api.log('actionHero restarted', 'notice');
-      if(typeof callback == 'function'){ callback(null, self.api) }
+      if('function' === typeof callback){ callback(null, self.api) }
     });
   }
 };

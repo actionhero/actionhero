@@ -103,9 +103,11 @@ describe('Core: Cache', function(){
       save_resp.should.equal(true);
       setTimeout(function(){
         apiObj.cache.load('testKey_slow', {expireTimeMS: expireTime}, function(err, load_resp){
+          should.not.exist(err);
           load_resp.should.equal('abc123');
           setTimeout(function(){
             apiObj.cache.load('testKey_slow', function(err, load_resp){
+              should.not.exist(err);
               load_resp.should.equal('abc123');
               setTimeout(function(){
                 apiObj.cache.load('testKey_slow', function(err, load_resp){

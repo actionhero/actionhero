@@ -23,11 +23,11 @@ describe('Server: Socket', function(){
 
     setTimeout(function(){
       var lastLine = lines[(lines.length - 1)];
-      if(lastLine == ''){ lastLine = lines[(lines.length - 2)] }
+      if('' === lastLine){ lastLine = lines[(lines.length - 2)] }
       var parsed = null;
       try { parsed = JSON.parse(lastLine) } catch(e){}
       thisClient.removeListener('data', rsp);
-      if(typeof cb == 'function'){ cb(parsed) }
+      if('function' === typeof cb){ cb(parsed) }
     }, 100);
 
     thisClient.on('data', rsp);
@@ -192,11 +192,11 @@ describe('Server: Socket', function(){
           responses.push(JSON.parse(line));
         }
       })
-      if(responses.length == 6){
+      if(6 === responses.length){
         client.removeListener('data', checkResponses);
         for(var i in responses){
           var response = responses[i];
-          if(i == 0){
+          if(0 === i){
             response.error.should.eql('you have too many pending requests');
           } else {
             should.not.exist(response.error)

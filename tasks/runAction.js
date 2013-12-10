@@ -6,7 +6,7 @@ var task = {
   pluginOptions: [],
   frequency:     0,
   run: function(api, params, next){
-    if(params == null){ params = {} }
+    if(null === params){ params = {} }
 
     var connection = new api.connection({
       type: 'task',

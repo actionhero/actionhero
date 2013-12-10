@@ -7,7 +7,7 @@ describe('~~ Benchmarks', function(){
   var startTime = 0;
   var endTime = 0;
 
-  function makeSocketRequest(message, next){
+  var makeSocketRequest = function(message, next){
     var rsp = function(response){
       var parts = response.split('\r\n')
       if(parts.length > 2){
@@ -38,15 +38,11 @@ describe('~~ Benchmarks', function(){
         var thisData = {}
         for(var i in data){
           thisData[i] = data[i];
-          if(typeof thisData[i] == 'function'){
-            thisData[i] = thisData[i]();
-          }
+          if('function' === typeof thisData[i]){ thisData[i] = thisData[i]() }
         }
         makeHTTPRequest(path, thisData, function(response){
           responses++
-          if(responses == count){
-            next(false, response);
-          }
+          if(count === responses){ next(false, response) }
         });
       });
     }

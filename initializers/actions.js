@@ -8,7 +8,7 @@ var actions = function(api, next){
   api.actions.preProcessors = [];
   api.actions.postProcessors = [];
 
-  if(api.config.general.simultaneousActions == null){
+  if(null === api.config.general.simultaneousActions){
     api.config.general.simultaneousActions = 5;
   }
 
@@ -17,28 +17,28 @@ var actions = function(api, next){
       api.log(msg + '; exiting.', 'emerg');
     }
 
-    if(typeof action.name != 'string' || action.name.length < 1){
+    if('string' !== typeof action.name || action.name.length < 1){
       fail('an action is missing \'action.name\'');
       return false;
-    } else if(typeof action.description != 'string' || action.description.length < 1){
+    } else if('string' !== typeof action.description || action.description.length < 1){
       fail('Action ' + action.name + ' is missing \'action.description\'');
       return false;
-    } else if(typeof action.inputs != 'object'){
+    } else if('object' !== typeof action.inputs){
       fail('Action ' + action.name + ' has no inputs');
       return false;
-    } else if(typeof action.inputs.required != 'object'){
+    } else if('object' !== typeof action.inputs.required){
       fail('Action ' + action.name + ' has no required inputs');
       return false;
-    } else if(typeof action.inputs.optional != 'object'){
+    } else if('object' !== typeof action.inputs.optional){
       fail('Action ' + action.name + ' has no optional inputs');
       return false;
-    } else if(typeof action.outputExample != 'object'){
+    } else if('object' !== typeof action.outputExample){
       fail('Action ' + action.name + ' has no outputExample');
       return false;
-    } else if(typeof action.run != 'function'){
+    } else if('function' !== typeof action.run){
       fail('Action ' + action.name + ' has no run method');
       return false;
-    } else if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
+    } else if(null !== api.connections && api.connections.allowedVerbs.indexOf(action.name) >= 0){
       fail(action.name + ' is a reserved verb for connections. choose a new name');
       return false;
     } else {
@@ -47,16 +47,16 @@ var actions = function(api, next){
   }
 
   api.actions.loadDirectory = function(path){
-    if(path == null){
+    if(null === path){
       path = api.config.general.paths.action;
       if(!fs.existsSync(api.config.general.paths.action)){
         api.log(api.config.general.paths.action + ' defined as action path, but does not exist', 'warning');
       }
     }
     fs.readdirSync(path).forEach( function(file) {
-      if(path[path.length - 1] != '/'){ path += '/' }
+      if('/' !== path[path.length - 1]){ path += '/' }
       var fullFilePath = path + file;
-      if(file[0] != '.'){
+      if('.' !== file[0]){
         var stats = fs.statSync(fullFilePath);
         if(stats.isDirectory()){
           api.actions.loadDirectory(fullFilePath);
@@ -66,7 +66,7 @@ var actions = function(api, next){
         } else if(stats.isFile()){
           var fileParts = file.split('.');
           var ext = fileParts[(fileParts.length - 1)];
-          if(ext === 'js'){ api.actions.loadFile(fullFilePath) }
+          if('js' === ext){ api.actions.loadFile(fullFilePath) }
         } else {
           api.log(file + ' is a type of file I cannot read', 'error')
         }
@@ -75,7 +75,7 @@ var actions = function(api, next){
   }
 
   api.actions.loadFile = function(fullFilePath, reload){
-    if(reload == null){ reload = false; }
+    if(null === reload){ reload = false }
 
     var loadMessage = function(action){
       var msgString = '';
@@ -102,10 +102,10 @@ var actions = function(api, next){
       var collection = require(fullFilePath);
       for(var i in collection){
         var action = collection[i];
-        if(action.version == null){ action.version = 1.0 }
-        if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {} }
+        if(null === action.version){ action.version = 1.0 }
+        if(null === api.actions.actions[action.name]){ api.actions.actions[action.name] = {} }
         api.actions.actions[action.name][action.version] = action;
-        if(api.actions.versions[action.name] == null){
+        if(null === api.actions.versions[action.name]){
           api.actions.versions[action.name] = [];
         }
         api.actions.versions[action.name].push(action.version);

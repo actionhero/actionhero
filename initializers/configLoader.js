@@ -26,7 +26,7 @@ var configLoader = function(api, next){
 
   api.watchedFiles = [];
   api.watchFileAndAct = function(file, callback){
-    if(api.config.general.developmentMode == true && api.watchedFiles.indexOf(file) < 0){
+    if(true === api.config.general.developmentMode && api.watchedFiles.indexOf(file) < 0){
       api.watchedFiles.push(file);
       fs.watchFile(file, {interval: 1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
@@ -44,23 +44,23 @@ var configLoader = function(api, next){
     api.watchedFiles = [];
   };
 
-  if(api._startingParams.api != null){
+  if(null !== api._startingParams.api){
     api.utils.hashMerge(api, api._startingParams.api);
   }
 
   api.env = 'development'
-  if(argv['NODE_ENV'] != null){
+  if(null !== argv['NODE_ENV']){
     api.env = argv['NODE_ENV'];
-  } else if(process.env.NODE_ENV != null){
+  } else if(null !== process.env.NODE_ENV){
     api.env = process.env.NODE_ENV;
   }
 
   var configFile = path.resolve(api.project_root, 'config/config.js');
-  if(argv['config'] != null){
-    if(argv['config'].charAt(0) == '/'){ configFile = argv['config'] }
+  if(null !== argv['config']){
+    if('/' === argv['config'].charAt(0)){ configFile = argv['config'] }
     else { configFile = path.resolve(api.project_root, argv['config']) }
-  } else if(process.env.ACTIONHERO_CONFIG != null){
-    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configFile = process.env.ACTIONHERO_CONFIG }
+  } else if(null !== process.env.ACTIONHERO_CONFIG){
+    if('/' === process.env.ACTIONHERO_CONFIG.charAt(0)){ configFile = process.env.ACTIONHERO_CONFIG }
     else { configFile = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG) }
   } else if(!fs.existsSync(configFile)){
     throw new Error(configFile + 'No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
@@ -82,7 +82,7 @@ var configLoader = function(api, next){
     }
   }
 
-  if(api._startingParams.configChanges != null){
+  if(null !== api._startingParams.configChanges){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
 

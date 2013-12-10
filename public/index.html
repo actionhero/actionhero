@@ -11,7 +11,7 @@
   var documentation = function(callback){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function(){
-      if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+      if(4 === xmlhttp.readyState && 200 === xmlhttp.status){
         var response = JSON.parse(xmlhttp.responseText);
         callback(response);
       }
@@ -22,7 +22,7 @@
 
   var populateServerInfo = function(){
     documentation(function(data){
-      if(data.serverInformation != null){
+      if(null !== data.serverInformation){
         document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
         document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
       }

@@ -13,7 +13,7 @@ describe('Server: Web Sockets', function(){
   function countWebSocketConnections(){
     var found = 0;
     for(var i in apiObj.connections.connections){
-      if(apiObj.connections.connections[i].type == 'websocket'){
+      if('websocket' === apiObj.connections.connections[i].type){
         found++;
       }
     }
@@ -110,7 +110,7 @@ describe('Server: Web Sockets', function(){
       responses.length.should.equal(6);
       for(var i in responses){
         var response = responses[i];
-        if(i == 0){
+        if(0 === i){
           response.error.should.eql('you have too many pending requests');
         } else {
           should.not.exist(response.error)
@@ -207,4 +207,4 @@ describe('Server: Web Sockets', function(){
 
   })
 
-});
+});

@@ -57,9 +57,9 @@ var websocket = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
-    if(message.context == null){ message.context = 'response'; }
-    if(messageCount == null){ messageCount = connection.messageCount; }
-    if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
+    if(null === message.context){ message.context = 'response' }
+    if(null === messageCount){ messageCount = connection.messageCount }
+    if('response' === message.context && null === message.messageCount){ message.messageCount = messageCount }
     var channel = server.attributes.fayeChannelPrefix + connection.rawConnection.uuid;
     api.faye.client.publish(channel, message);
   }
@@ -83,7 +83,7 @@ var websocket = function(api, options, next){
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
-    if(toRender != false){
+    if(false !== toRender){
       connection.response.messageCount = messageCount;
       server.sendMessage(connection, connection.response, messageCount)
     }
@@ -95,7 +95,7 @@ var websocket = function(api, options, next){
 
   api.faye.disconnectHandlers.push(function(clientId){
     for(var uuid in server.connectionsMap){
-      if(server.connectionsMap[uuid].rawConnection.clientId == clientId){
+      if(clientId === server.connectionsMap[uuid].rawConnection.clientId){
         server.goodbye(server.connectionsMap[uuid]);
         break;
       }
@@ -104,13 +104,13 @@ var websocket = function(api, options, next){
 
   var messagingFayeExtension = function(message, callback){
     // messages for this server (and not AH internals)
-    if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
+    if(0 === message.channel.indexOf(server.attributes.fayeChannelPrefix)){
       if(message.clientId === api.faye.client._clientId){
         callback(message);
       } else {
         var uuid = message.channel.split('/')[4];
         var connection = server.connectionsMap[uuid];
-        if(connection != null){
+        if(null !== connection){
           incomingMessage(connection, message);
         } else {
           api.faye.client.publish(rebroadcastChannel, {
@@ -130,7 +130,7 @@ var websocket = function(api, options, next){
     if(message.channel.indexOf('/meta/subscribe') === 0){
       if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
         var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, '');
-        if(server.connectionsMap[uuid] != null){
+        if(null !== server.connectionsMap[uuid]){
           message.error = 'You cannot subscribe to another clients\' channel';
         } else {
           // let the server generate a new connection.id, don't use client-generated UUID
@@ -155,7 +155,7 @@ var websocket = function(api, options, next){
     var originalMessage = message.originalMessage;
     var uuid = originalMessage.channel.split('/')[4];
     var connection = server.connectionsMap[uuid];
-    if(connection != null){
+    if(null !== connection){
       messagingFayeExtension(originalMessage);
     }
   }
@@ -167,7 +167,7 @@ var websocket = function(api, options, next){
     setTimeout(function(){
       // TODO: This will always be localhost (or the proxy IP) if you front this with nginx, haproxy, etc.
       var fayeConnection = api.faye.server._server._engine._connections[clientId];
-      if(fayeConnection && fayeConnection.socket != null){
+      if(fayeConnection && null !== fayeConnection.socket){
         remoteIp   = fayeConnection.socket._socket._stream.remoteAddress;
         remotePort = fayeConnection.socket._socket._stream.remotePort;
       }
@@ -176,23 +176,23 @@ var websocket = function(api, options, next){
   }
 
   var incomingMessage = function(connection, message){
-    if(connection != null){
+    if(null !== connection){
       var data = message.data;
       var verb = data.event;
       delete data.event;
       connection.messageCount++;
-      if(verb == 'action'){
+      if('action' === verb){
         connection.params = data.params;
         connection.error = null;
         connection.response = {};
         server.processAction(connection);
-      } else if(verb == 'file'){
+      } else if('file' === verb){
         server.processFile(connection);
       } else {
         var words = []
         for(var i in data){ words.push(data[i]); }
         connection.verbs(verb, words, function(error, data){
-          if(error == null){
+          if(null === error){
             var message = {status: 'OK', context: 'response', data: data};
             server.sendMessage(connection, message);
           } else {

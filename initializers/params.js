@@ -44,25 +44,25 @@ var params = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // api param checking
   api.params.requiredParamChecker = function(connection, required_params, mode){
-    if(mode == null){ mode = 'all' }
+    if(null === mode){ mode = 'all' }
     if(mode == 'all'){
       required_params.forEach(function(param){
-        if(connection.error === null && (typeof connection.params[param] === 'undefined' || connection.params[param].length == 0)){
+        if(null === connection.error && ('undefined' === typeof connection.params[param] || 0 === connection.params[param].length)){
           connection.error = new Error(param + ' is a required parameter for this action');
         }
       });
     }
-    if(mode == 'any'){
+    if('any' === mode){
       var paramString = '';
       var found = false;
       required_params.forEach(function(param){
-        if(paramString != ''){ paramString = paramString + ',' }
+        if('' !== paramString){ paramString = paramString + ',' }
         paramString = paramString + ' ' + param;
-        if(connection.params[param] != null){
+        if(null !== connection.params[param]){
           found = true;
         }
       });
-      if(found == false){
+      if(false === found){
         connection.error = new Error(
           'none of the required params for this action were provided.  ' +
           'Any of the following are required: ' + paramString

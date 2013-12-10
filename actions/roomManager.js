@@ -13,7 +13,7 @@ exports.action = {
   run: function(api, connection, next){
 
     var handleAuth = function(callback){
-      if(connection.params.authKey != null && connection.params.authValue != null){
+      if(null !== connection.params.authKey && null !== connection.params.authValue){
         api.chatRoom.setAuthenticationPattern(connection.params.room, connection.params.authKey, connection.params.authValue, function(){
           callback();
         })
@@ -22,13 +22,13 @@ exports.action = {
       }
     }
 
-    if(connection.params.direction == 'add'){
+    if('add' === connection.params.direction){
       api.chatRoom.add(connection.params.room, function(){
         handleAuth(function(){
           next(connection, true);
         });
       });
-    } else if(connection.params.direction == 'remove'){
+    } else if('remove' === connection.params.direction){
       api.chatRoom.del(connection.params.room, function(){
         handleAuth(function(){
           next(connection, true);

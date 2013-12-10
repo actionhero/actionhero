@@ -88,7 +88,7 @@ var genericServer = function(api, next){
     // you can overwrite attributes with options
     // this could cause some problems, be careful
     for(var key in this.options){
-      if(this.attributes[key] != null){
+      if(null !== this.attributes[key]){
         this.attributes[key] = this.options[key];
       }
     }
@@ -115,7 +115,7 @@ var genericServer = function(api, next){
     if(self.attributes.sendWelcomeMessage === true){
       connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: 'api'})
     }
-    if(typeof self.attributes.sendWelcomeMessage === 'number'){
+    if('number' === typeof self.attributes.sendWelcomeMessage){
       setTimeout(function(){
         try {
           connection.sendMessage({welcome: api.config.general.welcomeMessage, room: connection.room, context: 'api'})
@@ -124,14 +124,14 @@ var genericServer = function(api, next){
         }
       }, self.attributes.sendWelcomeMessage);
     }
-    if(self.attributes.canChat === true){
+    if(true === self.attributes.canChat){
       connection.canChat = true;
     }
   }
 
   api.genericServer.prototype.destroyConnection = function(connection){
     var self = this;
-    if(self.attributes.logExits === true){
+    if(true === self.attributes.logExits){
       self.log('connection closed', 'info', {to: connection.remoteIP});
     }
     connection.destroy();

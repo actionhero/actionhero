@@ -1,9 +1,9 @@
 exports['generateTask'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
-  if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
-  if(binary.argv.queue == null){ binary.argv.queue = 'default' }
-  if(binary.argv.frequency == null){ binary.argv.frequency = 0 }
+  if(null === binary.argv.name){ binary.utils.hardError('name is a required input') }
+  if(null === binary.argv.description){ binary.argv.description = binary.argv.name }
+  if(null === binary.argv.queue){ binary.argv.queue = 'default' }
+  if(null === binary.argv.frequency){ binary.argv.frequency = 0 }
 
   var templateLines = [];
 

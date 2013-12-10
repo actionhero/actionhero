@@ -1,6 +1,6 @@
 exports['generateInitializer'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
+  if(null === binary.argv.name){ binary.utils.hardError('name is a required input') }
 
   var templateLines = [];
   templateLines.push('exports.' + binary.argv['name'] + ' = function(api, next){');

@@ -37,14 +37,14 @@ var exceptions = function(api, next){
     }
     api.exceptionHandlers.renderError(err);
     // domain.dispose();
-    if(typeof next == 'function'){ next(false) }
+    if('function' === typeof next){ next(false) }
   };
   ///
   api.exceptionHandlers.renderConnection = function(connection){
     api.log('! connection details:', 'error');
     var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
     for(var i in relevantDetails){
-      if(connection[relevantDetails[i]] != null && typeof connection[relevantDetails[i]] != 'function'){
+      if(null !== connection[relevantDetails[i]] && 'function' !== typeof connection[relevantDetails[i]]){
         api.log('!     ' + relevantDetails[i] + ': ' + JSON.stringify(connection[relevantDetails[i]]), 'error');
       }
     }

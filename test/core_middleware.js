@@ -100,7 +100,7 @@ describe('Core: Middleware', function(){
         done();
       });
       specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
-        //
+        // TODO something here?
       });
     });
 
@@ -109,7 +109,7 @@ describe('Core: Middleware', function(){
         done();
       });
       specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
-        //
+        // TODO something here?
       });
     })
 

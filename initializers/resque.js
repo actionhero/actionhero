@@ -40,7 +40,7 @@ var resque = function(api, next){
 
     startScheduler: function(callback){
       var self = this;
-      if(api.config.tasks.scheduler === true){
+      if(true === api.config.tasks.scheduler){
         self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
           self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info') })
           self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
@@ -61,7 +61,7 @@ var resque = function(api, next){
 
     stopScheduler: function(callback){
       var self = this;
-      if(self.scheduler == null){
+      if(null === self.scheduler){
         callback();
       } else {
         self.scheduler.end(function(){
@@ -75,7 +75,7 @@ var resque = function(api, next){
       var self = this;
       var i = 0;
       var started = 0;
-      if(api.config.tasks.queues == null || api.config.tasks.queues.length === 0){
+      if(null === api.config.tasks.queues || 0 === api.config.tasks.queues.length){
         callback();
       } else {
         while(i < api.config.tasks.queues.length){
@@ -115,7 +115,7 @@ var resque = function(api, next){
 
     stopWorkers: function(callback){
       var self = this;
-      if(self.workers.length === 0){
+      if(0 === self.workers.length){
         callback();
       } else {
         var ended = 0;
@@ -133,7 +133,7 @@ var resque = function(api, next){
     }
   }
 
-  if(api.resque.connectionDetails.fake == true){
+  if(true === api.resque.connectionDetails.fake){
     api.resque.connectionDetails.package = require('fakeredis');
   }
 
@@ -141,4 +141,4 @@ var resque = function(api, next){
 
 }
 
-exports.resque = resque;
+exports.resque = resque;

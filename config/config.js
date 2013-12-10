@@ -72,7 +72,7 @@ if(cluster.isMaster){
 try{
   fs.mkdirSync('./log');
 } catch(e) {
-  if(e.code != 'EEXIST'){ console.log(e); process.exit(); }
+  if('EEXIST' !== e.code){ console.log(e); process.exit(); }
 }
 config.logger.transports.push(function(api, winston) {
   return new (winston.transports.File)({

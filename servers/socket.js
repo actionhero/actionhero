@@ -41,7 +41,7 @@ var socket = function(api, options, next){
   //////////////////////
 
   server._start = function(next){
-    if(options.secure == false){
+    if(false === options.secure){
       server.server = net.createServer(function(rawConnection){
         handleConnection(rawConnection);
       });
@@ -67,11 +67,11 @@ var socket = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
-    if(connection.respondingTo != null){
+    if(null !== connection.respondingTo){
       message.messageCount = messageCount;
       connection.respondingTo = null;
-    } else if(message.context == 'response'){
-      if(messageCount != null){
+    } else if('response' === message.context){
+      if(null !== messageCount){
         message.messageCount = messageCount;
       } else {
         message.messageCount = connection.messageCount;
@@ -85,7 +85,7 @@ var socket = function(api, options, next){
   }
 
   server.goodbye = function(connection, reason){
-    if(reason == null){ reason = 'server shutdown' }
+    if(null === reason){ reason = 'server shutdown' }
     try {
       connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api', reason: reason}) + '\r\n');
       server.destroyConnection(connection);
@@ -93,7 +93,7 @@ var socket = function(api, options, next){
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
-    if(error != null){
+    if(null !== error){
       server.sendMessage(connection, error, connection.messageCount);
     } else {
       fileStream.pipe(connection.rawConnection, {end: false});
@@ -144,7 +144,7 @@ var socket = function(api, options, next){
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
-    if(toRender === true){
+    if(true === toRender){
       connection.response.context = 'response';
       server.sendMessage(connection, connection.response, messageCount);
     }
@@ -157,23 +157,23 @@ var socket = function(api, options, next){
   var parseRequest = function(connection, line){
     var words = line.split(' ');
     var verb = words.shift();
-    if(verb == 'file'){
+    if('file' === verb){
       if(words.length > 0){
         connection.params.file = words[0];
       }
       server.processFile(connection);
     } else {
       connection.verbs(verb, words, function(error, data){
-        if(error == null){
+        if(null === error){
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
-        } else if(error === 'verb not found or not allowed'){
+        } else if('verb not found or not allowed' === error){
           // check for and attempt to check single-use params
           try {
             var request_hash = JSON.parse(line);
-            if(request_hash['params'] != null){
+            if(null !== request_hash['params']){
               connection.params = request_hash['params'];
             }
-            if(request_hash['action'] != null){
+            if(null !== request_hash['action']){
               connection.params['action'] = request_hash['action'];
             }
           } catch(e){
@@ -202,25 +202,25 @@ var socket = function(api, options, next){
   var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
-    if(hexChunk == 'fff4fffd06'){
+    if('fff4fffd06' === hexChunk){
       found = true // CTRL + C
-    } else if(hexChunk == '04'){
+    } else if('04' === hexChunk){
       found = true // CTRL + D
     }
     return found
   }
 
   var gracefulShutdown = function(next, alreadyShutdown){
-    if(alreadyShutdown == null || alreadyShutdown == false){
+    if(null === alreadyShutdown || false === alreadyShutdown){
       server.server.close();
     }
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
-      if(connection.pendingActions == 0){
+      if(0 === connection.pendingActions){
         server.goodbye(connection);
       } else {
         pendingConnections++;
-        if(connection.rawConnection.shutDownTimer == null){
+        if(null === connection.rawConnection.shutDownTimer){
           connection.rawConnection.shutDownTimer = setTimeout(function(){
             server.goodbye(connection);
           }, attributes.pendingShutdownWaitLimit);
@@ -232,7 +232,7 @@ var socket = function(api, options, next){
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    } else if(typeof next == 'function'){ next() }
+    } else if('function' === typeof next){ next() }
   }
 
   next(server);

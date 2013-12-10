@@ -25,7 +25,7 @@ console.log('\r\n>>> running test suite with fakeredis=' + redisConfig.fake + ' 
 var actionHeroPrototype = require(__dirname + '/../actionHero.js').actionHeroPrototype;
 
 specHelper.clearRedis = function(serverID, next){
-  if(serverID != 0){
+  if(0 !== serverID){
     next();
   } else {
     var redis, client;
@@ -54,9 +54,9 @@ specHelper.clearRedis = function(serverID, next){
 specHelper.tables = [ 'Logs' ];
 
 specHelper.prepare = function(serverID, next){
-  if(serverID == null){ serverID = 0 }
+  if(null === serverID){ serverID = 0 }
   specHelper.clearRedis(serverID, function(){
-    if(specHelper.actionHeroes[serverID] != null){
+    if(null !== specHelper.actionHeroes[serverID]){
       specHelper.restartServer(serverID, function(api){
         next(api);
       });
@@ -71,14 +71,14 @@ specHelper.prepare = function(serverID, next){
 ////////////////////////////////////////////////////////////////////////////
 // Start Test Server
 specHelper.startServer = function(serverID, next){
-  if(serverID == null){ serverID = 0 }
+  if(null === serverID){ serverID = 0 }
   var port = specHelper.startingSocketPort + serverID;
   var conn = specHelper.net.createConnection(port, specHelper.url, function(){
     next(specHelper.apis[serverID]);
     conn.destroy();
   });
   conn.on('error', function(err){
-    if(err.code == 'ECONNREFUSED'){
+    if('ECONNREFUSED' === err.code){
       specHelper.actionHeroes[serverID] = new actionHeroPrototype();
       var configChanges = {
         general: {
@@ -102,8 +102,8 @@ specHelper.startServer = function(serverID, next){
 }
 
 specHelper.stopServer = function(serverID, next){
-  if(serverID == null){ serverID = 0 }
-  if(specHelper.actionHeroes[serverID] != null){
+  if(null === serverID){ serverID = 0 }
+  if(null !== specHelper.actionHeroes[serverID]){
     specHelper.actionHeroes[serverID].stop(function(err, api){
       specHelper.apis[serverID] = api;
       next(specHelper.apis[serverID]);
@@ -114,7 +114,7 @@ specHelper.stopServer = function(serverID, next){
 };
 
 specHelper.restartServer = function(serverID, next){
-  if(serverID == null){ serverID = 0 }
+  if(null === serverID){ serverID = 0 }
   specHelper.actionHeroes[serverID].restart(function(err, api){
     specHelper.apis[serverID] = api;
     next(specHelper.apis[serverID]);
@@ -125,7 +125,7 @@ specHelper.restartServer = function(serverID, next){
 // API request
 specHelper.apiTest = {
   general: function(method, serverID, url, data, cb){
-    if(serverID == null){ serverID = 0 }
+    if(null === serverID){ serverID = 0 }
     var port = (specHelper.startingWebPort + serverID);
     var params = {}
     params.method = method;
@@ -163,7 +163,7 @@ specHelper.resetCookieJar = function(){
 ////////////////////////////////////////////////////////////////////////////
 // API object cleanup
 specHelper.cleanAPIObject = function(api){
-  var cleanAPI = {
+  return {
     'actions':     api['actions'],
     'tasks':       api['tasks'],
     'utils':       api['utils'],
@@ -176,7 +176,6 @@ specHelper.cleanAPIObject = function(api){
     'connections': api['connections'],
     'chatRoom':    api['chatRoom']
   }
-  return cleanAPI
 }
 
 ////////////////////////////////////////////////////////////////////////////

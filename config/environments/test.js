@@ -1,13 +1,8 @@
 // I override settings in ../config.js for this environment
 // these changes will be merged on top of those in config.js
 
-var toFakeRedis = false;
-if(process.env['fakeredis'] != null && process.env['fakeredis'] == 'true'){
-	toFakeRedis = true
-}
-
 var redisConfig = {
-  'fake': toFakeRedis,
+  'fake': (null !== process.env.fakeredis && 'true' === process.env.fakeredis),
   'host': '127.0.0.1',
   'port': 6379,
   'password': null,

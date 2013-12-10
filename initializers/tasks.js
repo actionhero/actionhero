@@ -23,7 +23,7 @@ var tasks = function(api, next){
 
     load: function(fullFilePath, reload){
       var self = this;
-      if(reload == null){ reload = false }
+      if(null === reload){ reload = false }
 
       var loadMessage = function(loadedTaskName){
         api.log('task ' + (reload?'(re)':'') + 'loaded: ' + loadedTaskName + ', ' + fullFilePath, 'debug');
@@ -31,7 +31,7 @@ var tasks = function(api, next){
 
       api.watchFileAndAct(fullFilePath, function(){
         var cleanPath = fullFilePath;
-        if(process.platform === 'win32'){
+        if('win32' === process.platform){
           cleanPath = fullFilePath.replace(/\//g, '\\');
         }
 
@@ -71,7 +71,7 @@ var tasks = function(api, next){
         'perform': function(){
           var args = Array.prototype.slice.call(arguments);
           var cb = args.pop();
-          if(args.length == 0){
+          if(0 === args.length){
             args.push({}); // empty params array
           }
           args.push(
@@ -91,19 +91,19 @@ var tasks = function(api, next){
       var fail = function(msg){
         api.log(msg + '; exiting.', 'emerg');
       }
-      if(typeof task.name != 'string' || task.name.length < 1){
+      if('string' !== typeof task.name || task.name.length < 1){
         fail('a task is missing \'task.name\'');
         return false;
-      } else if(typeof task.description != 'string' || task.description.length < 1){
+      } else if('string' !== typeof task.description || task.description.length < 1){
         fail('Task ' + task.name + ' is missing \'task.description\'');
         return false;
-      } else if(typeof task.frequency != 'number'){
+      } else if('number' !== typeof task.frequency){
         fail('Task ' + task.name + ' has no frequency');
         return false;
-      } else if(typeof task.queue != 'string'){
+      } else if('string' !== typeof task.queue){
         fail('Task ' + task.name + ' has no queue');
         return false;
-      } else if(typeof task.run != 'function'){
+      } else if('function' !== typeof task.run){
         fail('Task ' + task.name + ' has no run method');
         return false;
       } else {
@@ -114,15 +114,15 @@ var tasks = function(api, next){
     loadFolder: function(path){
       var self = this;
 
-      if(path == null){
+      if(null === path){
         path = api.config.general.paths.task;
       }
       
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != '/'){ path += '/' }
+          if('/' !== path[path.length - 1]){ path += '/' }
           var fullFilePath = path + file;
-          if(file[0] != '.'){
+          if('.' !== file[0]){
             var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
               self.loadFolder(fullFilePath);
@@ -131,7 +131,7 @@ var tasks = function(api, next){
               self.loadFolder(realPath);
             } else if(stats.isFile()){
               var ext = file.split('.')[1];
-              if(ext === 'js'){ api.tasks.load(fullFilePath) }
+              if('js' === ext){ api.tasks.load(fullFilePath) }
             } else {
               api.log(file + ' is a type of file I cannot read', 'alert')
             }
@@ -143,20 +143,20 @@ var tasks = function(api, next){
     },
 
     enqueue: function(taskName, params, queue, callback){
-      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if('function' === typeof queue && null === callback){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if('function' === typeof params && null === callback && null === queue){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueue(queue, taskName, params, callback);
     },
 
     enqueueAt: function(timestamp, taskName, params, queue, callback){
-      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if('function' === typeof queue && null === callback){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if('function' === typeof params && null === callback && null === queue){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback);
     },
 
     enqueueIn: function(time, taskName, params, queue, callback){
-      if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
-      else if(typeof params === 'function' && callback == null && queue == null){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+      if('function' === typeof queue && null === callback){ callback = queue; queue = this.tasks[taskName].queue; }
+      else if('function' === typeof params && null === callback && null === queue){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
       api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
     },
 
@@ -196,14 +196,14 @@ var tasks = function(api, next){
           loadedTasks.push(taskName);
           (function(taskName){
             self.enqueue(taskName, function(err, toRun){
-              if(toRun === true){ api.log('enqueuing periodic task: ' + taskName, 'info') }
+              if(true === toRun){ api.log('enqueuing periodic task: ' + taskName, 'info') }
               started--;
-              if(started == 0 && typeof callback == 'function'){ callback(loadedTasks) }
+              if(0 === started && 'function' === typeof callback){ callback(loadedTasks) }
             });
           })(taskName)
         }
       }
-      if(started == 0 && typeof callback == 'function'){ callback(loadedTasks) }
+      if(0 === started && 'function' === typeof callback){ callback(loadedTasks) }
     },
 
     stopRecurrentJob: function(taskName, callback){
@@ -228,17 +228,15 @@ var tasks = function(api, next){
       var self = this;
       var details = {'queues': {}};
       api.resque.queue.queues(function(err, queues){
-        if(queues.length == 0){ callback(null, details) }
+        if(0 === queues.length){ callback(null, details) }
         else {
           var started = 0;
           queues.forEach(function(queue){
             started++;
             api.resque.queue.length(queue, function(err, length){
-              details['queues'][queue] = {
-                length: length
-              }
+              details['queues'][queue] = { length: length }
               started--;
-              if(started == 0){ callback(null, details) }
+              if(0 === started){ callback(null, details) }
             });
           });
         }

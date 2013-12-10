@@ -1,6 +1,6 @@
 exports['generateServer'] = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError('name is a required input') }
+  if(null === binary.argv.name){ binary.utils.hardError('name is a required input') }
 
   var templateLines = [];
   templateLines.push('var ' + binary.argv['name'] + ' = function(api, options, next){');
@@ -15,7 +15,7 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('    logConnections: true,');
   templateLines.push('    logExits: true,');
   templateLines.push('    sendWelcomeMessage: true,');
-  templateLines.push('    verbs: [],');
+  templateLines.push('    verbs: []');
   templateLines.push('  }');
   templateLines.push('');
   templateLines.push('  var server = new api.genericServer(type, options, attributes);');

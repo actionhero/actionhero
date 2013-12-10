@@ -2,7 +2,7 @@
 
   var actionHeroWebSocket = function(options, callback){
     var self = this;
-    if(callback == null && typeof options == 'function'){ callback = options; options = null; }
+    if(null === callback && 'function' === typeof options){ callback = options; options = null; }
 
     self.callbacks = {};
     self.id = null;
@@ -14,9 +14,9 @@
       self.options[i] = options[i];
     }
 
-    if(options && options.faye != null){
+    if(options && null !== options.faye){
       self.faye = options.faye;
-    } else if(window.Faye != null){
+    } else if(null !== window.Faye){
       self.faye = window.Faye;
     } else {
       self.faye = Faye;
@@ -25,7 +25,7 @@
 
   actionHeroWebSocket.prototype.defaults = function(){
     var host;
-    if(typeof window != 'undefined'){ host = window.location.origin }
+    if('undefined' !== typeof window){ host = window.location.origin }
     return {
       host: host,
       path: '/faye',
@@ -40,7 +40,7 @@
 
   actionHeroWebSocket.prototype.log = function(message){
     if(console && console.log){
-      if(typeof message != 'string'){ message = JSON.stringify(message) }
+      if('string' !== typeof message){ message = JSON.stringify(message) }
       var date = new Date();
       var times = [date.getHours().toString(), date.getMinutes().toString(), date.getSeconds().toString()];
       for(var i in times){
@@ -68,7 +68,7 @@
 
     self.client.on('transport:down', function(){
       self.state = 'reconnecting';
-      if(typeof self.events.connect === 'disconnect'){
+      if('disconnect' === typeof self.events.connect){
         self.events.disconnect('connected');
       }
     });
@@ -77,10 +77,10 @@
       var previousState = self.state;
       self.state = 'connected';
       self.setupConnection(function(details){
-        if(previousState == 'reconnecting' && typeof self.events.reconnect === 'function'){
+        if('reconnecting' === previousState && 'function' === typeof self.events.reconnect){
           self.events.reconnect('reconnected');
         } else {
-          if(typeof self.events.connect === 'function'){
+          if('function' === typeof self.events.connect){
             self.events.connect('connected');
           }
           self.completeConnect(details);
@@ -95,7 +95,7 @@
 
     setTimeout(function(){
       self.detailsView(function(details){
-        if(self.room != null){
+        if(null !== self.room){
           self.send({event: 'roomChange', room: self.room});
         }
         self.id = details.data.id;
@@ -106,46 +106,46 @@
 
   actionHeroWebSocket.prototype.completeConnect = function(details){
     var self = this;
-    if(typeof self.startupCallback == 'function'){
+    if('function' === typeof self.startupCallback){
       self.startupCallback(null, details);
     }
   }
 
   actionHeroWebSocket.prototype.send = function(args, callback){
     var self = this;
-    if(self.state == 'connected'){
+    if('connected' === self.state){
       self.messageCount++;
-      if(typeof callback === 'function'){
+      if('function' === typeof callback){
         self.callbacks[self.messageCount] = callback;
       }
       self.client.publish(self.channel, args).errback(function(err){
         self.log(err);
       });
-    } else if(typeof callback == 'function'){ callback({error: 'not connected', state: self.state}) }
+    } else if('function' === typeof callback){ callback({error: 'not connected', state: self.state}) }
   }
 
   actionHeroWebSocket.prototype.handleMessage = function(message){
     var self = this;
-    if(message.context === 'response'){
-      if(typeof self.callbacks[message.messageCount] === 'function'){
+    if('response' === message.context){
+      if('function' === typeof self.callbacks[message.messageCount]){
         self.callbacks[message.messageCount](message);
       }
       delete self.callbacks[message.messageCount];
-    } else if(message.context === 'user'){
-      if(typeof self.events.say === 'function'){
+    } else if('user' === message.context){
+      if('function' === typeof self.events.say){
         self.events.say(message);
       }
-    } else if(message.context === 'alert'){
-      if(typeof self.events.api === 'function'){
+    } else if('alert' === message.context){
+      if('function' === typeof self.events.api){
         self.events.api(message);
       }
-    } else if(message.welcome != null && message.context == 'api'){
+    } else if(null !== message.welcome && 'api' === message.context){
       self.welcomeMessage = message.welcome;
-      if(typeof self.events.say === 'function' && typeof self.events.welcome == 'function'){
+      if('function' === typeof self.events.say && 'function' === typeof self.events.welcome){
         self.events.welcome(message);
       }
-    } else if(message.context === 'api'){
-      if(typeof self.events.api === 'function'){
+    } else if('api' === message.context){
+      if('function' === typeof self.events.api){
         self.events.api(message);
       }
     }
@@ -158,19 +158,21 @@
     for (var i = 0; i < 36; i++) {
       s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
     }
-    s[14] = '4';  // bits 12-15 of the time_hi_and_version field to 0010
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    // bits 12-15 of the time_hi_and_version field to 0010
+    s[14] = '4';
+    // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
     s[8] = s[13] = s[18] = s[23] = '-';
 
     return s.join('');
   }
 
   actionHeroWebSocket.prototype.action = function(action, params, callback){
-    if(callback == null && typeof params == 'function'){
+    if(null === callback && 'function' === typeof params){
       callback = params;
       params = null;
     }
-    if(params == null){ params = {} }
+    if(null === params){ params = {} }
     params.action = action;
     this.send({
       event: 'action',
@@ -221,4 +223,4 @@
 
   exports.actionHeroWebSocket = actionHeroWebSocket;
 
-})(typeof exports === 'undefined' ? window : exports);
+})('undefined' === typeof exports ? window : exports);

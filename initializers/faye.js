@@ -11,7 +11,7 @@ var faye = function(api, next){
   api.faye._start = function(api, next){
 
     var options = api.config.faye;
-    if(api.config.faye.redis.fake != true){
+    if(true !== api.config.faye.redis.fake){
       options.engine = {
         type:      require('faye-redis'),
         host:      api.config.faye.redis.host,
@@ -80,7 +80,7 @@ var faye = function(api, next){
   api.faye.extensions.push({
     incoming: function(message, callback){
       if(message.channel.indexOf('/actionHero') === 0){
-        if(message.data.serverToken != api.config.general.serverToken){
+        if(message.data.serverToken !== api.config.general.serverToken){
           message.error = 'message token miss-match on protected actionHero channel';
           api.log(message.error, 'warning', message);
         }

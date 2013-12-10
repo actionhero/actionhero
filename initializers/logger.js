@@ -5,7 +5,7 @@ var logger = function(api, next){
   var transports = [], i;
   for(i in api.config.logger.transports){
     var t = api.config.logger.transports[i];
-    if(typeof t == 'function'){
+    if('function' === typeof t){
       transports.push(t(api, winston));
     } else {
       transports.push(t);
@@ -27,13 +27,13 @@ var logger = function(api, next){
     transports: transports
   });
 
-  if(api.config.logger.levels != null){
+  if(null !== api.config.logger.levels){
     api.logger.setLevels(winston.config.syslog.levels);
   }
 
   api.log = function(message, severity, data){
-    if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
-    if(data != null){
+    if(null === severity || null === api.logger.levels[severity]){ severity = 'info' }
+    if(null !== data){
       api.logger.log(severity, message, data);
     } else {
       api.logger.log(severity, message);
