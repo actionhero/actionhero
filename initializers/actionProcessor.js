@@ -186,16 +186,16 @@ var actionProcessor = function(api, next){
       self.reduceParams();
       api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
       if(self.connection.error === null){
-        process.nextTick(function(){
-          api.stats.increment('actions:totalProcessedActions');
-          api.stats.increment('actions:processedActions:' + self.connection.action);
-          var actionDomain = domain.create();
-          actionDomain.on('error', function(err){
-            api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
-              self.completeAction(null, true);
-            });
+        api.stats.increment('actions:totalProcessedActions');
+        api.stats.increment('actions:processedActions:' + self.connection.action);
+        var actionDomain = domain.create();
+        actionDomain.on('error', function(err){
+          api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
+            self.completeAction(null, true);
           });
-          actionDomain.run(function(){
+        });
+        actionDomain.run(function(){
+          process.nextTick(function(){
             var toProcess = true;
             self.preProcessAction(toProcess, function(toProcess){
               if(toProcess === true){
