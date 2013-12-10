@@ -40,6 +40,4 @@ Currently actionHero supports:
 * Logo by [Ali Spagnola](http://alispagnola.com/)
 * If you want to contribute to actionHero, contribute to the conversation on [github](https://github.com/evantahler/actionHero)
 
-![trackBat](http://trackbat.com/api/track?tid=UA-29132597-1&dh=actionherojs.com&dp=/readme&dt=readme)
-
 ###
