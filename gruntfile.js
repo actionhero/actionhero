@@ -1,6 +1,11 @@
 var grunt = require('grunt')
 
 grunt.initConfig({
+  jshint: {
+    test: {
+      src: ['*.js','**/*.js']
+    }
+  },
   clean: {
     publish: {
       src: 'public/javascript/actionHeroWebSocket.min.js'
@@ -42,6 +47,7 @@ grunt.initConfig({
 })
 
 grunt.loadNpmTasks('grunt-contrib-clean')
+grunt.loadNpmTasks('grunt-contrib-jshint')
 grunt.loadNpmTasks('grunt-contrib-uglify')
 grunt.loadNpmTasks('grunt-env')
 grunt.loadNpmTasks('grunt-mocha-test')
@@ -49,7 +55,7 @@ grunt.loadNpmTasks('grunt-project-update')
 
 grunt.registerTask('testFakeRedis',['env:fakeredis','mochaTest:fakeredis'])
 grunt.registerTask('testRealRedis',['env:realredis','mochaTest:realredis'])
-grunt.registerTask('test',['testFakeRedis'])
+grunt.registerTask('test',['jshint','testFakeRedis'])
 
-grunt.registerTask('publish',['clean:publish','uglify:publish'])
+grunt.registerTask('publish',['jshint','clean:publish','uglify:publish'])
 grunt.registerTask('update',['projectUpdate'])
