@@ -1,14 +1,21 @@
+# local actionHero files
+
 pids/*
 tmp/*
 log/*
 cache/*
 node_modules/*
-.DS_Store
+
+# Node / NPM 
 npm-debug.log
+
+# OS-specific wierdness
+.DS_Store
+
+# Redis
+dump.rdb
+cache.dump
+
+# Editor-specific
 /nbproject/*
 /.idea/*
-dump.rdb
-cluster_pidfile
-cache.dump
-.tddium*
-.rbenv-version
