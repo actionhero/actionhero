@@ -77,7 +77,7 @@
       me: true,
       message: message,
       from: A.id,
-      sentAt: new Date().getTime(),
+      sentAt: new Date().getTime()
     })
   }
 
@@ -94,10 +94,11 @@
   } 
 
   function intToARGB(i){
-      color = ((i>>24)&0xFF).toString(16) + 
-             ((i>>16)&0xFF).toString(16) + 
-             ((i>>8)&0xFF).toString(16) + 
-             (i&0xFF).toString(16);
+      var color =
+        ((i>>24)&0xFF).toString(16) +
+        ((i>>16)&0xFF).toString(16) +
+        ((i>> 8)&0xFF).toString(16) +
+        (i&0xFF).toString(16);
       return color.substring(0, 6);
   }
 
@@ -128,7 +129,7 @@
 </body>
 
 <script>
-document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault; sendMessage(); }, false);
+document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault(); sendMessage(); }, false);
 </script>
 
 </html>

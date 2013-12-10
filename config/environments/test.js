@@ -2,66 +2,65 @@
 // these changes will be merged on top of those in config.js
 
 var toFakeRedis = false;
-if(process.env['fakeredis'] != null){
-  if(process.env['fakeredis'] == 'true'){ toFakeRedis = true; }
-  if(process.env['fakeredis'] == 'false'){ toFakeRedis = false; }
+if(process.env['fakeredis'] != null && process.env['fakeredis'] == 'true'){
+	toFakeRedis = true
 }
 
 var redisConfig = {
-  "fake": toFakeRedis,
-  "host": "127.0.0.1",
-  "port": 6379,
-  "password": null,
-  "options": null,
-  "DB": 2
+  'fake': toFakeRedis,
+  'host': '127.0.0.1',
+  'port': 6379,
+  'password': null,
+  'options': null,
+  'DB': 2
 }
 
 var config = {
   general: {
-    // id: "test-server-1",
+    //id: 'test-server-1',
     developmentMode: true,
     startingChatRooms: {
-      'defaultRoom': {}, 
-      'otherRoom': {}, 
-      'secureRoom': {authorized: true},
+      'defaultRoom': {},
+      'otherRoom': {},
+      'secureRoom': {authorized: true}
     }
   },
   logger: {
-    transports: null,
+    transports: null
   },
   stats: {
-    writeFrequency: 0, 
-    keys: ['test:stats'], 
+    writeFrequency: 0,
+    keys: ['test:stats']
   },
   redis : redisConfig,
   tasks : {
-    scheduler: false, 
+    scheduler: false,
     timeout: 100,
     queues: [],
-    redis: redisConfig,
+    redis: redisConfig
   },
-  faye: { 
+  faye: {
     mount: '/faye',
     timeout: 45,
     ping: null,
     redis: redisConfig,
-    namespace: 'faye:' 
+    namespace: 'faye:'
   },
   servers: {
     web: {
-      secure: false, 
-      // port: 9000,    
+      secure: false,
+      //port: 9000,
       matchExtensionMime: true,
       metadataOptions: {
         serverInformation: true,
-        requestorInformation: true
+        requesterInformation: true
       }
     },
     socket: {
-      secure: false, 
-      // port: 8000, 
+      //port: 8000,
+      secure: false
     },
-    websocket: { }
+    websocket: {}
   }
 };
 
