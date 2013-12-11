@@ -2,6 +2,10 @@ var grunt = require('grunt')
 
 grunt.initConfig({
   jshint: {
+    options: {
+      jshintrc: '.jshintrc',
+      reporter: require('jshint-stylish')
+    },
     test: {
       src: ['*.js','**/*.js']
     }
@@ -12,12 +16,13 @@ grunt.initConfig({
     }
   },
   env: {
+    test: {
+      NODE_ENV: 'test'
+    },
     fakeredis: {
-      NODE_ENV: 'test',
       fakeredis: 'true'
     },
     realredis: {
-      NODE_ENV: 'test',
       fakeredis: 'false'
     }
   },
@@ -25,10 +30,7 @@ grunt.initConfig({
     options: {
       reporter: 'spec'
     },
-    fakeredis: {
-      src: 'test/*.js'
-    },
-    realredis: {
+    test: {
       src: 'test/*.js'
     }
   },
@@ -53,9 +55,8 @@ grunt.loadNpmTasks('grunt-env')
 grunt.loadNpmTasks('grunt-mocha-test')
 grunt.loadNpmTasks('grunt-project-update')
 
-grunt.registerTask('testFakeRedis',['env:fakeredis','mochaTest:fakeredis'])
-grunt.registerTask('testRealRedis',['env:realredis','mochaTest:realredis'])
-grunt.registerTask('test',['jshint','testFakeRedis'])
+grunt.registerTask('testRealRedis',['env:test','env:realredis','mochaTest'])
+grunt.registerTask('test',['env:test','env:fakeredis','mochaTest'])
 
-grunt.registerTask('publish',['jshint','clean:publish','uglify:publish'])
+grunt.registerTask('publish',['clean:publish','uglify:publish'])
 grunt.registerTask('update',['projectUpdate'])

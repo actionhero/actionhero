@@ -190,6 +190,7 @@ var actionProcessor = function(api, next){
         api.stats.increment('actions:processedActions:' + self.connection.action);
         var actionDomain = domain.create();
         actionDomain.on('error', function(err){
+          console.log(err)
           api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
             self.completeAction(null, true);
           });
