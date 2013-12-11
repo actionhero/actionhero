@@ -55,7 +55,7 @@ grunt.loadNpmTasks('grunt-env')
 grunt.loadNpmTasks('grunt-mocha-test')
 grunt.loadNpmTasks('grunt-project-update')
 
-grunt.registerTask('testRealRedis',['env:test','env:realredis','mochaTest'])
+grunt.registerTask('testProduction',['env:test','env:realredis','mochaTest'])
 grunt.registerTask('test',['env:test','env:fakeredis','mochaTest'])
 
 grunt.registerTask('publish',['clean:publish','uglify:publish'])
