@@ -1,5 +1,6 @@
 var domain = require('domain');
 var async = require('async');
+var _ = require('underscore');
 
 var actionProcessor = function(api, next){
 
@@ -164,7 +165,7 @@ var actionProcessor = function(api, next){
       if(self.connection.params.apiVersion == null){
         self.connection.params.apiVersion = api.actions.versions[self.connection.action][api.actions.versions[self.connection.action].length - 1];
       }
-      self.actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
+      self.actionTemplate = _clone(api.actions.actions[self.connection.action][self.connection.params.apiVersion]);
     }
     api.stats.increment('actions:actionsCurrentlyProcessing');
 
