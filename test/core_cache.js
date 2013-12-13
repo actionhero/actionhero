@@ -149,4 +149,21 @@ describe('Core: Cache', function(){
     });
   });
 
+  it('can clear the cache entirely', function(done){
+    apiObj.cache.save('thingA', 123, function(){
+      apiObj.cache.size(function(err, count){
+        (count > 0).should.equal(true);
+        apiObj.cache.clear(function(){
+          apiObj.cache.size(function(err, count){
+            count.should.equal(0);
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  it('can read write the cache to a dump file');
+  it('can laod the cache from a dump file');
+
 });
