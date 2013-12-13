@@ -202,7 +202,7 @@ config.servers = {
     returnErrorCodes: false
   },
   'websocket' : {
-  }
+  },
   // 'socket' : {
   //   // TCP or TLS?
   //   secure: false,
