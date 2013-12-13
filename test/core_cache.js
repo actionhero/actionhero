@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 describe('Core: Cache', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
@@ -163,7 +165,36 @@ describe('Core: Cache', function(){
     });
   });
 
-  it('can read write the cache to a dump file');
-  it('can laod the cache from a dump file');
+  describe('cache dump files', function(){
+
+    var file = "/tmp/cacheDump"; // assumes *nix operatign system
+
+    it('can read write the cache to a dump file', function(done){
+      apiObj.cache.clear(function(){
+        apiObj.cache.save('thingA', 123, function(){
+          apiObj.cache.dumpWrite(file, function(error, count){
+            count.should.equal(1);
+            var body = JSON.parse(String(fs.readFileSync(file)));
+            var content = JSON.parse(body['actionHero:cache:thingA']);
+            content.value.should.equal(123);
+            done();
+          });
+        });
+      });
+    });
+
+    it('can laod the cache from a dump file', function(done){
+      apiObj.cache.clear(function(){
+        apiObj.cache.dumpRead(file, function(error, count){
+          count.should.equal(1);
+          apiObj.cache.load('thingA', function(err, value){
+            value.should.equal(123);
+            done();
+          });
+        });
+      });
+    });
+
+  })
 
 });
