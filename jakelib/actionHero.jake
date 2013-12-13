@@ -137,41 +137,30 @@ namespace('actionHero', function(){
 
     desc('This will clear actionHero\'s cache');
     task('clear', ['actionHero:environment'], {async: true}, function(){
-      api().cache.size(function(error, count){
+      api().cache.clear(function(error, count){
         exitWithError(error);
-        api().redis.client.del(api().cache.redisCacheKey, function(error){
-          exitWithError(error);
-          console.log('cleared ' + count + ' items from the cache');
-          complete(process.exit());
-        });
+        console.log('cleared ' + count + ' items from the cache');
+        complete(process.exit());
       });
     });
 
     desc('This will save the current cache as a JSON object');
     task('dump', ['actionHero:environment'], {async: true}, function(file){
       if(file == null){ file = 'cache.dump' }
-      api().cache.size(function(error, count){
+      api().cache.dumpWrite(file, function(error, count){
         exitWithError(error);
-        api().redis.client.hgetall(api().cache.redisCacheKey, function(error, data){
-          exitWithError(error);
-          fs.writeFileSync(file, JSON.stringify(data));
-          console.log('dumped ' + count + ' items from the cache');
-          complete(process.exit());
-        });
+        console.log('dumped ' + count + ' items from the cache to ' + file);
+        complete(process.exit());
       });
     });
 
     desc('This will load (and overwrite) the cache from a file');
     task('load', ['actionHero:environment'], {async: true}, function(file){
       if(file == null){ file = 'cache.dump' }
-      var data = JSON.parse( fs.readFileSync(file) );
-      api().redis.client.hmset(api().cache.redisCacheKey, data, function(error, data){
+      api().cache.dumpRead(file, function(error, count){
         exitWithError(error);
-        api().cache.size(function(error, count){
-          exitWithError(error);
-          console.log('loaded ' + count + ' items into the cache');
-          complete(process.exit());
-        });
+        console.log('cleared the cache and then loaded ' + count + ' items from ' + file);
+        complete(process.exit());
       });
     });
 

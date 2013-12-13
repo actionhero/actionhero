@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 describe('Core: Cache', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
@@ -80,7 +82,7 @@ describe('Core: Cache', function(){
     apiObj.cache.save('testKeyInThePast', 'abc123', -1, function(err, save_resp){
       save_resp.should.equal(true);
       apiObj.cache.load('testKeyInThePast', function(err, load_resp){
-        String(err).should.equal('Error: Object expired')
+        String(err).should.contain('Error: Object')
         should.equal(null, load_resp);
         done();
       });
@@ -148,5 +150,51 @@ describe('Core: Cache', function(){
       });
     });
   });
+
+  it('can clear the cache entirely', function(done){
+    apiObj.cache.save('thingA', 123, function(){
+      apiObj.cache.size(function(err, count){
+        (count > 0).should.equal(true);
+        apiObj.cache.clear(function(){
+          apiObj.cache.size(function(err, count){
+            count.should.equal(0);
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  describe('cache dump files', function(){
+
+    var file = "/tmp/cacheDump"; // assumes *nix operatign system
+
+    it('can read write the cache to a dump file', function(done){
+      apiObj.cache.clear(function(){
+        apiObj.cache.save('thingA', 123, function(){
+          apiObj.cache.dumpWrite(file, function(error, count){
+            count.should.equal(1);
+            var body = JSON.parse(String(fs.readFileSync(file)));
+            var content = JSON.parse(body['actionHero:cache:thingA']);
+            content.value.should.equal(123);
+            done();
+          });
+        });
+      });
+    });
+
+    it('can laod the cache from a dump file', function(done){
+      apiObj.cache.clear(function(){
+        apiObj.cache.dumpRead(file, function(error, count){
+          count.should.equal(1);
+          apiObj.cache.load('thingA', function(err, value){
+            value.should.equal(123);
+            done();
+          });
+        });
+      });
+    });
+
+  })
 
 });
