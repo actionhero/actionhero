@@ -27,6 +27,8 @@ config.general = {
   // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
   defaultLimit: 100,
   defaultOffset: 0,
+  // the redis prefix for actionHero's cache objects
+  cachePrefix: 'actionHero:cache:',
   // Watch for changes in actions and tasks, and reload/restart them on the fly
   developmentMode: true,
   // How many pending actions can a single connection be working on 
