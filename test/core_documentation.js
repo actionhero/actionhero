@@ -23,12 +23,12 @@ describe('Core: Documentation', function(){
       for(var actionName in json.documentation){
         for(var version in json.documentation[actionName]){
           var action = json.documentation[actionName][version];
-          action.name.should.be.a('string');
-          action.description.should.be.a('string');
-          action.inputs.should.be.a('object');
+          action.name.should.be.a.String;
+          action.description.should.be.a.String;
+          action.inputs.should.be.a.Object;
           action.inputs.required.should.be.an.instanceOf(Array)
           action.inputs.optional.should.be.an.instanceOf(Array)
-          action.outputExample.should.be.a('object');
+          action.outputExample.should.be.a.Object;
         }
       }
       done();

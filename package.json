@@ -32,11 +32,10 @@
     "browser_fingerprint": "0.0.x",
     "node-resque": "0.2.x",
     "async": "0.2.x",
-    "validator": "1.1.x",
     "formidable": "1.0.x",
     "mime": "1.2.x",
-    "redis": "0.8.x",
-    "optimist": "0.5.x",
+    "redis": "0.9.x",
+    "optimist": "0.6.x",
     "winston": "0.7.2",
     "node-uuid": "1.4.x",
     "fakeredis": "0.1.x",
@@ -44,10 +43,10 @@
     "faye-redis": "0.2.x"
   },
   "devDependencies": {
-    "mocha": "1.9.x",
-    "should": "1.2.x",
+    "mocha": "1.x.x",
+    "should": "2.x.x",
     "request": "2.x.x",
-    "uglify-js": "2.4.x"
+    "uglify-js": "2.x.x"
   },
   "bin": {
     "actionHero": "./bin/actionHero"
