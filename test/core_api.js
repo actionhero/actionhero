@@ -21,7 +21,7 @@ describe('Core: API', function(){
       apiObj.actions.actions.randomNumber['1'],
       apiObj.actions.actions.status['1']
     ].forEach(function(item){
-      item.should.be.a('object');
+      item.should.be.a.Object;
     });
 
     [
@@ -36,7 +36,7 @@ describe('Core: API', function(){
       apiObj.actions.actions.randomNumber['1'].name,
       apiObj.actions.actions.randomNumber['1'].description
     ].forEach(function(item){
-      item.should.be.a('string');
+      item.should.be.a.String;
     });
 
     apiObj.config.should.be.an.instanceOf(Object);

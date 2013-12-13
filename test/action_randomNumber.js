@@ -14,7 +14,7 @@ describe('Action: randomNumber', function(){
   var firstNumber = null;
   it('random numbers', function(done){
     specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
-      json.randomNumber.should.be.a('number');
+      json.randomNumber.should.be.a.Number;
       json.randomNumber.should.be.within(0,1);
       firstNumber = json.randomNumber;
       done();
@@ -23,7 +23,7 @@ describe('Action: randomNumber', function(){
 
   it('is unique / random', function(done){
     specHelper.apiTest.get('/api/randomNumber', 0, {}, function(response, json){
-      json.randomNumber.should.be.a('number');
+      json.randomNumber.should.be.a.Number;
       json.randomNumber.should.not.equal(firstNumber);
       done();
     });

@@ -55,7 +55,7 @@ describe('Core: Static File', function(){
   it('file: index page should be served when requesting a path', function(done){
     specHelper.apiTest.get('/public/', 0, {}, function(response, json){
       response.statusCode.should.equal(200);
-      response.body.should.be.a('string');
+      response.body.should.be.a.String;
       done();
     });
   });
