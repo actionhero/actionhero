@@ -80,7 +80,7 @@ describe('Core: Cache', function(){
     apiObj.cache.save('testKeyInThePast', 'abc123', -1, function(err, save_resp){
       save_resp.should.equal(true);
       apiObj.cache.load('testKeyInThePast', function(err, load_resp){
-        String(err).should.equal('Error: Object expired')
+        String(err).should.equal('Error: Object not found')
         should.equal(null, load_resp);
         done();
       });
