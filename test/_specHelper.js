@@ -1,4 +1,7 @@
+process.env.NODE_ENV = "test";
+
 var specHelper = {}
+
 specHelper.fs = require('fs');
 specHelper.net = require('net');
 specHelper.should = require('should');
@@ -11,14 +14,7 @@ specHelper.params = [];
 specHelper.startingWebPort = 9000;
 specHelper.startingSocketPort = 8000;
 
-var redisConfig = {
-  'fake': (null !== process.env.fakeredis && 'true' === process.env.fakeredis),
-  'host': '127.0.0.1',
-  'port': 6379,
-  'password': null,
-  'options': null,
-  'DB': 2
-}
+var redisConfig = require(__dirname + "/../config/environments/test.js").config.redis;
 
 console.log('\r\n>>> running test suite with fakeredis=' + redisConfig.fake + ' <<<');
 

@@ -160,6 +160,7 @@ var web = function(api, options, next){
         var forwardedIp = req.headers['x-forwarded-for'].split(",")[0];
         if(forwardedIp.indexOf(".") >= 0 || (forwardedIp.indexOf(".") < 0 && forwardedIp.indexOf(":") < 0)){
           // IPv4
+          forwardedIp = forwardedIp.replace('::ffff:',''); // remove any IPv6 information, ie: '::ffff:127.0.0.1'
           var parts = forwardedIp.split(":");
           if(parts[0] != null){ remoteIP = parts[0]; }
           if(parts[1] != null){ remotePort = parts[1]; }

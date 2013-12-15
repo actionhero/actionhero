@@ -15,7 +15,7 @@ describe('Core: Utils', function(){
   });
 
   it('utils.sqlDateTime default', function(done){
-    specHelper.utils.sqlDateTime().should.be.a('string');
+    specHelper.utils.sqlDateTime().should.be.a.String;
     done();
   });
 
@@ -35,7 +35,7 @@ describe('Core: Utils', function(){
 
   it('utils.randomString', function(done){
     var randomString = specHelper.utils.randomString(100);
-    randomString.should.be.a('string');
+    randomString.should.be.a.String;
     var i = 0;
     while(i < 1000){
       randomString.should.not.equal(specHelper.utils.randomString(100));

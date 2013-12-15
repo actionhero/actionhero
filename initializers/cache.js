@@ -1,48 +1,117 @@
+var fs = require('fs');
+
 var cache = function(api, next){
 
   api.cache = {};
   api.cache.sweeperTimer = null;
   api.cache.sweeperTimeout = 60 * 1000;
-  api.cache.redisCacheKey = 'actionHero:cache';
+  api.cache.redisPrefix = api.config.general.cachePrefix;
 
   api.cache._start = function(api, callback){
-    api.cache.runSweeper();
+    api.cache.size(function(err, count){
+      if(err != null){
+        api.log('error connecting to the cache: ' + String(e), 'fatal');
+      }
+      api.log('connected to the cache with ' + count + ' existing objects', 'debug');
+      callback();
+    });
+  }
+
+  api.cache._teardown = function(api, callback){
     callback();
   }
 
-  api.cache._teardown = function(api, next){
-    api.cache.stopTimers(api);
-    next();
+  api.cache.keys = function(next){
+    api.redis.client.keys(api.cache.redisPrefix + "*", function(err, keys){
+      next(err, keys);
+    });
   }
-
-  api.cache.stopTimers = function(api){
-    clearTimeout(api.cache.sweeperTimer);
-  }
-
-  api.cache.prepareDomain = function(){
-    // until the redis module handles domains, we need to force the callback to be bound properly
-    // https://github.com/mranney/node_redis/pull/310/files
-    return {
-      bind: function(callback){
-        return callback
-      }
-    }
-  }
-    
+ 
   api.cache.size = function(next){
-    var domain = api.cache.prepareDomain();
-    api.redis.client.hlen(api.cache.redisCacheKey, domain.bind(function(err, count){
-      next(null, count);
-    }));
+    api.cache.keys(function(err, keys){
+      var length = 0;
+      if(keys != null){
+        length = keys.length;
+      }
+      next(null, length);
+    });
+  }
+
+  api.cache.clear = function(next){
+    api.cache.keys(function(err, keys){
+      if(keys.length > 0){
+        var stared = 0;
+        keys.forEach(function(key){
+          stared++;
+          api.redis.client.del(key, function(err){
+            stared--;
+            if(stared === 0){
+              if(typeof next === 'function'){ next(err, keys.length); }
+            }
+          });
+        });
+      }else{
+        if(typeof next === 'function'){ next(err, keys.length); }
+      }
+    });
+  }
+
+  api.cache.dumpWrite = function(file, next){
+    api.cache.keys(function(err, keys){
+      var data = {};
+      var stared = 0;
+      keys.forEach(function(key){
+        stared++;
+        api.redis.client.get(key, function(err, content){
+          stared--;
+          data[key] = content;
+          if(stared === 0){
+            fs.writeFileSync(file, JSON.stringify(data));
+            if(typeof next === 'function'){ next(err, keys.length); }
+          }
+        });
+      });
+      if(keys.length === 0){
+        fs.writeFileSync(file, JSON.stringify(data));
+        if(typeof next === 'function'){ next(err, keys.length); }
+      }
+    });
+  }
+
+  api.cache.dumpRead = function(file, next){
+    api.cache.clear(function(err){
+      var stared = 0;
+      var data = JSON.parse( fs.readFileSync(file) );
+      for(var key in data){
+        stared++;
+        (function(key){
+          var content = data[key];
+          var parsedContent = JSON.parse(content);
+          api.redis.client.set(key, content, function(err){
+            if(parsedContent.expireTimestamp != null){
+              var expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000);
+              api.redis.client.expire(key, expireTimeSeconds);
+            }
+            stared--;
+            if(stared === 0){
+              if(typeof next === 'function'){ next(err, api.utils.hashLength(data)); }
+            }
+          });
+        })(key)
+      }
+      if(api.utils.hashLength(data) === 0){
+        if(typeof next === 'function'){ next(err, api.utils.hashLength(data)); }
+      }
+    });    
   }
 
   api.cache.load = function(key, options, next){
     if(typeof options == 'function'){
-      next = options
-      options = {}
+      next = options;
+      options = {};
     }
-    var domain = api.cache.prepareDomain();
-    api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
+
+    api.redis.client.get(api.cache.redisPrefix + key, function(err, cacheObj){
       if(err != null){ api.log(err, 'error') }
       try { cacheObj = JSON.parse(cacheObj) } catch(e){}
       if(cacheObj == null){
@@ -53,97 +122,58 @@ var cache = function(api, next){
         cacheObj.readAt = new Date().getTime();
         if(cacheObj.expireTimestamp != null && options.expireTimeMS){
           cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
+          var expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000);
         }
-        api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
-          if(typeof next == 'function'){
-            process.nextTick(function(){ next(null, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+        api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(err){
+          if(expireTimeSeconds != null){
+            api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
           }
-        }));
+          if(typeof next == 'function'){
+            process.nextTick(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+          }
+        });
       } else {
         if(typeof next == 'function'){
           process.nextTick(function(){ next(new Error('Object expired'), null, null, null, null); });
         }
       }
-    }));
+    });
+
   };
 
   api.cache.destroy = function(key, next){
-    var domain = api.cache.prepareDomain();
-    api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
-      api.stats.increment('cache:cachedObjects', -1 );
+    api.redis.client.del(api.cache.redisPrefix + key, function(err, count){
       if(err != null){ api.log(err, 'error') }
       var resp = true;
       if(count != 1){ resp = false }
       if(typeof next == 'function'){ process.nextTick(function(){ next(null, resp) }) }
-    }));
+    });
   };
 
-  api.cache.sweeper = function(next){
-    var domain = api.cache.prepareDomain();
-    api.redis.client.hkeys(api.cache.redisCacheKey, domain.bind(function(err, keys){
-      var started = 0;
-      var sweptKeys = [];
-      keys.forEach(function(key){
-        started++;
-        api.redis.client.hget(api.cache.redisCacheKey, key, domain.bind(function(err, cacheObj){
-          if(err != null){ api.log(err, 'error') }
-          try { cacheObj = JSON.parse(cacheObj) } catch(e){}
-          if(cacheObj != null){
-            if(cacheObj.expireTimestamp != null && cacheObj.expireTimestamp < new Date().getTime()){
-              api.redis.client.hdel(api.cache.redisCacheKey, key, domain.bind(function(err, count){
-                sweptKeys.push(key);
-                started--;
-                if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
-              }));
-            } else {
-              started--;
-              if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
-            }
-          } else {
-            started--;
-            if(started == 0 && typeof next == 'function'){ next(err, sweptKeys) }
-          }
-        }));
-      });
-      if(keys.length == 0 && typeof next == 'function'){ next(err, sweptKeys) }
-    }));
-  }
-
   api.cache.save = function(key, value, expireTimeMS, next){
-    api.stats.increment('cache:cachedObjects');
-    api.stats.increment('cache:totalCachedObjects');
-    var domain = api.cache.prepareDomain();
     if(typeof expireTimeMS == 'function' && typeof next == 'undefined'){
       next = expireTimeMS;
       expireTimeMS = null;
     }
+    var expireTimeSeconds = null
     var expireTimestamp = null
-    if(null !== expireTimeMS){
-      expireTimestamp = new Date().getTime() + expireTimeMS;
+    if(null != expireTimeMS){
+      expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
+      expireTimestamp   = new Date().getTime() + expireTimeMS;
     }
     var cacheObj = {
-      value: value,
+      value:           value,
       expireTimestamp: expireTimestamp,
-      createdAt: new Date().getTime(),
-      readAt: null
+      createdAt:       new Date().getTime(),
+      readAt:          null
     }
-    api.redis.client.hset(api.cache.redisCacheKey, key, JSON.stringify(cacheObj), domain.bind(function(){
-      if(typeof next == 'function'){ process.nextTick(function(){ next(null, true) }) }
-    }));
-  };
-
-  api.cache.runSweeper = function(){
-    clearTimeout(api.cache.sweeperTimer);
-    api.cache.sweeper(function(err, sweptKeys){
-      if(sweptKeys.length > 0){
-        api.stats.increment('cache:cachedObjects', -1 * sweptKeys.length);
-        api.log('cleaned ' + sweptKeys.length + ' expired cache keys', 'debug');
+    api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(err){
+      if(err == null && expireTimeSeconds != null){
+        api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
       }
-      if(api.running){
-        api.cache.sweeperTimer = setTimeout(api.cache.runSweeper, api.cache.sweeperTimeout, api);
-      }
+      if(typeof next == 'function'){ process.nextTick(function(){ next(err, true) }) }
     });
-  }
+  };
 
   next();
 }
