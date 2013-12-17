@@ -5,7 +5,7 @@ describe('Server: Web Sockets', function(){
   var should = require('should');
   var socketURL = 'http://localhost:9000';
   var faye = require('faye');
-  var actionHeroWebSocket = require(process.cwd() + '/public/default/javascript/actionHeroWebSocket.js').actionHeroWebSocket;
+  var actionHeroWebSocket = require(process.cwd() + '/public/javascript/actionHeroWebSocket.js').actionHeroWebSocket;
   var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
   var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
   var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
