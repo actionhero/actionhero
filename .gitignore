@@ -1,5 +1,5 @@
 # local actionHero files
-
+config.js
 pids/*
 tmp/*
 log/*
