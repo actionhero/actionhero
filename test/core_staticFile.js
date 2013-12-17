@@ -1,7 +1,7 @@
 describe('Core: Static File', function(){
   var specHelper = require(__dirname + '/_specHelper.js').specHelper;
   var apiObj = {};
-  var defaultPath = '/public/default/';
+  var defaultPath = '/public/';
   var should = require('should');
 
   before(function(done){
