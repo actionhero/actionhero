@@ -16,7 +16,8 @@ var staticFile = function(api, next){
 	
 		var file = path.join(api.config.general.paths.public,
 			(connection.rawConnection.req.headers.host in api.config.general.domains)?
-			api.config.general.domains[connection.rawConnection.req.headers.host]:'',
+			api.config.general.domains[connection.rawConnection.req.headers.host]:
+			api.config.general.domains['default_domain'],
 			connection.params.file);
 
      	if(file.indexOf(path.normalize(file)) != 0){
