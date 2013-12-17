@@ -43,6 +43,10 @@ config.general = {
     'server':      __dirname + '/../servers',
     'initializer': __dirname + '/../initializers'
   },
+  //Hash of folders within 'public' for different domains; if domain name isn't found, defaults to public filepath
+  domains: {
+	
+  },
   // hash containing chat rooms you wish to be created at server boot 
   startingChatRooms: {
     // format is {roomName: {authKey, authValue}}
@@ -159,7 +163,7 @@ config.servers = {
     // Passed to https.createServer if secure=true. Should contain SSL certificates
     serverOptions: {},
     // Port or Socket
-    port: 8080,
+    port: 80,
     // Which IP to listen on (use '0.0.0.0' for all; '::' for all on ipv4 and ipv6)
     bindIP: '0.0.0.0',
     // Any additional headers you want actionHero to respond with
