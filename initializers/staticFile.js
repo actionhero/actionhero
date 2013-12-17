@@ -19,7 +19,7 @@ var staticFile = function(api, next){
 			api.config.general.domains[connection.rawConnection.req.headers.host]:
 			api.config.general.domains['default_domain'],
 			connection.params.file);
-		console.log(file);
+		
      	if(file.indexOf(path.normalize(file)) != 0){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
         } else {
