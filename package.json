@@ -37,7 +37,6 @@
     "mime": "~1.2.11",
     "redis": "~0.9.1",
     "optimist": "~0.6.0",
-    "jake": "latest",
     "winston": "0.7.2",
     "node-uuid": "~1.4.1",
     "fakeredis": "~0.1.3",
