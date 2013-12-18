@@ -38,7 +38,7 @@ exports['generate'] = function(binary, next){
   |\n\
   readme.md\n\
   routes.js\n\
-  Jakefile.js\n\
+  gruntfile.js\n\
   package.json (be sure to include \'actionHero\':\'x\')\n\
   ';
 
@@ -48,8 +48,7 @@ exports['generate'] = function(binary, next){
   documents.routes_js = fs.readFileSync(binary.paths.actionHero_root + '/routes.js');
   documents.action_status = fs.readFileSync(binary.paths.actionHero_root + '/actions/status.js');
   documents.task_runAction = fs.readFileSync(binary.paths.actionHero_root + '/tasks/runAction.js');
-  documents.jakefile = fs.readFileSync(binary.paths.actionHero_root + '/Jakefile.js');
-  documents.ah_jakefile = fs.readFileSync(binary.paths.actionHero_root + '/jakelib/actionHero.jake');
+  documents.gruntfile = fs.readFileSync(binary.paths.actionHero_root + '/shared_gruntfile.js');
   documents.public_actionHeroWebSocket = fs.readFileSync(binary.paths.actionHero_root + '/public/javascript/actionHeroWebSocket.js');
   documents.public_actionHeroWebSocketMin = fs.readFileSync(binary.paths.actionHero_root + '/public/javascript/actionHeroWebSocket.min.js');
   documents.public_index = fs.readFileSync(binary.paths.actionHero_root + '/public/index.html');
@@ -115,7 +114,6 @@ exports['generate'] = function(binary, next){
   binary.utils.create_dir_safely(binary.paths.project_root + '/public/css');
   binary.utils.create_dir_safely(binary.paths.project_root + '/public/logo');
   binary.utils.create_dir_safely(binary.paths.project_root + '/tasks');
-  binary.utils.create_dir_safely(binary.paths.project_root + '/jakelib');
 
   // make files
   binary.utils.create_file_safely(binary.paths.project_root + '/.gitignore', documents.git_ignore);
@@ -133,8 +131,7 @@ exports['generate'] = function(binary, next){
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.js', documents.public_actionHeroWebSocket);
   binary.utils.create_file_safely(binary.paths.project_root + '/public/javascript/actionHeroWebSocket.min.js', documents.public_actionHeroWebSocketMin);
   binary.utils.create_file_safely(binary.paths.project_root + '/readme.md', documents.readme_md);
-  binary.utils.create_file_safely(binary.paths.project_root + '/Jakefile.js', documents.jakefile);
-  binary.utils.create_file_safely(binary.paths.project_root + '/jakelib/actionHero.jake', documents.ah_jakefile);
+  binary.utils.create_file_safely(binary.paths.project_root + '/gruntfile.js', documents.gruntfile);
 
   binary.log('');
   binary.log('Generation Complete.  Your project directory should look like this:\n' + documents.projectMap);
