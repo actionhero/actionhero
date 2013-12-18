@@ -13,7 +13,8 @@ branches:
     - develop
 services:
   - redis-server
-# before_script:
+before_script:
+  - npm install -g grunt-cli
 notifications:
   webhooks: 
     urls:

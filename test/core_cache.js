@@ -100,28 +100,41 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load with options that extending expireTime should return cached item', function(done){
-    var expireTime = 100;
-    apiObj.cache.save('testKey_slow', 'abc123', expireTime, function(err, save_resp){
-      save_resp.should.equal(true);
+    /**
+     * @nullivex
+     * This test is time sensitive and since it is slower/busy systems will have a hard
+     * time passing this test. An increased time increment helps this test pass more reliably.
+     *
+     * Increasing the margin to 80ms seems to work for me on a slow windows fakeRedis but
+     * this might need to be adjusted for slower/busier machines
+     */
+    var expireTime = 400
+    var timeout = 320
+    //save the initial key
+    apiObj.cache.save('testKey_slow', 'abc123', expireTime, function(err, saveResp){
+      saveResp.should.equal(true)
+      //wait for `timeout` and try to load the key
       setTimeout(function(){
-        apiObj.cache.load('testKey_slow', {expireTimeMS: expireTime}, function(err, load_resp){
-          load_resp.should.equal('abc123');
+        apiObj.cache.load('testKey_slow', {expireTimeMS: expireTime}, function(err, loadResp){
+          loadResp.should.equal('abc123')
+          //wait another `timeout` and load the key again within the extended expire time
           setTimeout(function(){
-            apiObj.cache.load('testKey_slow', function(err, load_resp){
-              load_resp.should.equal('abc123');
+            apiObj.cache.load('testKey_slow', function(err, loadResp){
+              loadResp.should.equal('abc123')
+              //wait another `timeout` and the key load should fail without the extension
               setTimeout(function(){
-                apiObj.cache.load('testKey_slow', function(err, load_resp){
+                apiObj.cache.load('testKey_slow', function(err, loadResp){
                   String(err).should.equal('Error: Object expired')
-                  should.equal(null, load_resp);
-                  done();
-                });
-              }, 80);
+                  should.equal(null, loadResp)
+                  done()
+                })
+              },timeout)
             });
-          }, 80);
-        });
-      }, 80);
-    });
-  });
+          },timeout)
+        })
+      },timeout)
+    })
+  })
 
   it('cache.save works with arrays', function(done){
     apiObj.cache.save('array_key', [1, 2, 3], function(err, save_resp){

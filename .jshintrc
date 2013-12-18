@@ -6,7 +6,6 @@
   "esnext": true,
   "bitwise": true,
   "camelcase": true,
-  "curly": true,
   "eqeqeq": true,
   "immed": true,
   "indent": 2,
@@ -17,7 +16,6 @@
   "regexp": true,
   "undef": true,
   "unused": true,
-  "strict": true,
   "trailing": true,
   "smarttabs": true,
   "globals": {
