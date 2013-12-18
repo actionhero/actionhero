@@ -43,6 +43,10 @@ config.general = {
     'server':      __dirname + '/../servers',
     'initializer': __dirname + '/../initializers'
   },
+  //Hash of folders in 'public' for each domain; if domain name isn't found, defaults to default_domain
+  domains: {
+	'default_domain' :'default'	
+  },
   // hash containing chat rooms you wish to be created at server boot 
   startingChatRooms: {
     // format is {roomName: {authKey, authValue}}
