@@ -193,10 +193,12 @@ var tasks = function(api, next){
         var task = self.tasks[taskName];
         if(task.frequency > 0){
           started++;
-          loadedTasks.push(taskName);
           (function(taskName){
             self.enqueue(taskName, function(err, toRun){
-              if(toRun === true){ api.log('enqueuing periodic task: ' + taskName, 'info') }
+              if(toRun === true){ 
+                api.log('enqueuing periodic task: ' + taskName, 'info');
+                loadedTasks.push(taskName);
+              }
               started--;
               if(started == 0 && typeof callback == 'function'){ callback(loadedTasks) }
             });
