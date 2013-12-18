@@ -107,23 +107,30 @@ grunt.registerTask('enqueueAllPeriodicTasks','This will enqueue all periodic tas
   })
 })
 
-grunt.registerTask('enqueuePeriodicTask','Enqueue a periodic task',function(taskName){
+grunt.registerTask('enqueuePeriodicTask','Enqueue a periodic task (--taskName)',function(){
   var done = this.async()
+  var taskName = grunt.option('taskName');
   init(function(api){
     if(!api.tasks.tasks[taskName]) throw new Error('Task not found')
     api.resque.startQueue(function(){
       // enqueue to run ASAP
-      api.tasks.enqueue(taskName, function(err){
+      api.tasks.enqueue(taskName, function(err, toRun){
         if(err) throw err
-        grunt.log.writeln('loaded task: ' + taskName)
+        if(toRun === true){
+          grunt.log.writeln('loaded task: ' + taskName)
+        }else{
+          grunt.log.writeln(taskName + ' not enqueued')
+        }
         done()
       })
     })
   })
 })
 
-grunt.registerTask('stopPeriodicTask','Remove an enqueued periodic task',function(taskName){
+grunt.registerTask('stopPeriodicTask','Remove an enqueued periodic task (--taskName)',function(){
   var done = this.async()
+  var taskName = grunt.option('taskName');
+  console.log(">> " + taskName)
   init(function(api){
     if(!api.tasks.tasks[taskName]) throw new Error('Task not found')
     api.resque.startQueue(function(){
@@ -149,46 +156,37 @@ grunt.registerTask('flushRedis','Clear the entire actionHero redis database',fun
 grunt.registerTask('clearCache','Clear the actionHero cache',function(){
   var done = this.async()
   init(function(api){
-    api.cache.size(function(err, count){
-      if(err) throw err
-      api.redis.client.del(api.cache.redisCacheKey, function(err){
-        if(err) throw err
-        grunt.log.writeln('cleared ' + count + ' items from the cache')
-        done()
-      })
+    api.cache.clear(function(error, count){
+      if(error) throw error
+      grunt.log.writeln('cleared ' + count + ' items from the cache');
+      done()
     })
   })
 })
 
-grunt.registerTask('dumpCache','Save the current cache as a JSON object',function(file){
+grunt.registerTask('dumpCache','Save the current cache as a JSON object (--file)',function(){
   var done = this.async()
+  var file = grunt.option('file');
   init(function(api){
-    if(undefined === file) file = 'cache.dump'
-    api.cache.size(function(err, count){
-      if(err) throw err
-      api.redis.client.hgetall(api.cache.redisCacheKey, function(err, data){
-        if(err) throw err
-        if(!data) data = {}
-        fs.writeFileSync(file, JSON.stringify(data))
-        grunt.log.writeln('dumped ' + count + ' items from the cache')
-        done()
-      })
+    if(undefined === file){ file = 'cache.dump' }
+    api.cache.dumpWrite(file, function(error, count){
+      if(error) throw error
+      grunt.log.writeln('dumped ' + count + ' items from the cache to ' + file);
+      done()
     })
   })
 })
 
-grunt.registerTask('setCache','Set the cache from a file (overwrites existing cache)',function(file){
+grunt.registerTask('loadCache','Set the cache from a file (overwrites existing cache) (--file)',function(){
   var done = this.async()
+  var file = grunt.option('file');
   init(function(api){
-    if(undefined === file) file = 'cache.dump'
-    var data = JSON.parse(fs.readFileSync(file)) || {}
-    api.redis.client.hmset(api.cache.redisCacheKey, data, function(err){
-      if(err) throw err
-      api.cache.size(function(err, count){
-        if(err) throw err
-        grunt.log.writeln('loaded ' + count + ' items into the cache')
-        done()
-      })
+
+    if(file == null){ file = 'cache.dump' }
+    api.cache.dumpRead(file, function(error, count){
+      if(error) throw error
+      grunt.log.writeln('cleared the cache and then loaded ' + count + ' items from ' + file);
+      done()
     })
   })
 })
