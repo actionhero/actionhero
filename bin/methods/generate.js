@@ -72,7 +72,8 @@ exports['generate'] = function(binary, next){
       "node": ">=0.8.0"\n\
     },\n\
     "dependencies": {\n\
-      "actionHero": "'+AHversionNumber+"\"\n\
+      \"actionHero\": \"'+AHversionNumber+"\",\n\
+      \"grunt\": \"~0.4.2\"\n\
     },\n\
     \"devDependencies\": {},\n\
     \"scripts\": {\n\
