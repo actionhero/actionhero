@@ -80,12 +80,7 @@ exports['generate'] = function(binary, next){
       \"help\": \"actionHero help\",\n\
       \"start\": \"actionHero start\",\n\
       \"actionHero\": \"actionHero\",\n\
-      \"startCluster\": \"actionHero startCluster\",\n\
-      \"generate\": \"actionHero generate\",\n\
-      \"generateAction\": \"actionHero generateAction\",\n\
-      \"generateServer\": \"actionHero generateServer\",\n\
-      \"generateTask\": \"actionHero generateTask\",\n\
-      \"generateInitializer\": \"actionHero generateInitializer\"\n\
+      \"startCluster\": \"actionHero startCluster\"\n\
     }\n\
   }\n\
   ";
