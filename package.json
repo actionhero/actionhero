@@ -59,10 +59,10 @@
     "actionHero": "./bin/actionHero"
   },
   "scripts": {
-    "postinstall": "node ./bin/actionHero intro",
-    "help": "node ./bin/actionHero help",
+    "postinstall": "./bin/actionHero intro",
+    "help": "./bin/actionHero help",
     "test": "grunt test && grunt testProduction",
-    "start": "node ./bin/actionHero"
+    "start": "./bin/actionHero"
   },
   "prepublish": "grunt publish",
   "subdomain": "actionhero",
