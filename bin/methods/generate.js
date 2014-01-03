@@ -77,10 +77,15 @@ exports['generate'] = function(binary, next){
     },\n\
     \"devDependencies\": {},\n\
     \"scripts\": {\n\
-      \"start\": \"node ./node_modules/.bin/actionHero start\",\n\
-      \"startCluster\": \"node ./node_modules/.bin/actionHero startCluster\",\n\
-      \"actionHero\": \"node ./node_modules/.bin/actionHero\",\n\
-      \"help\": \"node ./node_modules/.bin/actionHero help\"\n\
+      \"help\": \"actionHero help\",\n\
+      \"start\": \"actionHero start\",\n\
+      \"actionHero\": \"actionHero\",\n\
+      \"startCluster\": \"actionHero startCluster\",\n\
+      \"generate\": \"actionHero generate\",\n\
+      \"generateAction\": \"actionHero generateAction\",\n\
+      \"generateServer\": \"actionHero generateServer\",\n\
+      \"generateTask\": \"actionHero generateTask\",\n\
+      \"generateInitializer\": \"actionHero generateInitializer\"\n\
     }\n\
   }\n\
   ";
