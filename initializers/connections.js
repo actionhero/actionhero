@@ -58,15 +58,13 @@ var connections = function(api, next){
 
     var connectionDefaults = {
       error: null,
+      room: null,
       params: {},
       response: {},
       pendingActions: 0,
       totalActions: 0,
       messageCount: 0,
       listeningRooms: [],
-      roomMatchKey: null,
-      roomMatchValue: null,
-      room: api.config.general.defaultChatRoom,
       canChat: false
     }
 

@@ -11,9 +11,7 @@ var params = function(api, next){
     'callback',
     'action',
     'limit',
-    'offset',
-    'roomMatchKey',
-    'roomMatchValue'
+    'offset'
   ];
 
   api.params.buildPostVariables = function(){
