@@ -1,65 +1,68 @@
+var should = require('should');
+var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
+var actionHero = new actionHeroPrototype();
+var api;
+
+var net = require('net');
+var client = {};
+var client2 = {};
+var client3 = {};
+
+var client_details = {};
+var client_2_details = {};
+
+function makeSocketRequest(thisClient, message, cb){
+  var lines = [];
+
+  var rsp = function(d){
+    d.split('\n').forEach(function(l){
+      lines.push(l);
+    });
+    lines.push()
+  };
+
+  setTimeout(function(){
+    var lastLine = lines[(lines.length - 1)];
+    if(lastLine == ''){ lastLine = lines[(lines.length - 2)] }
+    var parsed = null;
+    try { parsed = JSON.parse(lastLine) } catch(e){}
+    thisClient.removeListener('data', rsp);
+    if(typeof cb == 'function'){ cb(parsed) }
+  }, 100);
+
+  thisClient.on('data', rsp);
+  thisClient.write(message + '\r\n');
+}
+
 describe('Server: Socket', function(){
-  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
-  var net = require('net');
-  var apiObj = {};
-  var rawAPI = {};
-  var should = require('should');
-  var client_details = {};
-  var client_2_details = {};
-
-  var client = {};
-  var client2 = {};
-  var client3 = {};
-
-  function makeSocketRequest(thisClient, message, cb){
-    var lines = [];
-
-    var rsp = function(d){
-      d.split('\n').forEach(function(l){
-        lines.push(l);
-      });
-      lines.push()
-    };
-
-    setTimeout(function(){
-      var lastLine = lines[(lines.length - 1)];
-      if(lastLine == ''){ lastLine = lines[(lines.length - 2)] }
-      var parsed = null;
-      try { parsed = JSON.parse(lastLine) } catch(e){}
-      thisClient.removeListener('data', rsp);
-      if(typeof cb == 'function'){ cb(parsed) }
-    }, 100);
-
-    thisClient.on('data', rsp);
-    thisClient.write(message + '\r\n');
-  }
 
   before(function(done){
-    this.timeout(5000);
-    specHelper.prepare(0, function(api){
-      rawAPI = api;
-      apiObj = specHelper.cleanAPIObject(api);
+    actionHero.start(function(err, a){
+      api = a;
 
-      client = net.connect((specHelper.startingSocketPort + 0), function(){
+      setTimeout(function(){
+        done();
+      }, 1000);
+
+      client = net.connect(api.config.servers.socket.port, function(){
         client.setEncoding('utf8');
-        client2 = net.connect((specHelper.startingSocketPort + 0), function(){
-          client2.setEncoding('utf8');
-          client3 = net.connect((specHelper.startingSocketPort + 0), function(){
-            client3.setEncoding('utf8');
-            setTimeout(function(){ // This timeout is to wait-out all the
-              done();
-            }, 1000);
-          });
-        });
+      });
+      client2 = net.connect(api.config.servers.socket.port, function(){
+        client2.setEncoding('utf8');
+      });
+      client3 = net.connect(api.config.servers.socket.port, function(){
+        client3.setEncoding('utf8');
       });
     });
   });
 
   after(function(done){
-    client.write('quit\r\n')
-    client2.write('quit\r\n')
-    client3.write('quit\r\n')
-    done();
+    client.write('quit\r\n');
+    client2.write('quit\r\n');
+    client3.write('quit\r\n');
+    actionHero.stop(function(err){
+      done();
+    });
   });
 
   it('socket connections should be able to connect and get JSON', function(done){
@@ -73,7 +76,7 @@ describe('Server: Socket', function(){
   it('single string message are treated as actions', function(done){
     makeSocketRequest(client, 'status', function(response){
       response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server-1');
+      response.id.should.equal('test-server');
       done();
     });
   });
@@ -81,7 +84,7 @@ describe('Server: Socket', function(){
   it('stringified JSON can also be sent as actions', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), function(response){
       response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server-1');
+      response.id.should.equal('test-server');
       done();
     });
   });
@@ -90,8 +93,8 @@ describe('Server: Socket', function(){
     var msg = {
       action: 'cacheTest',
       params: {
-        key: apiObj.utils.randomString(100),
-        value: apiObj.utils.randomString(500)
+        key: api.utils.randomString(100),
+        value: api.utils.randomString(500)
       }
     }
     makeSocketRequest(client, JSON.stringify(msg), function(response){
@@ -177,7 +180,6 @@ describe('Server: Socket', function(){
   });
 
   it('will limit how many simultaneous connections I can have', function(done){
-    this.timeout(5000)
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 500}}) + '\r\n');
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 600}}) + '\r\n');
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 700}}) + '\r\n');
@@ -217,7 +219,7 @@ describe('Server: Socket', function(){
       makeSocketRequest(client3, 'roomChange defaultRoom');
       setTimeout(function(){
         done();
-      }, 100);
+      }, 250);
     })
 
     it('clients are in the default room', function(done){
@@ -274,14 +276,13 @@ describe('Server: Socket', function(){
 
     it('Folks are notified when I join a room', function(done){
       makeSocketRequest(client, 'roomChange otherRoom', function(response){
-        setTimeout(function(){
-          makeSocketRequest(client, '', function(response){
-            response.message.should.equal('I have entered the room');
-            response.from.should.equal(client_2_details.id);
-            done();
-          });
-          makeSocketRequest(client2, 'roomChange otherRoom' + '\r\n');
-        }, 500);
+        makeSocketRequest(client, '', function(response){
+          response.message.should.equal('I have entered the room');
+          response.from.should.equal(client_2_details.id);
+          done();
+        });
+
+        makeSocketRequest(client2, 'roomChange otherRoom' + '\r\n');
       });
     });
 
@@ -291,11 +292,11 @@ describe('Server: Socket', function(){
         response.from.should.equal(client_2_details.id);
         done();
       });
+
       makeSocketRequest(client2, 'roomChange otherRoom\r\n');
     });
 
     it('I can register for messages from rooms I am not in', function(done){
-      this.timeout(5000);
       makeSocketRequest(client, 'roomChange defaultRoom', function(response){
         makeSocketRequest(client2, 'roomChange otherRoom', function(response){
           makeSocketRequest(client, 'listenToRoom otherRoom', function(response){
@@ -310,7 +311,6 @@ describe('Server: Socket', function(){
     });
 
     it('I can unregister for messages from rooms I am not in', function(done){
-      this.timeout(5000);
       makeSocketRequest(client, 'roomChange defaultRoom', function(response){
         makeSocketRequest(client2, 'roomChange otherRoom', function(response){
           makeSocketRequest(client, 'listenToRoom otherRoom', function(response){
@@ -334,7 +334,7 @@ describe('Server: Socket', function(){
     });
 
     it('can join secure rooms when applicable', function(done){
-      rawAPI.connections.connections[client_details.id].authorized = true;
+      api.connections.connections[client_details.id].authorized = true;
       makeSocketRequest(client, 'roomChange secureRoom', function(response){
         response.data.should.equal(true);
         response.status.should.equal('OK');
@@ -343,7 +343,7 @@ describe('Server: Socket', function(){
     });
 
     it('cannot join secure rooms when missing attributes', function(done){
-      rawAPI.connections.connections[client_details.id].authorized = false;
+      api.connections.connections[client_details.id].authorized = false;
       makeSocketRequest(client, 'roomChange secureRoom', function(response){
         response.data.should.equal(false);
         response.status.should.equal('not authorized to join room');

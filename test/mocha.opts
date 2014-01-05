@@ -1,0 +1,3 @@
+--recursive
+--reporter dot
+--timeout 5000

@@ -1,0 +1,23 @@
+var should = require('should');
+var actionHeroPrototype = require('actionHero').actionHeroPrototype;
+var actionHero = new actionHeroPrototype();
+var api;
+
+describe('myActionHero Tests', function(){
+
+  before(function(done){
+    actionHero.start(function(err, a){
+      api = a;
+      done();
+    })
+  });
+
+  after(function(done){
+    actionHero.stop(function(err){
+      done();
+    });
+  })
+
+  // tests here
+
+});
