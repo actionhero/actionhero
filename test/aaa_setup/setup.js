@@ -23,8 +23,10 @@ describe('Setup', function(){
     });
   });
 
-  it('ensures the TEST env', function(){
+  it('should have booted into the test env', function(){
     process.env.NDOE_ENV.should.equal('test');
-  })
+    api.env.should.equal('test');
+    should.exist(api.id);
+  });
 
 });

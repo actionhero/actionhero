@@ -59,9 +59,10 @@
   "scripts": {
     "postinstall": "./bin/actionHero intro",
     "help": "./bin/actionHero help",
-    "test": "fakeredis=true NODE_ENV=test ./node_modules/.bin/mocha && fakeredis=false NODE_ENV=test ./node_modules/.bin/mocha",
+    "test": "fakeredis=true NODE_ENV=test mocha && fakeredis=false NODE_ENV=test mocha",
     "start": "./bin/actionHero"
   },
+  "postinstall": "npm install",
   "prepublish": "grunt publish",
   "subdomain": "actionhero",
   "domains": [

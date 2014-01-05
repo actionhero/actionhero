@@ -19,9 +19,8 @@ describe('Action: Random Number', function(){
   });
 
   var firstNumber = null;
-  it('random numbers', function(done){
+  it('generates random numbers', function(done){
     api.specHelper.runAction('randomNumber', function(response, connection){
-      response.randomNumber.should.exit
       response.randomNumber.should.be.a.Number;
       response.randomNumber.should.be.within(0,1);
       firstNumber = response.randomNumber;

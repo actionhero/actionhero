@@ -1,9 +1,11 @@
+process.env.NODE_ENV = 'test';
+
 var should = require('should');
 var actionHeroPrototype = require('actionHero').actionHeroPrototype;
 var actionHero = new actionHeroPrototype();
 var api;
 
-describe('myActionHero Tests', function(){
+describe('actionHero Tests', function(){
 
   before(function(done){
     actionHero.start(function(err, a){
@@ -18,6 +20,10 @@ describe('myActionHero Tests', function(){
     });
   })
 
-  // tests here
+  it('should have booted into the test env', function(){
+    process.env.NODE_ENV.should.equal('test');
+    api.env.should.equal('test');
+    should.exist(api.id);
+  });
 
 });
