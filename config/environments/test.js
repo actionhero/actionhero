@@ -17,7 +17,7 @@ var redisConfig = {
 
 var config = {
   general: {
-    //id: 'test-server-1',
+    id: 'test-server',
     developmentMode: true,
     startingChatRooms: {
       'defaultRoom': {},
@@ -49,7 +49,7 @@ var config = {
   servers: {
     web: {
       secure: false,
-      //port: 9000,
+      port: 8081,
       matchExtensionMime: true,
       metadataOptions: {
         serverInformation: true,
@@ -57,7 +57,7 @@ var config = {
       }
     },
     socket: {
-      //port: 8000,
+      port: 5001,
       secure: false
     },
     websocket: {}

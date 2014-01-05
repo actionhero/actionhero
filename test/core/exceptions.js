@@ -1,14 +1,21 @@
+var should = require('should');
+var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
+var actionHero = new actionHeroPrototype();
+var api;
+
 describe('Core: Exceptions', function(){
-  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
-  var apiObj = {};
-  var should = require('should');
 
   before(function(done){
-    this.timeout(5000);
-    specHelper.prepare(0, function(api){
-      apiObj = specHelper.cleanAPIObject(api);
+    actionHero.start(function(err, a){
+      api = a;
       done();
     })
+  });
+
+  after(function(done){
+    actionHero.stop(function(err){
+      done();
+    });
   });
 
   var uncaughtExceptionHandlers = process.listeners('uncaughtException');
@@ -27,7 +34,7 @@ describe('Core: Exceptions', function(){
   });
 
   it('I can inject a bad task that breaks', function(done){
-    apiObj.actions.actions.badAction = {
+    api.actions.actions.badAction = {
       '1': {
         name: 'badAction',
         description: 'I will break',
@@ -40,8 +47,8 @@ describe('Core: Exceptions', function(){
         }
       }
     }
-    apiObj.actions.versions['badAction'] = [1];
-    apiObj.actions.actions['badAction'].should.be.an.instanceOf(Object);
+    api.actions.versions['badAction'] = [1];
+    api.actions.actions['badAction'].should.be.an.instanceOf(Object);
     done();
   });
 
@@ -64,8 +71,8 @@ describe('Core: Exceptions', function(){
      * still pass in normal environments.
      */
     if(9 < parseInt(process.version.split('.')[1],10)){
-      specHelper.apiTest.get('/api/badAction', 0, {} , function(response, json){
-        json.error.should.equal('Error: The server experienced an internal error');
+      api.specHelper.runAction('badAction', {}, function(response, connection){
+        response.error.should.equal('Error: The server experienced an internal error');
         done();
       });
     } else {
@@ -74,16 +81,16 @@ describe('Core: Exceptions', function(){
   });
 
   it('other actions still work', function(done){
-    specHelper.apiTest.get('/api/randomNumber', 0, {} , function(response){
-      should.not.exist(response.body.error);
+    api.specHelper.runAction('randomNumber', {}, function(response, connection){
+      should.not.exist(response.error);
       done();
     });
   });
 
   it('I can remove the bad action', function(done){
-    delete apiObj.actions.actions['badAction'];
-    delete apiObj.actions.versions['badAction'];
-    should.not.exist(apiObj.actions.actions['badAction']);
+    delete api.actions.actions['badAction'];
+    delete api.actions.versions['badAction'];
+    should.not.exist(api.actions.actions['badAction']);
     done();
   });
 });

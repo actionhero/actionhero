@@ -116,7 +116,7 @@ var cache = function(api, next){
       try { cacheObj = JSON.parse(cacheObj) } catch(e){}
       if(cacheObj == null){
         if(typeof next == 'function'){
-          process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
+          setImmediate(function(){ next(new Error('Object not found'), null, null, null, null); });
         }
       } else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null){
         cacheObj.readAt = new Date().getTime();
@@ -129,12 +129,12 @@ var cache = function(api, next){
             api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
           }
           if(typeof next == 'function'){
-            process.nextTick(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+            setImmediate(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
           }
         });
       } else {
         if(typeof next == 'function'){
-          process.nextTick(function(){ next(new Error('Object expired'), null, null, null, null); });
+          setImmediate(function(){ next(new Error('Object expired'), null, null, null, null); });
         }
       }
     });
@@ -146,7 +146,7 @@ var cache = function(api, next){
       if(err != null){ api.log(err, 'error') }
       var resp = true;
       if(count != 1){ resp = false }
-      if(typeof next == 'function'){ process.nextTick(function(){ next(null, resp) }) }
+      if(typeof next == 'function'){ setImmediate(function(){ next(null, resp) }) }
     });
   };
 
@@ -171,7 +171,7 @@ var cache = function(api, next){
       if(err == null && expireTimeSeconds != null){
         api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
       }
-      if(typeof next == 'function'){ process.nextTick(function(){ next(err, true) }) }
+      if(typeof next == 'function'){ setImmediate(function(){ next(err, true) }) }
     });
   };
 

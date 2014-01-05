@@ -66,7 +66,8 @@ actionHero.prototype.initialize = function(params, callback){
     'tasks',
     'routes',
     'genericServer',
-    'servers'
+    'servers',
+    'specHelper'
   ].forEach(function(initializer){
     var file = __dirname + '/initializers/' + initializer + '.js';
     delete require.cache[require.resolve(file)];

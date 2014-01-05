@@ -1,31 +1,32 @@
-describe('Server: Web Sockets', function(){
+var should = require('should');
+var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
+var actionHero = new actionHeroPrototype();
+var api;
 
-  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
-  var apiObj = {};
-  var should = require('should');
-  var socketURL = 'http://localhost:9000';
-  var faye = require('faye');
-  var actionHeroWebSocket = require(process.cwd() + '/public/javascript/actionHeroWebSocket.js').actionHeroWebSocket;
-  var client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
-  var client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
-  var client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+var socketURL;
+var faye = require('faye');
+var actionHeroWebSocket = require(__dirname + '/../../public/javascript/actionHeroWebSocket.js').actionHeroWebSocket;
+var client_1;
+var client_2;
+var client_3;
 
-  function countWebSocketConnections(){
-    var found = 0;
-    for(var i in apiObj.connections.connections){
-      if(apiObj.connections.connections[i].type == 'websocket'){
-        found++;
-      }
-    }
-    return found;
-  }
+describe('Server: Web Socket', function(){
 
   before(function(done){
-    this.timeout(5000);
-    specHelper.prepare(0, function(api){
-      apiObj = api;
+    actionHero.start(function(err, a){
+      api = a;
+      socketURL = 'http://localhost:' + api.config.servers.web.port;
+      client_1 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+      client_2 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
+      client_3 = new actionHeroWebSocket({host: socketURL, faye: faye, connectionDelay: 500});
       done();
     })
+  });
+
+  after(function(done){
+    actionHero.stop(function(err){
+      done();
+    });
   });
 
   it('faye should work in general', function(done){
@@ -36,7 +37,7 @@ describe('Server: Web Sockets', function(){
     });
 
     setTimeout(function(){
-      apiObj.faye.client.publish('/test', {message: 'hello'});
+      api.faye.client.publish('/test', {message: 'hello'});
     }, 500);
   });
 
@@ -96,8 +97,6 @@ describe('Server: Web Sockets', function(){
   });
 
   it('will limit how many simultaneous connections I can have', function(done){
-    this.timeout(5000);
-
     var responses = [];
     client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response) })
     client_1.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response) })
@@ -155,7 +154,6 @@ describe('Server: Web Sockets', function(){
     });
 
     it('I can register for messages from rooms I am not in; and then unregister', function(done){
-      this.timeout(5000)
       client_1.roomChange('defaultRoom', function(){
         client_2.roomChange('otherRoom', function(){
           
@@ -195,12 +193,12 @@ describe('Server: Web Sockets', function(){
   describe('disconnect', function(){
 
     it('can disconnect', function(done){
-      countWebSocketConnections().should.equal(3);
+      api.servers.servers.websocket.connections().length.should.equal(3);
       client_1.disconnect();
       client_2.disconnect();
       client_3.disconnect();
       setTimeout(function(){
-        countWebSocketConnections().should.equal(0);
+        api.servers.servers.websocket.connections().length.should.equal(0);
         done();
       }, 500);
     });

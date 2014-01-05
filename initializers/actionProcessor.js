@@ -49,7 +49,7 @@ var actionProcessor = function(api, next){
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
 
-    process.nextTick(function(){
+    setImmediate(function(){
 
       self.connection._original_connection.action = self.connection.action;
       self.connection._original_connection.error = self.connection.error;
@@ -195,7 +195,7 @@ var actionProcessor = function(api, next){
           });
         });
         actionDomain.run(function(){
-          process.nextTick(function(){
+          setImmediate(function(){
             var toProcess = true;
             self.preProcessAction(toProcess, function(toProcess){
               if(toProcess === true){

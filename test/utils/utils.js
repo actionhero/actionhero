@@ -1,21 +1,29 @@
-describe('Core: Utils', function(){
-  var specHelper = require(__dirname + '/_specHelper.js').specHelper;
-  var apiObj = {};
-  var should = require('should');
+var should = require('should');
+var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
+var actionHero = new actionHeroPrototype();
+var api;
+
+var testCounterName = 'testCounterName';
+var oldValues = { global: 0, local: 0 };
+var testKey = 'test:stats'
+
+describe('Utils', function(){
 
   before(function(done){
-    this.timeout(5000);
-    specHelper.prepare(0, function(api){
-      apiObj = specHelper.cleanAPIObject(api);
-      var utilLoader = require('../initializers/utils.js').utils
-      utilLoader(specHelper, function(){
-        done();
-      })
+    actionHero.start(function(err, a){
+      api = a;
+      done();
     })
   });
 
+  after(function(done){
+    actionHero.stop(function(err){
+      done();
+    });
+  });
+
   it('utils.sqlDateTime default', function(done){
-    specHelper.utils.sqlDateTime().should.be.a.String;
+    api.utils.sqlDateTime().should.be.a.String;
     done();
   });
 
@@ -29,16 +37,16 @@ describe('Core: Utils', function(){
       now.getUTCMinutes(),
       now.getUTCSeconds()
     );
-    specHelper.utils.sqlDateTime(now_utc).should.equal('1970-01-01 00:00:00');
+    api.utils.sqlDateTime(now_utc).should.equal('1970-01-01 00:00:00');
     done();
   });
 
   it('utils.randomString', function(done){
-    var randomString = specHelper.utils.randomString(100);
+    var randomString = api.utils.randomString(100);
     randomString.should.be.a.String;
     var i = 0;
     while(i < 1000){
-      randomString.should.not.equal(specHelper.utils.randomString(100));
+      randomString.should.not.equal(api.utils.randomString(100));
       i++;
     }
     done();
@@ -46,14 +54,14 @@ describe('Core: Utils', function(){
 
   it('utils.hashLength', function(done){
     var testHash = { a: 1, b: 2, c: {aa: 1, bb: 2}};
-    specHelper.utils.hashLength(testHash).should.equal(3)
-    specHelper.utils.hashLength({}).should.equal(0)
+    api.utils.hashLength(testHash).should.equal(3)
+    api.utils.hashLength({}).should.equal(0)
     done();
   });
 
   it('utils.sleepSync', function(done){
     var start = new Date();
-    specHelper.utils.sleepSync(0.1)
+    api.utils.sleepSync(0.1)
     var end = new Date();
     (end - start).should.be.within(100, 200);
     done();
@@ -61,7 +69,7 @@ describe('Core: Utils', function(){
 
   it('utils.arrayUniqueify', function(done){
     var a = [1,2,3,3,4,4,4,5,5,5]
-    specHelper.utils.arrayUniqueify(a).should.eql([1,2,3,4,5]);
+    api.utils.arrayUniqueify(a).should.eql([1,2,3,4,5]);
     done();
   });
 
@@ -72,7 +80,7 @@ describe('Core: Utils', function(){
     var D = {a: 1, b: {n:111, o:22}};
 
     it('simple', function(done){
-      var Z = specHelper.utils.hashMerge(A, B);
+      var Z = api.utils.hashMerge(A, B);
       Z.a.should.equal(1);
       Z.b.should.equal(-2);
       Z.c.should.equal(3);
@@ -80,7 +88,7 @@ describe('Core: Utils', function(){
     });
 
     it('directional', function(done){
-      var Z = specHelper.utils.hashMerge(B, A);
+      var Z = api.utils.hashMerge(B, A);
       Z.a.should.equal(1);
       Z.b.should.equal(2);
       Z.c.should.equal(3);
@@ -88,7 +96,7 @@ describe('Core: Utils', function(){
     });
 
     it('nested', function(done){
-      var Z = specHelper.utils.hashMerge(C, D);
+      var Z = api.utils.hashMerge(C, D);
       Z.a.should.equal(1);
       Z.b.m.should.equal(10);
       Z.b.n.should.equal(111);
@@ -98,9 +106,9 @@ describe('Core: Utils', function(){
   });
 
   it('utils.inArray', function(done){
-    specHelper.utils.inArray([1,2,3], 1).should.eql(true);
-    specHelper.utils.inArray([1,2,3], 4).should.eql(false);
-    specHelper.utils.inArray([1,2,3], null).should.eql(false);
+    api.utils.inArray([1,2,3], 1).should.eql(true);
+    api.utils.inArray([1,2,3], 4).should.eql(false);
+    api.utils.inArray([1,2,3], null).should.eql(false);
     done();
   });
 
@@ -113,7 +121,7 @@ describe('Core: Utils', function(){
         second: 2
       }
     }
-    var b = specHelper.utils.objClone(a);
+    var b = api.utils.objClone(a);
     a.should.eql(b);
     delete a.a
     a.should.not.eql(b);
@@ -124,21 +132,21 @@ describe('Core: Utils', function(){
 
     it('address and port', function(){
       var uri = '[2604:4480::5]:8080';
-      var parts = specHelper.utils.parseIPv6URI(uri);
+      var parts = api.utils.parseIPv6URI(uri);
       parts.host.should.equal('2604:4480::5');
       parts.port.should.equal(8080);
     });
 
     it('address without port', function(){
       var uri = '2604:4480::5';
-      var parts = specHelper.utils.parseIPv6URI(uri);
+      var parts = api.utils.parseIPv6URI(uri);
       parts.host.should.equal('2604:4480::5');
       parts.port.should.equal(80);
     });
 
     it('full uri', function(){
       var uri = 'http://[2604:4480::5]:8080/foo/bar';
-      var parts = specHelper.utils.parseIPv6URI(uri);
+      var parts = api.utils.parseIPv6URI(uri);
       parts.host.should.equal('2604:4480::5');
       parts.port.should.equal(8080);
     });
@@ -146,7 +154,7 @@ describe('Core: Utils', function(){
     it('failing address', function(){
       var uri = '[2604:4480:z:5]:80';
       try{
-        var parts = specHelper.utils.parseIPv6URI(uri);
+        var parts = api.utils.parseIPv6URI(uri);
       }catch(e){
         e.message.should.equal('failed to parse address');
       }

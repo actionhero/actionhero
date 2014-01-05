@@ -11,13 +11,20 @@ var servers = function(api, next){
     if(api.utils.hashLength(api.config.servers) == 0){ next() }
     for(var server in api.config.servers){
       started++;
-      api.log('starting server: ' + server, 'notice');
-      api.servers.servers[server]._start(function(){
+      if(api.config.servers[server] != null){
+        api.log('starting server: ' + server, 'notice');
+        api.servers.servers[server]._start(function(){
+          process.nextTick(function(){
+            started--;
+            if(started == 0){ next() }
+          });
+        });
+      }else{
         process.nextTick(function(){
           started--;
           if(started == 0){ next() }
         });
-      });
+      }
     }
   }
 
