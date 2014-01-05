@@ -105,6 +105,9 @@ var genericServer = function(api, next){
       remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection
     });
+    if(self.attributes.canChat === true){
+      connection.canChat = true;
+    }
     connection.sendMessage = function(message){
       self.sendMessage(connection, message);
     }
@@ -123,9 +126,6 @@ var genericServer = function(api, next){
           api.log(e, 'error');
         }
       }, self.attributes.sendWelcomeMessage);
-    }
-    if(self.attributes.canChat === true){
-      connection.canChat = true;
     }
   }
 
