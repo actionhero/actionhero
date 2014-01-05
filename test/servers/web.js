@@ -3,7 +3,7 @@ var request = require('request');
 var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
 var actionHero = new actionHeroPrototype();
 var api;
-// var url
+var url
 
 describe('Server: Web', function(){
 
