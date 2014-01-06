@@ -57,7 +57,7 @@
     "actionHero": "./bin/actionHero"
   },
   "scripts": {
-    "postinstall": "node ./bin/actionHero intro",
+    "postinstall": "echo 'To generate a new actionHero project, run \"node ./node_modules/.bin/actionHero generate\"'",
     "help": "node ./bin/actionHero help",
     "test": "fakeredis=true NODE_ENV=test mocha && fakeredis=false NODE_ENV=test mocha",
     "start": "node ./bin/actionHero"
