@@ -7,6 +7,8 @@
 
 [![Nodei stats](https://nodei.co/npm/actionHero.png?downloads=true)](https://npmjs.org/package/actionHero)
 
+[![NPM](https://nodei.co/npm-dl/actionHero.png)](https://npmjs.org/package/actionHero)
+
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionHero.png)](http://demo.actionherojs.com)
 
 [![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero)  [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/evantahler/actionhero/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
