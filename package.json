@@ -57,10 +57,10 @@
     "actionHero": "./bin/actionHero"
   },
   "scripts": {
-    "postinstall": "./bin/actionHero intro",
-    "help": "./bin/actionHero help",
+    "postinstall": "node ./bin/actionHero intro",
+    "help": "node ./bin/actionHero help",
     "test": "fakeredis=true NODE_ENV=test mocha && fakeredis=false NODE_ENV=test mocha",
-    "start": "./bin/actionHero"
+    "start": "node ./bin/actionHero"
   },
   "prepublish": "grunt publish",
   "subdomain": "actionhero",
