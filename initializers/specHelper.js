@@ -114,7 +114,7 @@ var specHelper = function(api, next){
         next = input;
         input = {};
       }
-      if(input instanceof api.specHelper.connection){
+      if(input.id != null && input.type === 'testServer'){
         connection = input;
       }else{
         connection = new api.specHelper.connection();
@@ -127,7 +127,9 @@ var specHelper = function(api, next){
         connection.actionCallbacks[(connection.messageCount)] = next;
       }
 
-      api.servers.servers.testServer.processAction(connection);
+      process.nextTick(function(){
+        api.servers.servers.testServer.processAction(connection);
+      });
     }
 
     // helpers to get files
