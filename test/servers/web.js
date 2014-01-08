@@ -218,6 +218,20 @@ describe('Server: Web', function(){
       });
     });
 
+    it('keeps sessions with browser_fingerprint', function(done){
+      var j = request.jar()
+      request({url: url+'/api', jar: j}, function(err, response1, body1){
+        response1.headers['set-cookie'].should.exist;
+        request({url: url+'/api', jar: j}, function(err, response2, body2){
+          should.not.exist(response2.headers['set-cookie']);
+          body1 = JSON.parse(body1);
+          body2 = JSON.parse(body2);
+          body1.requesterInformation.id.should.equal(body2.requesterInformation.id);
+          done();
+        });
+      });
+    });
+
   });
 
   describe('http returnErrorCodes true', function(){
