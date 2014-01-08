@@ -220,14 +220,26 @@ describe('Server: Web', function(){
 
     it('keeps sessions with browser_fingerprint', function(done){
       var j = request.jar()
-      request({url: url+'/api', jar: j}, function(err, response1, body1){
-        response1.headers['set-cookie'].should.exist;
-        request({url: url+'/api', jar: j}, function(err, response2, body2){
-          should.not.exist(response2.headers['set-cookie']);
-          body1 = JSON.parse(body1);
-          body2 = JSON.parse(body2);
-          body1.requesterInformation.id.should.equal(body2.requesterInformation.id);
-          done();
+      request.post({url: url+'/api', jar: j}, function(err, response1, body1){
+        request.get({url: url+'/api', jar: j}, function(err, response2, body2){
+          request.put({url: url+'/api', jar: j}, function(err, response3, body3){
+            request.del({url: url+'/api', jar: j}, function(err, response4, body4){
+              body1 = JSON.parse(body1);
+              body2 = JSON.parse(body2);
+              body3 = JSON.parse(body3);
+              body4 = JSON.parse(body4);
+
+              response1.headers['set-cookie'].should.exist;
+              should.not.exist(response2.headers['set-cookie']);
+              should.not.exist(response3.headers['set-cookie']);
+              should.not.exist(response4.headers['set-cookie']);
+
+              body1.requesterInformation.id.should.equal(body2.requesterInformation.id);
+              body1.requesterInformation.id.should.equal(body3.requesterInformation.id);
+              body1.requesterInformation.id.should.equal(body4.requesterInformation.id);
+              done();
+            });
+          });
         });
       });
     });
