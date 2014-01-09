@@ -185,7 +185,8 @@ config.servers = {
     fingerprintOptions : {
       cookieKey: 'sessionID',
       toSetCookie: true,
-      onlyStaticElements: false
+      onlyStaticElements: false,
+      settings: 'path=/;'
     },
     // Options to be applied to incoming file uploads.
     //  More options and details at https://github.com/felixge/node-formidable
