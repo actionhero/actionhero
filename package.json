@@ -30,12 +30,11 @@
   "dependencies": {
     "grunt": "~0.4.2",
     "browser_fingerprint": "~0.0.4",
-    "node-resque": "~0.2.4",
+    "node-resque": "~0.2.6",
     "async": "~0.2.9",
-    "validator": "~1.1.0",
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
-    "redis": "~0.9.1",
+    "redis": "~0.10.0",
     "optimist": "~0.6.0",
     "winston": "0.7.2",
     "node-uuid": "~1.4.1",
@@ -44,11 +43,11 @@
     "faye-redis": "~0.2.0"
   },
   "devDependencies": {
-    "mocha": "1.x.x",
-    "should": "2.x.x",
-    "request": "~2.29.0",
+    "mocha": "~1.17.0",
+    "should": "~2.1.0",
+    "request": "~2.31.0",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-project-update": "~0.2.2",
     "jshint-stylish": "~0.1.4"
