@@ -4,39 +4,35 @@
   <meta http-equiv="content-language" content="en" />
   <meta name="description" content="actionHero.js" />
   <link href='/public/css/actionhero.css' rel='stylesheet' type='text/css'>
-  <script type="text/javascript" src="/faye/client.js"></script>
-  <script type="text/javascript" src="/public/javascript/actionHeroWebSocket.js"></script>
   <link rel="icon" href="/public/favicon.ico">
   <title>actionHero.js</title>
 
+  <script type="text/javascript" src="/faye/client.js"></script>
+  <script type="text/javascript" src="/public/javascript/actionHeroClient.js"></script>
+
   <script type="text/javascript">
 
-  var A;
+  var client;
   var boot = function(){
-    A = new actionHeroWebSocket;
+    client = new actionHeroClient;
   
-    A.events = {
-      say: function(message){
-        A.log(message);
-        appendMessage(message);
-      },
-      alert: function(message){
-        alert(message.message);
-      },
-      welcome: function(message){
-        A.log(message);
-        appendMessage(message);
-      }
-    }
-  
-    A.connect(function(err, details){
+    client.on('connected',    function(){ console.log('connected!') })
+    client.on('disconnected', function(){ console.log('disconnected :(') })
+    
+    // client.on('message',      function(message){ console.log(message) })
+
+    client.on('alert',        function(message){ alert(message) })
+    client.on('api',          function(message){ alert(message) })
+
+    client.on('welcome',      function(message){ appendMessage(message); })
+    client.on('say',          function(message){ appendMessage(message); })
+
+    client.connect(function(err, details){
       if(err != null){
-        A.log(err);
+        console.log(err);
       }else{
-        A.log("CONNECTED");
-        A.roomChange("defaultRoom");
-        document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(A.id)) + "\">" + A.id + "</span>"
-        A.listenToRoom("twitter")
+        client.roomChange("defaultRoom");
+        document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>"
       }
     });
       
@@ -47,10 +43,6 @@
     s += "<pre>"
     if (message.welcome != null){
       s += "<div align=\"center\">*** " + message.welcome + " ***</div>";
-    }else if(message.room === "twitter"){
-      s += " " + formatTime(message.sentAt);
-      s += " [tweet (" + message.message.twitterUser + ") #" + message.message.hashtag + "]";
-      s += " " + message.message.message;
     }else{
       s += " " + formatTime(message.sentAt);
       s += "<span style=\"color:#" + intToARGB(hashCode(message.from)) + "\">"
@@ -63,20 +55,19 @@
       s += message.message;
     }
     s += "</pre>"
-    var div = document.getElementById("chatBox")
-    div.innerHTML += s;
-    div.scrollTop = div.scrollHeight;
+    var div = document.getElementById("chatBox");
+    div.innerHTML = s + div.innerHTML;
   }
 
   var sendMessage = function(){
     var div = document.getElementById("message");
     var message = div.value;
     div.value = "";
-    A.say(message);
+    client.say(message);
     appendMessage({
       me: true,
       message: message,
-      from: A.id,
+      from: client.id,
       sentAt: new Date().getTime()
     })
   }

@@ -54,11 +54,15 @@ var specHelper = function(api, next){
         };
 
         try{ 
-          fileStream.on('data', function(d){ content+= d; });
-          fileStream.on('end', function(d){
-            response.content = content;
+          if(error == null){
+            fileStream.on('data', function(d){ content+= d; });
+            fileStream.on('end', function(d){
+              response.content = content;
+              server.sendMessage(connection, response, connection.messageCount);
+            });
+          }else{
             server.sendMessage(connection, response, connection.messageCount);
-          });
+          }
         }catch(e){
           api.log(e, 'warning');
           server.sendMessage(connection, response, connection.messageCount);

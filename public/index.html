@@ -7,43 +7,7 @@
   <link rel="icon" href="/public/favicon.ico">
   <title>actionHero.js</title>
 
-  <script type="text/javascript">
-  var documentation = function(callback){
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function(){
-      if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-        var response = JSON.parse(xmlhttp.responseText);
-        callback(response);
-      }
-    }
-    xmlhttp.open('GET', '/api', true);
-    xmlhttp.send();
-  }
-
-  var populateServerInfo = function(){
-    documentation(function(data){
-      if(data.serverInformation != null){
-        document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
-        document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
-      }
-      for(var actionName in data.documentation){
-        for(var version in data.documentation[actionName]){
-          var action = data.documentation[actionName][version];
-          var row = '';
-          row += '<div class="box box-tall"><div class="left">';
-          row += '<a href="/api/' + action.name + '?apiVersion=' + version + '">' + action.name + ' (v' + version + ')</a></div>';
-          row += '<div class="right">' + action.description;
-          row += '<br /><br />';
-          row += 'required: ' + action.inputs.required.join(',');
-          row += '<br />';
-          row += 'optional: ' + action.inputs.optional.join(',');
-          row += '</div></div>';
-          document.getElementById('actions').innerHTML += row;
-        }
-      }
-    });
-  }
-  </script>
+  <script src="/public/javascript/actionHeroClient.js"></script>
   
 </head>
 
@@ -73,7 +37,32 @@
   </div>
 
   <script type="text/javascript">
-    populateServerInfo();
+    var populateServerInfo = function(data){
+      if(data.serverInformation != null){
+        document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
+        document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
+      }
+      for(var actionName in data.documentation){
+        for(var version in data.documentation[actionName]){
+          var action = data.documentation[actionName][version];
+          var row = '';
+          row += '<div class="box box-tall"><div class="left">';
+          row += '<a href="/api/' + action.name + '?apiVersion=' + version + '">' + action.name + ' (v' + version + ')</a></div>';
+          row += '<div class="right">' + action.description;
+          row += '<br /><br />';
+          row += 'required: ' + action.inputs.required.join(',');
+          row += '<br />';
+          row += 'optional: ' + action.inputs.optional.join(',');
+          row += '</div></div>';
+          document.getElementById('actions').innerHTML += row;
+        }
+      }
+    }
+
+    var client = new actionHeroClient();
+    client.action('', function(err, data){
+      populateServerInfo(data)
+    }); 
   </script>
 
 </body>
