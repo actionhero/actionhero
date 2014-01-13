@@ -85,6 +85,19 @@ config.logger.transports.push(function(api, winston) {
 });
 
 ///////////
+// Redis //
+///////////
+
+config.redis = {
+  fake: true,
+  host: '127.0.0.1',
+  port: 6379,
+  password: null,
+  options: null,
+  database: 0
+};
+
+///////////
 // Stats //
 ///////////
 
@@ -97,19 +110,6 @@ config.stats = {
     'actionHero:stats'
   ]
 }
-
-///////////
-// Redis //
-///////////
-
-config.redis = {
-  fake: true,
-  host: '127.0.0.1',
-  port: 6379,
-  password: null,
-  options: null,
-  database: 0
-};
 
 //////////
 // FAYE //

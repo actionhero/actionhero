@@ -45,6 +45,27 @@ describe('Core: specHelper', function(){
     });
   });
 
+  describe('files', function(){
+    it('can request file data', function(done){
+      api.specHelper.getStaticFile('simple.html', function(data){
+        should.not.exist(data.error);
+        data.content.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
+        data.mime.should.equal('text/html');
+        data.length.should.equal(101);
+        done();
+      });
+    });
+
+    it('missing files', function(done){
+      api.specHelper.getStaticFile('missing.html', function(data){
+        data.error.should.equal(api.config.general.flatFileNotFoundMessage);
+        data.mime.should.equal('text/html');
+        should.not.exist(data.content);
+        done();
+      });
+    });
+  });
+
   describe('persistent test connections', function(){
 
     var conn;

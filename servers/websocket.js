@@ -8,11 +8,12 @@ var websocket = function(api, options, next){
 
   var type = 'websocket'
   var attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    sendWelcomeMessage: 200, // delay sending by 200ms
-    fayeChannelPrefix: '/client/websocket/connection/',
+    canChat:               true,
+    logConnections:        true,
+    logExits:              true,
+    sendWelcomeMessage:    200,
+    fayeChannelPrefix:     '/client/websocket/connection/',
+    setupChannelPrefix:    '/client/websocket/_incoming',
     verbs: [
       'quit',
       'exit',
@@ -29,7 +30,6 @@ var websocket = function(api, options, next){
   var rebroadcastChannel = '/actionHero/websockets/rebroadcast';
 
   var server = new api.genericServer(type, options, attributes);
-  server.connectionsMap = {};
 
   //////////////////////
   // REQUIRED METHODS //
@@ -60,17 +60,37 @@ var websocket = function(api, options, next){
     if(message.context == null){ message.context = 'response'; }
     if(messageCount == null){ messageCount = connection.messageCount; }
     if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
-    var channel = server.attributes.fayeChannelPrefix + connection.rawConnection.uuid;
+    var channel = server.attributes.fayeChannelPrefix + connection.id;
     api.faye.client.publish(channel, message);
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
-    // TODO;
+    var content = '';
+    response = {
+      error      : error,
+      content    : null,
+      mime       : mime,
+      length     : length
+    };
+
+    try{ 
+      if(error == null){
+        fileStream.on('data', function(d){ content+= d; });
+        fileStream.on('end', function(d){
+          response.content = content;
+          server.sendMessage(connection, response, connection.messageCount);
+        });
+      }else{
+        server.sendMessage(connection, response, connection.messageCount);
+      }
+    }catch(e){
+      api.log(e, 'warning');
+      server.sendMessage(connection, response, connection.messageCount);
+    }
   };
 
   server.goodbye = function(connection, reason){
     server.sendMessage(connection, {status: 'Bye!', context: 'api', reason: reason});
-    delete this.connectionsMap[connection.rawConnection.uuid];
     server.destroyConnection(connection);
   };
 
@@ -79,7 +99,11 @@ var websocket = function(api, options, next){
   ////////////
 
   server.on('connection', function(connection){
-    server.connectionsMap[connection.rawConnection.uuid] = connection;
+    var channel = connection.rawConnection.setupChannel;
+    var message = {
+      id: connection.id,
+    };
+    api.faye.client.publish(channel, message);
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
@@ -94,56 +118,45 @@ var websocket = function(api, options, next){
   /////////////
 
   api.faye.disconnectHandlers.push(function(clientId){
-    for(var uuid in server.connectionsMap){
-      if(server.connectionsMap[uuid].rawConnection.clientId == clientId){
-        server.goodbye(server.connectionsMap[uuid]);
+    var clients = server.connections();
+    for(var i in clients){
+      if(clients[i].rawConnection.clientId === clientId){
+        server.goodbye(clients[i]);
         break;
       }
     }
   });
 
+  var newClientFayeExtension = function(message, callback){
+    if(message.channel === '/meta/subscribe' && message.subscription.indexOf(server.attributes.setupChannelPrefix) === 0){
+      remoteConnectionDetails(message.clientId, function(details){
+        server.buildConnection({
+          // id: message.clientId,
+          rawConnection  : {
+            clientId:     message.clientId,
+            setupChannel: message.subscription,
+          },
+          remoteAddress  : details.remoteIp,
+          remotePort     : details.remotePort
+        });
+      });
+    }
+    callback(message);
+  }
+
   var messagingFayeExtension = function(message, callback){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
-      if(message.clientId === api.faye.client._clientId){
-        callback(message);
-      } else {
-        var uuid = message.channel.split('/')[4];
-        var connection = server.connectionsMap[uuid];
+      if(message.clientId !== api.faye.client._clientId){
+        var connectionId = message.channel.split("/")[4];
+        var connection = api.connections.connections[connectionId];
         if(connection != null){
           incomingMessage(connection, message);
-        } else {
+        }else{
           api.faye.client.publish(rebroadcastChannel, {
             serverId:        api.id,
             serverToken:     api.config.general.serverToken,
             originalMessage: message
-          });
-        }
-        callback(message);
-      }
-    } else {
-      callback(message);
-    }
-  };
-
-  var subscriptionFayeExtension = function(message, callback){
-    if(message.channel.indexOf('/meta/subscribe') === 0){
-      if(message.subscription.indexOf(server.attributes.fayeChannelPrefix) === 0){
-        var uuid = message.subscription.replace(server.attributes.fayeChannelPrefix, '');
-        if(server.connectionsMap[uuid] != null){
-          message.error = 'You cannot subscribe to another clients\' channel';
-        } else {
-          // let the server generate a new connection.id, don't use client-generated UUID
-          remoteConnectionDetails(message.clientId, function(details){
-            server.buildConnection({
-            // will emit 'connection'
-              rawConnection  : {
-                clientId: message.clientId,
-                uuid: uuid
-              },
-              remoteAddress  : details.remoteIp,
-              remotePort     : details.remotePort
-            });
           });
         }
       }
@@ -153,8 +166,8 @@ var websocket = function(api, options, next){
 
   var incomingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
-    var uuid = originalMessage.channel.split('/')[4];
-    var connection = server.connectionsMap[uuid];
+    var connectionId = message.channel.split("/")[4];
+    var connection = api.connections.connections[connectionId];
     if(connection != null){
       messagingFayeExtension(originalMessage);
     }
@@ -187,6 +200,9 @@ var websocket = function(api, options, next){
         connection.response = {};
         server.processAction(connection);
       } else if(verb == 'file'){
+        connection.params = {
+          file: data.file
+        }
         server.processFile(connection);
       } else {
         var words = []
@@ -205,11 +221,11 @@ var websocket = function(api, options, next){
   }
 
   api.faye.extensions.push({
-    incoming: messagingFayeExtension
-  });
+    incoming: newClientFayeExtension
+  });  
 
   api.faye.extensions.push({
-    incoming: subscriptionFayeExtension
+    incoming: messagingFayeExtension
   });
 
   next(server);

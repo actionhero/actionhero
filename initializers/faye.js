@@ -58,6 +58,18 @@ var faye = function(api, next){
     next();
   }
 
+  api.faye.redis = function(){
+    return api.faye.server._server._engine._engine._redis;
+  }
+
+  api.faye.clientExists = function(clientId, callback){
+    api.faye.redis().zscore(api.config.faye.namespace + '/clients', function(err, score){
+      var found = false;
+      if(score != null){ found = true; }
+      callback(err, found);
+    });
+  }
+
   api.faye.connectHandlers.push(function(clientId){
     api.log('faye client connected: ' + clientId, 'debug');
   });
@@ -71,6 +83,7 @@ var faye = function(api, next){
       if(message.channel.indexOf('/meta/subscribe') === 0){
         if(message.subscription.indexOf('*') >= 0){
           message.error = 'actionHero does not allow wildcard subscriptions';
+          api.log(message.error, 'warning', message);
         }
       }
       callback(message);
