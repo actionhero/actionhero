@@ -71,13 +71,14 @@ var tasks = function(api, next){
         'perform': function(){
           var args = Array.prototype.slice.call(arguments);
           var cb = args.pop();
+          var error = null;
           if(args.length == 0){
             args.push({}); // empty params array
           }
           args.push(
             function(resp){
               self.enqueueRecurrentJob(taskName, function(){
-                cb(resp);
+                cb(error, resp);
               });
             }
           );
