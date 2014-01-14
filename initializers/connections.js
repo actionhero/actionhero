@@ -81,6 +81,10 @@ var connections = function(api, next){
     throw new Error('I should be replaced with a connection-specific method');
   }
 
+  api.connection.prototype.sendFile = function(path){
+    throw new Error('I should be replaced with a connection-specific method');
+  }
+
   api.connection.prototype.destroy = function(callback){
     var self = this;
     for(var i in api.connections.destroyCallbacks){

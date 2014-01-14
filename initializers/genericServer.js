@@ -111,6 +111,10 @@ var genericServer = function(api, next){
     connection.sendMessage = function(message){
       self.sendMessage(connection, message);
     }
+    connection.sendFile = function(path){
+      connection.params.file = path;
+      self.processFile(connection);
+    }
     self.emit('connection', connection);
 
     if(self.attributes.logConnections === true){
