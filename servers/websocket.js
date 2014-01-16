@@ -195,7 +195,11 @@ var websocket = function(api, options, next){
       delete data.event;
       connection.messageCount++;
       if(verb == 'action'){
-        connection.params = data.params;
+        api.params.postVariables.forEach(function(postVar){
+          if(typeof data.params[postVar] !== 'undefined' && data.params[postVar] != null){
+            connection.params[postVar] = data.params[postVar];
+          }
+        });
         connection.error = null;
         connection.response = {};
         server.processAction(connection);
