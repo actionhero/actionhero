@@ -18,6 +18,11 @@ var actionProcessor = function(api, next){
       }
     }
     proxyConnection._original_connection = connection
+    for(var param in proxyConnection.params){
+      if(api.params.postVariables.indexOf(param) < 0){
+        delete proxyConnection.params[param];
+      }
+    }
     return proxyConnection;
   }
 
