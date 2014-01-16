@@ -33,6 +33,8 @@ config.general = {
   developmentMode: true,
   // How many pending actions can a single connection be working on 
   simultaneousActions: 5,
+  // disables the whitelisting of client params
+  disableParamScrubbing : false,
   // configuration for your actionHero project structure
   paths: {
     'action':      __dirname + '/../actions',
