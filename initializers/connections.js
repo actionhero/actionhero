@@ -122,7 +122,7 @@ var connections = function(api, next){
           key = parts[0];
           value = parts[1];
         }
-        if(api.params.postVariables.indexOf(key) > 0){
+        if(api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) > 0){
           self.params[key] = value;
         }
         if(typeof callback === 'function'){ callback(null, null); }

@@ -339,11 +339,18 @@ var web = function(api, options, next){
   }
 
   var fillParamsFromWebRequest = function(connection, varsHash){
-    api.params.postVariables.forEach(function(postVar){
-      if(typeof varsHash[postVar] !== 'undefined' && varsHash[postVar] != null){
-        connection.params[postVar] = varsHash[postVar];
-      }
-    });
+    if(api.config.general.disableParamScrubbing) {
+      Object.keys(varsHash).forEach(function(key) {
+        connection.params[key] = varsHash[key];
+      });
+    } else {
+       api.params.postVariables.forEach(function(postVar){
+        if(typeof varsHash[postVar] !== 'undefined' && varsHash[postVar] != null){
+          connection.params[postVar] = varsHash[postVar];
+        }
+      });
+    }
+   
   }
 
   var shouldSendDocumentation = function(connection){
