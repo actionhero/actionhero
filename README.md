@@ -1,6 +1,8 @@
 # actionhero.js 
 ## The Reusable, Scalable, and Quick node.js API Server
 
+**Note that this project has recently been renamed `actionhero` (lowercase) on NPM.  Update your projects**
+
 **Links: [NPM](https://npmjs.org/package/actionhero) | [Wiki](https://github.com/evantahler/actionhero/wiki) | [API Methods](https://github.com/evantahler/actionhero/wiki/API-Methods) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
 
 <img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/>
