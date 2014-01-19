@@ -34,7 +34,6 @@ exports['generate'] = function(binary, next){
   documents.package_json = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/package.json'));
   documents.package_json = documents.package_json.replace('%%versionNumber%%', AHversionNumber);
   documents.readme_md    = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/README.md'));
-  documents.git_ignore   = String(fs.readFileSync(binary.paths.actionhero_root + '/.gitignore'));
 
   //////// LOGIC ////////
 
@@ -61,7 +60,6 @@ exports['generate'] = function(binary, next){
 
   // make files
   var newFileMap = {
-    '/.gitignore'                                   : 'git_ignore',
     '/config/config.js'                             : 'config_js',
     '/config/environments/production.js'            : 'config_production_js',
     '/config/environments/test.js'                  : 'config_test_js',
