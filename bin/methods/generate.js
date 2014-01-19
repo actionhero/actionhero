@@ -6,44 +6,7 @@ exports['generate'] = function(binary, next){
 
   var documents = {};
 
-  documents.projectMap = '/\n\
-  |- config\n\
-  | -- config.js\n\
-  | -- environments\n\
-  |-- (project settings)\n\
-  |\n\
-  |- actions\n\
-  |-- (your actions)\n\
-  |\n\
-  |- initializers\n\
-  |-- (any additional initializers you want)\n\
-  |\n\
-  |- log\n\
-  |-- (default location for logs)\n\
-  |\n\
-  |- node_modules\n\
-  |-- (your modules, actionHero should be npm installed in here)\n\
-  |\n\
-  |- pids\n\
-  |-- (pidfiles for your running servers)\n\
-  |\n\
-  |- public\n\
-  |-- (your static assets to be served by /file)\n\
-  |\n\
-  |- servers\n\
-  |-- (custom servers you may make)\n\
-  |\n\
-  |- tasks\n\
-  |-- (your tasks)\n\
-  |\n\
-  |- tests\n\
-  |-- (tests for your API)\n\
-  |\n\
-  readme.md\n\
-  routes.js\n\
-  gruntfile.js\n\
-  package.json (be sure to include \'actionHero\':\'x\')\n\
-  ';
+  documents.projectMap = fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
     config_js                     : '/config/config.js',
@@ -68,47 +31,10 @@ exports['generate'] = function(binary, next){
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
-  documents.package_json = '{\n\
-  "author": "YOU <YOU@example.com>",\n\
-  "name": "my_actionHero_project",\n\
-  "description": "",\n\
-  "version": "0.0.1",\n\
-  "homepage": "",\n\
-  "repository": {\n\
-    "type": "",\n\
-    "url": ""\n\
-  },\n\
-  "engines": {\n\
-    "node": ">=0.8.0"\n\
-  },\n\
-  "dependencies": {\n\
-    \"actionHero\": \"'+AHversionNumber+"\",\n\
-    \"grunt\": \"~0.4.2\"\n\
-  },\n\
-  \"devDependencies\": {\n\
-    \"mocha\": \"latest\",\n\
-    \"should\": \"latest\"\n\
-  },\n\
-  \"scripts\": {\n\
-    \"help\": \"actionHero help\",\n\
-    \"start\": \"actionHero start\",\n\
-    \"actionHero\": \"actionHero\",\n\
-    \"startCluster\": \"actionHero startCluster\",\n\
-    \"test\": \"mocha\"\n\
-  }\n\
-}\n\
-";
-
-  documents._project_js = 'exports._project = function(api, next){\n\
-  // modify / append the api global variable\n\
-  // I will be run as part of actionHero\'s boot process\n\
-\n\
-  next();\n\
-}\
-';
-
-  documents.readme_md = '# My actionHero Project\nreadme';
-  documents.git_ignore = 'log\npids\nnode_modules';
+  documents.package_json = String(fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/package.json'));
+  documents.package_json = documents.package_json.replace('%%versionNumber%%', AHversionNumber);
+  documents.readme_md    = String(fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/README.md'));
+  documents.git_ignore   = String(fs.readFileSync(binary.paths.actionHero_root + '/.gitignore'));
 
   //////// LOGIC ////////
 
@@ -118,7 +44,6 @@ exports['generate'] = function(binary, next){
   [
     '/actions',
     '/pids',
-    '/certs',
     '/config',
     '/config/environments',
     '/initializers',
@@ -143,15 +68,13 @@ exports['generate'] = function(binary, next){
     '/routes.js'                                    : 'routes_js',
     '/package.json'                                 : 'package_json',
     '/actions/status.js'                            : 'action_status',
-    '/tasks/runAction.js'                           : 'task_runAction',
-    '/initializers/_project.js'                     : '_project_js',
     '/public/index.html'                            : 'public_index',
     '/public/chat.html'                             : 'public_chat',
     '/public/css/actionhero.css'                    : 'public_css',
     '/public/logo/actionHero.png'                   : 'public_logo',
     '/public/javascript/actionHeroClient.js'        : 'public_actionHeroClient',
     '/public/javascript/actionHeroClient.min.js'    : 'public_actionHeroClientMin',
-    '/readme.md'                                    : 'readme_md',
+    '/README.md'                                    : 'readme_md',
     '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'example_test',
   }

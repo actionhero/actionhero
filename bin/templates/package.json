@@ -1,0 +1,24 @@
+ {
+  "author":      "YOU <YOU@example.com>",
+  "name":        "my_actionHero_project",
+  "description": "my actionHero project",
+  "version":     "0.0.1",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "actionHero": "%%versionNumber%%",
+    "grunt":      "latest"
+  },
+  "devDependencies": {
+    "mocha":  "latest",
+    "should": "latest"
+  },
+  "scripts": {
+    "help":         "actionHero help",
+    "start":        "actionHero start",
+    "actionHero":   "actionHero",
+    "startCluster": "actionHero startCluster",
+    "test":         "mocha"
+  }
+}

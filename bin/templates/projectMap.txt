@@ -1,0 +1,36 @@
+|- config
+| -- config.js
+| -- environments
+|-- (project settings)
+|
+|- actions
+|-- (your actions)
+|
+|- initializers
+|-- (any additional initializers you want)
+|
+|- log
+|-- (default location for logs)
+|
+|- node_modules
+|-- (your modules, actionHero should be npm installed in here)
+|
+|- pids
+|-- (pidfiles for your running servers)
+|
+|- public
+|-- (your static assets to be served by /file)
+|
+|- servers
+|-- (custom servers you may make)
+|
+|- tasks
+|-- (your tasks)
+|
+|- tests
+|-- (tests for your API)
+|
+readme.md
+routes.js
+gruntfile.js
+package.json

@@ -22,8 +22,6 @@ Descriptions:
   will generate a new action in "actions"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
-  [inputsRequired] (optional) should be a comma-separated list IE: 'userName,password'
-  [inputsOptional] (optional) should be a comma-separated list IE: 'userName,password'
 
 * actionHero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
   will generate a new task in "tasks"

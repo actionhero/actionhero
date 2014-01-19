@@ -1,62 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
-/*
-
-A generic implementation of a server:
-
-    var myServer = function(api, options, next){
-      
-      //////////
-      // INIT //
-      //////////
-
-      var type = 'myServer'
-      var attributes = {
-        canChat: true,
-        logConnections: true,
-        logExits: true,
-        sendWelcomeMessage: true,
-        verbs: [],
-      }
-
-      var server = new api.genericServer(type, options, attributes);
-
-      //////////////////////
-      // REQUIRED METHODS //
-      //////////////////////
-
-      server._start = function(next){}
-
-      server._stop = function(next){}
-
-      server.sendMessage = function(connection, message, messageCount){}
-
-      server.sendFile = function(connection, error, fileStream, mime, length){};
-
-      server.goodbye = function(connection, reason){};
-
-      ////////////
-      // EVENTS //
-      ////////////
-
-      server.on('connection', function(connection){});
-
-      server.on('actionComplete', function(connection, toRender, messageCount){});
-
-      /////////////
-      // HELPERS //
-      /////////////
-
-      next(server);
-    }
-
-    /////////////////////////////////////////////////////////////////////
-    // exports
-    exports.myServer = myServer;
-
-*/
-
 var genericServer = function(api, next){
   // I am the prototypical generic server that all other types of servers inherit from.
   // I shouldn't actually be used by a client

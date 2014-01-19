@@ -29,7 +29,7 @@ if(cluster.isMaster){
   transports.push(
     new (winston.transports.Console)({
       colorize: true,
-      timestamp: true
+      timestamp: false
     })
   )
 }
@@ -189,8 +189,8 @@ if(binary.actions[binary.mainAction] != null){
     binary.actions[binary.mainAction](binary, function(){});
   } else {
     binary.log('actionHero >> ' + binary.mainAction);
-    binary.log('project_root >> ' + path.normalize(binary.paths.project_root + '/'));
-    binary.log('actionHero_root >> ' + path.normalize(binary.paths.actionHero_root + '/'));
+    // binary.log('project_root >> ' + path.normalize(binary.paths.project_root + '/'));
+    // binary.log('actionHero_root >> ' + path.normalize(binary.paths.actionHero_root + '/'));
     binary.actions[binary.mainAction](binary, function(){});
   }
 } else {

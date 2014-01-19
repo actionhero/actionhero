@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 exports['generateTask'] = function(binary, next){
 
   if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
@@ -5,25 +7,18 @@ exports['generateTask'] = function(binary, next){
   if(binary.argv.queue == null){ binary.argv.queue = 'default' }
   if(binary.argv.frequency == null){ binary.argv.frequency = 0 }
 
-  var templateLines = [];
+  var data = fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/task.js');
+  data = String(data);
 
-  templateLines.push('exports.task = {');
-  templateLines.push('  name: \'' + binary.argv['name'] + '\',');
-  templateLines.push('  description: "' + binary.argv['description'] + '",');
-  templateLines.push('  frequency: ' + binary.argv['frequency'] + ',');
-  templateLines.push('  queue: \'' + binary.argv['queue'] + '\',');
-  templateLines.push('  plugins: [],');
-  templateLines.push('  pluginOptions: {},');
-  templateLines.push('  run: function(api, params, next){');
-  templateLines.push('    // your logic here');
-  templateLines.push('    next();');
-  templateLines.push('  }');
-  templateLines.push('};');
-
-  var data = '';
-  for(var i in templateLines){
-    data += templateLines[i] + '\n';
-  }
+  [
+    'name',
+    'description',
+    'queue',
+    'frequency',
+  ].forEach(function(v){
+    var regex = new RegExp('%%' + v + '%%', "g");
+    data = data.replace(regex, binary.argv[v]);
+  });
 
   binary.utils.create_file_safely(binary.paths.config.task + '/' + binary.argv['name'] + '.js', data);
 
