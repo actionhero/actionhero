@@ -2,19 +2,19 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="content-language" content="en" />
-  <meta name="description" content="actionHero.js" />
+  <meta name="description" content="actionhero.js" />
   <link href='/public/css/actionhero.css' rel='stylesheet' type='text/css'>
   <link rel="icon" href="/public/favicon.ico">
-  <title>actionHero.js</title>
+  <title>actionhero.js</title>
 
   <script type="text/javascript" src="/faye/client.js"></script>
-  <script type="text/javascript" src="/public/javascript/actionHeroClient.js"></script>
+  <script type="text/javascript" src="/public/javascript/actionheroClient.js"></script>
 
   <script type="text/javascript">
 
   var client;
   var boot = function(){
-    client = new actionHeroClient;
+    client = new actionheroClient;
   
     client.on('connected',    function(){ console.log('connected!') })
     client.on('disconnected', function(){ console.log('disconnected :(') })

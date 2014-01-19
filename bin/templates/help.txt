@@ -1,4 +1,4 @@
-actionHero - a node.js API framework for both tcp sockets, web sockets, and http clients.
+actionhero - a node.js API framework for both tcp sockets, web sockets, and http clients.
 
 Binary options:
 * help (default)
@@ -12,48 +12,48 @@ Binary options:
 
 Descriptions:
 
-* actionHero help
+* actionhero help
   will display this document
 
-* actionHero generate
-  will prepare an empty directory with a template actionHero project
+* actionhero generate
+  will prepare an empty directory with a template actionhero project
 
-* actionHero generateAction --name=[name] --description=[description] --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
+* actionhero generateAction --name=[name] --description=[description] --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
   will generate a new action in "actions"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
 
-* actionHero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
+* actionhero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
   will generate a new task in "tasks"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
   [scope] (optional) can be "any" or "all"
   [frequency] (optional)
 
-* actionHero generateInitializer --name=[name]
+* actionhero generateInitializer --name=[name]
   will generate a new initializer in "initializers"
   [name] (required)
 
-* actionHero generateServer --name=[name]
+* actionhero generateServer --name=[name]
   will generate a new server in "servers"
   [name] (required)
 
-* actionHero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
-  will start a template actionHero server
+* actionhero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
+  will start a template actionhero server
   this is the respondent to "npm start"
   [config] (optional) path to config.js, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG].
-  [title] (optional) process title to use for actionHero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
+  [title] (optional) process title to use for actionhero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
   [daemon] (optional) to fork and run as a new background process defaults to false
 
-* actionHero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
-  will launch a actionHero cluster (using node-s cluster module)
+* actionhero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
+  will launch a actionhero cluster (using node-s cluster module)
   [exec] (optional) command for the cluster-master to run to stat the workers
   [workers] (optional) number of workers (defaults to # CPUs - 2)
   [pidfile] (optional) pidfile location (defaults to process.cwd() + '/pids')
   [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
-  [title] (optional) default actionHero-master  Does not work on OSX/Windows
-  [workerTitlePrefix] (optional) default actionHero-worker
+  [title] (optional) default actionhero-master  Does not work on OSX/Windows
+  [workerTitlePrefix] (optional) default actionhero-worker
   [config] (optional) path to config.js for workers, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG]
   [daemon] (optional) to fork and run as a new background process defaults to false
 
-More Help & the actionHero wiki can be found @ http://actionherojs.com
+More Help & the actionhero wiki can be found @ http://actionherojs.com

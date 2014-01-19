@@ -1,14 +1,14 @@
 {
   "author": "Evan Tahler <evantahler@gmail.com>",
-  "name": "actionHero",
-  "description": "actionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "7.5.2",
+  "name": "actionhero",
+  "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
+  "version": "7.6.0",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
-    "url": "git://github.com/evantahler/actionHero.git"
+    "url": "git://github.com/evantahler/actionhero.git"
   },
-  "main": "actionHero.js",
+  "main": "actionhero.js",
   "keywords": [
     "socket",
     "http",
@@ -53,13 +53,13 @@
     "jshint-stylish": "~0.1.4"
   },
   "bin": {
-    "actionHero": "./bin/actionHero"
+    "actionhero": "./bin/actionhero"
   },
   "scripts": {
-    "postinstall": "echo 'To generate a new actionHero project, run \"node ./node_modules/.bin/actionHero generate\"'",
-    "help": "node ./bin/actionHero help",
+    "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
+    "help": "node ./bin/actionhero help",
     "test": "fakeredis=true NODE_ENV=test mocha && fakeredis=false NODE_ENV=test mocha",
-    "start": "node ./bin/actionHero"
+    "start": "node ./bin/actionhero"
   },
   "prepublish": "grunt publish",
   "subdomain": "actionhero",

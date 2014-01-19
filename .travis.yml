@@ -22,4 +22,4 @@ notifications:
     on_success: always
     on_failure: never
 after_failure: 
-  - "cat /home/travis/builds/evantahler/actionHero/npm-debug.log"
+  - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"

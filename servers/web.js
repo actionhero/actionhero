@@ -142,7 +142,7 @@ var web = function(api, options, next){
         responseHeaders.push([i, cookieHash[i]]);
       }
 
-      // https://github.com/evantahler/actionHero/issues/189
+      // https://github.com/evantahler/actionhero/issues/189
       responseHeaders.push(['Transfer-Encoding', 'Chunked']);
       // a sensible default; can be replaced
       responseHeaders.push(['Content-Type', 'application/json']);

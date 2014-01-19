@@ -1,6 +1,6 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 process.env.NDOE_ENV = 'test'; // force it
@@ -8,7 +8,7 @@ process.env.NDOE_ENV = 'test'; // force it
 describe('Setup', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       console.log('')
       console.log('Running suite with fakeredis=' + api.config.redis.fake);
@@ -18,7 +18,7 @@ describe('Setup', function(){
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });

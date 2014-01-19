@@ -13,7 +13,7 @@
 |-- (default location for logs)
 |
 |- node_modules
-|-- (your modules, actionHero should be npm installed in here)
+|-- (your modules, actionhero should be npm installed in here)
 |
 |- pids
 |-- (pidfiles for your running servers)

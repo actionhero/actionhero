@@ -1,11 +1,11 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 var socketURL;
 var faye = require('faye');
-var actionHeroClientPrototype = require(__dirname + '/../../public/javascript/actionHeroClient.js').actionHeroClient;
+var actionheroClientPrototype = require(__dirname + '/../../public/javascript/actionheroClient.js').actionheroClient;
 var client_1;
 var client_2;
 var client_3;
@@ -13,18 +13,18 @@ var client_3;
 describe('Server: Web Socket', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       socketURL = 'http://localhost:' + api.config.servers.web.port;
-      client_1 = new actionHeroClientPrototype({host: socketURL, faye: faye});
-      client_2 = new actionHeroClientPrototype({host: socketURL, faye: faye});
-      client_3 = new actionHeroClientPrototype({host: socketURL, faye: faye});
+      client_1 = new actionheroClientPrototype({host: socketURL, faye: faye});
+      client_2 = new actionheroClientPrototype({host: socketURL, faye: faye});
+      client_3 = new actionheroClientPrototype({host: socketURL, faye: faye});
       done();
     })
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });
@@ -47,7 +47,7 @@ describe('Server: Web Socket', function(){
         data.should.be.an.instanceOf(Object);
         data.context.should.equal('response');
         data.data.totalActions.should.equal(0);
-        client_1.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
+        client_1.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
         done();
       }, 500);
     });
@@ -59,7 +59,7 @@ describe('Server: Web Socket', function(){
         data.should.be.an.instanceOf(Object);
         data.context.should.equal('response');
         data.data.totalActions.should.equal(0);
-        client_2.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
+        client_2.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
         done();
       }, 500);
     });
@@ -71,7 +71,7 @@ describe('Server: Web Socket', function(){
         data.should.be.an.instanceOf(Object);
         data.context.should.equal('response');
         data.data.totalActions.should.equal(0);
-        client_3.welcomeMessage.should.equal('Hello! Welcome to the actionHero api');
+        client_3.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
         done();
       }, 500);
     });

@@ -112,7 +112,7 @@ binary.utils = {
 
 binary.paths = {
   project_root: null,
-  actionHero_root: null
+  actionhero_root: null
 }
 
 if(process.env.project_root != null){
@@ -123,19 +123,19 @@ if(process.env.project_root != null){
   binary.paths.project_root = process.cwd();
 }
 
-if(process.env.actionHero_root != null){
-  binary.paths.actionHero_root = process.env.actionHero_root;
+if(process.env.actionhero_root != null){
+  binary.paths.actionhero_root = process.env.actionhero_root;
 } else if(process.env.ACTIONHERO_ROOT != null){
-  binary.paths.actionHero_root = process.env.ACTIONHERO_ROOT;
-} else if(binary.utils.file_exists(__dirname + '/../actionHero.js')){
-  // in the actionHero project itself
-  binary.paths.actionHero_root = __dirname + '/..';
-} else if(binary.utils.file_exists(__dirname + '/../node_modules/actionHero/actionHero.js')){
-  // running from a project's node_modules (bin or actionHero)
-  binary.paths.actionHero_root = __dirname + '/../node_modules/actionHero';
+  binary.paths.actionhero_root = process.env.ACTIONHERO_ROOT;
+} else if(binary.utils.file_exists(__dirname + '/../actionhero.js')){
+  // in the actionhero project itself
+  binary.paths.actionhero_root = __dirname + '/..';
+} else if(binary.utils.file_exists(__dirname + '/../node_modules/actionhero/actionhero.js')){
+  // running from a project's node_modules (bin or actionhero)
+  binary.paths.actionhero_root = __dirname + '/../node_modules/actionhero';
 } else {
   // installed globally
-  binary.paths.actionHero_root = path.normalize(__dirname + '/..');
+  binary.paths.actionhero_root = path.normalize(__dirname + '/..');
 }
 
 try {
@@ -156,10 +156,10 @@ binary.argv = require('optimist').argv;
 
 binary.actions = {};
 
-fs.readdirSync(binary.paths.actionHero_root + '/bin/methods/').sort().forEach(function(file){
+fs.readdirSync(binary.paths.actionhero_root + '/bin/methods/').sort().forEach(function(file){
   if(file.indexOf('.js') > 0){
     var action = file.split('.')[0];
-    binary.actions[action] = require(binary.paths.actionHero_root + '/bin/methods/' + file)[action];
+    binary.actions[action] = require(binary.paths.actionhero_root + '/bin/methods/' + file)[action];
   }
 });
 
@@ -178,7 +178,7 @@ if(binary.actions[binary.mainAction] != null){
       }
     }
     args.push('--isDaemon=true')
-    var command = path.normalize(binary.paths.actionHero_root + '/bin/actionHero');
+    var command = path.normalize(binary.paths.actionhero_root + '/bin/actionhero');
     var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
     // child.unref();
     binary.log(command + ' ' + args.join(' '), 'info');
@@ -188,9 +188,9 @@ if(binary.actions[binary.mainAction] != null){
     binary.logger.remove(winston.transports.Console);
     binary.actions[binary.mainAction](binary, function(){});
   } else {
-    binary.log('actionHero >> ' + binary.mainAction);
+    binary.log('actionhero >> ' + binary.mainAction);
     // binary.log('project_root >> ' + path.normalize(binary.paths.project_root + '/'));
-    // binary.log('actionHero_root >> ' + path.normalize(binary.paths.actionHero_root + '/'));
+    // binary.log('actionhero_root >> ' + path.normalize(binary.paths.actionhero_root + '/'));
     binary.actions[binary.mainAction](binary, function(){});
   }
 } else {

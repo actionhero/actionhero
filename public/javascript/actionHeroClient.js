@@ -1,6 +1,6 @@
 (function(exports){
 
-  var actionHeroClient = function(options){
+  var actionheroClient = function(options){
     var self = this;
 
     self.callbacks = {};
@@ -26,7 +26,7 @@
     }
   }
 
-  actionHeroClient.prototype.defaults = function(){
+  actionheroClient.prototype.defaults = function(){
     var host;
 
     if(typeof window != 'undefined'){ host = window.location.origin }
@@ -46,7 +46,7 @@
   // CONNECTION //
   ////////////////
 
-  actionHeroClient.prototype.connect = function(callback){
+  actionheroClient.prototype.connect = function(callback){
     var self = this;
     
     self.client = new self.faye.Client(self.options.host + self.options.fayePath, {
@@ -100,7 +100,7 @@
   // MESSAGING //
   ///////////////
 
-  actionHeroClient.prototype.send = function(args, callback){
+  actionheroClient.prototype.send = function(args, callback){
     var self = this;
     if(self.state === 'connected'){
       self.messageCount++;
@@ -113,7 +113,7 @@
     }
   }
 
-  actionHeroClient.prototype.handleMessage = function(message){
+  actionheroClient.prototype.handleMessage = function(message){
     var self = this;
     self.emit('message', message);
     if(message.context === 'response'){
@@ -137,7 +137,7 @@
   // ACTIONS //
   /////////////
 
-  actionHeroClient.prototype.action = function(action, params, callback){
+  actionheroClient.prototype.action = function(action, params, callback){
     if(callback == null && typeof params == 'function'){
       callback = params;
       params = null;
@@ -152,7 +152,7 @@
     }
   }
 
-  actionHeroClient.prototype.actionWeb = function(params, callback){
+  actionheroClient.prototype.actionWeb = function(params, callback){
     var timeoutTimer = setTimeout(function(){
       callback('timeout');
     }, this.options.timeout);
@@ -182,7 +182,7 @@
     xmlhttp.send();
   }
 
-  actionHeroClient.prototype.actionWebSocket = function(params, callback){
+  actionheroClient.prototype.actionWebSocket = function(params, callback){
     this.send({event: 'action',params: params}, callback);
   }
 
@@ -190,44 +190,44 @@
   // COMMANDS //
   //////////////
 
-  actionHeroClient.prototype.say = function(message, callback){
+  actionheroClient.prototype.say = function(message, callback){
     this.send({event: 'say', message: message}, callback);
   }
 
-  actionHeroClient.prototype.file = function(file, callback){
+  actionheroClient.prototype.file = function(file, callback){
     this.send({event: 'file', file: file}, callback);
   }
 
-  actionHeroClient.prototype.detailsView = function(callback){
+  actionheroClient.prototype.detailsView = function(callback){
     this.send({event: 'detailsView'}, callback);
   }
 
-  actionHeroClient.prototype.roomView = function(callback){
+  actionheroClient.prototype.roomView = function(callback){
     this.send({event: 'roomView'}, callback);
   }
 
-  actionHeroClient.prototype.roomChange = function(room, callback){
+  actionheroClient.prototype.roomChange = function(room, callback){
     this.room = room;
     this.send({event: 'roomChange', room: room}, callback);
   }
 
-  actionHeroClient.prototype.roomLeave = function(callback){
+  actionheroClient.prototype.roomLeave = function(callback){
     this.send({event: 'roomLeave'}, callback);
   }
 
-  actionHeroClient.prototype.listenToRoom = function(room, callback){
+  actionheroClient.prototype.listenToRoom = function(room, callback){
     this.send({event: 'listenToRoom', room: room}, callback);
   }
 
-  actionHeroClient.prototype.silenceRoom = function(room, callback){
+  actionheroClient.prototype.silenceRoom = function(room, callback){
     this.send({event: 'silenceRoom', room: room}, callback);
   }
 
-  actionHeroClient.prototype.documentation = function(callback){
+  actionheroClient.prototype.documentation = function(callback){
     this.send({event: 'documentation'}, callback);
   }
 
-  actionHeroClient.prototype.disconnect = function(){
+  actionheroClient.prototype.disconnect = function(){
     this.state = 'disconnected';
     this.client.disconnect();
   }
@@ -236,7 +236,7 @@
   // HELPERS //
   /////////////
 
-  actionHeroClient.prototype.on = function(event, callback){
+  actionheroClient.prototype.on = function(event, callback){
     var self = this;
     if(self.events[event] == null){
       self.events[event] = {};
@@ -246,7 +246,7 @@
     return key;
   }
 
-  actionHeroClient.prototype.emit = function(event, data){
+  actionheroClient.prototype.emit = function(event, data){
     var self = this;
     if(self.events[event] != null){
       for(var i in self.events[event]){
@@ -255,17 +255,17 @@
     }
   }
 
-  actionHeroClient.prototype.removeListener = function(event, key){
+  actionheroClient.prototype.removeListener = function(event, key){
     var self = this;
     delete self.events[event][key];
   }
 
-  actionHeroClient.prototype.removeAllListeners = function(event){
+  actionheroClient.prototype.removeAllListeners = function(event){
     var self = this;
     delete self.events[event];
   }
 
-  actionHeroClient.prototype.randomString = function(){
+  actionheroClient.prototype.randomString = function(){
     var seed = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for( var i=0; i < 32; i++ ){
@@ -275,6 +275,6 @@
     return seed
   }
 
-  exports.actionHeroClient = actionHeroClient;
+  exports.actionheroClient = actionheroClient;
 
 })(typeof exports === 'undefined' ? window : exports);

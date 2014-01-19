@@ -1,6 +1,6 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 var taskOutput = [];
@@ -9,7 +9,7 @@ var queue = 'testQueue';
 describe('Core: Tasks', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
 
       api.tasks.tasks['regular_task'] = {
@@ -50,7 +50,7 @@ describe('Core: Tasks', function(){
     delete api.tasks.tasks['periodic_task'];
     delete api.tasks.jobs['regular_task'];
     delete api.tasks.jobs['periodic_task'];
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });

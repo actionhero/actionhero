@@ -27,7 +27,7 @@ var websocket = function(api, options, next){
       'say'
     ]
   }
-  var rebroadcastChannel = '/actionHero/websockets/rebroadcast';
+  var rebroadcastChannel = '/actionhero/websockets/rebroadcast';
 
   var server = new api.genericServer(type, options, attributes);
 

@@ -7,9 +7,9 @@ var pids = function(api, next){
   api.pids.pid = process.pid;
 
   if(cluster.isMaster){
-    api.pids.title = 'actionHero-' + api.id.replace(new RegExp(':', 'g'), '-');
+    api.pids.title = 'actionhero-' + api.id.replace(new RegExp(':', 'g'), '-');
   } else {
-    api.pids.title = 'actionHeroWorker-' + new Date().getTime();
+    api.pids.title = 'actionheroWorker-' + new Date().getTime();
   }
 
   try { fs.mkdirSync(api.config.general.paths.pid, '0777') } catch(e) {}

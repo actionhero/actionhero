@@ -168,7 +168,7 @@ var utils = function(api, next){
 
   ////////////////////////////////////////////////////////////////////////////
   // parse an IPv6 address 
-  // https://github.com/evantahler/actionHero/issues/275 && https://github.com/nullivex
+  // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
   api.utils.parseIPv6URI = function(addr){
     var host = '::1'
       , port = '80'

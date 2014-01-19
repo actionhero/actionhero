@@ -10,13 +10,13 @@ var id = function(api, next){
   } else if(api.config.general.id == null){
     var externalIP = api.utils.getExternalIPAddress();
     if(externalIP == false){
-      var message = ' * Error fetching this hosts external IP address; setting id base to \'actionHero\''
+      var message = ' * Error fetching this hosts external IP address; setting id base to \'actionhero\''
       try {
         api.log(message, 'crit');
       } catch(e){
         console.log(message);
       }
-      externalIP = 'actionHero';
+      externalIP = 'actionhero';
     }
 
     api.id = externalIP;
