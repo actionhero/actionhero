@@ -1,6 +1,6 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 var net = require('net');
@@ -37,7 +37,7 @@ function makeSocketRequest(thisClient, message, cb){
 describe('Server: Socket', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
 
       setTimeout(function(){
@@ -60,7 +60,7 @@ describe('Server: Socket', function(){
     client.write('quit\r\n');
     client2.write('quit\r\n');
     client3.write('quit\r\n');
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });

@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-// TO START IN CONSOLE: "./bin/actionHero startCluster"
+// TO START IN CONSOLE: "./bin/actionhero startCluster"
 // 
-// ** Production-ready actionHero cluster **
+// ** Production-ready actionhero cluster **
 // - be sure to enable redis so that workers can share state
 // - workers which die will be restarted
 // - maser/manager specific logging
@@ -14,7 +14,7 @@
 // - WINCH to stop all workers
 // - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
-//   -- Lazy Daemon: "nohup ./bin/actionHero startCluster &"
+//   -- Lazy Daemon: "nohup ./bin/actionhero startCluster &"
 //   -- you may want to explore "forever" as a daemonizing option
 //
 // * Setting process titles does not work on windows or OSX
@@ -39,7 +39,7 @@ exports['startCluster'] = function(binary, next){
       binary.numWorkers = binary.numCPUs - 2;
       binary.claimedWorkerIds = [];
       if(binary.numWorkers < 2){ binary.numWorkers = 2}
-      binary.execCMD = path.normalize(binary.paths.actionHero_root + '/bin/actionHero');
+      binary.execCMD = path.normalize(binary.paths.actionhero_root + '/bin/actionhero');
       next();
     },
     pids: function(next){
@@ -64,8 +64,8 @@ exports['startCluster'] = function(binary, next){
         workers: binary.numWorkers,
         pidfile: binary.pidPath + '/cluster_pidfile',
         log: process.cwd() + '/log/cluster.log',
-        title: 'actionHero-master',
-        workerTitlePrefix: 'actionHero-worker'
+        title: 'actionhero-master',
+        workerTitlePrefix: 'actionhero-worker'
       };
 
       for(var i in binary.clusterConfig){

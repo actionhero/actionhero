@@ -1,21 +1,21 @@
 process.env.NODE_ENV = 'test';
 
 var should = require('should');
-var actionHeroPrototype = require('actionHero').actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require('actionhero').actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
-describe('actionHero Tests', function(){
+describe('actionhero Tests', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       done();
     })
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   })

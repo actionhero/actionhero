@@ -2,14 +2,14 @@ var grunt = require('grunt')
   , fs = require('fs')
   , path = require('path')
 
-var actionHeroRoot = function(){
+var actionheroRoot = function(){
   var rv
-  if(fs.existsSync(__dirname + '/actionHero.js')){
-    // in the actionHero project itself
+  if(fs.existsSync(__dirname + '/actionhero.js')){
+    // in the actionhero project itself
     rv = __dirname
-  } else if(fs.existsSync(__dirname + '/node_modules/actionHero/actionHero.js')){
-    // running from a project's node_modules (bin or actionHero)
-    rv = __dirname + '/node_modules/actionHero'
+  } else if(fs.existsSync(__dirname + '/node_modules/actionhero/actionhero.js')){
+    // running from a project's node_modules (bin or actionhero)
+    rv = __dirname + '/node_modules/actionhero'
   } else {
     // installed globally
     rv = path.normalize(__dirname)
@@ -18,15 +18,15 @@ var actionHeroRoot = function(){
 }
 
 var init = function(fn){
-  var root = actionHeroRoot()
-    , ActionHeroPrototype = require(root + '/actionHero.js').actionHeroPrototype
-    , actionHero = new ActionHeroPrototype()
+  var root = actionheroRoot()
+    , ActionHeroPrototype = require(root + '/actionhero.js').actionheroPrototype
+    , actionhero = new ActionHeroPrototype()
     , configChanges = {
       logger: {
         transports: null
       }
     }
-  actionHero.initialize({configChanges: configChanges}, function(err, api){
+  actionhero.initialize({configChanges: configChanges}, function(err, api){
     fn(api)
   })
 }
@@ -93,7 +93,7 @@ grunt.registerTask('stopPeriodicTask','Remove an enqueued periodic task (:taskNa
   })
 })
 
-grunt.registerTask('flushRedis','Clear the entire actionHero redis database',function(){
+grunt.registerTask('flushRedis','Clear the entire actionhero redis database',function(){
   var done = this.async()
   init(function(api){
     api.redis.client.flushdb(function(err){
@@ -104,7 +104,7 @@ grunt.registerTask('flushRedis','Clear the entire actionHero redis database',fun
   })
 })
 
-grunt.registerTask('clearCache','Clear the actionHero cache',function(){
+grunt.registerTask('clearCache','Clear the actionhero cache',function(){
   var done = this.async()
   init(function(api){
     api.cache.clear(function(error, count){

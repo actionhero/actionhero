@@ -1,19 +1,19 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 describe('Core: specHelper', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       done();
     })
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });
@@ -30,7 +30,7 @@ describe('Core: specHelper', function(){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
       response.error.should.equal('Error: x is not a known action or that is not a valid apiVersion.');
       response.messageCount.should.equal(1);
-      response.serverInformation.serverName.should.equal('actionHero API');
+      response.serverInformation.serverName.should.equal('actionhero API');
       response.requesterInformation.remoteIP.should.equal('testServer');
       done();
     });
@@ -39,7 +39,7 @@ describe('Core: specHelper', function(){
   it('will stack up messages recieved', function(done){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
       connection.messages.length.should.equal(2);
-      connection.messages[0].welcome.should.equal('Hello! Welcome to the actionHero api');
+      connection.messages[0].welcome.should.equal('Hello! Welcome to the actionhero api');
       connection.messages[1].error.should.equal('Error: x is not a known action or that is not a valid apiVersion.');
       done();
     });

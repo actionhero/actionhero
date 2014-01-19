@@ -1,13 +1,13 @@
  {
   "author":      "YOU <YOU@example.com>",
-  "name":        "my_actionHero_project",
-  "description": "my actionHero project",
+  "name":        "my_actionhero_project",
+  "description": "my actionhero project",
   "version":     "0.0.1",
   "engines": {
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "actionHero": "%%versionNumber%%",
+    "actionhero": "%%versionNumber%%",
     "grunt":      "latest"
   },
   "devDependencies": {
@@ -15,10 +15,10 @@
     "should": "latest"
   },
   "scripts": {
-    "help":         "actionHero help",
-    "start":        "actionHero start",
-    "actionHero":   "actionHero",
-    "startCluster": "actionHero startCluster",
+    "help":         "actionhero help",
+    "start":        "actionhero start",
+    "actionhero":   "actionhero",
+    "startCluster": "actionhero startCluster",
     "test":         "mocha"
   }
 }

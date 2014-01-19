@@ -1,7 +1,7 @@
 var fs = require('fs');
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 var original_file =    './actions/randomNumber.js';
@@ -22,7 +22,7 @@ new_file_content += 'exports.action = action;';
 describe('Core: Developer Mode', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       setTimeout(function(){
         done();
@@ -31,7 +31,7 @@ describe('Core: Developer Mode', function(){
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       fs.writeFile(original_file, String(original_content), function(err){
         setTimeout(function(){
           done();

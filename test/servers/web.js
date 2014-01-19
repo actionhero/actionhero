@@ -1,14 +1,14 @@
 var should = require('should');
 var request = require('request');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 var url
 
 describe('Server: Web', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       done();
@@ -16,7 +16,7 @@ describe('Server: Web', function(){
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });

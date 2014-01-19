@@ -1,9 +1,9 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
 
-var actionHero1 = new actionHeroPrototype();
-var actionHero2 = new actionHeroPrototype();
-var actionHero3 = new actionHeroPrototype();
+var actionhero1 = new actionheroPrototype();
+var actionhero2 = new actionheroPrototype();
+var actionhero3 = new actionheroPrototype();
 
 var api_1;
 var api_2;
@@ -29,9 +29,9 @@ var configChanges = {
 }
 
 var startAllServers = function(next){
-  actionHero1.start({configChanges: configChanges[1]}, function(a1){
-    actionHero2.start({configChanges: configChanges[2]}, function(a2){
-      actionHero3.start({configChanges: configChanges[3]}, function(a3){
+  actionhero1.start({configChanges: configChanges[1]}, function(a1){
+    actionhero2.start({configChanges: configChanges[2]}, function(a2){
+      actionhero3.start({configChanges: configChanges[3]}, function(a3){
         api_1 = a1;
         api_2 = a2;
         api_3 = a3;
@@ -42,9 +42,9 @@ var startAllServers = function(next){
 }
 
 var stopAllServers = function(next){
-  actionHero1.stop(function(){
-    actionHero2.stop(function(){
-      actionHero3.stop(function(){
+  actionhero1.stop(function(){
+    actionhero2.stop(function(){
+      actionhero3.stop(function(){
         next();
       });
     });
@@ -52,9 +52,9 @@ var stopAllServers = function(next){
 }
 
 var restartAllServers = function(next){
-  actionHero1.restart(function(a1){
-    actionHero2.restart(function(a2){
-      actionHero3.restart(function(a3){
+  actionhero1.restart(function(a1){
+    actionhero2.restart(function(a2){
+      actionhero3.restart(function(a3){
         api_1 = a1;
         api_2 = a2;
         api_3 = a3;
@@ -79,7 +79,7 @@ describe('Core: Action Cluster', function(){
   describe('general actionCluster', function(){
 
     it('Start cluster server #1', function(done){
-      actionHero1.start({configChanges: configChanges[1]}, function(err, api){
+      actionhero1.start({configChanges: configChanges[1]}, function(err, api){
         api.should.be.an.Object;
         api.id.should.equal('test-server-1');
         api_1 = api;
@@ -88,7 +88,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('Start cluster server #2', function(done){
-      actionHero2.start({configChanges: configChanges[2]}, function(err, api){
+      actionhero2.start({configChanges: configChanges[2]}, function(err, api){
         api.should.be.an.Object;
         api.id.should.equal('test-server-2');
         api_2 = api;
@@ -97,7 +97,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('Start cluster server #3', function(done){
-      actionHero3.start({configChanges: configChanges[3]}, function(err, api){
+      actionhero3.start({configChanges: configChanges[3]}, function(err, api){
         api.should.be.an.Object;
         api.id.should.equal('test-server-3');
         api_3 = api;

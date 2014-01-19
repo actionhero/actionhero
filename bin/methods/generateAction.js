@@ -5,7 +5,7 @@ exports['generateAction'] = function(binary, next){
   if(binary.argv.name == null){ binary.utils.hardError('name is a required input'); }
   if(binary.argv.description == null){ binary.argv.description = binary.argv.name; }
   
-  var data = fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/action.js');
+  var data = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/action.js');
   data = String(data);
 
   [

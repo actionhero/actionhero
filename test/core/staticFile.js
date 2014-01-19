@@ -1,19 +1,19 @@
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 describe('Core: Static File', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       done();
     })
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });
@@ -43,7 +43,7 @@ describe('Core: Static File', function(){
   });
 
   it('file: sub paths should work', function(done){
-    api.specHelper.getStaticFile('logo/actionHero.png', function(response, connection){
+    api.specHelper.getStaticFile('logo/actionhero.png', function(response, connection){
       response.mime.should.equal('image/png');
       response.length.should.equal(142141);
       response.content.length.should.be.within(136836, 136920); // wacky per-OS encoding issues I guess

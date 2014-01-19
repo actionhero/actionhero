@@ -82,7 +82,7 @@ var faye = function(api, next){
     incoming: function(message, callback){
       if(message.channel.indexOf('/meta/subscribe') === 0){
         if(message.subscription.indexOf('*') >= 0){
-          message.error = 'actionHero does not allow wildcard subscriptions';
+          message.error = 'actionhero does not allow wildcard subscriptions';
           api.log(message.error, 'warning', message);
         }
       }
@@ -92,9 +92,9 @@ var faye = function(api, next){
 
   api.faye.extensions.push({
     incoming: function(message, callback){
-      if(message.channel.indexOf('/actionHero') === 0){
+      if(message.channel.indexOf('/actionhero') === 0){
         if(message.data.serverToken != api.config.general.serverToken){
-          message.error = 'message token miss-match on protected actionHero channel';
+          message.error = 'message token miss-match on protected actionhero channel';
           api.log(message.error, 'warning', message);
         }
       }

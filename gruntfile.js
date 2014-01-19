@@ -14,7 +14,7 @@ grunt.initConfig({
   },
   clean: {
     publish: {
-      src: 'public/javascript/actionHeroWebSocket.min.js'
+      src: 'public/javascript/actionheroWebSocket.min.js'
     }
   },
   projectUpdate: {
@@ -25,8 +25,8 @@ grunt.initConfig({
       lint: true
     },
     publish: {
-      src: 'public/javascript/actionHeroClient.js',
-      dest: 'public/javascript/actionHeroClient.min.js'
+      src: 'public/javascript/actionheroClient.js',
+      dest: 'public/javascript/actionheroClient.min.js'
     }
   }
 

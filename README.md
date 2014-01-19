@@ -1,45 +1,45 @@
-# actionHero.js 
+# actionhero.js 
 ## The Reusable, Scalable, and Quick node.js API Server
 
-**Links: [NPM](https://npmjs.org/package/actionHero) | [Wiki](https://github.com/evantahler/actionHero/wiki) | [API Methods](https://github.com/evantahler/actionHero/wiki/API-Methods) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionHero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
+**Links: [NPM](https://npmjs.org/package/actionhero) | [Wiki](https://github.com/evantahler/actionhero/wiki) | [API Methods](https://github.com/evantahler/actionhero/wiki/API-Methods) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
 
-<img src="https://raw.github.com/evantahler/actionHero/master/public/logo/actionHero.png" height="300"/>
+<img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/>
 
-[![Nodei stats](https://nodei.co/npm/actionHero.png?downloads=true)](https://npmjs.org/package/actionHero)
+[![Nodei stats](https://nodei.co/npm/actionhero.png?downloads=true)](https://npmjs.org/package/actionhero)
 
-[![NPM](https://nodei.co/npm-dl/actionHero.png)](https://npmjs.org/package/actionHero)
+[![NPM](https://nodei.co/npm-dl/actionhero.png)](https://npmjs.org/package/actionhero)
 
-[![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionHero.png)](http://demo.actionherojs.com)
+[![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionhero.png)](http://demo.actionherojs.com)
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionHero.png?branch=master)](http://travis-ci.org/evantahler/actionHero) 
+[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) 
 
-## Who is the actionHero?
-actionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionHero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionHero server can [**consume the api**](https://github.com/evantahler/actionHero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionHero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionHero/wiki/Chat).  actionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
+## Who is the actionhero?
+actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](https://github.com/evantahler/actionhero/wiki/Actions), [**consume static content**](https://github.com/evantahler/actionhero/wiki/File-Server), and [**communicate with each other**](https://github.com/evantahler/actionhero/wiki/Chat).  actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
-Currently actionHero supports:
+Currently actionhero supports:
 
-- [Web Clients](https://github.com/evantahler/actionHero/wiki/web): HTTP, HTTPS
-- [Socket Clients](https://github.com/evantahler/actionHero/wiki/socket): TCP (telnet), TLS
-- [Web Socket (Faye) clients](https://github.com/evantahler/actionHero/wiki/websocket): HTTP, HTTPS
+- [Web Clients](https://github.com/evantahler/actionhero/wiki/web): HTTP, HTTPS
+- [Socket Clients](https://github.com/evantahler/actionhero/wiki/socket): TCP (telnet), TLS
+- [Web Socket (Faye) clients](https://github.com/evantahler/actionhero/wiki/websocket): HTTP, HTTPS
 
-[You can also make your own servers and transports.](https://github.com/evantahler/actionHero/wiki/Servers)
+[You can also make your own servers and transports.](https://github.com/evantahler/actionhero/wiki/Servers)
 
 ## Quick Start
 
-- `npm install actionHero`
-- `./node_modules/.bin/actionHero generate`
+- `npm install actionhero`
+- `./node_modules/.bin/actionhero generate`
 - `npm start`
 
 ## Want more?
 
-- [Getting Started](https://github.com/evantahler/actionHero/wiki/Getting-Started)
-- [Running actionHero](https://github.com/evantahler/actionHero/wiki/Running-ActionHero)
-- [Read the documentation on the wiki](https://github.com/evantahler/actionHero/wiki)
-- [View the release history](https://github.com/evantahler/actionHero/releases/)
+- [Getting Started](https://github.com/evantahler/actionhero/wiki/Getting-Started)
+- [Running actionhero](https://github.com/evantahler/actionhero/wiki/Running-ActionHero)
+- [Read the documentation on the wiki](https://github.com/evantahler/actionhero/wiki)
+- [View the release history](https://github.com/evantahler/actionhero/releases/)
 
 ## Who?
-* The primary creator of the actionHero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/evantahler/actionHero/graphs/contributors)
+* The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/evantahler/actionhero/graphs/contributors)
 * Logo by [Ali Spagnola](http://alispagnola.com/)
-* If you want to contribute to actionHero, contribute to the conversation on [github](https://github.com/evantahler/actionHero)
+* If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/evantahler/actionhero)
 
 ###

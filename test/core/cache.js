@@ -1,20 +1,20 @@
 var fs = require('fs');
 var should = require('should');
-var actionHeroPrototype = require(__dirname + "/../../actionHero.js").actionHeroPrototype;
-var actionHero = new actionHeroPrototype();
+var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 var api;
 
 describe('Core: Cache', function(){
 
   before(function(done){
-    actionHero.start(function(err, a){
+    actionhero.start(function(err, a){
       api = a;
       done();
     })
   });
 
   after(function(done){
-    actionHero.stop(function(err){
+    actionhero.stop(function(err){
       done();
     });
   });
@@ -186,7 +186,7 @@ describe('Core: Cache', function(){
           api.cache.dumpWrite(file, function(error, count){
             count.should.equal(1);
             var body = JSON.parse(String(fs.readFileSync(file)));
-            var content = JSON.parse(body['actionHero:cache:thingA']);
+            var content = JSON.parse(body['actionhero:cache:thingA']);
             content.value.should.equal(123);
             done();
           });

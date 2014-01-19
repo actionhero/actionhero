@@ -3,13 +3,13 @@ var chatRoom = function(api, next){
   api.chatRoom = {};
   api.chatRoom.keys = {
     // set
-    rooms:   'actionHero:chatRoom:rooms',
+    rooms:   'actionhero:chatRoom:rooms',
     // prefix to hashes
-    members: 'actionHero:chatRoom:members:',
+    members: 'actionhero:chatRoom:members:',
     // hash
-    auth:    'actionHero:chatRoom:auth'
+    auth:    'actionhero:chatRoom:auth'
   }
-  api.chatRoom.fayeChannel = '/actionHero/chat';
+  api.chatRoom.fayeChannel = '/actionhero/chat';
 
   api.chatRoom._start = function(api, next){
     api.chatRoom.subscription = api.faye.client.subscribe(api.chatRoom.fayeChannel, function(message){

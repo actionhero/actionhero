@@ -7,7 +7,7 @@ exports['generateTask'] = function(binary, next){
   if(binary.argv.queue == null){ binary.argv.queue = 'default' }
   if(binary.argv.frequency == null){ binary.argv.frequency = 0 }
 
-  var data = fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/task.js');
+  var data = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/task.js');
   data = String(data);
 
   [

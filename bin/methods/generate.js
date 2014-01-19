@@ -6,7 +6,7 @@ exports['generate'] = function(binary, next){
 
   var documents = {};
 
-  documents.projectMap = fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/projectMap.txt');
+  documents.projectMap = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
     config_js                     : '/config/config.js',
@@ -16,29 +16,29 @@ exports['generate'] = function(binary, next){
     routes_js                     : '/routes.js',
     action_status                 : '/actions/status.js',
     task_runAction                : '/tasks/runAction.js',
-    gruntfile                     : '/grunt/actionHero_gruntfile.js',
-    public_actionHeroClient       : '/public/javascript/actionHeroClient.js',
-    public_actionHeroClientMin    : '/public/javascript/actionHeroClient.min.js',
+    gruntfile                     : '/grunt/actionhero_gruntfile.js',
+    public_actionheroClient       : '/public/javascript/actionheroClient.js',
+    public_actionheroClientMin    : '/public/javascript/actionheroClient.min.js',
     public_index                  : '/public/index.html',
     public_chat                   : '/public/chat.html',
-    public_logo                   : '/public/logo/actionHero.png',
+    public_logo                   : '/public/logo/actionhero.png',
     public_css                    : '/public/css/actionhero.css',
     example_test                  : '/test/template.js.example',
   }
   for(var name in oldFileMap){
-    documents[name] = fs.readFileSync(binary.paths.actionHero_root + oldFileMap[name]);
+    documents[name] = fs.readFileSync(binary.paths.actionhero_root + oldFileMap[name]);
   }
 
   var AHversionNumber = JSON.parse(documents.package_json).version;
 
-  documents.package_json = String(fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/package.json'));
+  documents.package_json = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/package.json'));
   documents.package_json = documents.package_json.replace('%%versionNumber%%', AHversionNumber);
-  documents.readme_md    = String(fs.readFileSync(binary.paths.actionHero_root + '/bin/templates/README.md'));
-  documents.git_ignore   = String(fs.readFileSync(binary.paths.actionHero_root + '/.gitignore'));
+  documents.readme_md    = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/README.md'));
+  documents.git_ignore   = String(fs.readFileSync(binary.paths.actionhero_root + '/.gitignore'));
 
   //////// LOGIC ////////
 
-  binary.log('Generating a new actionHero project...');
+  binary.log('Generating a new actionhero project...');
 
   // make directories
   [
@@ -71,9 +71,9 @@ exports['generate'] = function(binary, next){
     '/public/index.html'                            : 'public_index',
     '/public/chat.html'                             : 'public_chat',
     '/public/css/actionhero.css'                    : 'public_css',
-    '/public/logo/actionHero.png'                   : 'public_logo',
-    '/public/javascript/actionHeroClient.js'        : 'public_actionHeroClient',
-    '/public/javascript/actionHeroClient.min.js'    : 'public_actionHeroClientMin',
+    '/public/logo/actionhero.png'                   : 'public_logo',
+    '/public/javascript/actionheroClient.js'        : 'public_actionheroClient',
+    '/public/javascript/actionheroClient.min.js'    : 'public_actionheroClientMin',
     '/README.md'                                    : 'readme_md',
     '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'example_test',

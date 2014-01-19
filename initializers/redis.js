@@ -1,12 +1,12 @@
 var redis = function(api, next){
 
-  /* actionHero will create the following stores within your redis database:
+  /* actionhero will create the following stores within your redis database:
 
   ** Keys **
 
-  - 'actionHero:cache' [] the common shared cache object
-  - 'actionHero:stats' [] the common shared stats object
-  - 'actionHero:roomMembers-{roomName}' [] a list of the folks in a given socket room
+  - 'actionhero:cache' [] the common shared cache object
+  - 'actionhero:stats' [] the common shared stats object
+  - 'actionhero:roomMembers-{roomName}' [] a list of the folks in a given socket room
   */
 
   api.redis = {};
