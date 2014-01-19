@@ -32,7 +32,7 @@ var chatRoom = function(api, next){
     next();
   }
 
-  api.chatRoom._teardown = function(api, next){
+  api.chatRoom._stop = function(api, next){
     api.chatRoom.subscription.cancel();
     next();
   }

@@ -47,7 +47,7 @@ var websocket = function(api, options, next){
     next();
   }
 
-  server._teardown = function(next){
+  server._stop = function(next){
     server.connections().forEach(function(connection){
       server.goodbye(connection, 'server shutting down');
     });

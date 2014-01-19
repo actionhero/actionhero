@@ -10,7 +10,7 @@ var stats = function(api, next){
     next();
   }
 
-  api.stats._teardown = function(api, next){
+  api.stats._stop = function(api, next){
     clearTimeout(api.stats.timer);
     next();
   }

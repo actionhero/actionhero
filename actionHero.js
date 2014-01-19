@@ -186,7 +186,7 @@ actionHero.prototype.stop = function(callback){
     self.api.initialized = false;
     self.api.log('Shutting down open servers and stopping task processing', 'alert');
 
-    var orderedTeardowns = {};
+    var orderedStopper = {};
     [
       'task',
       'resque',
@@ -194,29 +194,29 @@ actionHero.prototype.stop = function(callback){
       'faye',
       'webSocketServer',
       'socketServer'
-    ].forEach(function(teardown){
-      if(self.api[teardown] != null && typeof self.api[teardown]._teardown == 'function'){
+    ].forEach(function(stopper){
+      if(self.api[stopper] != null && typeof self.api[stopper]._stop == 'function'){
         (function(name) {
-          orderedTeardowns[name] = function(next){
-            self.api.log(' > teardown: ' + name, 'debug');
-            self.api[name]._teardown(self.api, next);
+          orderedStopper[name] = function(next){
+            self.api.log(' > stop: ' + name, 'debug');
+            self.api[name]._stop(self.api, next);
           };
-        })(teardown);
+        })(stopper);
       }
     });
 
     for(var i in self.api){
-      if(typeof self.api[i]._teardown == 'function' && orderedTeardowns[i] == null){
+      if(typeof self.api[i]._stop == 'function' && orderedStopper[i] == null){
         (function(name) {
-          orderedTeardowns[name] = function(next){
-            self.api.log(' > teardown: ' + name, 'debug');
-            self.api[name]._teardown(self.api, next);
+          orderedStopper[name] = function(next){
+            self.api.log(' > stop: ' + name, 'debug');
+            self.api[name]._stop(self.api, next);
           };
         })(i);
       }
     }
 
-    orderedTeardowns['_complete'] = function(){
+    orderedStopper['_complete'] = function(){
       self.api.unWatchAllFiles();
       self.api.pids.clearPidFile();
       self.api.log('The actionHero has been stopped', 'alert');
@@ -225,7 +225,7 @@ actionHero.prototype.stop = function(callback){
       if(typeof callback == 'function'){ callback(null, self.api) }
     };
 
-    async.series(orderedTeardowns);
+    async.series(orderedStopper);
   } else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   } else {

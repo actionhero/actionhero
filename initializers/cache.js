@@ -17,10 +17,6 @@ var cache = function(api, next){
     });
   }
 
-  api.cache._teardown = function(api, callback){
-    callback();
-  }
-
   api.cache.keys = function(next){
     api.redis.client.keys(api.cache.redisPrefix + "*", function(err, keys){
       next(err, keys);

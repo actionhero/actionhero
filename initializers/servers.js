@@ -28,13 +28,13 @@ var servers = function(api, next){
     }
   }
 
-  api.servers._teardown = function(api, next){
+  api.servers._stop = function(api, next){
     var started = 0;
     if(api.utils.hashLength(api.servers.servers) == 0){ next() }
     for(var server in api.servers.servers){
       started++;
       api.log('stopping server: ' + server, 'notice');
-      api.servers.servers[server]._teardown(function(){
+      api.servers.servers[server]._stop(function(){
         process.nextTick(function(){
           started--;
           if(started == 0){ next() }

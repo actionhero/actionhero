@@ -26,7 +26,7 @@ exports['generateServer'] = function(binary, next){
   templateLines.push('');
   templateLines.push('  server._start = function(next){}');
   templateLines.push('');
-  templateLines.push('  server._teardown = function(next){}');
+  templateLines.push('  server._stop = function(next){}');
   templateLines.push('');
   templateLines.push('  server.sendMessage = function(connection, message, messageCount){}');
   templateLines.push('');

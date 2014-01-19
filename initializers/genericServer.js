@@ -28,7 +28,7 @@ A generic implementation of a server:
 
       server._start = function(next){}
 
-      server._teardown = function(next){}
+      server._stop = function(next){}
 
       server.sendMessage = function(connection, message, messageCount){}
 
@@ -189,7 +189,7 @@ var genericServer = function(api, next){
   api.genericServer.prototype._start = function(next){ methodNotDefined() }
 
   // I am invoked as part of shutdown
-  api.genericServer.prototype._teardown = function(next){ methodNotDefined() }
+  api.genericServer.prototype._stop = function(next){ methodNotDefined() }
 
   // This method will be appended to the connection as 'connection.sendMessage'
   api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined() }

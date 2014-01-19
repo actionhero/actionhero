@@ -25,10 +25,6 @@ var redis = function(api, next){
   api.redis._start = function(api, next){
     next();
   }
-
-  api.redis._teardown = function(api, next){
-    next();
-  }
     
   api.redis.initialize = function(callback){
     api.redis.client = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);

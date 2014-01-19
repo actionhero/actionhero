@@ -62,7 +62,7 @@ var socket = function(api, options, next){
     });
   }
 
-  server._teardown = function(next){
+  server._stop = function(next){
     gracefulShutdown(next);
   }
 

@@ -20,7 +20,7 @@ var resque = function(api, next){
       });
     },
 
-    _teardown: function(api, next){
+    _stop: function(api, next){
       var self = this;
       self.stopScheduler(function(){
         self.stopWorkers(function(){

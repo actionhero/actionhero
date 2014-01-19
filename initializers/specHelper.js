@@ -31,7 +31,7 @@ var specHelper = function(api, next){
         next();
       }
 
-      server._teardown = function(next){
+      server._stop = function(next){
         next();
       }
 

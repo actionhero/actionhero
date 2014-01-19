@@ -62,10 +62,11 @@ var web = function(api, options, next){
     });
   }
 
-  server._teardown = function(next){
-    // long-lasting connections will be terminated by process.exit from the startServer manager's timeout
+  server._stop = function(next){
     server.server.close();
-    next();
+    process.nextTick(function(){
+      next();
+    });
   }
 
   server.sendMessage = function(connection, message){

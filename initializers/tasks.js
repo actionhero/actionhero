@@ -17,10 +17,6 @@ var tasks = function(api, next){
       }
     },
 
-    _teardown: function(api, next){
-      next();
-    },
-
     load: function(fullFilePath, reload){
       var self = this;
       if(reload == null){ reload = false }
