@@ -91,23 +91,13 @@ var common_loader = function(api){
       return return_var;
   };
   
-  this.initialize = function(){
-    if(this.validate(this, {
-        vmap:'object',
-        path:'string',
-        exceptionManager:'function',
-        fileHandler:'function'
-      })
-    ){
-      if(!fs.existsSync(this.path)){
-       api.log("Failed to load initializer for: "+this.path+", path invalid.", "warning");
-      }else{
-         this.loadDirectory(this.path);
-      }
-    }else{     
-      api.log("Failed to load initializer for: "+this.path+", initializer invalid.", "warning");
-    }
-  }
+  this.initialize = function(path){
+    if(!fs.existsSync(path)){
+      api.log("Failed to load initializer for: "+this.path+", path invalid.", "warning");
+    }else{
+      this.loadDirectory(path);
+    } 
+  };
 };
 
 module.exports = common_loader;

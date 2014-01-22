@@ -12,7 +12,7 @@ var actions = function(api, next){
     api.config.general.simultaneousActions = 5;
   }
 
-  api.actions.validateAction = function(action){
+  api.actions.validate = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
     }
@@ -62,10 +62,10 @@ var actions = function(api, next){
         this.versions[action.name].push(action.version);
         this.versions[action.name].sort();
         this.validate(api.actions.actions[action.name][action.version], this.vmap);
-        this.loadMessage("action", reload, action.name + ' @ v' + action.version);
+        api.log('', 'debug');
   };    
 
-  api.actions.loadDirectory(api.config.general.paths.action);
+  api.actions.initialize(api.config.general.paths.action);
   next();
   
 }
