@@ -68,17 +68,26 @@ var actionProcessor = function(api, next){
       if(self.actionTemplate != null && self.actionTemplate.logLevel != null){
         logLevel = self.actionTemplate.logLevel;
       }
-      var stringifiedError = ''
+      var stringifiedError = '';
       try {
         stringifiedError = JSON.stringify(self.connection.error);
       } catch(e){
         stringifiedError = String(self.connection.error)
       }
       
+      var filteredParams = {}
+      for(var i in self.connection.params){
+        if(api.config.general.filteredParams != null && api.config.general.filteredParams.indexOf(i) >= 0){
+          filteredParams[i] = "[FILTERED]";
+        }else{
+          filteredParams[i] = self.connection.params[i];
+        }
+      }
+
       api.log('[ action @ ' + self.connection.type + ' ]', logLevel, {
         to: self.connection.remoteIP,
         action: self.connection.action,
-        params: JSON.stringify(self.connection.params),
+        params: JSON.stringify(filteredParams),
         duration: self.duration,
         error: stringifiedError
       });

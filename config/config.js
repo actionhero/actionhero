@@ -34,7 +34,9 @@ config.general = {
   // How many pending actions can a single connection be working on 
   simultaneousActions: 5,
   // disables the whitelisting of client params
-  disableParamScrubbing : false,
+  disableParamScrubbing: false,
+  // params you would like hidden from any logs
+  filterParameters: [],
   // configuration for your actionhero project structure
   paths: {
     'action':      __dirname + '/../actions',
