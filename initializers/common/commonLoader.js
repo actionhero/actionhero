@@ -56,11 +56,6 @@ var common_loader = function(api){
       }
     });
   };
-  
-  this.loadMessage = function(type, reload, moduleName, fullFilePath){
-        var message = type+' ' + (reload?'(re)':'') + 'loaded: ' + moduleName + ', ' + fullFilePath;
-        api.log(message, 'debug');
-      };
       
   this.validate = function(module, map){
     var return_var = true;

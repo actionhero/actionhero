@@ -2,8 +2,9 @@ var fs = require('fs');
 
 var tasks = function(api, next){
 
-  api.tasks = {
+  api.tasks = {};
 
+  api.tasks = {
     tasks: {},
     jobs: {},
 
@@ -244,8 +245,23 @@ var tasks = function(api, next){
       });
     }
   }
+  
 
-  api.tasks.loadFolder();
+  var proto = new(require('./common/commonLoader.js'))(api);
+
+    ['loadDirectory', 'initialize'].forEach(function(pr,i){
+      api.tasks[pr] = proto[pr];
+    });
+  
+  api.tasks.loadDirectory = proto.loadDirectory;
+  api.tasks.initialize = proto.initialize;
+  api.tasks.loadFile = api.tasks.load;
+  api.tasks.exceptionManager = function(fullFilePath, err, task){
+    api.exceptionHandlers.loader(fullFilePath, err);
+    delete api.tasks.tasks[task.name];
+    delete api.tasks.jobs[task.name];
+  }; 
+  api.tasks.initialize(api.config.general.paths.task);
   next();
   
 };
