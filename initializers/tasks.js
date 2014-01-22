@@ -108,37 +108,6 @@ var tasks = function(api, next){
         return true;
       }
     },
-    
-    loadFolder: function(path){
-      var self = this;
-
-      if(path == null){
-        path = api.config.general.paths.task;
-      }
-      
-      if(fs.existsSync(path)){
-        fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != '/'){ path += '/' }
-          var fullFilePath = path + file;
-          if(file[0] != '.'){
-            var stats = fs.statSync(fullFilePath);
-            if(stats.isDirectory()){
-              self.loadFolder(fullFilePath);
-            } else if(stats.isSymbolicLink()){
-              var realPath = fs.readlinkSync(fullFilePath);
-              self.loadFolder(realPath);
-            } else if(stats.isFile()){
-              var ext = file.split('.')[1];
-              if(ext === 'js'){ api.tasks.load(fullFilePath) }
-            } else {
-              api.log(file + ' is a type of file I cannot read', 'alert')
-            }
-          }
-        });
-      } else {
-        api.log('no tasks folder found, skipping', 'debug');
-      }
-    },
 
     enqueue: function(taskName, params, queue, callback){
       if(typeof queue === 'function' && callback == null){ callback = queue; queue = this.tasks[taskName].queue; }
@@ -253,7 +222,6 @@ var tasks = function(api, next){
       api.tasks[pr] = proto[pr];
     });
   
-  api.tasks.loadDirectory = proto.loadDirectory;
   api.tasks.initialize = proto.initialize;
   api.tasks.loadFile = api.tasks.load;
   api.tasks.exceptionManager = function(fullFilePath, err, task){
