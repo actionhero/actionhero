@@ -15,17 +15,19 @@ var common_loader = function(api){
 
         delete require.cache[require.resolve(cleanPath)];
         self.loadFile(fullFilePath, true);
+        try{
         api.params.buildPostVariables();
+        }catch(e){}
       });
       
       try {
         var collection = require(fullFilePath);
         for(var i in collection){
           var _module = collection[i];
-          self.fileHandler(collection[i], reload, fullFilePath);
+          self.fileHandler(collection[i], reload);
 
           api.log('file ' + (reload?'(re)':'') + 'loaded: ' + collection[i].name + ', ' + fullFilePath, 'debug');
-	  //self.loadMessage("file", reload, collection[i].name, fullFilePath);
+        
         }
       } catch(err){
 
@@ -57,33 +59,23 @@ var common_loader = function(api){
     });
   };
       
-  this.validate = function(module, map){
-    var return_var = true;
+  this._validate = function(module, map){
+    
     var fail = function(){
       api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
-      return_var = false;
+      return false;
     }
   
-      function validator(map,parent){     
-        parent = [].concat(parent);
-       
-        var this_module = parent.reduce(function(obj,i){return obj[i]},module);
-      
-        for(x in map){
-          if(typeof map[x] == 'object'){
-            validator(map[x], parent.concat([x]));
-          }else if(typeof map[x] == 'function'){
-            if(map[x](module)){
-              fail();
-            }
-          }else if(typeof this_module[x] != map[x]){
-              fail();
-          }
-        };
-      };
-      
-      validator(map,[]);
-      return return_var;
+    for(x in map){
+      if(typeof map[x] == 'function'){
+        if(map[x](module)){
+          return fail();
+        }
+      }else if(typeof module[x] != map[x]){
+         return fail();
+      }
+    };
+    return true;
   };
   
   this.initialize = function(path){

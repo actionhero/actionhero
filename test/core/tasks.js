@@ -83,7 +83,7 @@ describe('Core: Tasks', function(){
       }
     };
 
-    var response = api.tasks.validateTask(badTask);
+    var response = api.tasks.validate(badTask);
     response.should.equal(false);
     done();
   });
