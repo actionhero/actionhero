@@ -17,9 +17,9 @@ var staticFile = function(api, next){
         if(file.indexOf(path.normalize(api.config.general.paths.public)) != 0){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
         } else {
-          self.checkExistence(file, function(exists){
+          self.checkExistence(file, function(exists, truePath){
             if(exists){
-              self.sendFile(file, connection, callback);
+              self.sendFile(truePath, connection, callback);
             } else {
               self.sendFileNotFound(connection, 'file not found', callback);
             }
@@ -63,24 +63,24 @@ var staticFile = function(api, next){
       var self = this;
       fs.stat(file, function(err, stats){
         if(err != null){
-          callback(false);
+          callback(false, file);
         } else {
           if(stats.isDirectory()){
-            // default file should have been appended by server
-            callback(false);
+            var indexPath = file + '/' + api.config.general.directoryFileType;
+            api.staticFile.checkExistence(indexPath, callback);
           } else if(stats.isSymbolicLink()){
             fs.readLink(file, function(err, truePath){
               if(err != null){
-                callback(false);
+                callback(false, file);
               } else {
-                truePath = path.normalize(truePath);
-                api.fileServer.checkExistence(truePath, callback);
+                var truePath = path.normalize(truePath);
+                api.staticFile.checkExistence(truePath, callback);
               }
             });
           } else if(stats.isFile()){
-            callback(true);
+            callback(true, file);
           } else {
-            callback(false);
+            callback(false, file);
           }
         }
       });

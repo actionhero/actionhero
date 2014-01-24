@@ -37,6 +37,8 @@ config.general = {
   disableParamScrubbing: false,
   // params you would like hidden from any logs
   filterParameters: [],
+  // The default filetype to server when a user requests a directory
+  directoryFileType : 'index.html',
   // configuration for your actionhero project structure
   paths: {
     'action':      __dirname + '/../actions',
@@ -181,8 +183,6 @@ config.servers = {
     // When visiting the root URL, should visitors see 'api' or 'file'?
     //  Visitors can always visit /api and /public as normal
     rootEndpointType : 'file',
-    // The default filetype to server when a user requests a directory
-    directoryFileType : 'index.html',
     // The header which will be returned for all flat file served from /public; defined in seconds
     flatFileCacheDuration : 60,
     // Settings for determining the id of an http(s) request (browser-fingerprint)

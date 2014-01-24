@@ -332,7 +332,7 @@ var web = function(api, options, next){
       if(connection.params['file'] == null){
         connection.params['file'] = filePathParts.join('/');
         if(connection.params['file'] == '' || connection.params['file'][connection.params['file'].length - 1] == '/'){
-          connection.params['file'] = api.config.servers.web.directoryFileType;
+          connection.params['file'] = connection.params['file'] + api.config.general.directoryFileType;
         }
       }
       callback(requestMode);
