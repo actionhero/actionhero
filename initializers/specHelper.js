@@ -92,7 +92,9 @@ var specHelper = function(api, next){
         for(var k in connection.params){
           connection.response.requesterInformation.receivedParams[k] = connection.params[k];
         }
-        server.sendMessage(connection, connection.response, messageCount);
+        if(toRender === true){
+          server.sendMessage(connection, connection.response, messageCount);
+        }
       });
 
       next(server);
@@ -128,9 +130,7 @@ var specHelper = function(api, next){
 
       connection.messageCount++;
       if(typeof next === 'function'){
-        connection.actionCallbacks[(connection.messageCount)] = function(){
-          process.nextTick(next);
-        }
+        connection.actionCallbacks[(connection.messageCount)] = next;
       }
 
       process.nextTick(function(){

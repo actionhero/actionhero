@@ -49,21 +49,21 @@ describe('Benchmarks', function(){
   });
 
   it('status', function(done){
-    this.timeout(60000)
+    this.timeout(10 * 1000)
     multiAction('randomNumber', 1000, {}, function(duration){
       done();
     });
   });
 
   it('status', function(done){
-    this.timeout(60000)
+    this.timeout(10 * 1000)
     multiAction('status', 1000, {}, function(duration){
       done();
     });
   });
 
   it('cacheTest', function(done){
-    this.timeout(60000)
+    this.timeout(10 * 1000)
     multiAction('cacheTest', 1000, {
       key:   function(){ return api.utils.randomString(32) }, 
       value: function(){ return api.utils.randomString(32) }

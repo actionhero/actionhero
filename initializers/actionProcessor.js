@@ -40,8 +40,9 @@ var actionProcessor = function(api, next){
     return this.connection._original_connection.pendingActions;
   }
 
-  api.actionProcessor.prototype.completeAction = function(error, toRender){
+  api.actionProcessor.prototype.completeAction = function(error, toRender, actionDomain){
     var self = this;
+    if(actionDomain != null){ actionDomain.exit(); }
     if(error != null){ self.connection.error = error }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
@@ -205,7 +206,7 @@ var actionProcessor = function(api, next){
         var actionDomain = domain.create();
         actionDomain.on('error', function(err){
           api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
-            self.completeAction(null, true);
+            self.completeAction(null, true, actionDomain);
           });
         });
         actionDomain.run(function(){
@@ -215,13 +216,12 @@ var actionProcessor = function(api, next){
               if(toProcess === true){
                 self.actionTemplate.run(api, self.connection, function(connection, toRender){
                   self.connection = connection;
-                  // actionDomain.dispose();
                   self.postProcessAction(toRender, function(toRender){
-                    self.completeAction(null, toRender);
+                    self.completeAction(null, toRender, actionDomain);
                   });
                 });
               } else {
-                self.completeAction(null, true);
+                self.completeAction(null, true, actionDomain);
               }
             });
           });
