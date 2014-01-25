@@ -44,10 +44,11 @@ var common_loader = function(api){
       if(file[0] != '.'){
         var stats = fs.statSync(fullFilePath);
         if(stats.isDirectory()){
-          api.actions.loadDirectory(fullFilePath);
+
+          self.loadDirectory(fullFilePath);
         } else if(stats.isSymbolicLink()){
           var realPath = fs.readlinkSync(fullFilePath);
-          api.actions.loadDirectory(realPath);
+          self.loadDirectory(realPath);
         } else if(stats.isFile()){
           var fileParts = file.split('.');
           var ext = fileParts[(fileParts.length - 1)];
