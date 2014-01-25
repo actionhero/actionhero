@@ -128,7 +128,9 @@ var specHelper = function(api, next){
 
       connection.messageCount++;
       if(typeof next === 'function'){
-        connection.actionCallbacks[(connection.messageCount)] = next;
+        connection.actionCallbacks[(connection.messageCount)] = function(){
+          process.nextTick(next);
+        }
       }
 
       process.nextTick(function(){
