@@ -7,6 +7,9 @@ var actionheroRoot = function(){
   if(fs.existsSync(__dirname + '/actionhero.js')){
     // in the actionhero project itself
     rv = __dirname
+  } else if(fs.existsSync(__dirname + '/../actionhero.js')){
+    // running from /grunt in the actionhero project itself
+    rv =  __dirname + '/../'
   } else if(fs.existsSync(__dirname + '/node_modules/actionhero/actionhero.js')){
     // running from a project's node_modules (bin or actionhero)
     rv = __dirname + '/node_modules/actionhero'
@@ -17,17 +20,19 @@ var actionheroRoot = function(){
   return rv
 }
 
-var init = function(fn){
+var init = function(fn, configChanges){
   var root = actionheroRoot()
     , ActionHeroPrototype = require(root + '/actionhero.js').actionheroPrototype
     , actionhero = new ActionHeroPrototype()
-    , configChanges = {
+  if(configChanges == null){ 
+    configChanges = {
       logger: {
         transports: null
       }
     }
+  }
   actionhero.initialize({configChanges: configChanges}, function(err, api){
-    fn(api)
+    fn(api, actionhero)
   })
 }
 
