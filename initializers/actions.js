@@ -1,7 +1,7 @@
 var fs = require('fs');
 
 var actions = function(api, next){
-  api.actions = new(require('./common/commonLoader.js'))(api);
+  api.actions = new api.common_loader;
   api.actions.actions = {};
   api.actions.versions = {};
 

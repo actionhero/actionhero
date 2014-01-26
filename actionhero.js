@@ -41,6 +41,97 @@ actionhero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
+  self.api.common_loader = function(){};
+ 
+  self.api.common_loader.prototype.loadFile = function(fullFilePath, reload){
+      var that = this;
+      if(reload == null){ reload = false; }
+      
+      self.api.watchFileAndAct(fullFilePath, function(){
+        var cleanPath = fullFilePath;
+        if(process.platform === 'win32'){
+          cleanPath = fullFilePath.replace(/\//g, '\\');
+        }
+
+        delete require.cache[require.resolve(cleanPath)];
+        that.loadFile(fullFilePath, true);
+        try{
+        self.api.params.buildPostVariables();
+        }catch(e){
+          console.log(e);
+        }
+      });
+      
+      try {
+        var collection = require(fullFilePath);
+        for(var i in collection){
+          var _module = collection[i];
+          that.fileHandler(collection[i], reload);
+
+          self.api.log('file ' + (reload?'(re)':'') + 'loaded: ' + collection[i].name + ', ' + fullFilePath, 'debug');
+        
+        }
+      } catch(err){
+
+        that.exceptionManager(fullFilePath, err, _module);
+      }
+    };
+
+  self.api.common_loader.prototype.loadDirectory = function(path){
+    var that = this;
+    
+    fs.readdirSync(path).forEach( function(file) {
+      if(path[path.length - 1] != '/'){ path += '/' }
+      var fullFilePath = path + file;
+      if(file[0] != '.'){
+        var stats = fs.statSync(fullFilePath);
+        if(stats.isDirectory()){
+
+          that.loadDirectory(fullFilePath);
+        } else if(stats.isSymbolicLink()){
+          var realPath = fs.readlinkSync(fullFilePath);
+          that.loadDirectory(realPath);
+        } else if(stats.isFile()){
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
+          if(ext === 'js'){ that.loadFile(fullFilePath) }
+        } else {
+          self.api.log(file + ' is a type of file I cannot read', 'error')
+        }
+      }
+    });
+  };
+      
+  self.api.common_loader.prototype._validate = function(module, map){
+    
+    var fail = function(){
+      self.api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
+      return false;
+    }
+  
+    for(x in map){
+      if(typeof map[x] == 'function'){
+        if(map[x](module)){
+          return fail();
+        }
+      }else if(typeof module[x] != map[x]){
+         return fail();
+      }
+    };
+    return true;
+  };
+  
+  self.api.common_loader.prototype.initialize = function(path){
+    var that = this;
+    if(!fs.existsSync(path)){
+      self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
+    }else{
+      that.loadDirectory(path);
+    } 
+  };
+    
+  
+  
   // run the initializers
   var orderedInitializers = {};
 
