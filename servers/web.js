@@ -145,7 +145,7 @@ var web = function(api, options, next){
       // https://github.com/evantahler/actionhero/issues/189
       responseHeaders.push(['Transfer-Encoding', 'Chunked']);
       // a sensible default; can be replaced
-      responseHeaders.push(['Content-Type', 'application/json']);
+      responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
       responseHeaders.push(['X-Powered-By', api.config.general.serverName]);
 
       if(typeof(api.config.servers.web.httpHeaders) != null){
