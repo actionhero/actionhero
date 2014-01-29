@@ -574,7 +574,7 @@ describe('Server: Web', function(){
       it('will not change header information if there is a connection.error', function(done){
         request.get(url + '/api/mimeTestAction', function(err, response, body){
           body = JSON.parse(body);
-          response.headers['content-type'].should.equal('application/json');
+          response.headers['content-type'].should.equal('application/json; charset=utf-8');
           body.error.should.equal('Error: key is a required parameter for this action');
           done();
         });
