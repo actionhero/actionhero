@@ -144,9 +144,7 @@ var web = function(api, options, next){
 
       // https://github.com/evantahler/actionhero/issues/189
       responseHeaders.push(['Transfer-Encoding', 'Chunked']);
-      // a sensible default; can be replaced
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
-      responseHeaders.push(['X-Powered-By', api.config.general.serverName]);
 
       if(typeof(api.config.servers.web.httpHeaders) != null){
         for(i in api.config.servers.web.httpHeaders){
@@ -248,12 +246,21 @@ var web = function(api, options, next){
     }
   }
 
+  var connectionHasHeader = function(connection, match){
+    for(var i in connection.rawConnection.responseHeaders){
+      if(connection.rawConnection.responseHeaders[i][0].toLowerCase() === match.toLowerCase()){
+        return true;
+      }
+    }
+    return false;
+  }
+
   var respondToOptions = function(connection){
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null && !connectionHasHeader(connection, 'Access-Control-Allow-Methods')){
       var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null && !connectionHasHeader(connection, 'Access-Control-Allow-Origin')){
       var origin = '*';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }

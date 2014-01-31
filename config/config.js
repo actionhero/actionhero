@@ -170,6 +170,7 @@ config.servers = {
     bindIP: '0.0.0.0',
     // Any additional headers you want actionhero to respond with
     httpHeaders : {
+      'X-Powered-By'                : config.general.serverName,
       'Access-Control-Allow-Origin' : '*',
       'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE',
       'Access-Control-Allow-Headers': 'Content-Type'
