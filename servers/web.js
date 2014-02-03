@@ -221,7 +221,7 @@ var web = function(api, options, next){
             connection.rawConnection.responseHttpCode = 422;
           } else if(String(connection.error).indexOf('none of the required params for this action were provided') > 0){
             connection.rawConnection.responseHttpCode = 422;
-          } else if('Error: ' + String(connection.response.error) == api.config.general.serverErrorMessage){
+          } else if('Error: ' +  api.config.general.serverErrorMessage == String(connection.response.error)){
             connection.rawConnection.responseHttpCode = 500;
           } else {
             connection.rawConnection.responseHttpCode = 400;
