@@ -64,7 +64,7 @@ var actions = function(api, next){
         this.validate(api.actions.actions[action.name][action.version], this.vmap);
         api.log('', 'debug');
   };    
-
+  
   api.actions.initialize(api.config.general.paths.action);
   next();
   

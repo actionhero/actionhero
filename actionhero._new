@@ -26,9 +26,7 @@ actionhero.prototype.initialize = function(params, callback){
     stop: self.stop,
     restart: self.restart
   };
-  
-  self.api.watchFileAndAct = function(){};
-  self.api.log = function(a){/*console.log(a)*/};
+
   self.api.project_root = process.cwd();
   if(process.env.project_root != null){
     self.api.project_root = process.env.project_root;
@@ -63,35 +61,18 @@ actionhero.prototype.initialize = function(params, callback){
             console.log(e);
           }
       };
-
-      that.watchFileAndActCallback = (typeof that.watchFileAndActCallback == 'function')?that.watchFileAndActCallback:defaultWFAACallback;
+      that.watchFileAndActCallback = (that.watchFileAndActCallback)?that.watchFileAndActCallback:defaultWFAACallback;
         
-      self.api.watchFileAndAct(fullFilePath, function(){
-          var cleanPath = fullFilePath;
-          if(process.platform === 'win32'){
-            cleanPath = fullFilePath.replace(/\//g, '\\');
-          }
-
-          delete require.cache[require.resolve(cleanPath)];
-          that.loadFile(fullFilePath, true);
-          try{
-          self.api.params.buildPostVariables();
-          }catch(e){
-            console.log(e);
-          }
-      });
+      
+      self.api.watchFileAndAct(fullFilePath, that.watchFileAndActCallback);
       
       try {
-        
         var collection = require(fullFilePath);
         for(var i in collection){
-          
           var _module = collection[i];
-          that.fileHandler(collection[i], reload, fullFilePath);
+          that.fileHandler(collection[i], reload);
 
-          var module_name = collection[i].name || path.basename(fullFilePath);
-          
-          self.api.log('file ' + (reload?'(re)':'') + 'loaded: ' + module_name + ', ' + fullFilePath, 'debug');
+          self.api.log('file ' + (reload?'(re)':'') + 'loaded: ' + collection[i].name + ', ' + fullFilePath, 'debug');
         
         }
       } catch(err){
@@ -155,18 +136,22 @@ actionhero.prototype.initialize = function(params, callback){
   };
     
   // run the initializers
-  var orderedInitializers = new self.api.common_loader;
+  var orderedInitializers = new api.common_loader;
 
-  orderedInitializers.prepArray = {};
+  orderedInitializers.prepArray = {
+    '_complete' : function(){
+      self.api.initialized = true;
+      callback(null, self.api);
+    }  
+  };
   
-  orderedInitializers.fileHandler = function(initializer, reload, fullFilePath){
+  orderedInitializers.fileHandler = function(initializer, reload){
     
     //This needs to be explicit somewhere in a standardized part of the documentation
-    var initname = path.basename(fullFilePath).split('.')[0];
-    
-    self.initalizers[initname] = initializer;
+    var initname = path.basename(initializer).split('.')[0];
+    self.initalizers[initname] = require(initializer)[initname];
     this.prepArray[initname] = function(next){
-      self.initalizers[initname](self.api, next);
+      self.initalizers[initializer](self.api, next);
     };
   };
   
@@ -181,18 +166,8 @@ actionhero.prototype.initialize = function(params, callback){
       self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
     }else{
       that.loadDirectory(path, fileList);
-      
-    that.prepArray['_complete'] = function(){
-      self.api.initialized = true;
-      callback(null, self.api);
-      }
       async.series(that.prepArray);
     } 
-  };
-  
-  orderedInitializers.exceptionManager = function(fullFilePath, err, initializer){
-    console.log("Initializer at: "+fullFilePath+" could not be loaded, exiting");
-    return null;
   };
   
   orderedInitializers.initialize(__dirname + '/initializers/core/',[
@@ -220,7 +195,6 @@ actionhero.prototype.initialize = function(params, callback){
     'servers.js',
     'specHelper.js'
   ]);
-};
 
 actionhero.prototype.start = function(params, callback){
   var self = this;
@@ -351,4 +325,3 @@ actionhero.prototype.restart = function(callback){
 };
 
 exports.actionheroPrototype = actionhero;
-
