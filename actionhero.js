@@ -63,10 +63,11 @@ actionhero.prototype.initialize = function(params, callback){
             console.log(e);
           }
       };
-
-      that.watchFileAndActCallback = (typeof that.watchFileAndActCallback == 'function')?that.watchFileAndActCallback:defaultWFAACallback;
         
-      self.api.watchFileAndAct(fullFilePath, function(){
+      self.api.watchFileAndAct(fullFilePath, function(){   
+        if(that.watchFileAndActCallback){
+          that.watchFileAndActCallback();
+        }else{
           var cleanPath = fullFilePath;
           if(process.platform === 'win32'){
             cleanPath = fullFilePath.replace(/\//g, '\\');
@@ -79,6 +80,7 @@ actionhero.prototype.initialize = function(params, callback){
           }catch(e){
             console.log(e);
           }
+        }
       });
       
       try {
