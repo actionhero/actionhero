@@ -250,6 +250,7 @@ describe('Server: Web', function(){
 
     before(function(done){
       api.config.servers.web.returnErrorCodes = true;
+      
       api.actions.versions.statusTestAction = [1]
       api.actions.actions.statusTestAction = {
         '1': {
@@ -268,6 +269,21 @@ describe('Server: Web', function(){
           }
         }
       }
+
+      api.actions.versions.brokenAction = [1]
+      api.actions.actions.brokenAction = {
+        '1': {
+          name: 'brokenAction',
+          description: 'I am broken',
+          inputs: { required: [], optional: [] },
+          outputExample: {},
+          run:function(api, connection, next){
+            BREAK; // undefiend
+            next(connection, true);
+          }
+        }
+      }
+
       done();
     });
 
@@ -275,6 +291,8 @@ describe('Server: Web', function(){
       api.config.servers.web.returnErrorCodes = false;
       delete api.actions.versions['statusTestAction'];
       delete api.actions.actions['statusTestAction'];
+      delete api.actions.versions['brokenAction'];
+      delete api.actions.actions['brokenAction'];
       done();
     });
 
@@ -290,6 +308,14 @@ describe('Server: Web', function(){
       request.post(url + '/api/statusTestAction', function(err, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(422);
+        done();
+      });
+    });
+
+    it('server errors should return a 500', function(done){
+      request.post(url + '/api/brokenAction', function(err, response, body){
+        body = JSON.parse(body);
+        response.statusCode.should.eql(500);
         done();
       });
     });
