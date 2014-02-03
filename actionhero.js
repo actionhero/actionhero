@@ -157,47 +157,50 @@ actionhero.prototype.initialize = function(params, callback){
   };
     
   // run the initializers
-  var orderedInitializers = new self.api.common_loader;
-
-  orderedInitializers.prepArray = {};
-  
-  orderedInitializers.fileHandler = function(initializer, reload, fullFilePath){
+  var Initializers = new self.api.common_loader;
+ 
+  Initializers.fileHandler = function(initializer, reload, fullFilePath){
     
     //This needs to be explicit somewhere in a standardized part of the documentation
     var initname = path.basename(fullFilePath).split('.')[0];
-    
     self.initalizers[initname] = initializer;
     this.prepArray[initname] = function(next){
       self.initalizers[initname](self.api, next);
     };
   };
   
-  orderedInitializers.watchFileAndActCallback = function(file){
+  Initializers.watchFileAndActCallback = function(file){
     self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
     self.api._commands.restart.call(self.api._self);
   };
   
-  orderedInitializers.initialize = function(path, fileList){
+  Initializers.initialize = function(paths){
     var that = this;
-    if(!fs.existsSync(path)){
-      self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
-    }else{
-      that.loadDirectory(path, fileList);
-      
+    that.prepArray = {};
+    for(i=0;i<paths.length;i++){
+    
+    var path = paths[i][0];
+    var fileList = paths[i][1];
+    
+      if(!fs.existsSync(path)){
+        self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
+      }else{
+        that.loadDirectory(path, fileList);  
+      }
+    }
     that.prepArray['_complete'] = function(){
       self.api.initialized = true;
       callback(null, self.api);
-      }
-      async.series(that.prepArray);
-    } 
+    }
+    async.series(that.prepArray);
   };
   
-  orderedInitializers.exceptionManager = function(fullFilePath, err, initializer){
+  Initializers.exceptionManager = function(fullFilePath, err, initializer){
     console.log("Initializer at: "+fullFilePath+" could not be loaded, exiting");
     return null;
   };
   
-  orderedInitializers.initialize(__dirname + '/initializers/core/',[
+  Initializers.initialize([[__dirname + '/initializers/core/',[
     'utils.js',
     'configLoader.js',
     'id.js',
@@ -221,7 +224,9 @@ actionhero.prototype.initialize = function(params, callback){
     'genericServer.js',
     'servers.js',
     'specHelper.js'
-  ]);
+  ]],[__dirname + '/initializers/project/']]);
+
+  
 };
 
 actionhero.prototype.start = function(params, callback){
