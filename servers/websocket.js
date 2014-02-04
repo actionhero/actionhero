@@ -44,16 +44,19 @@ var websocket = function(api, options, next){
       incomingRebroadcast(message);
     });
 
+    server.active = true;
+
     next();
   }
 
   server._stop = function(next){
+    server.active = false;
     server.connections().forEach(function(connection){
       server.goodbye(connection, 'server shutting down');
     });
-    setTimeout(function(){
+    process.nextTick(function(){
       next();
-    }, 500);
+    });
   }
 
   server.sendMessage = function(connection, message, messageCount){
@@ -129,17 +132,19 @@ var websocket = function(api, options, next){
 
   var newClientFayeExtension = function(message, callback){
     if(message.channel === '/meta/subscribe' && message.subscription.indexOf(server.attributes.setupChannelPrefix) === 0){
-      remoteConnectionDetails(message.clientId, function(details){
-        server.buildConnection({
-          // id: message.clientId,
-          rawConnection  : {
-            clientId:     message.clientId,
-            setupChannel: message.subscription,
-          },
-          remoteAddress  : details.remoteIp,
-          remotePort     : details.remotePort
+      if(server.active === true){
+        remoteConnectionDetails(message.clientId, function(details){
+          server.buildConnection({
+            // id: message.clientId,
+            rawConnection  : {
+              clientId:     message.clientId,
+              setupChannel: message.subscription,
+            },
+            remoteAddress  : details.remoteIp,
+            remotePort     : details.remotePort
+          });
         });
-      });
+      }
     }
     callback(message);
   }

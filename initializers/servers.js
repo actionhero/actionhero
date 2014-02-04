@@ -33,13 +33,16 @@ var servers = function(api, next){
     if(api.utils.hashLength(api.servers.servers) == 0){ next() }
     for(var server in api.servers.servers){
       started++;
-      api.log('stopping server: ' + server, 'notice');
-      api.servers.servers[server]._stop(function(){
-        process.nextTick(function(){
-          started--;
-          if(started == 0){ next() }
+      (function(server){
+        api.log('stopping server: ' + server, 'notice');
+        api.servers.servers[server]._stop(function(){
+          process.nextTick(function(){
+            api.log('server stopped: ' + server, 'debug');
+            started--;
+            if(started == 0){ next() }
+          });
         });
-      });
+      })(server)
     }
   }
 

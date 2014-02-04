@@ -4,6 +4,7 @@ var readline = require('readline');
 exports['start'] = function(binary, next){
 
   var actionheroPrototype = require(binary.paths.actionhero_root + '/actionhero.js').actionheroPrototype;
+  // var actionheroPrototype = require('./../../actionhero.js').actionheroPrototype;
   var actionhero = new actionheroPrototype();
   var shutdownTimeout = 1000 * 30 // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
   var api = {};
@@ -51,15 +52,13 @@ exports['start'] = function(binary, next){
   }
 
   var stopProcess = function(){
-    if(state == 'started'){
-      var finalTimer = setTimeout(process.exit, shutdownTimeout)
-      // finalTimer.unref();
-      stopServer(function(){
-        process.nextTick(function(){
-          process.exit();
-        });
+    var finalTimer = setTimeout(process.exit, shutdownTimeout)
+    // finalTimer.unref();
+    stopServer(function(){
+      process.nextTick(function(){
+        process.exit();
       });
-    }
+    });
   }
 
   if(cluster.isWorker){
@@ -85,9 +84,5 @@ exports['start'] = function(binary, next){
   }
 
   // start the server!
-  startServer(function(api_from_callback){
-    api = api_from_callback;
-    next();
-  });
-
+  startServer(next);
 }

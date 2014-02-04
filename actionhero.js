@@ -217,12 +217,14 @@ actionhero.prototype.stop = function(callback){
     }
 
     orderedStopper['_complete'] = function(){
-      self.api.unWatchAllFiles();
-      self.api.pids.clearPidFile();
-      self.api.log('The actionhero has been stopped', 'alert');
-      self.api.log('***', 'debug');
-      delete self.api.shuttingDown;
-      if(typeof callback == 'function'){ callback(null, self.api) }
+      setTimeout(function(){
+        self.api.unWatchAllFiles();
+        self.api.pids.clearPidFile();
+        self.api.log('The actionhero has been stopped', 'alert');
+        self.api.log('***', 'debug');
+        delete self.api.shuttingDown;
+        if(typeof callback == 'function'){ callback(null, self.api) } 
+      }, 500);
     };
 
     async.series(orderedStopper);
