@@ -15,7 +15,6 @@ exports['generate'] = function(binary, next){
     package_json                  : '/package.json',
     routes_js                     : '/routes.js',
     action_status                 : '/actions/status.js',
-    task_runAction                : '/tasks/runAction.js',
     gruntfile                     : '/grunt/actionhero_gruntfile.js',
     public_actionheroClient       : '/public/javascript/actionheroClient.js',
     public_actionheroClientMin    : '/public/javascript/actionheroClient.min.js',
