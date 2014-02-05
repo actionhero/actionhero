@@ -111,7 +111,6 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.api.common_loader.prototype.loadDirectory = function(path, fileList){
     var that = this;
-    
     var readList = (fileList)?fileList:fs.readdirSync(path);
     readList.forEach( function(file) {
       if(path[path.length - 1] != '/'){ path += '/' }
@@ -141,7 +140,6 @@ actionhero.prototype.initialize = function(params, callback){
       self.api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
       return false;
     }
-  
     for(x in map){
       if(typeof map[x] == 'function'){
         if(map[x](module)){
@@ -186,15 +184,21 @@ actionhero.prototype.initialize = function(params, callback){
     that.prepArray = {};
     for(i=0;i<paths.length;i++){
     
-    var path = paths[i][0];
-    var fileList = paths[i][1];
+    var _path = paths[i][0];
+    var _fileList = paths[i][1];
     
-      if(!fs.existsSync(path)){
-        self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
+      if(!fs.existsSync(_path)){
+        self.api.log("Failed to load initializer for: "+_path+", path invalid.", "warning");
       }else{
-        that.loadDirectory(path, fileList);  
+        that.loadDirectory(_path, _fileList);  
       }
     }
+    that.prepArray['_projectInitializers'] = function(next){
+      that.loadDirectory(path.resolve((self.api.config.general.paths.initializer||
+                       __dirname + '/initializers')));
+      next();
+    };
+    
     that.prepArray['_complete'] = function(){
       self.api.initialized = true;
       callback(null, self.api);
@@ -207,7 +211,7 @@ actionhero.prototype.initialize = function(params, callback){
     return null;
   };
   
-  Initializers.initialize([[__dirname + '/initializers/core/',[
+  Initializers.initialize([[__dirname + '/initializers',[
     'utils.js',
     'configLoader.js',
     'id.js',
@@ -231,7 +235,7 @@ actionhero.prototype.initialize = function(params, callback){
     'genericServer.js',
     'servers.js',
     'specHelper.js'
-  ]],[__dirname + '/initializers/project/']]);
+  ]]]);
 
   
 };
