@@ -28,8 +28,15 @@ actionhero.prototype.initialize = function(params, callback){
   };
   
   self.api.watchFileAndAct = function(){};
-  self.api.log = function(a){/*console.log(a)*/};
+  
+  //Shim until logger is loaded, will log to console if thrown during loading of core initializers
+  self.api.log = function(a,b){
+      if(["warning","error","crit","alert","emerg"].indexOf(b)>-1)
+      console.log(a+" "+b);
+  };
+  
   self.api.project_root = process.cwd();
+  
   if(process.env.project_root != null){
     self.api.project_root = process.env.project_root;
   } else if(process.env.PROJECT_ROOT != null){
@@ -60,7 +67,7 @@ actionhero.prototype.initialize = function(params, callback){
           try{
           self.api.params.buildPostVariables();
           }catch(e){
-            console.log(e);
+            self.api.log(e,'emerg');
           }
       };
         
@@ -78,7 +85,7 @@ actionhero.prototype.initialize = function(params, callback){
           try{
           self.api.params.buildPostVariables();
           }catch(e){
-            console.log(e);
+            self.api.log(e,'emerg');
           }
         }
       });
