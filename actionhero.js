@@ -26,8 +26,17 @@ actionhero.prototype.initialize = function(params, callback){
     stop: self.stop,
     restart: self.restart
   };
-
+  
+  self.api.watchFileAndAct = function(){};
+  
+  //Shim until logger is loaded, will log to console if thrown during loading of core initializers
+  self.api.log = function(a,b){
+      if(["warning","error","crit","alert","emerg"].indexOf(b)>-1)
+      console.log(a+" "+b);
+  };
+  
   self.api.project_root = process.cwd();
+  
   if(process.env.project_root != null){
     self.api.project_root = process.env.project_root;
   } else if(process.env.PROJECT_ROOT != null){
@@ -41,87 +50,194 @@ actionhero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
-  // run the initializers
-  var orderedInitializers = {};
+  self.api.common_loader = function(){};
+ 
+  self.api.common_loader.prototype.loadFile = function(fullFilePath, reload){
+      var that = this;
+      if(reload == null){ reload = false; }
+      
+      var defaultWFAACallback = function(){
+          var cleanPath = fullFilePath;
+          if(process.platform === 'win32'){
+            cleanPath = fullFilePath.replace(/\//g, '\\');
+          }
 
-  [
-    'utils',
-    'configLoader',
-    'id',
-    'pids',
-    'logger',
-    'exceptions',
-    'stats',
-    'redis',
-    'faye',
-    'cache',
-    'connections',
-    'actions',
-    'documentation',
-    'actionProcessor',
-    'params',
-    'staticFile',
-    'chatRoom',
-    'resque',
-    'tasks',
-    'routes',
-    'genericServer',
-    'servers',
-    'specHelper'
-  ].forEach(function(initializer){
-    var file = __dirname + '/initializers/' + initializer + '.js';
-    delete require.cache[require.resolve(file)];
-    self.initalizers[initializer] = require(file)[initializer];
-    orderedInitializers[initializer] = function(next){
-      self.initalizers[initializer](self.api, next);
-      self.api.watchFileAndAct(file, function(){
-        self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
-        self.api._commands.restart.call(self.api._self);
-      });
-    };
-  });
+          delete require.cache[require.resolve(cleanPath)];
+          that.loadFile(fullFilePath, true);
+          try{
+          self.api.params.buildPostVariables();
+          }catch(e){
+            self.api.log(e,'emerg');
+          }
+      };
+        
+      self.api.watchFileAndAct(fullFilePath, function(){   
+        if(that.watchFileAndActCallback){
+          that.watchFileAndActCallback();
+        }else{
+          var cleanPath = fullFilePath;
+          if(process.platform === 'win32'){
+            cleanPath = fullFilePath.replace(/\//g, '\\');
+          }
 
-  orderedInitializers['_projectInitializers'] = function(next){
-    var projectInitializers = {};
-    if(path.resolve(self.api.config.general.paths.initializer) != path.resolve(__dirname + '/initializers')){
-      var fileSet = fs.readdirSync(path.resolve(self.api.config.general.paths.initializer)).sort();
-      fileSet.forEach(function(f){
-        var file = path.resolve(self.api.config.general.paths.initializer + '/' + f);
-        if(file[0] != '.'){
-          var initializer = f.split('.')[0];
-          var fileParts = file.split('.');
-          var ext = fileParts[(fileParts.length - 1)];
-          if(ext === 'js'){
-            if(require.cache[require.resolve(file)] !== null){
-              delete require.cache[require.resolve(file)];
-            }
-            self.initalizers[initializer] = require(file)[initializer];
-            projectInitializers[initializer] = function(next){
-              self.api.log('running custom initializer: ' + initializer, 'info');
-              self.initalizers[initializer](self.api, next);
-              self.api.watchFileAndAct(file, function(){
-                self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-                self.api._commands.restart.call(self.api._self);
-              });
-            };
+          delete require.cache[require.resolve(cleanPath)];
+          that.loadFile(fullFilePath, true);
+          try{
+          self.api.params.buildPostVariables();
+          }catch(e){
+            self.api.log(e,'emerg');
           }
         }
       });
-    }
+      
+      try {
+        
+        var collection = require(fullFilePath);
+        for(var i in collection){
+          
+          var _module = collection[i];
+          that.fileHandler(collection[i], reload, fullFilePath);
 
-    projectInitializers['_complete'] = function(){
-      process.nextTick(function(){ next(); });
-    }
+          var module_name = collection[i].name || path.basename(fullFilePath);
+          
+          self.api.log('file ' + (reload?'(re)':'') + 'loaded: ' + module_name + ', ' + fullFilePath, 'debug');
+        
+        }
+      } catch(err){
 
-    async.series(projectInitializers);
-  }
+        that.exceptionManager(fullFilePath, err, _module);
+      }
+    };
 
-  orderedInitializers['_complete'] = function(){
-    self.api.initialized = true;
-    callback(null, self.api);
+  self.api.common_loader.prototype.loadDirectory = function(path, fileList){
+    var that = this;
+    var readList = (fileList)?fileList:fs.readdirSync(path);
+    readList.forEach( function(file) {
+      if(path[path.length - 1] != '/'){ path += '/' }
+      var fullFilePath = path + file;
+      if(file[0] != '.'){
+        var stats = fs.statSync(fullFilePath);
+        if(stats.isDirectory()){
+
+          that.loadDirectory(fullFilePath);
+        } else if(stats.isSymbolicLink()){
+          var realPath = fs.readlinkSync(fullFilePath);
+          that.loadDirectory(realPath);
+        } else if(stats.isFile()){
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
+          if(ext === 'js'){ that.loadFile(fullFilePath) }
+        } else {
+          self.api.log(file + ' is a type of file I cannot read', 'error')
+        }
+      }
+    });
   };
+      
+  self.api.common_loader.prototype._validate = function(module, map){
+    
+    var fail = function(){
+      self.api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
+      return false;
+    }
+    for(x in map){
+      if(typeof map[x] == 'function'){
+        if(map[x](module)){
+          return fail();
+        }
+      }else if(typeof module[x] != map[x]){
+         return fail();
+      }
+    };
+    return true;
+  };
+  
+  self.api.common_loader.prototype.initialize = function(path, fileList){
+    var that = this;
+    if(!fs.existsSync(path)){
+      self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
+    }else{
+      that.loadDirectory(path, fileList);
+    } 
+  };
+    
+  // run the initializers
+  var Initializers = new self.api.common_loader;
+ 
+  Initializers.fileHandler = function(initializer, reload, fullFilePath){
+    
+    //This needs to be explicit somewhere in a standardized part of the documentation
+    var initname = path.basename(fullFilePath).split('.')[0];
+    self.initalizers[initname] = initializer;
+    this.prepArray[initname] = function(next){
+      self.initalizers[initname](self.api, next);
+    };
+  };
+  
+  Initializers.watchFileAndActCallback = function(file){
+    self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
+    self.api._commands.restart.call(self.api._self);
+  };
+  
+  Initializers.initialize = function(paths){
+    var that = this;
+    that.prepArray = {};
+    for(i=0;i<paths.length;i++){
+    
+    var _path = paths[i][0];
+    var _fileList = paths[i][1];
+    
+      if(!fs.existsSync(_path)){
+        self.api.log("Failed to load initializer for: "+_path+", path invalid.", "warning");
+      }else{
+        that.loadDirectory(_path, _fileList);  
+      }
+    }
+    that.prepArray['_projectInitializers'] = function(next){
+      that.loadDirectory(path.resolve((self.api.config.general.paths.initializer||
+                       __dirname + '/initializers')));
+      next();
+    };
+    
+    that.prepArray['_complete'] = function(){
+      self.api.initialized = true;
+      callback(null, self.api);
+    }
+    async.series(that.prepArray);
+  };
+  
+  Initializers.exceptionManager = function(fullFilePath, err, initializer){
+    console.log("Initializer at: "+fullFilePath+" could not be loaded, exiting");
+    return null;
+  };
+  
+  Initializers.initialize([[__dirname + '/initializers',[
+    'utils.js',
+    'configLoader.js',
+    'id.js',
+    'pids.js',
+    'logger.js',
+    'exceptions.js',
+    'stats.js',
+    'redis.js',
+    'faye.js',
+    'cache.js',
+    'connections.js',
+    'actions.js',
+    'documentation.js',
+    'actionProcessor.js',
+    'params.js',
+    'staticFile.js',
+    'chatRoom.js',
+    'resque.js',
+    'tasks.js',
+    'routes.js',
+    'genericServer.js',
+    'servers.js',
+    'specHelper.js'
+  ]]]);
 
-  async.series(orderedInitializers);
+  
 };
 
 actionhero.prototype.start = function(params, callback){
@@ -255,3 +371,4 @@ actionhero.prototype.restart = function(callback){
 };
 
 exports.actionheroPrototype = actionhero;
+

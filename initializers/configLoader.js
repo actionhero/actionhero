@@ -31,7 +31,7 @@ var configLoader = function(api, next){
       fs.watchFile(file, {interval: 1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
           process.nextTick(function(){
-            callback();
+            callback(file);
           });
         }
       });
