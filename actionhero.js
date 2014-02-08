@@ -165,7 +165,6 @@ actionhero.prototype.initialize = function(params, callback){
   var Initializers = new self.api.common_loader;
  
   Initializers.fileHandler = function(initializer, reload, fullFilePath){
-    
     //This needs to be explicit somewhere in a standardized part of the documentation
     var initname = path.basename(fullFilePath).split('.')[0];
     self.initalizers[initname] = initializer;
@@ -184,25 +183,21 @@ actionhero.prototype.initialize = function(params, callback){
     that.prepArray = {};
     for(i=0;i<paths.length;i++){
     
-    var _path = paths[i][0];
-    var _fileList = paths[i][1];
-    
+    var _path = path.resolve(paths[i][0]);
+    var _fileList = (paths[i][1])?paths[i][1]:fs.readdirSync(path.resolve(_path)).sort();
+
       if(!fs.existsSync(_path)){
         self.api.log("Failed to load initializer for: "+_path+", path invalid.", "warning");
       }else{
         that.loadDirectory(_path, _fileList);  
       }
-    }
-    that.prepArray['_projectInitializers'] = function(next){
-      that.loadDirectory(path.resolve((self.api.config.general.paths.initializer||
-                       __dirname + '/initializers')));
-      next();
-    };
+    }   
     
     that.prepArray['_complete'] = function(){
       self.api.initialized = true;
       callback(null, self.api);
-    }
+     }
+
     async.series(that.prepArray);
   };
   
@@ -235,7 +230,7 @@ actionhero.prototype.initialize = function(params, callback){
     'genericServer.js',
     'servers.js',
     'specHelper.js'
-  ]]]);
+  ]],[self.api.project_root + '/initializers', false]]);
 
   
 };
@@ -253,7 +248,9 @@ actionhero.prototype.start = function(params, callback){
     }
     self.api.running = true;
     self._starters = [];
+
     for(var i in self.api){
+      
       if(typeof self.api[i]._start == 'function'){
         self._starters.push(i);
       }
@@ -369,4 +366,3 @@ actionhero.prototype.restart = function(callback){
 };
 
 exports.actionheroPrototype = actionhero;
-
