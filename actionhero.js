@@ -26,7 +26,7 @@ actionhero.prototype.initialize = function(params, callback){
     stop: self.stop,
     restart: self.restart
   };
-  
+  self.api.config = require('./config/config.js').config;
   self.api.watchFileAndAct = function(){};
   
   //Shim until logger is loaded, will log to console if thrown during loading of core initializers
@@ -183,12 +183,12 @@ actionhero.prototype.initialize = function(params, callback){
     that.prepArray = {};
     for(i=0;i<paths.length;i++){
     
-    var _path = path.resolve(paths[i][0]);
-    var _fileList = (paths[i][1])?paths[i][1]:fs.readdirSync(path.resolve(_path)).sort();
+    var _path = path.resolve(paths[i][0])||null;
 
       if(!fs.existsSync(_path)){
         self.api.log("Failed to load initializer for: "+_path+", path invalid.", "warning");
       }else{
+        var _fileList = (paths[i][1])?paths[i][1]:fs.readdirSync(_path).sort();
         that.loadDirectory(_path, _fileList);  
       }
     }   
@@ -205,7 +205,7 @@ actionhero.prototype.initialize = function(params, callback){
     console.log("Initializer at: "+fullFilePath+" could not be loaded, exiting");
     return null;
   };
-  
+
   Initializers.initialize([[__dirname + '/initializers',[
     'utils.js',
     'configLoader.js',
@@ -230,7 +230,7 @@ actionhero.prototype.initialize = function(params, callback){
     'genericServer.js',
     'servers.js',
     'specHelper.js'
-  ]],[self.api.project_root + '/initializers', false]]);
+  ]],[self.api.config.general.paths.initializer]]);
 
   
 };
