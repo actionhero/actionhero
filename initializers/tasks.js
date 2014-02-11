@@ -2,7 +2,7 @@ var fs = require('fs');
 
 var tasks = function(api, next){
 
-  api.tasks = new api.common_loader;
+  api.tasks = new api.commonLoader;
 
 
   api.tasks.tasks = {};

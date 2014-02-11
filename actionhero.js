@@ -50,9 +50,9 @@ actionhero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
-  self.api.common_loader = function(){};
+  self.api.commonLoader = function(){};
  
-  self.api.common_loader.prototype.loadFile = function(fullFilePath, reload){
+  self.api.commonLoader.prototype.loadFile = function(fullFilePath, reload){
       var that = this;
       if(reload == null){ reload = false; }
       
@@ -109,7 +109,7 @@ actionhero.prototype.initialize = function(params, callback){
       }
     };
 
-  self.api.common_loader.prototype.loadDirectory = function(path, fileList){
+  self.api.commonLoader.prototype.loadDirectory = function(path, fileList){
     var that = this;
     var readList = (fileList)?fileList:fs.readdirSync(path);
     readList.forEach( function(file) {
@@ -134,7 +134,7 @@ actionhero.prototype.initialize = function(params, callback){
     });
   };
       
-  self.api.common_loader.prototype._validate = function(module, map){
+  self.api.commonLoader.prototype._validate = function(module, map){
     
     var fail = function(){
       self.api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
@@ -152,7 +152,7 @@ actionhero.prototype.initialize = function(params, callback){
     return true;
   };
   
-  self.api.common_loader.prototype.initialize = function(path, fileList){
+  self.api.commonLoader.prototype.initialize = function(path, fileList){
     var that = this;
     if(!fs.existsSync(path)){
       self.api.log("Failed to load initializer for: "+path+", path invalid.", "warning");
@@ -162,7 +162,7 @@ actionhero.prototype.initialize = function(params, callback){
   };
     
   // run the initializers
-  var Initializers = new self.api.common_loader;
+  var Initializers = new self.api.commonLoader;
  
   Initializers.fileHandler = function(initializer, reload, fullFilePath){
     //This needs to be explicit somewhere in a standardized part of the documentation
