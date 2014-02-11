@@ -188,7 +188,7 @@ actionhero.prototype.stop = function(callback){
 
     var orderedStopper = {};
     [
-      'task',
+      'tasks',
       'resque',
       'webServer',
       'faye',
