@@ -26,7 +26,10 @@ actionhero.prototype.initialize = function(params, callback){
     stop: self.stop,
     restart: self.restart
   };
-  self.api.config = require('./config/config.js').config;
+  var configPath = (fs.existsSync(__dirname+'/../../config/config.js'))?__dirname+'/../../config/config.js':'./config/config.js';
+
+  self.api.config = require(configPath).config;
+
   self.api.watchFileAndAct = function(){};
   
   //Shim until logger is loaded, will log to console if thrown during loading of core initializers
