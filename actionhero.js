@@ -136,17 +136,19 @@ actionhero.prototype.initialize = function(params, callback){
       
   self.api.commonLoader.prototype._validate = function(module, map){
     
-    var fail = function(){
-      self.api.log(module.name+" attribute: "+x+" is invalid." + '; exiting.', 'emerg');
-      return false;
+    var fail = function(attr){
+      self.api.log(module.name+" attribute: "+attr+" is invalid; exiting.", 'emerg');
+      
     }
     for(x in map){
       if(typeof map[x] == 'function'){
-        if(map[x](module)){
-          return fail();
+        if(!map[x](module)){
+          fail(x);
+          return false;
         }
       }else if(typeof module[x] != map[x]){
-         return fail();
+        fail(x);
+        return false;
       }
     };
     return true;

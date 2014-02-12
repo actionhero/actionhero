@@ -56,15 +56,16 @@ var tasks = function(api, next){
       }
     }
   };
-
-  api.tasks.validate = function(task){
-    return this._validate(task, {
+  
+  api.tasks.vmap = {
       'name':'string',
       'description':'string', 
       'frequency':'number', 
       'queue':'string', 
       'run':'function' 
-    });
+    };
+  api.tasks.validate = function(task){
+    return this._validate(task, api.tasks.vmap);
   };
 
   api.tasks.enqueue = function(taskName, params, queue, callback){

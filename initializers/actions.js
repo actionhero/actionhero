@@ -14,33 +14,34 @@ var actions = function(api, next){
   api.actions.vmap = {
       'name':'string',
       'description':'string', 
-      'inputs':'object', 
-      'outputExample':'object', 
-      'run':'function' 
+      'inputs':function(action){
+        if(typeof action.inputs != 'object'){
+          return false;
+        } else if(typeof action.inputs.required != 'object'){
+          return false;
+        } else if(typeof action.inputs.optional != 'object'){
+          return false;    
+        } else {
+          return true;
+        }
+      }, 
+      'outputExample':'object',
+      'connections' : function(action){
+        if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
+          api.log(action.name + ' is a reserved verb for connections. choose a new name');
+          return false;
+        } else {
+          return true;
+        }
+      },
+      'run':'function'
     };
-  api.actions.validate = function(action, map){
-    var fail = function(msg){
-      api.log(msg + '; exiting.', 'emerg');
-    }
-
-    if(typeof action.inputs != 'object'){
-      fail('Action ' + action.name + ' has no inputs');
-      return false;
-    } else if(typeof action.inputs.required != 'object'){
-      fail('Action ' + action.name + ' has no required inputs');
-      return false;
-    } else if(typeof action.inputs.optional != 'object'){
-      fail('Action ' + action.name + ' has no optional inputs');
-      return false;    
-    } else if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
-      fail(action.name + ' is a reserved verb for connections. choose a new name');
-      return false;
-    } else {
-      this._validate(action, map);
-    }
-    
-  }
-
+  
+  api.actions.validate = function(action){
+    api.actions._validate(action, api.actions.vmap);
+  
+  };
+ 
   api.actions.exceptionManager = function(fullFilePath, err, action){
     api.exceptionHandlers.loader(fullFilePath, err);
     delete api.actions.actions[action.name][action.version];
@@ -56,9 +57,9 @@ var actions = function(api, next){
         }
         this.versions[action.name].push(action.version);
         this.versions[action.name].sort();
-        api.log(this.vmap);
-        this.validate(api.actions.actions[action.name][action.version], this.vmap);
-        api.log('', 'debug');
+   
+        this.validate(api.actions.actions[action.name][action.version]);
+     
   };    
   
   api.actions.initialize(api.config.general.paths.action);
