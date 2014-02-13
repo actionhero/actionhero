@@ -79,7 +79,7 @@ var tasks = function(api, next){
             }
           );
           args.splice(0, 0, api);
-          api.tasks.tasks[taskName].run.apply(null, args);
+          api.tasks.tasks[taskName].run.apply(this, args);
         }
       }
     },
