@@ -5,7 +5,7 @@ var exceptions = function(api, next){
   api.exceptionHandlers = {};
   api.exceptionHandlers.reporters = [];
 
-  var consoleReporter = function(err, extraMessages, severity){
+  var consoleReporter = function(type, err, extraMessages, severity){
     for(var i in extraMessages){
       var line = extraMessages[i];
       api.log(line, severity);
@@ -20,11 +20,11 @@ var exceptions = function(api, next){
 
   api.exceptionHandlers.reporters.push(consoleReporter);
 
-  api.exceptionHandlers.report = function(err, extraMessages, severity){
+  api.exceptionHandlers.report = function(type, err, extraMessages, severity){
     if(severity == null){ severity = 'error'; }
     for(var i in api.exceptionHandlers.reporters){
       var reporter = api.exceptionHandlers.reporters[i];
-      reporter(err, extraMessages, severity);
+      reporter(type, err, extraMessages, severity);
     }
   }
 
@@ -46,7 +46,7 @@ var exceptions = function(api, next){
     var extraMessages = [
       '! Failed to load ' + fullFilePath,
     ];
-    api.exceptionHandlers.report(err, extraMessages, 'alert');
+    api.exceptionHandlers.report('loader', err, extraMessages, 'alert');
   };
 
   api.exceptionHandlers.action = function(domain, err, connection, next){
@@ -59,7 +59,7 @@ var exceptions = function(api, next){
     }
     api.exceptionHandlers.renderConnection(connection, extraMessages)
 
-    api.exceptionHandlers.report(err, extraMessages, 'error');
+    api.exceptionHandlers.report('action', err, extraMessages, 'error');
 
     connection.error = new Error(api.config.general.serverErrorMessage);
     connection.response = {}; // no partial responses
@@ -75,7 +75,7 @@ var exceptions = function(api, next){
     } catch(e){
       extraMessages.push('! uncaught error from task: ' + e.message + ' on queue ' + queue);
     }
-    api.exceptionHandlers.report(err, extraMessages, 'error');
+    api.exceptionHandlers.report('task', err, extraMessages, 'error');
   };
   
   next();
