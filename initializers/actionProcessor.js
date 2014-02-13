@@ -198,8 +198,6 @@ var actionProcessor = function(api, next){
       self.connection.error = new Error('this action does not support the ' + self.connection.type + ' connection type');
       self.completeAction();
     } else {
-      self.reduceParams();
-      api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
       if(self.connection.error === null){
         api.stats.increment('actions:totalProcessedActions');
         api.stats.increment('actions:processedActions:' + self.connection.action);
@@ -213,7 +211,9 @@ var actionProcessor = function(api, next){
           setImmediate(function(){
             var toProcess = true;
             self.preProcessAction(toProcess, function(toProcess){
-              if(toProcess === true){
+              self.reduceParams();
+              api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
+              if(toProcess === true && self.connection.error === null){
                 self.actionTemplate.run(api, self.connection, function(connection, toRender){
                   self.connection = connection;
                   self.postProcessAction(toRender, function(toRender){
