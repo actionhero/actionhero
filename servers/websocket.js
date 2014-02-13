@@ -171,7 +171,7 @@ var websocket = function(api, options, next){
 
   var incomingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
-    var connectionId = message.channel.split("/")[4];
+    var connectionId = originalMessage.channel.split("/")[4];
     var connection = api.connections.connections[connectionId];
     if(connection != null){
       messagingFayeExtension(originalMessage);
