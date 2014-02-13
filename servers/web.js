@@ -347,6 +347,16 @@ var web = function(api, options, next){
   }
 
   var fillParamsFromWebRequest = function(connection, varsHash){
+    // helper for JSON posts
+    if(api.utils.hashLength(varsHash) == 1){
+      var key = Object.keys(varsHash)[0];
+      if(varsHash[key] == null || varsHash[key] == ''){
+        try{
+          varsHash = JSON.parse(key);
+        }catch(e){ }
+      }
+    }
+
     if(api.config.general.disableParamScrubbing) {
       Object.keys(varsHash).forEach(function(key) {
         connection.params[key] = varsHash[key];
@@ -358,7 +368,6 @@ var web = function(api, options, next){
         }
       });
     }
-   
   }
 
   var shouldSendDocumentation = function(connection){

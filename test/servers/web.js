@@ -120,6 +120,15 @@ describe('Server: Web', function(){
     });
   });
 
+  it('HTTP Verbs should work: Post with JSON Payload as body', function(done){
+    var body = JSON.stringify({key:'key', value: 'value'});
+    request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/x-www-form-urlencoded'}}, function(err, response, body){
+      body = JSON.parse(body);
+      body.cacheTestResults.saveResp.should.eql(true);
+      done();
+    });
+  });
+
   it('returnErrorCodes false should still have a status of 200', function(done){
     request.del(url + '/api/', function(err, response, body){
       body = JSON.parse(body);
