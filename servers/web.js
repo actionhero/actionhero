@@ -353,6 +353,10 @@ var web = function(api, options, next){
       if(varsHash[key] == null || varsHash[key] == ''){
         try{
           varsHash = JSON.parse(key);
+          var keys = Object.keys(varsHash);
+          if(keys.length === 1 && keys[0] === '0'){
+            varsHash = {payload: varsHash} // post was an array, lets call it "payload"
+          }
         }catch(e){ }
       }
     }
