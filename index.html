@@ -1,398 +1,252 @@
-    <!DOCTYPE HTML>
-    <html lang="en">
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
     <meta charset="utf-8">
-    <title>actionhero.js - The Reusable, Scalable, and Quick node.js API Server</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <link rel='stylesheet' id='prettyphoto-css'  href="css/prettyPhoto.css" type='text/css' media='all'>
-    <link href="css/fontello.css" type="text/css" rel="stylesheet">
-    <!--[if lt IE 7]>
-            <link href="css/fontello-ie7.css" type="text/css" rel="stylesheet">  
-        <![endif]-->
-    <!-- Google Web fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Quattrocento:400,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Patua+One' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <style>
-    body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-    }
-    </style>
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="img/favicon.ico">
-    <!-- JQuery -->
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <!-- Load ScrollTo -->
-    <script type="text/javascript" src="js/jquery.scrollTo-1.4.2-min.js"></script>
-    <!-- Load LocalScroll -->
-    <script type="text/javascript" src="js/jquery.localscroll-1.2.7-min.js"></script>
-    <!-- prettyPhoto Initialization -->
-    <script type="text/javascript" charset="utf-8">
-          $(document).ready(function(){
-            $("a[rel^='prettyPhoto']").prettyPhoto();
-          });
-        </script>
-    </head>
-    <body>
-    <!--******************** NAVBAR ********************-->
-    <div class="navbar-wrapper">
-      <div class="navbar navbar-inverse navbar-fixed-top hidden-phone">
-        <div class="navbar-inner">
-          <div class="container">
-            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
-            <h1 class="brand"><a href="#top">actionhero.js</a></h1>
-            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
-            <nav class="pull-right nav-collapse collapse">
-              <ul id="menu-main" class="nav">
-                <li><a title="portfolio" href="#portfolio">Features</a></li>
-                <li><a title="services" href="#services">Servers</a></li>
-                <li><a title="testimonials" href="#testimonials">Try</a></li>
-                <li><a title="contact" href="#contact">Community</a></li>
-                <li><a target="_blank" title="demo" href="http://demo.actionherojs.com/public">Demo</a></li>
-                <li><a title="demo" href="https://github.com/evantahler/actionhero/wiki">Docs</a></li>
-                <li><a title="demo" href="https://github.com/evantahler/actionhero">Github</a></li>
-              </ul>
-            </nav>
-          </div>
-          <!-- /.container -->
-        </div>
-        <!-- /.navbar-inner -->
-      </div>
-      <!-- /.navbar -->
-    </div>
-    <!-- /.navbar-wrapper -->
-    <div id="top"></div>
-    <!-- ******************** HeaderWrap ********************-->
-    <div id="headerwrap">
-      <header class="clearfix">
-        <div class="hidden-desktop hidden-tablet"><br><br><br></div>
-        <h1><span>actionhero.js</span> The Reusable, Scalable, and Quick node.js API Server</h1>
-        <div class="container">
-          <div class="row">
-            <div class="span12">
-              <img src="logo/v2/actionhero_400.png" height="42" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="span12">
-              <ul class="icon">
-                <li><a href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js" target="_blank"><i class="icon-chat"></i></a></li>
-                <li><a href="http://twitter.com/actionherojs" target="_blank"><i class="icon-twitter-circled"></i></a></li>
-                <li><a href="https://github.com/evantahler/actionhero" target="_blank"><i class="icon-cog"></i></a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </header>
-    </div>
-    <!--******************** Feature ********************-->
-    <div class="scrollblock">
-      <section id="feature">
-        <div class="container">
-          <div class="row">
-            <div class="span12">
-              <article>
-                <p>actionhero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks.</p>
-              </article>
-            </div>
-            <!-- ./span12 -->
-          </div>
-          <!-- .row -->
-        </div>
-        <!-- ./container -->
-      </section>
-    </div>
-    <hr>
-    <!--******************** features Section ********************-->
-    <section id="portfolio" class="single-page scrollblock">
-      <div class="container">
-        <div class="align"><i class="icon-desktop-circled"></i></div>
-        <h1 id="folio-headline">Features</h1>
-        <div class="row">
-          <div class="span2">
-            <div class="align"><div class="mask2"> <a href="img/actionheroGraphic.png" rel="prettyPhoto"><img height="200" src="img/actionheroGraphic.png" alt=""></a> </div></div>
-          </div>
-          <div class="span10">
-            <h2>actionhero was built from the ground up to include all the features you expect from a modern API framework.  This includes all the features listed below and more.</h2>
-            <h2>ActionHero also knows when to get out of the way to allow you to customize your stack to fit your needs.</h2>
-          </div>
-        </div>
-        <hr />
-        <div class="row">
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/actions.jpg" rel="prettyPhoto"><img src="img/features/actions.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Easy-to-use Actions</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>With actionhero, you create 'actions' which can respond to any type of connection.  They process incoming parameters and offer a response to the client.  actionhero takes care of routing and responding to each connection type for you.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Actions">Learn more about Actions</a>
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/tasks.jpg" rel="prettyPhoto"><img src="img/features/tasks.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Built-in Delayed Jobs</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>Background tasks are first-class citizens in actionhero.  You can enqueue a task from anywhere in the application.  Tasks can be recurring or single-run.  actionhero's task sytem is powerd by Resque, so it is compatible with a number of other applications and frameworks.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Tasks">Learn more about Tasks</a>
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/faye-redis.jpg" rel="prettyPhoto"><img src="img/features/faye-redis.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Cluster-Ready</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>actionhero uses Faye and Redis to store and share data.  With first-class cache functions, decentralized communications, and distributed workers, you can be sure that your application is able to scale from 1 worker on one server, to as big of a cluster as you need.</p>
-                <a target="_blank" class="more-link" href="http://redis.io/">Learn more about Redis</a><br />
-                <a target="_blank" class="more-link" href="http://faye.jcoglan.com/">Learn more about Faye</a>
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-        </div>
-        <!-- /.row -->
-        
-        <div class="row">
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/servers.jpg" rel="prettyPhoto"><img src="img/features/servers.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Multiple Servers & Transports</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>The actionhero API makes it simple to create a traditional HTTP(s) API, but it also lets you easily extend your API to TCP and websocket clients (all included).  actionhero also easily lets you write your own servers to handle custom transports.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Servers">Learn more about Servers</a>
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/routes.jpg" rel="prettyPhoto"><img src="img/features/routes.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Routing</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>actionhero ships with a router to make mapping HTTP requests to your actions a breeze.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Web-Clients#routes">Learn more about Routes</a>  
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/api-first.jpg" rel="prettyPhoto"><img src="img/features/api-first.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>API First Development</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>actionhero makes API-First development very easy by enforcing a strict separation of views and application logic.  actionhero also makes modularizing your application easy with simple clustering and easy-to-use background tasks.</p>
-                <a class="more-link" target="_blank" href="http://api-first.com">Learn More about API-First development</a> </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-        </div>
-        <!-- /.row -->
+    <meta name="description" content="actionhero js framework for http, websocket, and tcp; The Reusable, Scalable, and Quick node.js API Server">
+    <meta name="author" content="Evan Tahler">
 
-        <div class="row">
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/chat.jpg" rel="prettyPhoto"><img src="img/features/chat.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Chat</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>actionhero (optionally) facilitates real-time communication not only from server-to-client, but also client-to-client!  actionhero's chat sub-system allows for streaming of both public and private messages between clients.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Chat">Learn more about Chat</a> 
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/cluster.jpg" rel="prettyPhoto"><img src="img/features/cluster.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>Clustered Deployment and 0-downtime binaries</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>It is simple to deploy actionhero with our included binaries.  You can launch your server as a single instance or as part of a node.js cluster.</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/Running-ActionHero">Learn more about Running actionhero</a> 
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-          <div class="span4">
-            <div class="mask2"> <a href="img/features/file.jpg" rel="prettyPhoto"><img src="img/features/file.jpg" alt=""></a> </div>
-            <div class="inside">
-              <hgroup>
-                <h2>File Server</h2>
-              </hgroup>
-              <div class="entry-content">
-                <p>Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and actionhero is no exception.  Configured to asynchronously stream file contents, actionhero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server.  No nginx required!</p>
-                <a target="_blank" class="more-link" href="https://github.com/evantahler/actionhero/wiki/File-Server">Learn more about Serving Files with actionhero</a> 
-              </div>
-            </div>
-            <!-- /.inside -->
-          </div>
-          <!-- /.span4 -->
-        </div>
+    <title>actionhero.js</title>
 
-      </div>
-      <!-- /.container -->
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Fonts -->
+    <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Custom Theme CSS -->
+    <link href="css/grayscale.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="#page-top">
+                    <i class="fa fa-play-circle"></i>  <span class="light">actionhero</span>.js
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#about">About</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#features">Features</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#community">Community</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#try">Try</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading">actionhero</h1>
+                        <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server.</p>
+                        <img src="/img/logo/actionhero_400.png" width="300" />
+                        <div class="page-scroll">
+                            <a href="#about" class="btn btn-circle">
+                                <i class="fa fa-angle-double-down animated"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
-    <hr>
-    <!--******************** Services Section ********************-->
-    <section id="services" class="single-page scrollblock">
-      <div class="container">
-        <div class="align"><i class="icon-cog-circled"></i></div>
-        <h1>Servers & Transports</h1>
-        <!-- Four columns -->
+
+    <section id="about" class="container content-section text-center">
         <div class="row">
-          <div class="span3">
-            <h2>Web</h2>
-            <p>actionhero can act as a HTTP or HTTPs API server.  With integrated routing, it is easy to create RESTful resources.  actionhero can also serve static files.</p>
-            <pre>
-curl "http://127.0.0.1:8080/api/" -d "action=actionsView"
-            </pre>
-          </div>
-          <!-- /.span3 -->
-          <div class="span3">
-            <h2>Socket</h2>
-            <p>actionhero ships with the ability to be a line TCP or TLS server.  actionhero clients can speak a wire protocol or send lines of JSON.  Actions can be processed asynchronously and in parallel.  The API server and the built-in chat system provide all you need for a communication or game application.</p>
-            <pre>
-> telnet localhost 5000
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>About actionhero</h2>
+                <p>actionhero.js is a multi-transport API Server with integrated cluster capabilites and delayed tasks.</p>
+                <p>actionhero was built from the ground up to include all the features you expect from a modern API framework. This includes all the features listed below and more.  actionhero also knows when to get out of the way to allow you to customize your stack to fit your needs.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2>Servers</h2>
+
+            <div class="col-6 col-sm-6 col-lg-6">
+                <h4><a href="#">Web</a></h4>
+                <p class="feature-description">actionhero can act as a HTTP or HTTPs API server. With integrated routing, it is easy to create RESTful resources. actionhero can also serve static files.</p>
+                <pre>curl "http://127.0.0.1:8080/api/" -d "action=actionsView"</pre>
+            </div>
+
+            <div class="col-6 col-sm-6 col-lg-6">
+                <h4><a href="#">Web Sockets</a></h4>
+                <p class="feature-description">actionhero uses Faye to provided a robust and reliable websocket implementation. actionhero web socket clients can fall back to long-polling and other transports to ensure they are connected. actionhero does not require that a client stay connected to the same node.</p>
+                <pre>var A = new actionheroClient;
+A.action("actionsView", function(data){ console.log(data); })</pre>
+            </div>
+
+            <div class="col-6 col-sm-6 col-lg-6">
+                <h4><a href="#">Socket</a></h4>
+                <p class="feature-description">actionhero ships with the ability to be a line TCP or TLS server. actionhero clients can speak a wire protocol or send lines of JSON. Actions can be processed asynchronously and in parallel. The API server and the built-in chat system provide all you need for a communication or game application.</p>
+                <pre>> telnet localhost 5000
 Trying 127.0.0.1...
 Connected to localhost.
-Escape character is '^]'.
 {"welcome":"Hello! Welcome to the actionhero api}
-> actionsView
-            </pre>
-          </div>
-          <!-- /.span3 -->
-          <div class="span3">
-            <h2>Web Sockets</h2>
-            <p>actionhero uses Faye to provided a robust and reliable websocket implementation.  actionhero web socket clients can fall back to long-polling and other transports to ensure they are connected.  actionhero does not require that a client stay connected to the same node.</p>
-            <pre>
-var A = new actionheroWebSocket;
-A.action("actionsView", function(data){ console.log(data); })
-            </pre>
-          </div>
-          <!-- /.span3 -->
-          <div class="span3">
-            <h2>Your Own</h2>
-            <p>Most importantly, actionhero's modular server architecture allows you to define your own servers and protocols.
-              <br><br>
-              Learn how on the <a target="_blank" href="https://github.com/evantahler/actionhero/wiki/Servers">actionhero WIKI</a></p>
-          </div>
-          <!-- /.span3 -->
+> actionsView</pre>
+            </div>
+
+            <div class="col-6 col-sm-6 col-lg-6">
+                <h4><a href="#">Your Own</a></h4>
+                <p class="feature-description">Most importantly, actionhero's modular server architecture allows you to define your own servers and protocols. Learn how on the actionhero WIKI</p>
+            </div>
         </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container -->
     </section>
 
-    <!--******************** Testimonials Section ********************-->
+    <section id="features" class="content-section text-center">
+        <div class="features-section">
+            <div class="container">
+                <h2>Features</h2>
 
-    <section id="testimonials" class="single-page scrollblock">
-      <div class="container">
-        <h1>Get Started Now</h1>
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Easy-To-Use Actions</a></h4>
+                        <p class="feature-description">With actionhero, you create 'actions' which can respond to any type of connection. They process incoming parameters and offer a response to the client. actionhero takes care of routing and responding to each connection type for you.</p>
+                    </div>
+
+                     <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Built-In Delayed Jobs</a></h4>
+                        <p class="feature-description">Background tasks are first-class citizens in actionhero. You can enqueue a task from anywhere in the application. Tasks can be recurring or single-run. actionhero's task sytem is powerd by Resque, so it is compatible with a number of other applications and frameworks.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Cluster-Ready</a></h4>
+                        <p class="feature-description">actionhero uses Faye and Redis to store and share data. With first-class cache functions, decentralized communications, and distributed workers, you can be sure that your application is able to scale from 1 worker on one server, to as big of a cluster as you need.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Multiple Servers & Transports</a></h4>
+                        <p class="feature-description">The actionhero API makes it simple to create a traditional HTTP(s) API, but it also lets you easily extend your API to TCP and websocket clients (all included). actionhero also easily lets you write your own servers to handle custom transports.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Routing</a></h4>
+                        <p class="feature-description">actionhero ships with a router to make mapping HTTP requests to your actions a breeze.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">API First Development</a></h4>
+                        <p class="feature-description">actionhero makes API-First development very easy by enforcing a strict separation of views and application logic. actionhero also makes modularizing your application easy with simple clustering and easy-to-use background tasks.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Chat</a></h4>
+                        <p class="feature-description">actionhero (optionally) facilitates real-time communication not only from server-to-client, but also client-to-client! actionhero's chat sub-system allows for streaming of both public and private messages between clients.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">Clustered Deployment And 0-Downtime Binaries</a></h4>
+                        <p class="feature-description">It is simple to deploy actionhero with our included binaries. You can launch your server as a single instance or as part of a node.js cluster.</p>
+                    </div>
+
+                    <div class="col-6 col-sm-6 col-lg-6">
+                        <h4><a href="#">File Server</a></h4>
+                        <p class="feature-description">Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and actionhero is no exception. Configured to asynchronously stream file contents, actionhero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server. No nginx required!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="community" class="container content-section text-center">
         <div class="row">
-          <div class="span12">
-            <pre class="">
-              <h1 class="alignleft">npm install actionhero</h1>
-              <h1 class="alignleft">./node_modules/.bin/actionhero generate</h1>
-              <h1 class="alignleft">npm start</h1>
-            </pre>
-          </div>
-            <!-- ./span12 -->
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Community</h2>
+                <ul class="list-inline banner-social-buttons">
+                    <li><a href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js" class="btn btn-default btn-lg"><i class="fa fa-mail-reply-all fa-fw"></i> <span class="network-name">Mailing List</span></a></li>
+                    <li><a href="https://twitter.com/actionherojs" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a></li>
+                    <li><a href="https://github.com/evantahler/actionhero/issues" class="btn btn-default btn-lg"><i class="fa fa fa-github fa-fw"></i> <span class="network-name">Github Issues</span></a></li>
+                    <li><a href="https://github.com/evantahler/actionhero/releases" class="btn btn-default btn-lg"><i class="fa fa fa-github fa-fw"></i> <span class="network-name">Releases</span></a></li>
+                </ul>
+
+                <br /><br /><br />
+
+                <h2>Downloads</h2>
+                <ul class="list-inline banner-social-buttons">
+                    <li><a href="https://www.npmjs.org/package/actionhero" class="btn btn-default btn-lg"><i class="fa fa fa-cloud-download fa-fw"></i> <span class="network-name">NPM</span></a></li>
+                    <li><a href="https://github.com/evantahler/actionhero" class="btn btn-default btn-lg"><i class="fa fa fa-github fa-fw"></i> <span class="network-name">Github</span></a></li>
+                </ul>
+
+                <br /><br /><br />
+
+                <h2>Learn</h2>
+                <ul class="list-inline banner-social-buttons">
+                    <li><a href="https://github.com/evantahler/actionhero_client" class="btn btn-default btn-lg"><i class="fa fa fa-github fa-fw"></i> <span class="network-name">Server Client</span></a></li>
+                    <li><a href="https://github.com/evantahler/actionhero-tutorial" class="btn btn-default btn-lg"><i class="fa fa fa-github fa-fw"></i> <span class="network-name">Tutorial</span></a></li>
+                    <li><a href="/wiki" class="btn btn-default btn-lg"><i class="fa fa fa-book fa-fw"></i> <span class="network-name">Wiki</span></a></li>
+                </ul>
+            </div>
         </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container -->
     </section>
 
-    <!--******************** Contact Section ********************-->
-    <section id="contact" class="single-page scrollblock">
-      <div class="container">
-        <div class="align"><i class="icon-mail-2"></i></div>
-        <h1>Join the Community</h1>
-        <div class="row">
-          <div class="span12" align="center">
+    <section id="try" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Try actionhero Now</h2>
+                    <pre>
+                    npm install actionhero
 
-            <h2><a target="_blank" href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js">Mailing List</a><small><br /> actionhero's Google Group & Mailing List</small></h2>
-            <h2><a target="_blank" href="https://twitter.com/actionherojs">Twitter</a><small><br />  quick news updates</small></h2>
-            <h2><a target="_blank" href="https://npmjs.org/package/actionhero">NPM</a><small><br />  the Node Package Manager</small></h2>
-            <h2><a target="_blank" href="https://github.com/evantahler/actionhero">Github</a><small><br />  check out the latest code and current issues</small></h2>
-            <h2><a target="_blank" href="https://github.com/evantahler/actionhero/wiki">actionhero WIKI</a><small><br />documentation and examples <br/> (<a href="https://github.com/evantahler/actionhero/wiki">en_US</a>, <a href="https://github.com/jacobbubu/actionhero-wiki-zh-hans/wiki">zh_HANS</a>)</small></h2>
-            <h2><a target="_blank" href="https://github.com/evantahler/actionhero/wiki/API-Methods">API Methods</a><small><br />  quick references for actionhero's exposed methods for developers</small></h2>
-            <h2><a target="_blank" href="https://github.com/evantahler/actionhero_client">Client</a><small><br />  node.js client example for consuming a actionhero API</small></h2>
-            <h2><a target="_blank" href="https://github.com/evantahler/actionhero-tutorial">Tutorial</a><small><br />  want help gettings started?</small></h2>
-            <br />
-          </div>
-          <!-- ./span12 -->
+                    ./node_modules/.bin/actionhero generate
+
+                    npm start
+                    </pre>
+                </div>
+            </div>
         </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container -->
     </section>
-    <hr>
-    <div class="footer-wrapper">
-      <div class="container">
-        <footer>
-          <small>&copy; 2013 <a target="_blank" href="http://evantahler.com">Evan Tahler</a>.</small><br />
-          <small>Hosted @ <a href="http://pages.github.com/" target="_blank" >Githib Pages</a></small> | 
-          <small>Logo by <a href="http://www.alispagnola.com/" target="_blank" >Ali Spagnola</a></small> | 
-          <small>Site Template by <a href="http://www.dzyngiri.com/legend-free-responsive-one-page-template/" target="_blank">Dzyngirl</a></small>
-        </footer>
-      </div>
-      <!-- ./container -->
-    </div>
-    <!-- Loading the javaScript at the end of the page -->
-    <script type="text/javascript" src="js/bootstrap.js"></script>
-    <script type="text/javascript" src="js/jquery.prettyPhoto.js"></script>
-    <script type="text/javascript" src="js/site.js"></script>
-    
+
+    <!-- Core JavaScript Files -->
+    <script src="/js/jquery-1.10.2.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/grayscale.js"></script>
+
     <!--ANALYTICS CODE-->
-	<script type="text/javascript">
-	  var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-29132597-1']);
-    _gaq.push(['_setDomainName', 'actionherojs.com']);
-    _gaq.push(['_trackPageview']);
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29132597-1']);
+        _gaq.push(['_setDomainName', 'actionherojs.com']);
+        _gaq.push(['_trackPageview']);
 
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-	</script>
-    </body>
-    </html>
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+</body>
+
+</html>
