@@ -137,6 +137,28 @@ var utils = function(api, next){
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
+  api.utils.collapseObjectToArray = function(obj){
+    try{
+      var keys = Object.keys(obj)
+      if(keys.length < 1){ return false }
+      if(keys[0] !== '0'){ return false }
+      if(keys[(keys.length - 1)] !== String(keys.length - 1)){ return false }
+      
+      var arr = [];
+      for(var i in keys){
+        var key = keys[i];
+        if(String(parseInt(key)) !== key){ return false }
+        else{ arr.push(obj[key]); }
+      }
+
+      return arr;
+    }catch(e){
+      return false
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
   // get this servers external interface
   api.utils.getExternalIPAddress = function(){
     var os = require('os')

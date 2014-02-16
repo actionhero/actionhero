@@ -200,16 +200,9 @@ var websocket = function(api, options, next){
       delete data.event;
       connection.messageCount++;
       if(verb == 'action'){
-        if(api.config.general.disableParamScrubbing) {
-          connection.params = data.params;
-        } else {
-          api.params.postVariables.forEach(function(postVar){
-            if(typeof data.params[postVar] !== 'undefined' && data.params[postVar] != null){
-              connection.params[postVar] = data.params[postVar];
-            }
-          });
-        }
-        
+        for(var v in data.params){
+          connection.params[v] = data.params[v];
+        };
         connection.error = null;
         connection.response = {};
         server.processAction(connection);

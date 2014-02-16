@@ -348,30 +348,24 @@ var web = function(api, options, next){
 
   var fillParamsFromWebRequest = function(connection, varsHash){
     // helper for JSON posts
-    if(api.utils.hashLength(varsHash) == 1){
+    var collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
+    if(collapsedVarsHash !== false){
+      varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
+    }else if(api.utils.hashLength(varsHash) == 1){
       var key = Object.keys(varsHash)[0];
       if(varsHash[key] == null || varsHash[key] == ''){
         try{
           varsHash = JSON.parse(key);
-          var keys = Object.keys(varsHash);
-          if(keys.length === 1 && keys[0] === '0'){
+          if(Array.isArray(varsHash)){
             varsHash = {payload: varsHash} // post was an array, lets call it "payload"
           }
         }catch(e){ }
       }
     }
 
-    if(api.config.general.disableParamScrubbing) {
-      Object.keys(varsHash).forEach(function(key) {
-        connection.params[key] = varsHash[key];
-      });
-    } else {
-       api.params.postVariables.forEach(function(postVar){
-        if(typeof varsHash[postVar] !== 'undefined' && varsHash[postVar] != null){
-          connection.params[postVar] = varsHash[postVar];
-        }
-      });
-    }
+    for(var v in varsHash){
+      connection.params[v] = varsHash[v];
+    };
   }
 
   var shouldSendDocumentation = function(connection){
@@ -390,9 +384,13 @@ var web = function(api, options, next){
       remoteIP: connection.remoteIP,
       receivedParams: {}
     };
-    for(var k in connection.params){
-      requesterInformation.receivedParams[k] = connection.params[k];
+
+    for(var p in connection.params){
+      if(api.config.general.disableParamScrubbing === true || api.params.postVariables.indexOf(p) >= 0){
+        requesterInformation.receivedParams[p] = connection.params[p];
+      }
     }
+
     return requesterInformation;
   }
 
