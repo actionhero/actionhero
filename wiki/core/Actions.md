@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Actions
+---
+
 #Actions
 
 ## General
@@ -8,7 +13,7 @@ You can create you own actions by placing them in a `./actions/` folder at the r
 
 Here's an example of a simple action which will return a random number to the client:
 
-```javascript
+{% highlight javascript %}
 
   var action = {};
   
@@ -34,12 +39,12 @@ Here's an example of a simple action which will return a random number to the cl
   /////////////////////////////////////////////////////////////////////
   // exports
   exports.action = action;
-```
+{% endhighlight %}
 
 or more concisely: 
 
 
-```javascript
+{% highlight javascript %}
 
   exports.action = {
     name: "randomNumber",
@@ -52,11 +57,11 @@ or more concisely:
     }
   }
 
-```
+{% endhighlight %}
 
 You can also define more than one action per file if you would like:
 
-```javascript
+{% highlight javascript %}
 
     var commonInputs = {
       required: ['email', 'password'],
@@ -84,7 +89,7 @@ You can also define more than one action per file if you would like:
         next(connection, true);
       }
     }
-```
+{% endhighlight %}
 
 ## Versions
 
@@ -96,7 +101,7 @@ ActionHero supports multiple versions of the same action.  This will allow you t
 
 You can optionally create routes to handle your API versioning:
 
-```javascript
+{% highlight javascript %}
 exports.routes = {
   all: [
     // creates routes like `/api/myAction/1/` and `/api/myAction/2/`
@@ -108,7 +113,7 @@ exports.routes = {
     { path: "/:apiVersion/myAction", action: "myAction" },
   ]
 };
-```
+{% endhighlight %}
 
 *As a note, if a client accessing actionhero via routes does not provide an apiVersion and it is explicitly defined in the route, the highest number will not be assigned automatically, as will be seen as a routing error.*
 
@@ -116,7 +121,7 @@ exports.routes = {
 
 The complete set of options an action can have are:
 
-```javascript
+{% highlight javascript %}
 exports.action = {
   name: "randomNumber",
   description: "I am an API method which will generate a random number",
@@ -135,7 +140,7 @@ exports.action = {
     next(connection, true);
   }
 }
-```
+{% endhighlight %}
 
 ## Notes
 

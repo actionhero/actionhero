@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - File Server
+---
+
 # File Server
 
 ## General
@@ -26,10 +31,10 @@ On .nix operating system's symlinks for both files and folders will be followed.
 
 You can send files from within actions using `connection.sendFile()`.  Here's an example:
 
-```javascript
+{% highlight javascript %}
 connection.rawConnection.responseHttpCode = 404; 
 connection.sendFile('404.html');
 next(connection, false);
-```
+{% endhighlight %}
 
 Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set `toRender = false` in the callback, as you have already sent data to the client, and probably don't want to do so again on a file request.

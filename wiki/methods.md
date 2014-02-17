@@ -1,31 +1,22 @@
+---
+layout: wiki
+title: Wiki - API Methods
+---
+
 # API Methods
 
 A refrence document for actionhero's methods.
-
----
-
-- [Connection](./API-Methods#wiki-connection)
-- [Actions](./API-Methods#wiki-actions)
-- [Tasks](./API-Methods#wiki-tasks)
-- [Cache](./API-Methods#wiki-cache)
-- [Chat](./API-Methods#wiki-chat-rooms)
-- [File Server](./API-Methods#wiki-file-server)
-- [Redis](./API-Methods#wiki-redis)
-- [Stats](./API-Methods#wiki-stats)
-- [Log](./API-Methods#wiki-log)
-- [Testing](./API-Methods#wiki-testing)
-- [Utils](./API-Methods#wiki-utils)
-
----
 
 ## Actions
 
 ### new api.actionProcessor(data)
 
-    new api.actionProcessor({
-      connection: connection,
-      callback: next,
-    })
+{% highlight javascript %}
+new api.actionProcessor({
+  connection: connection,
+  callback: next,
+})
+{% endhighlight %}
 
 - `next(connection, toContinue)`
 - process an action in-line
@@ -42,7 +33,7 @@ A refrence document for actionhero's methods.
 
 All connection objects have these properties by the time they reach middleware or an action:
 
-```javascript
+{% highlight javascript %}
 {
   id: 'bafbe812649a74e65021c689cf5b096d49f03a49',
   connectedAt: 1388804743345,
@@ -67,12 +58,12 @@ All connection objects have these properties by the time they reach middleware o
   _original_connection: {},
   action: 'status' 
 }
-```
+{% endhighlight %}
 
 - All connections which appear to your actions are "proxy" connections built at the start of the request, and `_original_connection` is a refrence back to the "real" connection object.  If you are modifying a long-lasting connection (perhaps for chat auth), be sure to modify both `connection.value` and `connection._original_connection.value`.
 - `rawConnection` contains the actual socket or connection object for the connection.  This will change based on the server type.  
 
-```javascript
+{% highlight javascript %}
 // web
 connection.rawConnection = {
   req: req,
@@ -92,12 +83,11 @@ connection.rawConnection = {
 
 // socket
 connection.rawConnection = DuplexSocket;
-
-```
+{% endhighlight %}
 
 When building a connection: 
 
-```javascript
+{% highlight javascript %}
 connection = new api.connection({
     type "web",
     remoteIp: '123.123.123.123',
@@ -107,7 +97,8 @@ connection = new api.connection({
       res: res,
     },
 });
-```
+{% endhighlight %}
+
 - data is required, and must contain: `{type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}`
 - If your connection already has an ID (from faye, your server implementation, or browser_fingerprint), you can also pass `data.id`, otherwise a new id will be generated.
 - When connections are built, they are added automatically to `api.connections`
@@ -151,31 +142,31 @@ connection = new api.connection({
 
 connections should use the verbs `roomChange` or `listenToRom` to move around rooms.  These methods are for the server to manage rooms.
 
-### `api.chatRoom.socketRoomBroadcast(connection, message, callback)`
+### api.chatRoom.socketRoomBroadcast(connection, message, callback)
 - tell a message to all members in a room.
 - connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form `{room: "someOtherRoom}`.  mockConnections without an id will be assigned the id of 0
 - The `context` of messages sent with `api.chatRoom.socketRoomBroadcast` always be `user` to differentiate these responses from a `responsee` to a request
 
-### `api.chatRoom.add(room, callback)`
+### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
 
-### `api.chatRoom.add(room, callback)`
+### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
 
-### `api.chatRoom.del(room, callback)`
+### api.chatRoom.del(room, callback)
 - callback is empty
 
-### `api.chatRoom.exists(room, callback)`
+### api.chatRoom.exists(room, callback)
 - callback returns (error, found); found is a boolean
 
-### `api.chatRoom.setAuthenticationPattern(room, key, value, callback)`
+### api.chatRoom.setAuthenticationPattern(room, key, value, callback)
 - callback returns (error)
 
-### `api.chatRoom.roomStatus(room, callback)`
+### api.chatRoom.roomStatus(room, callback)
 - callback return (error, data)
 - data is of the form:
 
-```javascript
+{% highlight javascript %}
 {
   room: "myRoom",
   membersCount: 2,
@@ -184,12 +175,12 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
     bbb: {id: "bbb", joinedAt: 123456789 },
   }
 }
-```
+{% endhighlight %}
 
-### `api.chatRoom.addMember(connection, room, callback)`
+### api.chatRoom.addMember(connection, room, callback)
 - callback is of the form (error, wasAdded)
 
-### `api.chatRoom.removeMember(connection, callback)`
+### api.chatRoom.removeMember(connection, callback)
 - callback is of the form (error, wasRemoved)
 
 ## File Server
@@ -202,11 +193,11 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
 - note that fileStream is a stream you can `pipe` to the client, not the file contents
 
 You can send files in actions with `connection.sendFile`, IE:
-```javascript
+{% highlight javascript %}
 connection.rawConnection.responseHttpCode = 404; 
 connection.sendFile('404.html');
 next(connection, false);
-```
+{% endhighlight %}
 
 ## Redis
 
@@ -293,7 +284,7 @@ Faye can be used for actionhero serers to communicate to all other running serve
 - the default severity level is 'info'
 - (optional) metadata is anything that can be stringified with `JSON.stringify`
 
-api.logger.log and api.logger[severity] also exist
+`api.logger.log` and `api.logger[severity]` also exist
 
 
 ## Testing
@@ -309,25 +300,25 @@ api.logger.log and api.logger[severity] also exist
 - the callback returns `message` and `connection`.
 - example use:
 
-```javascript
+{% highlight javascript %}
 api.specHelper.runAction('cacheTest', {key: 'key', value: 'value'}, function(message, connection){
   // message is the normal API response;
   // connection is a new connection object
 })
-```
+{% endhighlight %}
 
 #### api.specHelper.getStaticFile(file, callback)
 - request a file in `/public` from the server
 - the callback returns `message` and `connection` where `message` is a hash:
 
-```javascript
+{% highlight javascript %}
 var message = {
   error    : error,  // null if everything is OK
   content  : (string),  // string representation of the file's body
   mime     : mime,  // file mime
   length   : length  // bytes
 }
-```
+{% endhighlight %}
 
 #### api.specHelper.runTask(taskName, params, callback)
 - callback may or may not return anything depending on your task's makeup

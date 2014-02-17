@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - WebSocket Server
+---
+
 # WebSocket Server
 
 ## General
@@ -14,7 +19,7 @@ Data is always returned as JSON objects to the webSocket client.
 
 An example web socket session might be the following:
 
-```html
+{% highlight html %}
 <script src="/faye/client.js"></script>
 <script src="/public/javascript/actionheroClient.js"></script>
 
@@ -46,7 +51,7 @@ An example web socket session might be the following:
   });
 
 </script>
-```
+{% endhighlight %}
 
 You can also inspect `client.state` ('connected', 'disconnected', etc)
 
@@ -80,7 +85,7 @@ Methods which the provided actionheroWebSocket object expose are:
 - `client.disconnect()`
 
 The contents of the `file` callback look like:
-``` javascript
+{% highlight javascript %}
 {
   content: "<h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/simple.html<br />",
   context: "response",
@@ -89,13 +94,13 @@ The contents of the `file` callback look like:
   messageCount: 3,
   mime: "text/html"
 }
-```
+{% endhighlight %}
 
 ## Options
 
 You can create your client with options.  The full collection and defaults are:
 
-```html
+{% highlight html %}
 <script src="/faye/client.js"></script>
 <script src="/public/javascript/actionheroClient.js"></script>
 
@@ -114,7 +119,7 @@ You can create your client with options.  The full collection and defaults are:
   client = new actionheroClient(options)
 
 </script>
-```
+{% endhighlight %}
 
 ## Notes
 

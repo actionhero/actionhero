@@ -1,8 +1,15 @@
+---
+layout: wiki
+title: Wiki - Example mysql Initializer
+---
+
+# Example mysql Initializer
+
 Using the [Sequelize](http://sequelizejs.com/) ORM.
 
 ## Initializer
 
-```javascript
+{% highlight javascript %}
 var Sequelize = require("sequelize");
 var SequelizeFixtures = require('sequelize-fixtures');
 
@@ -46,11 +53,11 @@ exports.mySQL = function(api, next){
 
   next();
 }
-```
+{% endhighlight %}
 
 ## An example Model
 living in /models/user.js
-```javascript
+{% highlight javascript %}
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define("user", {
     email:         DataTypes.STRING,
@@ -63,11 +70,11 @@ module.exports = function(sequelize, DataTypes) {
     timestamps:  true
   })
 }
-```
+{% endhighlight %}
 
 ## Config 
 Extra settings to add to `config.js`
-```javascript
+{% highlight javascript %}
 config.mySQL = {
   "database"    : "v3_development",
   "dialect"     : "mysql",
@@ -93,4 +100,4 @@ config.mySQL = {
     ]
   }
 }
-```
+{% endhighlight %}

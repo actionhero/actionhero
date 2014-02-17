@@ -1,3 +1,10 @@
+---
+layout: wiki
+title: Wiki - Tasks
+---
+
+# Tasks
+
 ## General
 
 Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem. There are [a number of example tasks provided](Example-tasks).
@@ -11,29 +18,29 @@ There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `per
 
 When enqueuing a task from your code, it's as simple as
 
-```javascript
+{% highlight javascript %}
 api.tasks.enqueue("sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
   // done!
 });
-```
+{% endhighlight %}
 
 "sendWelcomeEmail" should be a task defined in the project, and `{to: 'evan@evantahler.com'}` are arguments to that task.  This task will be processed by workers assigned to the 'default queue'.
 
 You can also enqueue tasks to be run at some time in the future:
 
-```javascript
+{% highlight javascript %}
 api.tasks.enqueueAt(1234556, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
   // done!
 });
-```
+{% endhighlight %}
 
 or
 
-```javascript
+{% highlight javascript %}
 api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
   // done!
 });
-```
+{% endhighlight %}
 
 `enqueueAt` asks for a timestamp to run at, and `enqueueIn` asks for the number of ms from now to run.
 
@@ -47,14 +54,15 @@ If you are enqueuing delayed or periodic tasks, you also need to enable the sche
 
 If I wanted to run 2 workers and a scheduler to run the jobs enqueued in the default queues above, I would do the following:
 
-```javascript
+{% highlight javascript %}
 config.tasks = {
   scheduler: true,    
   queues: ['default', 'default'],   
   timeout: 5000,
   redis: config.redis,
 }
-```
+{% endhighlight %}
+
 You can also set workers to work the `"*"` queue, and process any job they can find.
 
 ## Creating a Task
@@ -71,7 +79,7 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 
 An example Task:
 
-```javascript
+{% highlight javascript %}
 var task = {
   name:          "sendWelcomeEmail",
   description:   "I will send a new user a welcome email",
@@ -88,12 +96,11 @@ var task = {
 };
 
 exports.task = task;
-
-```
+{% endhighlight %}
 
 You can also define more than one task in a single file:
 
-```javascript
+{% highlight javascript %}
 
 exports.sayHello = {
   name:          'sayHello',
@@ -121,11 +128,11 @@ exports.sayGoodbye = {
   }
 };
 
-```
+{% endhighlight %}
 
 If you run these 2 tasks, you will see output in your console like this:
 
-```bash
+{% highlight bash %}
 2013-11-28 15:21:56 - debug: resque scheduler working timestamp 1385680913
 2013-11-28 15:21:56 - debug: resque scheduler enquing job 1385680913 class=sayHello, queue=default,
 2013-11-28 15:21:56 - debug: resque scheduler working timestamp 1385680914
@@ -136,7 +143,7 @@ If you run these 2 tasks, you will see output in your console like this:
 2013-11-28 15:21:56 - debug: resque worker #1 working job default class=sayGoodbye, queue=default,
 2013-11-28 15:21:56 - info: goodbye
 2013-11-28 15:21:56 - debug: re-enqueued reccurent job sayGoodbye
-```
+{% endhighlight %}
 
 ## Queue Inspection
 actionhero provides some methods to help inspect the state of your queue

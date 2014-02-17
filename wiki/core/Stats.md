@@ -1,4 +1,9 @@
-## Stats
+---
+layout: wiki
+title: Wiki - Stats
+---
+
+# Stats
 
 actionhero ships with stats backend (in redis) to store and retrieve metrics about the server, connectons, the cluster, and your application.
 
@@ -29,7 +34,8 @@ The Stats redis server is defined by `api.config.redis`. Note that if `api.confi
 - You can configure actionhero to store stats changes to more than one redis hash.  You might wish to do this so that you may keep 'local' stats and 'global' stats.  For example, if you set `api.config.stats.keys = ['actionhero:stats', process.pid + ':stats']`.  All servers in your cluster will contribute to `actionhero:stats` and just this server's information will be logged in `process.pid + ':stats'`
   
 ## Example: 
-``` javascript
+
+{% highlight javascript %} 
 api.stats.increment('myCount', 2);
 api.stats.increment('myCount', 3);
 api.stats.increment('myCount', -1);
@@ -39,4 +45,4 @@ api.stats.increment('myCount', -1);
 api.stats.get('myCount', function(err, count){
 	console.log(count)); // count => 4
 });
-```
+{% endhighlight %}

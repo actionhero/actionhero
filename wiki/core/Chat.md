@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Chat
+---
+
 # Chat
 
 ## General
@@ -26,28 +31,28 @@ There is no limit to the number of rooms which can be created, but keep in mind 
 
 These methods are to be used within your server (perhaps an action or initializer).  They are not exposed directly to clients.
 
-### `api.chatRoom.socketRoomBroadcast(connection, message, callback)`
+### api.chatRoom.socketRoomBroadcast(connection, message, callback)
 - tell a message to all members in a room.
 - connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form `{room: "someOtherRoom}`.  mockConnections without an id will be assigned the id of 0
 - The `context` of messages sent with `api.chatRoom.socketRoomBroadcast` always be `user` to differentiate these responses from a `responsee` to a request
 
-### `api.chatRoom.add(room, callback)`
+### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
 
-### `api.chatRoom.del(room, callback)`
+### api.chatRoom.del(room, callback)
 - callback is empty
 
-### `api.chatRoom.exists(room, callback)`
+### api.chatRoom.exists(room, callback)
 - callback returns (error, found); found is a boolean
 
 ### `api.chatRoom.setAuthenticationPattern(room, key, value, callback)`
 - callback returns (error)
 
-### `api.chatRoom.roomStatus(room, callback)`
+### api.chatRoom.roomStatus(room, callback)
 - callback return (error, data)
 - data is of the form:
 
-```javascript
+{% highlight javascript %}
 {
   room: "myRoom",
   membersCount: 2,
@@ -56,25 +61,25 @@ These methods are to be used within your server (perhaps an action or initialize
     bbb: {id: "bbb", joinedAt: 123456789 },
   }
 }
-```
+{% endhighlight %}
 
-### `api.chatRoom.addMember(connection, room, callback)`
+### api.chatRoom.addMember(connection, room, callback)
 - callback is of the form (error, wasAdded)
 
-### `api.chatRoom.removeMember(connection, callback)`
+### api.chatRoom.removeMember(connection, callback)
 - callback is of the form (error, wasRemoved)
 
-### Authentication
+## Authentication
 
 When you set a rooms' authentication paten with `api.chatRoom.setAuthenticationPatern`, you are describing a hash which a client needs to match to enter the room.
 
-- `api.chatRoom.setAuthenticationPatern('myRoom', 'type', 'websocket')`` would only allow websocket clients in
-- `api.chatRoom.setAuthenticationPatern('myRoom', 'auteneticated', true)`` would only allow clients in which have previously been modified by `connection.authenticated = true; connection._original_connection.authenticated = true;`` probably in an action or middleware.
+- `api.chatRoom.setAuthenticationPatern('myRoom', 'type', 'websocket')` would only allow websocket clients in
+- `api.chatRoom.setAuthenticationPatern('myRoom', 'auteneticated', true)` would only allow clients in which have previously been modified by `connection.authenticated = true; connection._original_connection.authenticated = true;` probably in an action or middleware.
 
 Clients' authentication is only checked when they first join a room, and not again.
 
 If you delete a room with connections still in it, they will be unable to send any more messages (with a 'room does not exist'-type error), but they will not have `connection.room` reset to null.
 
-### Chatting to specific clients
+## Chatting to specific clients
 
 Every connection object also has a `connection.sendMessage(message)` method which you can call directly from the server.  

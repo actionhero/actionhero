@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Socket Server
+---
+
 # Socket Server
 
 ## General
@@ -16,7 +21,7 @@ You can access actionhero's methods via a persistent socket connection.  The def
 * `listenToRoom` - opt into hearing messages from another chat room
 * `silenceRoom` - stop hearing messages from other chat rooms
 * `detailsView` - show you details about your connection, including your public ID.
-* `say` [message]
+* `say` message
 
 Please note that any verbs set using the above method will be 'sticky' to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.
 
@@ -24,7 +29,7 @@ To help sort out the potential stream of messages a socket user may receive, it 
 
 Socket Example:
 
-```javascript
+{% highlight javascript %}
 > telnet localhost 5000
 Trying 127.0.0.1...
 Connected to localhost.
@@ -46,7 +51,7 @@ cacheTest
 {"cacheTestResults":{"saveResp":true,"sizeResp":1,"loadResp":{"key":"cacheTest_myKey","value":"myValue","expireTimestamp":1368918936984,"createdAt":1368918931984,"readAt":1368918931995},"deleteResp":true},"context":"response","messageCount":7}
 say hooray!
 {"status":"OK","context":"response","data":null,"messageCount":8}
-```
+{% endhighlight %}
 
 `connection.type` for a TCP/Socket client is "socket"
 
@@ -54,33 +59,33 @@ say hooray!
 
 You can switch your TCP server to use TLS encryption if you desire.  Just toggle the settings in `config.json` and provide valid certificates.  You can test this with the openSSL client rather than telnet `openssl s_client -connect 127.0.0.1:5000`
 
-```javascript
+{% highlight javascript %}
 config.severs.socket = {
   secure: false,                        // TCP or TLS?
   serverOptions: {},                    // passed to tls.createServer if secure=ture. Should contain SSL certificates
   port: 5000,                           // Port or Socket
   bindIP: "0.0.0.0",                    // which IP to listen on (use 0.0.0.0 for all)
 };
-```
+{% endhighlight %}
 
 Note that if you wish to create a secure (tls) server, you will be required to complete the serverOptions hash with at least a cert and a keyfile:
 
-```javascript
+{% highlight javascript %}
 config.server.socket.serverOptions: {
   key: fs.readFileSync('certs/server-key.pem'),
   cert: fs.readFileSync('certs/server-cert.pem')
 }
-```
+{% endhighlight %}
 
 You can connect like:
 
-```javascript
+{% highlight javascript %}
 openssl s_client -connect 127.0.0.1:5000
-```
+{% endhighlight %}
 
 or from node:
 
-```javascript
+{% highlight javascript %}
 var tls = require('tls');
 var fs = require('fs');
 
@@ -98,7 +103,7 @@ cleartextStream.setEncoding('utf8');
 cleartextStream.on('data', function(data) {
   console.log(data);
 });
-```
+{% endhighlight %}
 
 ## Files and Routes for TCP clients
 

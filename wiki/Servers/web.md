@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Web Server
+---
+
 # Web Server
 
 ## General
@@ -6,7 +11,7 @@ The web server exposes actions and files over http or https.  You can visit the 
 
 HTTP responses are always JSON and follow the format:
 
-```javascript
+{% highlight javascript %}
 
 {
 	hello: "world"
@@ -25,11 +30,11 @@ HTTP responses are always JSON and follow the format:
 		}
 	}
 }
-```
+{% endhighlight %}
 
 HTTP Example: 
 
-```javascript
+{% highlight javascript %}
 
 > curl 'localhost:8080/api/status' -v | python -mjson.tool
 * About to connect() to localhost port 8080 (#0)
@@ -96,7 +101,7 @@ HTTP Example:
         }
     }
 }
-```
+{% endhighlight %}
 
 * you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. 
 * unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).  These defaults are defined in `config.js`
@@ -105,7 +110,7 @@ HTTP Example:
 
 `config.js` contains the settings for the web server.  The relevant options are:
 
-```javascript
+{% highlight javascript %}
 config.servers = {
   "web" : {
     secure: false,                       // HTTP or HTTPS?
@@ -139,16 +144,16 @@ config.servers = {
     returnErrorCodes: false              // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null. You can also set connection.rawConnection.responseHttpCode to specify a code per request.
   }
 }  
-```
+{% endhighlight %}
 
 Note that if you wish to create a secure (https) server, you will be required to complete the serverOptions hash with at least a cert and a keyfile:
 
-```javascript
+{% highlight javascript %}
 config.server.web.serverOptions: {
   key: fs.readFileSync('certs/server-key.pem'),
   cert: fs.readFileSync('certs/server-cert.pem')
 }
-```
+{% endhighlight %}
 	
 ## The `connection` object
 
@@ -175,11 +180,12 @@ actionhero can also serve up flat files.  actionhero will not cache these files 
 * Proper mime-type headers will be set when possible via the `mime` package.
 
 There are helpers you can use in your actions to send files:
-```javascript
+
+{% highlight javascript %}
 connection.rawConnection.responseHttpCode = 404; 
 connection.sendFile('404.html');
 next(connection, false);
-```
+{% endhighlight %}
 
 See the [file server](https://github.com/evantahler/actionhero/wiki/File-Server) page for more documentation
 
@@ -197,24 +203,26 @@ This variables in play here are:
 
 Say you have an action called 'status' (like in a freshly generated actionhero project). 
 Lets start with actionhero's default config:
-``` javascript
+
+{% highlight javascript %}
 api.config.servers.web.urlPathForActions = 'api';
 api.config.servers.web.urlPathForFiles = 'public';
 api.config.servers.web.rootEndpointType = 'file';
-```
+{% endhighlight %}
 
 There are 3 ways a client can access actions via the web server.
 
 - no routing at all and use GET params: `server.com/api?action=status`
 - with 'basic' routing, where the action's name will respond after the /api path: `server.com/api/status`
 - or you can modify this with routes. Say you want `server.com/api/stuff/statusPage`
-```javascript
+
+{% highlight javascript %}
 exports.routes = {
   get: [
     { path: '/stuff/statusPage', action: 'status' }
   ]
 };
-```
+{% endhighlight %}
 
 The `api.config.servers.web.rootEndpointType` is "file" which means that the routes you are making are active only under the `/api` path.  If you wanted the route example to become  `server.com/stuff/statusPage`, you would need to change `api.config.servers.web.rootEndpointType` to be 'api'.  Note that making this change doesn't stop `server.com/api/stuff/statusPage` from working as well, as you still have `api.config.servers.web.urlPathForActions` set to be 'api', so both will continue to work.
 
@@ -236,7 +244,7 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
 
 **example**:
 
-```javascript
+{% highlight javascript %}
 {
   get: [
     { path: "/users", action: "usersList" }, // (GET) /api/users
@@ -251,20 +259,20 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
     { path: "/user/:userID", action: "user" } // (*) / /api/user/123
   ]
 }
-```
+{% endhighlight %}
 
 ## Params
 
 Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `config.js`).  Variables defined in your actions by `action.inputs.required` and `action.inputs.optional` will be aded to your whitelist.  Special params which the api will always accept are: 
 
-```javascript
+{% highlight javascript %}
   [ 'file',
     'apiVersion',
     'callback',
     'action',
     'limit',
     'offset' ]
-```
+{% endhighlight %}
 	
 Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in you initializers. 
 
@@ -275,7 +283,8 @@ A note on JSON payloads:
 You can post BODY json paylaods to actionHero in the form of a hash or array. 
 
 Hash: `curl -X POST -d '{"key":"something", "value":{"a":1, "b":2}}' http://localhost:8080/api/cacheTest`.  This will result in:
-```javascript
+
+{% highlight javascript %}
 connection.params = {
   key: 'something'
   value: {
@@ -283,12 +292,12 @@ connection.params = {
     b: 2
   }
 }
-```
+{% endhighlight %}
 
 Array: `curl -X POST -d '[{"key":"something", "value":{"a":1, "b":2}}]' http://localhost:8080/api/cacheTest`.
 In this case, we set the array to the param key `payload`:
 
-```javascript
+{% highlight javascript %}
 connection.params = {
   payload: [
     { 
@@ -300,7 +309,7 @@ connection.params = {
     }
   ]
 }
-```
+{% endhighlight %}
 
 ## Uploading Files
 
@@ -308,7 +317,7 @@ actionhero uses the [formidable](https://github.com/felixge/node-formidable) for
 
 #### uploader.js (action)
 
-```javascript
+{% highlight javascript %}
 exports.action = {
   name: 'uploader',
   description: 'uploader',
@@ -323,11 +332,11 @@ exports.action = {
     next(connection, true);
   }
 };
-```
+{% endhighlight %}
 
 #### uploader.html (public)
 
-```html
+{% highlight html %}
 <html>
     <head></head>
     <body>
@@ -342,11 +351,11 @@ exports.action = {
         </form>
     </body>
 </html>
-```
+{% endhighlight %}
 
 .. and an example `connections.params` with 2 uploaded files and string values:
 
-```
+{% highlight javascript %}
 { action: 'uploader',
   file1: 
    { domain: null,
@@ -379,13 +388,13 @@ exports.action = {
   key2: '456',
   limit: 100,
   offset: 0 }
-```
+{% endhighlight %}
 
 ## Client Library
 
 Although the `actionheroClient` client-side library is mostly for websockets, it can now be used to make http actions when not connected (and websocket clients will fall back to http actions when disconnected)
 
-```html
+{% highlight html %}
 <script src="/public/javascript/actionheroClient.js"></script>
 
 <script>
@@ -394,6 +403,6 @@ client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
    // do stuff
 }); 
 </script>
-```
+{% endhighlight %}
 
 Note that we never called `client.connect`.  More information can be found on the [websocket server wiki page](https://github.com/evantahler/actionhero/wiki/websocket).

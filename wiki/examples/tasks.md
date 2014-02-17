@@ -1,4 +1,9 @@
-## Example Tasks
+---
+layout: wiki
+title: Wiki - Example Tasks
+---
+
+# Example Tasks
 
 **[runAction](https://github.com/evantahler/actionhero/blob/master/tasks/runAction.js)**: This (non periodic) task is used to call an action in the background.  For example, you might have an action to `sendEmail` which can be called synchronously by a client, but you also might want to call it in a delayed manner.  This is the task for you!
 

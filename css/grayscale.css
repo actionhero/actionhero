@@ -18,11 +18,12 @@ h4,
 h5,
 h6 {
     margin: 0 0 35px;
-    text-transform: uppercase;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
     font-weight: 700;
     letter-spacing: 1px;
 }
+
+h1, h2 { text-transform: uppercase; }
 
 p {
     margin: 0 0 25px;
@@ -49,6 +50,10 @@ a:hover,
 a:focus {
     text-decoration: none;
     color: #176e61;
+}
+
+.toc a {
+    font-size: 18px;
 }
 
 .light {
@@ -373,6 +378,15 @@ a:focus {
 
 pre {
     text-align: left;
+}
+
+code {
+    padding: 2px 4px;
+    font-size: 70%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    white-space: nowrap;
+    border-radius: 4px;
 }
 
 ::-moz-selection {

@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Running actionhero
+---
+
 # Running actionhero
 
 ## The actionhero Binary
@@ -5,7 +10,7 @@ The suggested method to run your actionhero server is to use the included `./nod
 
 At the time of this writing the actionhero binary's help contains:
 
-```bash
+{% highlight bash %}
 Binary options:
 * help (default)
 * start
@@ -63,7 +68,7 @@ Descriptions:
   [daemon] (optional) to fork and run as a new background process defalts to false
 
 More Help & the actionhero wiki can be found @ http://actionherojs.com
-```
+{% endhighlight %}
 
 ## Linking the actionhero binary
 
@@ -77,7 +82,7 @@ By default, actionhero will use the config settings in `/config/config.js`.  How
 
 The load order of configs is:
 - config.js
-- #{env}.js
+- ~env.js
 - options passed in to boot with `actionhero.start({configChanges: configChanges}, callback)`
 
 ## Programatic Use of actionhero
@@ -88,35 +93,34 @@ Feel free to look at the source of `./node_modules/actionhero/bin/include/start`
 
 You can programmatically control an actionhero server with `actionhero.start(params, callback)`, `actionhero.stop(callback)` and `actionhero.restart(callback)`
 
-```javascript
+{% highlight javascript %}
+var actionheroPrototype = require("actionhero").actionheroPrototype;
+var actionhero = new actionheroPrototype();
 
-    var actionheroPrototype = require("actionhero").actionheroPrototype;
-    var actionhero = new actionheroPrototype();
-
-	var timer = 5000;
-	actionhero.start(params, function(err, api){
+var timer = 5000;
+actionhero.start(params, function(err, api){
+	
+	api.log(" >> Boot Successful!");
+	setTimeout(function(){
 		
-		api.log(" >> Boot Successful!");
-		setTimeout(function(){
+		api.log(" >> restarting server...");
+		actionhero.restart(function(err, api){
 			
-			api.log(" >> restarting server...");
-			actionhero.restart(function(err, api){
+			api.log(" >> Restarted!");
+			setTimeout(function(){
 				
-				api.log(" >> Restarted!");
-				setTimeout(function(){
+				api.log(" >> stopping server...");
+				actionhero.stop(function(err, api){
 					
-					api.log(" >> stopping server...");
-					actionhero.stop(function(err, api){
-						
-						api.log(" >> Stopped!");
-						process.exit();
-						
-					});
-				}, timer);
-			})
-		}, timer);
-	});
-```
+					api.log(" >> Stopped!");
+					process.exit();
+					
+				});
+			}, timer);
+		})
+	}, timer);
+});
+{% endhighlight %}
 
 ## Grunt
 
@@ -128,7 +132,7 @@ actionhero will generate a few example tasks in `./gruntfile.js` to help you sav
 
 You will have access to all of your initializers, actions, and tasks within the api object.  `api` will represent an initialized sever, but not a started one.  Your initializer's "_start" methods will not be run, nor will the servers be started.  For example:
 
-```javascript
+{% highlight javascript %}
 grunt.registerTask('myTask','description of task', function(arg1, arg2){
   var done = this.async()
   init(function(api){
@@ -137,11 +141,11 @@ grunt.registerTask('myTask','description of task', function(arg1, arg2){
     done()
   })
 })
-```
+{% endhighlight %}
 
 As always, you can list your project's grunt tasks with `grunt -help`
 
-```bash
+{% highlight bash %}
 > grunt --help
 
                    list  List your actions and metadata
@@ -154,13 +158,13 @@ enqueueAllPeriodicTasks  This will enqueue all periodic tasks (could lead to
               dumpCache  Save the current cache as a JSON object (:file)
               loadCache  Set the cache from a file (overwrites existing cache)
                          (:file)
-```
+{% endhighlight %}
 
 You can [learn more about grunt here](http://gruntjs.com/).
 
 ## Signals
 
-actionhero is intended to be run on *nix operating systems.  The `start` and `startCluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
+actionhero is intended to be run on `*nix` operating systems.  The `start` and `startCluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
 
 **actionhero start**
 

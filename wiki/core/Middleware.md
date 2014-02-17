@@ -1,5 +1,9 @@
-# Middleware 
-## Middleware (aka pre and post processing)
+---
+layout: wiki
+title: Wiki - Middleware
+---
+
+# Middleware
 
 ## Action Middleware
 
@@ -16,7 +20,7 @@ Note: preProcessor action middleware will be executed before connections have th
 
 Some Examples:
 
-```javascript
+{% highlight javascript %}
 
 // a preProcessor to check if a userId is provided:
 
@@ -36,13 +40,13 @@ api.actions.postProcessors.push(function(connection, actionTemplate, toRender, n
   next(connection);
 });
 
-```
+{% endhighlight %}
 
 Action middleware is often used in authentication.  Here are some examples:
 - [simple authentication middleware](https://github.com/evantahler/actionhero-tutorial/blob/master/initializers/middleware.js)
 - [mongoDB based authentication](https://gist.github.com/panjiesw/7768779)
 
-### Connection Middleware
+## Connection Middleware
 
 Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware.  
 
@@ -50,7 +54,7 @@ Like the action middleware above, you can also create middleware to react to the
 
 Any modification made to the connection at this stage may happen either before or after an action, and may or may not persist to the connection depending on how the server is implemented.
 
-```javascript
+{% highlight javascript %}
 
 api.connections.createCallbacks.push(function(connection){
   console.log(connection);
@@ -60,4 +64,4 @@ api.connections.destroyCallbacks.push(function(connection){
   console.log(connection);
 });
 
-```
+{% endhighlight %}

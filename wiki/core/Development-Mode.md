@@ -1,18 +1,25 @@
+---
+layout: wiki
+title: Wiki - Development Mode
+---
+
+# Development Mode
+
 To enable development mode simply set `developmentMode: true` in your `config.js`.
 
-```js
+{% highlight javascript%}
 config.general = {
   developmentMode: true
 }
-```
+{% endhighlight %}
 
 To do this with an environment variable try something like in your `config.js` which follows the same NODE_ENV that express and friends use.
 
-```js
+{% highlight javascript %}
 //disable development mode in production
 if("production" === process.env.NODE_ENV)
   config.general.developmentMode = false
-```
+{% endhighlight %}
 
 ## Effects of Development Mode
 
@@ -31,26 +38,28 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your actionhero application within the familar Chrome Browser's developer tools.
 
 
-```javascript
+{% highlight javascript %}
 "dependencies": {
   "actionhero": "x",
   "node-inspector": "x"
 },
-```
+{% endhighlight %}
 
 Be sure to run actionhero with node's `--debug` flag
 
-```bash
+{% highlight bash %}
 node --debug ./node_modules/.bin/actionhero start
-```
+{% endhighlight %}
 
 Start up node-inspector (both node-inspector and actionhero have the same default port, so you will need to change one of them)
 
-```bash
-  ./node_modules/.bin/node-inspector --web-port=1234
-```
+{% highlight bash %}
+./node_modules/.bin/node-inspector --web-port=1234
+{% endhighlight %}
 
 That's it! Now you can visit `http://0.0.0.0:1234/debug?port=5858` and start debugging.  Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects.  IE: I put a breakpoint in the default `status` action in the `run` method:
 
+{% highlight bash %}
 `api.bootTime`
 - 1372739939789
+{% endhighlight %}

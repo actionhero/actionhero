@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Action Cluster
+---
+
 # Running actionhero in a Cluster
 
 actionhero can be run either as a solitary server or as part of a cluster.  The goal of these cluster helpers is to allow you to create a group of servers which will share state and each be able to handle requests and run tasks.  You can add or remove nodes from the cluster without fear of data loss or task duplication.  You can also run many instances of actionhero on the same server using node.js' cluster methods (`actionhero startCluster`).
@@ -22,15 +27,15 @@ You can broadcast and receive messages from other peers in the cluster:
 - channel is a string of the form "/my/channel"
 - message is an object
 
-For securty, please keep all internal server-to-server communication broadcasting in a channel under the "actionhero:*" namespace.  actionhero has a includes extenstion that will require all messages sent on this channel to include `{serverToken: api.config.general.serverToken}` as part of thier payload.
+For securty, please keep all internal server-to-server communication broadcasting in a channel under the `"actionhero:*"` namespace.  actionhero has a includes extenstion that will require all messages sent on this channel to include `{serverToken: api.config.general.serverToken}` as part of thier payload.
 
 ## Redis Key Reservations
 
 The following keys in redis will be in use by actionhero:
 
-- `actionhero:cache` [] the common shared cache object
-- `actionhero:stats` [] the common shared stats object
-- `actionhero:roomMembers-{roomName}` [] a list of the folks in a given socket room
+- `actionhero:cache` (array) the common shared cache object
+- `actionhero:stats` (array) the common shared stats object
+- `actionhero:roomMembers-{roomName}` (array) a list of the folks in a given socket room
 
 Faye will also make use of a large number of keys, but under the "faye" namespace (configurable prefix)
 

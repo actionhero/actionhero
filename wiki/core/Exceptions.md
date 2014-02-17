@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Exceptions
+---
+
 # Exceptions
 
 **This module only works for node.js >= `v0.8.0`, as it makes use of [domains](http://nodejs.org/api/domain.html)**
@@ -23,7 +28,7 @@ Other exceptions, perhaps occurring in an initializer, will not be caught.  Thes
 
 As an example, here is the default `stdout` logger:
 
-```javascript
+{% highlight javascript %}
 var consoleReporter = function(type, err, extraMessages, severity){
   for(var i in extraMessages){
     var line = extraMessages[i];
@@ -38,11 +43,11 @@ var consoleReporter = function(type, err, extraMessages, severity){
 }
 
 api.exceptionHandlers.reporters.push(consoleReporter);
-```
+{% endhighlight %}
 
 ## Example
 
-```
+{% highlight bash %}
 2012-09-30 22:02:03 | [action @ web] to: 127.0.0.1 | action: {no action} | request: localhost:8080/ | params: {"action":"","limit":100,"offset":0} | duration: 1
 2012-09-30 22:02:07 | ! uncaught error from action: randomNumber
 2012-09-30 22:02:07 | ! connection details:
@@ -60,4 +65,4 @@ api.exceptionHandlers.reporters.push(consoleReporter);
 2012-09-30 22:02:07 | *
 2012-09-30 22:02:07 | [action @ web] to: 127.0.0.1 | action: randomNumber | request: localhost:8080/randomNumber | params: {"action":"randomNumber","limit":100,"offset":0} | duration: 4
 2012-09-30 22:02:23 | [action @ web] to: 127.0.0.1 | action: status | request: localhost:8080/status | params: {"action":"status","limit":100,"offset":0} | duration: 1
-```
+{% endhighlight %}

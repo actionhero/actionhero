@@ -1,3 +1,8 @@
+---
+layout: wiki
+title: Wiki - Cache
+---
+
 # Cache
 
 ## General Cache Notes
@@ -8,7 +13,7 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 
 ## Methods
 
-### `api.cache.save`
+### api.cache.save
 
 * Invoke: `api.cache.save(key, value, expireTimeMS, next)`
 	* `expireTimeMS` can be null if you never want the object to expire 
@@ -18,7 +23,7 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 	
 `api.cache.save` is used to both create new entires or update existing cache entires.  If you don't define an expireTimeMS, `null` will be assumed, and using `null` will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)
 
-### `api.cache.load`
+### api.cache.load
 
 * Invoke: `api.cache.load(key, next)` | `api.cache.load(key, options, next)`
 * Callback: `next(error, value, expireTimestamp, createdAt, readAt)`
@@ -31,7 +36,7 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 	
 	If the key requested is not found (or expired), all values returned will be null.
 
-### `api.cache.destroy`
+### api.cache.destroy
 
 * Invoke: `api.cache.destroy(key)`
 * Callback: `next(error)`

@@ -1,4 +1,9 @@
-## Example Actions
+---
+layout: wiki
+title: Wiki - Example Actions
+---
+
+# Example Actions
 
 **[cachetest](https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js)**: This action demonstrates how to handle parameter checking for an actin, and how to use the internal cache methods of actionhero to save and recall data provided from a client.
 
