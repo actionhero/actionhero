@@ -6,7 +6,7 @@ title: Wiki - Home
 
 # Who is the actionhero?
 
-actionhero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionhero are to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  clients connected to an actionhero server can **consume the api**, **consume static content**, and **communicate with each other**.
+actionhero is a [node.js](http://nodejs.org) **API framework** for both **tcp sockets**, **web sockets**, and **http clients**.  The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can **consume the api**, **consume static content**, and **communicate with each other**.
 
 actionhero servers can process both requests and tasks (delayed actions like `send e-mail` or other background jobs).  actionhero servers can also run in a cluster (on the same or multiple machines) to work in concert to handle your load.
 

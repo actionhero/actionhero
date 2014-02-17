@@ -40,7 +40,7 @@ p {
 }
 
 a {
-    color: #28c3ab;
+    color: orange;
     -webkit-transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
@@ -49,7 +49,7 @@ a {
 a:hover,
 a:focus {
     text-decoration: none;
-    color: #176e61;
+    color: #CC0000;
 }
 
 .toc a {
@@ -336,17 +336,17 @@ a:focus {
 }
 
 .btn-default {
-    border: 1px solid #28c3ab;
-    color: #28c3ab;
+    border: 1px solid orange;
+    color: orange;
     background-color: transparent;
 }
 
 .btn-default:hover,
 .btn-default:focus {
-    border: 1px solid #28c3ab;
+    border: 1px solid #CC0000;
     outline: 0;
     color: #000;
-    background-color: #28c3ab;
+    background-color: #CC0000;
 }
 
 .btn-huge {
