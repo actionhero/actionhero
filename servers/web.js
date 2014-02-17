@@ -143,7 +143,6 @@ var web = function(api, options, next){
       }
 
       // https://github.com/evantahler/actionhero/issues/189
-      responseHeaders.push(['Transfer-Encoding', 'Chunked']);
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
 
       if(typeof(api.config.servers.web.httpHeaders) != null){
