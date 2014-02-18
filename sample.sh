@@ -9,14 +9,18 @@ DESTINATION=${1:-$DEFAULT_DESTINATION}
 
 echo "Creating a sample actionhero app @ $DESTINATION from $CURRENT_PATH"
 
+rm -rf $DESTINATION
+sleep 1
 mkdir $DESTINATION
-cd $DESTINATION && mkdir 'node_modules'
-cd $DESTINATION/node_modules && mkdir '.bin'
-cd $DESTINATION/node_modules && ln -s $CURRENT_PATH actionhero
-cd $DESTINATION/node_modules/.bin && ln -s ../actionhero/bin/actionhero actionhero 
+# cd $DESTINATION && mkdir 'node_modules'
+# cd $DESTINATION/node_modules && mkdir '.bin'
+# cd $DESTINATION/node_modules && ln -s $CURRENT_PATH actionhero
+# cd $DESTINATION/node_modules/.bin && ln -s ../actionhero/bin/actionhero actionhero 
+cd $DESTINATION && npm install actionhero
 
 cd $DESTINATION && node_modules/.bin/actionhero generate
 cd $DESTINATION && npm install
 
 echo ""
+echo "***************"
 echo "cd $DESTINATION"
