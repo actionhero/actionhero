@@ -156,6 +156,8 @@ var actionProcessor = function(api, next){
   }
 
   api.actionProcessor.prototype.reduceParams = function(){
+		if (api.config.general.disableParamScrubbing) return;
+		
     var self = this;
     for(var p in self.connection.params){
       if(api.params.globalSafeParams.indexOf(p) < 0 &&
