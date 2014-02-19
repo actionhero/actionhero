@@ -389,6 +389,10 @@ code {
     border-radius: 4px;
 }
 
+.highlighttable {
+    width: 100%;
+}
+
 ::-moz-selection {
     text-shadow: none;
     background: #fcfcfc;
@@ -400,6 +404,12 @@ code {
     background: #fcfcfc;
     background: rgba(255,255,255,.2);
 }
+
+
+code::selection, code span::selection {
+    background: yellow;
+}
+
 
 img::selection {
     background: 0 0;
