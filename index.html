@@ -35,20 +35,20 @@ title: Home
         <h2>Servers</h2>
 
         <div class="col-6 col-sm-6 col-lg-6">
-            <h4><a href="#">Web</a></h4>
+            <h4><a href="/wiki/servers/web.html">Web</a></h4>
             <p class="feature-description">actionhero can act as a HTTP or HTTPs API server. With integrated routing, it is easy to create RESTful resources. actionhero can also serve static files.</p>
             <pre>curl "http://127.0.0.1:8080/api/" -d "action=actionsView"</pre>
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
-            <h4><a href="#">Web Sockets</a></h4>
+            <h4><a href="/wiki/servers/websocket.html">Web Sockets</a></h4>
             <p class="feature-description">actionhero uses Faye to provided a robust and reliable websocket implementation. actionhero web socket clients can fall back to long-polling and other transports to ensure they are connected. actionhero does not require that a client stay connected to the same node.</p>
             <pre>var A = new actionheroClient;
 A.action("actionsView", function(data){ console.log(data); })</pre>
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
-            <h4><a href="#">Socket</a></h4>
+            <h4><a href="/wiki/servers/socket.html">Socket</a></h4>
             <p class="feature-description">actionhero ships with the ability to be a line TCP or TLS server. actionhero clients can speak a wire protocol or send lines of JSON. Actions can be processed asynchronously and in parallel. The API server and the built-in chat system provide all you need for a communication or game application.</p>
             <pre>> telnet localhost 5000
 Trying 127.0.0.1...
@@ -58,7 +58,7 @@ Connected to localhost.
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
-            <h4><a href="#">Your Own</a></h4>
+            <h4><a href="/wiki/core/servers.html">Your Own</a></h4>
             <p class="feature-description">Most importantly, actionhero's modular server architecture allows you to define your own servers and protocols. Learn how on the actionhero WIKI</p>
         </div>
     </div>
@@ -71,47 +71,47 @@ Connected to localhost.
 
             <div class="row">
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Easy-To-Use Actions</a></h4>
+                    <h4><a href="/wiki/core/actions.html">Easy-To-Use Actions</a></h4>
                     <p class="feature-description">With actionhero, you create 'actions' which can respond to any type of connection. They process incoming parameters and offer a response to the client. actionhero takes care of routing and responding to each connection type for you.</p>
                 </div>
 
                  <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Built-In Delayed Jobs</a></h4>
+                    <h4><a href="/wiki/core/tasks.html">Built-In Tasks</a></h4>
                     <p class="feature-description">Background tasks are first-class citizens in actionhero. You can enqueue a task from anywhere in the application. Tasks can be recurring or single-run. actionhero's task sytem is powerd by Resque, so it is compatible with a number of other applications and frameworks.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Cluster-Ready</a></h4>
+                    <h4><a href="/wiki/core/actionCluster.html">Cluster-Ready</a></h4>
                     <p class="feature-description">actionhero uses Faye and Redis to store and share data. With first-class cache functions, decentralized communications, and distributed workers, you can be sure that your application is able to scale from 1 worker on one server, to as big of a cluster as you need.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Multiple Servers and Transports</a></h4>
+                    <h4><a href="/#about">Multiple Servers and Transports</a></h4>
                     <p class="feature-description">The actionhero API makes it simple to create a traditional HTTP(s) API, but it also lets you easily extend your API to TCP and websocket clients (all included). actionhero also easily lets you write your own servers to handle custom transports.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Routing</a></h4>
+                    <h4><a href="/wiki/servers/web.html#routes">Routing</a></h4>
                     <p class="feature-description">actionhero ships with a router to make mapping HTTP requests to your actions a breeze.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">API First Development</a></h4>
+                    <h4><a href="http://api-first.com">API First Development</a></h4>
                     <p class="feature-description">actionhero makes API-First development very easy by enforcing a strict separation of views and application logic. actionhero also makes modularizing your application easy with simple clustering and easy-to-use background tasks.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Chat</a></h4>
+                    <h4><a href="/wiki/core/chat.html">Chat</a></h4>
                     <p class="feature-description">actionhero (optionally) facilitates real-time communication not only from server-to-client, but also client-to-client! actionhero's chat sub-system allows for streaming of both public and private messages between clients.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">Clustered Deployment And 0-Downtime Binaries</a></h4>
+                    <h4><a href="/wiki/ops/production-notes.html">Clustered Deployment And 0-Downtime Binaries</a></h4>
                     <p class="feature-description">It is simple to deploy actionhero with our included binaries. You can launch your server as a single instance or as part of a node.js cluster.</p>
                 </div>
 
                 <div class="col-6 col-sm-6 col-lg-6">
-                    <h4><a href="#">File Server</a></h4>
+                    <h4><a href="/wiki/core/file-server.html">File Server</a></h4>
                     <p class="feature-description">Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and actionhero is no exception. Configured to asynchronously stream file contents, actionhero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server. No nginx required!</p>
                 </div>
             </div>

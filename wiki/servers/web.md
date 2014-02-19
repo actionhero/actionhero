@@ -187,7 +187,7 @@ connection.sendFile('404.html');
 next(connection, false);
 {% endhighlight %}
 
-See the [file server](https://github.com/evantahler/actionhero/wiki/File-Server) page for more documentation
+See the [file server](/wiki/core/file-server.html) page for more documentation
 
 ## Routes
 
@@ -405,4 +405,4 @@ client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
 </script>
 {% endhighlight %}
 
-Note that we never called `client.connect`.  More information can be found on the [websocket server wiki page](https://github.com/evantahler/actionhero/wiki/websocket).
+Note that we never called `client.connect`.  More information can be found on the [websocket server wiki page](/wiki/servers/websocket.html).

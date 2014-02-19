@@ -406,6 +406,10 @@ code {
 }
 
 
+pre::selection, pre span::selection {
+    background: yellow;
+}
+
 code::selection, code span::selection {
     background: yellow;
 }
