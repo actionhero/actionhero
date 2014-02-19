@@ -160,7 +160,8 @@ var actionProcessor = function(api, next){
     for(var p in self.connection.params){
       if(api.params.globalSafeParams.indexOf(p) < 0 &&
          self.actionTemplate.inputs.required.indexOf(p) < 0 &&
-         self.actionTemplate.inputs.optional.indexOf(p) < 0
+         self.actionTemplate.inputs.optional.indexOf(p) < 0 &&
+         !api.config.general.disableParamScrubbing
       ){
         delete self.connection.params[p];
       }
