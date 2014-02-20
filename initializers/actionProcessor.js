@@ -152,14 +152,15 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.reduceParams = function(){
     var self = this;
-    for(var p in self.connection.params){
-      if(
-          api.config.general.disableParamScrubbing !== true && 
-          api.params.postVariables.indexOf(p) < 0 &&
-          self.actionTemplate.inputs.required.indexOf(p) < 0 &&
-          self.actionTemplate.inputs.optional.indexOf(p) < 0
-      ){
-        delete self.connection.params[p];
+    if(api.config.general.disableParamScrubbing !== true){
+      for(var p in self.connection.params){
+        if(
+            api.params.postVariables.indexOf(p) < 0 &&
+            self.actionTemplate.inputs.required.indexOf(p) < 0 &&
+            self.actionTemplate.inputs.optional.indexOf(p) < 0
+        ){
+          delete self.connection.params[p];
+        }
       }
     }
   }
