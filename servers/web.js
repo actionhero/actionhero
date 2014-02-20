@@ -85,7 +85,8 @@ var web = function(api, options, next){
 
   server.sendFile = function(connection, error, fileStream, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    connection.rawConnection.responseHeaders.push(['Content-Length', length]);
+    // connection.rawConnection.responseHeaders.push(['Content-Length', length]);  // Don't send both content-length and transfer-encoding
+    connection.rawConnection.responseHeaders.push(['Transfer-Encoding', 'Chunked'])
     connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
     connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']);
     cleanHeaders(connection);
@@ -143,7 +144,6 @@ var web = function(api, options, next){
       }
 
       // https://github.com/evantahler/actionhero/issues/189
-      responseHeaders.push(['Transfer-Encoding', 'Chunked']);
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
 
       if(typeof(api.config.servers.web.httpHeaders) != null){

@@ -84,29 +84,34 @@ actionhero.prototype.initialize = function(params, callback){
   orderedInitializers['_projectInitializers'] = function(next){
     var projectInitializers = {};
     if(path.resolve(self.api.config.general.paths.initializer) != path.resolve(__dirname + '/initializers')){
-      var fileSet = fs.readdirSync(path.resolve(self.api.config.general.paths.initializer)).sort();
-      fileSet.forEach(function(f){
-        var file = path.resolve(self.api.config.general.paths.initializer + '/' + f);
-        if(file[0] != '.'){
-          var initializer = f.split('.')[0];
-          var fileParts = file.split('.');
-          var ext = fileParts[(fileParts.length - 1)];
-          if(ext === 'js'){
-            if(require.cache[require.resolve(file)] !== null){
-              delete require.cache[require.resolve(file)];
+      var localInitializerPath = path.resolve(self.api.config.general.paths.initializer);
+      if( fs.existsSync(localInitializerPath) ){
+        var fileSet = fs.readdirSync(localInitializerPath).sort();
+        fileSet.forEach(function(f){
+          var file = path.resolve(self.api.config.general.paths.initializer + '/' + f);
+          if(file[0] != '.'){
+            var initializer = f.split('.')[0];
+            var fileParts = file.split('.');
+            var ext = fileParts[(fileParts.length - 1)];
+            if(ext === 'js'){
+              if(require.cache[require.resolve(file)] !== null){
+                delete require.cache[require.resolve(file)];
+              }
+              self.initalizers[initializer] = require(file)[initializer];
+              projectInitializers[initializer] = function(next){
+                self.api.log('running custom initializer: ' + initializer, 'info');
+                self.initalizers[initializer](self.api, next);
+                self.api.watchFileAndAct(file, function(){
+                  self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+                  self.api._commands.restart.call(self.api._self);
+                });
+              };
             }
-            self.initalizers[initializer] = require(file)[initializer];
-            projectInitializers[initializer] = function(next){
-              self.api.log('running custom initializer: ' + initializer, 'info');
-              self.initalizers[initializer](self.api, next);
-              self.api.watchFileAndAct(file, function(){
-                self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-                self.api._commands.restart.call(self.api._self);
-              });
-            };
           }
-        }
-      });
+        });
+      }else{
+        self.api.log('local initializer path not found', 'alert');
+      }
     }
 
     projectInitializers['_complete'] = function(){

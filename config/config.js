@@ -173,7 +173,7 @@ config.servers = {
       'X-Powered-By'                : config.general.serverName,
       'Access-Control-Allow-Origin' : '*',
       'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Headers': 'Content-Type',
     },
     // Route that actions will be served from; secondary route against this route will be treated as actions,
     //  IE: /api/?action=test == /api/test/
