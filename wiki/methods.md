@@ -18,6 +18,7 @@ new api.actionProcessor({
 })
 {% endhighlight %}
 
+- you should not need to interact with the actionProcessor directly if connections use a server
 - `next(connection, toContinue)`
 - process an action in-line
 - connection must be a properly formatted connection object (best to use `new api.connection(data)`)
