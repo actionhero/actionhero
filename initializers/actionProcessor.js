@@ -18,11 +18,6 @@ var actionProcessor = function(api, next){
       }
     }
     proxyConnection._original_connection = connection
-    for(var param in proxyConnection.params){
-      if(!api.config.general.disableParamScrubbing && api.params.postVariables.indexOf(param) < 0){
-        delete proxyConnection.params[param];
-      }
-    }
     return proxyConnection;
   }
 
@@ -158,9 +153,11 @@ var actionProcessor = function(api, next){
   api.actionProcessor.prototype.reduceParams = function(){
     var self = this;
     for(var p in self.connection.params){
-      if(api.params.globalSafeParams.indexOf(p) < 0 &&
-         self.actionTemplate.inputs.required.indexOf(p) < 0 &&
-         self.actionTemplate.inputs.optional.indexOf(p) < 0
+      if(
+          api.config.general.disableParamScrubbing !== true && 
+          api.params.postVariables.indexOf(p) < 0 &&
+          self.actionTemplate.inputs.required.indexOf(p) < 0 &&
+          self.actionTemplate.inputs.optional.indexOf(p) < 0
       ){
         delete self.connection.params[p];
       }

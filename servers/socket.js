@@ -171,17 +171,10 @@ var socket = function(api, options, next){
           try {
             var request_hash = JSON.parse(line);
             if(request_hash['params'] != null){
-              if(api.config.general.disableParamScrubbing) {
-                connection.params = request_hash['params'];
-              } else {
-                connection.params = {};
-                api.params.postVariables.forEach(function(postVar){
-                  if(typeof request_hash['params'][postVar] !== 'undefined' && request_hash['params'][postVar] != null){
-                    connection.params[postVar] = request_hash['params'][postVar];
-                  }
-                });
-              }
-              
+              connection.params = {};
+              for(var v in request_hash['params']){
+                connection.params[v] = request_hash['params'][v];
+              };
             }
             if(request_hash['action'] != null){
               connection.params['action'] = request_hash['action'];
