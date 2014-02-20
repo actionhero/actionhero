@@ -20,7 +20,7 @@ new api.actionProcessor({
 
 - `next(connection, toContinue)`
 - process an action in-line
-- connection must be a properly formatted connection object (best to use `api.utils.setupConnection`)
+- connection must be a properly formatted connection object (best to use `new api.connection(data)`)
 
 ### actionProcessor.processAction(messageId)
 - process the action pending `this.commection`
