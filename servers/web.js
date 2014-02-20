@@ -373,16 +373,27 @@ var web = function(api, options, next){
 				}
 
 				// Object or array?
-				param = param[key] = (current) ? api.utils.hashMerge(param[key], {})  : [];
+				if (!current || current == parseInt(current)) {
+					param[key] = (param[key] instanceof Array) ? param[key] : [];
+				} else {
+					param[key] = api.utils.hashMerge(param[key] || {}, {});
+				}
 
+        param = param[key];
 				key = current;
 			}
 		
 			// Add to params
 			if (param instanceof Array) { 
-				param.push(varsHash[v]);
+				if (varsHash[v] instanceof Array) {
+					for (var i in varsHash[v]) {
+						param.push(varsHash[v][i]);
+					}
+				} else {
+					param.push(varsHash[v]);
+				}
 			} else {
-				param[key] = varsHash[v];
+				param[key] = (varsHash[v] instanceof Array) ? varsHash[v][varsHash[v].length - 1] : varsHash[v];
 			}
     };
   }
