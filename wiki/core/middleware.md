@@ -5,6 +5,8 @@ title: Wiki - Middleware
 
 # Middleware
 
+<img src="/img/connection_flow.png" />
+
 ## Action Middleware
 
 actionhero provides hooks for you to execute custom code both before and after the execution of all actions.  You do this by adding to the `api.actions.preProcessors` and `api.actions.postProcessors` array.  Functions you add here will be executed in order on the connection.

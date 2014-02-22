@@ -14,8 +14,15 @@ The actionhero API defines a single access point and accepts GET, POST, PUT and 
 
 actionhero will also serve static files for you, but actionhero is not a 'rendering' server (like express or rails).
 
+# All Images
+
+## actionhero sections
 <img src="/img/actionheroGraphic.png" />
+
+## request flow
+<img src="/img/connection_flow.png" />
 
 ---
 
-**note**: This wiki will always reflect the master branch of actionhero, and therefore may be slightly ahead of the latest release on NPM.
+# Notes
+- This wiki will always reflect the master branch of actionhero, and therefore may be slightly ahead of the latest release on NPM.
