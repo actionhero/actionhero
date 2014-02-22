@@ -44,13 +44,13 @@ When running the cluster, the cluster process first writes his own pidfile to `p
 ## Git-based deployment Example
 
 To send a signal to the cluster master process to reboot all its workers (`USR2`), you can cat the pidfile (bash):
-```bash
+{% highlight bash %}
 kill -s USR2 `cat /path/to/pids/cluster_pidfile`
-```
+{% endhighlight %}
 
 If you want to setup a git-based deployment, the simplest steps would be something like:
 
-```bash
+{% highlight javascript %}
 #!/usr/bin/env bash
 # assuming the actionhero cluster master process is already running
 
@@ -60,7 +60,7 @@ cd $DEPLOY_PATH && git pull
 cd $DEPLOY_PATH && npm install
 # run any grunt tasks here, like perhaps an asset compile step or a database migration
 cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
-```
+{% endhighlight %}
 
 ## Global Packages
 
