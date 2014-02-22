@@ -355,8 +355,46 @@ var web = function(api, options, next){
       var key = Object.keys(varsHash)[0];
     }
 
-    for(var v in varsHash){
-      connection.params[v] = varsHash[v];
+    for(var v in varsHash) {
+			var start = -1, 
+					end = -1, 
+					key = v, 
+					param = connection.params;
+			
+			// Parse array/object notation
+			while (!(v instanceof Array) && (start = v.indexOf('[', start + 1)) > -1 && (end == -1 || end == start - 1) && (end = v.indexOf(']', start)) > -1) {
+				// Get term between brackets
+				var current = v.slice(start + 1, end);
+				current.trim();
+
+				// Get initial key
+				if (param === connection.params) {
+					key = v.substr(0, start);
+				}
+
+				// Object or array?
+				if (!current || current == parseInt(current)) {
+					param[key] = (param[key] instanceof Array) ? param[key] : [];
+				} else {
+					param[key] = api.utils.hashMerge(param[key] || {}, {});
+				}
+
+        param = param[key];
+				key = current;
+			}
+		
+			// Add to params
+			if (param instanceof Array) { 
+				if (varsHash[v] instanceof Array) {
+					for (var i in varsHash[v]) {
+						param.push(varsHash[v][i]);
+					}
+				} else {
+					param.push(varsHash[v]);
+				}
+			} else {
+				param[key] = (varsHash[v] instanceof Array) ? varsHash[v][varsHash[v].length - 1] : varsHash[v];
+			}
     };
   }
 
