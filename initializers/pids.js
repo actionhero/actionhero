@@ -6,10 +6,20 @@ var pids = function(api, next){
   api.pids = {};
   api.pids.pid = process.pid;
 
+  api.pids.sanitizeId = function(){
+    var pidfile = api.id;
+    pidfile = pidfile.replace(new RegExp(':', 'g'), '-');
+    pidfile = pidfile.replace(new RegExp(' ', 'g'), '_');
+    pidfile = pidfile.replace(new RegExp('\r', 'g'), '');
+    pidfile = pidfile.replace(new RegExp('\n', 'g'), '');
+
+    return pidfile;
+  }
+
   if(cluster.isMaster){
-    api.pids.title = 'actionhero-' + api.id.replace(new RegExp(':', 'g'), '-');
+    api.pids.title = 'actionhero-' + api.pids.sanitizeId();
   } else {
-    api.pids.title = 'actionheroWorker-' + new Date().getTime();
+    api.pids.title = api.pids.sanitizeId();
   }
 
   try { fs.mkdirSync(api.config.general.paths.pid, '0777') } catch(e) {}

@@ -65,7 +65,7 @@ exports['startCluster'] = function(binary, next){
         pidfile: binary.pidPath + '/cluster_pidfile',
         log: process.cwd() + '/log/cluster.log',
         title: 'actionhero-master',
-        workerTitlePrefix: 'actionhero-worker'
+        workerTitlePrefix: 'actionhero-worker-'
       };
 
       for(var i in binary.clusterConfig){
@@ -129,7 +129,8 @@ exports['startCluster'] = function(binary, next){
           workerID = workerID - binary.workerRestartArray.length;
         }
         var worker = cluster.fork({
-          title: binary.clusterConfig.workerTitlePrefix + workerID
+          title: binary.clusterConfig.workerTitlePrefix + workerID,
+          ACTIONHERO_TITLE: binary.clusterConfig.workerTitlePrefix + workerID
         });
         worker.workerID = workerID
         binary.log('starting worker #' + worker.workerID, 'info');
