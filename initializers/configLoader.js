@@ -11,13 +11,13 @@ var configLoader = function(api, next){
       api.watchFileAndAct(configFile, function(){
         api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
         delete require.cache[require.resolve(configFile)];
-        api._commands.restart.call(api._self);
+        api.commands.restart.call(api._self);
       });
 
       api.watchFileAndAct(envConfigFile, function(){
         api.log('\r\n\r\n*** rebooting due to environment config change ***\r\n\r\n', 'info');
         delete require.cache[require.resolve(envConfigFile)];
-        api._commands.restart.call(api._self);
+        api.commands.restart.call(api._self);
       });
 
       callback();

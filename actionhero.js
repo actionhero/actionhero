@@ -20,7 +20,7 @@ var actionhero = function(){
 actionhero.prototype.initialize = function(params, callback){
   var self = this;
   self.api._self = self;
-  self.api._commands = {
+  self.api.commands = {
     initialize: self.initialize,
     start: self.start,
     stop: self.stop,
@@ -76,7 +76,7 @@ actionhero.prototype.initialize = function(params, callback){
       self.initalizers[initializer](self.api, next);
       self.api.watchFileAndAct(file, function(){
         self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
-        self.api._commands.restart.call(self.api._self);
+        self.api.commands.restart.call(self.api._self);
       });
     };
   });
@@ -103,7 +103,7 @@ actionhero.prototype.initialize = function(params, callback){
                 self.initalizers[initializer](self.api, next);
                 self.api.watchFileAndAct(file, function(){
                   self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-                  self.api._commands.restart.call(self.api._self);
+                  self.api.commands.restart.call(self.api._self);
                 });
               };
             }
