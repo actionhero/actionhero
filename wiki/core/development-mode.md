@@ -5,20 +5,18 @@ title: Wiki - Development Mode
 
 # Development Mode
 
+## Don't use this in production!
+
+## About
+
+actionhero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to config.js or initializers are more severe, and will restart the whole application (much like nodemon).
+
 To enable development mode simply set `developmentMode: true` in your `config.js`.
 
 {% highlight javascript%}
 config.general = {
   developmentMode: true
 }
-{% endhighlight %}
-
-To do this with an environment variable try something like in your `config.js` which follows the same NODE_ENV that express and friends use.
-
-{% highlight javascript %}
-//disable development mode in production
-if("production" === process.env.NODE_ENV)
-  config.general.developmentMode = false
 {% endhighlight %}
 
 ## Effects of Development Mode
@@ -31,12 +29,20 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 - if you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change 
 - changing `config.js`, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
 
-#### Don't use this in production!
+## Watching custom files
+
+You can use actionhero's `watchFileAndAct()` method to watch additional files your application may have:
+
+{% highlight javascript %}
+api.watchFileAndAct(path_to_file, function(){
+  api.log(rebooting due to config change: ' + path_to_file, 'info');
+  api.commands.restart.call(api._self);
+});
+{% endhighlight %}
 
 ## Debugging
 
 You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your actionhero application within the familar Chrome Browser's developer tools.
-
 
 {% highlight javascript %}
 "dependencies": {
