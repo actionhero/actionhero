@@ -69,7 +69,6 @@ var servers = function(api, next){
 
           api.watchFileAndAct(fullFilePath, function(){
             api.log('\r\n\r\n*** rebooting due to server ('+fullFilePath+') change ***\r\n\r\n', 'info');
-            delete require.cache[require.resolve(fullFilePath)];
             api.commands.restart.call(api._self);
           });
         }

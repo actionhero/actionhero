@@ -26,12 +26,6 @@ var tasks = function(api, next){
       }
 
       api.watchFileAndAct(fullFilePath, function(){
-        var cleanPath = fullFilePath;
-        if(process.platform === 'win32'){
-          cleanPath = fullFilePath.replace(/\//g, '\\');
-        }
-
-        delete require.cache[require.resolve(cleanPath)];
         self.load(fullFilePath, true);
       });
 

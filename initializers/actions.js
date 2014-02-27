@@ -88,12 +88,6 @@ var actions = function(api, next){
     }
 
     api.watchFileAndAct(fullFilePath, function(){
-      var cleanPath = fullFilePath;
-      if('win32' === process.platform){
-        cleanPath = fullFilePath.replace(/\//g, '\\');
-      }
-
-      delete require.cache[require.resolve(cleanPath)];
       api.actions.loadFile(fullFilePath, true);
       api.params.buildPostVariables();
     })

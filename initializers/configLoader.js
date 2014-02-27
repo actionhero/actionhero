@@ -25,18 +25,25 @@ var configLoader = function(api, next){
   }
 
   api.watchedFiles = [];
+
   api.watchFileAndAct = function(file, callback){
     if(api.config.general.developmentMode == true && api.watchedFiles.indexOf(file) < 0){
       api.watchedFiles.push(file);
       fs.watchFile(file, {interval: 1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
           process.nextTick(function(){
+            var cleanPath = file;
+            if(process.platform === 'win32'){
+              cleanPath = file.replace(/\//g, '\\');
+            }
+            delete require.cache[require.resolve(cleanPath)];
             callback();
           });
         }
       });
     }
   };
+
   api.unWatchAllFiles = function(){
     for(var i in api.watchedFiles){
       fs.unwatchFile(api.watchedFiles[i]);
