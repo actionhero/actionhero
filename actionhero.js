@@ -9,7 +9,7 @@ var async = require('async');
 
 var actionhero = function(){
   var self = this;
-  self.initalizers = {};
+  self.initializers = {};
   self.api = {
     running: false,
     initialized: false,
@@ -71,9 +71,9 @@ actionhero.prototype.initialize = function(params, callback){
   ].forEach(function(initializer){
     var file = __dirname + '/initializers/' + initializer + '.js';
     delete require.cache[require.resolve(file)];
-    self.initalizers[initializer] = require(file)[initializer];
+    self.initializers[initializer] = require(file)[initializer];
     orderedInitializers[initializer] = function(next){
-      self.initalizers[initializer](self.api, next);
+      self.initializers[initializer](self.api, next);
       self.api.watchFileAndAct(file, function(){
         self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
         self.api.commands.restart.call(self.api._self);
@@ -97,10 +97,10 @@ actionhero.prototype.initialize = function(params, callback){
               if(require.cache[require.resolve(file)] !== null){
                 delete require.cache[require.resolve(file)];
               }
-              self.initalizers[initializer] = require(file)[initializer];
+              self.initializers[initializer] = require(file)[initializer];
               projectInitializers[initializer] = function(next){
                 self.api.log('running custom initializer: ' + initializer, 'info');
-                self.initalizers[initializer](self.api, next);
+                self.initializers[initializer](self.api, next);
                 self.api.watchFileAndAct(file, function(){
                   self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
                   self.api.commands.restart.call(self.api._self);
