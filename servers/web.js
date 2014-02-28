@@ -33,7 +33,7 @@ var web = function(api, options, next){
   if(api.config.servers.web.directoryFileType == null){
     api.config.servers.web.directoryFileType = 'index.html';
   }
-  
+
   //////////////////////
   // REQUIRED METHODS //
   //////////////////////
@@ -85,7 +85,7 @@ var web = function(api, options, next){
 
   server.sendFile = function(connection, error, fileStream, mime, length){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    connection.rawConnection.responseHeaders.push(['Content-Length', length]); // Don't send both content-length and transfer-encoding 
+    connection.rawConnection.responseHeaders.push(['Content-Length', length]); // Don't send both content-length and transfer-encoding
     // connection.rawConnection.responseHeaders.push(['Transfer-Encoding', 'Chunked'])
     connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
     connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']);
@@ -151,7 +151,7 @@ var web = function(api, options, next){
           responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
         }
       }
-             
+
       var remoteIP = req.connection.remoteAddress;
       var remotePort = req.connection.remotePort;
 
@@ -367,6 +367,7 @@ var web = function(api, options, next){
     delete params.action;
     delete params.limit;
     delete params.offset;
+    delete params[''];
     return (api.utils.hashLength(params) === 0);
   }
 
@@ -406,7 +407,6 @@ var web = function(api, options, next){
   }
 
   next(server);
-
 }
 
 /////////////////////////////////////////////////////////////////////
