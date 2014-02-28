@@ -19,6 +19,6 @@ title: Wiki - Example Actions
 
 **[oauth](https://gist.github.com/4326070)**: This file is actually 2 actions which are needed to authenticate a user against twitter's API.  Note the use of `api.cache` to save and load the temporary secret tokens, and how to send custom (redirect) headers with actionhero
 
-**[Authentication Example](hhttp://blog.evantahler.com/blog/authentication-with-actionHero-again.html)**: This example contains a working user system (auth, login, user creation, sessions, etc) using redis. 
+**[Authentication Example](http://blog.evantahler.com/blog/authentication-with-actionHero-again.html)**: This example contains a working user system (auth, login, user creation, sessions, etc) using redis. 
 
 ***[Tic-Tac-Toe API](https://gist.github.com/evantahler/5898472)*** This advanced example demonstrates how to create actions (and initializers) which will enable you to play tic-tac-toe against an AI Player.
