@@ -3,8 +3,8 @@ notifications:
     - evantahler@gmail.com
 language: node_js
 node_js:
-  # - "0.8" (need to disable this until faye is fixed) [[ https://github.com/faye/faye/pull/269 ]]
-  - "0.10" 
+  - "0.8"
+  - "0.10"
   # - "0.11"
 
 branches:
@@ -16,10 +16,10 @@ services:
 before_script:
   - npm install -g grunt-cli
 notifications:
-  webhooks: 
+  webhooks:
     urls:
       - http://webhooks.nodejitsu.com/1/deploy
     on_success: always
     on_failure: never
-after_failure: 
+after_failure:
   - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
