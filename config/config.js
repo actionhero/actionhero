@@ -180,6 +180,11 @@ config.servers = {
     // Route that static files will be served from;
     //  path (relative to your project root) to serve static content from
     urlPathForFiles : 'public',
+    //
+    //
+    hostFolderPaths:{
+      "mainserver":"mainserver"
+    },
     // When visiting the root URL, should visitors see 'api' or 'file'?
     //  Visitors can always visit /api and /public as normal
     rootEndpointType : 'file',

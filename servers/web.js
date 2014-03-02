@@ -113,6 +113,11 @@ var web = function(api, options, next){
       if(requestMode == 'api'){
         server.processAction(connection);
       } else if(requestMode == 'file'){
+        var thisHost = connection.rawConnection.req.headers.host.split(":")[0];
+        if(thisHost in api.config.servers.web.hostFolderPaths){
+          connection.params.file = api.config.servers.web.hostFolderPaths[thisHost]+"/"+connection.params.file;
+        };
+        api.log(connection.params.file);
         server.processFile(connection);
       } else if(requestMode == 'options'){
         respondToOptions(connection);
@@ -137,6 +142,7 @@ var web = function(api, options, next){
       var responseHttpCode = 200;
       var method = req.method;
       var parsedURL = url.parse(req.url, true);
+      api.log(req.headers.host);
       var i;
       for(i in cookieHash){
         responseHeaders.push([i, cookieHash[i]]);
@@ -402,3 +408,4 @@ var web = function(api, options, next){
 /////////////////////////////////////////////////////////////////////
 // exports
 exports.web = web;
+

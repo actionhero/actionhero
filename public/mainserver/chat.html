@@ -1,0 +1,126 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="actionhero.js" />
+  <link href='/public/css/actionhero.css' rel='stylesheet' type='text/css'>
+  <link rel="icon" href="/public/favicon.ico">
+  <title>actionhero.js</title>
+
+  <script type="text/javascript" src="/faye/client.js"></script>
+  <script type="text/javascript" src="/public/javascript/actionheroClient.js"></script>
+
+  <script type="text/javascript">
+
+  var client;
+  var boot = function(){
+    client = new actionheroClient;
+  
+    client.on('connected',    function(){ console.log('connected!') })
+    client.on('disconnected', function(){ console.log('disconnected :(') })
+    
+    // client.on('message',      function(message){ console.log(message) })
+
+    client.on('alert',        function(message){ alert(message) })
+    client.on('api',          function(message){ alert(message) })
+
+    client.on('welcome',      function(message){ appendMessage(message); })
+    client.on('say',          function(message){ appendMessage(message); })
+
+    client.connect(function(err, details){
+      if(err != null){
+        console.log(err);
+      }else{
+        client.roomChange("defaultRoom");
+        document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>"
+      }
+    });
+      
+  }
+
+  var appendMessage = function(message){
+    var s = "";
+    s += "<pre>"
+    if (message.welcome != null){
+      s += "<div align=\"center\">*** " + message.welcome + " ***</div>";
+    }else{
+      s += " " + formatTime(message.sentAt);
+      s += "<span style=\"color:#" + intToARGB(hashCode(message.from)) + "\">"
+      s += " [";
+      if(message.me === true){ s += "<strong>"; }
+      s += message.from;
+      if(message.me === true){ s += "</strong>"; }
+      s += "] ";
+      s += "</span>"
+      s += message.message;
+    }
+    s += "</pre>"
+    var div = document.getElementById("chatBox");
+    div.innerHTML = s + div.innerHTML;
+  }
+
+  var sendMessage = function(){
+    var div = document.getElementById("message");
+    var message = div.value;
+    div.value = "";
+    client.say(message);
+    appendMessage({
+      me: true,
+      message: message,
+      from: client.id,
+      sentAt: new Date().getTime()
+    })
+  }
+
+  var formatTime = function(timestamp){
+    return new Date(timestamp).toLocaleTimeString()
+  }
+
+  function hashCode(str) { // java String#hashCode
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) {
+         hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return hash;
+  } 
+
+  function intToARGB(i){
+      var color =
+        ((i>>24)&0xFF).toString(16) +
+        ((i>>16)&0xFF).toString(16) +
+        ((i>> 8)&0xFF).toString(16) +
+        (i&0xFF).toString(16);
+      return color.substring(0, 6);
+  }
+
+  </script>
+  
+</head>
+
+<body onload="boot()">
+
+  <div class="body_container">
+    <div class="server_info">
+      <div class="box"><div class="left">Name:</div><span id="name"></span></div>
+      <div class="box"><div class="left">Message:</div>
+          <form id="messageForm" name="messageForm" action="#">
+            <input type="text" name="message" size="90" id="message"> <a href="javascript:sendMessage()">[ send ]</a>
+          </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="body_container">
+    <h2>Chat:</h2>
+    <div class="server_info" id="actions">
+      <div class="chatBox" id="chatBox">...</div>
+    </div>
+  </div>
+
+</body>
+
+<script>
+document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault(); sendMessage(); }, false);
+</script>
+
+</html>

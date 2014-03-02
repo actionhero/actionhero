@@ -1,0 +1,54 @@
+body {
+  background-color: #04819E;
+  text-align: center;
+  font-family: sans-serif;
+  color: black;
+}
+
+.body_container {
+  margin:0 auto;
+  width: 800px;
+  background-color: #FFB100;
+  border-radius: 15px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  border: 5px solid #015367;
+}
+
+h1 {
+  font-family: 'Impact', sans-serif;
+  font-weight: 800; 
+  font-size: 50px;
+  text-shadow: 4px 4px #A61300;
+  color: #FF1E00;
+}
+
+.server_info {
+  text-align: left;
+}
+
+.box{
+  border: 1px solid black;
+  clear: both;
+}
+
+.box-tall{
+  min-height: 85px;
+}
+
+.left {
+  padding-left: 10px;
+  width: 200px;
+  float: left;
+}
+
+.right {
+  padding-right: 10px;
+  width: 500px;
+  float: right;
+}
+
+.messages {
+  font-size: 10px;
+  text-align: left;
+}

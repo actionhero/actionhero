@@ -1,0 +1,69 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="actionhero.js" />
+  <link rel="stylesheet" href="/public/css/actionhero.css" type="text/css">
+  <link rel="icon" href="/public/favicon.ico">
+  <title>actionhero.js</title>
+
+  <script src="/public/javascript/actionheroClient.js"></script>
+  
+</head>
+
+<body> 
+
+  <div class="body_container">
+    <h1>All Hail MainServer</h1>
+    <img src="/public/logo/actionhero.png" width="400px"/>
+    <p><strong>Congratulations!</strong> Your actionhero server working.</p>
+    <p>Try <a href="/chat.html">chat with websockets</a></p>
+    <p>Learn more @ <a href="http://www.actionherojs.com">www.actionherojs.com</a></p>
+  </div>
+
+  <div class="body_container">
+    <h2>Server Information:</h2>
+    <div class="server_info">
+      <div class="box"><div class="left">Server Name:</div><div class="right" id="serverName"></div></div>
+      <div class="box"><div class="left">API Version:</div><div class="right" id="serverVersion"></div></div>
+    </div>
+  </div>
+
+  <div class="body_container">
+    <h2>Actions:</h2>
+    <div class="server_info" id="actions">
+      
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var populateServerInfo = function(data){
+      if(data.serverInformation != null){
+        document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
+        document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
+      }
+      for(var actionName in data.documentation){
+        for(var version in data.documentation[actionName]){
+          var action = data.documentation[actionName][version];
+          var row = '';
+          row += '<div class="box box-tall"><div class="left">';
+          row += '<a href="/api/' + action.name + '?apiVersion=' + version + '">' + action.name + ' (v' + version + ')</a></div>';
+          row += '<div class="right">' + action.description;
+          row += '<br /><br />';
+          row += 'required: ' + action.inputs.required.join(',');
+          row += '<br />';
+          row += 'optional: ' + action.inputs.optional.join(',');
+          row += '</div></div>';
+          document.getElementById('actions').innerHTML += row;
+        }
+      }
+    }
+
+    var client = new actionheroClient();
+    client.action('', function(err, data){
+      populateServerInfo(data)
+    }); 
+  </script>
+
+</body>
+</html>
