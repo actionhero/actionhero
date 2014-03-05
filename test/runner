@@ -16,7 +16,7 @@ tests['fake'] = function(next){
   child.stdin.pipe(process.stdin);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
-  // child.on('error', function(err){ throw err; })
+  child.on('error', function(err){ throw err; })
   child.on('close', function(code){
     if(code != 0){ process.exit(code); }
     next();
