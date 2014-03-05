@@ -16,7 +16,7 @@ This is a great place to write authentication logic or custom loggers.
 preProcessors, like actions themselves, return the connection and a `toProcess` flag.  Setting `toProcess` to false will block the execution of an action.  You can operate on `connection.response` and `connection.error`, just like within an action to create messages to the client.
 
 **preProcessors** are provided with `connection`, `actionTemplate`, and `next`.  They are expected to return (connection, toProcess)
-**postProcessors** are provided with `connection`, `actionTemplate`, and `next`.  They are expected to return (connection)
+**postProcessors** are provided with `connection`, `actionTemplate`, `toRender`, and `next`.  They are expected to return (connection, toRender)
 
 Note: preProcessor action middleware will be executed before connections have their params filtered.  This means that you will have access to all the request's input at `connection.params`.  Extra caution should be used.
 
@@ -39,7 +39,7 @@ api.actions.preProcessors.push(function(connection, actionTemplate, next){
 
 api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
   connection.response._description = actionTemplate.description;
-  next(connection);
+  next(connection, toRender);
 });
 
 {% endhighlight %}
