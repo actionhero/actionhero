@@ -28,7 +28,7 @@ function makeSocketRequest(thisClient, message, cb){
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb == 'function'){ cb(parsed) }
-  }, 100);
+  }, 500);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');

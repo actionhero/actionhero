@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+var spawn = require('child_process').spawn;
+var async = require('async');
+var path  = require('path'); 
+var mocha = ["node_modules", "mocha", "bin", "mocha"].join(path.sep);
+var tests = {};
+
+process.env.NODE_ENV = "test";
+
+tests['fake'] = function(next){
+  console.log('')
+  console.log("*** running test suite with fakeredis ***\r\n")
+  process.env.fakeredis = "true"
+
+  child = spawn("node", [mocha], {env: process.env, cwd: process.cwd() });
+  child.stdin.pipe(process.stdin);
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
+  child.on('error', function(err){ throw err; })
+  child.on('close', function(code){
+    if(code != 0){ process.exit(code); }
+    next();
+  });
+}
+
+tests['real'] = function(next){
+  console.log('')
+  console.log("*** running test suite with real redis ***\r\n");
+  process.env.fakeredis = "false";
+
+  child = spawn("node", [mocha], {env: process.env, cwd: process.cwd() });
+  child.stdin.pipe(process.stdin);
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
+  child.on('error', function(err){ throw err; })
+  child.on('close', function(code){
+    if(code != 0){ process.exit(code); }
+    next();
+  });
+}
+
+async.series(tests);
+
