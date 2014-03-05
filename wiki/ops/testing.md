@@ -47,6 +47,13 @@ var message = {
 #### api.specHelper.runTask(taskName, params, callback)
 - callback may or may not return anything depending on your task's makeup
 
+{% highlight javascript %}
+api.specHelper.runTask('sendEmailTask', {message: 'hello' to: 'evan@test.com'}, function(response){
+  // test it!
+  // remember that the task really will be run, so be sure that the test environment is set properly
+})
+{% endhighlight %}
+
 ## Suggested Test Layout
 
 {% highlight javascript %}
