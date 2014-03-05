@@ -118,8 +118,8 @@ var actionProcessor = function(api, next){
         processors.push(function(next){
           if(toProcess === true){
             processor(self.connection, self.actionTemplate, function(connection, localToProcess){
-              self.connection = connection
-              toProcess = localToProcess
+              self.connection = connection;
+              if(localToProcess != null){ toProcess = localToProcess; }
               next();
             });
           } else { next(toProcess) }
@@ -140,7 +140,7 @@ var actionProcessor = function(api, next){
         processors.push(function(next){
           processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
-            toRender = localToRender;
+            if(localToRender != null){ toRender = localToRender; }
             next();
           });
         })
