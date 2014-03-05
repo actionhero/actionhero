@@ -1,4 +1,6 @@
 var fs = require('fs');
+var os = require('os');
+var path = require('path');
 var should = require('should');
 var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
 var actionhero = new actionheroPrototype();
@@ -178,7 +180,7 @@ describe('Core: Cache', function(){
 
   describe('cache dump files', function(){
 
-    var file = "/tmp/cacheDump"; // assumes *nix operatign system
+    var file = os.tmpdir() + path.sep + "cacheDump";
 
     it('can read write the cache to a dump file', function(done){
       api.cache.clear(function(){
