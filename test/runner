@@ -9,6 +9,7 @@ var tests = {};
 process.env.NODE_ENV = "test";
 
 tests['fake'] = function(next){
+  console.log('')
   console.log("*** running test suite with fakeredis ***\r\n")
   process.env.fakeredis = "true"
 
@@ -24,6 +25,7 @@ tests['fake'] = function(next){
 }
 
 tests['real'] = function(next){
+  console.log('')
   console.log("*** running test suite with real redis ***\r\n");
   process.env.fakeredis = "false";
 
