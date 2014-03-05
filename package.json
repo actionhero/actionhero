@@ -45,7 +45,9 @@
   "devDependencies": {
     "mocha": "~1.17.1",
     "should": "~2.1.1",
-    "request": "~2.34.0",
+    "request": "~2.34.0"
+  },
+  "optionalDependencies": {
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-uglify": "~0.4.0",
