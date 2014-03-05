@@ -96,4 +96,40 @@ describe('Core: specHelper', function(){
     });
   });
 
+  describe('tasks', function(){
+
+    before(function(done){
+      api.tasks.tasks['test_task'] = {
+        name: 'test_task',
+        description: 'task: ' + this.name,
+        queue: 'default',
+        frequency: 0,
+        plugins: [],
+        pluginOptions: {},
+        run: function(api, params, next){
+          api.testOutput = 'OK'; // test modifying the api pbject
+          next('OK');
+        }
+      }
+
+      api.tasks.jobs['test_task']  = api.tasks.jobWrapper('test_task');
+      done();
+    });
+
+    after(function(done){
+      delete api['testOutput']
+      delete api.tasks.tasks['test_task'];
+      done();
+    });
+
+    it('can run tasks', function(done){
+      api.specHelper.runTask('test_task', {}, function(response){
+        response.should.equal('OK');
+        api.testOutput.should.equal('OK');
+        done();
+      })
+    });
+
+  });
+
 });
