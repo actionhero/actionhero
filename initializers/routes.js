@@ -16,7 +16,9 @@ var routes = function(api, next){
         var match = api.routes.matchURL(connection.rawConnection.parsedURL.pathname, route.path);
         if(match.match === true){
           for(var param in match.params){
-            connection.params[param] = match.params[param];
+            var decodedName = decodeURIComponent(param.replace(/\+/g, ' '));
+            var decodedValue = decodeURIComponent(match.params[param].replace(/\+/g, ' '));
+            connection.params[decodedName] = decodedValue;
           }
           connection.params['action'] = route.action;
           break;
