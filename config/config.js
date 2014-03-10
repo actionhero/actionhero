@@ -36,7 +36,7 @@ config.general = {
   // disables the whitelisting of client params
   disableParamScrubbing: false,
   // params you would like hidden from any logs
-  filterParameters: [],
+  filteredParams: [],
   // The default filetype to server when a user requests a directory
   directoryFileType : 'index.html',
   // configuration for your actionhero project structure
