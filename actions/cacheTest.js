@@ -24,9 +24,9 @@ action.outputExample = {
 action.run = function(api, connection, next){
   var key = 'cacheTest_' + connection.params.key;
   var value = connection.params.value;
-    
+
   connection.response.cacheTestResults = {};
-    
+
   api.cache.save(key, value, 5000, function(err, resp){
     connection.response.cacheTestResults.saveResp = resp;
     api.cache.size(function(err, numberOfCacheObjects){

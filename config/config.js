@@ -24,14 +24,14 @@ config.general = {
   flatFileNotFoundMessage: 'Sorry, that file is not found :(',
   // The message to accompany 500 errors (internal server errors)
   serverErrorMessage: 'The server experienced an internal error',
-  // defaultLimit & defaultOffset are useful for limiting the length of response lists. 
+  // defaultLimit & defaultOffset are useful for limiting the length of response lists.
   defaultLimit: 100,
   defaultOffset: 0,
   // the redis prefix for actionhero's cache objects
   cachePrefix: 'actionhero:cache:',
   // Watch for changes in actions and tasks, and reload/restart them on the fly
   developmentMode: true,
-  // How many pending actions can a single connection be working on 
+  // How many pending actions can a single connection be working on
   simultaneousActions: 5,
   // disables the whitelisting of client params
   disableParamScrubbing: false,
@@ -49,7 +49,7 @@ config.general = {
     'server':      __dirname + '/../servers',
     'initializer': __dirname + '/../initializers'
   },
-  // hash containing chat rooms you wish to be created at server boot 
+  // hash containing chat rooms you wish to be created at server boot
   startingChatRooms: {
     // format is {roomName: {authKey, authValue}}
     //'secureRoom': {authorized: true},

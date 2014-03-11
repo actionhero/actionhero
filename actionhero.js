@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // actionhero Framework in node.js
-// evan@evantahler.com 
+// evan@evantahler.com
 // https://github.com/evantahler/actionhero
 
 var fs = require('fs');
@@ -16,7 +16,7 @@ var actionhero = function(){
     shuttingDown: false
   };
 };
-  
+
 actionhero.prototype.initialize = function(params, callback){
   var self = this;
   self.api._self = self;
@@ -228,7 +228,7 @@ actionhero.prototype.stop = function(callback){
         self.api.log('The actionhero has been stopped', 'alert');
         self.api.log('***', 'debug');
         delete self.api.shuttingDown;
-        if(typeof callback == 'function'){ callback(null, self.api) } 
+        if(typeof callback == 'function'){ callback(null, self.api) }
       }, 500);
     };
 
