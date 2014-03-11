@@ -102,13 +102,9 @@ var tasks = function(api, next){
       }
     },
     
-    loadFolder: function(path){
+    loadDirectory: function(path){
       var self = this;
 
-      if(path == null){
-        path = api.config.general.paths.task;
-      }
-      
       if(fs.existsSync(path)){
         fs.readdirSync(path).forEach( function(file) {
           if(path[path.length - 1] != '/'){ path += '/' }
@@ -116,10 +112,10 @@ var tasks = function(api, next){
           if(file[0] != '.'){
             var stats = fs.statSync(fullFilePath);
             if(stats.isDirectory()){
-              self.loadFolder(fullFilePath);
+              self.loadDirectory(fullFilePath);
             } else if(stats.isSymbolicLink()){
               var realPath = fs.readlinkSync(fullFilePath);
-              self.loadFolder(realPath);
+              self.loadDirectory(realPath);
             } else if(stats.isFile()){
               var ext = file.split('.')[1];
               if(ext === 'js'){ api.tasks.load(fullFilePath) }
@@ -239,7 +235,10 @@ var tasks = function(api, next){
     }
   }
 
-  api.tasks.loadFolder();
+  api.config.general.paths.task.forEach(function(p){
+    api.tasks.loadDirectory(p);
+  })
+
   next();
   
 };

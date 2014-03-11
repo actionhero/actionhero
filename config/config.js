@@ -41,14 +41,19 @@ config.general = {
   directoryFileType : 'index.html',
   // configuration for your actionhero project structure
   paths: {
-    'action':      __dirname + '/../actions',
-    'task':        __dirname + '/../tasks',
-    'public':      __dirname + '/../public',
-    'pid':         __dirname + '/../pids',
-    'log':         __dirname + '/../log',
-    'server':      __dirname + '/../servers',
-    'initializer': __dirname + '/../initializers'
+    'action':      [ __dirname + '/../actions'      ] ,
+    'task':        [ __dirname + '/../tasks'        ] ,
+    'public':      [ __dirname + '/../public'       ] ,
+    'pid':         [ __dirname + '/../pids'         ] ,
+    'log':         [ __dirname + '/../log'          ] ,
+    'server':      [ __dirname + '/../servers'      ] ,
+    'initializer': [ __dirname + '/../initializers' ]
   },
+  // list of actionhero plugins you want to load
+  plugins: [
+    // this is a list of package names
+    // packages still need to be included in `package.json`
+  ],
   // hash containing chat rooms you wish to be created at server boot
   startingChatRooms: {
     // format is {roomName: {authKey, authValue}}

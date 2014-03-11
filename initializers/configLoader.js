@@ -93,6 +93,19 @@ var configLoader = function(api, next){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
 
+  api.config.general.plugins.forEach(function(plugin){
+    // #TODO: support for global modules?
+    var pluginPackageBase = api.project_root + '/node_modules/' + plugin;
+    if(fs.existsSync(pluginPackageBase + "/package.json")){
+      api.config.general.paths.action.push(      pluginPackageBase + '/actions'     );
+      api.config.general.paths.task.push(        pluginPackageBase + '/tasks'       );
+      api.config.general.paths.server.push(      pluginPackageBase + '/server'      );
+      api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );
+    }else{
+      throw new Error('plugin not found:' + plugin);
+    }
+  });
+
   next();
 }
 

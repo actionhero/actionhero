@@ -49,10 +49,13 @@ var servers = function(api, next){
   // Load the servers
 
   var serverFolders = [
-    __dirname + '/../servers',
-    api.config.general.paths.server
+    __dirname + '/../servers'  
   ];
-    
+
+  api.config.general.paths.server.forEach(function(p){
+    serverFolders.push(p);
+  })
+
   var inits = {}
   for(var i in serverFolders){
     var folder = serverFolders[i];

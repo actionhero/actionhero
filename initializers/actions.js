@@ -47,12 +47,6 @@ var actions = function(api, next){
   }
 
   api.actions.loadDirectory = function(path){
-    if(path == null){
-      path = api.config.general.paths.action;
-      if(!fs.existsSync(api.config.general.paths.action)){
-        api.log(api.config.general.paths.action + ' defined as action path, but does not exist', 'warning');
-      }
-    }
     fs.readdirSync(path).forEach( function(file) {
       if(path[path.length - 1] != '/'){ path += '/' }
       var fullFilePath = path + file;
@@ -113,7 +107,10 @@ var actions = function(api, next){
     }
   }
 
-  api.actions.loadDirectory();
+  api.config.general.paths.action.forEach(function(p){
+    api.actions.loadDirectory(p);
+  })
+
   next();
   
 }
