@@ -99,7 +99,7 @@ var configLoader = function(api, next){
     if(fs.existsSync(pluginPackageBase + "/package.json")){
       api.config.general.paths.action.push(      pluginPackageBase + '/actions'     );
       api.config.general.paths.task.push(        pluginPackageBase + '/tasks'       );
-      api.config.general.paths.server.push(      pluginPackageBase + '/server'      );
+      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );
       api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );
     }else{
       throw new Error('plugin not found:' + plugin);
