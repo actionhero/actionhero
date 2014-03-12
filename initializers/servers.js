@@ -49,7 +49,7 @@ var servers = function(api, next){
   // Load the servers
 
   var serverFolders = [
-    __dirname + '/../servers',
+    path.resolve(__dirname + '/../servers'),
     api.config.general.paths.server
   ];
     
