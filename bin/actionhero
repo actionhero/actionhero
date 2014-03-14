@@ -141,7 +141,7 @@ if(process.env.actionhero_root != null){
   process.chdir(binary.paths.project_root);
 } else {
   // installed globally
-  binary.paths.actionhero_root = pwd;
+  binary.paths.actionhero_root = path.normalize(__dirname + '/../');
 }
 
 try {
