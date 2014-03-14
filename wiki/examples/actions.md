@@ -15,7 +15,9 @@ title: Wiki - Example Actions
 
 **[inspectTasks](https://gist.github.com/4399793)**: This action will retrieve the status of the task queue.
 
-**[fileResponder](https://gist.github.com/connanp/6169574)**: This snippet is for rendering Jade templates on the server for pushState single page apps in actionhero. Useful when you need to bootstrap model data on initial page load. It also pre-compiles the templates on server start and will recompile if they change.
+**[SimpleFileResponder](https://gist.github.com/evantahler/9541992)**: This action demonstrates how you can can manually send files from within actions.
+
+**[JadefileResponder](https://gist.github.com/connanp/6169574)**: This snippet is for rendering Jade templates on the server for pushState single page apps in actionhero. Useful when you need to bootstrap model data on initial page load. It also pre-compiles the templates on server start and will recompile if they change.
 
 **[oauth](https://gist.github.com/4326070)**: This file is actually 2 actions which are needed to authenticate a user against twitter's API.  Note the use of `api.cache` to save and load the temporary secret tokens, and how to send custom (redirect) headers with actionhero
 
