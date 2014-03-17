@@ -186,8 +186,8 @@ var websocket = function(api, options, next){
       // TODO: This will always be localhost (or the proxy IP) if you front this with nginx, haproxy, etc.
       var fayeConnection = api.faye.server._server._engine._connections[clientId];
       if(fayeConnection && fayeConnection.socket != null){
-        remoteIp   = fayeConnection.socket._socket._stream.remoteAddress;
-        remotePort = fayeConnection.socket._socket._stream.remotePort;
+        if(remoteIp != null)  { remoteIp   = fayeConnection.socket._socket._stream.remoteAddress; }
+        if(remotePort != null){ remotePort = fayeConnection.socket._socket._stream.remotePort; }
       }
       callback({remoteIp: remoteIp, remotePort: remotePort});
     }, 50); // should be enough time for the connection to establish?
