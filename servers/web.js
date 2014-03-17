@@ -61,7 +61,7 @@ var web = function(api, options, next){
       if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
         // indicates that we are listining on a socket
         // ensure that the socket is readable by other processes on the host
-        fs.chmodSync(options.port, 0755);
+        fs.chmodSync(options.port, 0766);
       } 
       next(server);
     });
