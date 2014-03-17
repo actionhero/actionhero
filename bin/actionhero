@@ -115,27 +115,33 @@ binary.paths = {
   actionhero_root: null
 }
 
+var pwd = path.normalize(process.cwd());
+if(process.env.PWD != null){
+  pwd = path.normalize(process.env.PWD);
+}
+
 if(process.env.project_root != null){
   binary.paths.project_root = process.env.project_root;
 } else if(process.env.PROJECT_ROOT != null){
   binary.paths.project_root = process.env.PROJECT_ROOT;
 } else {
-  binary.paths.project_root = process.cwd();
+  binary.paths.project_root = pwd;
 }
 
 if(process.env.actionhero_root != null){
   binary.paths.actionhero_root = process.env.actionhero_root;
 } else if(process.env.ACTIONHERO_ROOT != null){
   binary.paths.actionhero_root = process.env.ACTIONHERO_ROOT;
-} else if(binary.utils.file_exists(__dirname + '/../actionhero.js')){
+} else if(binary.utils.file_exists(pwd + '/actionhero.js')){
   // in the actionhero project itself
-  binary.paths.actionhero_root = __dirname + '/..';
-} else if(binary.utils.file_exists(__dirname + '/../node_modules/actionhero/actionhero.js')){
+  binary.paths.actionhero_root = pwd;
+} else if(binary.utils.file_exists(pwd + '/node_modules/actionhero/actionhero.js')){
   // running from a project's node_modules (bin or actionhero)
-  binary.paths.actionhero_root = __dirname + '/../node_modules/actionhero';
+  binary.paths.actionhero_root = pwd + '/node_modules/actionhero';
+  process.chdir(binary.paths.project_root);
 } else {
   // installed globally
-  binary.paths.actionhero_root = path.normalize(__dirname + '/..');
+  binary.paths.actionhero_root = path.normalize(__dirname + '/../');
 }
 
 try {
