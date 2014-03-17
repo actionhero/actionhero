@@ -155,6 +155,12 @@ var web = function(api, options, next){
       var remoteIP = req.connection.remoteAddress;
       var remotePort = req.connection.remotePort;
 
+      // helpers for unix socket bindings with no forward
+      if(remoteIP == null && remotePort == null){
+        remoteIP   = '0.0.0.0';
+        remotePort = '0';
+      }
+
       if(req.headers['x-forwarded-for'] != null){
         var forwardedIp = req.headers['x-forwarded-for'].split(",")[0];
         if(forwardedIp.indexOf(".") >= 0 || (forwardedIp.indexOf(".") < 0 && forwardedIp.indexOf(":") < 0)){
