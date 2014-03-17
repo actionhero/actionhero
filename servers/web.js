@@ -58,6 +58,11 @@ var web = function(api, options, next){
     });
 
     server.server.listen(options.port, options.bindIP, function(){
+      if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
+        // indicates that we are listining on a socket
+        // ensure that the socket is readable by other processes on the host
+        fs.chmodSync(options.port, 0755);
+      } 
       next(server);
     });
   }
