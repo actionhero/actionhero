@@ -15,7 +15,7 @@ exports.test = {
   redis: function(api){
     var toFakeRedis = false;
     if(process.env['fakeredis'] != null && process.env['fakeredis'] == 'true'){
-      toFakeRedis = true
+      toFakeRedis = false
     }
 
     return {
