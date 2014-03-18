@@ -16,15 +16,15 @@ var client3;
 var configChanges = {
   1: {
     general: {id: 'test-server-1'},
-    servers: {web: null, socket: null, websocket: null}
+    servers: {}
   },
   2: {
     general: {id: 'test-server-2'},
-    servers: {web: null, socket: null, websocket: null}
+    servers: {}
   },
   3: {
     general: {id: 'test-server-3'},
-    servers: {web: null, socket: null, websocket: null}
+    servers: {}
   }
 }
 

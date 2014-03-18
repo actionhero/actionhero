@@ -58,22 +58,22 @@ var utils = function(api, next){
   api.utils.hashMerge = function(a, b, arg){
     var c = {}, i;
     for(i in a){
-      if(api.utils.isPlainObject(a[i])){
+      if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0){
         c[i] = api.utils.hashMerge(c[i], a[i], arg);
       } else {
         if(typeof a[i] === 'function'){
-          c[i] = a[i](arg);
+          c[i] = api.utils.hashMerge(c[i], a[i](arg), arg);
         }else{
           c[i] = a[i];
         }
       }
     }
     for(i in b){
-      if(api.utils.isPlainObject(b[i])){
+      if(api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0 ){
         c[i] = api.utils.hashMerge(c[i], b[i], arg);
       } else {
         if(typeof b[i] === 'function'){
-          c[i] = b[i](arg);
+          c[i] = api.utils.hashMerge(c[i], b[i](arg), arg);
         }else{
           c[i] = b[i];
         }
