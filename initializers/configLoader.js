@@ -7,19 +7,6 @@ var configLoader = function(api, next){
   api.configLoader = {
     _start: function(api, callback){
       api.log('environment: ' + api.env);
-
-      api.watchFileAndAct(configFile, function(){
-        api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
-        delete require.cache[require.resolve(configFile)];
-        api.commands.restart.call(api._self);
-      });
-
-      api.watchFileAndAct(envConfigFile, function(){
-        api.log('\r\n\r\n*** rebooting due to environment config change ***\r\n\r\n', 'info');
-        delete require.cache[require.resolve(envConfigFile)];
-        api.commands.restart.call(api._self);
-      });
-
       callback();
     }
   }
@@ -56,38 +43,47 @@ var configLoader = function(api, next){
   }
 
   api.env = 'development'
+
   if(argv['NODE_ENV'] != null){
     api.env = argv['NODE_ENV'];
   } else if(process.env.NODE_ENV != null){
     api.env = process.env.NODE_ENV;
   }
 
-  var configFile = path.resolve(api.project_root, 'config/config.js');
+  var configPath = path.resolve(api.project_root, 'config');
+
   if(argv['config'] != null){
-    if(argv['config'].charAt(0) == '/'){ configFile = argv['config'] }
-    else { configFile = path.resolve(api.project_root, argv['config']) }
-  } else if(process.env.ACTIONHERO_CONFIG != null){
-    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configFile = process.env.ACTIONHERO_CONFIG }
-    else { configFile = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG) }
-  } else if(!fs.existsSync(configFile)){
-    throw new Error(configFile + 'No config.js found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
+    if(argv['config'].charAt(0) == '/'){ configPath = argv['config'] }
+    else { configPath = path.resolve(api.project_root, argv['config']) }
+  } else if(process.env.ACTIONHERO_CONFIG != null) {
+    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configPath = process.env.ACTIONHERO_CONFIG }
+    else { configPath = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG) }
+  } else if(!fs.existsSync(configPath)){
+    throw new Error(configPath + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
   }
 
-  try {
-    api.config = require(configFile).config;
-  } catch(e){
-    throw new Error(configFile + ' is not a valid config file or is not readable: ' + e);
-  }
+  api.config = {};
 
-  var envConfigFile = path.resolve(api.project_root, 'config/environments/' + api.env + '.js');
-  if(fs.existsSync(envConfigFile)){
-    try {
-      var envUpdates = require(envConfigFile).config;
-      api.config = api.utils.hashMerge(api.config, envUpdates);
-    } catch(e){
-      throw new Error(envConfigFile + ' is not a valid config file or is not readable: ' + e);
-    }
-  }
+  configFiles = api.utils.recusiveDirecotryGlob(configPath);
+  configFiles.forEach(function(f){
+    var localConfig = require(f);
+    if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+    if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+
+    api.watchFileAndAct(f, function(){
+      api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
+      delete require.cache[require.resolve(f)];
+      api.commands.restart.call(api._self);
+    });
+  })
+
+  // We load the config twice.
+  // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
+  configFiles.forEach(function(f){
+    var localConfig = require(f);
+    if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+    if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+  })
 
   if(api._startingParams.configChanges != null){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
@@ -102,7 +98,7 @@ var configLoader = function(api, next){
       api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );
       api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );
     }else{
-      throw new Error('plugin not found:' + plugin);
+      throw new Error('plugin missing `package.json`:' + plugin);
     }
   });
 

@@ -17,7 +17,7 @@ var tasks = function(api, next){
       }
     },
 
-    load: function(fullFilePath, reload){
+    loadFile: function(fullFilePath, reload){
       var self = this;
       if(reload == null){ reload = false }
 
@@ -26,7 +26,7 @@ var tasks = function(api, next){
       }
 
       api.watchFileAndAct(fullFilePath, function(){
-        self.load(fullFilePath, true);
+        self.loadFile(fullFilePath, true);
       });
 
       try {
@@ -99,33 +99,6 @@ var tasks = function(api, next){
         return false;
       } else {
         return true;
-      }
-    },
-    
-    loadDirectory: function(path){
-      var self = this;
-
-      if(fs.existsSync(path)){
-        fs.readdirSync(path).forEach( function(file) {
-          if(path[path.length - 1] != '/'){ path += '/' }
-          var fullFilePath = path + file;
-          if(file[0] != '.'){
-            var stats = fs.statSync(fullFilePath);
-            if(stats.isDirectory()){
-              self.loadDirectory(fullFilePath);
-            } else if(stats.isSymbolicLink()){
-              var realPath = fs.readlinkSync(fullFilePath);
-              self.loadDirectory(realPath);
-            } else if(stats.isFile()){
-              var ext = file.split('.')[1];
-              if(ext === 'js'){ api.tasks.load(fullFilePath) }
-            } else {
-              api.log(file + ' is a type of file I cannot read', 'alert')
-            }
-          }
-        });
-      } else {
-        api.log('no tasks folder found, skipping', 'debug');
       }
     },
 
@@ -236,7 +209,9 @@ var tasks = function(api, next){
   }
 
   api.config.general.paths.task.forEach(function(p){
-    api.tasks.loadDirectory(p);
+    api.utils.recusiveDirecotryGlob(p).forEach(function(f){
+      api.tasks.loadFile(f);
+    });
   })
 
   next();
