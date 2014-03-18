@@ -93,10 +93,10 @@ var configLoader = function(api, next){
     // #TODO: support for global modules?
     var pluginPackageBase = api.project_root + '/node_modules/' + plugin;
     if(fs.existsSync(pluginPackageBase + "/package.json")){
-      api.config.general.paths.action.push(      pluginPackageBase + '/actions'     );
-      api.config.general.paths.task.push(        pluginPackageBase + '/tasks'       );
-      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );
-      api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );
+      if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.push(      pluginPackageBase + '/actions'      );}
+      if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.push(        pluginPackageBase + '/tasks'        );}
+      if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );}
+      if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );}
     }else{
       throw new Error('plugin missing `package.json`:' + plugin);
     }
