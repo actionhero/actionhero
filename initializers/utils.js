@@ -167,7 +167,7 @@ var utils = function(api, next){
       }
     });
 
-    return results;
+    return results.sort();
   }
 
   ////////////////////////////////////////////////////////////////////////////
