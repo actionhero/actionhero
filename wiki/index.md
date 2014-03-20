@@ -24,5 +24,9 @@ actionhero will also serve static files for you, but actionhero is not a 'render
 
 ---
 
+# Contributing
+
+The actionherojs.com website and wiki is hosted on [GitHub Pages](http://pages.github.com/).  You can submit pull requests to the [gh-pages](https://github.com/evantahler/actionhero/tree/gh-pages) branch of the actionhero project.
+
 # Notes
 - This wiki will always reflect the master branch of actionhero, and therefore may be slightly ahead of the latest release on NPM.
