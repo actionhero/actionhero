@@ -9,9 +9,15 @@ exports['generate'] = function(binary, next){
   documents.projectMap = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
-    config_js                     : '/config/config.js',
-    config_production_js          : '/config/environments/production.js',
-    config_test_js                : '/config/environments/test.js',
+    config_api_js                 : '/config/api.js',
+    config_faye_js                : '/config/faye.js',
+    config_logger_js              : '/config/logger.js',
+    config_redis_js               : '/config/redis.js',
+    config_stats_js               : '/config/stats.js',
+    config_tasks_js               : '/config/tasks.js',
+    config_socket_js              : '/config/servers/socket.js',
+    config_web_js                 : '/config/servers/web.js',
+    config_websocket_js           : '/config/servers/websocket.js',
     package_json                  : '/package.json',
     routes_js                     : '/routes.js',
     action_status                 : '/actions/status.js',
@@ -43,7 +49,7 @@ exports['generate'] = function(binary, next){
     '/actions',
     '/pids',
     '/config',
-    '/config/environments',
+    '/config/servers',
     '/initializers',
     '/log',
     '/servers',
@@ -59,9 +65,15 @@ exports['generate'] = function(binary, next){
 
   // make files
   var newFileMap = {
-    '/config/config.js'                             : 'config_js',
-    '/config/environments/production.js'            : 'config_production_js',
-    '/config/environments/test.js'                  : 'config_test_js',
+    '/config/api.js'                                : 'config_api_js',
+    '/config/faye.js'                               : 'config_faye_js',
+    '/config/logger.js'                             : 'config_logger_js',
+    '/config/redis.js'                              : 'config_redis_js',
+    '/config/stats.js'                              : 'config_stats_js',
+    '/config/tasks.js'                              : 'config_tasks_js',
+    '/config/servers/socket.js'                     : 'config_socket_js',
+    '/config/servers/web.js'                        : 'config_web_js',
+    '/config/servers/websocket.js'                  : 'config_websocket_js',
     '/routes.js'                                    : 'routes_js',
     '/package.json'                                 : 'package_json',
     '/actions/status.js'                            : 'action_status',

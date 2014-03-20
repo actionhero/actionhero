@@ -9,22 +9,15 @@ var servers = function(api, next){
   api.servers._start = function(api, next){
     var started = 0;
     if(api.utils.hashLength(api.config.servers) == 0){ next() }
-    for(var server in api.config.servers){
+    for(var server in api.servers.servers){
       started++;
-      if(api.config.servers[server] != null){
-        api.log('starting server: ' + server, 'notice');
-        api.servers.servers[server]._start(function(){
-          process.nextTick(function(){
-            started--;
-            if(started == 0){ next() }
-          });
-        });
-      }else{
+      api.log('starting server: ' + server, 'notice');
+      api.servers.servers[server]._start(function(){
         process.nextTick(function(){
           started--;
           if(started == 0){ next() }
         });
-      }
+      });
     }
   }
 
@@ -49,32 +42,31 @@ var servers = function(api, next){
   // Load the servers
 
   var serverFolders = [
-    path.resolve(__dirname + '/../servers'),
-    api.config.general.paths.server
+    path.resolve(__dirname + '/../servers')
   ];
-    
-  var inits = {}
-  for(var i in serverFolders){
-    var folder = serverFolders[i];
-    if(fs.existsSync(folder)){
-      fs.readdirSync(folder).sort().forEach(function(file){
-        var fullFilePath = path.resolve(serverFolders[i] + '/' + file);
-        var fileParts = file.split('.');
-        var ext = fileParts[(fileParts.length - 1)];
-        if (file[0] != '.' && ext === 'js'){
-          var server = file.split('.')[0];
-          if(api.config.servers[server] != null){
-            inits[server] = require(fullFilePath)[server];
-          }
 
-          api.watchFileAndAct(fullFilePath, function(){
-            api.log('\r\n\r\n*** rebooting due to server ('+fullFilePath+') change ***\r\n\r\n', 'info');
-            api.commands.restart.call(api._self);
-          });
-        }
-      });
+  api.config.general.paths.server.forEach(function(p){
+    p = path.resolve(p);
+    if(serverFolders.indexOf(p) < 0){
+      serverFolders.push(p);
     }
-  }
+  })
+
+  var inits = {}
+
+  serverFolders.forEach(function(p){
+    api.utils.recusiveDirecotryGlob(p).forEach(function(f){
+      var parts = f.split('/')
+      var server = parts[(parts.length - 1)].split('.')[0];
+      if(api.config.servers[server] != null && api.config.servers[server].enabled === true){
+        inits[server] = require(f)[server];
+      }
+      api.watchFileAndAct(f, function(){
+        api.log('\r\n\r\n*** rebooting due to server ('+server+') change ***\r\n\r\n', 'info');
+        api.commands.restart.call(api._self);
+      });
+    });
+  })
 
   var started = 0;
   for(var server in inits){

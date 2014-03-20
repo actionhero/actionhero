@@ -46,34 +46,6 @@ var actions = function(api, next){
     }
   }
 
-  api.actions.loadDirectory = function(path){
-    if(path == null){
-      path = api.config.general.paths.action;
-      if(!fs.existsSync(api.config.general.paths.action)){
-        api.log(api.config.general.paths.action + ' defined as action path, but does not exist', 'warning');
-      }
-    }
-    fs.readdirSync(path).forEach( function(file) {
-      if(path[path.length - 1] != '/'){ path += '/' }
-      var fullFilePath = path + file;
-      if(file[0] != '.'){
-        var stats = fs.statSync(fullFilePath);
-        if(stats.isDirectory()){
-          api.actions.loadDirectory(fullFilePath);
-        } else if(stats.isSymbolicLink()){
-          var realPath = fs.readlinkSync(fullFilePath);
-          api.actions.loadDirectory(realPath);
-        } else if(stats.isFile()){
-          var fileParts = file.split('.');
-          var ext = fileParts[(fileParts.length - 1)];
-          if(ext === 'js'){ api.actions.loadFile(fullFilePath) }
-        } else {
-          api.log(file + ' is a type of file I cannot read', 'error')
-        }
-      }
-    });
-  }
-
   api.actions.loadFile = function(fullFilePath, reload){
     if(reload == null){ reload = false; }
 
@@ -113,7 +85,12 @@ var actions = function(api, next){
     }
   }
 
-  api.actions.loadDirectory();
+  api.config.general.paths.action.forEach(function(p){
+    api.utils.recusiveDirecotryGlob(p).forEach(function(f){
+      api.actions.loadFile(f);
+    });
+  })
+
   next();
   
 }

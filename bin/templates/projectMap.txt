@@ -1,6 +1,14 @@
 |- config
-| -- config.js
-| -- environments
+| -- api.js
+| -- faye.js
+| -- logger.js
+| -- redis.js
+| -- stats.js
+| -- tasks.js
+| -- servers
+| ---- web.js
+| ---- websocket.js
+| ---- socket.js
 |-- (project settings)
 |
 |- actions

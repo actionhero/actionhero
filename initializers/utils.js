@@ -1,3 +1,6 @@
+var fs = require('fs');
+var path = require('path');
+
 var utils = function(api, next){
 
   api.utils = {};
@@ -52,20 +55,28 @@ var utils = function(api, next){
 
   ////////////////////////////////////////////////////////////////////////////
   // merge two hashes recursively 
-  api.utils.hashMerge = function(a, b){
+  api.utils.hashMerge = function(a, b, arg){
     var c = {}, i;
     for(i in a){
-      if(api.utils.isPlainObject(a[i])){
-        c[i] = api.utils.hashMerge(c[i], a[i]);
+      if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0){
+        c[i] = api.utils.hashMerge(c[i], a[i], arg);
       } else {
-        c[i] = a[i];
+        if(typeof a[i] === 'function'){
+          c[i] = api.utils.hashMerge(c[i], a[i](arg), arg);
+        }else{
+          c[i] = a[i];
+        }
       }
     }
     for(i in b){
-      if(api.utils.isPlainObject(b[i])){
-        c[i] = api.utils.hashMerge(c[i], b[i]);
+      if(api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0 ){
+        c[i] = api.utils.hashMerge(c[i], b[i], arg);
       } else {
-        c[i] = b[i];
+        if(typeof b[i] === 'function'){
+          c[i] = api.utils.hashMerge(c[i], b[i](arg), arg);
+        }else{
+          c[i] = b[i];
+        }
       }
     }
     return c;
@@ -126,6 +137,37 @@ var utils = function(api, next){
       }
     }
     return found;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // get all .js files in a directory
+  api.utils.recusiveDirecotryGlob = function(dir, extension){
+    var results = [];
+
+    if(extension == null){ extension = 'js'; }
+    extension = extension.replace('.','');
+    if(dir[dir.length - 1] != '/'){ dir += '/' }
+
+    fs.readdirSync(dir).forEach( function(file) {
+      var fullFilePath = path.normalize(dir + file);
+      if(file[0] != '.'){ // ignore 'system' files
+        var stats = fs.statSync(fullFilePath);
+        if(stats.isDirectory()){
+          var child = api.utils.recusiveDirecotryGlob(fullFilePath, extension);
+          child.forEach(function(c){ results.push(c); })
+        } else if(stats.isSymbolicLink()){
+          var realPath = fs.readlinkSync(fullFilePath);
+          var child = api.utils.recusiveDirecotryGlob(realPath);
+          child.forEach(function(c){ results.push(c); })
+        } else if(stats.isFile()){
+          var fileParts = file.split('.');
+          var ext = fileParts[(fileParts.length - 1)];
+          if(ext === extension){ results.push(fullFilePath); }
+        }
+      }
+    });
+
+    return results.sort();
   }
 
   ////////////////////////////////////////////////////////////////////////////
