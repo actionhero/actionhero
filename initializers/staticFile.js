@@ -6,7 +6,9 @@ var staticFile = function(api, next){
 
   api.staticFile = {
 
-    path: api.config.general.paths.public[0], // having more than one public dir would be silly
+    path: function(connection){
+      return api.config.general.paths.public[0];
+    },
 
     // connection.params.file should be set
     // callback is of the form: callback(connection, error, fileStream, mime, length)
@@ -15,8 +17,8 @@ var staticFile = function(api, next){
       if(connection.params.file == null){
         self.sendFileNotFound(connection, 'file is a required param to send a file', callback);
       } else {
-        var file = path.normalize(api.staticFile.path + '/' + connection.params.file);
-        if(file.indexOf(path.normalize(api.staticFile.path)) != 0){
+        var file = path.normalize(api.staticFile.path(connection) + '/' + connection.params.file);
+        if(file.indexOf(path.normalize(api.staticFile.path(connection))) != 0){
           self.sendFileNotFound(connection, 'that is not a valid file path', callback);
         } else {
           self.checkExistence(file, function(exists, truePath){
