@@ -37,12 +37,14 @@ exports.default = {
         'pid':         [ __dirname + '/../pids'         ] ,
         'log':         [ __dirname + '/../log'          ] ,
         'server':      [ __dirname + '/../servers'      ] ,
-        'initializer': [ __dirname + '/../initializers' ]
+        'initializer': [ __dirname + '/../initializers' ] ,
+        'package':     [ __dirname + '/../node_modules' ] 
       },
       // list of actionhero plugins you want to load
       plugins: [
         // this is a list of package names
-        // packages still need to be included in `package.json`
+        // packages still need to be included in `package.json` or the path defined in `api.config.general.paths.package`
+        'ah-sample-plugin'
       ],
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {

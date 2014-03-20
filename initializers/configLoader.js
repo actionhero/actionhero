@@ -89,17 +89,18 @@ var configLoader = function(api, next){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
 
-  api.config.general.plugins.forEach(function(plugin){
-    // #TODO: support for global modules?
-    var pluginPackageBase = api.project_root + '/node_modules/' + plugin;
-    if(fs.existsSync(pluginPackageBase + "/package.json")){
-      if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.push(      pluginPackageBase + '/actions'      );}
-      if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.push(        pluginPackageBase + '/tasks'        );}
-      if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );}
-      if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );}
-    }else{
-      throw new Error('plugin missing `package.json`:' + plugin);
-    }
+  api.config.general.paths.package.forEach(function(p){
+    api.config.general.plugins.forEach(function(plugin){
+      var pluginPackageBase = path.normalize(p + '/' + plugin);
+      if(api.project_root != pluginPackageBase){
+        var found = false;
+        console.log(pluginPackageBase)
+        if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.push(      pluginPackageBase + '/actions'      );}
+        if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.push(        pluginPackageBase + '/tasks'        );}
+        if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );}
+        if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.push( pluginPackageBase + '/initializers' );}
+      }
+    });    
   });
 
   next();
