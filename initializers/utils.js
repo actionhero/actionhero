@@ -148,25 +148,27 @@ var utils = function(api, next){
     extension = extension.replace('.','');
     if(dir[dir.length - 1] != '/'){ dir += '/' }
 
-    fs.readdirSync(dir).forEach( function(file) {
-      var fullFilePath = path.normalize(dir + file);
-      if(file[0] != '.'){ // ignore 'system' files
-        var stats = fs.statSync(fullFilePath);
-        if(stats.isDirectory()){
-          var child = api.utils.recusiveDirecotryGlob(fullFilePath, extension);
-          child.forEach(function(c){ results.push(c); })
-        } else if(stats.isSymbolicLink()){
-          var realPath = fs.readlinkSync(fullFilePath);
-          var child = api.utils.recusiveDirecotryGlob(realPath);
-          child.forEach(function(c){ results.push(c); })
-        } else if(stats.isFile()){
-          var fileParts = file.split('.');
-          var ext = fileParts[(fileParts.length - 1)];
-          if(ext === extension){ results.push(fullFilePath); }
+    if(fs.existsSync(dir)){
+      fs.readdirSync(dir).forEach( function(file) {
+        var fullFilePath = path.normalize(dir + file);
+        if(file[0] != '.'){ // ignore 'system' files
+          var stats = fs.statSync(fullFilePath);
+          if(stats.isDirectory()){
+            var child = api.utils.recusiveDirecotryGlob(fullFilePath, extension);
+            child.forEach(function(c){ results.push(c); })
+          } else if(stats.isSymbolicLink()){
+            var realPath = fs.readlinkSync(fullFilePath);
+            var child = api.utils.recusiveDirecotryGlob(realPath);
+            child.forEach(function(c){ results.push(c); })
+          } else if(stats.isFile()){
+            var fileParts = file.split('.');
+            var ext = fileParts[(fileParts.length - 1)];
+            if(ext === extension){ results.push(fullFilePath); }
+          }
         }
-      }
-    });
-
+      });
+    }
+    
     return results.sort();
   }
 
