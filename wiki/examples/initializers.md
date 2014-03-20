@@ -11,4 +11,4 @@ title: Wiki - Example Initializers
 
 **[passport](https://gist.github.com/juancgarcia/e4caf5dc7474769f5137)**: Use the [passport](http://passportjs.org/) package for authentication in actionhero.
 
-**[mongo](/wiki/examples/initialzers/mongo.html)**: a MongoDB initializer 
+**[mongo](/wiki/examples/initialzers/mongo.html)**: a MongoDB initializer

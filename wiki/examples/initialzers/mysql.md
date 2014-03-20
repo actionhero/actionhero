@@ -14,7 +14,7 @@ var Sequelize = require("sequelize");
 var SequelizeFixtures = require('sequelize-fixtures');
 
 exports.mySQL = function(api, next){
-  
+
   api.mySQL = {
     _start: function(api, next){
       var self = this;
@@ -26,7 +26,7 @@ exports.mySQL = function(api, next){
         slug: api.mySQL.sequelize.import(__dirname + "/../models/slug.js"),
         // ...
       }
-      
+
       if(api.env === "test"){  
         SequelizeFixtures.loadFile(__dirname + '/../test/fixtures/*.json', api.models, function(){
           self.test(next);
@@ -72,7 +72,7 @@ module.exports = function(sequelize, DataTypes) {
 }
 {% endhighlight %}
 
-## Config 
+## Config
 Extra settings to add to `config.js`
 {% highlight javascript %}
 config.mySQL = {
@@ -85,15 +85,15 @@ config.mySQL = {
   },
   "replication" : {
     "write": {
-      "host"     : "127.0.0.1", 
-      "username" : "root", 
+      "host"     : "127.0.0.1",
+      "username" : "root",
       "password" : "",
       "pool"     : {}
     },
     "read": [
       {
-        "host"     : "127.0.0.1", 
-        "username" : "root", 
+        "host"     : "127.0.0.1",
+        "username" : "root",
         "password" : "",
         "pool"     : {}
       }

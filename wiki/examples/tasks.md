@@ -11,4 +11,4 @@ title: Wiki - Example Tasks
 
 **[cleanLogFiles](/wiki/examples/tasks/cleanLogFiles.html)**: This periodic task will run on all servers and inspect actionhero's `log` directly for large log files, and delete them
 
-**[pingSocketClients](/wiki/examples/tasks/pingSocketClients.html)**: This periodic task will run on all servers and send a 'ping' to any connected TCP clients to help them keep their 
+**[pingSocketClients](/wiki/examples/tasks/pingSocketClients.html)**: This periodic task will run on all servers and send a 'ping' to any connected TCP clients to help them keep their

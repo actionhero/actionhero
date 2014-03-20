@@ -8,7 +8,7 @@ title: Wiki - Example Session Initializer
 {% highlight javascript %}
 
 ////////////////////////////////////////////////////////////////////////////
-// Sessions 
+// Sessions
 
 exports.sessions(api, next){
 
@@ -38,5 +38,5 @@ exports.sessions(api, next){
 
   next();
 }
-		
+
 {% endhighlight %}
