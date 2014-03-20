@@ -94,7 +94,6 @@ var configLoader = function(api, next){
       var pluginPackageBase = path.normalize(p + '/' + plugin);
       if(api.project_root != pluginPackageBase){
         var found = false;
-        console.log(pluginPackageBase)
         if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.push(      pluginPackageBase + '/actions'      );}
         if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.push(        pluginPackageBase + '/tasks'        );}
         if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.push(      pluginPackageBase + '/servers'      );}
