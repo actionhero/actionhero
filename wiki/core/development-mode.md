@@ -9,9 +9,9 @@ title: Wiki - Development Mode
 
 ## About
 
-actionhero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to config.js or initializers are more severe, and will restart the whole application (much like nodemon).
+actionhero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to `api.config` or initializers are more severe, and will restart the whole application (much like nodemon).
 
-To enable development mode simply set `developmentMode: true` in your `config.js`.
+To enable development mode simply set `developmentMode: true` in your `config/api.js`.
 
 {% highlight javascript%}
 config.general = {
@@ -27,7 +27,7 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 - new files won't be loaded in, only existing files when the app was booted will be monitored
 - as deleting a file might crash your application, we will not attempt to re-load deleted files
 - if you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change 
-- changing `config.js`, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
+- changing `api.config`, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
 
 ## Watching custom files
 

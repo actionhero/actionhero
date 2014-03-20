@@ -7,7 +7,7 @@ title: Wiki - Web Server
 
 ## General
 
-The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. `{url}?action=actioName` or `{url}/api/{actioName}` is how you would access an action.  For example, using the default ports in `config.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`  
+The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. `{url}?action=actioName` or `{url}/api/{actioName}` is how you would access an action.  For example, using the default ports in `/config/servers/web.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`  
 
 HTTP responses are always JSON and follow the format:
 
@@ -104,11 +104,11 @@ HTTP Example:
 {% endhighlight %}
 
 * you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. 
-* unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).  These defaults are defined in `config.js`
+* unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).  These defaults are defined in `/config/api.js`
 * If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
-`config.js` contains the settings for the web server.  The relevant options are:
+`/config/servers/web.js` contains the settings for the web server.  The relevant options are:
 
 {% highlight javascript %}
 config.servers = {
@@ -173,7 +173,7 @@ Of course, the generic connection attributes (`connection.error`, `connection.pa
 
 actionhero can also serve up flat files.  actionhero will not cache these files and each request to `file` will re-read the file from disk (like the nginx web server).
 
-* /public and /api are  routes which expose the 'directories' of those types.  These top level path can be configured in `config.js` with `api.config.servers.web.urlPathForActions` and `api.config.servers.web.urlPathForFiles`.
+* /public and /api are  routes which expose the 'directories' of those types.  These top level path can be configured in `/config/servers/web.js` with `api.config.servers.web.urlPathForActions` and `api.config.servers.web.urlPathForFiles`.
 * the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.config.servers.web.rootEndpointType`. The default is `api`.
 * actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the 'file' route as described above. `http://{baseUrl}/public/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}` and `http://{baseUrl}/file/{pathToFile}`. 
 * Errors will result in a 404 (file not found) with a message you can customize.
@@ -263,7 +263,7 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
 
 ## Params
 
-Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `config.js`).  Variables defined in your actions by `action.inputs.required` and `action.inputs.optional` will be aded to your whitelist.  Special params which the api will always accept are: 
+Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `/config/servers/web.js`).  Variables defined in your actions by `action.inputs.required` and `action.inputs.optional` will be aded to your whitelist.  Special params which the api will always accept are: 
 
 {% highlight javascript %}
   [ 'file',

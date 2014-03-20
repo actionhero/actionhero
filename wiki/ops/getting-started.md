@@ -31,12 +31,20 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 	
 ## Application Structure
 
-Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`. `/public` will become your application's default static asset location.  The map below describes actionhero's default project layout.  If you wish to customize your project's paths, you can do so within `config.js` in the `api.config.general.paths` section
+Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`. `/public` will become your application's default static asset location.  The map below describes actionhero's default project layout.  If you wish to customize your project's paths, you can do so within `config/api.js` in the `api.config.general.paths` section
 
 {% highlight bash %}
 |- config
-| -- config.js
-| -- environments
+| -- api.js
+| -- faye.js
+| -- logger.js
+| -- redis.js
+| -- stats.js
+| -- tasks.js
+| -- servers
+| ---- web.js
+| ---- websocket.js
+| ---- socket.js
 |-- (project settings)
 |
 |- actions

@@ -12,7 +12,7 @@ You can set a few environment variables to affect how actionhero runs:
 
 - `PROJECT_ROOT`: This is useful when deploying actionhero applications on a server where symlinks will change under a running process.  The cluster will look at your symlink `PROJECT_ROOT=/path/to/current_symlink` rather than the absolute path it was started from
 - `ACTIONHERO_ROOT`: This can used to set the absolute path to the actionhero binaries
-- `ACTIONHERO_CONFIG`: This can be user to set the absolute path to the actionhero config file you wish to use.  This is useful when you might have a `staging.config.json` and a `production.config.json`
+- `ACTIONHERO_CONFIG`: This can be user to set the absolute path to the actionhero config directory you wish to use.  This is useful when you might have a variable configs per server
 - `ACTIONHERO_TITLE`: The value of `api.id`, and the name for the pidfile in some boot configurations
 
 ## Daemon
@@ -35,11 +35,11 @@ Of course, not going in to swap memory is more important than utilizing all of y
 
 ## Pidfiles
 
-actionhero will write its pid to a pidfile in the normal unix way.  The path for the pidfile is set in `config.js` with `config.general.paths.pid`.  
+actionhero will write its pid to a pidfile in the normal unix way.  The path for the pidfile is set in `config/api.js` with `config.general.paths.pid`.  
 
 Individual actionhero servers will name their pidfiles by `api.id`, which is determined by the logic [here](https://github.com/evantahler/actionhero/blob/master/initializers/pids.js) and [here](https://github.com/evantahler/actionhero/blob/master/initializers/id.js).  For example, on my laptop with the IP address of `192.168.0.1`, running `npm start` would run one actionhero server and generate a pidfile of `./pids/actionhero-192.168.0.1` in which would be a single line containg the process' pid.
 
-When running the cluster, the cluster process first writes his own pidfile to `process.cwd() + './pids/cluster_pidfile'`.  Then, every worker the cluster master creates will have a pid like `actionhero-worker-1` in the location defined by `config.js`.
+When running the cluster, the cluster process first writes his own pidfile to `process.cwd() + './pids/cluster_pidfile'`.  Then, every worker the cluster master creates will have a pid like `actionhero-worker-1` in the location defined by `config/api.js`.
 
 ## Git-based deployment Example
 

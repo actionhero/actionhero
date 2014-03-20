@@ -73,7 +73,7 @@ module.exports = function(sequelize, DataTypes) {
 {% endhighlight %}
 
 ## Config
-Extra settings to add to `config.js`
+Extra settings to add to `config/mysql.js`
 {% highlight javascript %}
 config.mySQL = {
   "database"    : "v3_development",

@@ -49,14 +49,14 @@ Descriptions:
   will generate a new server in `servers`
   [name] (required)
 
-* actionhero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
+* actionhero start --config=[/path/to/config/] --title=[processTitle]  --daemon
   will start a template actionhero server
   this is the respondant to `npm start`
-  [config] (optional) path to config.js, defaults to `process.cwd() + "/" + config.js`. You can also use ENV[ACTIONHERO_CONFIG].
+  [config] (optional) path to /config, defaults to `process.cwd() + "/" + config`. You can also use ENV[ACTIONHERO_CONFIG].
   [title] (optional) process title to use for actionhero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
   [daemon] (optional) to fork and run as a new background process defalts to false
 
-* actionhero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
+* actionhero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config]  --daemon
   will launch a actionhero cluster (using node-s cluster module)
   [exec] (optional) command for the cluster-master to run to stat the workers
   [workers] (optional) number of workers (defaults to # CPUs - 2)
@@ -64,7 +64,7 @@ Descriptions:
   [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
   [title] (optional) default actionhero-master  Does not work on OSX/Windows
   [workerTitlePrefix] (optional) default actionhero-worker
-  [config] (optional) path to config.js for workers, defaults to `process.cwd() + "/" + config.js`. You can also use ENV[ACTIONHERO_CONFIG]
+  [config] (optional) path to /config for workers, defaults to `process.cwd() + "/" + config`. You can also use ENV[ACTIONHERO_CONFIG]
   [daemon] (optional) to fork and run as a new background process defalts to false
 
 More Help & the actionhero wiki can be found @ http://actionherojs.com
@@ -78,11 +78,11 @@ More Help & the actionhero wiki can be found @ http://actionherojs.com
 
 ## Environments and Confg
 
-By default, actionhero will use the config settings in `/config/config.js`.  However, you can set envrioment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up a config ovveride file from `/config/environments/#{env}.js`.  This is the recommended way to have sperate settings for staging and production.
+By default, actionhero will use the config settings in `/config/`.  However, you can set envrioment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up a config ovveride file from `/config/environments/#{env}.js`.  This is the recommended way to have sperate settings for staging and production.
 
 The load order of configs is:
-- config.js
-- ~env.js
+- default values in `/config`
+- environment-specific values in `/config`
 - options passed in to boot with `actionhero.start({configChanges: configChanges}, callback)`
 
 ## Programatic Use of actionhero

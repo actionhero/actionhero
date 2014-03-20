@@ -123,5 +123,5 @@ You can create your client with options.  The full collection and defaults are:
 
 ## Notes
 
-The websocket server will use settings inherited by the `faye` `config.js` block.  If you want to set options on the client (like specific protocols to use), you can read up on the options [here](http://faye.jcoglan.com/browser.html).  Note that changes to server options may require updates to the client library `actionheroWebsocket.js` as well.
+The websocket server will use settings inherited by the `faye` `api.config` block.  If you want to set options on the client (like specific protocols to use), you can read up on the options [here](http://faye.jcoglan.com/browser.html).  Note that changes to server options may require updates to the client library `actionheroWebsocket.js` as well.
 

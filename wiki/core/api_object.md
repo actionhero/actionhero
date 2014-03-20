@@ -39,9 +39,9 @@ By now you will have noticed that most sections of actionhero are initilized wit
   unWatchAllFiles: [Function],
 
   // api.config
-  // build from your `config.js`
+  // build from your `/config`
   config: {
-    // see https://github.com/evantahler/actionhero/blob/master/config/config.js for example
+    // see https://github.com/evantahler/actionhero/blob/master/config/config/ for examples
   }
 
   // collections of boot options and loaders for actionhero 
@@ -256,7 +256,7 @@ By now you will have noticed that most sections of actionhero are initilized wit
     },
     workers: [],
     scheduler: null,
-    connectionDetails: {}, // from `config.js`
+    connectionDetails: {}, // from `/config/tasks.js`
     _start: [Function],
     _stop: [Function],
     startQueue: [Function],

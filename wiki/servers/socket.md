@@ -57,7 +57,7 @@ say hooray!
 
 ## TLS
 
-You can switch your TCP server to use TLS encryption if you desire.  Just toggle the settings in `config.json` and provide valid certificates.  You can test this with the openSSL client rather than telnet `openssl s_client -connect 127.0.0.1:5000`
+You can switch your TCP server to use TLS encryption if you desire.  Just toggle the settings in `/config/servers/socket.js` and provide valid certificates.  You can test this with the openSSL client rather than telnet `openssl s_client -connect 127.0.0.1:5000`
 
 {% highlight javascript %}
 config.severs.socket = {
