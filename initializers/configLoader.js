@@ -89,7 +89,7 @@ var configLoader = function(api, next){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
 
-  api.config.general.paths.package.forEach(function(p){
+  api.config.general.paths.plugin.forEach(function(p){
     api.config.general.plugins.forEach(function(plugin){
       var pluginPackageBase = path.normalize(p + '/' + plugin);
       if(api.project_root != pluginPackageBase){
