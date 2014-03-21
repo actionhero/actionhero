@@ -65,19 +65,43 @@ var configLoader = function(api, next){
   api.config = {};
 
   configFiles = api.utils.recusiveDirecotryGlob(configPath);
-  configFiles.forEach(function(f){
-    var localConfig = require(f);
-    if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
-    if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+  var loadRetries = 0;
+  var loadErrors = {};
+  for(var i = 0, limit = configFiles.length; (i < limit); i++){
+    var f = configFiles[i];
+    try{
+      // attempt configuration file load
+      var localConfig = require(f);
+      if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+      if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+      // configuration file load success: clear retries and
+      // errors since progress has been made
+      loadRetries = 0;
+      loadErrors = {};
+    } catch(error){
+      // error loading configuration, abort if all remaining
+      // configuration files have been tried and failed
+      // indicating inability to progress 
+      loadErrors[f] = error.toString();
+      if(++loadRetries == limit-i){
+          throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
+      }
+      // adjust configuration files list: remove and push
+      // failed configuration to the end of the list and
+      // continue with next file at same index
+      configFiles.push(configFiles.splice(i--, 1)[0]);
+      continue;
+    }
 
+    // configuration file loaded: set watch
     api.watchFileAndAct(f, function(){
       api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
       delete require.cache[require.resolve(f)];
       api.commands.restart.call(api._self);
     });
-  })
+  }
 
-  // We load the config twice.
+  // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
   // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
   configFiles.forEach(function(f){
     var localConfig = require(f);
