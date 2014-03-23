@@ -90,7 +90,7 @@ describe('Core: Cache', function(){
     api.cache.save('testKeyInThePast', 'abc123', -1, function(err, save_resp){
       save_resp.should.equal(true);
       api.cache.load('testKeyInThePast', function(err, load_resp){
-        String(err).should.contain('Error: Object')
+        String(err).should.include('Error: Object')
         should.equal(null, load_resp);
         done();
       });
