@@ -240,7 +240,7 @@ var web = function(api, options, next){
         }
       }
 
-      var stringResponse = JSON.stringify(connection.response, null, 2);
+      var stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
       if(connection.response.error == null &&
          connection.action != null &&
          connection.params.apiVersion != null &&
@@ -280,7 +280,7 @@ var web = function(api, options, next){
 
   var respondToTrace= function(connection){
     var data = buildRequesterInformation(connection);
-    var stringResponse = JSON.stringify(data, null, 2);
+    var stringResponse = JSON.stringify(data, null, api.config.servers.web.padding);
     server.sendMessage(connection, stringResponse);
   }
 

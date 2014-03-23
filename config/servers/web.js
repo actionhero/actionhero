@@ -44,6 +44,9 @@ exports.default = {
           keepExtensions: false,
           maxFieldsSize: 1024 * 1024 * 100
         },
+        // Should we pad JSON responses with whitespace to make them more human-readable?
+        // set to null to disable
+        padding: 2,
         // Options to configure metadata in responses
         metadataOptions: {
           serverInformation: true,
@@ -61,6 +64,7 @@ exports.production = {
   servers: {
     web: function(api){
       return {
+        padding: null,
         metadataOptions: {
           serverInformation: false,
           requesterInformation: false
