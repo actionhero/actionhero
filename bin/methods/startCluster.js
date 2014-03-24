@@ -182,6 +182,10 @@ exports['startCluster'] = function(binary, next){
         }
       }
 
+      binary.cleanup = function(){
+        
+      }
+
       next();
     },
     process: function(next){
@@ -246,6 +250,7 @@ exports['startCluster'] = function(binary, next){
         }
       });
       process.on('exit', function(){
+        binary.cleanup();
         binary.workersExpected = 0;
         binary.log('cluster complete, Bye!', 'notice')
       });
