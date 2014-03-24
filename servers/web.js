@@ -51,18 +51,25 @@ var web = function(api, options, next){
       });
     }
 
+    var bootAttempts = 0
     server.server.on('error', function(e){
-      server.log('cannot start web server @ ' + options.bindIP + ':' + options.port + '; exiting.', 'emerg');
-      server.log(e, 'error');
-      process.exit(1);
+      bootAttempts++;
+      if(bootAttempts < 5){
+        server.log('cannot boot web server; trying again [' + String(e) + ']', 'error');
+        if(bootAttempts === 1){ cleanSocket(options.bindIP, options.port); }
+        setTimeout(function(){
+          server.log('attempting to boot again..')
+          server.server.listen(options.port, options.bindIP);
+        }, 1000)
+      }else{
+        server.log('cannot start web server @ ' + options.bindIP + ':' + options.port + '; exiting.', 'emerg');
+        server.log(e, 'error');
+        process.exit(1);
+      }
     });
 
     server.server.listen(options.port, options.bindIP, function(){
-      if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
-        // indicates that we are listining on a socket
-        // ensure that the socket is readable by other processes on the host
-        fs.chmodSync(options.port, 0766);
-      } 
+      chmodSocket(options.bindIP, options.port);
       next(server);
     });
   }
@@ -415,6 +422,19 @@ var web = function(api, options, next){
       }
     }
     connection.rawConnection.responseHeaders = cleanedHeaders;
+  }
+
+  var cleanSocket = function(bindIP, port){
+    if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
+      server.log('removing stale unix socket @ ' + port)
+      fs.unlinkSync(port); 
+    } 
+  }
+
+  var chmodSocket = function(bindIP, port){
+    if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
+      fs.chmodSync(port, 0777); 
+    } 
   }
 
   next(server);
