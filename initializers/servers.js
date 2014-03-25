@@ -56,7 +56,7 @@ var servers = function(api, next){
 
   serverFolders.forEach(function(p){
     api.utils.recusiveDirecotryGlob(p).forEach(function(f){
-      var parts = f.split('/')
+      var parts = f.split(/[\/\\]+/)
       var server = parts[(parts.length - 1)].split('.')[0];
       if(api.config.servers[server] != null && api.config.servers[server].enabled === true){
         inits[server] = require(f)[server];
