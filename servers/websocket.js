@@ -153,7 +153,7 @@ var websocket = function(api, options, next){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId !== api.faye.client._clientId){
-        var connectionId = message.channel.split("/")[4];
+        var connectionId = message.channel.split('/')[4];
         var connection = api.connections.connections[connectionId];
         if(connection != null){
           incomingMessage(connection, message);
@@ -171,7 +171,7 @@ var websocket = function(api, options, next){
 
   var incomingRebroadcast = function(message){
     var originalMessage = message.originalMessage;
-    var connectionId = originalMessage.channel.split("/")[4];
+    var connectionId = originalMessage.channel.split('/')[4];
     var connection = api.connections.connections[connectionId];
     if(connection != null){
       messagingFayeExtension(originalMessage);
