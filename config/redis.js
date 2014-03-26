@@ -13,11 +13,11 @@ exports.default = {
 
 exports.test = { 
   redis: function(api){
-    var toFakeRedis = false;
-    if(process.env.fakeredis == 'true'){
-      toFakeRedis = true;
+    var toFakeRedis = true;
+    if(process.env.fakeredis == 'false'){
+      toFakeRedis = false;
     }
-
+    
     return {
       'fake': toFakeRedis,
       'host': '127.0.0.1',
