@@ -13,7 +13,8 @@
 
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionhero.png)](http://demo.actionherojs.com)
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) 
+[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) [![Dependency Status](https://gemnasium.com/evantahler/actionhero.svg)](https://gemnasium.com/evantahler/actionhero)
+
 
 ## Who is the actionhero?
 actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](http://actionherojs.com/wiki/core/actions.html), [**consume static content**](http://actionherojs.com/wiki/core/file-server.html), and [**communicate with each other**](http://actionherojs.com/wiki/core/chat.html).  actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
