@@ -25,7 +25,7 @@ To create a plugin, create a project with the following structure:
 | - initializers
 | - scripts
 | - config
-| 
+|
 | - package.json
 {% endhighlight %}
 
@@ -56,7 +56,7 @@ And you would add the following to your `package.json`:
 }
 {% endhighlight %}
 
-When developing your plugin locally, you can load it into an existing actionhero project to test it out.  
+When developing your plugin locally, you can load it into an existing actionhero project to test it out.
 
 First, add the path your plugin is in to `api.config.general.paths.plugin`.  If your actionhero app is in `/var/ah/actionhero` and your plugin is in `/var/ah/my_plugin`, add `/var/ah` to `api.config.general.paths.plugin`
 
@@ -75,3 +75,4 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 - [ah-airbrake-plugin](https://github.com/evantahler/ah-airbrake-plugin) Airbrake Integration
 - [ah-newrelic-plugin](https://github.com/evantahler/ah-newrelic-plugin) NewRelic Integration
 - [ah-sequelize-plugin](https://github.com/evantahler/ah-sequelize-plugin) Sequelize Integration for mySQL or Postgres
+- [ah-nodemailer-plugin](https://github.com/panjiesw/ah-nodemailer-plugin) Nodemailer Integration
