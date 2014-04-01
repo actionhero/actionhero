@@ -70,7 +70,7 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 
 ---
 
-## Published Plugins
+# Published Plugins
 
 - [ah-airbrake-plugin](https://github.com/evantahler/ah-airbrake-plugin) Airbrake Integration
 - [ah-newrelic-plugin](https://github.com/evantahler/ah-newrelic-plugin) NewRelic Integration
