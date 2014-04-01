@@ -56,6 +56,12 @@ And you would add the following to your `package.json`:
 }
 {% endhighlight %}
 
+When developing your plugin locally, you can load it into an existing actionhero project to test it out.  
+
+First, add the path your plugin is in to `api.config.general.paths.plugin`.  If your actionhero app is in `/var/ah/actionhero` and your plugin is in `/var/ah/my_plugin`, add `/var/ah` to `api.config.general.paths.plugin`
+
+Then, in `api.config.general.plugins`, add the name of your plugin, in this case `my_plugin`.  Note that the directory name and the package name in the plugin's `package.json` should match.
+
 **Please use the npm naming convention `ah-(name)-plugin` when uploading your plugin to npm**
 
 ## Example Plugin
