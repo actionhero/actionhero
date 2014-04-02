@@ -258,7 +258,8 @@ describe('Core: Tasks', function(){
         api.resque.startWorkers(function(){
           var listener = function(queue, job, error){
             queue.should.equal(queue);
-            should.not.exist(job);
+            job.class.should.equal('someCrazyTask')
+            job.queue.should.equal('testQueue')
             String(error).should.equal('Error: No job defined for class \'someCrazyTask\'');
             api.resque.workers[0].removeListener('error', listener);
             done();

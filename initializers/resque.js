@@ -100,7 +100,6 @@ var resque = function(api, next){
                 api.exceptionHandlers.task(error, queue, job)
               })
 
-
               worker.workerCleanup();
               worker.start();
               self.workers[i] = worker;
