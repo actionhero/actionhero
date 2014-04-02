@@ -172,6 +172,19 @@ describe('Server: Socket', function(){
     });
   });
 
+  it('params are sticky between actions', function(done){
+    makeSocketRequest(client, 'cacheTest', function(response){
+      should.not.exist(response.error);
+      response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey');
+      response.cacheTestResults.loadResp.value.should.equal('abc123');
+      makeSocketRequest(client, 'cacheTest', function(response){
+        response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey');
+        response.cacheTestResults.loadResp.value.should.equal('abc123');
+        done();
+      });
+    });
+  });
+
   it('only params sent in a JSON block are used', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), function(response){
       response.error.should.equal('Error: value is a required parameter for this action')

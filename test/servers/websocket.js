@@ -102,6 +102,19 @@ describe('Server: Web Socket', function(){
     });
   });
 
+  it('has sticky params', function(done){
+    client_1.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
+      should.not.exist(response.error);
+      response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
+      response.cacheTestResults.loadResp.value.should.equal('test value');
+      client_1.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
+        response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
+        response.cacheTestResults.loadResp.value.should.equal('test value');
+        done();
+      });
+    });
+  });
+
   it('will limit how many simultaneous connections I can have', function(done){
     var responses = [];
     client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response) })
