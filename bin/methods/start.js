@@ -73,7 +73,8 @@ exports['start'] = function(binary, next){
   process.on('SIGTERM', function(){ stopProcess() });
   process.on('SIGUSR2', function(){ restartServer() });
 
-  if(process.platform === 'win32'){
+  // IISNODE Support: Check if running on windows and not on iisnode
+  if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
     var rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout

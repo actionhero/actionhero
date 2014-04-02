@@ -38,8 +38,12 @@ var pids = function(api, next){
   }
 
   api.pids._start = function(api, next){
-    api.pids.writePidFile();
-    api.log('pid: ' + process.pid, 'notice');
+    if(api.config.general.writepid){
+      api.pids.writePidFile();
+      api.log('pid: ' + process.pid, 'notice');
+    } else {
+      api.log('skipping pid creation', 'notice');
+    }
     next();
   }
 

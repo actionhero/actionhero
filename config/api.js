@@ -40,6 +40,9 @@ exports.default = {
         'initializer': [ __dirname + '/../initializers' ] ,
         'plugin':      [ __dirname + '/../node_modules' ] 
       },
+      
+      // Needed config for IISNode, true > write pidfile, false > skip writing pid file
+      writepid: true,
       // list of actionhero plugins you want to load
       plugins: [
         // this is a list of plugin names
