@@ -72,4 +72,18 @@ describe('Benchmarks', function(){
     });
   });
 
+  it('sleepTest', function(done){
+    this.timeout(10 * 1000)
+    multiAction('sleepTest', 1000, {}, function(duration){
+      done();
+    });
+  });
+
+  it('debug', function(done){
+    this.timeout(10 * 1000)
+    multiAction('debug', 1000, {}, function(duration){
+      done();
+    });
+  });
+
 });
