@@ -63,7 +63,7 @@ var exceptions = function(api, next){
 
     connection.error = new Error(api.config.general.serverErrorMessage);
     connection.response = {}; // no partial responses
-    next(connection, true);
+    if(typeof next === 'function'){ next(connection, true); }
   };
 
   api.exceptionHandlers.task = function(err, queue, task){

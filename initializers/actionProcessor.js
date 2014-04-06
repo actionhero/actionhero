@@ -3,11 +3,14 @@ var async = require('async');
 
 var actionProcessor = function(api, next){
 
+  var duplicateCallbackErrorTimeout = 500;
+
   api.actionProcessor = function(data){
     if(data.connection == null){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
+    this.working = false;
   }
 
   api.actionProcessor.prototype.buildProxyConnection = function(connection){
@@ -88,6 +91,8 @@ var actionProcessor = function(api, next){
         error: stringifiedError
       });
 
+      self.working = false;
+
     });
   }
 
@@ -165,9 +170,23 @@ var actionProcessor = function(api, next){
     }
   }
 
+  api.actionProcessor.prototype.duplicateCallbackHandler = function(error, actionDomain){
+    var self = this;
+    if(self.working == true){
+      setTimeout(function(){
+        self.duplicateCallbackHandler(error, actionDomain);
+      }, duplicateCallbackErrorTimeout)
+    }else{
+      process.nextTick(function(){
+        api.exceptionHandlers.action(actionDomain, new Error(error), self.connection);
+      });
+    }
+  }
+
   api.actionProcessor.prototype.processAction = function(){
     var self = this;
     self.actionStartTime = new Date().getTime();
+    self.working = true;
     self.incrementTotalActions();
     self.incrementPendingActions();
     self.sanitizeLimitAndOffset();
@@ -208,18 +227,37 @@ var actionProcessor = function(api, next){
         actionDomain.run(function(){
           setImmediate(function(){
             var toProcess = true;
+            var step = 0;
             self.preProcessAction(toProcess, function(toProcess){
-              self.reduceParams();
-              api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
-              if(toProcess === true && self.connection.error === null){
-                self.actionTemplate.run(api, self.connection, function(connection, toRender){
-                  self.connection = connection;
-                  self.postProcessAction(toRender, function(toRender){
-                    self.completeAction(null, toRender, actionDomain);
+              step++;
+              if(step !== 1){ 
+                step = 1; 
+                self.duplicateCallbackHandler('Double callback prevented within action preProcessor', actionDomain); 
+              }else{
+                self.reduceParams();
+                api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
+                if(toProcess === true && self.connection.error === null){
+                  self.actionTemplate.run(api, self.connection, function(connection, toRender){
+                    step++;
+                    if(step !== 2){ 
+                      step = 2; 
+                      self.duplicateCallbackHandler('Double callback prevented within action', actionDomain); 
+                    }else{
+                      self.connection = connection;
+                      self.postProcessAction(toRender, function(toRender){
+                        step++;
+                        if(step !== 3){ 
+                          step = 3; 
+                          self.duplicateCallbackHandler('Double callback prevented within action postProcessor', actionDomain); 
+                        }else{
+                          self.completeAction(null, toRender, actionDomain);
+                        }
+                      });
+                    }
                   });
-                });
-              } else {
-                self.completeAction(null, true, actionDomain);
+                } else {
+                  self.completeAction(null, true, actionDomain);
+                }
               }
             });
           });

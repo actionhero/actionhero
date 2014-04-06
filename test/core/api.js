@@ -156,4 +156,49 @@ describe('Core: API', function(){
     });
   })
 
+  describe('duplicate callback prevention', function(){
+
+    before(function(done){
+      api.actions.versions.badAction = [1]
+      api.actions.actions.badAction = {
+        '1': {
+          name: 'badAction',
+          description: 'I double callback',
+          version: 1,
+          inputs: { required: [], optional: [] },
+          outputExample: {},
+          run:function(api, connection, next){
+            connection.response.count = 1
+            next(connection, true);
+            setTimeout(function(){
+              connection.response.count = 2
+              next(connection, true);
+            }, 1000)
+          }
+        }
+      }
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.actions['badAction'];
+      delete api.actions.versions['badAction'];
+      done();
+    });
+
+    it('will only callback once for a bad action and only the first response will be returned', function(done){
+      responses = [];
+      api.specHelper.runAction('badAction', function(response, connection){
+        responses.push( api.utils.objClone(response) );
+      });
+
+      setTimeout(function(){
+        responses.length.should.equal(1);
+        responses[0].count.should.equal(1)
+        done();
+      }, 2000)
+    });
+
+  });
+
 });
