@@ -181,6 +181,7 @@ describe('Core: API', function(){
     });
 
     after(function(done){
+      api.actions.preProcessors = [];
       delete api.actions.actions['badAction'];
       delete api.actions.versions['badAction'];
       done();
@@ -195,6 +196,23 @@ describe('Core: API', function(){
       setTimeout(function(){
         responses.length.should.equal(1);
         responses[0].count.should.equal(1)
+        done();
+      }, 2000)
+    });
+
+    it('can also prevent double callbacks from middleware', function(done){
+      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+        next(connection, true);
+        next(connection, true);
+      });
+
+      responses = [];
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        responses.push( api.utils.objClone(response) );
+      });
+
+      setTimeout(function(){
+        responses.length.should.equal(1);
         done();
       }, 2000)
     });

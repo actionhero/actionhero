@@ -227,37 +227,25 @@ var actionProcessor = function(api, next){
         actionDomain.run(function(){
           setImmediate(function(){
             var toProcess = true;
-            var step = 0;
+            var callbackCount = 0;
             self.preProcessAction(toProcess, function(toProcess){
-              step++;
-              if(step !== 1){ 
-                step = 1; 
-                self.duplicateCallbackHandler('Double callback prevented within action preProcessor', actionDomain); 
-              }else{
-                self.reduceParams();
-                api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
-                if(toProcess === true && self.connection.error === null){
-                  self.actionTemplate.run(api, self.connection, function(connection, toRender){
-                    step++;
-                    if(step !== 2){ 
-                      step = 2; 
-                      self.duplicateCallbackHandler('Double callback prevented within action', actionDomain); 
-                    }else{
-                      self.connection = connection;
-                      self.postProcessAction(toRender, function(toRender){
-                        step++;
-                        if(step !== 3){ 
-                          step = 3; 
-                          self.duplicateCallbackHandler('Double callback prevented within action postProcessor', actionDomain); 
-                        }else{
-                          self.completeAction(null, toRender, actionDomain);
-                        }
-                      });
-                    }
-                  });
-                } else {
-                  self.completeAction(null, true, actionDomain);
-                }
+              self.reduceParams();
+              api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
+              if(toProcess === true && self.connection.error === null){
+                self.actionTemplate.run(api, self.connection, function(connection, toRender){
+                  callbackCount++;
+                  if(callbackCount !== 1){ 
+                    callbackCount = 1; 
+                    self.duplicateCallbackHandler('Double callback prevented within action', actionDomain); 
+                  }else{
+                    self.connection = connection;
+                    self.postProcessAction(toRender, function(toRender){
+                      self.completeAction(null, toRender, actionDomain);
+                    });
+                  }
+                });
+              } else {
+                self.completeAction(null, true, actionDomain);
               }
             });
           });
