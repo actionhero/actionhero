@@ -144,18 +144,14 @@ if(process.env.actionhero_root != null){
   binary.paths.actionhero_root = path.normalize(__dirname + '/../');
 }
 
-try {
-  binary.paths.config = require(binary.paths.project_root + '/config/config.js').config.general.paths
-} catch(e){
-  binary.paths.config = {
-    'action':      binary.paths.project_root + '/actions',
-    'task':        binary.paths.project_root + '/tasks',
-    'public':      binary.paths.project_root + '/public',
-    'pid':         binary.paths.project_root + '/pids',
-    'log':         binary.paths.project_root + '/log',
-    'server':      binary.paths.project_root + '/servers',
-    'initializer': binary.paths.project_root + '/initializers'
-  }
+binary.paths.config = {
+  'action':      binary.paths.project_root + '/actions',
+  'task':        binary.paths.project_root + '/tasks',
+  'public':      binary.paths.project_root + '/public',
+  'pid':         binary.paths.project_root + '/pids',
+  'log':         binary.paths.project_root + '/log',
+  'server':      binary.paths.project_root + '/servers',
+  'initializer': binary.paths.project_root + '/initializers'
 }
 
 binary.argv = require('optimist').argv;
