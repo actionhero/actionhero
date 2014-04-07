@@ -425,9 +425,14 @@ var web = function(api, options, next){
   }
 
   var cleanSocket = function(bindIP, port){
-    if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
-      server.log('removing stale unix socket @ ' + port)
-      fs.unlinkSync(port); 
+    if(bindIP == null && port.indexOf("/") >= 0){ 
+      fs.unlink(port, function(err){
+        if(err){
+          server.log('cannot remove stale socket @' + port + ' : ' + err);
+        }else{
+          server.log('removed stale unix socket @ ' + port);
+        }
+      });
     } 
   }
 
