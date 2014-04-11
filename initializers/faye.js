@@ -11,7 +11,9 @@ var faye = function(api, next){
   api.faye._start = function(api, next){
 
     var options = api.config.faye;
-    if(api.config.faye.redis.fake != true){
+    if(api.config.faye.redis.package != 'fakeredis'){
+      // These options are hard-coded within faye-redis
+      // Faye-Redis does not support sentinels yet
       options.engine = {
         type:      require('faye-redis'),
         host:      api.config.faye.redis.host,
