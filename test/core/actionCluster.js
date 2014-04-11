@@ -159,7 +159,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('clients can communicate across the cluster', function(done){
-      if(api_1.config.redis.fake == true){
+      if(api_1.config.redis.package == 'fakeredis'){
         // you can't communicate across the cluster with fakeredis!
         done();
       } else {

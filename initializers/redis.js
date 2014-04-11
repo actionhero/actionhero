@@ -10,16 +10,15 @@ var redis = function(api, next){
   */
 
   api.redis = {};
-  api.redis.fake = api.config.redis.fake;
   if(api.config.redis.database == null){ api.config.redis.database = 0 }
 
   var redisPackage;
-  if(api.redis.fake == true){
+  if(api.config.redis.package === 'fakeredis'){
     api.log('running with fakeredis', 'warning');
-    redisPackage = require('fakeredis');
+    redisPackage = require(api.config.redis.package);
     redisPackage.fast = true;
   } else {
-    redisPackage = require('redis');
+    redisPackage = require(api.config.redis.package);
   }
 
   api.redis._start = function(api, next){
@@ -33,6 +32,7 @@ var redis = function(api, next){
     });
 
     api.redis.client.on('connect', function(err){
+      if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis', 'debug');
     });
 
@@ -43,7 +43,7 @@ var redis = function(api, next){
           callback();
         });
       });
-    } else if(api.config.redis.fake != true){
+    } else if(api.config.redis.package === 'fakeredis'){
       process.nextTick(function(){
         api.redis.client.select(api.config.redis.database, function(err){
           if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis.  exiting', 'emerg'); }
@@ -52,6 +52,7 @@ var redis = function(api, next){
       });
     } else {
       process.nextTick(function(){
+        if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
         callback();
       });
     }
