@@ -52,7 +52,7 @@ var websocket = function(api, options, next){
   server._stop = function(next){
     server.active = false;
     server.connections().forEach(function(connection){
-      server.goodbye(connection, 'server shutting down');
+      connection.destroy();
     });
     process.nextTick(function(){
       next();
@@ -93,8 +93,7 @@ var websocket = function(api, options, next){
   };
 
   server.goodbye = function(connection, reason){
-    server.sendMessage(connection, {status: 'Bye!', context: 'api', reason: reason});
-    server.destroyConnection(connection);
+    server.sendMessage(connection, {status: 'ClientDisconnect', context: 'api', reason: reason});
   };
 
   ////////////
@@ -124,7 +123,7 @@ var websocket = function(api, options, next){
     var clients = server.connections();
     for(var i in clients){
       if(clients[i].rawConnection.clientId === clientId){
-        server.goodbye(clients[i]);
+        clients[i].destroy();
         break;
       }
     }

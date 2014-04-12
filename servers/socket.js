@@ -84,11 +84,9 @@ var socket = function(api, options, next){
     }
   }
 
-  server.goodbye = function(connection, reason){
-    if(reason == null){ reason = 'server shutdown' }
+  server.goodbye = function(connection){
     try {
-      connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api', reason: reason}) + '\r\n');
-      server.destroyConnection(connection);
+      connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api'}) + '\r\n');
     } catch(e){}
   }
 
@@ -112,7 +110,7 @@ var socket = function(api, options, next){
 
     connection.rawConnection.on('data', function(chunk){
       if(checkBreakChars(chunk)){
-        server.goodbye(connection, 'break-character');
+        connection.destroy();
       } else {
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
         var index, line;
@@ -132,14 +130,18 @@ var socket = function(api, options, next){
     });
 
     connection.rawConnection.on('end', function(){
-      try { connection.rawConnection.end() } catch(e){}
-      server.destroyConnection(connection);
+      if(connection.destroyed !== true){
+        try { connection.rawConnection.end() } catch(e){}
+        connection.destroy();
+      }
     });
 
     connection.rawConnection.on('error', function(e){
-      server.log('socket error: ' + e, 'error');
-      try { connection.rawConnection.end() } catch(e){}
-      server.destroyConnection(connection);
+      if(connection.destroyed !== true){
+        server.log('socket error: ' + e, 'error');
+        try { connection.rawConnection.end() } catch(e){}
+        connection.destroy();
+      }
     });
   });
 
@@ -220,12 +222,12 @@ var socket = function(api, options, next){
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
       if(connection.pendingActions == 0){
-        server.goodbye(connection);
+        connection.destroy();
       } else {
         pendingConnections++;
         if(connection.rawConnection.shutDownTimer == null){
           connection.rawConnection.shutDownTimer = setTimeout(function(){
-            server.goodbye(connection);
+            connection.destroy();
           }, attributes.pendingShutdownWaitLimit);
         }
       }

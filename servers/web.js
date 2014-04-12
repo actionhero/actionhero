@@ -92,7 +92,7 @@ var web = function(api, options, next){
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
     connection.rawConnection.res.end(stringResponse);
-    server.destroyConnection(connection);
+    connection.destroy();
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
@@ -108,14 +108,18 @@ var web = function(api, options, next){
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
     if(error != null){
       connection.rawConnection.res.end(String(error));
-      server.destroyConnection(connection);
+      connection.destroy();
     } else {
       fileStream.pipe(connection.rawConnection.res);
       fileStream.on('end', function(){
-        server.destroyConnection(connection);
+        connection.destroy();
       });
     }
   };
+
+  server.goodbye = function(connection){
+    // disconnect handlers
+  }
 
   ////////////
   // EVENTS //

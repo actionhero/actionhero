@@ -129,6 +129,9 @@
       self.welcomeMessage = message.welcome;
       self.emit('welcome', message);
     } else if(message.context === 'api'){
+      if(message.status === "ClientDisconnect"){
+        client.disconnect();
+      }
       self.emit('api', message);
     }
   }
