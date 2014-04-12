@@ -34,25 +34,28 @@ function makeSocketRequest(thisClient, message, cb){
   thisClient.write(message + '\r\n');
 }
 
+var connectClients = function(callback){
+  setTimeout(function(){
+    callback();
+  }, 1000);
+
+  client = net.connect(api.config.servers.socket.port, function(){
+    client.setEncoding('utf8');
+  });
+  client2 = net.connect(api.config.servers.socket.port, function(){
+    client2.setEncoding('utf8');
+  });
+  client3 = net.connect(api.config.servers.socket.port, function(){
+    client3.setEncoding('utf8');
+  });
+}
+
 describe('Server: Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
       api = a;
-
-      setTimeout(function(){
-        done();
-      }, 1000);
-
-      client = net.connect(api.config.servers.socket.port, function(){
-        client.setEncoding('utf8');
-      });
-      client2 = net.connect(api.config.servers.socket.port, function(){
-        client2.setEncoding('utf8');
-      });
-      client3 = net.connect(api.config.servers.socket.port, function(){
-        client3.setEncoding('utf8');
-      });
+      connectClients(done)
     });
   });
 
@@ -364,6 +367,30 @@ describe('Server: Socket', function(){
       });
     });
   
+  });
+
+  describe('disconnect', function(){
+    after(function(done){
+      connectClients(done);
+    })
+
+    it('server can disconnect a client', function(done){
+      makeSocketRequest(client, 'status', function(response){
+        response.id.should.equal('test-server');
+        client.readable.should.equal(true)
+        client.writable.should.equal(true)
+        
+        for(id in api.connections.connections){
+          api.connections.connections[id].destroy();
+        }
+
+        setTimeout(function(){
+          client.readable.should.equal(false)
+          client.writable.should.equal(false)
+          done();
+        }, 100)
+      });
+    });
   });
 
 });

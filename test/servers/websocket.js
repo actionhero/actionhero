@@ -234,7 +234,25 @@ describe('Server: Web Socket', function(){
 
   describe('disconnect', function(){
 
-    it('can disconnect', function(done){
+    beforeEach(function(done){
+      try{
+        client_1.disconnect();
+        client_2.disconnect();
+        client_3.disconnect();
+      }catch(e){} 
+
+      client_1 = new actionheroClientPrototype({host: socketURL, faye: faye});
+      client_2 = new actionheroClientPrototype({host: socketURL, faye: faye});
+      client_3 = new actionheroClientPrototype({host: socketURL, faye: faye});
+
+      client_1.connect();
+      client_2.connect();
+      client_3.connect();
+      
+      setTimeout(done, 1000);
+    });
+
+    it('client can disconnect', function(done){
       api.servers.servers.websocket.connections().length.should.equal(3);
       client_1.disconnect();
       client_2.disconnect();
@@ -245,6 +263,22 @@ describe('Server: Web Socket', function(){
       }, 500);
     });
 
-  })
+    it('can be sent disconnect events from the server', function(done){
+      client_1.detailsView(function(response){
+        response.data.remoteIP.should.equal('127.0.0.1');
+        
+        for(id in api.connections.connections){
+          api.connections.connections[id].destroy();
+        }
+
+        client_1.detailsView(function(response){
+          throw new Error("should not get responst")
+        });
+
+        setTimeout(done, 4000)
+      });
+    });
+
+  });
 
 });

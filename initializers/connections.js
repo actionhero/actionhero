@@ -87,13 +87,20 @@ var connections = function(api, next){
 
   api.connection.prototype.destroy = function(callback){
     var self = this;
+    self.destroyed = true;
     for(var i in api.connections.destroyCallbacks){
       api.connections.destroyCallbacks[i](self);
     }
+
     api.stats.increment('connections:totalActiveConnections', -1);
     api.stats.increment('connections:activeConnections:' + self.type, -1);
     if(self.canChat === true){ api.chatRoom.removeMember(self); }
     delete api.connections.connections[self.id];
+    var server = api.servers.servers[self.type];
+    if(server.attributes.logExits === true){
+      server.log('connection closed', 'info', {to: self.remoteIP});
+    }
+    if(typeof server.goodbye === 'function'){ server.goodbye(self); }
     if(typeof callback == 'function'){ callback() }
   }
 
@@ -112,7 +119,7 @@ var connections = function(api, next){
     if(allowedVerbs.indexOf(verb) >= 0){
       server.log('verb', 'debug', {verb: verb, to: self.remoteIP, params: JSON.stringify(words)});
       if(verb === 'quit' || verb === 'exit'){
-        server.goodbye(self, verb + ' requested');
+        server.goodbye(self);
 
       } else if(verb === 'paramAdd'){
         key = words[0];

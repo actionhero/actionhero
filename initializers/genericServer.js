@@ -17,7 +17,6 @@ var genericServer = function(api, next){
     attributes = {
       canChat: true,
       logConnections: true,
-      logExits: true,
       sendWelcomeMessage: true,
       verbs: ['say', 'detailsView']
     }
@@ -78,15 +77,7 @@ var genericServer = function(api, next){
       }, self.attributes.sendWelcomeMessage);
     }
   }
-
-  api.genericServer.prototype.destroyConnection = function(connection){
-    var self = this;
-    if(self.attributes.logExits === true){
-      self.log('connection closed', 'info', {to: connection.remoteIP});
-    }
-    connection.destroy();
-  }
-
+  
   api.genericServer.prototype.processAction = function(connection){
     var self = this;
     var actionProcessor = new api.actionProcessor({
