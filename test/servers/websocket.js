@@ -235,6 +235,12 @@ describe('Server: Web Socket', function(){
   describe('disconnect', function(){
 
     beforeEach(function(done){
+      try{
+        client_1.disconnect();
+        client_2.disconnect();
+        client_3.disconnect();
+      }catch(e){} 
+
       client_1 = new actionheroClientPrototype({host: socketURL, faye: faye});
       client_2 = new actionheroClientPrototype({host: socketURL, faye: faye});
       client_3 = new actionheroClientPrototype({host: socketURL, faye: faye});
