@@ -70,7 +70,7 @@
           if(self.room != null){
             self.send({event: 'roomChange', room: self.room});
           }
-          callback(null, details);
+          if(typeof callback === 'function'){ callback(null, details); }
         });
       }, self.options.connectionDelay);
     });
@@ -130,7 +130,7 @@
       self.emit('welcome', message);
     } else if(message.context === 'api'){
       if(message.status === "ClientDisconnect"){
-        client.disconnect();
+        self.disconnect();
       }
       self.emit('api', message);
     }
@@ -233,6 +233,7 @@
   actionheroClient.prototype.disconnect = function(){
     this.state = 'disconnected';
     this.client.disconnect();
+    this.emit('disconnected');
   }
 
   /////////////
