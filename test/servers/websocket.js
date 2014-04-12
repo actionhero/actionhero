@@ -264,7 +264,6 @@ describe('Server: Web Socket', function(){
     });
 
     it('can be sent disconnect events from the server', function(done){
-      this.timeout = 5000
       client_1.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
         
