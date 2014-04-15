@@ -17,6 +17,7 @@ var genericServer = function(api, next){
     attributes = {
       canChat: true,
       logConnections: true,
+      logExits: true,
       sendWelcomeMessage: true,
       verbs: ['say', 'detailsView']
     }
