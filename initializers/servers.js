@@ -7,6 +7,12 @@ var servers = function(api, next){
   api.servers.servers = [];
 
   api.servers._start = function(api, next){
+
+    setInterval(function(){
+      var count = api.utils.hashLength(api.connections.connections)
+      api.log("CONNECTIONS: " + count);
+    }, 1000)
+
     var started = 0;
     if(api.utils.hashLength(api.config.servers) == 0){ next() }
     for(var server in api.servers.servers){
