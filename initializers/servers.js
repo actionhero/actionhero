@@ -9,7 +9,7 @@ var servers = function(api, next){
   api.servers._start = function(api, next){
 
     var started = 0;
-    if(api.utils.hashLength(api.config.servers) == 0){ next() }
+    if(api.utils.hashLength(api.servers.servers) == 0){ next() }
     for(var server in api.servers.servers){
       started++;
       api.log('starting server: ' + server, 'notice');
