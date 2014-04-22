@@ -45,8 +45,6 @@ All connection objects have these properties by the time they reach middleware o
   error: null,
   params: { 
     action: 'status', 
-    limit: 100, 
-    offset: 0 
   },
   response: {},
   pendingActions: 0,

@@ -199,7 +199,7 @@ By now you will have noticed that most sections of actionhero are initilized wit
   // Params
   // https://github.com/evantahler/actionhero/blob/master/initializers/params.js
   params: {
-    globalSafeParams: [ 'file', 'apiVersion', 'callback', 'action', 'limit', 'offset' ],
+    globalSafeParams: [ 'file', 'apiVersion', 'callback', 'action' ],
     buildPostVariables: [Function],
     requiredParamChecker: [Function],
     postVariables:[], // array

@@ -24,9 +24,7 @@ HTTP responses are always JSON and follow the format:
 		remoteAddress: "127.0.0.1",
 		RequestsRemaining: 989,
 		recievedParams: {
-			action: "",
-			limit: 100,
-			offset: 0
+			action: ""
 		}
 	}
 }
@@ -61,8 +59,6 @@ HTTP Example:
     "requestorInformation": {
         "recievedParams": {
             "action": "status", 
-            "limit": 100, 
-            "offset": 0
         }, 
         "remoteAddress": "127.0.0.1"
     }, 
@@ -104,7 +100,6 @@ HTTP Example:
 {% endhighlight %}
 
 * you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. 
-* unless otherwise provided, the api will set default values of limit and offset to help with paginating long lists of response objects (default: limit=100, offset=0).  These defaults are defined in `/config/api.js`
 * If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
@@ -269,9 +264,7 @@ Params provided by the user (GET, POST, etc for http and https servers, setParam
   [ 'file',
     'apiVersion',
     'callback',
-    'action',
-    'limit',
-    'offset' ]
+    'action', ]
 {% endhighlight %}
 	
 Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in you initializers. 
@@ -386,8 +379,7 @@ exports.action = {
       { ... },
   key1: '123',
   key2: '456',
-  limit: 100,
-  offset: 0 }
+ }
 {% endhighlight %}
 
 ## Client Library

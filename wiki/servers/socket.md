@@ -36,7 +36,7 @@ Connected to localhost.
 Escape character is '^]'.
 {"welcome":"Hello! Welcome to the actionhero api","room":"defaultRoom","context":"api"}
 detailsView
-{"status":"OK","context":"response","data":{"id":"2d68c389-521d-4dc6-b4f1-8292cd6cbde6","remoteIP":"127.0.0.1","remotePort":57393,"params":{"limit":100,"offset":0},"connectedAt":1368918901456,"room":"defaultRoom","totalActions":0,"pendingActions":0},"messageCount":1}
+{"status":"OK","context":"response","data":{"id":"2d68c389-521d-4dc6-b4f1-8292cd6cbde6","remoteIP":"127.0.0.1","remotePort":57393,"params":{},"connectedAt":1368918901456,"room":"defaultRoom","totalActions":0,"pendingActions":0},"messageCount":1}
 randomNumber
 {"randomNumber":0.4977603426668793,"context":"response","messageCount":2}
 cacheTest
@@ -46,7 +46,7 @@ paramAdd key=myKey
 paramAdd value=myValue
 {"status":"OK","context":"response","data":null,"messageCount":5}
 paramsView
-{"status":"OK","context":"response","data":{"limit":100,"offset":0,"action":"cacheTest","key":"myKey","value":"myValue"},"messageCount":6}
+{"status":"OK","context":"response","data":{"action":"cacheTest","key":"myKey","value":"myValue"},"messageCount":6}
 cacheTest
 {"cacheTestResults":{"saveResp":true,"sizeResp":1,"loadResp":{"key":"cacheTest_myKey","value":"myValue","expireTimestamp":1368918936984,"createdAt":1368918931984,"readAt":1368918931995},"deleteResp":true},"context":"response","messageCount":7}
 say hooray!
