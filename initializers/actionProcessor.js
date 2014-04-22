@@ -96,23 +96,6 @@ var actionProcessor = function(api, next){
     });
   }
 
-  api.actionProcessor.prototype.sanitizeLimitAndOffset = function(){
-    if(this.connection.params.limit == null){
-      this.connection.params.limit = api.config.general.defaultLimit;
-    } else {
-      this.connection.params.limit = parseFloat(this.connection.params.limit);
-    }
-    if(this.connection.params.offset == null){
-      this.connection.params.offset = api.config.general.defaultOffset;
-    } else {
-      this.connection.params.offset = parseFloat(this.connection.params.offset);
-    }
-    if(this.connection.params.apiVersion != null){
-      this.connection.params.apiVersion = parseFloat(this.connection.params.apiVersion);
-      if(isNaN(this.connection.params.apiVersion)){ this.connection.params.apiVersion = null; }
-    }
-  }
-
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
     var self = this;
     if(api.actions.preProcessors.length == 0){
@@ -189,7 +172,6 @@ var actionProcessor = function(api, next){
     self.working = true;
     self.incrementTotalActions();
     self.incrementPendingActions();
-    self.sanitizeLimitAndOffset();
 
     self.connection.action = self.connection.params['action'];
     if(api.actions.versions[self.connection.action] != null){
