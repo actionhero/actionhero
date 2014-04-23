@@ -14,9 +14,6 @@ exports.default = {
       flatFileNotFoundMessage: 'Sorry, that file is not found :(',
       // The message to accompany 500 errors (internal server errors)
       serverErrorMessage: 'The server experienced an internal error',
-      // defaultLimit & defaultOffset are useful for limiting the length of response lists.
-      defaultLimit: 100,
-      defaultOffset: 0,
       // the redis prefix for actionhero's cache objects
       cachePrefix: 'actionhero:cache:',
       // Watch for changes in actions and tasks, and reload/restart them on the fly

@@ -118,20 +118,11 @@ describe('Server: Socket', function(){
     });
   });
 
-  it('default params are set', function(done){
-    makeSocketRequest(client, 'paramsView', function(response){
-      response.should.be.an.instanceOf(Object)
-      response.data.limit.should.equal(100)
-      response.data.offset.should.equal(0)
-      done();
-    });
-  });
-
   it('params can be updated', function(done){
-    makeSocketRequest(client, 'paramAdd limit=50', function(response){
+    makeSocketRequest(client, 'paramAdd key=otherKey', function(response){
       response.status.should.equal('OK');
       makeSocketRequest(client, 'paramsView', function(response){
-        response.data.limit.should.equal(String(50))
+        response.data.key.should.equal('otherKey');
         done();
       });
     });

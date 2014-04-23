@@ -387,8 +387,6 @@ var web = function(api, options, next){
     if(connection.rawConnection.req.method.toUpperCase() != 'GET'){ return false }
     var params = api.utils.objClone(connection.params);
     delete params.action;
-    delete params.limit;
-    delete params.offset;
     delete params[''];
     return (api.utils.hashLength(params) === 0);
   }

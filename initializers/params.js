@@ -10,8 +10,6 @@ var params = function(api, next){
     'apiVersion',
     'callback',
     'action',
-    'limit',
-    'offset'
   ];
 
   api.params.buildPostVariables = function(){

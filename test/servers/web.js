@@ -55,15 +55,6 @@ describe('Server: Web', function(){
     });
   });
 
-  it('limit and offset should have defaults', function(done){
-    request.get(url + '/api/', function(err, response, body){
-      body = JSON.parse(body);
-      body.requesterInformation.receivedParams.limit.should.equal(100)
-      body.requesterInformation.receivedParams.offset.should.equal(0)
-      done();
-    });
-  });
-
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
       body = JSON.parse(body);
@@ -439,7 +430,7 @@ describe('Server: Web', function(){
         ],
         get: [
           { path: '/users', action: 'usersList' },
-          { path: '/search/:term/limit/:limit/offset/:offset', action: 'search' },
+          { path: '/search/:term', action: 'search' },
           { path: '/c/:key/:value', action: 'cacheTest' },
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' }
         ],
@@ -558,12 +549,10 @@ describe('Server: Web', function(){
     });
 
     it('route params trump explicit params', function(done){
-      request.get(url + '/api/search/SearchTerm/limit/123/offset/456?term=otherSearchTerm&limit=0&offset=0', function(err, response, body){
+      request.get(url + '/api/search/SearchTerm?term=otherSearchTerm', function(err, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('search')
         body.requesterInformation.receivedParams.term.should.equal('SearchTerm')
-        body.requesterInformation.receivedParams.limit.should.equal(123)
-        body.requesterInformation.receivedParams.offset.should.equal(456)
         done();
       });
     });

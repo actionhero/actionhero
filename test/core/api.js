@@ -55,8 +55,6 @@ describe('Core: API', function(){
     [
       'callback',
       'action',
-      'limit',
-      'offset',
       'key', // from action
       'value' // from action
     ].forEach(function(item){

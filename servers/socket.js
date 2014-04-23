@@ -103,10 +103,7 @@ var socket = function(api, options, next){
   ////////////
 
   server.on('connection', function(connection){
-    connection.params = {
-      limit:  api.config.general.defaultLimit,
-      offset: api.config.general.defaultOffset
-    }
+    connection.params = {};
 
     connection.rawConnection.on('data', function(chunk){
       if(checkBreakChars(chunk)){
