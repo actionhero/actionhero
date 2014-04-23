@@ -339,11 +339,11 @@ var web = function(api, options, next){
           if(connection.params['action'] == null){ connection.params['action'] = apiPathParts[0]; }
           callback(requestMode);
         } else {
-          var form = new formidable.IncomingForm();
+          connection.rawConnection.form = new formidable.IncomingForm();
           for(i in api.config.servers.web.formOptions){
-            form[i] = api.config.servers.web.formOptions[i];
+            connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
           }
-          form.parse(connection.rawConnection.req, function(err, fields, files) {
+          connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files) {
             if(err){
               server.log('error processing form: ' + String(err), 'error');
               connection.error = new Error('There was an error processing this form.');
