@@ -200,6 +200,7 @@ var web = function(api, options, next){
       server.buildConnection({
       // will emit 'connection'
         rawConnection: {
+          fingerprint: fingerprint,
           req: req,
           res: res,
           method: method,
@@ -208,7 +209,7 @@ var web = function(api, options, next){
           responseHttpCode: responseHttpCode,
           parsedURL: parsedURL
         },
-        id: fingerprint,
+        id: fingerprint + '-' + api.utils.randomString(16),
         remoteAddress: remoteIP,
         remotePort: remotePort
       });
