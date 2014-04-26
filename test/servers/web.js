@@ -234,9 +234,14 @@ describe('Server: Web', function(){
               should.not.exist(response3.headers['set-cookie']);
               should.not.exist(response4.headers['set-cookie']);
 
-              body1.requesterInformation.id.should.equal(body2.requesterInformation.id);
-              body1.requesterInformation.id.should.equal(body3.requesterInformation.id);
-              body1.requesterInformation.id.should.equal(body4.requesterInformation.id);
+              var fingerprint1 = body1.requesterInformation.id.split("-")[0];
+              var fingerprint2 = body2.requesterInformation.id.split("-")[0];
+              var fingerprint3 = body3.requesterInformation.id.split("-")[0];
+              var fingerprint4 = body4.requesterInformation.id.split("-")[0];
+
+              fingerprint1.should.equal(fingerprint2);
+              fingerprint1.should.equal(fingerprint3);
+              fingerprint1.should.equal(fingerprint4);
               done();
             });
           });
