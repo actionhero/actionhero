@@ -255,7 +255,7 @@ exports['startCluster'] = function(binary, next){
         binary.log('cluster complete, Bye!', 'notice')
       });
 
-      if(process.platform === 'win32'){
+      if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
         var rl = readline.createInterface({
           input: process.stdin,
           output: process.stdout
