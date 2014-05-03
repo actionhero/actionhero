@@ -43,7 +43,7 @@ Note that you can optionally modify responseCodes (for HTTP clients only).  Be s
 
 By default, we want actionhero's file server to be very locked-down, and only serve files from a single directory.  This is the safest default for beginners. However, you can customize things by changing the behavior of `api.staticFile.path()`.  For example:
 
-```javascript
+{% highlight javascript %}
 // in an initializer, override api.staticFile.path
 
 api.staticFile.path = function(connection){
@@ -53,6 +53,6 @@ api.staticFile.path = function(connection){
     return api.config.general.paths.public[0];
   }
 }
-```
+{% endhighlight %}
 
 This would serve files from `/public` for all requests except the `sendFile` action, which will serve files from `/tmp`
