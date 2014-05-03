@@ -38,3 +38,21 @@ next(connection, false);
 {% endhighlight %}
 
 Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set `toRender = false` in the callback, as you have already sent data to the client, and probably don't want to do so again on a file request.
+
+## Customizing the File Server
+
+By default, we want actionhero's file server to be very locked-down, and only serve files from a single directory.  This is the safest default for beginners. However, you can customize things by changing the behavior of `api.staticFile.path()`.  For example:
+
+```javascript
+// in an initializer, override api.staticFile.path
+
+api.staticFile.path = function(connection){
+  if(connection.action == 'sendFile'){
+    return '/tmp/uploads';
+  }else{
+    return api.config.general.paths.public[0];
+  }
+}
+```
+
+This would serve files from `/public` for all requests except the `sendFile` action, which will serve files from `/tmp`
