@@ -66,7 +66,7 @@ Methods which the provided actionheroWebSocket object expose are:
   - `action` is a string, like "login"
   - `params` is an object
   - `callback` will be passed `response` (and you can inspect `response.error`)
-- `client.say = function(message, callback)`
+- `client.say(message, callback)`
   - `message` is a string
   - `callback` will be passed `error`, `response`
 - `client.detailsView(callback)`

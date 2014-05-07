@@ -83,3 +83,13 @@ If you delete a room with connections still in it, they will be unable to send a
 ## Chatting to specific clients
 
 Every connection object also has a `connection.sendMessage(message)` method which you can call directly from the server.  
+
+## Client Use
+
+The details of communicating within a chat room are up to each induvidual server (see [websocket](/wiki/servers/websocket.html) or [socket](/wiki/servers/socket.html)), but the same principals apply:
+
+- Client will join a room (`client.roomChange(room)`).  A client can be in only one room at a time.
+  - Or client can listen to a room (`client.listenToRoom(room)`).  A client can listen to any number of rooms at a time.
+- Once in the room, clients can send messages (which are strings) to everyone else in the room via `say`, ie: `client.say('Hello World')`
+- Once a client is in a room, they will recive messages from other members of the room as events.  For example, catching say events from the websocket client looks like `client.on('say', function(message){ console.log(message); })`
+  - The payload of a message will contain the room, sender, and the message body: `{message: "Hello World", room: "SecretRoom", from: "7d419af9-accf-40ac-8d78-9281591dd59e", context: "user", sentAt: 1399437579346} `
