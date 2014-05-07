@@ -45,7 +45,7 @@ These methods are to be used within your server (perhaps an action or initialize
 ### api.chatRoom.exists(room, callback)
 - callback returns (error, found); found is a boolean
 
-### `api.chatRoom.setAuthenticationPattern(room, key, value, callback)`
+### api.chatRoom.setAuthenticationPattern(room, key, value, callback)
 - callback returns (error)
 
 ### api.chatRoom.roomStatus(room, callback)
