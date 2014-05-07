@@ -93,3 +93,12 @@ The details of communicating within a chat room are up to each induvidual server
 - Once in the room, clients can send messages (which are strings) to everyone else in the room via `say`, ie: `client.say('Hello World')`
 - Once a client is in a room, they will recive messages from other members of the room as events.  For example, catching say events from the websocket client looks like `client.on('say', function(message){ console.log(message); })`
   - The payload of a message will contain the room, sender, and the message body: `{message: "Hello World", room: "SecretRoom", from: "7d419af9-accf-40ac-8d78-9281591dd59e", context: "user", sentAt: 1399437579346} `
+
+The flow for an authenticated rooom is: 
+
+- Only the server(s) can create rooms with `api.chatRoom.add('secretRoom')`
+- Once a room is created, you can then set an authentication rule for clients joining it: `api.chatRoom.setAuthenticationPattern('secretRoom','authenticated', true)`
+  - This means that every `connection` which attempts to join this room, actionhero will check that `connection.authenticated == true` before allowing them in.
+- `connection`s can only modify their `connection.params` hash, which means that only the sever can ever modify `connection.authenticated`, which makes it a safe key for authentication.
+- In your authentication (login) action, you can set that authentication bit, ie: `connection.authenticated = true; connection._original_connection.authenticated = true; `. 
+- You can get more elaborate with this kind of thing.  Perhaps you only want each user to be allowed in one room at all.  Then do something like `api.chatRoom.setAuthenticationPattern('secretRoom','authorizedRoom','secretRoom')`. 
