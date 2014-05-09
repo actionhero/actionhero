@@ -18,11 +18,9 @@ var websocket = function(api, options, next){
       'quit',
       'exit',
       'documentation',
-      'roomChange',
+      'roomAdd',
       'roomLeave',
       'roomView',
-      'listenToRoom',
-      'silenceRoom',
       'detailsView',
       'say'
     ]
