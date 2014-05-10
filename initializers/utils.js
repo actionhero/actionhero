@@ -56,13 +56,20 @@ var utils = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // merge two hashes recursively 
   api.utils.hashMerge = function(a, b, arg){
-    var c = {}, i;
+    var c = {};
+    var i;
+
     for(i in a){
-      if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0){
+      if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0 ){
         c[i] = api.utils.hashMerge(c[i], a[i], arg);
-      } else {
+      }else{
         if(typeof a[i] === 'function'){
-          c[i] = api.utils.hashMerge(c[i], a[i](arg), arg);
+          var response = a[i](arg);
+          if( api.utils.isPlainObject(response) ){
+            c[i] = api.utils.hashMerge(c[i], response, arg);
+          }else{
+            c[i] = response;
+          }
         }else{
           c[i] = a[i];
         }
@@ -71,9 +78,14 @@ var utils = function(api, next){
     for(i in b){
       if(api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0 ){
         c[i] = api.utils.hashMerge(c[i], b[i], arg);
-      } else {
+      }else{
         if(typeof b[i] === 'function'){
-          c[i] = api.utils.hashMerge(c[i], b[i](arg), arg);
+          var response = b[i](arg);
+          if( api.utils.isPlainObject(response) ){
+            c[i] = api.utils.hashMerge(c[i], response, arg);
+          }else{
+            c[i] = response;
+          }
         }else{
           c[i] = b[i];
         }
@@ -83,12 +95,19 @@ var utils = function(api, next){
   }
 
   api.utils.isPlainObject = function(o){
-    var safeTypes = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
+    var safeTypes     = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
+    var safeInstances = [ 'boolean', 'number', 'string', 'function' ];
+    var expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
+
     if(o == null){ return false }
     if((o instanceof Object) == false){ return false }
     for(var i in safeTypes){
       if(o instanceof safeTypes[i]){ return false }
     }
+    for(var i in safeInstances){
+      if(typeof o === safeInstances[i]){ return false }
+    }
+    if(o[expandPreventMatchKey] === false){ return false }
     return (o.toString() == '[object Object]');
   }
 

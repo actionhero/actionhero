@@ -403,7 +403,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/?file=../config.json', function(err, response, body){
         response.statusCode.should.equal(404);
-        response.body.should.equal(api.config.general.flatFileNotFoundMessage);
+        response.body.should.equal( api.config.errors.fileNotFound() );
         done();
       });
     });
