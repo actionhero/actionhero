@@ -15,17 +15,17 @@ var staticFile = function(api, next){
     get: function(connection, callback){
       var self = this;
       if(connection.params.file == null){
-        self.sendFileNotFound(connection, 'file is a required param to send a file', callback);
+        self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
       } else {
         var file = path.normalize(api.staticFile.path(connection) + '/' + connection.params.file);
         if(file.indexOf(path.normalize(api.staticFile.path(connection))) != 0){
-          self.sendFileNotFound(connection, 'that is not a valid file path', callback);
+          self.sendFileNotFound(connection, api.config.errors.fileInvalidPath(), callback);
         } else {
           self.checkExistence(file, function(exists, truePath){
             if(exists){
               self.sendFile(truePath, connection, callback);
             } else {
-              self.sendFileNotFound(connection, 'file not found', callback);
+              self.sendFileNotFound(connection, api.config.errors.fileNotFound(), callback);
             }
           });
         }
@@ -36,7 +36,7 @@ var staticFile = function(api, next){
       var self = this;
       fs.stat(file, function(err, stats){
         if(err){
-          self.sendFileNotFound(connection, 'error reading file: ' + String(err), callback);
+          self.sendFileNotFound(connection, api.config.errors.fileReadError(String(err)) , callback);
         } else {
           var mime = Mime.lookup(file);
           var length = stats.size;
@@ -60,7 +60,7 @@ var staticFile = function(api, next){
       api.stats.increment('staticFiles:failedFileRequests');
       connection.error = new Error(errorMessage);
       self.logRequest('{404: not found}', connection, null, null, false);
-      callback(connection, api.config.general.flatFileNotFoundMessage, null, 'text/html', api.config.general.flatFileNotFoundMessage.length);
+      callback(connection, api.config.errors.fileNotFound(), null, 'text/html', api.config.errors.fileNotFound().length);
     },
 
     checkExistence: function(file, callback){

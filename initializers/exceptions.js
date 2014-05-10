@@ -61,7 +61,7 @@ var exceptions = function(api, next){
 
     api.exceptionHandlers.report('action', err, extraMessages, 'error');
 
-    connection.error = new Error(api.config.general.serverErrorMessage);
+    connection.error = new Error( api.config.errors.serverErrorMessage() );
     connection.response = {}; // no partial responses
     if(typeof next === 'function'){ next(connection, true); }
   };

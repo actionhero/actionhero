@@ -237,16 +237,14 @@ var web = function(api, options, next){
           connection.response.documentation = api.documentation.documentation;
           delete connection.error;
           delete connection.response.error;
-        } else if(api.config.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
-          if(connection.action == '{no action}' || String(connection.error).indexOf('is not a known action or that is not a valid apiVersion.') > 0){
+        }else if(api.config.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
+          if(connection.actionStatus == 'unknown_action'){
             connection.rawConnection.responseHttpCode = 404;
-          } else if(String(connection.error).indexOf('is a required parameter for this action') > 0){
+          }else if(connection.actionStatus === 'missing_params'){
             connection.rawConnection.responseHttpCode = 422;
-          } else if(String(connection.error).indexOf('none of the required params for this action were provided') > 0){
-            connection.rawConnection.responseHttpCode = 422;
-          } else if('Error: ' +  api.config.general.serverErrorMessage == String(connection.response.error)){
+          }else if(connection.actionStatus === 'server_error'){
             connection.rawConnection.responseHttpCode = 500;
-          } else {
+          }else{
             connection.rawConnection.responseHttpCode = 400;
           }
         }

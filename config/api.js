@@ -10,10 +10,6 @@ exports.default = {
       serverToken: 'change-me',
       // The welcome message seen by TCP and webSocket clients upon connection
       welcomeMessage: 'Hello! Welcome to the actionhero api',
-      // The body message to accompany 404 (file not found) errors regarding flat files
-      flatFileNotFoundMessage: 'Sorry, that file is not found :(',
-      // The message to accompany 500 errors (internal server errors)
-      serverErrorMessage: 'The server experienced an internal error',
       // the redis prefix for actionhero's cache objects
       cachePrefix: 'actionhero:cache:',
       // Watch for changes in actions and tasks, and reload/restart them on the fly

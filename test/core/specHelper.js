@@ -58,7 +58,7 @@ describe('Core: specHelper', function(){
 
     it('missing files', function(done){
       api.specHelper.getStaticFile('missing.html', function(data){
-        data.error.should.equal(api.config.general.flatFileNotFoundMessage);
+        data.error.should.equal( api.config.errors.fileNotFound() );
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();

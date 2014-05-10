@@ -129,7 +129,7 @@ describe('Server: Web Socket', function(){
       for(var i in responses){
         var response = responses[i];
         if(i == 0){
-          response.error.should.eql('you have too many pending requests');
+          response.error.should.eql('Error: you have too many pending requests');
         } else {
           should.not.exist(response.error)
         }
@@ -151,7 +151,7 @@ describe('Server: Web Socket', function(){
 
     it('missing files', function(done){
       client_1.file('missing.html', function(data){
-        data.error.should.equal(api.config.general.flatFileNotFoundMessage);
+        data.error.should.equal( api.config.errors.fileNotFound() );
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();

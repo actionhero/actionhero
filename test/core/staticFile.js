@@ -28,7 +28,7 @@ describe('Core: Static File', function(){
 
   it('file: 404 pages', function(done){
     api.specHelper.getStaticFile('someRandomFile', function(response, connection){
-      response.error.should.equal(api.config.general.flatFileNotFoundMessage);
+      response.error.should.equal( api.config.errors.fileNotFound() );
       should.not.exist(response.content);
       done();
     });
@@ -36,7 +36,7 @@ describe('Core: Static File', function(){
 
   it('I should not see files outside of the public dir', function(done){
     api.specHelper.getStaticFile('../config/config.json', function(response, connection){
-      response.error.should.equal(api.config.general.flatFileNotFoundMessage);
+      response.error.should.equal( api.config.errors.fileNotFound() );
       should.not.exist(response.content);
       done();
     });
