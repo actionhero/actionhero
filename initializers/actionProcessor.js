@@ -10,6 +10,7 @@ var actionProcessor = function(api, next){
     this.connection = this.buildProxyConnection(data.connection);
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
+    this.missingParams = [];
     this.working = false;
   }
 
@@ -38,16 +39,33 @@ var actionProcessor = function(api, next){
     return this.connection._original_connection.pendingActions;
   }
 
-  api.actionProcessor.prototype.completeAction = function(error, toRender, actionDomain){
+  api.actionProcessor.prototype.completeAction = function(status, toRender, actionDomain){
     var self = this;
     if(actionDomain != null){ actionDomain.exit(); }
-    if(error != null){ self.connection.error = error }
+    var error = null
+
+    if(status == 'server_shutting_down'){
+      error = api.config.errors.serverShuttingDown();
+    }else if(status == 'too_many_requests'){
+      error = api.config.errors.tooManyPendingActions();
+    }else if(status == 'unknown_action'){
+      error = api.config.errors.unknownAction(self.connection.action);
+    }else if(status == 'unsupported_server_type'){
+      error = api.config.errors.unsupportedServerType(self.connection.type);
+    }else if(status == 'missing_params'){
+      error = api.config.errors.missingParams(self.missingParams) ;
+    }
+
+    if(error !== null){
+      self.connection.error = new Error( error );
+    }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
     }
     if(self.connection.error != null && self.connection.response.error == null){
       self.connection.response.error = self.connection.error;
     }
+
     if(toRender == null){ toRender = true }
     self.incrementPendingActions(-1);
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
@@ -56,6 +74,7 @@ var actionProcessor = function(api, next){
     setImmediate(function(){
 
       self.connection._original_connection.action = self.connection.action;
+      self.connection._original_connection.actionStatus = status;
       self.connection._original_connection.error = self.connection.error;
       self.connection._original_connection.response = self.connection.response || {};
 
@@ -92,7 +111,6 @@ var actionProcessor = function(api, next){
       });
 
       self.working = false;
-
     });
   }
 
@@ -153,15 +171,15 @@ var actionProcessor = function(api, next){
     }
   }
 
-  api.actionProcessor.prototype.duplicateCallbackHandler = function(error, actionDomain){
+  api.actionProcessor.prototype.duplicateCallbackHandler = function(actionDomain){
     var self = this;
     if(self.working == true){
       setTimeout(function(){
-        self.duplicateCallbackHandler(error, actionDomain);
+        self.duplicateCallbackHandler(actionDomain);
       }, duplicateCallbackErrorTimeout)
     }else{
       process.nextTick(function(){
-        api.exceptionHandlers.action(actionDomain, new Error(error), self.connection);
+        api.exceptionHandlers.action(actionDomain, new Error( api.config.errors.doubleCallbackError() ), self.connection);
       });
     }
   }
@@ -183,58 +201,60 @@ var actionProcessor = function(api, next){
     api.stats.increment('actions:actionsCurrentlyProcessing');
 
     if(api.running != true){
-      self.completeAction('the server is shutting down');
+      self.completeAction('server_shutting_down');
     } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
-      self.completeAction('you have too many pending requests');
+      self.completeAction('too_many_requests');
     } else if(self.connection.error !== null){
-      self.completeAction();
+      self.completeAction(null);
     } else if(self.connection.action == null || self.actionTemplate == null){
       api.stats.increment('actions:actionsNotFound');
       if(self.connection.action == '' || self.connection.action == null){ self.connection.action = '{no action}'; }
-      self.connection.error = new Error(self.connection.action + ' is not a known action or that is not a valid apiVersion.');
-      self.completeAction();
+      self.completeAction('unknown_action');
     } else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
-      self.connection.error = new Error('this action does not support the ' + self.connection.type + ' connection type');
-      self.completeAction();
+      self.completeAction('unsupported_server_type');
     } else {
-      if(self.connection.error === null){
-        api.stats.increment('actions:totalProcessedActions');
-        api.stats.increment('actions:processedActions:' + self.connection.action);
-        var actionDomain = domain.create();
-        actionDomain.on('error', function(err){
-          api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
-            self.completeAction(null, true, actionDomain);
-          });
+      api.stats.increment('actions:totalProcessedActions');
+      api.stats.increment('actions:processedActions:' + self.connection.action);
+      var actionDomain = domain.create();
+      actionDomain.on('error', function(err){
+        api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
+          self.completeAction('server_error', true, actionDomain);
         });
-        actionDomain.run(function(){
-          setImmediate(function(){
-            var toProcess = true;
-            var callbackCount = 0;
-            self.preProcessAction(toProcess, function(toProcess){
-              self.reduceParams();
-              api.params.requiredParamChecker(self.connection, self.actionTemplate.inputs.required);
-              if(toProcess === true && self.connection.error === null){
-                self.actionTemplate.run(api, self.connection, function(connection, toRender){
-                  callbackCount++;
-                  if(callbackCount !== 1){ 
-                    callbackCount = 1; 
-                    self.duplicateCallbackHandler('Double callback prevented within action', actionDomain); 
-                  }else{
-                    self.connection = connection;
-                    self.postProcessAction(toRender, function(toRender){
-                      self.completeAction(null, toRender, actionDomain);
-                    });
-                  }
-                });
-              } else {
-                self.completeAction(null, true, actionDomain);
+      });
+      actionDomain.run(function(){
+        setImmediate(function(){
+          var toProcess = true;
+          var callbackCount = 0;
+          self.preProcessAction(toProcess, function(toProcess){
+            self.reduceParams();
+
+            self.actionTemplate.inputs.required.forEach(function(param){
+              if(self.connection.error === null && (typeof self.connection.params[param] === 'undefined' || self.connection.params[param].length == 0)){
+                self.missingParams.push(param);
               }
             });
+
+            if(self.missingParams.length > 0){
+              self.completeAction('missing_params');
+            }else if(toProcess === true && self.connection.error === null){
+              self.actionTemplate.run(api, self.connection, function(connection, toRender){
+                callbackCount++;
+                if(callbackCount !== 1){ 
+                  callbackCount = 1; 
+                  self.duplicateCallbackHandler(actionDomain); 
+                }else{
+                  self.connection = connection;
+                  self.postProcessAction(toRender, function(toRender){
+                    self.completeAction(true, toRender, actionDomain);
+                  });
+                }
+              });
+            }else{
+              self.completeAction(false, true, actionDomain);
+            }
           });
         });
-      } else {
-        self.completeAction();
-      }
+      });
     }
   }
 

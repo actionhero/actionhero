@@ -206,7 +206,7 @@ describe('Server: Socket', function(){
         for(var i in responses){
           var response = responses[i];
           if(i == 0){
-            response.error.should.eql('you have too many pending requests');
+            response.error.should.eql('Error: you have too many pending requests');
           } else {
             should.not.exist(response.error)
           }
