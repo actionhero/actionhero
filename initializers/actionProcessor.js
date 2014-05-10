@@ -205,7 +205,7 @@ var actionProcessor = function(api, next){
     } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
       self.completeAction('too_many_requests');
     } else if(self.connection.error !== null){
-      self.completeAction(null);
+      self.completeAction(false);
     } else if(self.connection.action == null || self.actionTemplate == null){
       api.stats.increment('actions:actionsNotFound');
       if(self.connection.action == '' || self.connection.action == null){ self.connection.action = '{no action}'; }
