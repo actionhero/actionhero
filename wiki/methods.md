@@ -55,7 +55,8 @@ All connection objects have these properties by the time they reach middleware o
   room: null,
   sendMessage: [Function],
   _original_connection: {},
-  action: 'status' 
+  action: 'status',
+  actionStatus: true
 }
 {% endhighlight %}
 
