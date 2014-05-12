@@ -25,41 +25,22 @@ var connections = function(api, next){
 
     connections: {},
 
-    // remote wrappers for managing connections cluster-wide
-
     _start: function(api, next){
-      api.connections.rebroadcastSubscription = api.faye.client.subscribe(api.connections.rebroadcastChannel, function(message){
-        api.connections.incomingRebroadcast(message);
-      });
-
       next();
     },
 
     _stop: function(api, next){
-      api.connections.rebroadcastSubscription.cancel();
-
       next();
     },
 
-    apply: function(){
-      // `connectionId` and `action` are required
-      var args = Array.prototype.slice.call(arguments);
-      args[serverToken] = api.config.general.serverToken;
-      args[serverId]    = api.id;
-      api.faye.client.publish(api.connections.rebroadcastChannel, arguments);
+    apply: function(connectionId, method, args, callback){
+      api.faye.doCluster('api.connections.applyCatch', [connectionId, method, args], 'api.connections.connections[\'' + connectionId + '\']', callback);
     },
 
-    incomingRebroadcast: function(message){
-      if(message.connectionId != null && api.connections.connections[message.connectionId] != null){
-        var connection = api.connections.connections[message.connectionId]
-             if(message.action === 'sendMessage'){ connection.sendMessage(message.message); }
-        else if(message.action === 'sendFile')   { connection.sendFile(message.path); }
-        else if(message.action === 'destroy')    { connection.destroy(); }
-        else if(message.action === 'set')        { connection.set(message.key, message.vale); }
-        else if(message.action === 'verbs')      { connection.verbs(message.verbs, message.words); }
-      }else{
-        // nothing to do, I don't manage this connection
-      }
+    applyCatch: function(connectionId, method, args, callback){
+      var connection = api.connections.connections[connectionId];
+      connection[method].call(connection, args);
+      callback();
     }
 
   };
@@ -209,7 +190,7 @@ var connections = function(api, next){
 
       } else if(verb === 'roomView'){
         var room = words[0];
-        if(connection.rooms.indexOf(room) > -1){
+        if(self.rooms.indexOf(room) > -1){
           api.chatRoom.roomStatus(room, function(err, roomStatus){
             if(typeof callback === 'function'){ callback(err, roomStatus); }
           });

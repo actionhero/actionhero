@@ -25,7 +25,6 @@ var websocket = function(api, options, next){
       'say'
     ]
   }
-  var rebroadcastChannel = '/actionhero/websockets/rebroadcast';
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -37,10 +36,6 @@ var websocket = function(api, options, next){
     var webserver = api.servers.servers['web'];
     api.faye.server.attach(webserver.server);
     api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.faye.mount, 'notice');
-
-    server.subscription = api.faye.client.subscribe(rebroadcastChannel, function(message){
-      incomingRebroadcast(message);
-    });
 
     server.active = true;
 
@@ -127,7 +122,7 @@ var websocket = function(api, options, next){
     }
   });
 
-  var newClientFayeExtension = function(message, callback){
+  server.newClientFayeExtension = function(message, callback){
     if(message.channel === '/meta/subscribe' && message.subscription.indexOf(server.attributes.setupChannelPrefix) === 0){
       if(server.active === true){
         remoteConnectionDetails(message.clientId, function(details){
@@ -146,7 +141,7 @@ var websocket = function(api, options, next){
     callback(message);
   }
 
-  var messagingFayeExtension = function(message, callback){
+  server.messagingFayeExtension = function(message, callback){
     // messages for this server (and not AH internals)
     if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
       if(message.clientId !== api.faye.client._clientId){
@@ -155,25 +150,12 @@ var websocket = function(api, options, next){
         if(connection != null){
           incomingMessage(connection, message);
         }else{
-          api.faye.client.publish(rebroadcastChannel, {
-            serverId:        api.id,
-            serverToken:     api.config.general.serverToken,
-            originalMessage: message
-          });
+          api.faye.doCluster('api.servers.servers.websocket.messagingFayeExtension', [message], 'api.connections.connections[\'' + connectionId + '\']', null);
         }
       }
     }
     callback(message);
   };
-
-  var incomingRebroadcast = function(message){
-    var originalMessage = message.originalMessage;
-    var connectionId = originalMessage.channel.split('/')[4];
-    var connection = api.connections.connections[connectionId];
-    if(connection != null){
-      messagingFayeExtension(originalMessage);
-    }
-  }
 
   var remoteConnectionDetails = function(clientId, callback){
     var remoteIp = '0.0.0.0';
@@ -225,11 +207,11 @@ var websocket = function(api, options, next){
   }
 
   api.faye.extensions.push({
-    incoming: newClientFayeExtension
+    incoming: server.newClientFayeExtension
   });  
 
   api.faye.extensions.push({
-    incoming: messagingFayeExtension
+    incoming: server.messagingFayeExtension
   });
 
   next(server);

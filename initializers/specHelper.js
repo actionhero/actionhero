@@ -36,12 +36,14 @@ var specHelper = function(api, next){
       }
 
       server.sendMessage = function(connection, message, messageCount){
-        message.messageCount = messageCount;
-        connection.messages.push(message);
-        if(typeof connection.actionCallbacks[messageCount] === 'function'){
-          connection.actionCallbacks[messageCount](message, connection);
-          delete connection.actionCallbacks[messageCount];
-        }
+        process.nextTick(function(){
+          message.messageCount = messageCount;
+          connection.messages.push(message);
+          if(typeof connection.actionCallbacks[messageCount] === 'function'){
+            connection.actionCallbacks[messageCount](message, connection);
+            delete connection.actionCallbacks[messageCount];
+          }
+        });
       }
 
       server.sendFile = function(connection, error, fileStream, mime, length){

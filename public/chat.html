@@ -63,7 +63,7 @@
     var div = document.getElementById("message");
     var message = div.value;
     div.value = "";
-    client.say(message);
+    client.say(client.rooms[0], message);
     appendMessage({
       me: true,
       message: message,

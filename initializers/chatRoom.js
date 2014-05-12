@@ -135,9 +135,11 @@ var chatRoom = function(api, next){
       data[key] = value;
       api.redis.client.hset(api.chatRoom.keys.auth, room, JSON.stringify(data), function(err){
         api.redis.client.hgetall(key, function(err, members){
-          members.forEach(function(member){
-            api.chatRoom.reAuthenticate(member);
-          });
+          if(err == null && members != null){
+            members.forEach(function(member){
+              api.chatRoom.reAuthenticate(member);
+            });
+          }
           if(typeof callback == 'function'){ callback(err) }
         });        
       });

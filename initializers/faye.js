@@ -1,4 +1,5 @@
 var fayePackage = require('faye');
+var uuid        = require('node-uuid');
 
 var faye = function(api, next){
 
@@ -6,6 +7,11 @@ var faye = function(api, next){
   api.faye.extensions = [];
   api.faye.connectHandlers = [];
   api.faye.disconnectHandlers = [];
+  api.faye.clusterAskChannel = "/actionhero/cluster/ask";
+  api.faye.clusterResponseChannel = "/actionhero/cluster/respond";
+  api.faye.clusterTimeout = 1000 * 10;
+  api.faye.clusterCallbaks = {};
+  api.faye.clusterCallbakTimeouts = {};
   // api.faye.subscribeHandlers = [];
 
   api.faye._start = function(api, next){
@@ -49,27 +55,74 @@ var faye = function(api, next){
     api.faye.client = api.faye.server.getClient();
     api.faye.client.publish('/_welcome');
 
+    api.faye.subscription = api.faye.client.subscribe(api.faye.clusterAskChannel, function(message){
+      // don't use a domain, as server-server methods should be made very robust independtantly
+      // TODO: eval is terrbible 
+
+      if(message.check == null || eval(message.check) != null){ 
+        var fn = eval(message.method);
+        var callback = function(){
+          api.faye.respondCluster(message.requestId, arguments);
+        };
+        var args = message.args;
+        args.push(callback);
+        fn.apply(null, args);
+      }
+    });
+
+    api.faye.subscription = api.faye.client.subscribe(api.faye.clusterResponseChannel, function(message){
+      if(api.faye.clusterCallbaks[message.requestId] != null){
+        clearTimeout(api.faye.clusterCallbakTimeouts[message.requestId]);
+        api.faye.clusterCallbaks[requestId].apply(null, message.response);
+        delete api.faye.clusterCallbaks[message.requestId];
+        delete api.faye.clusterCallbakTimeouts[message.requestId];
+      }
+    });
+
+    api.faye.doCluster = function(method, args, check, callback){
+      var requestId = uuid.v4();
+      var payload = {
+        serverId     : api.id,
+        serverToken  : api.config.general.serverToken,
+        requestId    : requestId,
+        check        : check,  // existince check on the reciving servers, like 'api.connections.connections[\'abc123\']' should exist
+        method       : method, // api.thing.stuff
+        args         : args,   // [1,2,3]
+      };
+
+      api.faye.client.publish(api.faye.clusterAskChannel, payload);
+
+      if(typeof callback == 'function'){
+        api.faye.clusterCallbaks[requestId] = callback;
+        api.faye.clusterCallbakTimeouts = setTimeout(function(requestId){
+          api.faye.clusterCallbaks[requestId](new Error('RPC Timeout'));
+          delete api.faye.clusterCallbaks[requestId];
+          delete api.faye.clusterCallbakTimeouts[requestId];
+        }, api.faye.clusterTimeout, requestId);
+      }
+    }
+
+    api.faye.respondCluster = function(requestId, response){
+      var payload = {
+        serverId     : api.id,
+        serverToken  : api.config.general.serverToken,
+        requestId    : requestId,
+        response     : response, // args to pass back, including error
+      };
+
+      api.faye.client.publish(api.faye.clusterResponseChannel, payload);
+    }
+
     setTimeout(function(){
-      api.log('api faye client ID: ' + api.faye.client._clientId, 'debug');
+      api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
       next();
     }, 1000);
   }
 
   api.faye._stop = function(api, next){
+    api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
     api.faye.server.getClient().disconnect();
     next();
-  }
-
-  api.faye.redis = function(){
-    return api.faye.server._server._engine._engine._redis;
-  }
-
-  api.faye.clientExists = function(clientId, callback){
-    api.faye.redis().zscore(api.config.faye.namespace + '/clients', function(err, score){
-      var found = false;
-      if(score != null){ found = true; }
-      callback(err, found);
-    });
   }
 
   api.faye.connectHandlers.push(function(clientId){

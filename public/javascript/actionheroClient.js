@@ -61,6 +61,8 @@
       self.setupSubscription.cancel();
       delete self.setupSubscription;
 
+      if(self.rooms == null){ self.rooms = []; }
+
       self.subscription = self.client.subscribe(self.channel, function(message){
         self.handleMessage(message);
       });
@@ -198,7 +200,7 @@
   //////////////
 
   actionheroClient.prototype.say = function(room, message, callback){
-    this.send({event: 'say', message: message, room: room}, callback);
+    this.send({event: 'say', room: room, message: message}, callback);
   }
 
   actionheroClient.prototype.file = function(file, callback){
@@ -214,7 +216,7 @@
   }
 
   actionheroClient.prototype.roomAdd = function(room, callback){
-    self.rooms.push(room); // only a list of *intended* rooms to join; might fail
+    this.rooms.push(room); // only a list of *intended* rooms to join; might fail
     this.send({event: 'roomAdd', room: room}, callback);
   }
 
