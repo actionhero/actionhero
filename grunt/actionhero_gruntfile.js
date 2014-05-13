@@ -1,6 +1,7 @@
 var grunt = require('grunt')
   , fs = require('fs')
   , path = require('path')
+  , repl = require("repl")
 
 var actionheroRoot = function(){
   var rv
@@ -20,21 +21,47 @@ var actionheroRoot = function(){
   return rv
 }
 
-var init = function(fn, configChanges){
-  var root = actionheroRoot()
-    , ActionHeroPrototype = require(root + '/actionhero.js').actionheroPrototype
-    , actionhero = new ActionHeroPrototype()
-  if(configChanges == null){ 
-    configChanges = {
-      logger: {
-        transports: null
-      }
-    }
+var actionhero;
+
+var init = function(fn, logging){
+  var ActionHeroPrototype = require(actionheroRoot() + '/actionhero.js').actionheroPrototype
+  actionhero = new ActionHeroPrototype();
+  if(logging == null){ logging = false; }
+  configChanges = {};
+  if(logging === false){
+    configChanges.logger = {transports: null};
   }
   actionhero.initialize({configChanges: configChanges}, function(err, api){
     fn(api, actionhero)
   })
 }
+
+grunt.registerTask('console', 'get a REPL/console into your application', function(){
+  // note this REPL will not run _start commands, only the intilizers 
+  var done = this.async();
+  var r = repl.start({
+    prompt: '',
+    useGlobal: true,
+  });
+  r.on('exit', function(){
+    done();
+  });
+
+  r.outputStream.write('*** STARTING ACTIONHERO REPL ***\r\n\r\n');
+
+  init(function(api){
+    r.prompt = "[ AH::" + api.env + " ] >> ";
+    for(var i in api.config.servers){
+      api.config.servers[i].enabled = false;
+    }
+    r.context.api = api;
+    actionhero.start(function(){
+      r.outputStream.write("\r\n\r\n");
+      r.outputStream.write('*** REPL READY ***\r\n\r\n');
+      r.outputStream.write(r.prompt)
+    });
+  }, true);
+});
 
 grunt.registerTask('list','List your actions and metadata',function(){
   var done = this.async()
