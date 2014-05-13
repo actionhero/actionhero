@@ -34,13 +34,15 @@ var connections = function(api, next){
     },
 
     apply: function(connectionId, method, args, callback){
-      api.faye.doCluster('api.connections.applyCatch', [connectionId, method, args], 'api.connections.connections[\'' + connectionId + '\']', callback);
+      api.faye.doCluster('connection_apply', [connectionId, method, args], connectionId, callback);
     },
 
     applyCatch: function(connectionId, method, args, callback){
       var connection = api.connections.connections[connectionId];
       connection[method].call(connection, args);
-      callback();
+      process.nextTick(function(){
+        callback();
+      });
     }
 
   };

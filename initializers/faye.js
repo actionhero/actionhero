@@ -55,18 +55,63 @@ var faye = function(api, next){
     api.faye.client = api.faye.server.getClient();
     api.faye.client.publish('/_welcome');
 
+    /////////
+    // RPC //
+    /////////
+
+    // RPC Methods
+    // For security, these are the only allowed cluster-to-cluster remote methods
+    // You may manually add to this hash
+    api.faye.rpc = {
+      'api_log': {
+        method: api.log
+      },
+      'websocket_rebroadcast': {
+        method: api.servers.servers.websocket.messagingFayeExtension,
+        check: function(connectionId){
+          return !( api.connections.connections[connectionId] == null )
+        }
+      },
+      'connection_apply': {
+        method: api.connections.applyCatch,
+        check: function(connectionId){
+          return !( api.connections.connections[connectionId] == null )
+        }
+      },
+      'chatRoom_reAuthenticate': {
+        method: api.chatRoom.reAuthenticate,
+        check: function(connectionId){
+          return !( api.connections.connections[connectionId] == null )
+        }
+      },
+      'chatRoom_addMember': {
+        method: api.chatRoom.addMember,
+        check: function(connectionId){
+          return !( api.connections.connections[connectionId] == null )
+        }
+      },
+      'chatRoom_removeMember': {
+        method: api.chatRoom.removeMember,
+        check: function(connectionId){
+          return !( api.connections.connections[connectionId] == null )
+        }
+      },
+    }
+
     api.faye.subscription = api.faye.client.subscribe(api.faye.clusterAskChannel, function(message){
       // don't use a domain, as server-server methods should be made very robust independtantly
-      // TODO: eval is terrbible 
-
-      if(message.check == null || eval(message.check) != null){ 
-        var fn = eval(message.method);
-        var callback = function(){
-          api.faye.respondCluster(message.requestId, arguments);
-        };
-        var args = message.args;
-        args.push(callback);
-        fn.apply(null, args);
+      
+      if(api.faye.rpc[message.rpcKey] != null){
+        var checkMethod = api.faye.rpc[message.rpcKey].check;
+        if(checkMethod == null || (message.check != null && checkMethod(message.check) === true)){
+          var method = api.faye.rpc[message.rpcKey].method;
+          var callback = function(){
+            api.faye.respondCluster(message.requestId, arguments);
+          };
+          var args = message.args;
+          args.push(callback);
+          method.apply(null, args);
+        }
       }
     });
 
@@ -79,14 +124,14 @@ var faye = function(api, next){
       }
     });
 
-    api.faye.doCluster = function(method, args, check, callback){
+    api.faye.doCluster = function(rpcKey, args, check, callback){
       var requestId = uuid.v4();
       var payload = {
         serverId     : api.id,
         serverToken  : api.config.general.serverToken,
         requestId    : requestId,
-        check        : check,  // existince check on the reciving servers, like 'api.connections.connections[\'abc123\']' should exist
-        method       : method, // api.thing.stuff
+        rpcKey       : rpcKey, // rpc key
+        check        : check, 
         args         : args,   // [1,2,3]
       };
 
@@ -114,13 +159,13 @@ var faye = function(api, next){
     }
 
     setTimeout(function(){
-      api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+      api.faye.doCluster('api_log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
       next();
     }, 1000);
   }
 
   api.faye._stop = function(api, next){
-    api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
+    api.faye.doCluster('api_log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
     api.faye.server.getClient().disconnect();
     next();
   }

@@ -7,15 +7,10 @@ var chatRoom = function(api, next){
     auth:    'actionhero:chatRoom:auth'
   }
   api.chatRoom.messageChannel     = '/actionhero/chat/chat';
-  api.chatRoom.rebroadcastChannel = '/actionhero/chat/rebroadcast';
 
   api.chatRoom._start = function(api, next){
     api.chatRoom.messageSubscription = api.faye.client.subscribe(api.chatRoom.messageChannel, function(message){
       api.chatRoom.incomingMessage(message);
-    });
-
-    api.chatRoom.rebroadcastSubscription = api.faye.client.subscribe(api.chatRoom.rebroadcastChannel, function(message){
-      api.chatRoom.incomingRebroadcast(message);
     });
 
     if(api.config.general.startingChatRooms != null){
@@ -37,7 +32,6 @@ var chatRoom = function(api, next){
 
   api.chatRoom._stop = function(api, next){
     api.chatRoom.messageSubscription.cancel();
-    api.chatRoom.rebroadcastSubscription.cancel();
     next();
   }
 
@@ -78,19 +72,6 @@ var chatRoom = function(api, next){
         }
       }
     }
-  }
-
-  api.chatRoom.incomingRebroadcast = function(message){
-    if(message.connectionId != null && api.connections.connections[message.connectionId] != null){
-      if(message.action === 'addMember')     { api.chatRoom.addMember(message.connectionId, message.room);    }
-      if(message.action === 'removeMember')  { api.chatRoom.removeMember(message.connectionId, message.room); }
-      if(message.action === 'reAuthenticate'){ api.chatRoom.reAuthenticate(message.connectionId);             }
-    }else if(message.connectionId == null){
-      // reAuthenticate
-    }else{
-      // nothing to do, I don't manage this connection
-    }
-    
   }
 
   api.chatRoom.add = function(room, callback){
@@ -212,12 +193,7 @@ var chatRoom = function(api, next){
         });
       }
     }else{
-      api.faye.client.publish(api.chatRoom.rebroadcastChannel, {
-        serverId:        api.id,
-        serverToken:     api.config.general.serverToken,
-        action:          'reAuthenticate',
-        connectionId:    connectionId
-      });
+      api.faye.doCluster('chatRoom_reAuthenticate', [connectionId], connectionId, callback);
     }
   }
 
@@ -258,13 +234,7 @@ var chatRoom = function(api, next){
         if(typeof callback == 'function'){ callback('already a member of room ' + room, false) }
       }
     }else{
-      api.faye.client.publish(api.chatRoom.rebroadcastChannel, {
-        serverId:        api.id,
-        serverToken:     api.config.general.serverToken,
-        action:          'addMember',
-        connectionId:    connectionId,
-        room:            room
-      });
+      api.faye.doCluster('chatRoom_addMember', [connectionId, room], connectionId, callback);
     }
   }
 
@@ -289,13 +259,7 @@ var chatRoom = function(api, next){
         if(typeof callback == 'function'){ callback('not a member of room ' + room, false) }
       }
     }else{
-      api.faye.client.publish(api.chatRoom.rebroadcastChannel, {
-        serverId:        api.id,
-        serverToken:     api.config.general.serverToken,
-        action:          'removeMember',
-        connectionId:    connectionId,
-        room:            room
-      });
+      api.faye.doCluster('chatRoom_removeMember', [connectionId, room], connectionId, callback);
     }
   }
 
