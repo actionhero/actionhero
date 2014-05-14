@@ -393,6 +393,7 @@ var web = function(api, options, next){
   var buildRequesterInformation = function(connection){
     var requesterInformation = {
       id: connection.id,
+      fingerprint: connection.rawConnection.fingerprint,
       remoteIP: connection.remoteIP,
       receivedParams: {}
     };
