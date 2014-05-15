@@ -250,7 +250,23 @@ var web = function(api, options, next){
         }
       }
 
-      var stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
+      var findDefaultJson = false;
+      for (var i in connection.rawConnection.responseHeaders.reverse()) {
+        if (connection.rawConnection.responseHeaders[i][0].toLowerCase() === 'content-type') {
+          var contentType = connection.rawConnection.responseHeaders[i][1];
+          if (contentType.match(/json/i)) {
+            var stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
+          }
+          else {
+            var stringResponse = connection.response;
+          }
+          findDefaultJson = true;
+        }
+      }
+      if (!findDefaultJson) {
+        var stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
+      }
+      
       if(connection.response.error == null &&
          connection.action != null &&
          connection.params.apiVersion != null &&
