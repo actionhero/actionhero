@@ -594,7 +594,6 @@ describe('Server: Web', function(){
 
       it('will change header information based on extension (when active)', function(done){
         request.get(url + '/api/mimeTestAction/val.png', function(err, response, body){
-          body = JSON.parse(body);
           response.headers['content-type'].should.equal('image/png');
           done();
         });

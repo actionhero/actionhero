@@ -250,38 +250,50 @@ var web = function(api, options, next){
         }
       }
 
-      var stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
       if(connection.response.error == null &&
          connection.action != null &&
          connection.params.apiVersion != null &&
-         api.actions.actions[connection.action][connection.params.apiVersion].matchExtensionMimeType === true
+         api.actions.actions[connection.action][connection.params.apiVersion].matchExtensionMimeType === true &&
+         connection.extension != null
         ){
-        connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(connection.extension)]);
+        if(connection.extension != null){ 
+          connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(connection.extension)]);
+        }
       }
-      if(connection.params.callback != null){
-        connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
-        stringResponse = connection.params.callback + '(' + stringResponse + ');';
+
+      var stringResponse = '';
+
+      if( extractHeader(connection, 'Content-Type').match(/json/) ){
+        stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
+        if(connection.params.callback != null){
+          connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
+          stringResponse = connection.params.callback + '(' + stringResponse + ');';
+        }
+      }else{
+        stringResponse = connection.response;
       }
 
       server.sendMessage(connection, stringResponse);
     }
   }
 
-  var connectionHasHeader = function(connection, match){
-    for(var i in connection.rawConnection.responseHeaders){
+  var extractHeader = function(connection, match){
+    var i = connection.rawConnection.responseHeaders.length - 1
+    while(i >= 0){
       if(connection.rawConnection.responseHeaders[i][0].toLowerCase() === match.toLowerCase()){
-        return true;
+        return connection.rawConnection.responseHeaders[i][1];
       }
+      i--;
     }
-    return false;
+    return null;
   }
 
   var respondToOptions = function(connection){
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null && !connectionHasHeader(connection, 'Access-Control-Allow-Methods')){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null && extractHeader(connection, 'Access-Control-Allow-Methods') == null){
       var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null && !connectionHasHeader(connection, 'Access-Control-Allow-Origin')){
+    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null && extractHeader(connection, 'Access-Control-Allow-Origin') == null){
       var origin = '*';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }
