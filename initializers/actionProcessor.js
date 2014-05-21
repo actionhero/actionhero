@@ -71,47 +71,46 @@ var actionProcessor = function(api, next){
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
 
-    setImmediate(function(){
+    self.connection._original_connection.action = self.connection.action;
+    self.connection._original_connection.actionStatus = status;
+    self.connection._original_connection.error = self.connection.error;
+    self.connection._original_connection.response = self.connection.response || {};
 
-      self.connection._original_connection.action = self.connection.action;
-      self.connection._original_connection.actionStatus = status;
-      self.connection._original_connection.error = self.connection.error;
-      self.connection._original_connection.response = self.connection.response || {};
-
-      if(typeof self.callback == 'function'){
+    if(typeof self.callback == 'function'){
+      process.nextTick(function(){
         self.callback(self.connection._original_connection, toRender, self.messageCount);
-      }
-
-      var logLevel = 'info';
-      if(self.actionTemplate != null && self.actionTemplate.logLevel != null){
-        logLevel = self.actionTemplate.logLevel;
-      }
-      var stringifiedError = '';
-      try {
-        stringifiedError = JSON.stringify(self.connection.error);
-      } catch(e){
-        stringifiedError = String(self.connection.error)
-      }
-      
-      var filteredParams = {}
-      for(var i in self.connection.params){
-        if(api.config.general.filteredParams != null && api.config.general.filteredParams.indexOf(i) >= 0){
-          filteredParams[i] = "[FILTERED]";
-        }else{
-          filteredParams[i] = self.connection.params[i];
-        }
-      }
-
-      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, {
-        to: self.connection.remoteIP,
-        action: self.connection.action,
-        params: JSON.stringify(filteredParams),
-        duration: self.duration,
-        error: stringifiedError
       });
+    }
 
-      self.working = false;
+    var logLevel = 'info';
+    if(self.actionTemplate != null && self.actionTemplate.logLevel != null){
+      logLevel = self.actionTemplate.logLevel;
+    }
+    var stringifiedError = '';
+    try {
+      stringifiedError = JSON.stringify(self.connection.error);
+    } catch(e){
+      stringifiedError = String(self.connection.error)
+    }
+    
+    var filteredParams = {}
+    for(var i in self.connection.params){
+      if(api.config.general.filteredParams != null && api.config.general.filteredParams.indexOf(i) >= 0){
+        filteredParams[i] = "[FILTERED]";
+      }else{
+        filteredParams[i] = self.connection.params[i];
+      }
+    }
+
+    api.log('[ action @ ' + self.connection.type + ' ]', logLevel, {
+      to: self.connection.remoteIP,
+      action: self.connection.action,
+      params: JSON.stringify(filteredParams),
+      duration: self.duration,
+      error: stringifiedError
     });
+
+    self.working = false;
   }
 
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
@@ -222,37 +221,35 @@ var actionProcessor = function(api, next){
         });
       });
       actionDomain.run(function(){
-        setImmediate(function(){
-          var toProcess = true;
-          var callbackCount = 0;
-          self.preProcessAction(toProcess, function(toProcess){
-            self.reduceParams();
+        var toProcess = true;
+        var callbackCount = 0;
+        self.preProcessAction(toProcess, function(toProcess){
+          self.reduceParams();
 
-            self.actionTemplate.inputs.required.forEach(function(param){
-              if(self.connection.error === null && (typeof self.connection.params[param] === 'undefined' || self.connection.params[param].length == 0)){
-                self.missingParams.push(param);
-              }
-            });
-
-            if(self.missingParams.length > 0){
-              self.completeAction('missing_params');
-            }else if(toProcess === true && self.connection.error === null){
-              self.actionTemplate.run(api, self.connection, function(connection, toRender){
-                callbackCount++;
-                if(callbackCount !== 1){ 
-                  callbackCount = 1; 
-                  self.duplicateCallbackHandler(actionDomain); 
-                }else{
-                  self.connection = connection;
-                  self.postProcessAction(toRender, function(toRender){
-                    self.completeAction(true, toRender, actionDomain);
-                  });
-                }
-              });
-            }else{
-              self.completeAction(false, true, actionDomain);
+          self.actionTemplate.inputs.required.forEach(function(param){
+            if(self.connection.error === null && (typeof self.connection.params[param] === 'undefined' || self.connection.params[param].length == 0)){
+              self.missingParams.push(param);
             }
           });
+
+          if(self.missingParams.length > 0){
+            self.completeAction('missing_params');
+          }else if(toProcess === true && self.connection.error === null){
+            self.actionTemplate.run(api, self.connection, function(connection, toRender){
+              callbackCount++;
+              if(callbackCount !== 1){ 
+                callbackCount = 1; 
+                self.duplicateCallbackHandler(actionDomain); 
+              }else{
+                self.connection = connection;
+                self.postProcessAction(toRender, function(toRender){
+                  self.completeAction(true, toRender, actionDomain);
+                });
+              }
+            });
+          }else{
+            self.completeAction(false, true, actionDomain);
+          }
         });
       });
     }
