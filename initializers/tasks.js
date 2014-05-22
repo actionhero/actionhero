@@ -190,7 +190,10 @@ var tasks = function(api, next){
       var self = this;
       var details = {'queues': {}};
       api.resque.queue.queues(function(err, queues){
-        if(queues.length == 0){ callback(null, details) }
+        if(err != null){
+          callback(err, null)
+        }
+        else if(queues.length == 0){ callback(null, details) }
         else {
           var started = 0;
           queues.forEach(function(queue){
@@ -200,7 +203,7 @@ var tasks = function(api, next){
                 length: length
               }
               started--;
-              if(started == 0){ callback(null, details) }
+              if(started == 0){ callback(err, details) }
             });
           });
         }
