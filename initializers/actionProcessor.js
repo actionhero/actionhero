@@ -115,11 +115,11 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
     var self = this;
-    if(api.actions.preProcessors.length == 0){
+    if(api.actions.preProcessors.length === 0 && api.actions.preProcessorsPriority.length === 0){
       callback(toProcess);
     } else {
       var processors = [];
-      api.actions.preProcessors.forEach(function(processor){
+      var push_func = function(processor) {
         processors.push(function(next){
           if(toProcess === true){
             processor(self.connection, self.actionTemplate, function(connection, localToProcess){
@@ -129,7 +129,20 @@ var actionProcessor = function(api, next){
             });
           } else { next(toProcess) }
         })
-      });
+      };
+      // priorities lower than default
+      for(var proc in api.actions.preProcessorsPriority) {
+        if(api.actions.preProcessorsPriority[proc].priority > api.config.general.defaultProcessorPriority) continue;
+        push_func(api.actions.preProcessorsPriority[proc].processor);
+      }
+      // default priority
+      api.actions.preProcessors.forEach(function(processor){push_func(processor)});
+      // priorities higher than default
+      for(var proc in api.actions.preProcessorsPriority) {
+        if(api.actions.preProcessorsPriority[proc].priority <= api.config.general.defaultProcessorPriority) continue;
+        push_func(api.actions.preProcessorsPriority[proc].processor);
+      }
+  
       processors.push(function(){ callback(toProcess) });
       async.series(processors);
     }
@@ -137,11 +150,11 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
     var self = this;
-    if(api.actions.postProcessors.length == 0){
+    if(api.actions.postProcessors.length == 0 && api.actions.postProcessorsPriority.length === 0){
       callback(toRender);
     } else {
       var processors = [];
-      api.actions.postProcessors.forEach(function(processor){
+      var push_func = function(processor) {
         processors.push(function(next){
           processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
@@ -149,7 +162,19 @@ var actionProcessor = function(api, next){
             next();
           });
         })
-      });
+      };
+      // priorities lower than default
+      for(var proc in api.actions.postProcessorsPriority) {
+        if(api.actions.postProcessorsPriority[proc].priority > api.config.general.defaultProcessorPriority) continue;
+        push_func(api.actions.postProcessorsPriority[proc].processor);
+      }
+      // default priority
+      api.actions.postProcessors.forEach(function(processor){push_func(processor)});
+      // priorities higher than default
+      for(var proc in api.actions.postProcessorsPriority) {
+        if(api.actions.postProcessorsPriority[proc].priority <= api.config.general.defaultProcessorPriority) continue;
+        push_func(api.actions.postProcessorsPriority[proc].processor);
+      }
       processors.push(function(){ callback(toRender) });
       async.series(processors);
     }

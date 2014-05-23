@@ -22,6 +22,8 @@ exports.default = {
       filteredParams: [],
       // The default filetype to server when a user requests a directory
       directoryFileType : 'index.html',
+      // The default priority level given to preProcessors and postProcessors arrays
+      defaultProcessorPriority : 10,
       // configuration for your actionhero project structure
       paths: {
         'action':      [ __dirname + '/../actions'      ] ,
