@@ -5,6 +5,10 @@ var actionProcessor = function(api, next){
 
   var duplicateCallbackErrorTimeout = 500;
 
+  if(api.config.general.defaultProcessorPriority == null){
+    api.config.general.defaultProcessorPriority = 10;
+  }
+  
   api.actionProcessor = function(data){
     if(data.connection == null){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
@@ -115,7 +119,7 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
     var self = this;
-    if(api.actions.preProcessors.length === 0 && api.actions.preProcessorsPriority.length === 0){
+    if(!api.actions.preProcessors.length && !api.actions.preProcessorsPriority.length){
       callback(toProcess);
     } else {
       var processors = [];
@@ -150,7 +154,7 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
     var self = this;
-    if(api.actions.postProcessors.length == 0 && api.actions.postProcessorsPriority.length === 0){
+    if(!api.actions.postProcessors.length && !api.actions.postProcessorsPriority.length){
       callback(toRender);
     } else {
       var processors = [];
