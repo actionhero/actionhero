@@ -83,7 +83,7 @@ actionhero.prototype.initialize = function(params, callback){
 
   orderedInitializers['_projectInitializers'] = function(next){
 
-    var projectInitializers = {};
+    var projectInitializers = [];
   
     self.api.config.general.paths.initializer.forEach(function(initPath){
       if(path.resolve(initPath) != path.resolve(__dirname + '/initializers')){
@@ -101,7 +101,12 @@ actionhero.prototype.initialize = function(params, callback){
                   delete require.cache[require.resolve(file)];
                 }
                 self.initializers[initializer] = require(file)[initializer];
-                projectInitializers[initializer] = function(next){
+                var priority = (self.api.config.general.defaultProcessorPriority ? self.api.config.general.defaultProcessorPriority : 10);
+                if(self.api.config.general.initializerPriorities && self.api.config.general.initializerPriorities[initializer]) {
+                  priority = self.api.config.general.initializerPriorities[initializer];
+                }
+                if(!projectInitializers[priority]) projectInitializers[priority] = [];
+                projectInitializers[priority][initializer] = function(next){
                   self.api.log('running custom initializer: ' + initializer, 'info');
                   self.initializers[initializer](self.api, next);
                   self.api.watchFileAndAct(file, function(){
@@ -117,12 +122,18 @@ actionhero.prototype.initialize = function(params, callback){
         }
       }
     })
-
-    projectInitializers['_complete'] = function(){
-      process.nextTick(function(){ next(); });
-    }
-
-    async.series(projectInitializers);
+    
+    projectInitializers.push({'_complete': function(){ process.nextTick(function(){ next(); })}});
+    
+    // flatten the projectInitializers array of arrays
+    var pi = [];
+    projectInitializers.forEach(function(inits) {
+      for(var i in inits) {
+        pi.push(inits[i]);
+      }
+    });
+    
+    async.series(pi);
   }
 
   orderedInitializers['_complete'] = function(){
