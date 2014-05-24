@@ -21,6 +21,8 @@ describe('Core: Middleware', function(){
   afterEach(function(done){
     api.actions.preProcessors  = [];
     api.actions.postProcessors = [];
+    api.actions.preProcessorsPriority  = [];
+    api.actions.postProcessorsPriority = [];
     done();
   });
   
@@ -37,6 +39,39 @@ describe('Core: Middleware', function(){
         done();
       });
     });
+    
+    it('preProcessors with priorities run in the right order', function(done){
+      // lower number priority (runs sooner)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+        //connection.response._processorNoteEarly = 'default';
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        //connection.response._processorNoteEarly = 'late';
+        //connection.response._processorNoteDefault = 'late';
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
 
     it('postProcessors can append the connection', function(done){
       api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
@@ -49,6 +84,39 @@ describe('Core: Middleware', function(){
         done();
       });
     })
+
+    it('postProcessors with priorities run in the right order', function(done){
+      // lower number priority (runs sooner)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
+        //connection.response._processorNoteEarly = 'default';
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        //connection.response._processorNoteEarly = 'late';
+        //connection.response._processorNoteDefault = 'late';
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
 
     it('preProcessors can block actions', function(done){
       api.actions.preProcessors.push(function(connection, actionTemplate, next){

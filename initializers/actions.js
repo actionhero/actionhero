@@ -7,11 +7,23 @@ var actions = function(api, next){
 
   api.actions.preProcessors = [];
   api.actions.postProcessors = [];
+  
+  api.actions.preProcessorsPriority = [];
+  api.actions.postProcessorsPriority = [];
 
   if(api.config.general.simultaneousActions == null){
     api.config.general.simultaneousActions = 5;
   }
 
+  api.actions.addPreProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultProcessorPriority;
+    return api.actions.preProcessorsPriority.push({processor:func,priority:priority});
+  }
+  api.actions.addPostProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultProcessorPriority;
+    return api.actions.postProcessorsPriority.push({processor:func,priority:priority});
+  }
+  
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
