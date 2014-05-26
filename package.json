@@ -34,7 +34,7 @@
     "async": "~0.8.0",
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
-    "redis": "~0.10.1",
+    "redis": "~0.10.3",
     "optimist": "~0.6.1",
     "winston": "0.7.2",
     "node-uuid": "~1.4.1",
