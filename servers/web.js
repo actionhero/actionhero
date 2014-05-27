@@ -359,6 +359,7 @@ var web = function(api, options, next){
               server.log('error processing form: ' + String(err), 'error');
               connection.error = new Error('There was an error processing this form.');
             } else {
+              connection.rawConnection.req.body = fields;
               fillParamsFromWebRequest(connection, files);
               fillParamsFromWebRequest(connection, fields);
             }
