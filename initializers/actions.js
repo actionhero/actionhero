@@ -17,11 +17,14 @@ var actions = function(api, next){
 
   api.actions.addPreProcessor = function(func, priority) {
     if(!priority) priority = api.config.general.defaultProcessorPriority;
-    return api.actions.preProcessorsPriority.push({processor:func,priority:priority});
+    if(!api.actions.preProcessorsPriority[priority]) api.actions.preProcessorsPriority[priority] = [];
+    return api.actions.preProcessorsPriority[priority].push(func);
   }
   api.actions.addPostProcessor = function(func, priority) {
     if(!priority) priority = api.config.general.defaultProcessorPriority;
-    return api.actions.postProcessorsPriority.push({processor:func,priority:priority});
+    if(!api.actions.postProcessorsPriority[priority]) api.actions.postProcessorsPriority[priority] = [];
+    return api.actions.postProcessorsPriority[priority].push(func);
+    //return api.actions.postProcessorsPriority.push({processor:func,priority:priority});
   }
   
   api.actions.validateAction = function(action){

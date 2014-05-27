@@ -122,65 +122,52 @@ var actionProcessor = function(api, next){
     if(!api.actions.preProcessors.length && !api.actions.preProcessorsPriority.length){
       callback(toProcess);
     } else {
-      var processors = [];
-      var push_func = function(processor) {
-        processors.push(function(next){
-          if(toProcess === true){
-            processor(self.connection, self.actionTemplate, function(connection, localToProcess){
-              self.connection = connection;
-              if(localToProcess != null){ toProcess = localToProcess; }
-              next();
-            });
-          } else { next(toProcess) }
-        })
-      };
-      // priorities lower than default
-      for(var proc in api.actions.preProcessorsPriority) {
-        if(api.actions.preProcessorsPriority[proc].priority > api.config.general.defaultProcessorPriority) continue;
-        push_func(api.actions.preProcessorsPriority[proc].processor);
-      }
-      // default priority
-      api.actions.preProcessors.forEach(function(processor){push_func(processor)});
-      // priorities higher than default
-      for(var proc in api.actions.preProcessorsPriority) {
-        if(api.actions.preProcessorsPriority[proc].priority <= api.config.general.defaultProcessorPriority) continue;
-        push_func(api.actions.preProcessorsPriority[proc].processor);
-      }
-  
-      processors.push(function(){ callback(toProcess) });
-      async.series(processors);
+      var processors = api.actions.preProcessorsPriority.slice();
+      
+      // if we have default actions to run, insert them into our processors
+      if(api.actions.preProcessors.length)
+        if(!processors[api.config.general.defaultProcessorPriority])
+          processors[api.config.general.defaultProcessorPriority] = api.actions.preProcessors;
+        else
+          processors[api.config.general.defaultProcessorPriority].concat(api.actions.preProcessors);
+      
+      // flatten processors and call them
+      async.eachSeries(processors.reduce(function(a, b) { return a.concat(b) }), function(proc, next) {
+        if(toProcess === true){
+          proc(self.connection, self.actionTemplate, function(connection, localToProcess){
+            self.connection = connection;
+            if(localToProcess != null){ toProcess = localToProcess; }
+            next();
+          });
+        } else { next(toProcess) }
+      },
+      function() { callback(toProcess) });
     }
   }
-
+  
   api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
     var self = this;
     if(!api.actions.postProcessors.length && !api.actions.postProcessorsPriority.length){
       callback(toRender);
     } else {
-      var processors = [];
-      var push_func = function(processor) {
-        processors.push(function(next){
-          processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
-            self.connection = connection;
-            if(localToRender != null){ toRender = localToRender; }
-            next();
-          });
+      var processors = api.actions.postProcessorsPriority.slice();
+      
+      // if we have default actions to run, insert them into our processors
+      if(api.actions.postProcessors.length)
+        if(!processors[api.config.general.defaultProcessorPriority])
+          processors[api.config.general.defaultProcessorPriority] = api.actions.postProcessors;
+        else
+          processors[api.config.general.defaultProcessorPriority].concat(api.actions.postProcessors);
+      
+      // flatten processors and call them
+      async.eachSeries(processors.reduce(function(a, b) { return a.concat(b) }), function(proc, next) {
+        proc(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
+          self.connection = connection;
+          if(localToRender != null){ toRender = localToRender; }
+          next();
         })
-      };
-      // priorities lower than default
-      for(var proc in api.actions.postProcessorsPriority) {
-        if(api.actions.postProcessorsPriority[proc].priority > api.config.general.defaultProcessorPriority) continue;
-        push_func(api.actions.postProcessorsPriority[proc].processor);
-      }
-      // default priority
-      api.actions.postProcessors.forEach(function(processor){push_func(processor)});
-      // priorities higher than default
-      for(var proc in api.actions.postProcessorsPriority) {
-        if(api.actions.postProcessorsPriority[proc].priority <= api.config.general.defaultProcessorPriority) continue;
-        push_func(api.actions.postProcessorsPriority[proc].processor);
-      }
-      processors.push(function(){ callback(toRender) });
-      async.series(processors);
+      },
+      function() { callback(toRender) });
     }
   }
 
