@@ -222,6 +222,15 @@ var utils = function(api, next){
   }
 
   ////////////////////////////////////////////////////////////////////////////
+  // flatten a multi-dimensional array to one-dimensional
+  api.utils.flattenArray = function(arr){
+    return arr.reduce(api.utils.reduceConcat);
+  }
+  api.utils.reduceConcat = function(a, b) {
+    return a.concat(b)
+  };
+
+  ////////////////////////////////////////////////////////////////////////////
   // get this servers external interface
   api.utils.getExternalIPAddress = function(){
     var os = require('os')

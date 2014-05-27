@@ -24,7 +24,6 @@ var actions = function(api, next){
     if(!priority) priority = api.config.general.defaultProcessorPriority;
     if(!api.actions.postProcessorsPriority[priority]) api.actions.postProcessorsPriority[priority] = [];
     return api.actions.postProcessorsPriority[priority].push(func);
-    //return api.actions.postProcessorsPriority.push({processor:func,priority:priority});
   }
   
   api.actions.validateAction = function(action){
