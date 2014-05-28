@@ -76,9 +76,9 @@ More Help & the actionhero wiki can be found @ http://actionherojs.com
 * Otherwise, you can reference the binary from either `./node_modules/.bin/actionhero` or `./node_modules/actionhero/bin/actionhero`.
 * If you installed actionhero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
 
-## Environments and Confg
+## Environments and Config
 
-By default, actionhero will use the config settings in `/config/`.  However, you can set envrioment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up a config ovveride file from `/config/environments/#{env}.js`.  This is the recommended way to have sperate settings for staging and production.
+By default, actionhero will use the settings found in the `exports.default` blocks in `/config/`.  However, you can set environment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.
 
 The load order of configs is:
 - default values in `/config`
