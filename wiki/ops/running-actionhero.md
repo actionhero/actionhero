@@ -78,7 +78,7 @@ More Help & the actionhero wiki can be found @ http://actionherojs.com
 
 ## Environments and Config
 
-By default, actionhero will use the config settings in `/config/`.  However, you can set envrioment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.
+By default, actionhero will use the settings found in the exports.default blocks in `/config/`.  However, you can set environment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.
 
 The load order of configs is:
 - default values in `/config`
