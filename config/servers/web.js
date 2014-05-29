@@ -16,7 +16,7 @@ exports.default = {
         httpHeaders : {
           'X-Powered-By'                : api.config.general.serverName,
           'Access-Control-Allow-Origin' : '*',
-          'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE',
+          'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
         // Route that actions will be served from; secondary route against this route will be treated as actions,
