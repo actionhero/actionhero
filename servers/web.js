@@ -312,6 +312,8 @@ var web = function(api, options, next){
     var apiPathParts = connection.rawConnection.parsedURL.pathname.split('/');
     var filePathParts = connection.rawConnection.parsedURL.pathname.split('/');
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
+    connection.rawConnection.params = {};
+
     if (extensionParts.length > 1){
       connection.extension = extensionParts[(extensionParts.length - 1)];
     }
@@ -332,7 +334,10 @@ var web = function(api, options, next){
         }
       }
     }
+    
     fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query); // GET, PUT, and DELETE params
+    connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;
+    
     if(requestMode == 'api'){
       var httpMethod = connection.rawConnection.req.method.toUpperCase();
       if(httpMethod == 'OPTIONS'){
@@ -359,7 +364,8 @@ var web = function(api, options, next){
               server.log('error processing form: ' + String(err), 'error');
               connection.error = new Error('There was an error processing this form.');
             } else {
-              connection.rawConnection.req.body = fields;
+              connection.rawConnection.params.body = fields;
+              connection.rawConnection.params.files = files;
               fillParamsFromWebRequest(connection, files);
               fillParamsFromWebRequest(connection, fields);
             }
