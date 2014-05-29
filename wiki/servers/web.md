@@ -221,6 +221,17 @@ exports.routes = {
 
 The `api.config.servers.web.rootEndpointType` is "file" which means that the routes you are making are active only under the `/api` path.  If you wanted the route example to become  `server.com/stuff/statusPage`, you would need to change `api.config.servers.web.rootEndpointType` to be 'api'.  Note that making this change doesn't stop `server.com/api/stuff/statusPage` from working as well, as you still have `api.config.servers.web.urlPathForActions` set to be 'api', so both will continue to work.
 
+For a route to match, all params must be satisfied.  So, if you expect a route to provide `api/:a/:b/:c` and the request is only for `api/:a/:c`, the route won't match (save some fancy regexp). This holds for any variable, including `:apiVersion`.  If you want to match both with and without apiVersion, just define the rote 2x, IE:
+
+{% highlight javascript %}
+exports.routes = {
+  all: [
+    { path: "/cache/:key/:value",             action:  "cacheTest" },
+    { path: "/:apiVersion/cache/:key/:value", action:  "cacheTest" },
+  ]
+};
+{% endhighlight %}
+
 If you want to shut off access to your action at `server.com/api/stuff/statusPage` and only allow access via `server.com/stuff/statusPage`, you can disable `api.config.servers.web.urlPathForActions` by setting it equal to `null` (but keeping the `api.config.servers.web.rootEndpointType` equal to 'api'). 
 
 #### Notes
@@ -229,10 +240,10 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
 - you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
   - IE: /api/user/123?userId=456 => `connection.userId = 123`
 - routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"
-- use ":variable" to defined "variable"
-- undefined ":variable" will match
+- use ":variable" to define "variable"
+- an undefined ":variable" will match
   - IE: "/api/user/" WILL match "/api/user/:userId"
-- routes are matched as defined here top-down
+- routes are matched as defined top-down in `routes.js`
 - you can optionally define a regex match along with your route variable
   - IE: `{ path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }`
   - be sure to double-escape when needed: `{ path: "/login/:userID(^\\d{3}$)", action: "login" }`
