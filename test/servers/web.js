@@ -144,7 +144,7 @@ describe('Server: Web', function(){
     });
   });
 
-  describe.only('connection.rawConnection.params', function () {
+  describe('connection.rawConnection.params', function () {
     before(function(done){
       api.actions.versions.paramTestAction = [1]
       api.actions.actions.paramTestAction = {
