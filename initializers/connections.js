@@ -4,8 +4,8 @@ var connections = function(api, next){
 
   api.connections = {
 
-    createCallbacks: [],
-    destroyCallbacks: [],
+    createCallbacks: {},
+    destroyCallbacks: {},
 
     allowedVerbs: [
       'quit',
@@ -27,20 +27,39 @@ var connections = function(api, next){
 
     connections: {}
   };
+
+  api.connections.addCreateCallback = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.connections.createCallbacks[priority]) api.connections.createCallbacks[priority] = [];
+    return api.connections.createCallbacks[priority].push(func);
+  }
+  api.connections.addDestroyCallback = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.connections.destroyCallbacks[priority]) api.connections.destroyCallbacks[priority] = [];
+    return api.connections.destroyCallbacks[priority].push(func);
+  }
   
 
   // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
   // id is optional and will be generated if missing
   api.connection = function(data){
-    this.setup(data)
+    var self = this;
+    self.setup(data)
     api.stats.increment('connections:totalActiveConnections');
-    api.stats.increment('connections:activeConnections:' + this.type);
+    api.stats.increment('connections:activeConnections:' + self.type);
     api.stats.increment('connections:totalConnections');
-    api.stats.increment('connections:connections:' + this.type);
-    api.connections.connections[this.id] = this;
-    for(var i in api.connections.createCallbacks){
-      api.connections.createCallbacks[i](this);
-    }
+    api.stats.increment('connections:connections:' + self.type);
+    api.connections.connections[self.id] = self;
+
+    var priorities = [];
+    for(var c in api.connections.createCallbacks) priorities.push(c);
+    priorities.forEach(function(priority){
+      api.connections.createCallbacks[priority].forEach(function(c){
+        c(self);   
+      });
+    });
   }
 
   api.connection.prototype.setup = function(data){
@@ -88,9 +107,14 @@ var connections = function(api, next){
   api.connection.prototype.destroy = function(callback){
     var self = this;
     self.destroyed = true;
-    for(var i in api.connections.destroyCallbacks){
-      api.connections.destroyCallbacks[i](self);
-    }
+    
+    var priorities = [];
+    for(var c in api.connections.destroyCallbacks) priorities.push(c);
+    priorities.forEach(function(priority){
+      api.connections.destroyCallbacks[priority].forEach(function(c){
+        c(self);   
+      });
+    });
 
     api.stats.increment('connections:totalActiveConnections', -1);
     api.stats.increment('connections:activeConnections:' + self.type, -1);
