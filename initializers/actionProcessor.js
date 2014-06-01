@@ -4,10 +4,6 @@ var async = require('async');
 var actionProcessor = function(api, next){
 
   var duplicateCallbackErrorTimeout = 500;
-
-  if(api.config.general.defaultProcessorPriority == null){
-    api.config.general.defaultProcessorPriority = 10;
-  }
   
   api.actionProcessor = function(data){
     if(data.connection == null){ throw new Error('data.connection is required') }
@@ -118,49 +114,55 @@ var actionProcessor = function(api, next){
   }
   
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
-    if(!api.actions.preProcessors.length && !api.actions.preProcessorsPriority.length) return callback(toProcess);
-    var self = this, processors = api.actions.preProcessorsPriority.slice();
-    
-    // if we have default actions to run, insert them into our processors
-    if(api.actions.preProcessors.length)
-      if(!processors[api.config.general.defaultProcessorPriority])
-        processors[api.config.general.defaultProcessorPriority] = api.actions.preProcessors;
-      else
-        processors[api.config.general.defaultProcessorPriority].concat(api.actions.preProcessors);
-    
-    // flatten processors and call them
-    async.eachSeries(api.utils.flattenArray(processors), function(proc, next) {
-      if(toProcess === true){
-        proc(self.connection, self.actionTemplate, function(connection, localToProcess){
-          self.connection = connection;
-          if(localToProcess != null){ toProcess = localToProcess; }
-          next();
+    var self = this;
+    var priorities = [];
+    var processors = [];
+    for(var p in api.actions.preProcessors) priorities.push(p);
+    priorities.sort();
+
+    if(priorities.length === 0) return callback(toProcess);
+
+    priorities.forEach(function(priority){
+      api.actions.preProcessors[priority].forEach(function(processor){
+        processors.push(function(next){
+          if(toProcess === true){
+            processor(self.connection, self.actionTemplate, function(connection, localToProcess){
+              self.connection = connection;
+              if(localToProcess != null){ toProcess = localToProcess; }
+              next();
+            });
+          } else { next(toProcess) }
         });
-      } else { next(toProcess) }
-    },
-    function() { callback(toProcess) });
+      });
+    });
+
+    processors.push(function(){ callback(toProcess) });
+    async.series(processors);
   }
   
   api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
-    if(!api.actions.postProcessors.length && !api.actions.postProcessorsPriority.length) return callback(toRender);
-    var self = this, processors = api.actions.postProcessorsPriority.slice();
-    
-    // if default actions to run, insert them into ordered processors
-    if(api.actions.postProcessors.length)
-      if(!processors[api.config.general.defaultProcessorPriority])
-        processors[api.config.general.defaultProcessorPriority] = api.actions.postProcessors;
-      else
-        processors[api.config.general.defaultProcessorPriority].concat(api.actions.postProcessors);
-    
-    // flatten processors and call them
-    async.eachSeries(api.utils.flattenArray(processors), function(proc, next) {
-      proc(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
-        self.connection = connection;
-        if(localToRender != null){ toRender = localToRender; }
-        next();
-      })
-    },
-    function() { callback(toRender) });
+    var self = this;
+    var priorities = [];
+    var processors = [];
+    for(var p in api.actions.postProcessors) priorities.push(p);
+    priorities.sort();
+
+    if(priorities.length === 0) return callback(toRender);
+
+    priorities.forEach(function(priority){
+      api.actions.postProcessors[priority].forEach(function(processor){
+        processors.push(function(next){
+          processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
+            self.connection = connection;
+            if(localToRender != null){ toRender = localToRender; }
+            next();
+          });
+        });
+      });
+    });
+
+    processors.push(function(){ callback(toRender) });
+    async.series(processors);
   }
 
   api.actionProcessor.prototype.reduceParams = function(){
