@@ -19,15 +19,15 @@ describe('Core: Middleware', function(){
   });
 
   afterEach(function(done){
-    api.actions.preProcessors  = [];
-    api.actions.postProcessors = [];
+    api.actions.preProcessors  = {};
+    api.actions.postProcessors = {};
     done();
   });
   
   describe('action preProcessors', function(){
 
     it('I can define an action preProcessor and it can append the connection', function(done){
-      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
         connection.response._preProcessorNote = 'note'
         next(connection, true);
       });
@@ -37,9 +37,67 @@ describe('Core: Middleware', function(){
         done();
       });
     });
+    
+    it('preProcessors with priorities run in the right order', function(done){
+      // first priority
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteFirst = 'first';
+        connection.response._processorNoteEarly = 'first';
+        connection.response._processorNoteLate = 'first';
+        connection.response._processorNoteDefault = 'first';
+        next(connection, true);
+      }, 1);
+      
+      // lower number priority (runs sooner)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
+    
+    it('multiple preProcessors with same priority are executed', function(done){
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteFirst = 'first';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteSecond = 'second';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteSecond.should.equal('second');
+        done();
+      });
+    });
 
     it('postProcessors can append the connection', function(done){
-      api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
         connection.response._postProcessorNote = 'note'
         next(connection, true);
       });
@@ -50,8 +108,66 @@ describe('Core: Middleware', function(){
       });
     })
 
+    it('postProcessors with priorities run in the right order', function(done){
+      // first priority
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteFirst = 'first';
+        connection.response._processorNoteEarly = 'first';
+        connection.response._processorNoteLate = 'first';
+        connection.response._processorNoteDefault = 'first';
+        next(connection, true);
+      }, 1);
+      
+      // lower number priority (runs sooner)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
+    
+    it('multiple postProcessors with same priority are executed', function(done){
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteFirst = 'first';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteSecond = 'second';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteSecond.should.equal('second');
+        done();
+      });
+    });
+
     it('preProcessors can block actions', function(done){
-      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
         connection.error = 'BLOCKED'
         next(connection, false);
       });
@@ -64,7 +180,7 @@ describe('Core: Middleware', function(){
     })
 
     it('postProcessors can modify toRender', function(done){
-      api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
         next(connection, false);
       });
 
@@ -81,19 +197,19 @@ describe('Core: Middleware', function(){
   describe('connection create/destroy callbacks', function(){
 
     beforeEach(function(done){
-      api.connections.createCallbacks = [];
-      api.connections.destroyCallbacks = [];
+      api.connections.createCallbacks = {};
+      api.connections.destroyCallbacks = {};
       done();
     })
 
     afterEach(function(done){
-      api.connections.createCallbacks = [];
-      api.connections.destroyCallbacks = [];
+      api.connections.createCallbacks = {};
+      api.connections.destroyCallbacks = {};
       done();
     })
 
     it('can create callbacks on connection creation', function(done){
-      api.connections.createCallbacks.push(function(c){
+      api.connections.addCreateCallback(function(c){
         done();
       });
       api.specHelper.runAction('randomNumber', function(response, connection){
@@ -102,9 +218,10 @@ describe('Core: Middleware', function(){
     });
 
     it('can create callbacks on connection destroy', function(done){
-      api.connections.destroyCallbacks.push(function(c){
+      api.connections.addDestroyCallback(function(c){
         done();
       });
+
       api.specHelper.runAction('randomNumber', function(response, connection){
         connection.destroy();
       });

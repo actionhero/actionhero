@@ -5,13 +5,26 @@ var actions = function(api, next){
   api.actions.actions = {};
   api.actions.versions = {};
 
-  api.actions.preProcessors = [];
-  api.actions.postProcessors = [];
+  api.actions.preProcessors = {};
+  api.actions.postProcessors = {};
 
   if(api.config.general.simultaneousActions == null){
     api.config.general.simultaneousActions = 5;
   }
 
+  api.actions.addPreProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.actions.preProcessors[priority]) api.actions.preProcessors[priority] = [];
+    return api.actions.preProcessors[priority].push(func);
+  }
+  api.actions.addPostProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.actions.postProcessors[priority]) api.actions.postProcessors[priority] = [];
+    return api.actions.postProcessors[priority].push(func);
+  }
+  
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
