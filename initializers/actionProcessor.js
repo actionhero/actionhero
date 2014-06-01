@@ -5,6 +5,10 @@ var actionProcessor = function(api, next){
 
   var duplicateCallbackErrorTimeout = 500;
 
+  if(api.config.general.defaultProcessorPriority == null){
+    api.config.general.defaultProcessorPriority = 10;
+  }
+  
   api.actionProcessor = function(data){
     if(data.connection == null){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
@@ -112,47 +116,51 @@ var actionProcessor = function(api, next){
 
     self.working = false;
   }
-
+  
   api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
-    var self = this;
-    if(api.actions.preProcessors.length == 0){
-      callback(toProcess);
-    } else {
-      var processors = [];
-      api.actions.preProcessors.forEach(function(processor){
-        processors.push(function(next){
-          if(toProcess === true){
-            processor(self.connection, self.actionTemplate, function(connection, localToProcess){
-              self.connection = connection;
-              if(localToProcess != null){ toProcess = localToProcess; }
-              next();
-            });
-          } else { next(toProcess) }
-        })
-      });
-      processors.push(function(){ callback(toProcess) });
-      async.series(processors);
-    }
+    if(!api.actions.preProcessors.length && !api.actions.preProcessorsPriority.length) return callback(toProcess);
+    var self = this, processors = api.actions.preProcessorsPriority.slice();
+    
+    // if we have default actions to run, insert them into our processors
+    if(api.actions.preProcessors.length)
+      if(!processors[api.config.general.defaultProcessorPriority])
+        processors[api.config.general.defaultProcessorPriority] = api.actions.preProcessors;
+      else
+        processors[api.config.general.defaultProcessorPriority].concat(api.actions.preProcessors);
+    
+    // flatten processors and call them
+    async.eachSeries(api.utils.flattenArray(processors), function(proc, next) {
+      if(toProcess === true){
+        proc(self.connection, self.actionTemplate, function(connection, localToProcess){
+          self.connection = connection;
+          if(localToProcess != null){ toProcess = localToProcess; }
+          next();
+        });
+      } else { next(toProcess) }
+    },
+    function() { callback(toProcess) });
   }
-
+  
   api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
-    var self = this;
-    if(api.actions.postProcessors.length == 0){
-      callback(toRender);
-    } else {
-      var processors = [];
-      api.actions.postProcessors.forEach(function(processor){
-        processors.push(function(next){
-          processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
-            self.connection = connection;
-            if(localToRender != null){ toRender = localToRender; }
-            next();
-          });
-        })
-      });
-      processors.push(function(){ callback(toRender) });
-      async.series(processors);
-    }
+    if(!api.actions.postProcessors.length && !api.actions.postProcessorsPriority.length) return callback(toRender);
+    var self = this, processors = api.actions.postProcessorsPriority.slice();
+    
+    // if default actions to run, insert them into ordered processors
+    if(api.actions.postProcessors.length)
+      if(!processors[api.config.general.defaultProcessorPriority])
+        processors[api.config.general.defaultProcessorPriority] = api.actions.postProcessors;
+      else
+        processors[api.config.general.defaultProcessorPriority].concat(api.actions.postProcessors);
+    
+    // flatten processors and call them
+    async.eachSeries(api.utils.flattenArray(processors), function(proc, next) {
+      proc(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
+        self.connection = connection;
+        if(localToRender != null){ toRender = localToRender; }
+        next();
+      })
+    },
+    function() { callback(toRender) });
   }
 
   api.actionProcessor.prototype.reduceParams = function(){

@@ -21,6 +21,8 @@ describe('Core: Middleware', function(){
   afterEach(function(done){
     api.actions.preProcessors  = [];
     api.actions.postProcessors = [];
+    api.actions.preProcessorsPriority  = [];
+    api.actions.postProcessorsPriority = [];
     done();
   });
   
@@ -37,6 +39,64 @@ describe('Core: Middleware', function(){
         done();
       });
     });
+    
+    it('preProcessors with priorities run in the right order', function(done){
+      // first priority
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteFirst = 'first';
+        connection.response._processorNoteEarly = 'first';
+        connection.response._processorNoteLate = 'first';
+        connection.response._processorNoteDefault = 'first';
+        next(connection, true);
+      }, 1);
+      
+      // lower number priority (runs sooner)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
+    
+    it('multiple preProcessors with same priority are executed', function(done){
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteFirst = 'first';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
+        connection.response._processorNoteSecond = 'second';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteSecond.should.equal('second');
+        done();
+      });
+    });
 
     it('postProcessors can append the connection', function(done){
       api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
@@ -49,6 +109,64 @@ describe('Core: Middleware', function(){
         done();
       });
     })
+
+    it('postProcessors with priorities run in the right order', function(done){
+      // first priority
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteFirst = 'first';
+        connection.response._processorNoteEarly = 'first';
+        connection.response._processorNoteLate = 'first';
+        connection.response._processorNoteDefault = 'first';
+        next(connection, true);
+      }, 1);
+      
+      // lower number priority (runs sooner)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteEarly = 'early';
+        connection.response._processorNoteLate = 'early';
+        connection.response._processorNoteDefault = 'early';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      // old style "default" priority
+      api.actions.postProcessors.push(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteLate = 'default';
+        connection.response._processorNoteDefault = 'default';
+        next(connection, true);
+      });
+      
+      // higher number priority (runs later)
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteLate = 'late';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority+1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteEarly.should.equal('early');
+        response._processorNoteDefault.should.equal('default');
+        response._processorNoteLate.should.equal('late');
+        done();
+      });
+    });
+    
+    it('multiple postProcessors with same priority are executed', function(done){
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteFirst = 'first';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next){
+        connection.response._processorNoteSecond = 'second';
+        next(connection, true);
+      }, api.config.general.defaultProcessorPriority-1);
+      
+      api.specHelper.runAction('randomNumber', function(response, connection){
+        response._processorNoteFirst.should.equal('first');
+        response._processorNoteSecond.should.equal('second');
+        done();
+      });
+    });
 
     it('preProcessors can block actions', function(done){
       api.actions.preProcessors.push(function(connection, actionTemplate, next){

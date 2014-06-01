@@ -7,11 +7,25 @@ var actions = function(api, next){
 
   api.actions.preProcessors = [];
   api.actions.postProcessors = [];
+  
+  api.actions.preProcessorsPriority = [];
+  api.actions.postProcessorsPriority = [];
 
   if(api.config.general.simultaneousActions == null){
     api.config.general.simultaneousActions = 5;
   }
 
+  api.actions.addPreProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultProcessorPriority;
+    if(!api.actions.preProcessorsPriority[priority]) api.actions.preProcessorsPriority[priority] = [];
+    return api.actions.preProcessorsPriority[priority].push(func);
+  }
+  api.actions.addPostProcessor = function(func, priority) {
+    if(!priority) priority = api.config.general.defaultProcessorPriority;
+    if(!api.actions.postProcessorsPriority[priority]) api.actions.postProcessorsPriority[priority] = [];
+    return api.actions.postProcessorsPriority[priority].push(func);
+  }
+  
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
