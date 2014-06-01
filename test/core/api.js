@@ -179,7 +179,7 @@ describe('Core: API', function(){
     });
 
     after(function(done){
-      api.actions.preProcessors = [];
+      api.actions.preProcessors = {};
       delete api.actions.actions['badAction'];
       delete api.actions.versions['badAction'];
       done();
@@ -199,10 +199,10 @@ describe('Core: API', function(){
     });
 
     it('can also prevent double callbacks from middleware', function(done){
-      api.actions.preProcessors.push(function(connection, actionTemplate, next){
+      api.actions.preProcessors[1] = function(connection, actionTemplate, next){
         next(connection, true);
         next(connection, true);
-      });
+      }
 
       responses = [];
       api.specHelper.runAction('randomNumber', function(response, connection){
