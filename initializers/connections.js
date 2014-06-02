@@ -34,7 +34,7 @@ var connections = function(api, next){
     },
 
     apply: function(connectionId, method, args, callback){
-      api.faye.doCluster('connection_apply', [connectionId, method, args], connectionId, callback);
+      api.faye.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
     },
 
     applyCatch: function(connectionId, method, args, callback){
@@ -225,14 +225,14 @@ var connections = function(api, next){
         }
 
       } else if(verb === 'detailsView'){
-        var details = {}
-        details.id = self.id;
-        details.remoteIP = self.remoteIP;
-        details.remotePort = self.remotePort;
-        details.params = self.params;
-        details.connectedAt = self.connectedAt;
-        details.rooms = self.rooms;
-        details.totalActions = self.totalActions;
+        var details            = {};
+        details.id             = self.id;
+        details.remoteIP       = self.remoteIP;
+        details.remotePort     = self.remotePort;
+        details.params         = self.params;
+        details.connectedAt    = self.connectedAt;
+        details.rooms          = self.rooms;
+        details.totalActions   = self.totalActions;
         details.pendingActions = self.pendingActions;
         if(typeof callback === 'function'){ callback(null, details); }
 
@@ -246,10 +246,10 @@ var connections = function(api, next){
         });
 
       } else {
-        if(typeof callback === 'function'){ callback('I do not know know to perform this verb', null); }
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(verb), null); }
       }
     } else {
-      if(typeof callback === 'function'){ callback('verb not found or not allowed', null); }
+      if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(verb), null); }
     }
   }
 

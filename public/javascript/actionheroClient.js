@@ -211,8 +211,8 @@
     this.send({event: 'detailsView'}, callback);
   }
 
-  actionheroClient.prototype.roomView = function(callback){
-    this.send({event: 'roomView'}, callback);
+  actionheroClient.prototype.roomView = function(room, callback){
+    this.send({event: 'roomView', room: room}, callback);
   }
 
   actionheroClient.prototype.roomAdd = function(room, callback){
@@ -220,8 +220,8 @@
     this.send({event: 'roomAdd', room: room}, callback);
   }
 
-  actionheroClient.prototype.roomLeave = function(callback){
-    this.send({event: 'roomLeave'}, callback);
+  actionheroClient.prototype.roomLeave = function(room, callback){
+    this.send({event: 'roomLeave', room: room}, callback);
   }
 
   actionheroClient.prototype.documentation = function(callback){

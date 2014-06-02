@@ -150,7 +150,7 @@ var websocket = function(api, options, next){
         if(connection != null){
           incomingMessage(connection, message);
         }else{
-          api.faye.doCluster('websocket_rebroadcast', [message], connectionId, null);
+          api.faye.doCluster('api.servers.servers.websocket.messagingFayeExtension', [message], connectionId, null);
         }
       }
     }

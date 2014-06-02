@@ -59,79 +59,41 @@ var faye = function(api, next){
     // RPC //
     /////////
 
-    // RPC Methods
-    // For security, these are the only allowed cluster-to-cluster remote methods
-    // You may manually add to this hash
-    api.faye.rpc = {
-      'api_log': {
-        method: api.log
-      },
-      'websocket_rebroadcast': {
-        method: api.servers.servers.websocket.messagingFayeExtension,
-        check: function(connectionId){
-          return !( api.connections.connections[connectionId] == null )
-        }
-      },
-      'connection_apply': {
-        method: api.connections.applyCatch,
-        check: function(connectionId){
-          return !( api.connections.connections[connectionId] == null )
-        }
-      },
-      'chatRoom_reAuthenticate': {
-        method: api.chatRoom.reAuthenticate,
-        check: function(connectionId){
-          return !( api.connections.connections[connectionId] == null )
-        }
-      },
-      'chatRoom_addMember': {
-        method: api.chatRoom.addMember,
-        check: function(connectionId){
-          return !( api.connections.connections[connectionId] == null )
-        }
-      },
-      'chatRoom_removeMember': {
-        method: api.chatRoom.removeMember,
-        check: function(connectionId){
-          return !( api.connections.connections[connectionId] == null )
-        }
-      },
-    }
-
     api.faye.subscription = api.faye.client.subscribe(api.faye.clusterAskChannel, function(message){
-      // don't use a domain, as server-server methods should be made very robust independtantly
       
-      if(api.faye.rpc[message.rpcKey] != null){
-        var checkMethod = api.faye.rpc[message.rpcKey].check;
-        if(checkMethod == null || (message.check != null && checkMethod(message.check) === true)){
-          var method = api.faye.rpc[message.rpcKey].method;
-          var callback = function(){
+      // don't use a domain, as server-server methods should be made very robust induvidually
+
+      if(message.connectionId == null || api.connections.connections[message.connectionId] != null){
+        var method = eval(message.method); //TODO: Eval makes me sad
+        var callback = function(){
+          process.nextTick(function(){
             api.faye.respondCluster(message.requestId, arguments);
-          };
-          var args = message.args;
-          args.push(callback);
-          method.apply(null, args);
-        }
+          });
+        };
+        var args = message.args;
+        if(args === null){ args = []; }
+        args.push(callback);
+        method.apply(null, args);
       }
     });
 
     api.faye.subscription = api.faye.client.subscribe(api.faye.clusterResponseChannel, function(message){
       if(api.faye.clusterCallbaks[message.requestId] != null){
         clearTimeout(api.faye.clusterCallbakTimeouts[message.requestId]);
-        api.faye.clusterCallbaks[requestId].apply(null, message.response);
+        api.faye.clusterCallbaks[message.requestId].apply(null, message.response);
         delete api.faye.clusterCallbaks[message.requestId];
         delete api.faye.clusterCallbakTimeouts[message.requestId];
       }
     });
 
-    api.faye.doCluster = function(rpcKey, args, check, callback){
+    api.faye.doCluster = function(method, args, connectionId, callback){
       var requestId = uuid.v4();
       var payload = {
         serverId     : api.id,
         serverToken  : api.config.general.serverToken,
         requestId    : requestId,
-        rpcKey       : rpcKey, // rpc key
-        check        : check, 
+        method       : method,
+        connectionId : connectionId,
         args         : args,   // [1,2,3]
       };
 
@@ -140,7 +102,9 @@ var faye = function(api, next){
       if(typeof callback == 'function'){
         api.faye.clusterCallbaks[requestId] = callback;
         api.faye.clusterCallbakTimeouts = setTimeout(function(requestId){
-          api.faye.clusterCallbaks[requestId](new Error('RPC Timeout'));
+          if(typeof api.faye.clusterCallbaks[requestId] === 'function'){
+            api.faye.clusterCallbaks[requestId](new Error('RPC Timeout'));
+          }
           delete api.faye.clusterCallbaks[requestId];
           delete api.faye.clusterCallbakTimeouts[requestId];
         }, api.faye.clusterTimeout, requestId);
@@ -159,13 +123,13 @@ var faye = function(api, next){
     }
 
     setTimeout(function(){
-      api.faye.doCluster('api_log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+      api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
       next();
     }, 1000);
   }
 
   api.faye._stop = function(api, next){
-    api.faye.doCluster('api_log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
+    api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
     api.faye.server.getClient().disconnect();
     next();
   }

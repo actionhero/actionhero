@@ -109,16 +109,14 @@ describe('Core: Action Cluster', function(){
 
   describe('say and clients on separate peers', function(){
 
-
     before(function(done){
-
       client1 = new api_1.specHelper.connection();
       client2 = new api_2.specHelper.connection();
       client3 = new api_3.specHelper.connection();
 
-      client1.verbs('roomChange','defaultRoom');
-      client2.verbs('roomChange','defaultRoom');
-      client3.verbs('roomChange','defaultRoom');
+      client1.verbs('roomAdd','defaultRoom');
+      client2.verbs('roomAdd','defaultRoom');
+      client3.verbs('roomAdd','defaultRoom');
 
       setTimeout(function(){
         done();
@@ -135,7 +133,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('all connections can join the default room and client #1 can see them', function(done){
-      client1.verbs('roomView', function(err, data){
+      client1.verbs('roomView', 'defaultRoom', function(err, data){
         data.room.should.equal('defaultRoom');
         data.membersCount.should.equal(3);
         done();
@@ -143,7 +141,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('all connections can join the default room and client #2 can see them', function(done){
-      client2.verbs('roomView', function(err, data){
+      client2.verbs('roomView', 'defaultRoom', function(err, data){
         data.room.should.equal('defaultRoom');
         data.membersCount.should.equal(3);
         done();
@@ -151,7 +149,7 @@ describe('Core: Action Cluster', function(){
     });
 
     it('all connections can join the default room and client #3 can see them', function(done){
-      client3.verbs('roomView', function(err, data){
+      client3.verbs('roomView', 'defaultRoom', function(err, data){
         data.room.should.equal('defaultRoom');
         data.membersCount.should.equal(3);
         done();
@@ -163,7 +161,7 @@ describe('Core: Action Cluster', function(){
         // you can't communicate across the cluster with fakeredis!
         done();
       } else {
-        client1.verbs('say', 'Hi from client 1', function(){
+        client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], function(){
           setTimeout(function(){
             var message = client2.messages[(client2.messages.length - 1)];
             message.message.should.equal('Hi from client 1');
@@ -196,6 +194,63 @@ describe('Core: Action Cluster', function(){
         })
       });
     });
+
+  });
+
+  describe('RPC', function(){
+
+    afterEach(function(done){
+      delete api_1.rpcTestMethod;
+      delete api_2.rpcTestMethod;
+      delete api_3.rpcTestMethod;
+      done();
+    })
+
+    it('can call remote methods on all other servers in the cluster', function(done){
+      if(api_1.config.redis.package == 'fakeredis'){
+        done();
+      }else{
+        var data = {};
+        api_1.rpcTestMethod = function(arg1, arg2, next){
+          data[1] = [arg1, arg2]; next();
+        }
+        api_2.rpcTestMethod = function(arg1, arg2, next){
+          data[2] = [arg1, arg2]; next();
+        }
+        api_3.rpcTestMethod = function(arg1, arg2, next){
+          data[3] = [arg1, arg2]; next();
+        }
+
+        api_1.faye.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(){
+          // callback should work too!
+          data[1][0].should.equal('arg1');
+          data[1][1].should.equal('arg2');
+          data[2][0].should.equal('arg1');
+          data[2][1].should.equal('arg2');
+          data[3][0].should.equal('arg1');
+          data[3][1].should.equal('arg2');
+          done();
+        });
+      }
+    });
+
+    it('can call remote methods only on one other cluster who holds a specific connectionId');
+
+    it('can call remote methods on/about connections connected to other servers')
+
+  });
+
+  describe('chat', function(){
+
+    it('server can create new room')
+    it('can check if rooms exist')
+    it('server can remove room and connections will be removed')
+    it('server can add connections to a room (local)')
+    it('server can add connections to a room (remote)')
+    it('server can remove connections to a room (remote)')
+    it('server can remove connections to a room (remote)')
+    it('server can re-authenticate all connections within a room')
+    it('server change auth for a room and all connections will be checked')
 
   });
 

@@ -37,7 +37,7 @@ var chatRoom = function(api, next){
 
   api.chatRoom.broadcast = function(connection, room, message, callback){
     if(room == null || room.length == 0 || message == null || message.length == 0){
-      if(typeof callback == 'function'){ process.nextTick(function(){ callback('both room and message are required'); }) }
+      if(typeof callback == 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionRoomAndMessage() ); }) }
     }else if(connection.rooms.indexOf(room) > -1){
       if(connection.id == null){ connection.id = 0 }
       api.stats.increment('chatRoom:messagesSent');
@@ -55,7 +55,7 @@ var chatRoom = function(api, next){
       api.faye.client.publish(api.chatRoom.messageChannel, payload);
       if(typeof callback == 'function'){ process.nextTick(function(){ callback(null); }) }
     } else {
-      if(typeof callback == 'function'){ process.nextTick(function(){ callback('connection not in this room'); }) }
+      if(typeof callback == 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(room) ); }) }
     }
   }
 
@@ -81,7 +81,7 @@ var chatRoom = function(api, next){
   }
 
   api.chatRoom.del = function(room, callback){
-    api.chatRoom.broadcast({room: room}, 'this room has been deleted');
+    api.chatRoom.broadcast({room: room}, api.config.errors.connectionRoomHasBeenDeleted(room) );
     api.redis.client.srem(api.chatRoom.keys.rooms, room, function(err){
       api.redis.client.hgetall(api.chatRoom.keys.members + room, function(err, membersHash){
         for(var id in membersHash){
@@ -148,7 +148,7 @@ var chatRoom = function(api, next){
         });
       });
     } else {
-      callback('room is required', null);
+      callback( api.config.errors.connectionRoomRequired() , null);
     }
   }
 
@@ -193,7 +193,7 @@ var chatRoom = function(api, next){
         });
       }
     }else{
-      api.faye.doCluster('chatRoom_reAuthenticate', [connectionId], connectionId, callback);
+      api.faye.doCluster('api.chatRoom.reAuthenticate', [connectionId], connectionId, callback);
     }
   }
 
@@ -219,22 +219,22 @@ var chatRoom = function(api, next){
                       if(typeof callback == 'function'){ callback(null, true) }
                     });
                   } else {
-                    if(typeof callback == 'function'){ callback('connection already in this room', false) }
+                    if(typeof callback == 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
                   }
                 });
               } else {
-                if(typeof callback == 'function'){ callback('not authorized to join room', false) }
+                if(typeof callback == 'function'){ callback( api.config.errors.connectionNotAuthorized(room), false) }
               }
             });
           } else {
-            if(typeof callback == 'function'){ callback('room does not exist', false) }
+            if(typeof callback == 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
           }
         });
       }else{
-        if(typeof callback == 'function'){ callback('already a member of room ' + room, false) }
+        if(typeof callback == 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
       }
     }else{
-      api.faye.doCluster('chatRoom_addMember', [connectionId, room], connectionId, callback);
+      api.faye.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, callback);
     }
   }
 
@@ -252,23 +252,22 @@ var chatRoom = function(api, next){
               if(typeof callback == 'function'){ callback(null, true) }
             });
           }else{
-            if(typeof callback == 'function'){ callback('room does not exist', false) }
+            if(typeof callback == 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
           }
         });
       } else {
-        if(typeof callback == 'function'){ callback('not a member of room ' + room, false) }
+        if(typeof callback == 'function'){ callback( api.config.errors.connectionNotInRoom(room), false) }
       }
     }else{
-      api.faye.doCluster('chatRoom_removeMember', [connectionId, room], connectionId, callback);
+      api.faye.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, callback);
     }
   }
 
   api.chatRoom.announceMember = function(connection, room, direction){
-    var message = 'I';
     if(direction == true){
-      message += ' have entered the room';
+      var message = api.config.errors.connectionEnteredRoom(connection, room);
     } else {
-      message += ' have left the room';
+      var message = api.config.errors.connectionLeftRoom(connection, room);
     }
 
     api.chatRoom.broadcast(connection, room, message);
