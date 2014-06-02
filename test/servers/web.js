@@ -55,6 +55,30 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('if disableParamScrubbing is set ', function () {
+    var orig;
+
+    before(function(done) {
+      orig = api.config.general.disableParamScrubbing;
+      api.config.general.disableParamScrubbing = true;
+      done();
+    });
+
+    after(function (done) {
+      api.config.general.disableParamScrubbing = orig;
+      done();
+    })
+
+      it('params are not ignored', function(done){
+        request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams['crazyParam123'].should.equal('something');
+          done();
+        });
+      });
+
+  });
+
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
       body = JSON.parse(body);
@@ -119,6 +143,50 @@ describe('Server: Web', function(){
       done();
     });
   });
+
+  describe('connection.rawConnection.params', function () {
+    before(function(done){
+      api.actions.versions.paramTestAction = [1]
+      api.actions.actions.paramTestAction = {
+        '1': {
+          name: 'paramTestAction',
+          description: 'I return connection.rawConnection.params',
+          version: 1,
+          inputs: { required: [], optional: [] },
+          outputExample: {},
+          run:function(api, connection, next){
+            connection.response = connection.rawConnection.params;
+            next(connection, true);
+          }
+        }
+      }
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.actions['paramTestAction'];
+      delete api.actions.versions['paramTestAction'];
+      done();
+    });
+
+
+    it('.query should contain unfiltered query params', function (done) {
+      request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
+        body = JSON.parse(body);
+        body.query['crazyParam123'].should.equal('something');
+        done();
+      });
+    })
+
+    it('.body should contain unfiltered request body params', function (done) {
+      var requestBody = JSON.stringify({key:'value'});
+      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
+        body = JSON.parse(body);
+        body.body.key.should.eql('value');
+        done();
+      });
+    })
+  })
 
   it('returnErrorCodes false should still have a status of 200', function(done){
     request.del(url + '/api/', function(err, response, body){

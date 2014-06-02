@@ -67,7 +67,7 @@ var routes = function(api, next){
   // load in the routes file
   api.routes.loadRoutes = function(rawRoutes){
     var counter = 0;
-    api.routes.routes = { 'get': [], 'post': [], 'put': [], 'delete': [] };
+    api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
     if(rawRoutes == null){
       if(fs.existsSync(api.routes.routesFile)){
