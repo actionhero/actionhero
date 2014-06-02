@@ -66,8 +66,9 @@ var faye = function(api, next){
       if(message.connectionId == null || api.connections.connections[message.connectionId] != null){
         var method = eval(message.method); //TODO: Eval makes me sad
         var callback = function(){
+          var responseArgs = Array.apply(null, arguments).sort();
           process.nextTick(function(){
-            api.faye.respondCluster(message.requestId, arguments);
+            api.faye.respondCluster(message.requestId, responseArgs);
           });
         };
         var args = message.args;
@@ -79,7 +80,7 @@ var faye = function(api, next){
 
     api.faye.subscription = api.faye.client.subscribe(api.faye.clusterResponseChannel, function(message){
       if(api.faye.clusterCallbaks[message.requestId] != null){
-        clearTimeout(api.faye.clusterCallbakTimeouts[message.requestId]);
+        // clearTimeout(api.faye.clusterCallbakTimeouts[message.requestId]);
         api.faye.clusterCallbaks[message.requestId].apply(null, message.response);
         delete api.faye.clusterCallbaks[message.requestId];
         delete api.faye.clusterCallbakTimeouts[message.requestId];
@@ -101,13 +102,13 @@ var faye = function(api, next){
 
       if(typeof callback == 'function'){
         api.faye.clusterCallbaks[requestId] = callback;
-        api.faye.clusterCallbakTimeouts = setTimeout(function(requestId){
-          if(typeof api.faye.clusterCallbaks[requestId] === 'function'){
-            api.faye.clusterCallbaks[requestId](new Error('RPC Timeout'));
-          }
-          delete api.faye.clusterCallbaks[requestId];
-          delete api.faye.clusterCallbakTimeouts[requestId];
-        }, api.faye.clusterTimeout, requestId);
+        // api.faye.clusterCallbakTimeouts = setTimeout(function(requestId){
+        //   if(typeof api.faye.clusterCallbaks[requestId] === 'function'){
+        //     api.faye.clusterCallbaks[requestId](new Error('RPC Timeout'));
+        //   }
+        //   delete api.faye.clusterCallbaks[requestId];
+        //   delete api.faye.clusterCallbakTimeouts[requestId];
+        // }, api.faye.clusterTimeout, requestId);
       }
     }
 
@@ -129,6 +130,11 @@ var faye = function(api, next){
   }
 
   api.faye._stop = function(api, next){
+    for(var i in api.faye.clusterCallbakTimeouts){
+      clearTimeout( api.faye.clusterCallbakTimeouts[i] );
+      delete api.faye.clusterCallbakTimeouts[i]
+      delete api.faye.clusterCallbaks[i];
+    }
     api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
     api.faye.server.getClient().disconnect();
     next();

@@ -1,3 +1,5 @@
+var async = require('async');
+
 var chatRoom = function(api, next){
 
   api.chatRoom = {};
@@ -38,7 +40,7 @@ var chatRoom = function(api, next){
   api.chatRoom.broadcast = function(connection, room, message, callback){
     if(room == null || room.length == 0 || message == null || message.length == 0){
       if(typeof callback == 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionRoomAndMessage() ); }) }
-    }else if(connection.rooms.indexOf(room) > -1){
+    }else if(connection.rooms == null || connection.rooms.indexOf(room) > -1){
       if(connection.id == null){ connection.id = 0 }
       api.stats.increment('chatRoom:messagesSent');
       api.stats.increment('chatRoom:messagesSent:' + room);
@@ -75,24 +77,51 @@ var chatRoom = function(api, next){
   }
 
   api.chatRoom.add = function(room, callback){
-    api.redis.client.sadd(api.chatRoom.keys.rooms, room, function(err, count){
-      if(typeof callback == 'function'){ process.nextTick(function(){ callback(err, count); }) }
+    api.chatRoom.exists(room, function(err, found){
+      if(found === false){
+        api.redis.client.sadd(api.chatRoom.keys.rooms, room, function(err, count){
+          if(typeof callback === 'function'){ callback(err, count); }
+        });
+      } else {
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomExists(room), null) }
+      }
     });
   }
 
-  api.chatRoom.del = function(room, callback){
-    api.chatRoom.broadcast({room: room}, api.config.errors.connectionRoomHasBeenDeleted(room) );
-    api.redis.client.srem(api.chatRoom.keys.rooms, room, function(err){
-      api.redis.client.hgetall(api.chatRoom.keys.members + room, function(err, membersHash){
-        for(var id in membersHash){
-          api.chatRoom.removeMember(id, room);
-        }
-      });
-      api.redis.client.del(api.chatRoom.keys.members + room, function(err){
-        api.chatRoom.setAuthenticationPattern(room, null, null, function(){
-          if(typeof callback == 'function'){ callback() }
+  api.chatRoom.destroy = function(room, callback){
+    api.chatRoom.exists(room, function(err, found){
+      if(found === true){
+        api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room), function(){
+          api.redis.client.hgetall(api.chatRoom.keys.members + room, function(err, membersHash){
+            var closers = [];
+
+            for(var id in membersHash){
+              closers.push(function(next){
+                api.chatRoom.removeMember(id, room, function(){
+                  next();
+                });
+              });
+            }
+
+            closers.push(function(){
+              api.chatRoom.setAuthenticationPattern(room, null, null, function(){
+                api.redis.client.srem(api.chatRoom.keys.rooms, room, function(err){
+                  api.redis.client.del(api.chatRoom.keys.members + room, function(err){
+                    if(typeof callback === 'function'){ callback() }
+                  });
+                });
+              });
+            });
+
+            setTimeout(function(){
+              async.series(closers);
+            }, 1000); // timeout to allow time for room delete message to transmit
+            
+          });
         });
-      });
+      } else {
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), null) }
+      }
     });
   }
 
@@ -102,67 +131,85 @@ var chatRoom = function(api, next){
       if(bool === 1 || bool === true){
         found = true;
       }
-      if(typeof callback == 'function'){ callback(err, found) }
+      if(typeof callback === 'function'){ callback(err, found) }
     });
   }
   
   api.chatRoom.setAuthenticationPattern = function(room, key, value, callback){
-    if(key == null){
-      api.redis.client.hdel(api.chatRoom.keys.auth, room, function(err){
-        if(typeof callback == 'function'){ callback(err) }
-      });
-    } else {
-      var data = {}
-      data[key] = value;
-      api.redis.client.hset(api.chatRoom.keys.auth, room, JSON.stringify(data), function(err){
-        api.redis.client.hgetall(key, function(err, members){
-          if(err == null && members != null){
-            members.forEach(function(member){
-              api.chatRoom.reAuthenticate(member);
-            });
-          }
-          if(typeof callback == 'function'){ callback(err) }
-        });        
-      });
-    }
+    api.chatRoom.exists(room, function(err, found){
+      if(found === true){
+        if(key == null){
+          api.redis.client.hdel(api.chatRoom.keys.auth, room, function(err){
+            if(typeof callback === 'function'){ callback(err) }
+          });
+        } else {
+          var data = {}
+          data[key] = value;
+          api.redis.client.hset(api.chatRoom.keys.auth, room, JSON.stringify(data), function(err){
+            api.redis.client.hgetall(key, function(err, members){
+              if(err == null && members != null){
+                members.forEach(function(member){
+                  api.chatRoom.reAuthenticate(member);
+                });
+              }
+              if(typeof callback === 'function'){ callback(err); }
+            });        
+          });
+        }
+      } else {
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), null) }
+      }
+    });
   }
 
   api.chatRoom.roomStatus = function(room, callback){
     if(room != null){
-      var key = api.chatRoom.keys.members + room;
-      api.redis.client.hgetall(key, function(err, members){
-        var cleanedMembers = {};
-        var count = 0;
-        for(var id in members){
-          var data = JSON.parse(members[id])
-          cleanedMembers[id] = {
-            id: id,
-            joinedAt: data['joinedAt']
-          }
-          count++;
+      api.chatRoom.exists(room, function(err, found){
+        if(found === true){
+          var key = api.chatRoom.keys.members + room;
+          api.redis.client.hgetall(key, function(err, members){
+            var cleanedMembers = {};
+            var count = 0;
+            for(var id in members){
+              var data = JSON.parse(members[id])
+              cleanedMembers[id] = {
+                id: id,
+                joinedAt: data['joinedAt']
+              }
+              count++;
+            }
+            callback(null, {
+              room: room,
+              members: cleanedMembers,
+              membersCount: count
+            });
+          });
+        } else {
+          if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), null) }
         }
-        callback(null, {
-          room: room,
-          members: cleanedMembers,
-          membersCount: count
-        });
       });
     } else {
-      callback( api.config.errors.connectionRoomRequired() , null);
+      if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomRequired() , null); }
     }
   }
 
   api.chatRoom.authorize = function(connection, room, callback){
-    api.redis.client.hget(api.chatRoom.keys.auth, room, function(err, rawAuth){
-      var auth = {};
-      if(rawAuth != null){ auth = JSON.parse(rawAuth) }
-      var authorized = true;
-      for(var k in auth){
-        if(connection[k] == null || connection[k] != auth[k]){
-          authorized = false;
-        }
+    api.chatRoom.exists(room, function(err, found){
+      if(found === true){
+        api.redis.client.hget(api.chatRoom.keys.auth, room, function(err, rawAuth){
+          var auth = {};
+          if(rawAuth != null){ auth = JSON.parse(rawAuth) }
+          var authorized = true;
+          for(var k in auth){
+            if(connection[k] == null || connection[k] != auth[k]){
+              authorized = false;
+            }
+          }
+          callback(err, authorized);
+        });
+      } else {
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), null) }
       }
-      callback(err, authorized);
     });
   }
 
@@ -170,7 +217,7 @@ var chatRoom = function(api, next){
     if(api.connections.connections[connectionId] != null){
       var connection = api.connections.connections[connectionId];
       if(connection.rooms.length === 0){
-        if(typeof callback == 'function'){ callback([]); }
+        if(typeof callback === 'function'){ callback([]); }
       }else{
         var started   = 0;
         var failed    = [];
@@ -186,7 +233,7 @@ var chatRoom = function(api, next){
                 failed.forEach(function(room){
                   api.chatRoom.removeMember(connection, room);
                 })
-                if(typeof callback == 'function'){ callback(failed); }
+                if(typeof callback === 'function'){ callback(failed); }
               }
             });
           })(room)
@@ -216,22 +263,22 @@ var chatRoom = function(api, next){
                       connection.rooms.push(room);
                       api.stats.increment('chatRoom:roomMembers:' + room);
                       api.chatRoom.announceMember(connection, room, true);
-                      if(typeof callback == 'function'){ callback(null, true) }
+                      if(typeof callback === 'function'){ callback(null, true); }
                     });
                   } else {
-                    if(typeof callback == 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
+                    if(typeof callback === 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
                   }
                 });
               } else {
-                if(typeof callback == 'function'){ callback( api.config.errors.connectionNotAuthorized(room), false) }
+                if(typeof callback === 'function'){ callback( api.config.errors.connectionNotAuthorized(room), false) }
               }
             });
           } else {
-            if(typeof callback == 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
+            if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
           }
         });
       }else{
-        if(typeof callback == 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false) }
       }
     }else{
       api.faye.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, callback);
@@ -249,14 +296,14 @@ var chatRoom = function(api, next){
               api.chatRoom.announceMember(connection, room, false);
               var index = connection.rooms.indexOf(room);
               if(index > -1){ connection.rooms.splice(index, 1); }
-              if(typeof callback == 'function'){ callback(null, true) }
+              if(typeof callback === 'function'){ callback(null, true) }
             });
           }else{
-            if(typeof callback == 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
+            if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomNotExist(room), false) }
           }
         });
       } else {
-        if(typeof callback == 'function'){ callback( api.config.errors.connectionNotInRoom(room), false) }
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionNotInRoom(room), false) }
       }
     }else{
       api.faye.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, callback);

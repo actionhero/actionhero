@@ -110,6 +110,10 @@ exports.default = {
         return 'room does not exist';
       },
 
+      connectionRoomExists: function(room){
+        return 'room exists';
+      },
+
       connectionRoomRequired: function(room){
         return 'a room is required';
       },

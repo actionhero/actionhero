@@ -39,7 +39,7 @@ var connections = function(api, next){
 
     applyCatch: function(connectionId, method, args, callback){
       var connection = api.connections.connections[connectionId];
-      connection[method].call(connection, args);
+      connection[method].apply(connection, args);
       process.nextTick(function(){
         callback();
       });
@@ -150,7 +150,7 @@ var connections = function(api, next){
     if(typeof callback == 'function'){ callback() }
   }
 
-  api.connection.prototype.set = function(key, vale){
+  api.connection.prototype.set = function(key, value){
     var self = this;
     self[key] = value;
   }
