@@ -192,7 +192,7 @@ describe('Server: Web', function(){
     it('should respond to OPTIONS with only HTTP headers', function(done){
       request({method: 'options', url: url + '/api/x'}, function(err, response, body){
         response.statusCode.should.eql(200);
-        response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE');
+        response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE');
         response.headers['access-control-allow-origin'].should.equal('*');
         response.headers['content-length'].should.equal('0');
         done();
