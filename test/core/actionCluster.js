@@ -341,20 +341,18 @@ describe('Core: Action Cluster', function(){
         });
       });
 
-      it('server can add connections to a room (local)', function(){
+      it('server can add connections to a LOCAL room', function(done){
         client1 = new api_1.specHelper.connection();
         client1.rooms.length.should.equal(0);
-        process.nextTick(function(){
-          api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
-            didAdd.should.equal(true);
-            client1.rooms[0].should.equal('defaultRoom');
-            client1.destroy();
-            done();
-          });
+        api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
+          didAdd.should.equal(true);
+          client1.rooms[0].should.equal('defaultRoom');
+          client1.destroy();
+          done();
         });
       });
 
-      it('server can add connections to a room (remote)', function(done){
+      it('server can add connections to a REMOTE room', function(done){
         if(api_1.config.redis.package == 'fakeredis'){
           // you can't communicate across the cluster with fakeredis
           done();
