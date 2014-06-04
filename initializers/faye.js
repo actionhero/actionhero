@@ -60,9 +60,7 @@ var faye = function(api, next){
     /////////
 
     api.faye.subscription = api.faye.client.subscribe(api.faye.clusterAskChannel, function(message){
-      
       // don't use a domain, as server-server methods should be made very robust induvidually
-
       if(message.connectionId == null || api.connections.connections[message.connectionId] != null){
         var method = eval(message.method); //TODO: Eval makes me sad
         var callback = function(){
@@ -88,7 +86,7 @@ var faye = function(api, next){
     });
 
     api.faye.doCluster = function(method, args, connectionId, callback){
-      var requestId = uuid.v4();
+      var requestId = uuid.v4() + '~' + api.id;
       var payload = {
         serverId     : api.id,
         serverToken  : api.config.general.serverToken,
@@ -120,13 +118,15 @@ var faye = function(api, next){
         response     : response, // args to pass back, including error
       };
 
-      api.faye.client.publish(api.faye.clusterResponseChannel, payload);
+      setTimeout(function(){
+        api.faye.client.publish(api.faye.clusterResponseChannel, payload);
+      }, api.config.faye.clusterTransmitTimeout);
     }
 
     setTimeout(function(){
       api.faye.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
       next();
-    }, 1000);
+    }, api.config.faye.clusterTransmitTimeout);
   }
 
   api.faye._stop = function(api, next){

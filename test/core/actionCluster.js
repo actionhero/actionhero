@@ -175,7 +175,7 @@ describe('Core: Action Cluster', function(){
               message.room.should.equal('defaultRoom');
               message.from.should.equal(client1.id);
               done();
-            }, 500);
+            }, 100);
           });
         }
       });
@@ -260,14 +260,12 @@ describe('Core: Action Cluster', function(){
             throw new Error('should not be here');
           }
 
-          setTimeout(function(){
-            api_2.faye.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client1.id, function(){
-              data[1][0].should.equal('arg1');
-              data[1][1].should.equal('arg2');
-              client1.destroy();
-              done();
-            });
-          }, 200);
+          api_2.faye.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client1.id, function(){
+            data[1][0].should.equal('arg1');
+            data[1][1].should.equal('arg2');
+            client1.destroy();
+            done();
+          });
         }
       });
 
@@ -279,16 +277,12 @@ describe('Core: Action Cluster', function(){
           client1 = new api_1.specHelper.connection();
           should.not.exist(client1.auth);
 
-          setTimeout(function(){
-            api_2.connections.apply(client1.id, 'set', ['auth', true], function(err){
-              setTimeout(function(){
-                should.not.exist(err);
-                client1.auth.should.equal(true);
-                client1.destroy();
-                done();
-              }, 200);
-            });
-          }, 200);
+          api_2.connections.apply(client1.id, 'set', ['auth', true], function(err){
+            should.not.exist(err);
+            client1.auth.should.equal(true);
+            client1.destroy();
+            done();
+          });
         }
       })
 
@@ -298,12 +292,7 @@ describe('Core: Action Cluster', function(){
 
       afterEach(function(done){
         api_1.chatRoom.destroy('newRoom', function(){
-          // for(var i in api_1.faye.clusterCallbakTimeouts){
-          //   clearTimeout( api_1.faye.clusterCallbakTimeouts[i] );
-          //   delete api_1.faye.clusterCallbakTimeouts[i]
-          //   delete api_1.faye.clusterCallbaks[i];
-          // }
-          process.nextTick(function(){ done(); })
+          done();
         });
       });
 
@@ -359,29 +348,26 @@ describe('Core: Action Cluster', function(){
         }else{
           client2 = new api_2.specHelper.connection();
           client2.rooms.length.should.equal(0);
-          setTimeout(function(){
-            api_1.chatRoom.addMember(client2.id, 'defaultRoom', function(err, didAdd){
-              didAdd.should.equal(true);
-              client2.rooms[0].should.equal('defaultRoom');
-              client2.destroy();
-              done();
-            });
-          }, 200);
+          api_1.chatRoom.addMember(client2.id, 'defaultRoom', function(err, didAdd){
+            didAdd.should.equal(true);
+            client2.rooms.length.should.equal(1);
+            client2.rooms[0].should.equal('defaultRoom');
+            client2.destroy();
+            done();
+          });
         }
       });
 
       it('will not re-add a member to a room', function(done){
         client1 = new api_1.specHelper.connection();
         client1.rooms.length.should.equal(0);
-        process.nextTick(function(){
+        api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
+          didAdd.should.equal(true);
           api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
-            didAdd.should.equal(true);
-            api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
-              err.should.equal('connection already in this room');
-              didAdd.should.equal(false);
-              client1.destroy();
-              done();
-            });
+            err.should.equal('connection already in this room');
+            didAdd.should.equal(false);
+            client1.destroy();
+            done();
           });
         });
       });
@@ -389,13 +375,11 @@ describe('Core: Action Cluster', function(){
       it('will not add a member to a non-existant room', function(done){
         client1 = new api_1.specHelper.connection();
         client1.rooms.length.should.equal(0);
-        process.nextTick(function(){
-          api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
-            err.should.equal('room does not exist');
-            didAdd.should.equal(false);
-            client1.destroy();
-            done();
-          });
+        api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
+          err.should.equal('room does not exist');
+          didAdd.should.equal(false);
+          client1.destroy();
+          done();
         });
       });
 
@@ -404,12 +388,10 @@ describe('Core: Action Cluster', function(){
           api_1.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
             client1 = new api_1.specHelper.connection();
             client1.auth = true;
-            process.nextTick(function(){
-              api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
-                didAdd.should.equal(true);
-                client1.destroy();
-                done();
-              });
+            api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
+              didAdd.should.equal(true);
+              client1.destroy();
+              done();
             });
           });
         });
@@ -420,12 +402,10 @@ describe('Core: Action Cluster', function(){
           api_1.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
             client1 = new api_1.specHelper.connection();
             client1.auth = false;
-            process.nextTick(function(){
-              api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
-                didAdd.should.equal(false);
-                client1.destroy();
-                done();
-              });
+            api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
+              didAdd.should.equal(false);
+              client1.destroy();
+              done();
             });
           });
         });
@@ -433,25 +413,21 @@ describe('Core: Action Cluster', function(){
 
       it('server will not remove a member not in a room', function(done){
         client1 = new api_1.specHelper.connection();
-        process.nextTick(function(){
-          api_1.chatRoom.removeMember(client1.id, 'defaultRoom', function(err, didRemove){
-            didRemove.should.equal(false);
-            client1.destroy();
-            done();
-          });
+        api_1.chatRoom.removeMember(client1.id, 'defaultRoom', function(err, didRemove){
+          didRemove.should.equal(false);
+          client1.destroy();
+          done();
         });
       });
 
       it('server can remove connections to a room (local)', function(done){
         client1 = new api_1.specHelper.connection();
-        process.nextTick(function(){
-          api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
-            didAdd.should.equal(true);
-            api_1.chatRoom.removeMember(client1.id, 'defaultRoom', function(err, didRemove){
-              didRemove.should.equal(true);
-              client1.destroy();
-              done();
-            });
+        api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
+          didAdd.should.equal(true);
+          api_1.chatRoom.removeMember(client1.id, 'defaultRoom', function(err, didRemove){
+            didRemove.should.equal(true);
+            client1.destroy();
+            done();
           });
         });
       });
@@ -462,37 +438,29 @@ describe('Core: Action Cluster', function(){
           done();
         }else{
           client2 = new api_2.specHelper.connection();
-          setTimeout(function(){
-            api_1.chatRoom.addMember(client2.id, 'defaultRoom', function(err, didAdd){
-              didAdd.should.equal(true);
-              setTimeout(function(){
-                api_1.chatRoom.removeMember(client2.id, 'defaultRoom', function(err, didRemove){
-                  didRemove.should.equal(true);
-                  client2.destroy();
-                  done();
-                });
-              }, 200);
+          api_2.chatRoom.addMember(client2.id, 'defaultRoom', function(err, didAdd){
+            didAdd.should.equal(true);
+            api_1.chatRoom.removeMember(client2.id, 'defaultRoom', function(err, didRemove){
+              didRemove.should.equal(true);
+              client2.destroy();
+              done();
             });
-          }, 200);
+          });
         }
       });
       
       it('server can destroy a room and connections will be removed', function(done){
         client1 = new api_1.specHelper.connection();
-        process.nextTick(function(){
-          api_1.chatRoom.add('newRoom', function(err){
-            api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
-              didAdd.should.equal(true);
-              client1.rooms[0].should.equal('newRoom');
-              process.nextTick(function(){
-                api_1.chatRoom.destroy('newRoom', function(err){
-                  client1.rooms.length.should.equal(0);
-                  client1.messages[1].message.should.equal('this room has been deleted');
-                  client1.messages[1].room.should.equal('newRoom');
-                  client1.destroy();
-                  done();
-                });
-              });
+        api_1.chatRoom.add('newRoom', function(err){
+          api_1.chatRoom.addMember(client1.id, 'newRoom', function(err, didAdd){
+            didAdd.should.equal(true);
+            client1.rooms[0].should.equal('newRoom');
+            api_1.chatRoom.destroy('newRoom', function(err){
+              client1.rooms.length.should.equal(0);
+              client1.messages[1].message.should.equal('this room has been deleted');
+              client1.messages[1].room.should.equal('newRoom');
+              client1.destroy();
+              done();
             });
           });
         });
@@ -501,15 +469,13 @@ describe('Core: Action Cluster', function(){
       it('can get a list of room members', function(done){
         client1 = new api_1.specHelper.connection();
         client1.rooms.length.should.equal(0);
-        process.nextTick(function(){
-          api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
-            api_1.chatRoom.roomStatus('defaultRoom', function(err, data){
-              data.room.should.equal('defaultRoom');
-              data.membersCount.should.equal(1);
-              client1.destroy();
-              done();
-            });            
-          });
+        api_1.chatRoom.addMember(client1.id, 'defaultRoom', function(err, didAdd){
+          api_1.chatRoom.roomStatus('defaultRoom', function(err, data){
+            data.room.should.equal('defaultRoom');
+            data.membersCount.should.equal(1);
+            client1.destroy();
+            done();
+          });            
         });
       })
 
