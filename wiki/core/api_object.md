@@ -5,7 +5,7 @@ title: Wiki - The API Object
 
 # The API Object
 
-By now you will have noticed that most sections of actionhero are initilized with access to the `api` object.  The `api` object is the top-level container/namespace for all of actionhero's data and methods.  We use the `api` object to avoide poluting any global namespaces.  The api object is availalbe to all parts of actionhero to share data and state.  Feel free to modify or add too the api object as you see fit, but be mindful of the data it already contains
+By now you will have noticed that most sections of actionhero are initilized with access to the `api` object.  The `api` object is the top-level container/namespace for all of actionhero's data and methods.  We use the `api` object to avoide polluting any global namespaces.  The api object is availalbe to all parts of actionhero to share data and state.  Feel free to modify or add too the api object as you see fit, but be mindful of the data it already contains
 
 {% highlight javascript %}
 { 

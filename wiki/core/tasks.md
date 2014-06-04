@@ -10,9 +10,10 @@ title: Wiki - Tasks
 Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem. There are [a number of example tasks provided](Example-tasks).
 
 There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `periodic`.
-- `normal` tasks are enqueued and processed one-by-one by the task workers
-- `delayed` tasks are enqueued in a special 'delayed' queue to only be processed at some time in the future (defined either by a timestamp or seconds-from-now)
-- `peroidc` tasks are like delayed tasks, but they run on a set frequency (IE: every 5 minutes).  Delayed tasks can take no input parameters.   
+
+  * `normal` tasks are enqueued and processed one-by-one by the task workers
+  * `delayed` tasks are enqueued in a special 'delayed' queue to only be processed at some time in the future (defined either by a timestamp or seconds-from-now)
+  * `periodic` tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).  Delayed tasks can take no input parameters.
 
 ## Enqueuing a Task
 
@@ -174,9 +175,9 @@ actionhero provides some methods to help inspect the state of your queue
 
 ## Notes
 
-Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is "allowed" to run, not when it Will run.  Workers will work tasks in a first-in-first-out manner.  Workers also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
+Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is **allowed** to run, not when it **will** run.  Workers will work tasks in a first-in-first-out manner.  Workers also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
 
-Remember that each actionhero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this **will** block tasks, actions, and clients from working.  However, if your tasks are meant to communication with external services (reading from a database, sending an email, etc), than these are perfect candidates to be run simultaneously.  
+Remember that each actionhero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this **will** block tasks, actions, and clients from working.  However, if your tasks are meant to communication with external services (reading from a database, sending an email, etc), then these are perfect candidates to be run simultaneously.  
 
 Tasks are stored in redis.  Be sure to enable non-fake redis if you want your tasks to persist and be shared across more than one actionhero server.
 

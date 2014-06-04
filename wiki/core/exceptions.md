@@ -24,7 +24,7 @@ Other exceptions, perhaps occurring in an initializer, will not be caught.  Thes
 
 ## Custom Error Reporters
 
-`api.exceptionHandlers.reporters` is an array that contains all the error reporters.  Upon an uncaught exception from an error or task, all the reporters in the array will be invoked with `(type, err, extraMessages, severity)`.  You can remove the default `sdtout` reporter by setting `api.exceptionHandlers.reporters = [];`
+`api.exceptionHandlers.reporters` is an array that contains all the error reporters.  Upon an uncaught exception from an error or task, all the reporters in the array will be invoked with `(type, err, extraMessages, severity)`.  You can remove the default `stdout` reporter by setting `api.exceptionHandlers.reporters = [];`
 
 As an example, here is the default `stdout` logger:
 

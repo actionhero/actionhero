@@ -15,19 +15,19 @@ Keep in mind that many clients/server can access a cached value simultaneously, 
 
 ## Pub/Sub (Faye)
 
-actionhero also uses [faye](http://faye.jcoglan.com/) to allow for pub/sub communication between node.  
+actionhero also uses [faye](http://faye.jcoglan.com/) to allow for pub/sub communication between nodes.  
 
 You can broadcast and receive messages from other peers in the cluster:
 
 #### api.faye.client.subscribe(channel, callback)
-- channel is a string of the form "/my/channel"
-- callback will be passed `message` which is an object
+- `channel` is a string of the form "/my/channel"
+- `callback` will be passed `message` which is an object
 
-#### api.faye.client.publish(channel, message);
-- channel is a string of the form "/my/channel"
-- message is an object
+#### api.faye.client.publish(channel, message)
+- `channel` is a string of the form "/my/channel"
+- `message` is an object
 
-For securty, please keep all internal server-to-server communication broadcasting in a channel under the `"actionhero:*"` namespace.  actionhero has a includes extenstion that will require all messages sent on this channel to include `{serverToken: api.config.general.serverToken}` as part of thier payload.
+For securty, please keep all internal server-to-server communication broadcasting in a channel under the `"actionhero:*"` namespace.  actionhero has includes an extension that will require all messages sent on this channel to include `{serverToken: api.config.general.serverToken}` as part of their payload.
 
 ## Redis Key Reservations
 
