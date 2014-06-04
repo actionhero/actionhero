@@ -40,7 +40,7 @@ exports.test = {
       'port': 6379,
       'password': null,
       'options': null,
-      'DB': 2
+      'database': 2
     }
   }
 }
