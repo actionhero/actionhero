@@ -29,7 +29,7 @@ To create a plugin, create a project with the following structure:
 | - package.json
 {% endhighlight %}
 
-This structure will allow elements to be loaded into actionher (we search `/actions` for actions, etc)
+This structure will allow elements to be loaded into actionhero (we search `/actions` for actions, etc)
 
 The `scripts` directory is used to contain any install scripts.  For example, imagine your plugin relies on configuration settings which are expected to be in a `api.config.myPlugin` hash.  Write an example config file in `/config`, and then use a post-install script to copy that into the containing project's `/config` directory.  For example:
 
@@ -43,7 +43,7 @@ var localFile   = path.normalize(__dirname + '/../config/ah-sample-plugin.js');
 var projectFile = path.normalize(process.cwd() + '/../../config/plugins/ah-sample-plugin.js');
 
 if(!fs.existsSync(projectFile)){
-  console.log("coppying " + localFile + " to " + projectFile)
+  console.log("copying " + localFile + " to " + projectFile);
   fs.createReadStream(localFile).pipe(fs.createWriteStream(projectFile));
 }
 {% endhighlight %}

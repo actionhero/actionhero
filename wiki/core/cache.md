@@ -25,16 +25,14 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 
 ### api.cache.load
 
-* Invoke: `api.cache.load(key, next)` | `api.cache.load(key, options, next)`
+* Invoke: `api.cache.load(key, next)` or `api.cache.load(key, options, next)`
+	* `options` can be `{expireTime: 1234}` where the act of reading the key will reset the key's expire time
+	* If the requested `key` is not found (or is expired), all values returned will be null.
 * Callback: `next(error, value, expireTimestamp, createdAt, readAt)`
-	* value will be the object which was saved and `null` if the object cannot be found or is expired
-	* expireTimestamp(ms) is when the object is set to expire in system time
-	* createdAt(ms) is when the object was created
-	* readAt(ms) is the timestamp at which the object was last read with `api.cache.load`.  Useful for telling if another worker has consumed the object recently
-
-        Options can be `{expireTime: 1234}` where the act of reading the key will reset the key's expire time
-	
-	If the key requested is not found (or expired), all values returned will be null.
+	* `value` will be the object which was saved and `null` if the object cannot be found or is expired
+	* `expireTimestamp` (ms) is when the object is set to expire in system time
+	* `createdAt` (ms) is when the object was created
+	* `readAt` (ms) is the timestamp at which the object was last read with `api.cache.load`.  Useful for telling if another worker has consumed the object recently
 
 ### api.cache.destroy
 
@@ -42,10 +40,10 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 * Callback: `next(error)`
 	* will be false if the object cannot be found, and true if destroyed
 	
-You can see an example of using the cache within an action in `[actions/cacheTest.js](https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js)`
+You can see an example of using the cache within an action in [actions/cacheTest.js](https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js)
 
 ## Redis
 
-The timestamps regarding `api.cahce.load` are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).
+The timestamps regarding `api.cache.load` are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).
 
 Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state.

@@ -45,8 +45,9 @@ api.actions.postProcessors.push(function(connection, actionTemplate, toRender, n
 {% endhighlight %}
 
 Action middleware is often used in authentication.  Here are some examples:
-- [simple authentication middleware](https://github.com/evantahler/actionhero-tutorial/blob/master/initializers/middleware.js)
-- [mongoDB based authentication](https://gist.github.com/panjiesw/7768779)
+
+* [simple authentication middleware](https://github.com/evantahler/actionhero-tutorial/blob/master/initializers/middleware.js)
+* [mongoDB based authentication](https://gist.github.com/panjiesw/7768779)
 
 ## Connection Middleware
 
