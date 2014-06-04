@@ -51,14 +51,13 @@ describe('Core: API', function(){
   });
 
   it('should have loaded postVariables properly', function(done){
-
     [
       'callback',
       'action',
       'key', // from action
       'value' // from action
     ].forEach(function(item){
-      api.params.postVariables.should.include(item);
+      (api.params.postVariables.indexOf(item) >= 0).should.equal(true);
     });
 
     done();
@@ -186,7 +185,7 @@ describe('Core: API', function(){
     });
 
     it('will only callback once for a bad action and only the first response will be returned', function(done){
-      responses = [];
+      var responses = [];
       api.specHelper.runAction('badAction', function(response, connection){
         responses.push( api.utils.objClone(response) );
       });
@@ -204,7 +203,7 @@ describe('Core: API', function(){
         next(connection, true);
       }
 
-      responses = [];
+      var responses = [];
       api.specHelper.runAction('randomNumber', function(response, connection){
         responses.push( api.utils.objClone(response) );
       });

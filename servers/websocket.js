@@ -62,7 +62,7 @@ var websocket = function(api, options, next){
 
   server.sendFile = function(connection, error, fileStream, mime, length){
     var content = '';
-    response = {
+    var response = {
       error      : error,
       content    : null,
       mime       : mime,

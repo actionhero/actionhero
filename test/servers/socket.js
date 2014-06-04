@@ -28,7 +28,7 @@ function makeSocketRequest(thisClient, message, cb){
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb == 'function'){ cb(parsed) }
-  }, 500);
+  }, 100);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');
@@ -356,7 +356,7 @@ describe('Server: Socket', function(){
         client.readable.should.equal(true)
         client.writable.should.equal(true)
         
-        for(id in api.connections.connections){
+        for(var id in api.connections.connections){
           api.connections.connections[id].destroy();
         }
 

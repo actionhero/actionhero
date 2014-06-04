@@ -317,7 +317,7 @@ describe('Server: Web Socket', function(){
       client_1.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
         
-        for(id in api.connections.connections){
+        for(var id in api.connections.connections){
           api.connections.connections[id].destroy();
         }
 

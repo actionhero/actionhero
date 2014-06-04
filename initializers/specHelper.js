@@ -48,7 +48,7 @@ var specHelper = function(api, next){
 
       server.sendFile = function(connection, error, fileStream, mime, length){
         var content = '';
-        response = {
+        var response = {
           error      : error,
           content    : null,
           mime       : mime,
@@ -142,7 +142,7 @@ var specHelper = function(api, next){
 
     // helpers to get files
     api.specHelper.getStaticFile = function(file, next){
-      connection = new api.specHelper.connection();
+      var connection = new api.specHelper.connection();
       connection.params.file = file;
 
       connection.messageCount++;

@@ -469,7 +469,7 @@ describe('Server: Web', function(){
     });
 
     it('new params will be allowed in route definitions', function(done){
-      api.params.postVariables.should.include('userID');
+      (api.params.postVariables.indexOf('userID') >= 0).should.equal(true);
       done();
     });
 
