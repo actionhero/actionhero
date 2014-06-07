@@ -83,7 +83,7 @@ var routes = function(api, next){
       for(var j in rawRoutes[i]){
         var route = rawRoutes[i][j];
         if(method == 'all'){
-          ['get', 'post', 'put', 'delete'].forEach(function(verb){
+          ['get', 'post', 'put', 'patch', 'delete'].forEach(function(verb){
             api.routes.routes[verb].push({ path: route.path, action: route.action });
           });
         } else {
