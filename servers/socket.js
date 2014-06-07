@@ -24,11 +24,9 @@ var socket = function(api, options, next){
       'paramView',
       'paramsView',
       'paramsDelete',
-      'roomChange',
+      'roomAdd',
       'roomLeave',
       'roomView',
-      'listenToRoom',
-      'silenceRoom',
       'detailsView',
       'say'
     ]

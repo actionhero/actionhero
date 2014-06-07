@@ -11,7 +11,7 @@ process.env.NODE_ENV = "test";
 tests['fake'] = function(next){
   console.log('')
   console.log("*** running test suite with fakeredis ***\r\n")
-  process.env.fakeredis = "true"
+  process.env.FAKEREDIS = "true"
 
   child = spawn("node", [mocha], {env: process.env, cwd: process.cwd() });
   child.stdin.pipe(process.stdin);
@@ -27,7 +27,7 @@ tests['fake'] = function(next){
 tests['real'] = function(next){
   console.log('')
   console.log("*** running test suite with real redis ***\r\n");
-  process.env.fakeredis = "false";
+  process.env.FAKEREDIS = "false";
 
   child = spawn("node", [mocha], {env: process.env, cwd: process.cwd() });
   child.stdin.pipe(process.stdin);

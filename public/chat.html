@@ -31,7 +31,7 @@
       if(err != null){
         console.log(err);
       }else{
-        client.roomChange("defaultRoom");
+        client.roomAdd("defaultRoom");
         document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>"
       }
     });
@@ -63,7 +63,7 @@
     var div = document.getElementById("message");
     var message = div.value;
     div.value = "";
-    client.say(message);
+    client.say(client.rooms[0], message);
     appendMessage({
       me: true,
       message: message,

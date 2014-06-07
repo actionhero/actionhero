@@ -61,14 +61,18 @@
       self.setupSubscription.cancel();
       delete self.setupSubscription;
 
+      if(self.rooms == null){ self.rooms = []; }
+
       self.subscription = self.client.subscribe(self.channel, function(message){
         self.handleMessage(message);
       });
 
       setTimeout(function(){
         self.detailsView(function(details){
-          if(self.room != null){
-            self.send({event: 'roomChange', room: self.room});
+          if(self.rooms.length > 0){
+            self.rooms.forEach(function(room){
+              self.send({event: 'roomAdd', room: room});
+            });
           }
           if(typeof callback === 'function'){ callback(null, details); }
         });
@@ -88,8 +92,10 @@
       self.emit('connected');
       if(previousState === 'reconnecting'){
         self.detailsView(function(details){
-          if(self.room != null){
-            self.send({event: 'roomChange', room: self.room});
+          if(self.rooms.length > 0){
+            self.rooms.forEach(function(room){
+              self.send({event: 'roomAdd', room: room});
+            });;
           }
         });
       }
@@ -193,8 +199,8 @@
   // COMMANDS //
   //////////////
 
-  actionheroClient.prototype.say = function(message, callback){
-    this.send({event: 'say', message: message}, callback);
+  actionheroClient.prototype.say = function(room, message, callback){
+    this.send({event: 'say', room: room, message: message}, callback);
   }
 
   actionheroClient.prototype.file = function(file, callback){
@@ -205,25 +211,17 @@
     this.send({event: 'detailsView'}, callback);
   }
 
-  actionheroClient.prototype.roomView = function(callback){
-    this.send({event: 'roomView'}, callback);
+  actionheroClient.prototype.roomView = function(room, callback){
+    this.send({event: 'roomView', room: room}, callback);
   }
 
-  actionheroClient.prototype.roomChange = function(room, callback){
-    this.room = room;
-    this.send({event: 'roomChange', room: room}, callback);
+  actionheroClient.prototype.roomAdd = function(room, callback){
+    this.rooms.push(room); // only a list of *intended* rooms to join; might fail
+    this.send({event: 'roomAdd', room: room}, callback);
   }
 
-  actionheroClient.prototype.roomLeave = function(callback){
-    this.send({event: 'roomLeave'}, callback);
-  }
-
-  actionheroClient.prototype.listenToRoom = function(room, callback){
-    this.send({event: 'listenToRoom', room: room}, callback);
-  }
-
-  actionheroClient.prototype.silenceRoom = function(room, callback){
-    this.send({event: 'silenceRoom', room: room}, callback);
+  actionheroClient.prototype.roomLeave = function(room, callback){
+    this.send({event: 'roomLeave', room: room}, callback);
   }
 
   actionheroClient.prototype.documentation = function(callback){

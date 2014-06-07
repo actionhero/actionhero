@@ -28,7 +28,7 @@ function makeSocketRequest(thisClient, message, cb){
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb == 'function'){ cb(parsed) }
-  }, 500);
+  }, 100);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');
@@ -221,45 +221,60 @@ describe('Server: Socket', function(){
   describe('chat', function(){
 
     beforeEach(function(done){
-      makeSocketRequest(client, 'roomChange defaultRoom');
-      makeSocketRequest(client2, 'roomChange defaultRoom');
-      makeSocketRequest(client3, 'roomChange defaultRoom');
+      makeSocketRequest(client,  'roomAdd defaultRoom');
+      makeSocketRequest(client2, 'roomAdd defaultRoom');
+      makeSocketRequest(client3, 'roomAdd defaultRoom');
       setTimeout(function(){
         done();
       }, 250);
-    })
+    });
+
+    afterEach(function(done){
+      ['defaultRoom', 'otherRoom', 'secureRoom'].forEach(function(room){
+        makeSocketRequest(client,  'roomLeave ' + room);
+        makeSocketRequest(client2, 'roomLeave ' + room);
+        makeSocketRequest(client3, 'roomLeave ' + room);
+      });
+      setTimeout(function(){
+        done();
+      }, 250);
+    });
 
     it('clients are in the default room', function(done){
-      makeSocketRequest(client, 'roomView', function(response){
+      makeSocketRequest(client, 'roomView defaultRoom', function(response){
         response.data.room.should.equal('defaultRoom');
         done();
       });
     });
 
     it('clients can view additional info about rooms they are in', function(done){
-      makeSocketRequest(client, 'roomView', function(response){
+      makeSocketRequest(client, 'roomView defaultRoom', function(response){
         response.data.membersCount.should.equal(3)
         done();
       });
     });
 
     it('rooms can be changed', function(done){
-      makeSocketRequest(client, 'roomChange otherRoom', function(response){
+      makeSocketRequest(client, 'roomAdd otherRoom', function(response){
+      makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
         response.status.should.equal('OK')
-        makeSocketRequest(client, 'roomView', function(response){
+        makeSocketRequest(client, 'roomView otherRoom', function(response){
           response.data.room.should.equal('otherRoom');
           done();
         })
       });
+      });
     });
 
     it('connections in the first room see the count go down', function(done){
-      makeSocketRequest(client, 'roomChange otherRoom', function(response){
-        makeSocketRequest(client2, 'roomView', function(response){
+      makeSocketRequest(client, 'roomAdd   otherRoom', function(response){
+      makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
+        makeSocketRequest(client2, 'roomView defaultRoom', function(response){
           response.data.room.should.equal('defaultRoom');
           response.data.membersCount.should.equal(2)
           done();
         });
+      });
       });
     });
 
@@ -268,28 +283,28 @@ describe('Server: Socket', function(){
         response.message.should.equal('hello?');
         done();
       });
-      makeSocketRequest(client2, 'say hello?' + '\r\n');
+
+      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n');
     });
 
     it('folks NOT in my room DON\'T hear what I say', function(done){
-      makeSocketRequest(client, 'roomChange otherRoom', function(response){
+      makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
         makeSocketRequest(client, '', function(response){
           should.not.exist(response);
           done();
         });
-        makeSocketRequest(client2, 'say hello?' + '\r\n');
+        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n');
       });
     });
 
     it('Folks are notified when I join a room', function(done){
-      makeSocketRequest(client, 'roomChange otherRoom', function(response){
+      makeSocketRequest(client, 'roomAdd otherRoom', function(response){
+        makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n');
         makeSocketRequest(client, '', function(response){
           response.message.should.equal('I have entered the room');
           response.from.should.equal(client_2_details.id);
           done();
         });
-
-        makeSocketRequest(client2, 'roomChange otherRoom' + '\r\n');
       });
     });
 
@@ -300,37 +315,7 @@ describe('Server: Socket', function(){
         done();
       });
 
-      makeSocketRequest(client2, 'roomChange otherRoom\r\n');
-    });
-
-    it('I can register for messages from rooms I am not in', function(done){
-      makeSocketRequest(client, 'roomChange defaultRoom', function(response){
-        makeSocketRequest(client2, 'roomChange otherRoom', function(response){
-          makeSocketRequest(client, 'listenToRoom otherRoom', function(response){
-            makeSocketRequest(client, '', function(response){
-              response.message.should.eql('hello in otherRoom')
-              done();
-            });
-            makeSocketRequest(client2, 'say hello in otherRoom\r\n');
-          });
-        });
-      });
-    });
-
-    it('I can unregister for messages from rooms I am not in', function(done){
-      makeSocketRequest(client, 'roomChange defaultRoom', function(response){
-        makeSocketRequest(client2, 'roomChange otherRoom', function(response){
-          makeSocketRequest(client, 'listenToRoom otherRoom', function(response){
-            makeSocketRequest(client, 'silenceRoom otherRoom', function(response){
-              makeSocketRequest(client, '', function(response){
-                should.not.exist(response);
-                done();
-              });
-              makeSocketRequest(client2, 'say hello in otherRoom\r\n');
-            });
-          });
-        });
-      });
+      makeSocketRequest(client2, 'roomLeave defaultRoom\r\n');
     });
 
     it('I can get my id', function(done){
@@ -342,7 +327,7 @@ describe('Server: Socket', function(){
 
     it('can join secure rooms when applicable', function(done){
       api.connections.connections[client_details.id].authorized = true;
-      makeSocketRequest(client, 'roomChange secureRoom', function(response){
+      makeSocketRequest(client, 'roomAdd secureRoom', function(response){
         response.data.should.equal(true);
         response.status.should.equal('OK');
         done();
@@ -351,7 +336,7 @@ describe('Server: Socket', function(){
 
     it('cannot join secure rooms when missing attributes', function(done){
       api.connections.connections[client_details.id].authorized = false;
-      makeSocketRequest(client, 'roomChange secureRoom', function(response){
+      makeSocketRequest(client, 'roomAdd secureRoom', function(response){
         response.data.should.equal(false);
         response.status.should.equal('not authorized to join room');
         done();
@@ -371,7 +356,7 @@ describe('Server: Socket', function(){
         client.readable.should.equal(true)
         client.writable.should.equal(true)
         
-        for(id in api.connections.connections){
+        for(var id in api.connections.connections){
           api.connections.connections[id].destroy();
         }
 

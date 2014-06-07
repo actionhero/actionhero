@@ -90,7 +90,7 @@ describe('Core: Cache', function(){
     api.cache.save('testKeyInThePast', 'abc123', -1, function(err, save_resp){
       save_resp.should.equal(true);
       api.cache.load('testKeyInThePast', function(err, load_resp){
-        String(err).should.include('Error: Object')
+        (String(err).indexOf('Error: Object') >= 0).should.equal(true)
         should.equal(null, load_resp);
         done();
       });
@@ -140,9 +140,9 @@ describe('Core: Cache', function(){
     api.cache.save('array_key', [1, 2, 3], function(err, save_resp){
       save_resp.should.equal(true);
       api.cache.load('array_key', function(err, load_resp){
-        load_resp.should.include(1);
-        load_resp.should.include(2);
-        load_resp.should.include(3);
+        load_resp[0].should.equal(1);
+        load_resp[1].should.equal(2);
+        load_resp[2].should.equal(3);
         done();
       });
     });
@@ -156,9 +156,9 @@ describe('Core: Cache', function(){
       save_resp.should.equal(true);
       api.cache.load('obj_key', function(err, load_resp){
         load_resp.thing.should.equal('stuff');
-        load_resp.otherThing.should.include(1);
-        load_resp.otherThing.should.include(2);
-        load_resp.otherThing.should.include(3);
+        load_resp.otherThing[0].should.equal(1);
+        load_resp.otherThing[1].should.equal(2);
+        load_resp.otherThing[2].should.equal(3);
         done();
       });
     });

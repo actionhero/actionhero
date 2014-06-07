@@ -74,6 +74,58 @@ exports.default = {
         return 'error reading file: ' + String(err);
       },
 
+      /////////////////
+      // CONNECTIONS //
+      /////////////////
+
+      verbNotFound: function(veb){
+        return 'I do not know know to perform this verb';
+      },
+
+      verbNotAllowed: function(verb){
+        return 'verb not found or not allowed';
+      },
+
+      connectionRoomAndMessage: function(){
+        return 'both room and message are required';
+      },
+
+      connectionNotInRoom: function(room){
+        return 'connection not in this room';
+      },
+
+      connectionAlreadyInRoom: function(room){
+        return 'connection already in this room';
+      },
+
+      connectionRoomHasBeenDeleted: function(room){
+        return 'this room has been deleted';
+      },
+
+      connectionNotAuthorized: function(room){
+        return 'not authorized to join room';
+      },
+
+      connectionRoomNotExist: function(room){
+        return 'room does not exist';
+      },
+
+      connectionRoomExists: function(room){
+        return 'room exists';
+      },
+
+      connectionRoomRequired: function(room){
+        return 'a room is required';
+      },
+
+      connectionEnteredRoom: function(connection, room){
+        return 'I have entered the room';
+      },
+
+      connectionLeftRoom: function(connection, room){
+        return 'I have left the room';
+      },
+
     }
   }
 }

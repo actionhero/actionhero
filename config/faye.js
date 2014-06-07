@@ -10,7 +10,11 @@ exports.default = {
       // What redis server should we connect to for faye?
       redis: api.config.redis,
       // redis prefix for faye keys
-      namespace: 'faye:'
+      namespace: 'faye:',
+      // Cluster Transmit Timeout
+      clusterTransmitTimeout: 100,
+      // RPC Error Timeout
+      rpcTimeout: 1000 * 5,
     }
   }
 }
@@ -22,7 +26,8 @@ exports.test = {
       timeout: 45,
       ping: null,
       redis: api.config.redis,
-      namespace: 'faye:'
+      namespace: 'faye:',
+      clusterTransmitTimeout: 1000, // needed to ease test conjestion
     }
   }
 }

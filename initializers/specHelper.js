@@ -36,17 +36,19 @@ var specHelper = function(api, next){
       }
 
       server.sendMessage = function(connection, message, messageCount){
-        message.messageCount = messageCount;
-        connection.messages.push(message);
-        if(typeof connection.actionCallbacks[messageCount] === 'function'){
-          connection.actionCallbacks[messageCount](message, connection);
-          delete connection.actionCallbacks[messageCount];
-        }
+        process.nextTick(function(){
+          message.messageCount = messageCount;
+          connection.messages.push(message);
+          if(typeof connection.actionCallbacks[messageCount] === 'function'){
+            connection.actionCallbacks[messageCount](message, connection);
+            delete connection.actionCallbacks[messageCount];
+          }
+        });
       }
 
       server.sendFile = function(connection, error, fileStream, mime, length){
         var content = '';
-        response = {
+        var response = {
           error      : error,
           content    : null,
           mime       : mime,
@@ -140,7 +142,7 @@ var specHelper = function(api, next){
 
     // helpers to get files
     api.specHelper.getStaticFile = function(file, next){
-      connection = new api.specHelper.connection();
+      var connection = new api.specHelper.connection();
       connection.params.file = file;
 
       connection.messageCount++;

@@ -30,7 +30,7 @@ exports.default = {
 exports.test = { 
   redis: function(api){
     var package = 'fakeredis';
-    if(process.env.fakeredis == 'false'){
+    if(process.env.FAKEREDIS == 'false'){
       package = 'redis';
     }
 
@@ -40,7 +40,7 @@ exports.test = {
       'port': 6379,
       'password': null,
       'options': null,
-      'DB': 2
+      'database': 2
     }
   }
 }

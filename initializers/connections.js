@@ -16,16 +16,35 @@ var connections = function(api, next){
       'paramView',
       'paramsView',
       'paramsDelete',
-      'roomChange',
+      'roomAdd',
       'roomLeave',
       'roomView',
-      'listenToRoom',
-      'silenceRoom',
       'detailsView',
       'say'
     ],
 
-    connections: {}
+    connections: {},
+
+    _start: function(api, next){
+      next();
+    },
+
+    _stop: function(api, next){
+      next();
+    },
+
+    apply: function(connectionId, method, args, callback){
+      api.faye.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
+    },
+
+    applyCatch: function(connectionId, method, args, callback){
+      var connection = api.connections.connections[connectionId];
+      connection[method].apply(connection, args);
+      process.nextTick(function(){
+        callback();
+      });
+    }
+
   };
 
   api.connections.addCreateCallback = function(func, priority) {
@@ -77,13 +96,12 @@ var connections = function(api, next){
 
     var connectionDefaults = {
       error: null,
-      room: null,
+      rooms: [],
       params: {},
       response: {},
       pendingActions: 0,
       totalActions: 0,
       messageCount: 0,
-      listeningRooms: [],
       canChat: false
     }
 
@@ -118,7 +136,11 @@ var connections = function(api, next){
 
     api.stats.increment('connections:totalActiveConnections', -1);
     api.stats.increment('connections:activeConnections:' + self.type, -1);
-    if(self.canChat === true){ api.chatRoom.removeMember(self); }
+    if(self.canChat === true){ 
+      self.rooms.forEach(function(room){
+        api.chatRoom.removeMember(self.id, room); 
+      });
+    }
     delete api.connections.connections[self.id];
     var server = api.servers.servers[self.type];
     if(server.attributes.logExits === true){
@@ -126,6 +148,11 @@ var connections = function(api, next){
     }
     if(typeof server.goodbye === 'function'){ server.goodbye(self); }
     if(typeof callback == 'function'){ callback() }
+  }
+
+  api.connection.prototype.set = function(key, value){
+    var self = this;
+    self[key] = value;
   }
 
   api.connection.prototype.verbs = function(verb, words, callback){
@@ -158,12 +185,12 @@ var connections = function(api, next){
         }
         if(typeof callback === 'function'){ callback(null, null); }
       } else if(verb === 'paramDelete'){
-        key = words[0];
+        var key = words[0];
         delete self.params[key];
         if(typeof callback === 'function'){ callback(null, null); }
 
       } else if(verb === 'paramView'){
-        key = words[0];
+        var key = words[0];
         if(typeof callback === 'function'){ callback(null, self.params[key]); }
 
       } else if(verb === 'paramsView'){
@@ -175,43 +202,37 @@ var connections = function(api, next){
         }
         if(typeof callback === 'function'){ callback(null, null); }
 
-      } else if(verb === 'roomChange'){
-        room = words[0];
-        api.chatRoom.addMember(self, room, function(err, didHappen){
+      } else if(verb === 'roomAdd'){
+        var room = words[0];
+        api.chatRoom.addMember(self.id, room, function(err, didHappen){
           if(typeof callback === 'function'){ callback(err, didHappen); }
         });
 
       } else if(verb === 'roomLeave'){
-        api.chatRoom.removeMember(self, function(err, didHappen){
+        var room = words[0];
+        api.chatRoom.removeMember(self.id, room, function(err, didHappen){
           if(typeof callback === 'function'){ callback(err, didHappen); }
         });
 
       } else if(verb === 'roomView'){
-        api.chatRoom.roomStatus(self.room, function(err, roomStatus){
-          if(typeof callback === 'function'){ callback(err, roomStatus); }
-        });
-
-      } else if(verb === 'listenToRoom'){
-        room = words[0];
-        api.chatRoom.listenToRoom(self, room, function(err, didHappen){
-          if(typeof callback === 'function'){ callback(err, didHappen); }
-        });
-
-      } else if(verb === 'silenceRoom'){
-        room = words[0];
-        api.chatRoom.silenceRoom(self, room, function(err, didHappen){
-          if(typeof callback === 'function'){ callback(err, didHappen); }
-        });
+        var room = words[0];
+        if(self.rooms.indexOf(room) > -1){
+          api.chatRoom.roomStatus(room, function(err, roomStatus){
+            if(typeof callback === 'function'){ callback(err, roomStatus); }
+          });
+        }else{
+          if(typeof callback === 'function'){ callback('not member of room ' + room); }
+        }
 
       } else if(verb === 'detailsView'){
-        var details = {}
-        details.id = self.id;
-        details.remoteIP = self.remoteIP;
-        details.remotePort = self.remotePort;
-        details.params = self.params;
-        details.connectedAt = self.connectedAt;
-        details.room = self.room;
-        details.totalActions = self.totalActions;
+        var details            = {};
+        details.id             = self.id;
+        details.remoteIP       = self.remoteIP;
+        details.remotePort     = self.remotePort;
+        details.params         = self.params;
+        details.connectedAt    = self.connectedAt;
+        details.rooms          = self.rooms;
+        details.totalActions   = self.totalActions;
         details.pendingActions = self.pendingActions;
         if(typeof callback === 'function'){ callback(null, details); }
 
@@ -219,15 +240,16 @@ var connections = function(api, next){
         if(typeof callback === 'function'){ callback(null, api.documentation.documentation); }
 
       } else if(verb === 'say'){
-        api.chatRoom.socketRoomBroadcast(self, words.join(' '), function(err){
+        var room = words.shift();
+        api.chatRoom.broadcast(self, room, words.join(' '), function(err){
           if(typeof callback === 'function'){ callback(err); }
         });
 
       } else {
-        if(typeof callback === 'function'){ callback('I do not know know to perform this verb', null); }
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(verb), null); }
       }
     } else {
-      if(typeof callback === 'function'){ callback('verb not found or not allowed', null); }
+      if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(verb), null); }
     }
   }
 
