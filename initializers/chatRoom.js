@@ -107,15 +107,15 @@ var chatRoom = function(api, next){
               api.chatRoom.setAuthenticationPattern(room, null, null, function(){
                 api.redis.client.srem(api.chatRoom.keys.rooms, room, function(err){
                   api.redis.client.del(api.chatRoom.keys.members + room, function(err){
-                    if(typeof callback === 'function'){ callback() }
+                    setTimeout(function(){
+                      if(typeof callback === 'function'){ callback() }
+                    }, api.config.faye.clusterTransmitTimeout);
                   });
                 });
               });
             });
 
-            setTimeout(function(){
-              async.series(closers);
-            }, 1000); // timeout to allow time for room delete message to transmit
+            async.series(closers);
             
           });
         });
@@ -146,13 +146,23 @@ var chatRoom = function(api, next){
           var data = {}
           data[key] = value;
           api.redis.client.hset(api.chatRoom.keys.auth, room, JSON.stringify(data), function(err){
-            api.redis.client.hgetall(key, function(err, members){
-              if(err == null && members != null){
-                members.forEach(function(member){
-                  api.chatRoom.reAuthenticate(member);
-                });
+            api.redis.client.hgetall((api.chatRoom.keys.members + room), function(err, members){
+              if(api.utils.hashLength( members ) === 0){
+                if(typeof callback === 'function'){ callback(err); }
+              }else{
+                var started = 0;
+                if(err == null && members != null){
+                  for(var member in members){
+                    started++;
+                    api.chatRoom.reAuthenticate(member, function(){
+                      started--;
+                      if(started === 0){
+                        if(typeof callback === 'function'){ callback(err); }
+                      }
+                    });
+                  }
+                }
               }
-              if(typeof callback === 'function'){ callback(err); }
             });        
           });
         }
@@ -230,10 +240,19 @@ var chatRoom = function(api, next){
               if(authorized === true) { succeeded.push(room); }
               if(authorized === false){ failed.push(room); }
               if(started === 0){
-                failed.forEach(function(room){
-                  api.chatRoom.removeMember(connection, room);
-                })
-                if(typeof callback === 'function'){ callback(failed); }
+                if(failed.length === 0){
+                  if(typeof callback === 'function'){ callback(failed); }
+                }else{
+                  failed.forEach(function(room){
+                    started++;
+                    api.chatRoom.removeMember(connectionId, room, function(){
+                      started--;
+                      if(started === 0){
+                        if(typeof callback === 'function'){ callback(failed); }
+                      }
+                    });
+                  });
+                }
               }
             });
           })(room)

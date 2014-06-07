@@ -13,7 +13,7 @@ exports.default = {
       namespace: 'faye:',
       // Cluster Transmit Timeout
       clusterTransmitTimeout: 100,
-      // RPC Timeout
+      // RPC Error Timeout
       rpcTimeout: 1000 * 5,
     }
   }
