@@ -15,13 +15,11 @@ You can access actionhero's methods via a persistent socket connection.  The def
 * `paramDelete` - deletes a single param.  IE: 'deleteParam screenName'
 * `paramsView` - returns a JSON object of all the params set to this connection
 * `paramsDelete` - deletes all params set to this session
-* `roomChange` - change the `room` you are connected to.
-* `roomLeave` - leave the `room` you are connected to.
-* `roomView` - show you the room you are connected to, and information about the members currently in that room.
-* `listenToRoom` - opt into hearing messages from another chat room
-* `silenceRoom` - stop hearing messages from other chat rooms
+* `roomAdd` - connect to a room.
+* `roomLeave` - (room) leave the `room` you are connected to.
+* `roomView` - (room) show you the room you are connected to, and information about the members currently in that room.
 * `detailsView` - show you details about your connection, including your public ID.
-* `say` message
+* `say` (room,) message
 
 Please note that any verbs set using the above method will be 'sticky' to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.
 

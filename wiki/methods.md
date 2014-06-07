@@ -150,10 +150,7 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
 ### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
 
-### api.chatRoom.add(room, callback)
-- callback will return 1 if you created the room, 0 if it already existed
-
-### api.chatRoom.del(room, callback)
+### api.chatRoom.destroy(room, callback)
 - callback is empty
 
 ### api.chatRoom.exists(room, callback)
@@ -177,11 +174,20 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
 }
 {% endhighlight %}
 
-### api.chatRoom.addMember(connection, room, callback)
-- callback is of the form (error, wasAdded)
+### api.chatRoom.authorize(connection, room, callback)
+- callback is of the form (error, authorized), which is `true` or `false`
 
-### api.chatRoom.removeMember(connection, callback)
+### api.chatRoom.reAuthenticate(connectionId, callback)
+- callback contains an array of rooms the connection is still in and rooms the connection was removed from
+- you can check on connections from this or any other server in the cluster
+
+### api.chatRoom.addMember(connectionId, room, callback)
+- callback is of the form (error, wasAdded)
+- you can add connections from this or any other server in the cluster
+
+### api.chatRoom.removeMember(connectionId, callback)
 - callback is of the form (error, wasRemoved)
+- you can remove connections from this or any other server in the cluster
 
 ## File Server
 
@@ -214,9 +220,15 @@ Faye can be used for actionhero serers to communicate to all other running serve
 - channel is a string of the form "/my/channel"
 - callback will be passed `message` which is an object
 
-#### api.faye.client.publish(channel, message);
+#### api.faye.client.publish(channel, message)
 - channel is a string of the form "/my/channel"
 - message is an object
+
+#### api.faye.doCluster(method, args, connectionId, callback)
+- this calls a remote function on one or many other members of the actionhero cluster
+- if you provide `connectionId`, only the one server who has that connection present will act, otherwise all servers will (including the sending server)
+- doCluster can timeout, and this value is set at `api.config.faye.rpcTimeout`
+- there is a delay that remote peers will use when responding, to ensure that the calling node has had time to catch the response.  This delay is set by `api.config.faye.clusterTransmitTimeout`
 
 
 ## Stats

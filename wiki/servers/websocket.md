@@ -66,19 +66,16 @@ Methods which the provided actionheroWebSocket object expose are:
   - `action` is a string, like "login"
   - `params` is an object
   - `callback` will be passed `response` (and you can inspect `response.error`)
-- `client.say(message, callback)`
+- `client.say(room, message, callback)`
   - `message` is a string
   - `callback` will be passed `error`, `response`
 - `client.detailsView(callback)`
   - `callback` will be passed `error`, `response` 
-- `client.roomView(callback)`
-- `client.roomChange(room, callback)`
+- `client.roomView(room, callback)`
+- `client.roomAdd(room, callback)`
   - `room` is a string
   - `callback` will be passed `error`, `response`
-- `client.listenToRoom(room, callback)`
-  - `room` is a string
-  - `callback` will be passed `error`, `response`
-- `client.silenceRoom(room, callback)`
+- `client.roomLeave(room, callback)`
   - `room` is a string
   - `callback` will be passed `error`, `response`
 - `client.file(callback)`

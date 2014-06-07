@@ -3,9 +3,23 @@ layout: wiki
 title: Wiki - Development Mode
 ---
 
-# Development Mode
+# REPL
 
-## Don't use this in production!
+actionhero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running instance of actionhero and manually call all the methods on the `api` namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running `grunt console` will load up a version of action hero in your terminal where you have access to the `api` object.  This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  
+
+The REPL will:
+
+- source `NODE_ENV` properly to load the config
+- will connect to faye/redis, and load any user-defined initializers
+- will load any plugins
+- will **not** boot any servers
+
+If you are familiar with rails, this is very similar to `rails console`
+
+<img src="https://cloud.githubusercontent.com/assets/303226/2953485/4db6cbe2-da5b-11e3-96de-26fe4931d9af.png">
+
+# Development Mode
+**Don't use this in production!**
 
 ## About
 
@@ -40,7 +54,7 @@ api.watchFileAndAct(path_to_file, function(){
 });
 {% endhighlight %}
 
-## Debugging
+# Debugging
 
 You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your actionhero application within the familar Chrome Browser's developer tools.
 

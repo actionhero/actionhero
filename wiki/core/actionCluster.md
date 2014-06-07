@@ -13,6 +13,34 @@ Using a [redis](http://redis.io/) backend, actionhero nodes share memory objects
 
 Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state.
 
+## RPC
+
+In version 9.0.0, actionhero introduced RPC.  You can call an RPC to be called on all nodes you may have in your cluster or just a node which holds a specific connection.  You can call RPC methods with the new `api.faye.doCluster` method.  If you provide the optional callback, you will get the first response back (or a timeout error).  RPC calls are invoked with `api.faye.doCluster(method, args, connectionId, callback)`.
+  
+  For example, if you wanted all nodes to log a message, you would do: `api.faye.doCluster('api.log', ["hello from " + api.id]);`
+  
+  If you wanted the node which holds connection `abc123` to change their `authorized` status (perhaps because your room authentication relies on this), you would do:
+
+```javascript
+api.connections.apply('abc123', 'set', ['auth', true], function(err){
+  // do stuff
+});
+```
+The RPC system is used heavily by Chat.
+
+Two options have been added to the `config/faye.js` config file to support this: 
+
+```javascript
+// Cluster Transmit Timeout (how long the responding node will delay its response to allow time to catch)
+api.config.faye.clusterTransmitTimeout: 100,
+// RPC Error Timeout (how long to wait on an RPC call before giving up)
+api.config.faye.rpcTimeout: 1000 * 5,
+
+#### WARNING
+
+RPC calls are authenticated against `api.config.serverToken` and communication happens over faye + redis. BE CAREFUL, as you can call *any* method within the API namespace on an actionhero server, including shutdown() and read *any* data on that node. 
+
+
 ## Pub/Sub (Faye)
 
 actionhero also uses [faye](http://faye.jcoglan.com/) to allow for pub/sub communication between nodes.  
@@ -33,10 +61,6 @@ For securty, please keep all internal server-to-server communication broadcastin
 
 The following keys in redis will be in use by actionhero:
 
-- `actionhero:cache` (array) the common shared cache object
-- `actionhero:stats` (array) the common shared stats object
-- `actionhero:roomMembers-{roomName}` (array) a list of the folks in a given socket room
-
-Faye will also make use of a large number of keys, but under the "faye" namespace (configurable prefix)
-
-Tasks will also make use of a large number of keys, but under the "resque" namespace (configurable prefix)
+Actionhero's core will create keys under the `actionhero` namespace (ie: `actionhero:cache`, `actionhero:stats`, etc).  This is configurable.
+Faye will also make use of a large number of keys, but under the `faye` namespace (configurable prefix)
+Tasks will also make use of a large number of keys, but under the `resque` namespace (configurable prefix)

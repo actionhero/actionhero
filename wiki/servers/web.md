@@ -159,6 +159,8 @@ when inspecting `connection` in actions from web client, a few additional elemen
 - `connection.rawConnection.cookies`: Hash representation of the connection's cookies
 - `connection.rawConnection.responseHttpCode`: the status code to be rendered to the user.  Defaults to 200
 - `connection.type` for a HTTP client is "web"
+- `connection.rawConnection.params.body` will contain un-filtered form data
+- `connection.rawConnection.params.files` will contain un-filtered form data
 - `connection.extension`.  If are using a route to access an action, and the request path ends in a file extension (IE: `server.com/action/option.jpg`), the extension will be available.  Depending on the server's options, this extension may also be used to modify the response mime-type by configuring `matchExtensionMimeType` within each action.
 
 Of course, the generic connection attributes (`connection.error`, `connection.params`, etc) will be present.
