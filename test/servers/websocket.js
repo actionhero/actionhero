@@ -237,9 +237,9 @@ describe('Server: Web Socket', function(){
           response.message.should.equal('I have entered the room');
           done();
         });
-      });
 
-      client_2.roomAdd('otherRoom');
+        client_2.roomAdd('otherRoom');
+      });
     });
 
     it('connections are notified when I leave a room', function(done){
