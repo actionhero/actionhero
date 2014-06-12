@@ -1,4 +1,8 @@
-var faye = require('faye');
+var primus   = require('primus');
+var UglifyJS = require('uglify-js');
+var fs       = require('fs');
+var path     = require('path');
+var util     = require('util');
 
 var websocket = function(api, options, next){
 
@@ -11,9 +15,7 @@ var websocket = function(api, options, next){
     canChat:               true,
     logConnections:        true,
     logExits:              true,
-    sendWelcomeMessage:    200,
-    fayeChannelPrefix:     '/client/websocket/connection/',
-    setupChannelPrefix:    '/client/websocket/_incoming',
+    sendWelcomeMessage:    true,
     verbs: [
       'quit',
       'exit',
@@ -34,11 +36,18 @@ var websocket = function(api, options, next){
 
   server._start = function(next){
     var webserver = api.servers.servers['web'];
-    api.faye.server.attach(webserver.server);
-    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.faye.mount, 'notice');
+    server.server = new primus(webserver.server, api.config.servers.websocket.server);
 
+    server.server.on('connection', function(rawConnection){
+      handleConnection(rawConnection);
+    });
+
+    server.server.on('disconnection', function(rawConnection){
+      handleDisconnection(rawConnection);
+    });
+
+    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.servers.websocket.pathname, 'notice');
     server.active = true;
-
     next();
   }
 
@@ -56,8 +65,7 @@ var websocket = function(api, options, next){
     if(message.context == null){ message.context = 'response'; }
     if(messageCount == null){ messageCount = connection.messageCount; }
     if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
-    var channel = server.attributes.fayeChannelPrefix + connection.id;
-    api.faye.client.publish(channel, message);
+    connection.rawConnection.write(message);
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
@@ -87,6 +95,7 @@ var websocket = function(api, options, next){
 
   server.goodbye = function(connection, reason){
     server.sendMessage(connection, {status: 'ClientDisconnect', context: 'api', reason: reason});
+    connection.rawConnection.end();
   };
 
   ////////////
@@ -94,11 +103,9 @@ var websocket = function(api, options, next){
   ////////////
 
   server.on('connection', function(connection){
-    var channel = connection.rawConnection.setupChannel;
-    var message = {
-      id: connection.id,
-    };
-    api.faye.client.publish(channel, message);
+    connection.rawConnection.on('data', function(data){
+      handleData(connection, data);
+    });
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
@@ -108,111 +115,84 @@ var websocket = function(api, options, next){
     }
   });
 
+  ////////////
+  // CLIENT //
+  ////////////
+
+  server.rawClientJs = fs.readFileSync(__dirname + '/../client/actionheroClient.js');
+
+  server.renderClientJS = function(){
+    var lib = api.servers.servers.websocket.server.library();
+    var code = lib
+    code += '\r\n\r\n\r\n';
+    var p = path.normalize(__dirname + '/../client/actionheroClient.js');
+    if(api.config.general.developmentMode === true){
+      server.rawClientJs = fs.readFileSync(__dirname + '/../client/actionheroClient.js');
+    }
+    code += server.rawClientJs;
+    code = code.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client))
+    var url = api.config.servers.websocket.clientUrl;
+    if(url.indexOf('/') < 0){
+      url = "'" + url + "'";
+    }
+    code = code.replace('%%URL%%', url);
+    
+    // code = UglifyJS.minify(String(code), {fromString: true}).code;
+    
+    return code;
+  }
+
   /////////////
   // HELPERS //
   /////////////
 
-  api.faye.disconnectHandlers.push(function(clientId){
-    var clients = server.connections();
-    for(var i in clients){
-      if(clients[i].rawConnection.clientId === clientId){
-        clients[i].destroy();
+  var handleConnection = function(rawConnection){
+    server.buildConnection({
+      rawConnection  : rawConnection,
+      remoteAddress  : rawConnection.address.ip,
+      remotePort     : rawConnection.address.port
+    });
+  }
+
+  var handleDisconnection = function(rawConnection){
+    for(var i in server.connections()){
+      if(server.connections()[i] != null && rawConnection.id === server.connections()[i].rawConnection.id){
+        server.connections()[i].destroy();
         break;
       }
     }
-  });
-
-  server.newClientFayeExtension = function(message, callback){
-    if(message.channel === '/meta/subscribe' && message.subscription.indexOf(server.attributes.setupChannelPrefix) === 0){
-      if(server.active === true){
-        remoteConnectionDetails(message.clientId, function(details){
-          server.buildConnection({
-            // id: message.clientId,
-            rawConnection  : {
-              clientId:     message.clientId,
-              setupChannel: message.subscription,
-            },
-            remoteAddress  : details.remoteIp,
-            remotePort     : details.remotePort
-          });
-        });
-      }
-    }
-    callback(message);
   }
 
-  server.messagingFayeExtension = function(message, callback){
-    // messages for this server (and not AH internals)
-    if(message.channel.indexOf(server.attributes.fayeChannelPrefix) === 0){
-      if(message.clientId !== api.faye.client._clientId){
-        var connectionId = message.channel.split('/')[4];
-        var connection = api.connections.connections[connectionId];
-        if(connection != null){
-          incomingMessage(connection, message);
-        }else{
-          api.faye.doCluster('api.servers.servers.websocket.messagingFayeExtension', [message], connectionId, null);
+  var handleData = function(connection, data){
+    var verb = data.event;
+    delete data.event;
+    connection.messageCount++;
+    if(verb == 'action'){
+      for(var v in data.params){
+        connection.params[v] = data.params[v];
+      };
+      connection.error = null;
+      connection.response = {};
+      server.processAction(connection);
+    } else if(verb == 'file'){
+      connection.params = {
+        file: data.file
+      }
+      server.processFile(connection);
+    } else {
+      var words = []
+      for(var i in data){ words.push(data[i]); }
+      connection.verbs(verb, words, function(error, data){
+        if(error == null){
+          var message = {status: 'OK', context: 'response', data: data};
+          server.sendMessage(connection, message);
+        } else {
+          var message = {status: error, context: 'response', data: data}
+          server.sendMessage(connection, message);
         }
-      }
-    }
-    callback(message);
-  };
-
-  var remoteConnectionDetails = function(clientId, callback){
-    var remoteIp = '0.0.0.0';
-    var remotePort = 0;
-
-    setTimeout(function(){
-      // TODO: This will always be localhost (or the proxy IP) if you front this with nginx, haproxy, etc.
-      var fayeConnection = api.faye.server._server._engine._connections[clientId];
-      if(fayeConnection && fayeConnection.socket != null){
-        if(fayeConnection.socket._socket._stream.remoteAddress != null) { remoteIp   = fayeConnection.socket._socket._stream.remoteAddress; }
-        if(fayeConnection.socket._socket._stream.remotePort != null)    { remotePort = fayeConnection.socket._socket._stream.remotePort; }
-      }
-      callback({remoteIp: remoteIp, remotePort: remotePort});
-    }, 50); // should be enough time for the connection to establish?
-  }
-
-  var incomingMessage = function(connection, message){
-    if(connection != null){
-      var data = message.data;
-      var verb = data.event;
-      delete data.event;
-      connection.messageCount++;
-      if(verb == 'action'){
-        for(var v in data.params){
-          connection.params[v] = data.params[v];
-        };
-        connection.error = null;
-        connection.response = {};
-        server.processAction(connection);
-      } else if(verb == 'file'){
-        connection.params = {
-          file: data.file
-        }
-        server.processFile(connection);
-      } else {
-        var words = []
-        for(var i in data){ words.push(data[i]); }
-        connection.verbs(verb, words, function(error, data){
-          if(error == null){
-            var message = {status: 'OK', context: 'response', data: data};
-            server.sendMessage(connection, message);
-          } else {
-            var message = {status: error, context: 'response', data: data}
-            server.sendMessage(connection, message);
-          }
-        });
-      }
+      });
     }
   }
-
-  api.faye.extensions.push({
-    incoming: server.newClientFayeExtension
-  });  
-
-  api.faye.extensions.push({
-    incoming: server.messagingFayeExtension
-  });
 
   next(server);
 }

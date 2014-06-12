@@ -6,40 +6,17 @@
     self.callbacks = {};
     self.id = null;
     self.events = {};
+    self.rooms = [];
     self.state = 'disconnected';
 
     self.options = self.defaults();
     for(var i in options){
       self.options[i] = options[i];
     }
-
-    if(options && options.faye != null){
-      self.faye = options.faye;
-    } else if(window.Faye != null){
-      self.faye = window.Faye;
-    } else {
-      try{
-        self.faye = Faye;
-      }catch(e){
-        self.faye = null;
-      }
-    }
   }
 
   actionheroClient.prototype.defaults = function(){
-    var host;
-
-    if(typeof window != 'undefined'){ host = window.location.origin }
-    return {
-      host:            host,
-      fayePath:        '/faye',
-      apiPath:         '/api',
-      setupChannel:    '/client/websocket/_incoming/' + this.randomString(),
-      channelPrefix:   '/client/websocket/connection/',
-      connectionDelay:  200,
-      timeout:          60 * 1000,
-      retry:            10
-    }
+    %%DEFAULTS%%
   }
 
   ////////////////
@@ -49,56 +26,40 @@
   actionheroClient.prototype.connect = function(callback){
     var self = this;
     
-    self.client = new self.faye.Client(self.options.host + self.options.fayePath, {
-      retry: self.options.retry,
-      timeout: self.options.timeout
-    });
-    // self.client.disable('websocket');
+    self.client = Primus.connect(%%URL%%, self.options);
 
-    self.setupSubscription = self.client.subscribe(self.options.setupChannel, function(message){
-      self.id = message.id;
-      self.channel = self.options.channelPrefix + self.id;
-      self.setupSubscription.cancel();
-      delete self.setupSubscription;
+    self.client.on('open', function(){
+      self.messageCount = 0;
+      self.detailsView(function(details){
+        self.id = details.data.id;
+        if(self.rooms.length > 0){
+          self.rooms.forEach(function(room){
+            self.send({event: 'roomAdd', room: room});
+          });
+        }
+        self.emit('connected');
 
-      if(self.rooms == null){ self.rooms = []; }
-
-      self.subscription = self.client.subscribe(self.channel, function(message){
-        self.handleMessage(message);
-      });
-
-      setTimeout(function(){
-        self.detailsView(function(details){
-          if(self.rooms.length > 0){
-            self.rooms.forEach(function(room){
-              self.send({event: 'roomAdd', room: room});
-            });
-          }
+        if(self.state === 'connected'){
+          //
+        }else{
+          self.state = 'connected';
           if(typeof callback === 'function'){ callback(null, details); }
-        });
-      }, self.options.connectionDelay);
-    });
+        }
+      });
+    })
 
-
-    self.client.on('transport:down', function(){
+    self.client.on('reconnecting', function(){
       self.state = 'reconnecting';
       self.emit('disconnected');
     });
 
-    self.client.on('transport:up', function(){
-      var previousState = self.state;
-      self.state = 'connected';
-      self.messageCount = 0;
-      self.emit('connected');
-      if(previousState === 'reconnecting'){
-        self.detailsView(function(details){
-          if(self.rooms.length > 0){
-            self.rooms.forEach(function(room){
-              self.send({event: 'roomAdd', room: room});
-            });;
-          }
-        });
-      }
+    self.client.on('end', function(){
+      self.state = 'disconnected';
+      self.emit('disconnected');
+    });
+
+    self.client.on('data', function(data){
+      self.handleMessage(data);
     });
   }
 
@@ -107,16 +68,13 @@
   ///////////////
 
   actionheroClient.prototype.send = function(args, callback){
+    // primus will buffer messages when not connected
     var self = this;
-    if(self.state === 'connected'){
-      self.messageCount++;
-      if(typeof callback === 'function'){
-        self.callbacks[self.messageCount] = callback;
-      }
-      self.client.publish(self.channel, args);
-    } else if(typeof callback == 'function'){ 
-      callback({error: 'not connected', state: self.state}) 
+    self.messageCount++;
+    if(typeof callback === 'function'){
+      self.callbacks[self.messageCount] = callback;
     }
+    self.client.write(args);
   }
 
   actionheroClient.prototype.handleMessage = function(message){

@@ -62,45 +62,7 @@ var restartAllServers = function(next){
 
 describe('Core: Action Cluster', function(){
 
-  describe('general actionCluster', function(){
-
-    after(function(done){
-      stopAllServers(function(){
-        done();
-      });
-    });
-
-    it('Start cluster server #1', function(done){
-      actionhero1.start({configChanges: configChanges[1]}, function(err, api){
-        api.should.be.an.Object;
-        api.id.should.equal('test-server-1');
-        done();
-      });
-    });
-
-    it('Start cluster server #2', function(done){
-      actionhero2.start({configChanges: configChanges[2]}, function(err, api){
-        api.should.be.an.Object;
-        api.id.should.equal('test-server-2');
-        done();
-      });
-    });
-
-    it('Start cluster server #3', function(done){
-      actionhero3.start({configChanges: configChanges[3]}, function(err, api){
-        api.should.be.an.Object;
-        api.id.should.equal('test-server-3');
-        done();
-      });
-    });
-  
-  });
-
   describe('servers', function(){
-
-    var client1;
-    var client2;
-    var client3;
 
     before(function(done){
       startAllServers(function(){
@@ -114,7 +76,11 @@ describe('Core: Action Cluster', function(){
       });
     });
 
-    describe('say and clients on separate peers', function(){
+    describe('say and clients on separate servers', function(){
+
+      var client1;
+      var client2;
+      var client3;
 
       before(function(done){
         client1 = new api_1.specHelper.connection();
@@ -127,7 +93,7 @@ describe('Core: Action Cluster', function(){
 
         setTimeout(function(){
           done();
-        }, 500);
+        }, 100);
       });
 
       after(function(done){
@@ -136,7 +102,7 @@ describe('Core: Action Cluster', function(){
         client3.destroy();
         setTimeout(function(){
           done();
-        }, 500);
+        }, 100);
       });
 
       it('all connections can join the default room and client #1 can see them', function(done){
@@ -164,20 +130,15 @@ describe('Core: Action Cluster', function(){
       });
 
       it('clients can communicate across the cluster', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
-          done();
-        } else {
-          client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], function(){
-            setTimeout(function(){
-              var message = client2.messages[(client2.messages.length - 1)];
-              message.message.should.equal('Hi from client 1');
-              message.room.should.equal('defaultRoom');
-              message.from.should.equal(client1.id);
-              done();
-            }, 100);
-          });
-        }
+        client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], function(){
+          setTimeout(function(){
+            var message = client2.messages[(client2.messages.length - 1)];
+            message.message.should.equal('Hi from client 1');
+            message.room.should.equal('defaultRoom');
+            message.from.should.equal(client1.id);
+            done();
+          }, 100);
+        });
       });
 
     });
@@ -214,92 +175,72 @@ describe('Core: Action Cluster', function(){
       })
 
       it('can call remote methods on all other servers in the cluster', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
-          done();
-        }else{
-          var data = {};
-          api_1.rpcTestMethod = function(arg1, arg2, next){
-            data[1] = [arg1, arg2]; next();
-          }
-          api_2.rpcTestMethod = function(arg1, arg2, next){
-            data[2] = [arg1, arg2]; next();
-          }
-          api_3.rpcTestMethod = function(arg1, arg2, next){
-            data[3] = [arg1, arg2]; next();
-          }
-
-          api_1.faye.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(err){
-            should.not.exist(err);
-            // callback should work too!
-            data[1][0].should.equal('arg1');
-            data[1][1].should.equal('arg2');
-            data[2][0].should.equal('arg1');
-            data[2][1].should.equal('arg2');
-            data[3][0].should.equal('arg1');
-            data[3][1].should.equal('arg2');
-            done();
-          });
+        var data = {};
+        api_1.rpcTestMethod = function(arg1, arg2, next){
+          data[1] = [arg1, arg2]; next();
         }
+        api_2.rpcTestMethod = function(arg1, arg2, next){
+          data[2] = [arg1, arg2]; next();
+        }
+        api_3.rpcTestMethod = function(arg1, arg2, next){
+          data[3] = [arg1, arg2]; next();
+        }
+
+        api_1.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(err){
+          should.not.exist(err);
+          // callback should work too!
+          data[1][0].should.equal('arg1');
+          data[1][1].should.equal('arg2');
+          data[2][0].should.equal('arg1');
+          data[2][1].should.equal('arg2');
+          data[3][0].should.equal('arg1');
+          data[3][1].should.equal('arg2');
+          done();
+        });
       });
 
       it('can call remote methods only on one other cluster who holds a specific connectionId', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
-          done();
-        }else{
-          var client = new api_1.specHelper.connection();
+        var client = new api_1.specHelper.connection();
 
-          var data = {};
-          api_1.rpcTestMethod = function(arg1, arg2, next){
-            data[1] = [arg1, arg2]; next();
-          }
-          api_2.rpcTestMethod = function(arg1, arg2, next){
-            throw new Error('should not be here');
-          }
-          api_3.rpcTestMethod = function(arg1, arg2, next){
-            throw new Error('should not be here');
-          }
-
-          api_2.faye.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, function(err){
-            should.not.exist(err);
-            data[1][0].should.equal('arg1');
-            data[1][1].should.equal('arg2');
-            client.destroy();
-            done();
-          });
+        var data = {};
+        api_1.rpcTestMethod = function(arg1, arg2, next){
+          data[1] = [arg1, arg2]; next();
         }
+        api_2.rpcTestMethod = function(arg1, arg2, next){
+          throw new Error('should not be here');
+        }
+        api_3.rpcTestMethod = function(arg1, arg2, next){
+          throw new Error('should not be here');
+        }
+
+        api_2.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, function(err){
+          should.not.exist(err);
+          data[1][0].should.equal('arg1');
+          data[1][1].should.equal('arg2');
+          client.destroy();
+          done();
+        });
       });
 
       it('can call remote methods on/about connections connected to other servers', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
-          done();
-        }else{
-          var client = new api_1.specHelper.connection();
-          should.not.exist(client.auth);
+        var client = new api_1.specHelper.connection();
+        should.not.exist(client.auth);
 
-          api_2.connections.apply(client.id, 'set', ['auth', true], function(err){
-            should.not.exist(err);
-            client.auth.should.equal(true);
-            client.destroy();
-            done();
-          });
-        }
+        api_2.connections.apply(client.id, 'set', ['auth', true], function(err){
+          should.not.exist(err);
+          client.auth.should.equal(true);
+          client.destroy();
+          done();
+        });
       });
 
       it('failing RPC calls with a callback will have a failure callback', function(done){
-        this.timeout(api_1.config.faye.rpcTimeout * 2);
+        this.timeout(api_1.config.redis.rpcTimeout * 2);
 
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
+        api_2.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', function(err){
+          String(err).should.equal('Error: RPC Timeout');
           done();
-        }else{
-          api_2.faye.doCluster('api.rpcTestMethod', [], 'A missing clientId', function(err){
-            String(err).should.equal('Error: RPC Timeout');
-            done();
-          });
-        }
+        });
       });
 
     });
@@ -308,9 +249,7 @@ describe('Core: Action Cluster', function(){
 
       afterEach(function(done){
         api_1.chatRoom.destroy('newRoom', function(){
-          setTimeout(function(){
-            done();
-          }, 500);
+          done();
         });
       });
 
@@ -360,20 +299,15 @@ describe('Core: Action Cluster', function(){
       });
 
       it('server can add connections to a REMOTE room', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
+        var client = new api_2.specHelper.connection();
+        client.rooms.length.should.equal(0);
+        api_1.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+          didAdd.should.equal(true);
+          client.rooms.length.should.equal(1);
+          client.rooms[0].should.equal('defaultRoom');
+          client.destroy();
           done();
-        }else{
-          var client = new api_2.specHelper.connection();
-          client.rooms.length.should.equal(0);
-          api_1.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
-            didAdd.should.equal(true);
-            client.rooms.length.should.equal(1);
-            client.rooms[0].should.equal('defaultRoom');
-            client.destroy();
-            done();
-          });
-        }
+        });
       });
 
       it('will not re-add a member to a room', function(done){
@@ -451,20 +385,15 @@ describe('Core: Action Cluster', function(){
       });
 
       it('server can remove connections to a room (remote)', function(done){
-        if(api_1.config.redis.package == 'fakeredis'){
-          // you can't communicate across the cluster with fakeredis
-          done();
-        }else{
-          var client = new api_2.specHelper.connection();
-          api_2.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
-            didAdd.should.equal(true);
-            api_1.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
-              didRemove.should.equal(true);
-              client.destroy();
-              done();
-            });
+        var client = new api_2.specHelper.connection();
+        api_2.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+          didAdd.should.equal(true);
+          api_1.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
+            didRemove.should.equal(true);
+            client.destroy();
+            done();
           });
-        }
+        });
       });
       
       it('server can destroy a room and connections will be removed', function(done){
@@ -506,6 +435,7 @@ describe('Core: Action Cluster', function(){
             api_1.chatRoom.authorize(client, 'newRoom', function(err, authed){
               should.not.exist(err);
               authed.should.equal(true);
+              client.destroy();
               done();
             });
           });
@@ -520,6 +450,7 @@ describe('Core: Action Cluster', function(){
             api_1.chatRoom.authorize(client, 'newRoom', function(err, authed){
               should.not.exist(err);
               authed.should.equal(false);
+              client.destroy();
               done();
             });
           });
@@ -539,6 +470,8 @@ describe('Core: Action Cluster', function(){
               api_1.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
                 clientA.rooms[0].should.equal('newRoom');
                 clientB.rooms.length.should.equal(0);
+                clientA.destroy();
+                clientB.destroy();
                 done();
               });
             });

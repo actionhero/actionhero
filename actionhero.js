@@ -53,7 +53,6 @@ actionhero.prototype.initialize = function(params, callback){
     'exceptions',
     'stats',
     'redis',
-    'faye',
     'cache',
     'connections',
     'actions',
@@ -141,9 +140,6 @@ actionhero.prototype.start = function(params, callback){
   }
 
   var start = function(){
-    if(self.api.config.general.developmentMode == true){
-      self.api.log('running in development mode', 'notice')
-    }
     self.api.running = true;
     self._starters = [];
     for(var i in self.api){
@@ -200,7 +196,6 @@ actionhero.prototype.stop = function(callback){
       'tasks',
       'resque',
       'webServer',
-      'faye',
       'webSocketServer',
       'socketServer'
     ].forEach(function(stopper){

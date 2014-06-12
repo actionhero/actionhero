@@ -2,7 +2,7 @@ exports.default = {
   servers: {
     socket: function(api){
       return {
-        enabled: false,
+        enabled: true,
         // TCP or TLS?
         secure: false,
         // passed to tls.createServer if secure=true. Should contain SSL certificates
