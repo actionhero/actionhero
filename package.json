@@ -62,7 +62,7 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "node ./test/runner",
+    "test": "echo \"** Running with FakeRedis -> `echo $FAKEREDIS` **\" && NODE_ENV=test  node ./node_modules/.bin/mocha",
     "start": "node ./bin/actionhero"
   },
   "prepublish": "grunt publish",
