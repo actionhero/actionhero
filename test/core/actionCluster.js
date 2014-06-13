@@ -176,6 +176,7 @@ describe('Core: Action Cluster', function(){
 
       it('can call remote methods on all other servers in the cluster', function(done){
         var data = {};
+
         api_1.rpcTestMethod = function(arg1, arg2, next){
           data[1] = [arg1, arg2]; next();
         }

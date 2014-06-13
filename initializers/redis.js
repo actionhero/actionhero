@@ -26,7 +26,11 @@ var redis = function(api, next){
       delete api.redis.clusterCallbaks[i];
     }
     api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
-    next();
+    
+    process.nextTick(function(){
+      api.redis.subscriber.unsubscribe();
+      next();
+    });
   }
 
   // connect
@@ -166,7 +170,7 @@ var redis = function(api, next){
 
     if(typeof callback === 'function'){
       api.redis.clusterCallbaks[requestId] = callback;
-      api.redis.clusterCallbakTimeouts = setTimeout(function(requestId){
+      api.redis.clusterCallbakTimeouts[requestId] = setTimeout(function(requestId){
         if(typeof api.redis.clusterCallbaks[requestId] === 'function'){
           api.redis.clusterCallbaks[requestId](new Error('RPC Timeout'));
         }
