@@ -20,7 +20,7 @@ exports.default = {
           // authorization: null,
           // pathname:      '/primus',
           // parser:        'JSON',
-          // transformer:   'websockets',
+          // transformer:   'ws',
           // plugin:        {},
           // timeout:       35000,
           // origins:       '*',

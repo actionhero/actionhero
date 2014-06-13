@@ -44,7 +44,7 @@
     "uglify-js": "~2.4.13"
   },
   "devDependencies": {
-    "ws":  "~0.4.31",
+    "sockjs":  "latest",
     "mocha": "~1.20.1",
     "should": "~4.0.1",
     "request": "~2.34.0"
