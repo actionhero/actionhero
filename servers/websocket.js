@@ -48,6 +48,9 @@ var websocket = function(api, options, next){
 
     api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port + ' mounted at ' + api.config.servers.websocket.pathname, 'notice');
     server.active = true;
+
+    server.writeClientJS();
+
     next();
   }
 
@@ -119,27 +122,44 @@ var websocket = function(api, options, next){
   // CLIENT //
   ////////////
 
-  server.rawClientJs = fs.readFileSync(__dirname + '/../client/actionheroClient.js');
-
-  server.renderClientJS = function(){
-    var lib = api.servers.servers.websocket.server.library();
-    var code = lib
-    code += '\r\n\r\n\r\n';
-    var p = path.normalize(__dirname + '/../client/actionheroClient.js');
-    if(api.config.general.developmentMode === true){
-      server.rawClientJs = fs.readFileSync(__dirname + '/../client/actionheroClient.js');
-    }
-    code += server.rawClientJs;
-    code = code.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client))
+  server.renderClientJS = function(minimize){
+    if(minimize == null){ minimize = false; }
+    var libSource = api.servers.servers.websocket.server.library();
+    var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
+    ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client));
     var url = api.config.servers.websocket.clientUrl;
     if(url.indexOf('/') < 0){
       url = "'" + url + "'";
     }
-    code = code.replace('%%URL%%', url);
+    ahClientSource = ahClientSource.replace('%%URL%%', url);
     
-    // code = UglifyJS.minify(String(code), {fromString: true}).code;
-    
-    return code;
+    if(minimize){
+      return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
+    }else{
+      return (libSource + '\r\n\r\n\r\n' + ahClientSource);
+    }    
+  }
+
+  server.writeClientJS = function(){
+    if(api.config.servers.websocket.clientJsPath != null && api.config.servers.websocket.clientJsName != null){
+      var base = path.normalize(
+        api.config.general.paths.public + 
+        path.sep + 
+        api.config.servers.websocket.clientJsPath + 
+        path.sep + 
+        api.config.servers.websocket.clientJsName
+      );
+      try{
+        fs.writeFileSync(base + '.js', server.renderClientJS(false));
+        api.log('wrote ' + base + '.js', 'debug');
+        fs.writeFileSync(base + '.min.js', server.renderClientJS(true));
+        api.log('wrote ' + base + '.min.js', 'debug');
+      }catch(e){
+        api.log('Cannot write client-side JS for websocket server:', 'warning');
+        api.log(e, 'warning');
+        throw e;
+      }
+    }
   }
 
   /////////////
