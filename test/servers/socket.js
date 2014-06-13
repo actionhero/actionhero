@@ -28,7 +28,7 @@ function makeSocketRequest(thisClient, message, cb){
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb == 'function'){ cb(parsed) }
-  }, 25);
+  }, 100);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');
@@ -226,7 +226,7 @@ describe('Server: Socket', function(){
       makeSocketRequest(client3, 'roomAdd defaultRoom');
       setTimeout(function(){
         done();
-      }, 50);
+      }, 250);
     });
 
     afterEach(function(done){
@@ -237,7 +237,7 @@ describe('Server: Socket', function(){
       });
       setTimeout(function(){
         done();
-      }, 50);
+      }, 250);
     });
 
     it('clients are in the default room', function(done){
