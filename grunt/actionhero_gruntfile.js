@@ -41,7 +41,7 @@ grunt.registerTask('console', 'get a REPL/console into your application', functi
   var done = this.async();
   var r = repl.start({
     prompt: '',
-    useGlobal: true,
+    useGlobal: false,
   });
   r.on('exit', function(){
     done();
