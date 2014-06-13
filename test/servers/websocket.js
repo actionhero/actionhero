@@ -3,24 +3,39 @@ var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-var socketURL;
-var faye = require('faye');
-var actionheroClientPrototype = require(__dirname + '/../../public/javascript/actionheroClient.js').actionheroClient;
 var client_1;
 var client_2;
 var client_3;
+
+var connectClients = function(callback){
+  // get actionheroClient in scope
+  eval( api.servers.servers.websocket.compileActionheroClientJS() );
+  
+  var S = api.servers.servers.websocket.server.Socket;
+  var url = 'http://localhost:' + api.config.servers.web.port;
+  var client_1_socket = new S(url);
+  var client_2_socket = new S(url);
+  var client_3_socket = new S(url);
+
+  client_1 = new actionheroClient({}, client_1_socket);
+  client_2 = new actionheroClient({}, client_2_socket);
+  client_3 = new actionheroClient({}, client_3_socket);
+
+  setTimeout(function(){
+    callback();
+  }, 100);
+}
 
 describe('Server: Web Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
       api = a;
-      socketURL = 'http://localhost:' + api.config.servers.web.port;
-      client_1 = new actionheroClientPrototype({host: socketURL, faye: faye});
-      client_2 = new actionheroClientPrototype({host: socketURL, faye: faye});
-      client_3 = new actionheroClientPrototype({host: socketURL, faye: faye});
-      done();
-    })
+
+      connectClients(function(){
+        done();
+      });
+    });
   });
 
   after(function(done){
@@ -29,57 +44,35 @@ describe('Server: Web Socket', function(){
     });
   });
 
-  it('faye should work in general', function(done){
-    var client = new faye.Client(socketURL + '/faye');
-    client.subscribe('/test', function(message){
-      message.message.should.equal('hello');
-      done();
-    });
-
-    setTimeout(function(){
-      api.faye.client.publish('/test', {message: 'hello'});
-    }, 500);
-  });
-
   it('socket client connections should work: client 1', function(done){
     client_1.connect(function(err, data){
-      setTimeout(function(){
-        data.should.be.an.instanceOf(Object);
-        data.context.should.equal('response');
-        data.data.totalActions.should.equal(0);
-        client_1.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
-        done();
-      }, 500);
+      data.context.should.equal('response');
+      data.data.totalActions.should.equal(0);
+      client_1.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
+      done();
     });
   });
 
   it('socket client connections should work: client 2', function(done){
     client_2.connect(function(err, data){
-      setTimeout(function(){
-        data.should.be.an.instanceOf(Object);
-        data.context.should.equal('response');
-        data.data.totalActions.should.equal(0);
-        client_2.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
-        done();
-      }, 500);
+      data.context.should.equal('response');
+      data.data.totalActions.should.equal(0);
+      client_1.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
+      done();
     });
   });
 
   it('socket client connections should work: client 3', function(done){
     client_3.connect(function(err, data){
-      setTimeout(function(){
-        data.should.be.an.instanceOf(Object);
-        data.context.should.equal('response');
-        data.data.totalActions.should.equal(0);
-        client_3.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
-        done();
-      }, 500);
+      data.context.should.equal('response');
+      data.data.totalActions.should.equal(0);
+      client_1.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
+      done();
     });
   });
 
   it('I can get my connection details', function(done){
     client_1.detailsView(function(response){
-      response.should.be.an.instanceOf(Object);
       response.data.connectedAt.should.be.within(0, new Date().getTime())
       response.data.remoteIP.should.equal('127.0.0.1');
       done()
@@ -88,7 +81,6 @@ describe('Server: Web Socket', function(){
 
   it('can run actions with errors', function(done){
     client_1.action('cacheTest', function(response){
-      response.should.be.an.instanceOf(Object);
       response.error.should.equal('Error: key is a required parameter for this action');
       done();
     });
@@ -96,7 +88,6 @@ describe('Server: Web Socket', function(){
 
   it('can run actions properly', function(done){
     client_1.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
-      response.should.be.an.instanceOf(Object);
       should.not.exist(response.error);
       done();
     });
@@ -117,12 +108,12 @@ describe('Server: Web Socket', function(){
 
   it('will limit how many simultaneous connections I can have', function(done){
     var responses = [];
+    client_1.action('sleepTest', {sleepDuration: 100}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 200}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 300}, function(response){ responses.push(response) })
+    client_1.action('sleepTest', {sleepDuration: 400}, function(response){ responses.push(response) })
     client_1.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response) })
     client_1.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response) })
-    client_1.action('sleepTest', {sleepDuration: 700}, function(response){ responses.push(response) })
-    client_1.action('sleepTest', {sleepDuration: 800}, function(response){ responses.push(response) })
-    client_1.action('sleepTest', {sleepDuration: 900}, function(response){ responses.push(response) })
-    client_1.action('sleepTest', {sleepDuration: 1000}, function(response){ responses.push(response) })
 
     setTimeout(function(){
       responses.length.should.equal(6);
@@ -135,7 +126,7 @@ describe('Server: Web Socket', function(){
         }
       }
       done();
-    }, 2000);
+    }, 1000);
   });
 
   describe('files', function(){
@@ -165,9 +156,9 @@ describe('Server: Web Socket', function(){
       client_1.roomAdd('defaultRoom',function(response){
       client_2.roomAdd('defaultRoom',function(response){
       client_3.roomAdd('defaultRoom',function(response){
-        setTimeout(function(){
+        setTimeout(function(){ // timeout to skip welcome messages as clients join rooms
           done();
-        }, 250);
+        }, 100);
       });
       });
       });
@@ -183,9 +174,7 @@ describe('Server: Web Socket', function(){
       client_1.roomLeave('secureRoom',function(response){
       client_2.roomLeave('secureRoom',function(response){
       client_3.roomLeave('secureRoom',function(response){
-        setTimeout(function(){
           done();
-        }, 250);
       }); }); }); }); }); }); }); }); });
     });
 
@@ -280,6 +269,7 @@ describe('Server: Web Socket', function(){
         done();
       });
     });
+
   });
 
   describe('disconnect', function(){
@@ -291,15 +281,12 @@ describe('Server: Web Socket', function(){
         client_3.disconnect();
       }catch(e){} 
 
-      client_1 = new actionheroClientPrototype({host: socketURL, faye: faye});
-      client_2 = new actionheroClientPrototype({host: socketURL, faye: faye});
-      client_3 = new actionheroClientPrototype({host: socketURL, faye: faye});
-
-      client_1.connect();
-      client_2.connect();
-      client_3.connect();
-      
-      setTimeout(done, 1000);
+      connectClients(function(){
+        client_1.connect();
+        client_2.connect();
+        client_3.connect();
+        setTimeout(done, 500);
+      });
     });
 
     it('client can disconnect', function(done){
@@ -317,15 +304,18 @@ describe('Server: Web Socket', function(){
       client_1.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
         
+        var count = 0
         for(var id in api.connections.connections){
+          count++;
           api.connections.connections[id].destroy();
         }
+        count.should.equal(3);
 
         client_1.detailsView(function(response){
           throw new Error("should not get responst")
         });
 
-        setTimeout(done, 4000)
+        setTimeout(done, 500)
       });
     });
 

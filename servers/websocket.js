@@ -97,7 +97,6 @@ var websocket = function(api, options, next){
   };
 
   server.goodbye = function(connection, reason){
-    server.sendMessage(connection, {status: 'ClientDisconnect', context: 'api', reason: reason});
     connection.rawConnection.end();
   };
 
@@ -122,9 +121,7 @@ var websocket = function(api, options, next){
   // CLIENT //
   ////////////
 
-  server.renderClientJS = function(minimize){
-    if(minimize == null){ minimize = false; }
-    var libSource = api.servers.servers.websocket.server.library();
+  server.compileActionheroClientJS = function(){
     var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
     ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client));
     var url = api.config.servers.websocket.clientUrl;
@@ -132,7 +129,19 @@ var websocket = function(api, options, next){
       url = "'" + url + "'";
     }
     ahClientSource = ahClientSource.replace('%%URL%%', url);
-    
+
+    return ahClientSource;
+  }
+
+  server.renderClientJS = function(minimize){
+    if(minimize == null){ minimize = false; }
+    var libSource = api.servers.servers.websocket.server.library();
+    var ahClientSource = server.compileActionheroClientJS();
+    ahClientSource = '(function(exports){ \r\n' 
+      + ahClientSource
+      + '\r\n'
+      + 'exports.actionheroClient = actionheroClient; \r\n'
+      + '})(typeof exports === \'undefined\' ? window : exports);' ;
     if(minimize){
       return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
     }else{

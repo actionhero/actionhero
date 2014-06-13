@@ -20,8 +20,8 @@
     
     // client.on('message',      function(message){ console.log(message) })
 
-    client.on('alert',        function(message){ alert(message) })
-    client.on('api',          function(message){ alert(message) })
+    client.on('alert',        function(message){ alert( JSON.stringify(message) ) })
+    client.on('api',          function(message){ alert( JSON.stringify(message) ) })
 
     client.on('welcome',      function(message){ appendMessage(message); })
     client.on('say',          function(message){ appendMessage(message); })
