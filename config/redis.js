@@ -6,6 +6,9 @@
 exports.default = { 
   redis: function(api){
     return {
+      channel: 'actionhero',
+      rpcTimeout: 5000,
+
       package: 'fakeredis',
 
       // package: 'redis',

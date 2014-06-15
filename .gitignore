@@ -5,6 +5,8 @@ tmp/*
 log/*
 cache/*
 node_modules/*
+public/javascript/actionheroClient.js
+public/javascript/actionheroClient.min.js
 
 # Node / NPM 
 npm-debug.log

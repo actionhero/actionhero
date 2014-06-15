@@ -34,7 +34,7 @@ var connections = function(api, next){
     },
 
     apply: function(connectionId, method, args, callback){
-      api.faye.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
+      api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
     },
 
     applyCatch: function(connectionId, method, args, callback){
