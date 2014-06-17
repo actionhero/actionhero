@@ -156,6 +156,9 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
 ### api.chatRoom.exists(room, callback)
 - callback returns (error, found); found is a boolean
 
+### api.chatRoom.roomStatus(room, callback)
+- callback returns (error, details); details is a hash containing room information
+
 ### api.chatRoom.setAuthenticationPattern(room, key, value, callback)
 - callback returns (error)
 
