@@ -223,12 +223,23 @@ describe('Core: Action Cluster', function(){
         });
       });
 
+      it('can get information about connections connected to other servers', function(done){
+        var client = new api_1.specHelper.connection();
+
+        api_2.connections.apply(client.id, function(connection){
+          connection.id.should.equal(client.id);
+          connection.type.should.equal('testServer');
+          connection.canChat.should.equal(true);
+          done();
+        });
+      });
+
       it('can call remote methods on/about connections connected to other servers', function(done){
         var client = new api_1.specHelper.connection();
         should.not.exist(client.auth);
 
-        api_2.connections.apply(client.id, 'set', ['auth', true], function(err){
-          should.not.exist(err);
+        api_2.connections.apply(client.id, 'set', ['auth', true], function(connection){
+          connection.id.should.equal(client.id);
           client.auth.should.equal(true);
           client.destroy();
           done();

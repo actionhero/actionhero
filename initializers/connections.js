@@ -34,18 +34,34 @@ var connections = function(api, next){
     },
 
     apply: function(connectionId, method, args, callback){
+      if(args == null && callback == null && typeof method === 'function'){
+        callback = method; args = null; method = null;
+      }
       api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
     },
 
     applyCatch: function(connectionId, method, args, callback){
       var connection = api.connections.connections[connectionId];
-      connection[method].apply(connection, args);
-      process.nextTick(function(){
-        callback();
-      });
+      if(method != null && args != null){
+        connection[method].apply(connection, args);
+      }
+      if(typeof callback === 'function'){
+        process.nextTick(function(){
+          callback(cleanConnection(connection));
+        });
+      }
     }
-
   };
+
+  var cleanConnection = function(connection){
+    var clean = {};
+    for(var i in connection){
+      if(i != 'rawConnection'){
+        clean[i] = connection[i];
+      }
+    }
+    return clean;
+  }
 
   api.connections.addCreateCallback = function(func, priority) {
     if(!priority) priority = api.config.general.defaultMiddlewarePriority;
