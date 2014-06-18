@@ -10,7 +10,6 @@ exports['generate'] = function(binary, next){
 
   var oldFileMap = {
     config_api_js                 : '/config/api.js',
-    config_faye_js                : '/config/faye.js',
     config_logger_js              : '/config/logger.js',
     config_redis_js               : '/config/redis.js',
     config_stats_js               : '/config/stats.js',
@@ -65,7 +64,6 @@ exports['generate'] = function(binary, next){
   // make files
   var newFileMap = {
     '/config/api.js'                                : 'config_api_js',
-    '/config/faye.js'                               : 'config_faye_js',
     '/config/logger.js'                             : 'config_logger_js',
     '/config/redis.js'                              : 'config_redis_js',
     '/config/stats.js'                              : 'config_stats_js',

@@ -1,6 +1,5 @@
 |- config
 | -- api.js
-| -- faye.js
 | -- logger.js
 | -- redis.js
 | -- stats.js
