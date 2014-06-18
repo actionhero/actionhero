@@ -42,6 +42,16 @@ rpcTimeout: 5000,
 
 RPC calls are authenticated against `api.config.serverToken` and communication happens over redis pub/sub. BE CAREFUL, as you can call *any* method within the API namespace on an actionhero server, including shutdown() and read *any* data on that node. 
 
+### Connections
+
+Some special RPC tools have been added so that you can interact with connections across multiple nodes.  Speficially the chat sub-system needs to be able to boot and move connections into rooms, regardless of which node they are connected to.
+
+actionhero has exposed `api.connections.apply` which can be used to retrive data about and modify a connection on any node.
+
+#### api.connections.apply(connectionId, method, args, callback)
+- connectionId is required
+- if `method` and `args` can be ignored if you just want to retirve information abou a connection, IE: `api.connections.apply(connectionId, callback)`
+- `callback` is of the form `function(err, connectionDetails)`
 
 ## Generic Pub/Sub
 
