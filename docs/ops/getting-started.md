@@ -36,7 +36,6 @@ Actions in `/actions` will be loaded in automatically, along `/initializers` and
 {% highlight bash %}
 |- config
 | -- api.js
-| -- faye.js
 | -- logger.js
 | -- redis.js
 | -- stats.js

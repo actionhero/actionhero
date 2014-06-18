@@ -7,9 +7,13 @@ title: Documentation - WebSocket Server
 
 ## General
 
-actionhero uses [faye](http://faye.jcoglan.com/) for web sockets.  Faye provides an abstraction for web sockets which allow fallback to long-polling and other protocols which should be appropriate for the vast majority of browsers. Within actionhero, web sockets are bound to the web server (either http or https).  
+actionhero uses [Priums](https://github.com/primus/primus) for web sockets.  The Primus project allows you to choose from many webscoket backends, including `ws`, `engine.io`, `socket.io`, and more. Within actionhero, web sockets are bound to the web server (either http or https).
 
-Faye can be configured to use a redis store to share state information across nodes.  actionhero uses the [faye-node-redis](https://github.com/faye/faye-redis-node) backend to ensure that all the nodes in your cluster can serve content for any client (no need for 'sticky' load balancer sessions).  actionhero also uses faye interntally to communicate between peers.
+actionhero will generate the client-side javasctipt needed for you (based on the actionheroClient library, priums, and the underlying ws transport).  This file is regenerated each time you boot the application.
+
+**Warning**
+
+In `v9.0.0`, actionhero will no longer attempt to manage non-sticky client connections. This means if you have a multi-server actionhero deployment and you use long-polling in your websocket transport, you will need to ensure that your load balancer can enforce sticky connections, meaning every request from the client will hit the same actionhero node.
 
 ## Connection Details
 
@@ -20,7 +24,6 @@ Data is always returned as JSON objects to the webSocket client.
 An example web socket session might be the following:
 
 {% highlight html %}
-<script src="/faye/client.js"></script>
 <script src="/public/javascript/actionheroClient.js"></script>
 
 <script>
@@ -43,7 +46,7 @@ An example web socket session might be the following:
     if(err != null){
       console.log(err);
     }else{
-      client.roomChange("defaultRoom");
+      client.roomAdd("defaultRoom");
       client.action('someAction', {key: 'k', value: 'v', function(error data){
         // do stuff
       });
@@ -53,9 +56,7 @@ An example web socket session might be the following:
 </script>
 {% endhighlight %}
 
-You can also inspect `client.state` ('connected', 'disconnected', etc)
-
-Note that we are using **both** the provided actionheroWebSocket prototype and requiring the faye library which actionhero provides.
+You can also inspect `client.state` ('connected', 'disconnected', etc).  The websocket client will attempt to re-connect automatically.
 
 ## Methods
 
@@ -95,30 +96,48 @@ The contents of the `file` callback look like:
 
 ## Options
 
-You can create your client with options.  The full collection and defaults are:
+You can create your client with options.  Options for both the server and client are stored in `/config/servers/websocket.js`.  Note there are 3 sections: 'server', 'client', and 'generation':
 
-{% highlight html %}
-<script src="/faye/client.js"></script>
-<script src="/public/javascript/actionheroClient.js"></script>
+{% highlight javascript %}
+enabled:          true,
+// you can pass a FQDN here, or function to be called / window object to be inspected
+clientUrl:        'window.location.origin',
+// Directory to render client-side JS.  
+// Path should start with "/" and will be built starting from api.config..general.paths.public
+clientJsPath:     'javascript/',
+// the name of the client-side JS file to render.  Both `.js` and `.min.js` versions will be created
+// do not include the file exension
+// set to `null` to not render the client-side JS on boot
+clientJsName:     'actionheroClient',
 
-<script>
-  var options = {
-    host:            window.location.origin,
-    fayePath:        '/faye',
-    apiPath:         '/api',
-    setupChannel:    '/client/websocket/_incoming/' + this.randomString(),
-    channelPrefix:   '/client/websocket/connection/',
-    connectionDelay:  200,
-    timeout:          60 * 1000,
-    retry:            10
-  }
+// Primus Server Options: 
+server: {
+  // authorization: null,
+  // pathname:      '/primus',
+  // parser:        'JSON',
+  // transformer:   'ws',
+  // plugin:        {},
+  // timeout:       35000,
+  // origins:       '*',
+  // methods:       ['GET','HEAD','PUT','POST','DELETE','OPTIONS'],
+  // credentials:   true,
+  // maxAge:        '30 days',
+  // headers:       false,
+  // exposed:       false,
+},
 
-  client = new actionheroClient(options)
-
-</script>
+// Priumus Client Options: 
+client: {
+  // reconnect:        {},
+  // timeout:          10000,
+  // ping:             25000,
+  // pong:             10000,
+  // strategy:         "online",
+  // manual:           false,
+  // websockets:       true,
+  // network:          true,
+  // transport:        {},
+  // queueSize:        Infinity,
+},
 {% endhighlight %}
-
-## Notes
-
-The websocket server will use settings inherited by the `faye` `api.config` block.  If you want to set options on the client (like specific protocols to use), you can read up on the options [here](http://faye.jcoglan.com/browser.html).  Note that changes to server options may require updates to the client library `actionheroWebsocket.js` as well.
 

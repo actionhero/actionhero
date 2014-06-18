@@ -10,7 +10,7 @@ actionhero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running 
 The REPL will:
 
 - source `NODE_ENV` properly to load the config
-- will connect to faye/redis, and load any user-defined initializers
+- will connect to redis and load any user-defined initializers
 - will load any plugins
 - will **not** boot any servers
 

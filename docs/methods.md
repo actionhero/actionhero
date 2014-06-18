@@ -100,7 +100,7 @@ connection = new api.connection({
 {% endhighlight %}
 
 - data is required, and must contain: `{type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}`
-- If your connection already has an ID (from faye, your server implementation, or browser_fingerprint), you can also pass `data.id`, otherwise a new id will be generated.
+- If your connection already has an ID (from your server implementation, or browser_fingerprint), you can also pass `data.id`, otherwise a new id will be generated.
 - When connections are built, they are added automatically to `api.connections`
 - `.connection.params`, `connection.response`, etc are automatically built into the connection object
 
@@ -214,25 +214,15 @@ next(connection, false);
 - the connected redis client
 - use this redis instance to make queries, etc
 
-
-## Faye
-
-Faye can be used for actionhero serers to communicate to all other running servers in the cluster.  Choose a chanel which begins with `/actionhero` to ensure that only servers which have the same `api.config.general.serverToken` can join.
-
-#### api.faye.client.subscribe(channel, callback)
-- channel is a string of the form "/my/channel"
-- callback will be passed `message` which is an object
-
-#### api.faye.client.publish(channel, message)
+#### api.redis.publish(channel, message)
 - channel is a string of the form "/my/channel"
 - message is an object
+- to subscribe to messages, add your handler to `api.redis.subsciptionHandlers`, IE: `api.redis.subsciptionHandlers['x'] = function(message)`
 
-#### api.faye.doCluster(method, args, connectionId, callback)
+#### api.redis.doCluster(method, args, connectionId, callback)
 - this calls a remote function on one or many other members of the actionhero cluster
 - if you provide `connectionId`, only the one server who has that connection present will act, otherwise all servers will (including the sending server)
-- doCluster can timeout, and this value is set at `api.config.faye.rpcTimeout`
-- there is a delay that remote peers will use when responding, to ensure that the calling node has had time to catch the response.  This delay is set by `api.config.faye.clusterTransmitTimeout`
-
+- doCluster can timeout, and this value is set at `api.config.redis.rpcTimeout`
 
 ## Stats
 
