@@ -3,7 +3,7 @@
 
 **Note that this project has recently been renamed `actionhero` (lowercase) on NPM.  Update your projects**
 
-**Links: [NPM](https://npmjs.org/package/actionhero) | [Wiki](http://actionherojs.com/wiki) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
+**Links: [NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
 
 <img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/>
 
@@ -17,15 +17,15 @@
 
 
 ## Who is the actionhero?
-actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](http://actionherojs.com/wiki/core/actions.html), [**consume static content**](http://actionherojs.com/wiki/core/file-server.html), and [**communicate with each other**](http://actionherojs.com/wiki/core/chat.html).  actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
+actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](http://actionherojs.com/docs/core/actions.html), [**consume static content**](http://actionherojs.com/docs/core/file-server.html), and [**communicate with each other**](http://actionherojs.com/docs/core/chat.html).  actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
 Currently actionhero supports:
 
-- [Web Clients](http://actionherojs.com/wiki/servers/web.html): HTTP, HTTPS
-- [Socket Clients](http://actionherojs.com/wiki/servers/socket.html): TCP (telnet), TLS
-- [Web Socket Clients](http://actionherojs.com/wiki/servers/websocket.html): HTTP, HTTPS
+- [Web Clients](http://actionherojs.com/docs/servers/web.html): HTTP, HTTPS
+- [Socket Clients](http://actionherojs.com/docs/servers/socket.html): TCP (telnet), TLS
+- [Web Socket Clients](http://actionherojs.com/docs/servers/websocket.html): HTTP, HTTPS
 
-[You can also make your own servers and transports.](http://actionherojs.com/wiki/core/servers.html)
+[You can also make your own servers and transports.](http://actionherojs.com/docs/core/servers.html)
 
 ## Quick Start
 
@@ -35,9 +35,9 @@ Currently actionhero supports:
 
 ## Want more?
 
-- [Getting Started](http://actionherojs.com/wiki/ops/getting-started.html)
-- [Running actionhero](http://actionherojs.com/wiki/ops/running-actionhero.html)
-- [Read the documentation on the wiki](http://actionherojs.com/wiki)
+- [Getting Started](http://actionherojs.com/docs/ops/getting-started.html)
+- [Running actionhero](http://actionherojs.com/docs/ops/running-actionhero.html)
+- [Read the documentation](http://actionherojs.com/docs)
 - [View the release history](https://github.com/evantahler/actionhero/releases/)
 
 ## Who?
