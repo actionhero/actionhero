@@ -125,7 +125,7 @@ var websocket = function(api, options, next){
     var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
     ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client));
     var url = api.config.servers.websocket.clientUrl;
-    if(url.indexOf('/') < 0){
+    if(url.indexOf('/') < 0 || url.indexOf('http://') == 0 || url.indexOf('https://') == 0){
       url = "'" + url + "'";
     }
     ahClientSource = ahClientSource.replace('%%URL%%', url);
