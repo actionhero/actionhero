@@ -137,6 +137,7 @@ var redis = function(api, next){
         });
       };
       var args = message.args;
+      if(!Array.isArray(args)){ args = [args]; }
       if(args === null){ args = []; }
       args.push(callback);
       method.apply(null, args);
