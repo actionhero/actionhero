@@ -220,6 +220,25 @@ describe('Server: Socket', function(){
 
   describe('chat', function(){
 
+    before(function(done){
+      api.chatRoom.addJoinCallback(function(connection, room){
+        api.chatRoom.broadcast(connection, room, 'I have entered the room');
+      });
+
+      api.chatRoom.addLeaveCallback(function(connection, room){
+        api.chatRoom.broadcast(connection, room, 'I have left the room');
+      });
+
+      done();
+    })
+
+    after(function(done){
+      api.chatRoom.joinCallbacks  = [];
+      api.chatRoom.leaveCallbacks = [];
+
+      done();
+    })
+
     beforeEach(function(done){
       makeSocketRequest(client,  'roomAdd defaultRoom');
       makeSocketRequest(client2, 'roomAdd defaultRoom');

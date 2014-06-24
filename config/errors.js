@@ -118,14 +118,6 @@ exports.default = {
         return 'a room is required';
       },
 
-      connectionEnteredRoom: function(connection, room){
-        return 'I have entered the room';
-      },
-
-      connectionLeftRoom: function(connection, room){
-        return 'I have left the room';
-      },
-
     }
   }
 }
