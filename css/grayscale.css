@@ -52,6 +52,10 @@ a:focus {
     color: #CC0000;
 }
 
+.container > ul {
+    font-size: 20px;
+}
+
 .toc a {
     font-size: 18px;
 }
@@ -140,7 +144,7 @@ a:focus {
     -o-background-size: cover;
 }
 
-.intro-wiki {
+.intro-docs {
     display: table;
     width: 100%;
     height: 40px;
@@ -283,7 +287,7 @@ a:focus {
     -o-background-size: cover;
 }
 
-.wiki-section {
+.docs-section {
     width: 100%;
     padding: 50px 0;
     color: #fff;
