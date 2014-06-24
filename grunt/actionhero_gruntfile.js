@@ -27,7 +27,11 @@ var init = function(fn, logging){
   var ActionHeroPrototype = require(actionheroRoot() + '/actionhero.js').actionheroPrototype
   actionhero = new ActionHeroPrototype();
   if(logging == null){ logging = false; }
-  configChanges = {};
+  configChanges = {
+    general: {
+      developmentMode: false
+    }
+  };
   if(logging === false){
     configChanges.logger = {transports: null};
   }
