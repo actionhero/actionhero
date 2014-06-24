@@ -165,8 +165,8 @@ describe('Server: Web Socket', function(){
     })
 
     after(function(done){
-      api.chatRoom.joinCallbacks  = [];
-      api.chatRoom.leaveCallbacks = [];
+      api.chatRoom.joinCallbacks  = {};
+      api.chatRoom.leaveCallbacks = {};
 
       done();
     })

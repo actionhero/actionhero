@@ -9,8 +9,8 @@ var chatRoom = function(api, next){
     auth:    'actionhero:chatRoom:auth'
   }
   api.chatRoom.messageChannel     = '/actionhero/chat/chat';
-  api.chatRoom.joinCallbacks      = [];
-  api.chatRoom.leaveCallbacks     = [];
+  api.chatRoom.joinCallbacks      = {};
+  api.chatRoom.leaveCallbacks     = {};
 
   api.chatRoom._start = function(api, next){
     api.redis.subsciptionHandlers['chat'] = function(message){
@@ -40,12 +40,18 @@ var chatRoom = function(api, next){
     next();
   }
 
-  api.chatRoom.addJoinCallback = function(func){
-    api.chatRoom.joinCallbacks.push(func);
+  api.chatRoom.addJoinCallback = function(func, priority){
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.chatRoom.joinCallbacks[priority]) api.chatRoom.joinCallbacks[priority] = [];
+    return api.chatRoom.joinCallbacks[priority].push(func);
   }
 
-  api.chatRoom.addLeaveCallback = function(func){
-    api.chatRoom.leaveCallbacks.push(func);
+  api.chatRoom.addLeaveCallback = function(func, priority){
+    if(!priority) priority = api.config.general.defaultMiddlewarePriority;
+    priority = Number(priority); // ensure priority is numeric
+    if(!api.chatRoom.leaveCallbacks[priority]) api.chatRoom.leaveCallbacks[priority] = [];
+    return api.chatRoom.leaveCallbacks[priority].push(func);
   }
 
   api.chatRoom.broadcast = function(connection, room, message, callback){
@@ -345,10 +351,14 @@ var chatRoom = function(api, next){
     } else {
       var collecton = api.chatRoom.leaveCallbacks;
     }
-
-    for(var i in collecton){
-      collecton[i](connection, room);
-    }
+    
+    var priorities = [];
+    for(var c in collecton) priorities.push(c);
+    priorities.forEach(function(priority){
+      collecton[priority].forEach(function(c){
+        c(connection, room);   
+      });
+    });
   }
 
   next();
