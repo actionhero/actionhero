@@ -75,6 +75,8 @@ The last type of middleware is used to act when a connection joins or leads a ch
 
 Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room.
 
+You can optionally provide a `priority` to control the order of operations in the middleware.
+
 You can announce to everyoen else in the room when a conneciton joins and leaves:
 {% highlight javascript %}
 api.chatRoom.addJoinCallback(function(connection, room){

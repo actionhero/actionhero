@@ -293,35 +293,41 @@ next(connection, false);
 
 ## Middleware
 
-### api.actions.addPreProcessor(function(connection, actionTemplate, next))
+### api.actions.addPreProcessor(function(connection, actionTemplate, next), priority)
 - action middleware
 - called in-line before every action
 - callback is of the form `next(connection, toContinue)`
+- priority is optional
 
-### api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next))
+### api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next), priority)
 - action middleware
 - called in-line after every action, before rendering a response to the client
 - callback is of the form `next(connection, toRender)`
+- priority is optional
 
-### api.connections.addCreateCallback(function(connection))
+### api.connections.addCreateCallback(function(connection), priority)
 - connection middleware
 - there is no callback
 - called when a connection joins the server
+- priority is optional
 
-### api.connections.addDestroyCallback(function(connection))
+### api.connections.addDestroyCallback(function(connection), priority)
 - connection middleware
 - there is no callback
 - called when a connection leaves the server
+- priority is optional
 
-### api.chatRoom.addJoinCallback(function(connection, room))
+### api.chatRoom.addJoinCallback(function(connection, room), priority)
 - chat middleware
 - there is no callback
 - called when a connection joins a room
+- priority is optional
 
-### api.chatRoom.addLeaveCallback(function(connection, room)
+### api.chatRoom.addLeaveCallback(function(connection, room), priority)
 - chat middleware
 - there is no callback
 - called when a connection leaves a room
+- priority is optional
 
 
 ## Testing

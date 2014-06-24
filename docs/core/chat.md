@@ -81,7 +81,9 @@ These methods are to be used within your server (perhaps an action or initialize
 
 As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is excecuted "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
 
-Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room.
+Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room. 
+
+You can optionally provide a `priority` to control the order of operations in the middleware.
 
 You can announce to everyoen else in the room when a conneciton joins and leaves:
 {% highlight javascript %}
