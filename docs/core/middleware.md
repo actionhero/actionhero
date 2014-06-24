@@ -73,7 +73,7 @@ api.connections.addDestroyCallback(function(connection){
 
 The last type of middleware is used to act when a connection joins or leads a chat room.  As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is executed "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
 
-Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room.
+Use `api.chatRoom.addJoinCallback(function(connection, room), priority)` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room), priority)` to handle connections leaving a room.
 
 You can optionally provide a `priority` to control the order of operations in the middleware.
 
