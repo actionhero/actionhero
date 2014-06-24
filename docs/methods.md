@@ -214,12 +214,12 @@ next(connection, false);
 - the connected redis client
 - use this redis instance to make queries, etc
 
-#### api.redis.publish(channel, message)
+### api.redis.publish(channel, message)
 - channel is a string of the form "/my/channel"
 - message is an object
 - to subscribe to messages, add your handler to `api.redis.subsciptionHandlers`, IE: `api.redis.subsciptionHandlers['x'] = function(message)`
 
-#### api.redis.doCluster(method, args, connectionId, callback)
+### api.redis.doCluster(method, args, connectionId, callback)
 - this calls a remote function on one or many other members of the actionhero cluster
 - if you provide `connectionId`, only the one server who has that connection present will act, otherwise all servers will (including the sending server)
 - doCluster can timeout, and this value is set at `api.config.redis.rpcTimeout`
@@ -291,15 +291,47 @@ next(connection, false);
 
 `api.logger.log` and `api.logger[severity]` also exist
 
+## Middleware
+
+### api.actions.addPreProcessor(function(connection, actionTemplate, next))
+- action middleware
+- called in-line before every action
+- callback is of the form `next(connection, toContinue)`
+
+### api.actions.addPostProcessor(function(connection, actionTemplate, toRender, next))
+- action middleware
+- called in-line after every action, before rendering a response to the client
+- callback is of the form `next(connection, toRender)`
+
+### api.connections.addCreateCallback(function(connection))
+- connection middleware
+- there is no callback
+- called when a connection joins the server
+
+### api.connections.addDestroyCallback(function(connection))
+- connection middleware
+- there is no callback
+- called when a connection leaves the server
+
+### api.chatRoom.addJoinCallback(function(connection, room))
+- chat middleware
+- there is no callback
+- called when a connection joins a room
+
+### api.chatRoom.addLeaveCallback(function(connection, room)
+- chat middleware
+- there is no callback
+- called when a connection leaves a room
+
 
 ## Testing
 
-#### new api.specHelper.connection()
+### new api.specHelper.connection()
 - generate a new connection object for the `testServer`
 - this connection can run actions, chat, etc.
 - `connection.messages` will contain all messages the connection has been sent (welcome messages, action responses, say messages, etc)
 
-#### api.specHelper.runAction(actionName, input, callback)
+### api.specHelper.runAction(actionName, input, callback)
 - use this method to run an action
 - `input` can be either a `api.specHelper.connection` object, or simply a hash of params, IE: `{key: 'value'}`
 - the callback returns `message` and `connection`.
@@ -312,7 +344,7 @@ api.specHelper.runAction('cacheTest', {key: 'key', value: 'value'}, function(mes
 })
 {% endhighlight %}
 
-#### api.specHelper.getStaticFile(file, callback)
+### api.specHelper.getStaticFile(file, callback)
 - request a file in `/public` from the server
 - the callback returns `message` and `connection` where `message` is a hash:
 
@@ -325,7 +357,7 @@ var message = {
 }
 {% endhighlight %}
 
-#### api.specHelper.runTask(taskName, params, callback)
+### api.specHelper.runTask(taskName, params, callback)
 - callback may or may not return anything depending on your task's makeup
 
 ## Utils

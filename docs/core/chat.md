@@ -77,6 +77,23 @@ These methods are to be used within your server (perhaps an action or initialize
 - callback is of the form (error, wasRemoved)
 - you can remove connections from this or any other server in the cluster
 
+## Middleware
+
+As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is excecuted "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
+
+Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room.
+
+You can announce to everyoen else in the room when a conneciton joins and leaves:
+{% highlight javascript %}
+api.chatRoom.addJoinCallback(function(connection, room){
+  api.chatRoom.broadcast(connection, room, 'I have entered the room');
+});
+
+api.chatRoom.addLeaveCallback(function(connection, room){
+  api.chatRoom.broadcast(connection, room, 'I have left the room');
+});
+{% endhighlight %}
+
 ## Authentication
 
 When you set a rooms' authentication paten with `api.chatRoom.setAuthenticationPatern`, you are describing a hash which a client needs to match to enter the room.
