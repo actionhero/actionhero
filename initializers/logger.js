@@ -31,13 +31,11 @@ var logger = function(api, next){
     api.logger.setLevels(winston.config.syslog.levels);
   }
 
-  api.log = function(message, severity, data){
+  api.log = function(message, severity){
     if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
-    if(data != null){
-      api.logger.log(severity, message, data);
-    } else {
-      api.logger.log(severity, message);
-    }
+    var args = [ severity, message ];
+    args.push.apply(args, Array.prototype.slice.call(arguments, 2));
+    api.logger.log.apply(api.logger, args);
   }
 
   var logLevels = [];
