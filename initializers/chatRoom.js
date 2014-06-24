@@ -9,6 +9,8 @@ var chatRoom = function(api, next){
     auth:    'actionhero:chatRoom:auth'
   }
   api.chatRoom.messageChannel     = '/actionhero/chat/chat';
+  api.chatRoom.joinCallbacks      = [];
+  api.chatRoom.leaveCallbacks     = [];
 
   api.chatRoom._start = function(api, next){
     api.redis.subsciptionHandlers['chat'] = function(message){
@@ -36,6 +38,14 @@ var chatRoom = function(api, next){
 
   api.chatRoom._stop = function(api, next){
     next();
+  }
+
+  api.chatRoom.addJoinCallback = function(func){
+    api.chatRoom.joinCallbacks.push(func);
+  }
+
+  api.chatRoom.addLeaveCallback = function(func){
+    api.chatRoom.leaveCallbacks.push(func);
   }
 
   api.chatRoom.broadcast = function(connection, room, message, callback){
@@ -281,7 +291,7 @@ var chatRoom = function(api, next){
                     api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(err){
                       connection.rooms.push(room);
                       api.stats.increment('chatRoom:roomMembers:' + room);
-                      api.chatRoom.announceMember(connection, room, true);
+                      api.chatRoom.handleCallbacks(connection, room, true);
                       if(typeof callback === 'function'){ callback(null, true); }
                     });
                   } else {
@@ -312,7 +322,7 @@ var chatRoom = function(api, next){
           if(found){
             api.stats.increment('chatRoom:roomMembers:' + room, -1);
             api.redis.client.hdel(api.chatRoom.keys.members + room, connection.id, function(err){
-              api.chatRoom.announceMember(connection, room, false);
+              api.chatRoom.handleCallbacks(connection, room, false);
               var index = connection.rooms.indexOf(room);
               if(index > -1){ connection.rooms.splice(index, 1); }
               if(typeof callback === 'function'){ callback(null, true) }
@@ -329,14 +339,16 @@ var chatRoom = function(api, next){
     }
   }
 
-  api.chatRoom.announceMember = function(connection, room, direction){
+  api.chatRoom.handleCallbacks = function(connection, room, direction){
     if(direction == true){
-      var message = api.config.errors.connectionEnteredRoom(connection, room);
+      var collecton = api.chatRoom.joinCallbacks;
     } else {
-      var message = api.config.errors.connectionLeftRoom(connection, room);
+      var collecton = api.chatRoom.leaveCallbacks;
     }
 
-    api.chatRoom.broadcast(connection, room, message);
+    for(var i in collecton){
+      collecton[i](connection, room);
+    }
   }
 
   next();
