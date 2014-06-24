@@ -79,13 +79,13 @@ These methods are to be used within your server (perhaps an action or initialize
 
 ## Middleware
 
-As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is excecuted "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
+As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is executed "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
 
 Use `api.chatRoom.addJoinCallback(function(connection, room))` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room)` to handle connections leaving a room. 
 
 You can optionally provide a `priority` to control the order of operations in the middleware.
 
-You can announce to everyoen else in the room when a conneciton joins and leaves:
+You can announce to everyone else in the room when a connection joins and leaves:
 {% highlight javascript %}
 api.chatRoom.addJoinCallback(function(connection, room){
   api.chatRoom.broadcast(connection, room, 'I have entered the room');
@@ -113,11 +113,11 @@ Every connection object also has a `connection.sendMessage(message)` method whic
 
 ## Client Use
 
-The details of communicating within a chat room are up to each induvidual server (see [websocket](/docs/servers/websocket.html) or [socket](/docs/servers/socket.html)), but the same principals apply:
+The details of communicating within a chat room are up to each individual server (see [websocket](/docs/servers/websocket.html) or [socket](/docs/servers/socket.html)), but the same principals apply:
 
 - Client will join a room (`client.roomAdd(room)`).
 - Once in the room, clients can send messages (which are strings) to everyone else in the room via `say`, ie: `client.say('room', Hello World')`
-- Once a client is in a room, they will recive messages from other members of the room as events.  For example, catching say events from the websocket client looks like `client.on('say', function(message){ console.log(message); })`.  You can inspect `message.room` if you are in more than one room.
+- Once a client is in a room, they will revive messages from other members of the room as events.  For example, catching say events from the websocket client looks like `client.on('say', function(message){ console.log(message); })`.  You can inspect `message.room` if you are in more than one room.
   - The payload of a message will contain the room, sender, and the message body: `{message: "Hello World", room: "SecretRoom", from: "7d419af9-accf-40ac-8d78-9281591dd59e", context: "user", sentAt: 1399437579346} `
 
 The flow for an authenticated rooom is: 
