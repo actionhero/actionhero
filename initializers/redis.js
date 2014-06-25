@@ -1,4 +1,5 @@
-var uuid = require('node-uuid');
+var uuid = require('node-uuid'),
+    events = require('events');
 
 var redis = function(api, next){
 
@@ -26,7 +27,7 @@ var redis = function(api, next){
       delete api.redis.clusterCallbaks[i];
     }
     api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
-    
+
     process.nextTick(function(){
       api.redis.subscriber.unsubscribe();
       next();
@@ -34,7 +35,7 @@ var redis = function(api, next){
   }
 
   // connect
-    
+
   api.redis.initialize = function(callback){
     if(api.config.redis.package === 'fakeredis'){
       api.redis.client     = redisPackage.createClient(String(api.config.redis.host));
@@ -43,7 +44,7 @@ var redis = function(api, next){
       api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
     }
-    
+
     api.redis.client.on('error', function(err){
       api.log('Redis Error (client): ' + err, 'emerg');
     });
@@ -86,11 +87,29 @@ var redis = function(api, next){
       });
     } else {
       process.nextTick(function(){
-        if(api.config.redis.database != null){ 
-          api.redis.client.select(api.config.redis.database); 
-          api.redis.subscriber.select(api.config.redis.database); 
-        }
-        callback();
+        var client, subscriber, emitter = new events.EventEmitter();
+
+        api.redis.client.once('connect', function () {
+          client = true;
+          if (client && subscriber) {
+            emitter.emit('go');
+          }
+        });
+
+        api.redis.subscriber.once('connect', function () {
+          subscriber = true;
+          if (client && subscriber) {
+            emitter.emit('go');
+          }
+        });
+
+        emitter.once('go', function () {
+          if(api.config.redis.database != null){
+            api.redis.client.select(api.config.redis.database);
+            api.redis.subscriber.select(api.config.redis.database);
+          }
+          callback();
+        });
       });
     }
   };
