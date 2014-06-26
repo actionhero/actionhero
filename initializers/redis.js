@@ -6,6 +6,10 @@ var redis = function(api, next){
   api.redis.clusterCallbaks = {};
   api.redis.clusterCallbakTimeouts = {};
   api.redis.subsciptionHandlers = {};
+  api.redis.status = {
+    client: false,
+    subscriber: false,
+  };
 
   if(api.config.redis.database == null){ api.config.redis.database = 0 }
 
@@ -52,48 +56,69 @@ var redis = function(api, next){
       api.log('Redis Error (subscriber): ' + err, 'emerg');
     });
 
+    api.redis.client.on('end', function(){
+      api.log('Redis Connection Closed (client): ', 'debug');
+      api.redis.status.client = false;
+    });
+
+    api.redis.subscriber.on('end', function(){
+      api.log('Redis Connection Closed (subscriber): ', 'debug');
+      api.redis.status.client = false;
+    });
+
     api.redis.client.on('connect', function(err){
       if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (client)', 'debug');
+      api.redis.status.client = true;
+      api.redis.connect(api.redis.client, function(){
+        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+      });
     });
 
     api.redis.subscriber.on('connect', function(err){
       if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
+      api.redis.status.subscriber = true;
+      api.redis.connect(api.redis.subscriber, function(){
+        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+      });
     });
 
+    if(api.config.redis.package === 'fakeredis'){
+      api.redis.connect(api.redis.client, function(){
+        api.redis.connect(api.redis.subscriber, function(){
+          api.redis.status.client = true;
+          api.redis.status.subscriber = true;
+          process.nextTick(function(){
+            if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+          })
+        });
+      });
+    }
+  };
+
+  api.redis.connect = function(redis, callback){
     if(api.config.redis.password != null && api.config.redis.password != ''){
-      api.redis.client.auth(api.config.redis.password, function(){
-        api.redis.subscriber.auth(api.config.redis.password, function(){
-          api.redis.client.select(api.config.redis.database, function(err){
-            if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis (client)', 'emerg'); }
-            api.redis.subscriber.select(api.config.redis.database, function(err){
-              if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis (subscriber)', 'emerg'); }
-              callback();
-            });
-          });
+      redis.auth(api.config.redis.password, function(){
+        redis.select(api.config.redis.database, function(err){
+          if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis', 'emerg'); }
+          callback();
         });
       });
     } else if(api.config.redis.package === 'fakeredis'){
-      process.nextTick(function(){
-        api.redis.client.select(api.config.redis.database, function(err){
-          if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis (client)', 'emerg'); }
-          api.redis.subscriber.select(api.config.redis.database, function(err){
-            if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis (subscriber)', 'emerg'); }
-            callback();
-          });
-        });
+      redis.select(api.config.redis.database, function(err){
+        if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis', 'emerg'); }
+        callback();
       });
     } else {
       process.nextTick(function(){
         if(api.config.redis.database != null){ 
-          api.redis.client.select(api.config.redis.database); 
-          api.redis.subscriber.select(api.config.redis.database); 
+          redis.select(api.config.redis.database); 
         }
         callback();
       });
     }
-  };
+  }
 
   // subscribe
 
