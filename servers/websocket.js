@@ -128,7 +128,7 @@ var websocket = function(api, options, next){
     if(url.indexOf('/') < 0 || url.indexOf('http://') == 0 || url.indexOf('https://') == 0){
       url = "'" + url + "'";
     }
-    ahClientSource = ahClientSource.replace('%%URL%%', url);
+    ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
 
     return ahClientSource;
   }

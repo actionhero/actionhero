@@ -157,7 +157,7 @@ actionheroClient.prototype.actionWeb = function(params, callback){
   if(params.httpMethod != null){
     method = params.httpMethod;
   }
-  var url = this.options.host + this.options.apiPath + qs;
+  var url = %%URL%% + this.options.apiPath + qs;
   xmlhttp.open(method, url, true);
   xmlhttp.send();
 }
