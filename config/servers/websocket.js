@@ -6,7 +6,7 @@ exports.default = {
       return {
         enabled:          true,
         // you can pass a FQDN here, or function to be called / window object to be inspected
-        clientUrl:        'window.location.origin',
+        clientUrl:        'window.location.origin',        
         // Directory to render client-side JS.  
         // Path should start with "/" and will be built starting from api.config..general.paths.public
         clientJsPath:     'javascript/',
@@ -20,7 +20,7 @@ exports.default = {
           // authorization: null,
           // pathname:      '/primus',
           // parser:        'JSON',
-          // transformer:   'ws',
+          // transformer:   'websockets',
           // plugin:        {},
           // timeout:       35000,
           // origins:       '*',
@@ -33,6 +33,7 @@ exports.default = {
 
         // Priumus Client Options: 
         client: {
+          apiPath:             '/api', // the api base endpoint on your actionhero server
           // reconnect:        {},
           // timeout:          10000,
           // ping:             25000,
