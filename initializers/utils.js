@@ -160,7 +160,7 @@ var utils = function(api, next){
 
   ////////////////////////////////////////////////////////////////////////////
   // get all .js files in a directory
-  api.utils.recusiveDirecotryGlob = function(dir, extension){
+  api.utils.recursiveDirectoryGlob = function(dir, extension){
     var results = [];
 
     if(extension == null){ extension = 'js'; }
@@ -173,11 +173,11 @@ var utils = function(api, next){
         if(file[0] != '.'){ // ignore 'system' files
           var stats = fs.statSync(fullFilePath);
           if(stats.isDirectory()){
-            var child = api.utils.recusiveDirecotryGlob(fullFilePath, extension);
+            var child = api.utils.recursiveDirectoryGlob(fullFilePath, extension);
             child.forEach(function(c){ results.push(c); })
           } else if(stats.isSymbolicLink()){
             var realPath = fs.readlinkSync(fullFilePath);
-            var child = api.utils.recusiveDirecotryGlob(realPath);
+            var child = api.utils.recursiveDirectoryGlob(realPath);
             child.forEach(function(c){ results.push(c); })
           } else if(stats.isFile()){
             var fileParts = file.split('.');

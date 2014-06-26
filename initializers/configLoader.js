@@ -64,7 +64,7 @@ var configLoader = function(api, next){
 
   api.config = {};
 
-  var configFiles = api.utils.recusiveDirecotryGlob(configPath);
+  var configFiles = api.utils.recursiveDirectoryGlob(configPath);
   var loadRetries = 0;
   var loadErrors = {};
   for(var i = 0, limit = configFiles.length; (i < limit); i++){

@@ -212,7 +212,7 @@ var tasks = function(api, next){
   }
 
   api.config.general.paths.task.forEach(function(p){
-    api.utils.recusiveDirecotryGlob(p).forEach(function(f){
+    api.utils.recursiveDirectoryGlob(p).forEach(function(f){
       api.tasks.loadFile(f);
     });
   })

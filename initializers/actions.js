@@ -99,7 +99,7 @@ var actions = function(api, next){
   }
 
   api.config.general.paths.action.forEach(function(p){
-    api.utils.recusiveDirecotryGlob(p).forEach(function(f){
+    api.utils.recursiveDirectoryGlob(p).forEach(function(f){
       api.actions.loadFile(f);
     });
   })
