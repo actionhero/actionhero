@@ -36,6 +36,7 @@
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
     "redis": "~0.10.3",
+    "ws":  "~0.4.31",
     "optimist": "~0.6.1",
     "winston": "0.7.2",
     "node-uuid": "~1.4.1",
@@ -44,7 +45,6 @@
     "uglify-js": "~2.4.14"
   },
   "devDependencies": {
-    "ws":  "~0.4.31",
     "mocha": "~1.20.1",
     "should": "~4.0.1",
     "request": "~2.34.0",
