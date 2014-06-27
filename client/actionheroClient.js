@@ -133,14 +133,9 @@ actionheroClient.prototype.action = function(action, params, callback){
 }
 
 actionheroClient.prototype.actionWeb = function(params, callback){
-  var timeoutTimer = setTimeout(function(){
-    callback('timeout');
-  }, this.options.timeout);
-
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function(){
     if(xmlhttp.readyState == 4){
-      clearTimeout(timeoutTimer);
       if(xmlhttp.status == 200){
         var response = JSON.parse(xmlhttp.responseText);
         callback(null, response);
