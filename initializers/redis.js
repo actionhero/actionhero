@@ -76,7 +76,7 @@ var redis = function(api, next){
     });
 
     api.redis.subscriber.on('connect', function(err){
-      if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
+      if(api.config.redis.database != null){ api.redis.subscriber.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
       api.redis.connect(api.redis.subscriber, function(){
