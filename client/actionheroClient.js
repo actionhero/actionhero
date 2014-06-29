@@ -17,6 +17,8 @@ var actionheroClient = function(options, client){
   }
 }
 
+actionheroClient.prototype = new EventEmitter();
+
 actionheroClient.prototype.defaults = function(){
   %%DEFAULTS%%
 }
@@ -198,47 +200,4 @@ actionheroClient.prototype.disconnect = function(){
   this.state = 'disconnected';
   this.client.end();
   this.emit('disconnected');
-}
-
-/////////////
-// HELPERS //
-/////////////
-
-actionheroClient.prototype.on = function(event, callback){
-  var self = this;
-  if(self.events[event] == null){
-    self.events[event] = {};
-  }
-  var key = self.randomString();
-  self.events[event][key] = callback;
-  return key;
-}
-
-actionheroClient.prototype.emit = function(event, data){
-  var self = this;
-  if(self.events[event] != null){
-    for(var i in self.events[event]){
-      self.events[event][i](data);
-    }
-  }
-}
-
-actionheroClient.prototype.removeListener = function(event, key){
-  var self = this;
-  delete self.events[event][key];
-}
-
-actionheroClient.prototype.removeAllListeners = function(event){
-  var self = this;
-  delete self.events[event];
-}
-
-actionheroClient.prototype.randomString = function(){
-  var seed = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for( var i=0; i < 32; i++ ){
-    seed += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  seed += '-' + new Date().getTime();
-  return seed
 }

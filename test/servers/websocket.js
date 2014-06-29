@@ -1,6 +1,7 @@
-var should = require('should');
+var should              = require('should');
+var EventEmitter        = require('events').EventEmitter
 var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
-var actionhero = new actionheroPrototype();
+var actionhero          = new actionheroPrototype();
 var api;
 
 var client_1;
@@ -212,20 +213,23 @@ describe('Server: Web Socket', function(){
     });
 
     it('Clients can talk to each other', function(done){
-      var listener = client_1.on('say', function(response){
+      var listener = function(response){
         client_1.removeListener('say', listener);
         response.context.should.equal('user');
         response.message.should.equal('hello from client 2');
         done();
-      });
+      };
 
+      client_1.on('say', listener);
       client_2.say('defaultRoom', 'hello from client 2');
     });
 
     it('will not get messages for rooms I am not in', function(done){
-      var listener = client_1.on('say', function(response){
+      var listener = function(response){
         response.should.not.exist();
-      });
+      };
+
+      client_1.on('say', listener);
 
       setTimeout(function(){
         client_1.removeListener('say', listener);
@@ -238,26 +242,28 @@ describe('Server: Web Socket', function(){
     });
 
     it('connections are notified when I join a room', function(done){
-      client_1.roomAdd('otherRoom', function(){
-        var listener = client_1.on('say', function(response){
-          client_1.removeListener('say', listener);
-          response.context.should.equal('user');
-          response.message.should.equal('I have entered the room');
-          done();
-        });
+      var listener = function(response){
+        client_1.removeListener('say', listener);
+        response.context.should.equal('user');
+        response.message.should.equal('I have entered the room');
+        done();
+      };
 
+      client_1.roomAdd('otherRoom', function(){
+        client_1.on('say', listener);
         client_2.roomAdd('otherRoom');
       });
     });
 
     it('connections are notified when I leave a room', function(done){
-      var listener = client_1.on('say', function(response){
+      var listener = function(response){
         client_1.removeListener('say', listener);
         response.context.should.equal('user');
         response.message.should.equal('I have left the room');
         done();
-      });
+      }
 
+      client_1.on('say', listener);
       client_2.roomLeave('defaultRoom');
     })
 
