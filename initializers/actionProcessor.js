@@ -237,7 +237,7 @@ var actionProcessor = function(api, next){
           self.reduceParams();
 
           self.actionTemplate.inputs.required.forEach(function(param){
-            if(self.connection.error === null && (typeof self.connection.params[param] === 'undefined' || self.connection.params[param].length == 0)){
+            if(self.connection.error === null && (self.connection.params[param] == null || self.connection.params[param].length == 0)){
               self.missingParams.push(param);
             }
           });
