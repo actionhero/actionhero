@@ -17,7 +17,11 @@ var actionheroClient = function(options, client){
   }
 }
 
-actionheroClient.prototype = new EventEmitter();
+if(typeof Primus === 'undefined'){
+  actionheroClient.prototype = new EventEmitter();
+}else{
+  actionheroClient.prototype = new Primus.EventEmitter();
+}
 
 actionheroClient.prototype.defaults = function(){
   %%DEFAULTS%%
