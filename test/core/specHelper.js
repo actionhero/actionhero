@@ -45,6 +45,32 @@ describe('Core: specHelper', function(){
     });
   });
 
+  describe('test callbacks', function(){
+
+    it('will not report a broken test as a broken action (sync)', function(done){
+      api.specHelper.runAction('randomNumber', function(response, conn){
+        try{
+          response.not.a.real.thing
+        }catch(e){
+          String(e).should.equal('TypeError: Cannot read property \'a\' of undefined');
+          done();
+        }
+      });
+    });
+
+    it('will not report a broken test as a broken action (async)', function(done){
+      api.specHelper.runAction('sleepTest', function(response, conn){
+        try{
+          response.thing.should.equal('this will break')
+        }catch(e){
+          String(e).should.equal('TypeError: Cannot read property \'should\' of undefined');
+          done();
+        }
+      });
+    });
+
+  });
+
   describe('files', function(){
     it('can request file data', function(done){
       api.specHelper.getStaticFile('simple.html', function(data){
