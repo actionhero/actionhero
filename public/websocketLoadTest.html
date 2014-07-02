@@ -1,0 +1,322 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="actionhero.js" />
+  <title>actionhero.js WebSocket Load Test</title>
+  <script type="text/javascript" src="/public/javascript/actionheroClient.js"></script>
+
+  <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      font-family:"Trebuchet MS", Helvetica, sans-serif;
+      font-size: 14px;
+    }
+
+    #mainContainer {
+      height: 100%;
+      width: 100%;
+    }
+
+    #resultsContainer {
+      color: white;
+      background-color: gray;
+      height: 100%;
+      width: 300px;
+      text-align: left;
+      overflow: scroll;
+      float: left;
+    }
+
+    #optionsContainer {
+      background-color: orange;
+      height: 100%;
+      width: 300px;
+      text-align: left;
+      overflow: scroll;
+      float: left;
+    }
+
+    #testContainer {
+      background-color: lightblue;
+      margin-left: 600px;
+      height: 100%;
+      overflow: scroll;
+    }
+
+    form {
+      padding: 4px;
+    }
+
+    h1 {
+      color: lightgreen;
+      padding: 10px;
+    }
+
+    h2 {
+      color: darkgreen;
+      padding: 5px;
+    }
+
+    .smallWords {
+      font-style: italic;
+      padding: 5px;
+    }
+
+    .green {background-color: green;}
+    .red {background-color: red;}
+    .yellow {background-color: yellow;}
+    .gray {background-color: gray;}
+
+    .connection{
+      margin: 5px;
+      border: 2px solid black;
+      float: left;
+    }
+  </style>
+
+  <script type="text/javascript">
+
+  /////////
+  // APP //
+  /////////
+
+  var app = {};
+
+  app.defaults = function(){
+    return {
+      state: 'stopped',
+      clients: {},
+      config: {},
+      renderTimer: null,
+      stats: {
+        totalGood: 0,
+        totalBad: 0,
+        totalRequests: 0,
+        startTime: 0,
+        endTime: 0,
+      }
+    }
+  }
+
+  app.loadConfig = function(){
+    app.config.numClients    = parseInt( document.getElementById('numClients').value );
+    app.config.numRequests   = parseInt( document.getElementById('numRequests').value );
+    app.config.sleep         = parseInt( document.getElementById('sleep').value );
+    app.config.action        = document.getElementById('action').value;
+    app.config.params        = JSON.parse(document.getElementById('params').value);
+  }
+
+  app.render = function(){
+    if(app.state === 'running'){
+      delta = (new Date().getTime() - app.stats.startTime) / 1000;
+    }else{
+      delta = (app.stats.endTime - app.stats.startTime) / 1000;
+    }
+
+    var totalTime = delta;
+    var reqPerSec = app.stats.totalRequests / delta;
+    var secPerReq = (delta / app.stats.totalRequests) * app.config.numClients;
+
+    document.getElementById('report.state').innerHTML = app.state;
+    document.getElementById('report.numClients').innerHTML = app.config.numClients;
+    document.getElementById('report.totalRequests').innerHTML = app.stats.totalRequests;
+    document.getElementById('report.totalTime').innerHTML = totalTime;
+    document.getElementById('report.totalGood').innerHTML = app.stats.totalGood;
+    document.getElementById('report.totalBad').innerHTML = app.stats.totalBad;
+    document.getElementById('report.reqPerSec').innerHTML = reqPerSec
+    document.getElementById('report.secPerReq').innerHTML = secPerReq
+    document.getElementById('report.percentGood').innerHTML =  Math.round(app.stats.totalGood / (app.stats.totalGood + app.stats.totalBad) * 100)
+  }
+
+  app.renderLoop = function(){
+    app.render();
+    app.checkComplete();
+    if(app.state === 'running' || app.sate === 'stopped'){
+      setTimeout(function(){
+        app.renderLoop();
+      },100)
+    }else{
+      app.render();
+    }
+  }
+
+  app.checkComplete = function(){
+    var complete = true;
+    for(var i in app.clients){
+      var connection = app.clients[i];
+      if(connection.running != false){
+        complete = false;
+        break;
+      }
+    }
+    if(complete === true){
+      app.stats.endTime = new Date().getTime();
+      app.state = 'complete';
+    }
+  }
+
+  app.boot = function(){
+    app.clients = {};
+    for(var i in app.defaults()){
+      app[i] = app.defaults()[i];
+    }
+    app.loadConfig();
+
+    var rows = '';
+    var i = 0;
+    while(i < app.config.numClients){
+      rows += '<div class="connection" id="connection_'+i+'">';
+      rows += '<div id="id_'+i+'" class="gray">#'+i+'</div>';
+      rows += '<span id="good_'+i+'" style="color: green;">0</span>';
+      rows += " | "
+      rows += '<span id="bad_'+i+'" style="color: red;">0</span>';
+      rows += '</div>';
+      i++;
+    }
+
+    document.getElementById('boxes').innerHTML = rows;
+
+    var i = 0;
+    app.stats.startTime = new Date().getTime();
+    app.state = 'running';
+    while(i < app.config.numClients){
+      var c = new client(i);
+      c.connect();
+      app.clients[i] = c;
+      i++;
+    }
+
+    app.renderLoop();
+
+    return false;
+  }
+
+  ////////////
+  // CLIENT //
+  ////////////
+
+  var client = function(id){
+    var self = this;
+    self.running = null;
+    self.id = id;
+    self.goodCount = 0;
+    self.badCount = 0;
+    self.numRequests = 0;
+  }
+
+  client.prototype.connect = function(){
+    var self = this;
+    self.client = new actionheroClient();
+    self.client.on('connected',    function(){ console.log('['+self.id+'] ' + 'connected!') })
+    self.client.on('disconnected', function(){ console.log('['+self.id+'] ' + 'disconnected :(') })
+    self.client.on('alert',        function(message){ alert('['+self.id+'] ' + JSON.stringify(message) ) })
+    self.client.on('api',          function(message){ alert('['+self.id+'] ' + JSON.stringify(message) ) })
+    self.client.on('welcome',      function(message){ console.log('['+self.id+'] ' + JSON.stringify(message) ); })
+    self.client.on('say',          function(message){ console.log('['+self.id+'] ' + JSON.stringify(message) ); })
+    self.client.connect(function(err, details){
+      if(err != null){
+        self.running = true;
+        console.log(err);
+      }else{
+        self.work();
+      }
+    });
+  }
+
+  client.prototype.work = function(){
+    var self = this;
+    document.getElementById('id_'+self.id).className = 'yellow'
+    self.client.action(app.config.action, app.config.params, function(data){
+      self.numRequests++;
+      app.stats.totalRequests++;
+      console.log('['+self.id+'] ' + JSON.stringify(data));
+      if(data.error == null){
+        self.goodCount++;
+        app.stats.totalGood++
+      }else{
+        self.badCount++;
+        app.stats.totalBad++;
+      }
+      document.getElementById('good_'+self.id).innerHTML = self.goodCount;
+      document.getElementById('bad_'+self.id).innerHTML = self.badCount;
+      if(self.numRequests >= app.config.numRequests){
+        // done!
+        if(self.badCount == 0){
+          document.getElementById('id_'+self.id).className = 'green';
+        }else{
+          document.getElementById('id_'+self.id).className = 'red';
+        }
+        self.running = false;
+        self.client.disconnect();
+        setTimeout(function(){
+          self.client.removeAllListeners('connected');
+          self.client.removeAllListeners('disconnected');
+          self.client.removeAllListeners('alert');
+          self.client.removeAllListeners('api');
+          self.client.removeAllListeners('welcome');
+          self.client.removeAllListeners('say');
+        },100);
+      }else{
+        setTimeout(function(){
+          self.work();
+        }, sleep)
+      }
+    });
+  }
+
+  </script>
+  
+</head>
+
+<body>
+  <div id="mainContainer">
+    
+    <div id="resultsContainer">
+      <h1>actionhero websocket load test</h1>
+      <p class="smallWords">Check the console for logs.<br />Be sure to update your ulimts!</p>
+      <ul id="results">
+        <li>Test State: <span id="report.state"></span></li>
+        <li>Connections: <span id="report.numClients"></span></li>
+        <li>Total Requests: <span id="report.totalRequests"></span></li>
+        <li>Total Time: <span id="report.totalTime"></span></li>
+        <li>Total Good: <span id="report.totalGood"></span></li>
+        <li>Total Bad:  <span id="report.totalBad"></span></li>
+        <li>Req/Sec:  <span id="report.reqPerSec"></span></li>
+        <li>Sec/Rec:  <span id="report.secPerReq"></span></li>
+        <li>% Good:  <span id="report.percentGood"></span></li>
+      </ul>
+    </div>
+
+    <div id='optionsContainer'>
+      <h2>Options</h2>
+
+      <form id="form" action="#">
+        <label>Number of Clients:</label><br>
+        <input type="text" name="numClients" id="numClients" value="100"><br><br>
+
+        <label>Number of Requests:</label><br>
+        <input type="text" name="numRequests" id="numRequests" value="10"><br><br>
+
+        <label>Action:</label><br>
+        <input type="text" name="action" id="action" value="randomNumber"><br><br>
+
+        <label>Params (json):</label><br>
+        <input type="text" name="params" id="params" value='{"key": "key", "value": "value"}'><br><br>
+
+        <label>Sleep (ms):</label><br>
+        <input type="text" name="sleep" id="sleep" value="10"><br><br>
+
+        <button onclick="return app.boot()">Go!</button>
+      </form>
+    </div>
+
+    <div id='testContainer'>
+      <h2>Results</h2>
+      <div id='boxes'></div>
+    </div>
+
+  </div>
+</body>
+</html>
