@@ -47,6 +47,10 @@ var redis = function(api, next){
       api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
     }
+    if(api.config.redis.password != null && api.config.redis.password != ''){
+      api.redis.client.auth(api.config.redis.password);
+      api.redis.subscriber.auth(api.config.redis.password);
+    }
     
     api.redis.client.on('error', function(err){
       api.log('Redis Error (client): ' + err, 'emerg');
@@ -70,7 +74,7 @@ var redis = function(api, next){
       if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (client)', 'debug');
       api.redis.status.client = true;
-      api.redis.connect(api.redis.client, function(){
+      process.nextTick(function(){
         if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
       });
     });
@@ -79,46 +83,23 @@ var redis = function(api, next){
       if(api.config.redis.database != null){ api.redis.subscriber.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
-      api.redis.connect(api.redis.subscriber, function(){
+      process.nextTick(function(){
         if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
       });
     });
 
     if(api.config.redis.package === 'fakeredis'){
-      api.redis.connect(api.redis.client, function(){
-        api.redis.connect(api.redis.subscriber, function(){
-          api.redis.status.client = true;
-          api.redis.status.subscriber = true;
-          process.nextTick(function(){
-            if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
-          })
-        });
+      api.redis.status.client = true;
+      api.redis.status.subscriber = true;
+      if(api.config.redis.database != null){ 
+        api.redis.client.select(api.config.redis.database); 
+        api.redis.subscriber.select(api.config.redis.database); 
+      }
+      process.nextTick(function(){
+        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
       });
     }
   };
-
-  api.redis.connect = function(redis, callback){
-    if(api.config.redis.password != null && api.config.redis.password != ''){
-      redis.auth(api.config.redis.password, function(){
-        redis.select(api.config.redis.database, function(err){
-          if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis', 'emerg'); }
-          callback();
-        });
-      });
-    } else if(api.config.redis.package === 'fakeredis'){
-      redis.select(api.config.redis.database, function(err){
-        if(err){ api.log('Error selecting database #' + api.config.redis.database + ' on redis', 'emerg'); }
-        callback();
-      });
-    } else {
-      process.nextTick(function(){
-        if(api.config.redis.database != null){ 
-          redis.select(api.config.redis.database); 
-        }
-        callback();
-      });
-    }
-  }
 
   // subscribe
 
@@ -222,8 +203,10 @@ var redis = function(api, next){
 
   api.redis.initialize(function(){
     api.redis.subscribe(function(){
-      api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
-      next();
+      process.nextTick(function(){
+        api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+        next();
+      });
     });
   });
 
