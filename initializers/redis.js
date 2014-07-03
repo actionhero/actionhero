@@ -48,8 +48,12 @@ var redis = function(api, next){
       api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
     }
     if(api.config.redis.password != null && api.config.redis.password != ''){
-      api.redis.client.auth(api.config.redis.password);
-      api.redis.subscriber.auth(api.config.redis.password);
+      try{ 
+        api.redis.client.auth(api.config.redis.password);
+        api.redis.subscriber.auth(api.config.redis.password);
+      }catch(e){
+        //
+      }
     }
     
     api.redis.client.on('error', function(err){
@@ -71,6 +75,9 @@ var redis = function(api, next){
     });
 
     api.redis.client.on('connect', function(err){
+      if(api.config.redis.password != null && api.config.redis.password != ''){
+        api.redis.client.auth(api.config.redis.password);
+      }
       if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (client)', 'debug');
       api.redis.status.client = true;
@@ -80,6 +87,9 @@ var redis = function(api, next){
     });
 
     api.redis.subscriber.on('connect', function(err){
+      if(api.config.redis.password != null && api.config.redis.password != ''){
+        api.redis.subscriber.auth(api.config.redis.password);
+      }
       if(api.config.redis.database != null){ api.redis.subscriber.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
