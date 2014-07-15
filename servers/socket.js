@@ -40,7 +40,7 @@ var socket = function(api, options, next){
 
   server._start = function(next){
     if(options.secure == false){
-      server.server = net.createServer(function(rawConnection){
+      server.server = net.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
       });
     } else {
@@ -190,6 +190,9 @@ var socket = function(api, options, next){
   }
 
   var handleConnection = function(rawConnection){
+    if(api.config.servers.socket.setKeepAlive === true){
+      rawConnection.setKeepAlive(true);
+    }
     rawConnection.socketDataString = '';
     server.buildConnection({
       rawConnection  : rawConnection,

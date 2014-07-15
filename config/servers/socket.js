@@ -11,6 +11,8 @@ exports.default = {
         port: 5000,
         // which IP to listen on (use 0.0.0.0 for all)
         bindIP: '0.0.0.0'
+        // Enabple TCP KeepAlive pings on each connection?
+        setKeepAlive: false
       }
     }
   }
