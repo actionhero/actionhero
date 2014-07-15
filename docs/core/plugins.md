@@ -77,3 +77,4 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 - [ah-sequelize-plugin](https://github.com/evantahler/ah-sequelize-plugin) Sequelize Integration for mySQL or Postgres
 - [ah-nodemailer-plugin](https://github.com/panjiesw/ah-nodemailer-plugin) Nodemailer Integration
 - [ah-ratelimit-plugin](https://github.com/innerdvations/ah-ratelimit-plugin) Rate Limits
+- [ah-autosession-plugin](https://github.com/innerdvations/ah-autosession-plugin) Sessions (based off of redis-sessions)
