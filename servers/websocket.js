@@ -176,10 +176,13 @@ var websocket = function(api, options, next){
   /////////////
 
   var handleConnection = function(rawConnection){
-    server.buildConnection({
-      rawConnection  : rawConnection,
-      remoteAddress  : rawConnection.address.ip,
-      remotePort     : rawConnection.address.port
+    browser_fingerprint.fingerprint(rawConnection, api.config.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash) {
+      rawConnection.fingerprint = fingerprint;
+      server.buildConnection ({
+        rawConnection : rawConnection,
+        remoteAddress : rawConnection.address.ip,
+        remotePort    : rawConnection.address.port
+      });
     });
   }
 
