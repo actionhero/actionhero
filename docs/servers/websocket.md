@@ -7,9 +7,9 @@ title: Documentation - WebSocket Server
 
 ## General
 
-actionhero uses [Priums](https://github.com/primus/primus) for web sockets.  The Primus project allows you to choose from many webscoket backends, including `ws`, `engine.io`, `socket.io`, and more. Within actionhero, web sockets are bound to the web server (either http or https).
+actionhero uses [Primus](https://github.com/primus/primus) for web sockets.  The Primus project allows you to choose from many websocket backends, including `ws`, `engine.io`, `socket.io`, and more. Within actionhero, web sockets are bound to the web server (either http or https).
 
-actionhero will generate the client-side javasctipt needed for you (based on the actionheroClient library, priums, and the underlying ws transport).  This file is regenerated each time you boot the application.
+Actionhero will generate the client-side javascript needed for you (based on the actionheroClient library, primus, and the underlying ws transport). This file is regenerated each time you boot the application.
 
 **Warning**
 
@@ -140,4 +140,3 @@ client: {
   // queueSize:        Infinity,
 },
 {% endhighlight %}
-
