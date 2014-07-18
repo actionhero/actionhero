@@ -177,13 +177,17 @@ var websocket = function(api, options, next){
   /////////////
 
   var handleConnection = function(rawConnection){
-    browser_fingerprint.fingerprint(rawConnection, api.config.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash) {
-      rawConnection.fingerprint = fingerprint;
-      server.buildConnection ({
-        rawConnection : rawConnection,
-        remoteAddress : rawConnection.address.ip,
-        remotePort    : rawConnection.address.port
-      });
+    // Check if we got any cookies with the websocket request
+    var gotCookies = browser_fingerprint.parseCookies(rawConnection);
+    // If the configured sessionid cookie is provided, enhance the websocket session with it
+    var sessionIdCookie = gotCookies[api.config.servers.web.fingerprintOptions.cookieKey];
+    if(sessionIdCookie){
+      rawConnection.fingerprint = sessionIdCookie;
+    }
+    server.buildConnection ({
+      rawConnection : rawConnection,
+      remoteAddress : rawConnection.address.ip,
+      remotePort    : rawConnection.address.port
     });
   }
 
