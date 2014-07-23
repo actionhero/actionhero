@@ -140,7 +140,7 @@ describe('Core: API', function(){
 
     it('will fail on a missing action + version', function(done){
       api.specHelper.runAction('versionedAction', {apiVersion: 10}, function(response, connection){
-        response.error.should.equal('Error: versionedAction is not a known action or that is not a valid apiVersion.');
+        response.error.should.equal('Error: unknown action or invalid apiVersion');
         done();
       });
     });

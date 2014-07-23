@@ -105,7 +105,7 @@ var routes = function(api, next){
     api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
     api.log(counter + ' routes loaded from ' + api.routes.routesFile, 'debug');
 
-    if(api.config.servers.web.simpleRouting === true){
+    if(api.config.servers.web != null && api.config.servers.web.simpleRouting === true){
       var simplePaths = [];
       for(var action in api.actions.actions){
         simplePaths.push('/' + action);
