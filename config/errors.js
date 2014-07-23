@@ -25,7 +25,7 @@ exports.default = {
 
       // user requested an unknown action
       unknownAction: function(action){
-        return String(action) + ' is not a known action or that is not a valid apiVersion.';
+        return 'unknown action or invalid apiVersion';
       },
 
       // action not useable by this client/server type
