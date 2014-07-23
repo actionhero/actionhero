@@ -31,7 +31,7 @@ Collections that you are reccomended not leave unmodifeid are un-expanded `[Obje
         // _starters: [] 
     },
 
-    // commands to control server sate
+    // commands to control server state
     commands:{ 
         initialize: [Function],
         start: [Function],
