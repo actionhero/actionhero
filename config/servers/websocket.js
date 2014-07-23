@@ -27,7 +27,6 @@ exports.default = {
           // methods:       ['GET','HEAD','PUT','POST','DELETE','OPTIONS'],
           // credentials:   true,
           // maxAge:        '30 days',
-          // headers:       false,
           // exposed:       false,
         },
 
