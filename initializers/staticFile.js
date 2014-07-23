@@ -7,14 +7,18 @@ var staticFile = function(api, next){
   api.staticFile = {
 
     path: function(connection){
-      return api.config.general.paths.public[0];
+      if(api.config.general.paths == null || api.config.general.paths.public.length == 0){
+        return null;
+      }else{
+        return api.config.general.paths.public[0];
+      }
     },
 
     // connection.params.file should be set
     // callback is of the form: callback(connection, error, fileStream, mime, length)
     get: function(connection, callback){
       var self = this;
-      if(connection.params.file == null){
+      if(connection.params.file == null || api.staticFile.path(connection) == null){
         self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
       } else {
         var file = path.normalize(api.staticFile.path(connection) + '/' + connection.params.file);

@@ -24,6 +24,7 @@ exports.default = {
         urlPathForActions : 'api',
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
+        //  set to `null` to disable the file server entirely 
         urlPathForFiles : 'public',
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal

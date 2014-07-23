@@ -321,7 +321,7 @@ var web = function(api, options, next){
     apiPathParts.shift();
     var i;
     if(pathParts.length > 0){
-      if(pathParts[1] == api.config.servers.web.urlPathForActions){
+      if(pathParts[1] == api.config.servers.web.urlPathForActions || api.config.servers.web.urlPathForFiles == null){
         requestMode = 'api';
         apiPathParts.shift();
       } else if(pathParts[1] == api.config.servers.web.urlPathForFiles || connection.rawConnection.parsedURL.pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0){
