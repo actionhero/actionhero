@@ -16,9 +16,13 @@ var routes = function(api, next){
         var match = api.routes.matchURL(connection.rawConnection.parsedURL.pathname, route.path);
         if(match.match === true){
           for(var param in match.params){
-            var decodedName = decodeURIComponent(param.replace(/\+/g, ' '));
-            var decodedValue = decodeURIComponent(match.params[param].replace(/\+/g, ' '));
-            connection.params[decodedName] = decodedValue;
+            try{
+              var decodedName = decodeURIComponent(param.replace(/\+/g, ' '));
+              var decodedValue = decodeURIComponent(match.params[param].replace(/\+/g, ' '));
+              connection.params[decodedName] = decodedValue;
+            }catch(e){
+              // malformed URL
+            }
           }
           connection.params['action'] = route.action;
           break;
