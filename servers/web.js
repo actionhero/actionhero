@@ -307,6 +307,7 @@ var web = function(api, options, next){
     var requestMode = api.config.servers.web.rootEndpointType;
     var pathParts = connection.rawConnection.parsedURL.pathname.split('/');
     while(pathParts[0] === ''){ pathParts.shift(); }
+    if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
     if(pathParts[0] != null && pathParts[0] === api.config.servers.web.urlPathForActions){
       requestMode = 'api';
       pathParts.shift();
@@ -376,7 +377,7 @@ var web = function(api, options, next){
       }
       callback(requestMode);
     }
-    
+
   }
 
   var fillParamsFromWebRequest = function(connection, varsHash){

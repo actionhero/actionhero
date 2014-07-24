@@ -626,18 +626,18 @@ describe('Server: Web', function(){
       });
     });
 
-    // it('to match, a route much match all parts of the URL', function(done){
-    //   request.get(url + '/api/thing', function(err, response, body){
-    //     body = JSON.parse(body);
-    //     body.requesterInformation.receivedParams.action.should.equal('thing')
+    it('to match, a route much match all parts of the URL', function(done){
+      request.get(url + '/api/thing', function(err, response, body){
+        body = JSON.parse(body);
+        body.requesterInformation.receivedParams.action.should.equal('thing')
         
-    //     request.get(url + '/api/thing/stuff', function(err, response, body){
-    //       body = JSON.parse(body);
-    //       body.requesterInformation.receivedParams.action.should.equal('thingStuff')
-    //       done();
-    //     });
-    //   });
-    // });
+        request.get(url + '/api/thing/stuff', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('thingStuff')
+          done();
+        });
+      });
+    });
 
     it('regexp matches will provide proper variables', function(done){
       request.post(url + '/api/login/123', function(err, response, body){

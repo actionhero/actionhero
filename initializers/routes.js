@@ -37,8 +37,14 @@ var routes = function(api, next){
     var matchParts = match.split('/');
     var regexp = '';
     var variable = '';
+    
     if(matchParts[0] == ''){ matchParts.splice(0, 1) }
     if(matchParts[(matchParts.length - 1)] == ''){ matchParts.pop() }
+    
+    if(matchParts.length != pathParts.length){
+      return response;
+    }
+
     for(var i in matchParts){
       var part = matchParts[i];
       if(!pathParts[i]){
@@ -61,6 +67,7 @@ var routes = function(api, next){
         }
       }
     }
+
     response.match = true;
     return response;
   }
