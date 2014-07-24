@@ -3,6 +3,7 @@ var UglifyJS = require('uglify-js');
 var fs       = require('fs');
 var path     = require('path');
 var util     = require('util');
+var browser_fingerprint = require('browser_fingerprint');
 
 var websocket = function(api, options, next){
 
@@ -176,10 +177,17 @@ var websocket = function(api, options, next){
   /////////////
 
   var handleConnection = function(rawConnection){
-    server.buildConnection({
-      rawConnection  : rawConnection,
-      remoteAddress  : rawConnection.address.ip,
-      remotePort     : rawConnection.address.port
+    // Check if we got any cookies with the websocket request
+    var gotCookies = browser_fingerprint.parseCookies(rawConnection);
+    // If the configured sessionid cookie is provided, enhance the websocket session with it
+    var sessionIdCookie = gotCookies[api.config.servers.web.fingerprintOptions.cookieKey];
+    if(sessionIdCookie){
+      rawConnection.fingerprint = sessionIdCookie;
+    }
+    server.buildConnection ({
+      rawConnection : rawConnection,
+      remoteAddress : rawConnection.address.ip,
+      remotePort    : rawConnection.address.port
     });
   }
 
