@@ -28,6 +28,7 @@ var actions = function(api, next){
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
+      process.exit();
     }
 
     if(typeof action.name != 'string' || action.name.length < 1){

@@ -1,6 +1,6 @@
 exports.action = {
-  name:                   'documentation',
-  description:            'documentation',
+  name:                   'showDocumentation',
+  description:            'return API documentation',
   blockedConnectionTypes: [],
   outputExample:          {},
   matchExtensionMimeType: false,
@@ -13,7 +13,7 @@ exports.action = {
   },
 
   run: function(api, connection, next){    
-    connection.response = api.documentation.documentation;
+    connection.response.documentation = api.documentation.documentation;
     next(connection, true);
   }
 };

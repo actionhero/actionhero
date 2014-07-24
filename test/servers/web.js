@@ -419,7 +419,7 @@ describe('Server: Web', function(){
   describe('documentation', function(){
 
     it('documentation can be returned via a documentation action', function(done){
-      request.get(url + '/api/documentation', function(err, response, body){
+      request.get(url + '/api/showDocumentation', function(err, response, body){
         body = JSON.parse(body);
         body.documentation.should.be.an.instanceOf(Object);
         done();
@@ -427,7 +427,7 @@ describe('Server: Web', function(){
     });
 
     it('should have actions with all the right parts', function(done){
-      request.get(url + '/api/', function(err, response, body){
+      request.get(url + '/api/showDocumentation', function(err, response, body){
         body = JSON.parse(body);
         for(var actionName in body.documentation){
           for(var version in body.documentation[actionName]){
