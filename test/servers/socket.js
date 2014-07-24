@@ -71,7 +71,7 @@ describe('Server: Socket', function(){
   it('socket connections should be able to connect and get JSON', function(done){
     makeSocketRequest(client, 'hello', function(response){
       response.should.be.an.instanceOf(Object)
-      response.error.should.equal('Error: hello is not a known action or that is not a valid apiVersion.');
+      response.error.should.equal('Error: unknown action or invalid apiVersion');
       done();
     });
   });

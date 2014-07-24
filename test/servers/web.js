@@ -39,17 +39,16 @@ describe('Server: Web', function(){
   });
 
   it('params work', function(done){
-    request.get(url + '/api/testAction/', function(err, response, body){
+    request.get(url + '/api?key=value', function(err, response, body){
       body = JSON.parse(body);
-      body.requesterInformation.receivedParams.action.should.equal('testAction')
+      body.requesterInformation.receivedParams.key.should.equal('value')
       done();
     });
   });
 
   it('params are ignored unless they are in the whitelist', function(done){
-    request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
+    request.get(url + '/api?crazyParam123=something', function(err, response, body){
       body = JSON.parse(body);
-      body.requesterInformation.receivedParams.action.should.equal('testAction');
       should.not.exist(body.requesterInformation.receivedParams['crazyParam123']);
       done();
     });
@@ -82,7 +81,7 @@ describe('Server: Web', function(){
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
       body = JSON.parse(body);
-      body.error.should.equal('Error: IAMNOTANACTION is not a known action or that is not a valid apiVersion.')
+      body.error.should.equal('Error: unknown action or invalid apiVersion')
       done();
     });
   });
@@ -160,6 +159,8 @@ describe('Server: Web', function(){
           }
         }
       }
+
+      api.routes.loadRoutes();
       done();
     });
 
@@ -189,6 +190,7 @@ describe('Server: Web', function(){
   })
 
   it('returnErrorCodes false should still have a status of 200', function(done){
+    api.config.servers.web.returnErrorCodes = false;
     request.del(url + '/api/', function(err, response, body){
       body = JSON.parse(body);
       response.statusCode.should.eql(200);
@@ -201,7 +203,6 @@ describe('Server: Web', function(){
     request.del(url + '/api/', function(err, response, body){
       body = JSON.parse(body);
       response.statusCode.should.eql(404);
-      api.config.servers.web.returnErrorCodes = false;
       done();
     });
   });
@@ -228,6 +229,8 @@ describe('Server: Web', function(){
           }
         }
       }
+
+      api.routes.loadRoutes();
       done();
     });
 
@@ -258,7 +261,7 @@ describe('Server: Web', function(){
     });
 
     it('should respond to OPTIONS with only HTTP headers', function(done){
-      request({method: 'options', url: url + '/api/x'}, function(err, response, body){
+      request({method: 'options', url: url + '/api/cacheTest'}, function(err, response, body){
         response.statusCode.should.eql(200);
         response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE');
         response.headers['access-control-allow-origin'].should.equal('*');
@@ -269,9 +272,8 @@ describe('Server: Web', function(){
 
     it('should respond to TRACE with parsed params received', function(done){
       request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, function(err, response, body){
-        body = JSON.parse(body);        
+        body = JSON.parse(body);  
         response.statusCode.should.eql(200);
-        body.receivedParams.action.should.equal('x');
         body.receivedParams.key.should.equal('someKey');
         body.receivedParams.value.should.equal('someValue');
         done();
@@ -357,6 +359,7 @@ describe('Server: Web', function(){
         }
       }
 
+      api.routes.loadRoutes();
       done();
     });
 
@@ -415,8 +418,8 @@ describe('Server: Web', function(){
 
   describe('documentation', function(){
 
-    it('documentation should be returned for web clients with no params', function(done){
-      request.get(url + '/api/', function(err, response, body){
+    it('documentation can be returned via a documentation action', function(done){
+      request.get(url + '/api/documentation', function(err, response, body){
         body = JSON.parse(body);
         body.documentation.should.be.an.instanceOf(Object);
         done();
@@ -460,16 +463,8 @@ describe('Server: Web', function(){
       });
     });
 
-    it('file: ?filename should work like a path', function(done){
-      request.get(url + '/public?file=simple.html', function(err, response, body){
-        response.statusCode.should.equal(200);
-        response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
-        done();
-      });
-    });
-
     it('I should not see files outside of the public dir', function(done){
-      request.get(url + '/public/?file=../config.json', function(err, response, body){
+      request.get(url + '/public/../config.json', function(err, response, body){
         response.statusCode.should.equal(404);
         response.body.should.equal( api.config.errors.fileNotFound() );
         done();
@@ -497,21 +492,6 @@ describe('Server: Web', function(){
   describe('routes', function(){
     
     before(function(done){
-      api.routes.loadRoutes({
-        all: [
-          { path: '/user/:userID', action: 'user' }
-        ],
-        get: [
-          { path: '/users', action: 'usersList' },
-          { path: '/search/:term', action: 'search' },
-          { path: '/c/:key/:value', action: 'cacheTest' },
-          { path: '/mimeTestAction/:key', action: 'mimeTestAction' }
-        ],
-        post: [
-          { path: '/login/:userID(^\\d{3}$)', action: 'login' }
-        ]
-      });
-
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
         '1': {
@@ -525,6 +505,23 @@ describe('Server: Web', function(){
           }
         }
       }
+
+      api.routes.loadRoutes({
+        all: [
+          { path: '/user/:userID', action: 'user' }
+        ],
+        get: [
+          { path: '/users', action: 'usersList' },
+          { path: '/search/:term', action: 'search' },
+          { path: '/c/:key/:value', action: 'cacheTest' },
+          { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
+          { path: '/thing', action: 'thing' },
+          { path: '/thing/stuff', action: 'thingStuff' }
+        ],
+        post: [
+          { path: '/login/:userID(^\\d{3}$)', action: 'login' }
+        ]
+      });
 
       done();
     });
@@ -552,8 +549,7 @@ describe('Server: Web', function(){
     it('unknown actions are still unknown', function(done){
       request.get(url + '/api/a_crazy_action', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('a_crazy_action')
-        body.error.should.equal('Error: a_crazy_action is not a known action or that is not a valid apiVersion.')
+        body.error.should.equal('Error: unknown action or invalid apiVersion')
         done();
       });
     });
@@ -630,6 +626,19 @@ describe('Server: Web', function(){
       });
     });
 
+    it('to match, a route much match all parts of the URL', function(done){
+      request.get(url + '/api/thing', function(err, response, body){
+        body = JSON.parse(body);
+        body.requesterInformation.receivedParams.action.should.equal('thing')
+        
+        request.get(url + '/api/thing/stuff', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('thingStuff')
+          done();
+        });
+      });
+    });
+
     it('regexp matches will provide proper variables', function(done){
       request.post(url + '/api/login/123', function(err, response, body){
         body = JSON.parse(body);
@@ -651,8 +660,7 @@ describe('Server: Web', function(){
     it('regexp match failures will be rejected', function(done){
       request.post(url + '/api/login/1234', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('Error: login is not a known action or that is not a valid apiVersion.');
-        body.requesterInformation.receivedParams.action.should.equal('login');
+        body.error.should.equal('Error: unknown action or invalid apiVersion');
         should.not.exist(body.requesterInformation.receivedParams.userID);
         done();
       });

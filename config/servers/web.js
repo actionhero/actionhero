@@ -29,6 +29,10 @@ exports.default = {
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
         rootEndpointType : 'file',
+        // simple routing also adds an 'all' route which matches /api/:action for all actions
+        simpleRouting : true,
+        // queryRouting allows an action to be defined via a URL param, ie: /api?action=:action
+        queryRouting : true,
         // The header which will be returned for all flat file served from /public; defined in seconds
         flatFileCacheDuration : 60,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
@@ -55,7 +59,7 @@ exports.default = {
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
         //  You can also set connection.rawConnection.responseHttpCode to specify a code per request.
-        returnErrorCodes: false
+        returnErrorCodes: true
       }
     }
   }
