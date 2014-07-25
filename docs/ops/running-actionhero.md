@@ -122,6 +122,8 @@ actionhero.start(params, function(err, api){
 });
 {% endhighlight %}
 
+From within actionhero itself (actions, initilizers, etc), you can use `api.commands.start`, `api.commands.stop`, and `api.commands.restart` to control the server. 
+
 ## Grunt
 
 actionhero integrates with [grunt](http://gruntjs.com/) to allow you to tun manual tasks within actionhero's environment.  Those of you coming from Ruby, grunt is very similar to `rake` or `make`.
