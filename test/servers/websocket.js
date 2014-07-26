@@ -1,4 +1,5 @@
 var should              = require('should');
+var request             = require('request');
 var EventEmitter        = require('events').EventEmitter
 var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
 var actionhero          = new actionheroPrototype();
@@ -7,6 +8,8 @@ var api;
 var client_1;
 var client_2;
 var client_3;
+
+var url
 
 var connectClients = function(callback){
   // get actionheroClient in scope
@@ -32,6 +35,7 @@ describe('Server: Web Socket', function(){
   before(function(done){
     actionhero.start(function(err, a){
       api = a;
+      url = 'http://localhost:' + api.config.servers.web.port;
 
       connectClients(function(){
         done();
@@ -294,6 +298,14 @@ describe('Server: Web Socket', function(){
         done();
       });
     });
+
+  });
+
+  describe('fingerprint', function(){
+    
+    // TODO: Cannot test socket within a browser context
+    // public/linkedSession.html has been provided as an example for now
+    it('will have the same fingerprint as the browser cookie which spawned the connection');
 
   });
 
