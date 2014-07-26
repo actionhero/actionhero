@@ -18,8 +18,8 @@ exports.sessions(api, next){
   };
 
   api.session.fingerprint = function(connection){
-    if(connection.type === 'web'){
-      return connection.rawConnection.fingerprint;
+    if(connection.fingerprint != null){
+      return connection.fingerprint;
     }else{
       return conneciton.id;
     }

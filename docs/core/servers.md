@@ -78,7 +78,7 @@ server.buildConnection({
     responseHttpCode: responseHttpCode,
     parsedURL: parsedURL
   }, 
-  id: fingerprint, 
+  id: randomNumber(), 
   remoteAddress: remoteIP, 
   remotePort: req.connection.remotePort}
 ); // will emit "connection"

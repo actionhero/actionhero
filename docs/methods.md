@@ -101,6 +101,7 @@ connection = new api.connection({
 
 - data is required, and must contain: `{type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}`
 - If your connection already has an ID (from your server implementation, or browser_fingerprint), you can also pass `data.id`, otherwise a new id will be generated.
+- If you want to link multiple connections together, consiter using `connection.fingerprint`
 - When connections are built, they are added automatically to `api.connections`
 - `.connection.params`, `connection.response`, etc are automatically built into the connection object
 

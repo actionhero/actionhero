@@ -94,6 +94,12 @@ The contents of the `file` callback look like:
 }
 {% endhighlight %}
 
+## Linking websockets to web auth
+
+actionhero provides `connection.fingerprint` where available to help you link websocket connections to related web connections. While every connection will always have a unique `connection.id`, we attempt to build `connection.fingerprint` by checking the headers the websocket connection began with.  If the cookie defined by `api.config.servers.web.fingerprint.cookieKey` is present, we will store its value on the websocket connection.  
+
+You can read more about using a value like `connection.fingerprint` in an [authentication middleware](/docs/core/middleware.html) or using it as a key for [session information](/docs/examples/initialzers/session.html).
+
 ## Options
 
 You can create your client with options.  Options for both the server and client are stored in `/config/servers/websocket.js`.  Note there are 3 sections: 'server', 'client', and 'generation':
