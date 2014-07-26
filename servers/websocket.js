@@ -1,8 +1,9 @@
-var primus   = require('primus');
-var UglifyJS = require('uglify-js');
-var fs       = require('fs');
-var path     = require('path');
-var util     = require('util');
+var primus              = require('primus');
+var UglifyJS            = require('uglify-js');
+var fs                  = require('fs');
+var path                = require('path');
+var util                = require('util');
+var browser_fingerprint = require('browser_fingerprint');
 
 var websocket = function(api, options, next){
 
@@ -176,10 +177,13 @@ var websocket = function(api, options, next){
   /////////////
 
   var handleConnection = function(rawConnection){
+    var parsedCookies   = browser_fingerprint.parseCookies(rawConnection);
+    var fingerprint     = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey];
     server.buildConnection({
       rawConnection  : rawConnection,
       remoteAddress  : rawConnection.address.ip,
-      remotePort     : rawConnection.address.port
+      remotePort     : rawConnection.address.port,
+      fingerprint    : fingerprint,
     });
   }
 

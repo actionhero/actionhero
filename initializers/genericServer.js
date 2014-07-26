@@ -42,16 +42,17 @@ var genericServer = function(api, next){
 
   api.genericServer.prototype.buildConnection = function(data){
     var self = this;
-    var connection = new api.connection({
+    var details = {
       type: self.type,
       id: data.id,
       remotePort: data.remotePort,
       remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection
-    });
-    if(self.attributes.canChat === true){
-      connection.canChat = true;
     }
+    if(self.attributes.canChat === true){ details.canChat = true; }
+    if(data.fingerprint != null ){ details.fingerprint = data.fingerprint; }
+    var connection = new api.connection(details);
+    
     connection.sendMessage = function(message){
       self.sendMessage(connection, message);
     }

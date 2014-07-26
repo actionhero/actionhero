@@ -75,7 +75,8 @@ actionheroClient.prototype.configure = function(callback){
 
   self.messageCount = 0;
   self.detailsView(function(details){
-    self.id = details.data.id;
+    self.id          = details.data.id;
+    self.fingerprint = details.data.fingerprint;
     if(self.rooms.length > 0){
       self.rooms.forEach(function(room){
         self.send({event: 'roomAdd', room: room});

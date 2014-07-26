@@ -312,6 +312,11 @@ describe('Server: Web', function(){
               fingerprint1.should.equal(fingerprint2);
               fingerprint1.should.equal(fingerprint3);
               fingerprint1.should.equal(fingerprint4);
+
+              fingerprint1.should.equal(body1.requesterInformation.fingerprint);
+              fingerprint2.should.equal(body2.requesterInformation.fingerprint);
+              fingerprint3.should.equal(body3.requesterInformation.fingerprint);
+              fingerprint4.should.equal(body4.requesterInformation.fingerprint);
               done();
             });
           });
