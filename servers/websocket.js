@@ -151,9 +151,12 @@ var websocket = function(api, options, next){
   }
 
   server.writeClientJS = function(){
+    if(api.config.general.paths.public == null || api.config.general.paths.public.length == 0){
+      return;
+    }
     if(api.config.servers.websocket.clientJsPath != null && api.config.servers.websocket.clientJsName != null){
       var base = path.normalize(
-        api.config.general.paths.public + 
+        api.config.general.paths.public[0] + 
         path.sep + 
         api.config.servers.websocket.clientJsPath + 
         path.sep + 
