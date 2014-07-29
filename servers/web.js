@@ -202,6 +202,7 @@ var web = function(api, options, next){
       // will emit 'connection'
         rawConnection: {
           req: req,
+          rawRequestBodyData: Buffer(''),
           res: res,
           params: {},
           method: method,
@@ -329,6 +330,10 @@ var web = function(api, options, next){
 
     // API
     else if(requestMode === 'api'){
+      connection.rawConnection.req.on('data', function(buffer) {
+        connection.rawConnection.rawRequestBodyData = Buffer.concat([connection.rawConnection.rawRequestBodyData, buffer]);
+      });
+      
       if(connection.rawConnection.method === 'TRACE'){ requestMode = 'trace'; }
 
       fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query);
