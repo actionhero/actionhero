@@ -9,8 +9,6 @@ title: Documentation - Example Actions
 
 **[randomNumber](https://github.com/evantahler/actionhero/blob/master/actions/randomNumber.js)**: This example shows how to craft a simple action with no input, but to respond differently to clients based on their HTTP method (if it exists)
 
-**[chat](https://github.com/evantahler/actionhero/blob/master/actions/roomManager.js)**: This action shows how it is possible to use the chatRoom features of actionhero such that a web client can broadcast a message to all persistently connected clients, and use the other chatRoom methods
-
 **[status](https://github.com/evantahler/actionhero/blob/master/actions/status.js)**: This action will render some statistics about this actionhero node, and all nodes in the cluster.  Useful for health checks.
 
 **[inspectTasks](https://gist.github.com/4399793)**: This action will retrieve the status of the task queue.
