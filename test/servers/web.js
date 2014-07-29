@@ -188,6 +188,60 @@ describe('Server: Web', function(){
       });
     })
   })
+  
+    describe('Check that raw request body data is stored', function () {
+    before(function(done){
+      api.actions.versions.rawBodyDataTestAction = [1]
+      api.actions.actions.rawBodyDataTestAction = {
+        '1': {
+          name: 'rawBodyDataTestAction',
+          description: 'I return connection.rawConnection.rawRequestBodyData',
+          version: 1,
+          inputs: { required: [], optional: [] },
+          outputExample: {},
+          run:function(api, connection, next){
+            connection.response.rawData = connection.rawConnection.rawRequestBodyData.toString('utf-8');
+            next(connection, true);
+          }
+        }
+      }
+
+      api.routes.loadRoutes();
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.actions['rawBodyDataTestAction'];
+      delete api.actions.versions['rawBodyDataTestAction'];
+      done();
+    });
+
+    it('.body.rawData should contain raw string of JSON request', function (done) {
+      var requestBody = JSON.stringify({key:'value'});
+      request.post(url + '/api/rawBodyDataTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
+        body = JSON.parse(body);
+        body.rawData.should.eql(requestBody);
+        done();
+      });
+    })
+    
+    it('.body.rawData should contain raw string of Form POST request', function (done) {
+      request.post(url + '/api/rawBodyDataTestAction', {form: {key:'key', value: 'value'}}, function(err, response, body){
+        body = JSON.parse(body);
+        body.rawData.should.eql("key=key&value=value");
+        done();
+      });
+    })
+    
+    it('.body.rawData should contain empty raw string of GET request', function (done) {
+      request.get(url + '/api/rawBodyDataTestAction?param=value', function(err, response, body){
+        body = JSON.parse(body);
+        body.rawData.should.eql("");
+        done();
+      });
+    })
+  })
+
 
   it('returnErrorCodes false should still have a status of 200', function(done){
     api.config.servers.web.returnErrorCodes = false;
