@@ -305,15 +305,25 @@ var web = function(api, options, next){
   var determineRequestParams = function(connection, callback){
     // determine file or api request
     var requestMode = api.config.servers.web.rootEndpointType;
-    var pathParts = connection.rawConnection.parsedURL.pathname.split('/');
+    var pathname = connection.rawConnection.parsedURL.pathname
+    var pathParts = pathname.split('/');
     while(pathParts[0] === ''){ pathParts.shift(); }
     if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
+
     if(pathParts[0] != null && pathParts[0] === api.config.servers.web.urlPathForActions){
       requestMode = 'api';
       pathParts.shift();
     }else if(pathParts[0] != null && pathParts[0] === api.config.servers.web.urlPathForFiles){
       requestMode = 'file'
       pathParts.shift();
+    }else if(pathParts[0] != null && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
+      requestMode = 'api';
+      var matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
+      for(var i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
+    }else if(pathParts[0] != null && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
+      requestMode = 'file'
+      var matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
+      for(var i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
     }
 
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');

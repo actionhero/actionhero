@@ -492,6 +492,54 @@ describe('Server: Web', function(){
       });
     });
 
+    describe('depth routes', function(){
+      before(function(){
+        api.config.servers.web.urlPathForActions = '/craz/y/action/path'
+        api.config.servers.web.urlPathForFiles = '/a/b/c'
+      })
+
+      after(function(){
+        api.config.servers.web.urlPathForActions = 'api'
+        api.config.servers.web.urlPathForFiles = 'public'
+      })
+
+      it('old action routes stop working', function(done){
+        request.get(url + '/api/randomNumber', function(err, response, body){
+          response.statusCode.should.equal(404);
+          done();
+        });
+      });
+
+      it('can ask for nested URL actions', function(done){
+        request.get(url + '/craz/y/action/path/randomNumber', function(err, response, body){
+          response.statusCode.should.equal(200);
+          done();
+        });
+      });
+
+      it('old file routes stop working', function(done){
+        request.get(url + '/public/simple.html', function(err, response, body){
+          response.statusCode.should.equal(404);
+          done();
+        });
+      });
+
+      it('can ask for nested URL files', function(done){
+        request.get(url + '/a/b/c/simple.html', function(err, response, body){
+          response.statusCode.should.equal(200);
+          response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
+          done();
+        });
+      });
+
+      it('can ask for nested URL files with depth', function(done){
+        request.get(url + '/a/b/c/css/actionhero.css', function(err, response, body){
+          response.statusCode.should.equal(200);
+          done();
+        });
+      });
+    })
+
   });
 
   describe('routes', function(){
