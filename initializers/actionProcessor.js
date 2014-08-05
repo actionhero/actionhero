@@ -57,7 +57,8 @@ var actionProcessor = function(api, next){
     }
 
     if(error !== null){
-      self.connection.error = new Error( error );
+      if(typeof error === "string") self.connection.error = new Error( error );
+      else self.connection.error = error;
     }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
