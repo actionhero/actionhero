@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe.only('Core: Errors', function(){
+describe('Core: Errors', function(){
   before(function(done){
     actionhero.start(function(err, a){
       api = a;
