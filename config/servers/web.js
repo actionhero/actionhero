@@ -40,7 +40,10 @@ exports.default = {
           cookieKey: 'sessionID',
           toSetCookie: true,
           onlyStaticElements: false,
-          settings: 'path=/;'
+          settings: {
+            path: '/',
+            expires: 3600000,
+          }
         },
         // Options to be applied to incoming file uploads.
         //  More options and details at https://github.com/felixge/node-formidable
