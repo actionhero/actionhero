@@ -22,7 +22,7 @@ exports['generate'] = function(binary, next){
     routes_js                     : '/routes.js',
     action_status                 : '/actions/status.js',
     action_documentation          : '/actions/showDocumentation.js',
-    gruntfile                     : '/grunt/actionhero_gruntfile.js',
+    gruntfile                     : '/bin/templates/gruntfile.js',
     public_index                  : '/public/index.html',
     public_chat                   : '/public/chat.html',
     public_logo                   : '/public/logo/actionhero.png',
