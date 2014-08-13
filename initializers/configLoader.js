@@ -62,69 +62,83 @@ var configLoader = function(api, next){
     throw new Error(configPath + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
   }
 
-  api.config = {};
+  api.loadConfigDirectory = function(configPath, watch){
+    var configFiles = api.utils.recursiveDirectoryGlob(configPath);
+    
+    var loadRetries = 0;
+    var loadErrors = {};
+    for(var i = 0, limit = configFiles.length; (i < limit); i++){
+      var f = configFiles[i];
+      try{
+        // attempt configuration file load
+        var localConfig = require(f);
+        if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+        if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+        // configuration file load success: clear retries and
+        // errors since progress has been made
+        loadRetries = 0;
+        loadErrors = {};
+      } catch(error){
+        // error loading configuration, abort if all remaining
+        // configuration files have been tried and failed
+        // indicating inability to progress 
+        loadErrors[f] = error.toString();
+        if(++loadRetries == limit-i){
+            throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
+        }
+        // adjust configuration files list: remove and push
+        // failed configuration to the end of the list and
+        // continue with next file at same index
+        configFiles.push(configFiles.splice(i--, 1)[0]);
+        continue;
+      }
 
-  var configFiles = api.utils.recursiveDirectoryGlob(configPath);
-  var loadRetries = 0;
-  var loadErrors = {};
-  for(var i = 0, limit = configFiles.length; (i < limit); i++){
-    var f = configFiles[i];
-    try{
-      // attempt configuration file load
+      if(watch !== false){
+        // configuration file loaded: set watch
+        api.watchFileAndAct(f, function(){
+          api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
+          delete require.cache[require.resolve(f)];
+          api.commands.restart.call(api._self);
+        });
+      }      
+    }
+
+    // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
+    // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
+    configFiles.forEach(function(f){
       var localConfig = require(f);
       if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
       if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
-      // configuration file load success: clear retries and
-      // errors since progress has been made
-      loadRetries = 0;
-      loadErrors = {};
-    } catch(error){
-      // error loading configuration, abort if all remaining
-      // configuration files have been tried and failed
-      // indicating inability to progress 
-      loadErrors[f] = error.toString();
-      if(++loadRetries == limit-i){
-          throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
-      }
-      // adjust configuration files list: remove and push
-      // failed configuration to the end of the list and
-      // continue with next file at same index
-      configFiles.push(configFiles.splice(i--, 1)[0]);
-      continue;
+    })
+
+    if(api._startingParams.configChanges != null){
+      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
     }
 
-    // configuration file loaded: set watch
-    api.watchFileAndAct(f, function(){
-      api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
-      delete require.cache[require.resolve(f)];
-      api.commands.restart.call(api._self);
+    api.config.general.paths.plugin.forEach(function(p){
+      api.config.general.plugins.forEach(function(plugin){
+        var pluginPackageBase = path.normalize(p + '/' + plugin);
+        if(api.project_root != pluginPackageBase){
+          var found = false;
+          if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
+          if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
+          if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
+          if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
+        }
+      });    
     });
   }
 
-  // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
-  // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
-  configFiles.forEach(function(f){
-    var localConfig = require(f);
-    if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
-    if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
-  })
 
-  if(api._startingParams.configChanges != null){
-    api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
-  }
 
-  api.config.general.paths.plugin.forEach(function(p){
-    api.config.general.plugins.forEach(function(plugin){
-      var pluginPackageBase = path.normalize(p + '/' + plugin);
-      if(api.project_root != pluginPackageBase){
-        var found = false;
-        if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
-        if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
-        if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
-        if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
-      }
-    });    
-  });
+  api.config = {};
+  
+  //load the default config of actionhero
+  api.loadConfigDirectory(__dirname + '/../config');
+  //now load the project specific config
+  api.loadConfigDirectory(configPath);
+
+  
 
   next();
 }
