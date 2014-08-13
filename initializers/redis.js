@@ -11,8 +11,6 @@ var redis = function(api, next){
     subscriber: false,
   };
 
-  if(api.config.redis.database == null){ api.config.redis.database = 0 }
-
   var redisPackage = require(api.config.redis.package);;
   if(api.config.redis.package === 'fakeredis'){
     api.log('running with fakeredis', 'warning');

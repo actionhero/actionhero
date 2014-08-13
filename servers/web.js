@@ -28,12 +28,7 @@ var web = function(api, options, next){
     server.log('api.config.servers.web.rootEndpointType can only be \'api\' or \'file\'', 'emerg');
     process.exit();
   }
-  if(api.config.servers.web.flatFileCacheDuration == null){
-    api.config.servers.web.flatFileCacheDuration = 0;
-  }
-  if(api.config.servers.web.directoryFileType == null){
-    api.config.servers.web.directoryFileType = 'index.html';
-  }
+
 
   //////////////////////
   // REQUIRED METHODS //
@@ -383,7 +378,7 @@ var web = function(api, options, next){
         connection.params['file'] = pathParts.join(path.sep);
       }
       if(connection.params['file'] == '' || connection.params['file'][connection.params['file'].length - 1] === '/'){
-        connection.params['file'] = connection.params['file'] + api.config.servers.web.directoryFileType;
+        connection.params['file'] = connection.params['file'] + api.config.general.directoryFileType;
       }
       callback(requestMode);
     }
