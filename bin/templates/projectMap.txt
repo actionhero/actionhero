@@ -38,6 +38,5 @@
 |-- (tests for your API)
 |
 readme.md
-routes.js
 gruntfile.js
 package.json

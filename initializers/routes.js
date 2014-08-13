@@ -4,7 +4,7 @@ var routes = function(api, next){
 
   api.routes = {};
   api.routes.routes = {};
-  api.routes.routesFile = api.project_root + '/routes.js';
+  api.routes.routesFile = api.project_root + '/routes.js'; //deprecated, see github issue #450
 
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
@@ -78,12 +78,11 @@ var routes = function(api, next){
     api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
     if(rawRoutes == null){
+      //depricated, see github issue #450
       if(fs.existsSync(api.routes.routesFile)){
+        api.log('Using the routes.js in your project root is depricated.', 'warning')
         delete require.cache[require.resolve(api.routes.routesFile)];
         rawRoutes = require(api.routes.routesFile).routes;
-      } else {
-        api.log('no routes file found, skipping', 'debug');
-        return;
       }
     }
 
@@ -126,11 +125,15 @@ var routes = function(api, next){
     }
   };
 
-  api.watchFileAndAct(api.routes.routesFile, function(){
-    api.routes.loadRoutes();
-  });
-
-  api.routes.loadRoutes();
+  //depricated, see github issue #450
+  if(fs.existsSync(api.routes.routesFile)){
+    api.watchFileAndAct(api.routes.routesFile, function(){
+      api.routes.loadRoutes();
+    });
+  }else{
+    api.routes.loadRoutes(api.config.routes);
+  }  
+  
   next();
 }
 
