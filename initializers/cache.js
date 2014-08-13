@@ -3,8 +3,6 @@ var fs = require('fs');
 var cache = function(api, next){
 
   api.cache = {};
-  api.cache.sweeperTimer = null;
-  api.cache.sweeperTimeout = 60 * 1000;
   api.cache.redisPrefix = api.config.general.cachePrefix;
 
   api.cache._start = function(api, callback){
