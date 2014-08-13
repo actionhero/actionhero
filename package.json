@@ -50,13 +50,7 @@
     "request": "~2.39.0",
     "redis-sentinel-client": "latest"
   },
-  "optionalDependencies": {
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-jshint": "~0.9.2",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-project-update": "~0.2.2",
-    "jshint-stylish": "~0.1.5"
-  },
+  "optionalDependencies": {},
   "bin": {
     "actionhero": "./bin/actionhero"
   },
@@ -66,7 +60,6 @@
     "test": "echo \"** Running with FakeRedis -> `echo $FAKEREDIS` **\" && NODE_ENV=test  node ./node_modules/.bin/mocha",
     "start": "node ./bin/actionhero"
   },
-  "prepublish": "grunt publish",
   "subdomain": "actionhero",
   "domains": [
     "demo.actionherojs.com",
