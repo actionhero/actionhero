@@ -145,7 +145,6 @@ var configLoader = function(api, next){
   if(api._startingParams.configChanges != null){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
-  console.log(api.config);
 
   next();
 }
