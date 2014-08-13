@@ -114,19 +114,6 @@ var configLoader = function(api, next){
     if(api._startingParams.configChanges != null){
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
     }
-
-    api.config.general.paths.plugin.forEach(function(p){
-      api.config.general.plugins.forEach(function(plugin){
-        var pluginPackageBase = path.normalize(p + '/' + plugin);
-        if(api.project_root != pluginPackageBase){
-          var found = false;
-          if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
-          if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
-          if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
-          if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
-        }
-      });    
-    });
   }
 
 
@@ -138,6 +125,18 @@ var configLoader = function(api, next){
   //now load the project specific config
   api.loadConfigDirectory(configPath);
 
+  
+  api.config.general.paths.plugin.forEach(function(p){
+    api.config.general.plugins.forEach(function(plugin){
+      var pluginPackageBase = path.normalize(p + '/' + plugin);
+      if(api.project_root != pluginPackageBase){
+        if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
+        if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
+        if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
+        if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
+      }
+    });    
+  });
   
 
   next();
