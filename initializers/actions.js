@@ -8,10 +8,6 @@ var actions = function(api, next){
   api.actions.preProcessors = {};
   api.actions.postProcessors = {};
 
-  if(api.config.general.simultaneousActions == null){
-    api.config.general.simultaneousActions = 5;
-  }
-
   api.actions.addPreProcessor = function(func, priority) {
     if(!priority) priority = api.config.general.defaultMiddlewarePriority;
     priority = Number(priority); // ensure priority is numeric
