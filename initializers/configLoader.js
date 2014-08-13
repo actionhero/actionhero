@@ -109,27 +109,27 @@ var configLoader = function(api, next){
       var localConfig = require(f);
       if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
       if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
-    })
-
-    if(api._startingParams.configChanges != null){
-      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
-    }
+    });
+  
   }
-
-
 
   api.config = {};
   
   //load the default config of actionhero
-  api.loadConfigDirectory(__dirname + '/../config');
-  //now load the project specific config
-  api.loadConfigDirectory(configPath);
+  api.loadConfigDirectory(__dirname + '/../config', false);
 
+  //load the project specific config
+  api.loadConfigDirectory(configPath);
   
+  //loop over it's plugins
   api.config.general.paths.plugin.forEach(function(p){
     api.config.general.plugins.forEach(function(plugin){
       var pluginPackageBase = path.normalize(p + '/' + plugin);
       if(api.project_root != pluginPackageBase){
+        if(fs.existsSync(pluginPackageBase + "/config")){
+          //and merge the plugin config 
+          api.loadConfigDirectory( pluginPackageBase + '/config', false);
+        }
         if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
         if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
         if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
@@ -138,9 +138,18 @@ var configLoader = function(api, next){
     });    
   });
   
+  //now load the project config again to overrule plugin configs
+  api.loadConfigDirectory(configPath);
+    
+  //finally merge starting params into the config
+  if(api._startingParams.configChanges != null){
+    api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
+  }
+  console.log(api.config);
 
   next();
 }
+
 
 /////////////////////////////////////////////////////////////////////
 // exports
