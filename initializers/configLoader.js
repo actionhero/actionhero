@@ -64,7 +64,7 @@ var configLoader = function(api, next){
 
   api.loadConfigDirectory = function(configPath, watch){
     var configFiles = api.utils.recursiveDirectoryGlob(configPath);
-
+    
     var loadRetries = 0;
     var loadErrors = {};
     for(var i = 0, limit = configFiles.length; (i < limit); i++){
@@ -120,7 +120,12 @@ var configLoader = function(api, next){
 
   //load the project specific config
   api.loadConfigDirectory(configPath);
-
+  
+  var plugin_actions      = [];
+  var plugin_tasks        = [];
+  var plugin_servers      = [];
+  var plugin_initializers = [];
+  
   //loop over it's plugins
   api.config.general.paths.plugin.forEach(function(p){
     api.config.general.plugins.forEach(function(plugin){
@@ -130,17 +135,23 @@ var configLoader = function(api, next){
           //and merge the plugin config 
           api.loadConfigDirectory( pluginPackageBase + '/config', false);
         }
-        if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
-        if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
-        if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
-        if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
+        if(fs.existsSync(pluginPackageBase + "/actions")){      plugin_actions.unshift(      pluginPackageBase + '/actions'      );}
+        if(fs.existsSync(pluginPackageBase + "/tasks")){        plugin_tasks.unshift(        pluginPackageBase + '/tasks'        );}
+        if(fs.existsSync(pluginPackageBase + "/servers")){      plugin_servers.unshift(      pluginPackageBase + '/servers'      );}
+        if(fs.existsSync(pluginPackageBase + "/initializers")){ plugin_initializers.unshift( pluginPackageBase + '/initializers' );}
       }
     });    
   });
-
+  
   //now load the project config again to overrule plugin configs
   api.loadConfigDirectory(configPath);
-
+    
+  //apply plugin paths for actions, tasks, servers and initializers
+  api.config.general.paths.action      = plugin_actions.concat(api.config.general.paths.action); 
+  api.config.general.paths.task        = plugin_tasks.concat(api.config.general.paths.task);
+  api.config.general.paths.server      = plugin_servers.concat(api.config.general.paths.server);
+  api.config.general.paths.initializer = plugin_initializers.concat(api.config.general.paths.initializer);
+        
   //finally merge starting params into the config
   if(api._startingParams.configChanges != null){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
