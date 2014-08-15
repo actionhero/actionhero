@@ -11,6 +11,8 @@ describe('Plugin', function(){
       api = a;
       done();
     })
+    //delete the ACTIONHERO_CONFIG env to prevent some errors on other tests
+    delete process.env.ACTIONHERO_CONFIG;
   });
 
   after(function(done){
@@ -45,7 +47,7 @@ describe('Plugin', function(){
     });
   });
   
-  it('plugin initializer should be able loaded', function(){
+  it('plugin initializer should be loaded', function(){
     api.test_initializer.should.be.equal('OK');
   });
   
