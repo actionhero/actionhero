@@ -66,5 +66,35 @@ describe('Plugin', function(){
       done()
     })
   });
+  
+  it('default actionhero servers config should be loaded', function(){
+    api.config.servers.web.port.should.be.equal(18080);
+  });
+  
+  it('default actionhero errors config should be loaded', function(){
+    api.config.errors.serverErrorMessage.should.be.a.function;
+    api.config.errors.serverErrorMessage().should.be.equal('The server experienced an internal error');
+  });
+  
+  
+  it('public path should be changed by the plugin', function(){
+    api.config.general.paths.public.length.should.be.equal(1);
+    api.config.general.paths.public[0].should.endWith('test/plugins/test_plugin/config/../public');
+  });
+  
+  it('getStaticFile() should return the plugin\'s public file', function(done){
+    api.specHelper.getStaticFile('test.txt', function(file){
+      should.not.exist(file.error);
+      file.content.should.be.equal('plugin test file');
+      done();
+    });
+  });
+  
+  it('other paths should be actionhero defaults', function(){
+    api.config.general.paths.log.length.should.be.equal(1);
+    api.config.general.paths.pid.length.should.be.equal(1);
+    api.config.general.paths.server.length.should.be.equal(1);
+  });
+  
 
 });

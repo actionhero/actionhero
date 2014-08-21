@@ -134,7 +134,14 @@ var configLoader = function(api, next){
         if(fs.existsSync(pluginPackageBase + "/config")){
           //and merge the plugin config 
           api.loadConfigDirectory( pluginPackageBase + '/config', false);
+          //collect all paths that could have multiple target folders
+          //is doesnt make any sense to have multiple public folders...
+          plugin_actions      = plugin_actions.concat(api.config.general.paths.action);
+          plugin_tasks        = plugin_tasks.concat(api.config.general.paths.task);
+          plugin_servers      = plugin_servers.concat(api.config.general.paths.server);
+          plugin_initializers = plugin_initializers.concat(api.config.general.paths.initializer);
         }
+        //additionally add the following paths if they exists
         if(fs.existsSync(pluginPackageBase + "/actions")){      plugin_actions.unshift(      pluginPackageBase + '/actions'      );}
         if(fs.existsSync(pluginPackageBase + "/tasks")){        plugin_tasks.unshift(        pluginPackageBase + '/tasks'        );}
         if(fs.existsSync(pluginPackageBase + "/servers")){      plugin_servers.unshift(      pluginPackageBase + '/servers'      );}
@@ -145,12 +152,12 @@ var configLoader = function(api, next){
   
   //now load the project config again to overrule plugin configs
   api.loadConfigDirectory(configPath);
-    
+  
   //apply plugin paths for actions, tasks, servers and initializers
-  api.config.general.paths.action      = plugin_actions.concat(api.config.general.paths.action); 
-  api.config.general.paths.task        = plugin_tasks.concat(api.config.general.paths.task);
-  api.config.general.paths.server      = plugin_servers.concat(api.config.general.paths.server);
-  api.config.general.paths.initializer = plugin_initializers.concat(api.config.general.paths.initializer);
+  api.config.general.paths.action      = api.utils.arrayUniqueify( plugin_actions.concat(api.config.general.paths.action) );
+  api.config.general.paths.task        = api.utils.arrayUniqueify( plugin_tasks.concat(api.config.general.paths.task) );
+  api.config.general.paths.server      = api.utils.arrayUniqueify( plugin_servers.concat(api.config.general.paths.server) );
+  api.config.general.paths.initializer = api.utils.arrayUniqueify( plugin_initializers.concat(api.config.general.paths.initializer) );
         
   //finally merge starting params into the config
   if(api._startingParams.configChanges != null){

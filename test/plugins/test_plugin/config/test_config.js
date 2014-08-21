@@ -6,13 +6,22 @@ exports.default = {
   },
   
   
-  general: function(api){
+  general: function(api){    
     return {
       serverName: 'actionhero API (Plugin)',
       paths: {
-        'action': [ __dirname + '/../actions2' ] 
+        'public': [__dirname + '/../public'],
+        'action': [__dirname + '/../actions2']
       },
       test_config: 'Plugin'
+    }
+  },
+  
+  servers:{
+    websocket: function(api){
+      return {
+        enabled: false
+      }
     }
   }
 }
