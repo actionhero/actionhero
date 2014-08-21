@@ -16,6 +16,9 @@ describe('Plugin', function(){
   });
 
   after(function(done){
+    //delete the ACTIONHERO_CONFIG env to prevent some errors on other tests
+    delete process.env.ACTIONHERO_CONFIG;
+    
     actionhero.stop(function(err){
       done();
     });
