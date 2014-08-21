@@ -9,6 +9,10 @@ describe('Plugin', function(){
     process.env.ACTIONHERO_CONFIG = __dirname + '/config';
     actionhero.start(function(err, a){
       api = a;
+      
+      //test variable for plugin tasks
+      api.config.test.task = null;
+      
       done();
     })
     //delete the ACTIONHERO_CONFIG env to prevent some errors on other tests
