@@ -91,7 +91,7 @@ When building a connection:
 connection = new api.connection({
     type "web",
     remoteIp: '123.123.123.123',
-    remorePort: 80,
+    remotePort: 80,
     rawConnection: {
       req: req,
       res: res,
