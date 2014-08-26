@@ -118,7 +118,7 @@ describe('Core: Cache', function(){
             should.equal(null, load_resp);
             done();
           });
-        }, 2001);
+        }, 1001);
       });
     });
   });
@@ -140,7 +140,7 @@ describe('Core: Cache', function(){
               //wait another `timeout` and the key load should fail without the extension
               setTimeout(function(){
                 api.cache.load('testKey_slow', function(err, loadResp){
-                  String(err).should.equal('Error: Object expired')
+                  String(err).should.equal('Error: Object not found')
                   should.equal(null, loadResp)
                   done()
                 })
