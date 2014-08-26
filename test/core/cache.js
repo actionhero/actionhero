@@ -118,7 +118,7 @@ describe('Core: Cache', function(){
             should.equal(null, load_resp);
             done();
           });
-        }, 1001);
+        }, 2001);
       });
     });
   });
