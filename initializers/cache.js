@@ -113,8 +113,11 @@ var cache = function(api, next){
           process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
         }
       } else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp == null){
+        var lastReadAt = cacheObj.readAt;
         cacheObj.readAt = new Date().getTime();
-        if(cacheObj.expireTimestamp != null && options.expireTimeMS){
+        if(cacheObj.expireTimestamp != null && options.expireTimeMS == null){
+          var expireTimeSeconds = Math.floor((cacheObj.expireTimestamp - new Date().getTime()) / 1000);
+        }else if(cacheObj.expireTimestamp != null && options.expireTimeMS != null){
           cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
           var expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000);
         }
@@ -123,7 +126,7 @@ var cache = function(api, next){
             api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
           }
           if(typeof next == 'function'){
-            process.nextTick(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, cacheObj.readAt); });
+            process.nextTick(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt); });
           }
         });
       } else {
@@ -132,7 +135,6 @@ var cache = function(api, next){
         }
       }
     });
-
   };
 
   api.cache.destroy = function(key, next){

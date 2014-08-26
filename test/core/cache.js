@@ -107,6 +107,22 @@ describe('Core: Cache', function(){
     });
   });
 
+  it('cache.load without changing the expireTime will re-apply the redis expire', function(done){
+    var key = 'testKey'
+    api.cache.save(key, 'val', 1000, function(err, save_resp){
+      api.cache.load(key, function(err, load_resp){
+        load_resp.should.equal('val');
+        setTimeout(function(){
+          api.cache.load(key, function(err, load_resp){
+            String(err).should.equal('Error: Object not found')
+            should.equal(null, load_resp);
+            done();
+          });
+        }, 1001);
+      });
+    });
+  });
+
   it('cache.load with options that extending expireTime should return cached item', function(done){
     var expireTime = 400
     var timeout = 320
