@@ -26,7 +26,7 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 ### api.cache.load
 
 * Invoke: `api.cache.load(key, next)` or `api.cache.load(key, options, next)`
-	* `options` can be `{expireTime: 1234}` where the act of reading the key will reset the key's expire time
+	* `options` can be `{expireTimeMS: 1234}` where the act of reading the key will reset the key's expire time
 	* If the requested `key` is not found (or is expired), all values returned will be null.
 * Callback: `next(error, value, expireTimestamp, createdAt, readAt)`
 	* `value` will be the object which was saved and `null` if the object cannot be found or is expired
