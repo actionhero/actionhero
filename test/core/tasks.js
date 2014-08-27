@@ -256,16 +256,16 @@ describe('Core: Tasks', function(){
       api.resque.queue.enqueue(queue, 'someCrazyTask', {}, function(){
         api.config.tasks.queues = ['*'];
         api.resque.startWorkers(function(){
-          var listener = function(queue, job, error){
+          var listener = function(queue, job, f){
             queue.should.equal(queue);
             job.class.should.equal('someCrazyTask')
             job.queue.should.equal('testQueue')
-            String(error).should.equal('Error: No job defined for class \'someCrazyTask\'');
-            api.resque.workers[0].removeListener('error', listener);
+            String(f).should.equal('Error: No job defined for class \'someCrazyTask\'');
+            api.resque.workers[0].removeListener('failure', listener);
             done();
           }
 
-          api.resque.workers[0].on('error', listener);
+          api.resque.workers[0].on('failure', listener);
         });
       });
     });

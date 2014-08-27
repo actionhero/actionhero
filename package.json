@@ -31,7 +31,7 @@
   "dependencies": {
     "grunt": "~0.4.2",
     "browser_fingerprint": "~0.0.5",
-    "node-resque": "~0.8.4",
+    "node-resque": "~0.9.0",
     "async": "~0.9.0",
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
