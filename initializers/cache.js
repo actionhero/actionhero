@@ -249,7 +249,7 @@ var cache = function(api, next){
 
     api.redis.client.get(api.cache.lockPrefix + key, function(err, lockedBy){
       if(err){
-        next(err);
+        next(err, false);
       }else if(lockedBy === api.cache.lockName || lockedBy == null){
         next(null, true);
       }else{
