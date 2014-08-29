@@ -11,7 +11,7 @@ actionhero ships with the functions needed for a distributed key-value cache.  Y
 
 The cache's redis server is defined by `api.config.redis`.  Note that if `api.config.redis.fake = true`, you will be using an in-memory redis server rather than a real redis process.
 
-## Methods
+## Cache Methods
 
 ### api.cache.save
 
@@ -36,6 +36,34 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 
 ### api.cache.destroy
 
+## Lock Methods
+
+You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first `api.cache.lock` a key, and then save it to prevent other nodes from modifying the object. 
+
+### api.cache.lock
+
+* Invoke: `api.cache.save(key, expireTimeMS, next)`
+  * `expireTimeMS` is optional, and will be `expireTimeMS = api.cache.lockDuration = api.config.general.lockDuration`
+* Callback: `next(error, lockOk)`
+  * `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  * `lockOk` will be `true` or `false` depending on if the lock was obtained.
+
+### api.cache.unlock
+
+* Invoke: `api.cache.save(key, next)`
+* Callback: `next(error, lockOk)`
+  * `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  * `lockOk` will be `true` or `false` depending on if the lock was removed.
+
+### api.cache.checkLock
+
+* Invoke: `api.cache.save(key,retry,  next)`
+  * `retry` is either `null` or an integer (ms) that we should keep retrying until the lock is free to be re-obtained
+* Callback: `next(error, lockOk)`
+  * `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  * `lockOk` will be `true` or `false` depending on if the lock is currently obtainable.
+
+
 * Invoke: `api.cache.destroy(key)`
 * Callback: `next(error)`
 	* will be false if the object cannot be found, and true if destroyed
@@ -46,4 +74,4 @@ You can see an example of using the cache within an action in [actions/cacheTest
 
 The timestamps regarding `api.cache.load` are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).
 
-Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state.
+Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state, or use the locking methods.
