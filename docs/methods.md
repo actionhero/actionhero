@@ -138,6 +138,26 @@ connection = new api.connection({
 - `next(error, didDelete)`
 - didDelete will be true if the object existed and was deleted.
 
+### api.cache.lock(key, expireTimeMS, next)
+- `expireTimeMS` is optional, and will be `expireTimeMS = api.cache.lockDuration = api.config.general.lockDuration`
+- Callback: `next(error, lockOk)`
+  - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  - `lockOk` will be `true` or `false` depending on if the lock was obtained.
+
+### api.cache.unlock(key, next)`
+- Callback: `next(error, lockOk)`
+  - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  - `lockOk` will be `true` or `false` depending on if the lock was removed.
+
+### api.cache.checkLock(key,retry,  next)`
+-  `retry` is either `null` or an integer (ms) that we should keep retrying until the lock is free to be re-obtained
+- Callback: `next(error, lockOk)`
+  - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
+  - `lockOk` will be `true` or `false` depending on if the lock is currently obtainable.
+
+### api.cache.locks()`
+- Callback: `next(error, locks)`
+
 
 ## Chat Rooms
 

@@ -63,6 +63,11 @@ You may optionally implement locking methods along with your cache objects.  Thi
   * `error` will be null unless there was something wrong with the connection (perhaps a redis error)
   * `lockOk` will be `true` or `false` depending on if the lock is currently obtainable.
 
+### api.cache.locks
+* Invoke: `api.cache.save()`
+* Callback: `next(error, locks)`
+	* `locks` is an array of all currently active locks
+
 
 * Invoke: `api.cache.destroy(key)`
 * Callback: `next(error)`
