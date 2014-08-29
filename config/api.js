@@ -12,6 +12,10 @@ exports.default = {
       welcomeMessage: 'Hello! Welcome to the actionhero api',
       // the redis prefix for actionhero's cache objects
       cachePrefix: 'actionhero:cache:',
+      // the redis prefix for actionhero's cache/lock objects
+      lockPrefix: 'actionhero:lock:',
+      // how long will a lock last before it exipres (ms)?
+      lockDuration: 1000 * 10, // 10 seconds
       // Watch for changes in actions and tasks, and reload/restart them on the fly
       developmentMode: true,
       // How many pending actions can a single connection be working on
