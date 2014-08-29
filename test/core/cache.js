@@ -194,6 +194,97 @@ describe('Core: Cache', function(){
     });
   });
 
+  describe('locks', function(){
+
+    var key = 'testKey';
+    afterEach(function(done){
+      api.cache.lockName = api.id;
+      api.cache.unlock(key, function(err, lockOk){
+        done();
+      });
+    })
+
+    it('things can be locked, checked, and unlocked aribitrarily', function(done){
+      api.cache.lock(key, 100, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.checkLock(key, null, function(err, lockOk){
+          lockOk.should.equal(true);
+          api.cache.unlock(key, function(err, lockOk){
+            lockOk.should.equal(true);
+            done();
+          });
+        });
+      });
+    });
+
+    it('locks have a TTL and the default will be assumed from config', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.redis.client.ttl(api.cache.lockPrefix + key, function(err, ttl){
+          (ttl >= 9).should.equal(true);
+          (ttl <= 10).should.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('you can save an item if you do hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.save(key, 'value', function(err, success){
+          success.should.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('you cannot save a locked item if you do not hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.lockName = 'otherId';
+        api.cache.save(key, 'value', function(err, success){
+          String(err).should.equal('Error: Object Locked')
+          done();
+        });
+      });
+    });
+
+    it('you cannot destroy a locked item if you do not hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.lockName = 'otherId';
+        api.cache.destroy(key, function(err, success){
+          String(err).should.equal('Error: Object Locked')
+          done();
+        });
+      });
+    });
+
+    it('you can opt to retry to obtaina lock if a lock is held (READ)', function(done){
+      api.cache.lock(key, 1, function(err, lockOk){ // will be rounded up to 1s
+        lockOk.should.equal(true);
+        api.cache.save(key, 'value', function(err, success){
+          success.should.equal(true);
+
+          api.cache.lockName = 'otherId';
+          api.cache.checkLock(key, null, function(err, lockOk){
+            lockOk.should.equal(false);
+
+            var start = new Date().getTime();
+            api.cache.load(key, {retry: 2000}, function(err, data){
+              data.should.equal('value');
+              var delta = new Date().getTime() - start;
+              (delta >= 1000).should.equal(true)
+              done();
+            });
+
+          });
+        });
+      });
+    });
+
+  });
+
   describe('cache dump files', function(){
 
     if (typeof os.tmpdir != 'function'){ os.tmpdir = os.tmpDir } // resolution for node v0.8.x
