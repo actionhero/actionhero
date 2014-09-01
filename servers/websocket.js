@@ -138,7 +138,8 @@ var websocket = function(api, options, next){
     if(minimize == null){ minimize = false; }
     var libSource = api.servers.servers.websocket.server.library();
     var ahClientSource = server.compileActionheroClientJS();
-    ahClientSource = '(function(exports){ \r\n' 
+    ahClientSource = ';;;\r\n'
+      + '(function(exports){ \r\n' 
       + ahClientSource
       + '\r\n'
       + 'exports.actionheroClient = actionheroClient; \r\n'
