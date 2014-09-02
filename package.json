@@ -35,13 +35,13 @@
     "async": "~0.9.0",
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
-    "redis": "~0.11.0",
+    "redis": "~0.12.0",
     "ws":  "~0.4.31",
     "optimist": "~0.6.1",
     "winston": "0.7.2",
     "node-uuid": "~1.4.1",
     "fakeredis": "~0.2.0",
-    "primus": "~2.3.0",
+    "primus": "~2.4.0",
     "uglify-js": "~2.4.14"
   },
   "devDependencies": {
