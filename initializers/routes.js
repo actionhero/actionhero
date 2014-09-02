@@ -127,6 +127,7 @@ var routes = function(api, next){
 
   //depricated, see github issue #450
   if(fs.existsSync(api.routes.routesFile)){
+    api.routes.loadRoutes();
     api.watchFileAndAct(api.routes.routesFile, function(){
       api.routes.loadRoutes();
     });

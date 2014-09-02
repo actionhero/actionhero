@@ -109,38 +109,64 @@ var configLoader = function(api, next){
       var localConfig = require(f);
       if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
       if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
-    })
-
-    if(api._startingParams.configChanges != null){
-      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
-    }
+    });
+  
   }
-
-
 
   api.config = {};
   
   //load the default config of actionhero
-  api.loadConfigDirectory(__dirname + '/../config');
-  //now load the project specific config
-  api.loadConfigDirectory(configPath);
+  api.loadConfigDirectory(__dirname + '/../config', false);
 
+  //load the project specific config
+  api.loadConfigDirectory(configPath);
   
+  var plugin_actions      = [];
+  var plugin_tasks        = [];
+  var plugin_servers      = [];
+  var plugin_initializers = [];
+  
+  //loop over it's plugins
   api.config.general.paths.plugin.forEach(function(p){
     api.config.general.plugins.forEach(function(plugin){
       var pluginPackageBase = path.normalize(p + '/' + plugin);
       if(api.project_root != pluginPackageBase){
-        if(fs.existsSync(pluginPackageBase + "/actions")){      api.config.general.paths.action.unshift(      pluginPackageBase + '/actions'      );}
-        if(fs.existsSync(pluginPackageBase + "/tasks")){        api.config.general.paths.task.unshift(        pluginPackageBase + '/tasks'        );}
-        if(fs.existsSync(pluginPackageBase + "/servers")){      api.config.general.paths.server.unshift(      pluginPackageBase + '/servers'      );}
-        if(fs.existsSync(pluginPackageBase + "/initializers")){ api.config.general.paths.initializer.unshift( pluginPackageBase + '/initializers' );}
+        if(fs.existsSync(pluginPackageBase + "/config")){
+          //and merge the plugin config 
+          api.loadConfigDirectory( pluginPackageBase + '/config', false);
+          //collect all paths that could have multiple target folders
+          //is doesnt make any sense to have multiple public folders...
+          plugin_actions      = plugin_actions.concat(api.config.general.paths.action);
+          plugin_tasks        = plugin_tasks.concat(api.config.general.paths.task);
+          plugin_servers      = plugin_servers.concat(api.config.general.paths.server);
+          plugin_initializers = plugin_initializers.concat(api.config.general.paths.initializer);
+        }
+        //additionally add the following paths if they exists
+        if(fs.existsSync(pluginPackageBase + "/actions")){      plugin_actions.unshift(      pluginPackageBase + '/actions'      );}
+        if(fs.existsSync(pluginPackageBase + "/tasks")){        plugin_tasks.unshift(        pluginPackageBase + '/tasks'        );}
+        if(fs.existsSync(pluginPackageBase + "/servers")){      plugin_servers.unshift(      pluginPackageBase + '/servers'      );}
+        if(fs.existsSync(pluginPackageBase + "/initializers")){ plugin_initializers.unshift( pluginPackageBase + '/initializers' );}
       }
     });    
   });
   
+  //now load the project config again to overrule plugin configs
+  api.loadConfigDirectory(configPath);
+  
+  //apply plugin paths for actions, tasks, servers and initializers
+  api.config.general.paths.action      = api.utils.arrayUniqueify( plugin_actions.concat(api.config.general.paths.action) );
+  api.config.general.paths.task        = api.utils.arrayUniqueify( plugin_tasks.concat(api.config.general.paths.task) );
+  api.config.general.paths.server      = api.utils.arrayUniqueify( plugin_servers.concat(api.config.general.paths.server) );
+  api.config.general.paths.initializer = api.utils.arrayUniqueify( plugin_initializers.concat(api.config.general.paths.initializer) );
+        
+  //finally merge starting params into the config
+  if(api._startingParams.configChanges != null){
+    api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
+  }
 
   next();
 }
+
 
 /////////////////////////////////////////////////////////////////////
 // exports
