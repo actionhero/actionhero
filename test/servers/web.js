@@ -507,7 +507,6 @@ describe('Server: Web', function(){
       after(function(done){
         fs.unlink('/tmp/testFile.html');
         api.config.general.paths.public.pop();
-        console.log(api.config.general.paths.public)
         process.nextTick(function(){ 
           done(); 
         });

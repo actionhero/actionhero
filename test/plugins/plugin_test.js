@@ -78,8 +78,10 @@ describe('Plugin', function(){
   
   
   it('public path should be changed by the plugin', function(){
-    api.config.general.paths.public.length.should.be.equal(1);
-    api.config.general.paths.public[0].should.endWith('test/plugins/test_plugin/config/../public');
+    api.config.general.paths.public.length.should.be.equal(2);
+    api.config.general.paths.public[1].should.endWith('test/plugins/test_plugin/public'); // this plugin
+    api.config.general.paths.public[0].should.endWith('application_public'); // normal project
+    
   });
   
   it('getStaticFile() should return the plugin\'s public file', function(done){
