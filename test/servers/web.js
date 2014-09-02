@@ -1,5 +1,6 @@
-var should = require('should');
+var should  = require('should');
 var request = require('request');
+var fs      = require('fs');
 var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -492,6 +493,35 @@ describe('Server: Web', function(){
       });
     });
 
+    describe('can serve files from more than one directory', function(){
+      var source = __dirname + "/../../public/simple.html"
+
+      before(function(done){
+        fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
+        api.config.general.paths.public.push('/tmp');
+        process.nextTick(function(){ 
+          done(); 
+        });
+      });
+
+      after(function(done){
+        fs.unlink('/tmp/testFile.html');
+        api.config.general.paths.public.pop();
+        console.log(api.config.general.paths.public)
+        process.nextTick(function(){ 
+          done(); 
+        });
+      });
+
+      it('works for secondary paths', function(done){
+        request.get(url + '/public/testFile.html', function(err, response, body){
+          response.statusCode.should.equal(200);
+          response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
+          done();
+        });
+      });
+    });
+
     describe('depth routes', function(){
       before(function(){
         api.config.servers.web.urlPathForActions = '/craz/y/action/path'
@@ -538,7 +568,7 @@ describe('Server: Web', function(){
           done();
         });
       });
-    })
+    });
 
   });
 
