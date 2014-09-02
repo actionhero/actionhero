@@ -125,6 +125,7 @@ var configLoader = function(api, next){
   var plugin_tasks        = [];
   var plugin_servers      = [];
   var plugin_initializers = [];
+  var plugin_publics      = [];
   
   //loop over it's plugins
   api.config.general.paths.plugin.forEach(function(p){
@@ -135,17 +136,18 @@ var configLoader = function(api, next){
           //and merge the plugin config 
           api.loadConfigDirectory( pluginPackageBase + '/config', false);
           //collect all paths that could have multiple target folders
-          //is doesnt make any sense to have multiple public folders...
           plugin_actions      = plugin_actions.concat(api.config.general.paths.action);
           plugin_tasks        = plugin_tasks.concat(api.config.general.paths.task);
           plugin_servers      = plugin_servers.concat(api.config.general.paths.server);
           plugin_initializers = plugin_initializers.concat(api.config.general.paths.initializer);
+          plugin_publics      = plugin_publics.concat(api.config.general.paths.public);
         }
         //additionally add the following paths if they exists
         if(fs.existsSync(pluginPackageBase + "/actions")){      plugin_actions.unshift(      pluginPackageBase + '/actions'      );}
         if(fs.existsSync(pluginPackageBase + "/tasks")){        plugin_tasks.unshift(        pluginPackageBase + '/tasks'        );}
         if(fs.existsSync(pluginPackageBase + "/servers")){      plugin_servers.unshift(      pluginPackageBase + '/servers'      );}
         if(fs.existsSync(pluginPackageBase + "/initializers")){ plugin_initializers.unshift( pluginPackageBase + '/initializers' );}
+        if(fs.existsSync(pluginPackageBase + "/public")){       plugin_publics.unshift(      pluginPackageBase + '/public'       );}
       }
     });    
   });
@@ -154,15 +156,29 @@ var configLoader = function(api, next){
   api.loadConfigDirectory(configPath);
   
   //apply plugin paths for actions, tasks, servers and initializers
-  api.config.general.paths.action      = api.utils.arrayUniqueify( plugin_actions.concat(api.config.general.paths.action) );
-  api.config.general.paths.task        = api.utils.arrayUniqueify( plugin_tasks.concat(api.config.general.paths.task) );
-  api.config.general.paths.server      = api.utils.arrayUniqueify( plugin_servers.concat(api.config.general.paths.server) );
-  api.config.general.paths.initializer = api.utils.arrayUniqueify( plugin_initializers.concat(api.config.general.paths.initializer) );
+  api.config.general.paths.action      = plugin_actions.concat(api.config.general.paths.action);
+  api.config.general.paths.task        = plugin_tasks.concat(api.config.general.paths.task);
+  api.config.general.paths.server      = plugin_servers.concat(api.config.general.paths.server);
+  api.config.general.paths.initializer = plugin_initializers.concat(api.config.general.paths.initializer);
+  api.config.general.paths.public      = plugin_publics.concat(api.config.general.paths.public);
         
+  // the first plugin path shoud alawys be the local project
+  api.config.general.paths.public.reverse();
+
   //finally merge starting params into the config
   if(api._startingParams.configChanges != null){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
+
+  // cleanup
+  api.config.general.paths.action      = api.utils.arrayUniqueify( api.config.general.paths.action.map(path.normalize) );
+  api.config.general.paths.task        = api.utils.arrayUniqueify( api.config.general.paths.task.map(path.normalize) );
+  api.config.general.paths.server      = api.utils.arrayUniqueify( api.config.general.paths.server.map(path.normalize) );
+  api.config.general.paths.initializer = api.utils.arrayUniqueify( api.config.general.paths.initializer.map(path.normalize) );
+  api.config.general.paths.public      = api.utils.arrayUniqueify( api.config.general.paths.public.map(path.normalize) );
+  api.config.general.paths.pid         = api.utils.arrayUniqueify( api.config.general.paths.pid.map(path.normalize) );
+  api.config.general.paths.log         = api.utils.arrayUniqueify( api.config.general.paths.log.map(path.normalize) );
+  api.config.general.paths.plugin      = api.utils.arrayUniqueify( api.config.general.paths.plugin.map(path.normalize) );
 
   next();
 }
