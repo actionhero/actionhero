@@ -37,11 +37,11 @@ The other way to modify the config is to pass a "changes" hash to the server dir
 
 The priority order of configs is:
 
-1) options passed in to boot with `actionhero.start({configChanges: configChanges}, callback)`
-2) environment-specific values in `/config`
-3) default values in `/config`
-4) default values of undifined settings from a plugin
-5) default values of undifined settings from actionhero's core
+1. options passed in to boot with `actionhero.start({configChanges: configChanges}, callback)`
+2. environment-specific values in `/config`
+3. default values in `/config`
+4. default values of undifined settings from a plugin
+5. default values of undifined settings from actionhero's core
 
 When building config files of your own, note that an `exports.default` is always required, and any environment overrides are optional.  What is exported is a hash which eventually resolves a synchronous function which accepts the `api` variable.
 
