@@ -58,6 +58,8 @@ An example web socket session might be the following:
 
 You can also inspect `client.state` ('connected', 'disconnected', etc).  The websocket client will attempt to re-connect automatically.
 
+If you want to communicate with a websocket client outside of an action, you can call `connection.send(message)` on the server. In the client lib, the event message will be fired. So, `client.on('message, function(m){ ... })`.  Be sure to add some descriptive content to the message you send from the sever (like perhaps `{"type": 'message type'}`) so you can route message types on the client.
+
 ## Methods
 
 Methods which the provided actionheroWebSocket object expose are:
