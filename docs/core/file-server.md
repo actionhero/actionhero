@@ -41,7 +41,7 @@ Note that you can optionally modify responseCodes (for HTTP clients only).  Be s
 
 ## Customizing the File Server
 
-By default, we want actionhero's file server to be very locked-down, and only serve files from a single directory.  This is the safest default for beginners. However, you can customize things by changing the behavior of `api.staticFile.path()`.  For example:
+By default, we want actionhero's file server to be very locked-down, and only serve files from directories defined in `api.config.general.paths.public`.  This is the safest default for beginners. However, you can customize things by changing the behavior of `api.staticFile.path()`.  For example:
 
 {% highlight javascript %}
 // in an initializer, override api.staticFile.path
