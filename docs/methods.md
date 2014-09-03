@@ -144,18 +144,18 @@ connection = new api.connection({
   - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
   - `lockOk` will be `true` or `false` depending on if the lock was obtained.
 
-### api.cache.unlock(key, next)`
+### api.cache.unlock(key, next)
 - Callback: `next(error, lockOk)`
   - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
   - `lockOk` will be `true` or `false` depending on if the lock was removed.
 
-### api.cache.checkLock(key,retry,  next)`
+### api.cache.checkLock(key,retry,  next)
 -  `retry` is either `null` or an integer (ms) that we should keep retrying until the lock is free to be re-obtained
 - Callback: `next(error, lockOk)`
   - `error` will be null unless there was something wrong with the connection (perhaps a redis error)
   - `lockOk` will be `true` or `false` depending on if the lock is currently obtainable.
 
-### api.cache.locks()`
+### api.cache.locks()
 - Callback: `next(error, locks)`
 
 
