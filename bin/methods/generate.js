@@ -1,43 +1,43 @@
 var fs = require('fs');
 
-exports['generate'] = function(binary, next){
+exports.generate = function(binary, next){
 
   //////// DOCUMENTS ////////
 
   var documents = {};
 
-  documents.projectMap = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/projectMap.txt');
+  documents.projectMap = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
-    config_api_js                 : '/config/api.js',
-    config_logger_js              : '/config/logger.js',
-    config_redis_js               : '/config/redis.js',
-    config_stats_js               : '/config/stats.js',
-    config_tasks_js               : '/config/tasks.js',
-    config_errors_js              : '/config/errors.js',
-    config_routes_js              : '/config/routes.js',    
-    config_socket_js              : '/config/servers/socket.js',
-    config_web_js                 : '/config/servers/web.js',
-    config_websocket_js           : '/config/servers/websocket.js',
-    package_json                  : '/package.json',
-    action_status                 : '/actions/status.js',
-    action_documentation          : '/actions/showDocumentation.js',
+    configApiJs                 : '/config/api.js',
+    configLoggerJs              : '/config/logger.js',
+    configRedisJs               : '/config/redis.js',
+    configStatsJs               : '/config/stats.js',
+    configTasksJs               : '/config/tasks.js',
+    configErrorsJs              : '/config/errors.js',
+    configRoutesJs              : '/config/routes.js',    
+    configSocketJs              : '/config/servers/socket.js',
+    configWebJs                 : '/config/servers/web.js',
+    configWebsocketJs           : '/config/servers/websocket.js',
+    packageJson                  : '/package.json',
+    actionStatus                 : '/actions/status.js',
+    actionDocumentation          : '/actions/showDocumentation.js',
     gruntfile                     : '/bin/templates/gruntfile.js',
-    public_index                  : '/public/index.html',
-    public_chat                   : '/public/chat.html',
-    public_logo                   : '/public/logo/actionhero.png',
-    public_css                    : '/public/css/actionhero.css',
-    example_test                  : '/test/template.js.example',
+    publicIndex                  : '/public/index.html',
+    publicChat                   : '/public/chat.html',
+    publicLogo                   : '/public/logo/actionhero.png',
+    publicCss                    : '/public/css/actionhero.css',
+    exampleTest                  : '/test/template.js.example',
   }
   for(var name in oldFileMap){
-    documents[name] = fs.readFileSync(binary.paths.actionhero_root + oldFileMap[name]);
+    documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
   }
 
-  var AHversionNumber = JSON.parse(documents.package_json).version;
+  var AHversionNumber = JSON.parse(documents.packageJson).version;
 
-  documents.package_json = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/package.json'));
-  documents.package_json = documents.package_json.replace('%%versionNumber%%', AHversionNumber);
-  documents.readme_md    = String(fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/README.md'));
+  documents.packageJson = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/package.json'));
+  documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
+  documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
 
   //////// LOGIC ////////
 
@@ -59,34 +59,34 @@ exports['generate'] = function(binary, next){
     '/tasks',
     '/test',
   ].forEach(function(dir){
-    binary.utils.create_dir_safely(binary.paths.project_root + dir);
+    binary.utils.createDirSafely(binary.paths.projectRoot + dir);
   });
 
   // make files
   var newFileMap = {
-    '/config/api.js'                                : 'config_api_js',
-    '/config/logger.js'                             : 'config_logger_js',
-    '/config/redis.js'                              : 'config_redis_js',
-    '/config/stats.js'                              : 'config_stats_js',
-    '/config/tasks.js'                              : 'config_tasks_js',
-    '/config/errors.js'                             : 'config_errors_js',
-    '/config/routes.js'                             : 'config_routes_js',
-    '/config/servers/socket.js'                     : 'config_socket_js',
-    '/config/servers/web.js'                        : 'config_web_js',
-    '/config/servers/websocket.js'                  : 'config_websocket_js',
-    '/package.json'                                 : 'package_json',
-    '/actions/status.js'                            : 'action_status',
-    '/actions/showDocumentation.js'                 : 'action_documentation',
-    '/public/index.html'                            : 'public_index',
-    '/public/chat.html'                             : 'public_chat',
-    '/public/css/actionhero.css'                    : 'public_css',
-    '/public/logo/actionhero.png'                   : 'public_logo',
-    '/README.md'                                    : 'readme_md',
+    '/config/api.js'                                : 'configApiJs',
+    '/config/logger.js'                             : 'configLoggerJs',
+    '/config/redis.js'                              : 'configRedisJs',
+    '/config/stats.js'                              : 'configStatsJs',
+    '/config/tasks.js'                              : 'configTasksJs',
+    '/config/errors.js'                             : 'configErrorsJs',
+    '/config/routes.js'                             : 'configRoutesJs',
+    '/config/servers/socket.js'                     : 'configSocketJs',
+    '/config/servers/web.js'                        : 'configWebJs',
+    '/config/servers/websocket.js'                  : 'configWebsocketJs',
+    '/package.json'                                 : 'packageJson',
+    '/actions/status.js'                            : 'actionStatus',
+    '/actions/showDocumentation.js'                 : 'actionDocumentation',
+    '/public/index.html'                            : 'publicIndex',
+    '/public/chat.html'                             : 'publicChat',
+    '/public/css/actionhero.css'                    : 'publicCss',
+    '/public/logo/actionhero.png'                   : 'publicLogo',
+    '/README.md'                                    : 'readmeMd',
     '/gruntfile.js'                                 : 'gruntfile',
-    '/test/example.js'                              : 'example_test',
+    '/test/example.js'                              : 'exampleTest',
   }
   for(var file in newFileMap){
-    binary.utils.create_file_safely(binary.paths.project_root + file, documents[newFileMap[file]]);
+    binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
   }
 
   binary.log('');

@@ -29,7 +29,7 @@ var path = require('path');
 var async = require('async');
 var readline = require('readline');
 
-exports['startCluster'] = function(binary, next){
+exports.startCluster = function(binary){
 
   var loopSleep = 1500;
 
@@ -39,7 +39,7 @@ exports['startCluster'] = function(binary, next){
       binary.numWorkers = binary.numCPUs - 2;
       binary.claimedWorkerIds = [];
       if(binary.numWorkers < 2){ binary.numWorkers = 2}
-      binary.execCMD = path.normalize(binary.paths.actionhero_root + '/bin/actionhero');
+      binary.execCMD = path.normalize(binary.paths.actionheroRoot + '/bin/actionhero');
       next();
     },
     pids: function(next){
@@ -69,12 +69,12 @@ exports['startCluster'] = function(binary, next){
       };
 
       for(var i in binary.clusterConfig){
-        if(binary.argv[i] != null && i != 'args'){
+        if(binary.argv[i] && i !== 'args'){
           binary.clusterConfig[i] = binary.argv[i];
         }
       }
 
-      if(binary.argv['config'] != null){ binary.clusterConfig.args += ' --config=' + binary.argv['config']; }
+      if(binary.argv.config){ binary.clusterConfig.args += ' --config=' + binary.argv.config; }
 
       next();
     },
@@ -96,7 +96,7 @@ exports['startCluster'] = function(binary, next){
       next();
     },
     pidFile: function(next){
-      if(binary.clusterConfig.pidfile != null){
+      if(binary.clusterConfig.pidfile){
         fs.writeFileSync(binary.clusterConfig.pidfile, process.pid.toString(), 'ascii');
       }
 
@@ -104,14 +104,13 @@ exports['startCluster'] = function(binary, next){
     },
     workerMethods: function(next){
       binary.claimWorkerId = function(){
-        var runningWorkersCount = (binary.utils.hashLength(cluster.workers));
         var expectedWorkerIds = []
         var i = 1;
         while(i <= binary.workersExpected){
           expectedWorkerIds.push(i);
           i++;
         }
-        for(var i in binary.claimedWorkerIds){
+        for(i in binary.claimedWorkerIds){
           var thisWorkerId = binary.claimedWorkerIds[i];
           expectedWorkerIds.splice(expectedWorkerIds.indexOf(thisWorkerId),1);
         }
@@ -123,7 +122,6 @@ exports['startCluster'] = function(binary, next){
         binary.claimedWorkerIds.splice(binary.claimedWorkerIds.indexOf(thisWorkerId),1);
       }
       binary.startAWorker = function(){
-        var workerID = (binary.utils.hashLength(cluster.workers)) + 1;
         var workerID = binary.claimWorkerId();
         if(binary.workerRestartArray.length > 0){
           workerID = workerID - binary.workerRestartArray.length;
@@ -135,7 +133,7 @@ exports['startCluster'] = function(binary, next){
         worker.workerID = workerID
         binary.log('starting worker #' + worker.workerID, 'info');
         worker.on('message', function(message){
-          if(worker.state != 'none'){
+          if(worker.state !== 'none'){
             binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: ' + message, 'info');
           }
         });
@@ -156,7 +154,7 @@ exports['startCluster'] = function(binary, next){
           setTimeout(binary.loopUntilNoWorkers, loopSleep);
         } else {
           binary.log('all workers gone', 'info');
-          if(binary.clusterConfig.pidfile != null){
+          if(binary.clusterConfig.pidfile){
             try { fs.unlinkSync(binary.clusterConfig.pidfile); } catch(e){}
           }
           setTimeout(process.exit, 500);
@@ -170,9 +168,8 @@ exports['startCluster'] = function(binary, next){
         }
       }
 
-      binary.reloadAWorker = function(next){
-        var count = 0;
-        for (var i in cluster.workers){ count++; }
+      binary.reloadAWorker = function(){
+        var count = binary.utils.hashLength(cluster.workers)
         if(binary.workersExpected > count){
           binary.startAWorker();
         }
@@ -188,6 +185,7 @@ exports['startCluster'] = function(binary, next){
 
       next();
     },
+
     process: function(next){
       process.stdin.resume();
       binary.workerRestartArray = []; // used to track rolling restarts of workers
@@ -199,11 +197,13 @@ exports['startCluster'] = function(binary, next){
         binary.workersExpected = 0;
         binary.setupShutdown();
       });
+
       process.on('SIGTERM', function(){
         binary.log('Signal: SIGTERM', 'debug');
         binary.workersExpected = 0;
         binary.setupShutdown();
       });
+
       process.on('SIGUSR2', function(){
         binary.log('Signal: SIGUSR2', 'debug');
         binary.log('swap out new workers one-by-one', 'info');
@@ -214,6 +214,7 @@ exports['startCluster'] = function(binary, next){
         binary.workerRestartArray.reverse();
         binary.reloadAWorker();
       });
+
       process.on('SIGHUP', function(){
         binary.log('Signal: SIGHUP', 'debug');
         binary.log('reload all workers now', 'info');
@@ -222,6 +223,7 @@ exports['startCluster'] = function(binary, next){
           worker.send('restart');
         }
       });
+
       process.on('SIGWINCH', function(){
         if(binary.isDaemon){
           binary.log('Signal: SIGWINCH', 'debug');
@@ -233,12 +235,14 @@ exports['startCluster'] = function(binary, next){
           }
         }
       });
+
       process.on('SIGTTIN', function(){
         binary.log('Signal: SIGTTIN', 'debug');
         binary.log('add a worker', 'info');
         binary.workersExpected++;
         binary.startAWorker();
       });
+
       process.on('SIGTTOU', function(){
         binary.log('Signal: SIGTTOU', 'debug');
         binary.log('remove a worker', 'info');
@@ -249,6 +253,7 @@ exports['startCluster'] = function(binary, next){
           break;
         }
       });
+
       process.on('exit', function(){
         binary.cleanup();
         binary.workersExpected = 0;
@@ -267,7 +272,8 @@ exports['startCluster'] = function(binary, next){
       
       next();
     },
-    start: function(next){
+
+    start: function(){
       cluster.setupMaster({
         exec : binary.clusterConfig.exec,
         args: binary.clusterConfig.args.split(' '),
@@ -280,10 +286,10 @@ exports['startCluster'] = function(binary, next){
       cluster.on('fork', function(worker) {
         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has spawned', 'info');
       });
-      cluster.on('listening', function(worker, address){
-        //
+      cluster.on('listening', function(){
+        // TODO?
       });
-      cluster.on('exit', function(worker, code, signal) {
+      cluster.on('exit', function(worker) {
         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has exited', 'alert');
         binary.releaseWorkerId(worker.workerID);
         // to prevent CPU explosions if crashing too fast

@@ -24,7 +24,7 @@ action.run = function(api, connection, next){
   api.stats.getAll(function(err, stats){
     connection.response.stats = stats;
     api.tasks.details(function(err, details){
-      connection.response.queues = details['queues'];
+      connection.response.queues = details.queues;
       next(connection, true);
     });
   });
