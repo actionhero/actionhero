@@ -1,5 +1,6 @@
 # actionhero.js 
 ## The Reusable, Scalable, and Quick node.js API Server
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 **Note that this project has recently been renamed `actionhero` (lowercase) on NPM.  Update your projects**
 
