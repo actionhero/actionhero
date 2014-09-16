@@ -34,7 +34,7 @@ module.exports = function(grunt){
     var done = this.async();
     grunt.startActionhero(function(api){
           
-      if(file == null){ file = 'cache.dump' }
+      if(!file){ file = 'cache.dump' }
       
       api.cache.dumpRead(file, function(error, count){
         if(error) throw error

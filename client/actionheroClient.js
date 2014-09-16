@@ -1,4 +1,5 @@
 var actionheroClient = function(options, client){
+
   var self = this;
 
   self.callbacks = {};
@@ -12,7 +13,7 @@ var actionheroClient = function(options, client){
     self.options[i] = options[i];
   }
 
-  if(client != null){
+  if(client){
     self.client = client;
   }
 }
@@ -34,7 +35,7 @@ actionheroClient.prototype.defaults = function(){
 actionheroClient.prototype.connect = function(callback){
   var self = this;
   
-  if(self.client == null){
+  if(!self.client){
     self.client = Primus.connect(%%URL%%, self.options);
   }else{
     self.client.end();
@@ -112,7 +113,7 @@ actionheroClient.prototype.handleMessage = function(message){
     self.emit('say', message);
   } else if(message.context === 'alert'){
     self.emit('alert', message);
-  } else if(message.welcome != null && message.context == 'api'){
+  } else if(message.welcome && message.context === 'api'){
     self.welcomeMessage = message.welcome;
     self.emit('welcome', message);
   } else if(message.context === 'api'){
@@ -125,11 +126,11 @@ actionheroClient.prototype.handleMessage = function(message){
 /////////////
 
 actionheroClient.prototype.action = function(action, params, callback){
-  if(callback == null && typeof params == 'function'){
+  if(!callback && typeof params === 'function'){
     callback = params;
     params = null;
   }
-  if(params == null){ params = {} }
+  if(!params){ params = {}; }
   params.action = action;
   
   if(this.state !== 'connected'){
@@ -142,8 +143,8 @@ actionheroClient.prototype.action = function(action, params, callback){
 actionheroClient.prototype.actionWeb = function(params, callback){
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function(){
-    if(xmlhttp.readyState == 4){
-      if(xmlhttp.status == 200){
+    if(xmlhttp.readyState === 4){
+      if(xmlhttp.status === 200){
         var response = JSON.parse(xmlhttp.responseText);
         callback(null, response);
       }else{
@@ -151,12 +152,12 @@ actionheroClient.prototype.actionWeb = function(params, callback){
       }
     }
   }
-  var qs = "?"
+  var qs = '?';
   for(var i in params){
-    qs += i + "=" + params[i] + "&";
+    qs += i + '=' + params[i] + '&';
   }
   var method = 'GET';
-  if(params.httpMethod != null){
+  if(params.httpMethod){
     method = params.httpMethod;
   }
   var url = %%URL%% + this.options.apiPath + qs;
