@@ -18,16 +18,19 @@ module.exports = function(grunt) {
       
       r.outputStream.write('*** STARTING ACTIONHERO REPL ***\r\n\r\n');
       
-      r.prompt = "[ AH::" + api.env + " ] >> ";
+      r.prompt = '[ AH::' + api.env + ' ] >> ';
       
       for(var i in api.config.servers){
         api.config.servers[i].enabled = false;
       }
+
+      api.config.tasks.scheduler = false;
+      api.config.tasks.queues    = [];
       
       r.context.api = api;
       
       actionhero.start(function(){
-        r.outputStream.write("\r\n\r\n");
+        r.outputStream.write('\r\n\r\n');
         r.outputStream.write('*** REPL READY ***\r\n\r\n');
         r.outputStream.write(r.prompt);
       });
