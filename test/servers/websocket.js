@@ -36,6 +36,7 @@ describe('Server: Web Socket', function(){
     actionhero.start(function(err, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
+      api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port;
 
       connectClients(function(){
         done();
