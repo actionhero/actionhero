@@ -8,7 +8,7 @@ var redis = function(api, next){
   api.redis.subsciptionHandlers = {};
   api.redis.status = {
     client: false,
-    subscriber: false,
+    subscriber: false
   };
 
   var redisPackage = require(api.config.redis.package);;
@@ -79,9 +79,15 @@ var redis = function(api, next){
       if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (client)', 'debug');
       api.redis.status.client = true;
-      process.nextTick(function(){
-        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
-      });
+
+      if(!api.redis.status.clientAlreadyConnected) {
+        process.nextTick(function(){
+          if(api.redis.status.client === true && api.redis.status.subscriber === true){
+            callback();
+          }
+        });
+        api.redis.status.clientAlreadyConnected = true;
+      }
     });
 
     api.redis.subscriber.on('connect', function(err){
@@ -91,9 +97,15 @@ var redis = function(api, next){
       if(api.config.redis.database != null){ api.redis.subscriber.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
-      process.nextTick(function(){
-        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
-      });
+
+      if(!api.redis.status.subscriberAlreadyConnected) {
+        process.nextTick(function(){
+          if(api.redis.status.client === true && api.redis.status.subscriber === true){
+            callback();
+            api.redis.status.subscriberAlreadyConnected = true;
+          }
+        });
+      }
     });
 
     if(api.config.redis.package === 'fakeredis'){
@@ -140,7 +152,6 @@ var redis = function(api, next){
   }
 
   // Subsciption Handlers
-
   api.redis.subsciptionHandlers['do'] = function(message){
     if(message.connectionId == null || ( api.connections != null && api.connections.connections[message.connectionId] != null) ){
       var method = eval(message.method); //TODO: Eval makes me sad
@@ -178,7 +189,7 @@ var redis = function(api, next){
       requestId    : requestId,
       method       : method,
       connectionId : connectionId,
-      args         : args,   // [1,2,3]
+      args         : args  // [1,2,3]
     };
 
     api.redis.publish(payload);
@@ -201,7 +212,7 @@ var redis = function(api, next){
       serverId     : api.id,
       serverToken  : api.config.general.serverToken,
       requestId    : requestId,
-      response     : response, // args to pass back, including error
+      response     : response // args to pass back, including error
     };
 
     api.redis.publish(payload);
