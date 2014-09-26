@@ -69,7 +69,7 @@ var redis = function(api, next){
 
     api.redis.subscriber.on('end', function(){
       api.log('Redis Connection Closed (subscriber): ', 'debug');
-      api.redis.status.client = false;
+      api.redis.status.subscriber = false;
     });
 
     api.redis.client.on('connect', function(err){
