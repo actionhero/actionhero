@@ -9,9 +9,10 @@ var redis = function(api, next){
   api.redis.status = {
     client: false,
     subscriber: false,
+    subscribed: false
   };
 
-  var redisPackage = require(api.config.redis.package);;
+  var redisPackage = require(api.config.redis.package);
   if(api.config.redis.package === 'fakeredis'){
     api.log('running with fakeredis', 'warning');
     redisPackage.fast = true;
@@ -70,6 +71,7 @@ var redis = function(api, next){
     api.redis.subscriber.on('end', function(){
       api.log('Redis Connection Closed (subscriber): ', 'debug');
       api.redis.status.subscriber = false;
+      api.redis.status.subscribed = false;
     });
 
     api.redis.client.on('connect', function(err){
@@ -113,13 +115,14 @@ var redis = function(api, next){
 
   api.redis.subscribe = function(callback){
     var channel = api.config.redis.channel;
-    var subscribed = false;
+
+    if (api.redis.status.subscribed) {
+      return callback();
+    }
 
     api.redis.subscriber.on('subscribe', function(messageChannel, count){
-      if(subscribed === false){
-        subscribed = true;
-        callback();
-      }
+      api.redis.status.subscribed = true;
+      callback();
     });
 
     api.redis.subscriber.on('message', function(messageChannel, message){
