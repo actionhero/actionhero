@@ -78,7 +78,7 @@ exports.default = {
       // CONNECTIONS //
       /////////////////
 
-      verbNotFound: function(veb){
+      verbNotFound: function(verb){
         return 'I do not know know to perform this verb';
       },
 
