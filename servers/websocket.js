@@ -124,12 +124,16 @@ var websocket = function(api, options, next){
 
   server.compileActionheroClientJS = function(){
     var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
-    ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client));
     var url = api.config.servers.websocket.clientUrl;
-    if(url.indexOf('http://') == 0 || url.indexOf('https://') == 0){
-      url = "'" + url + "'";
-    }
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
+    var defaults = {}
+    for(var i in api.config.servers.websocket.client){
+      defaults[i] = api.config.servers.websocket.client[i]
+    }
+    defaults.url = url;
+    var defaultsString = util.inspect(defaults);
+    defaultsString = defaultsString.replace("'window.location.origin'", 'window.location.origin');
+    ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + defaultsString);
 
     return ahClientSource;
   }

@@ -35,8 +35,8 @@ actionheroClient.prototype.defaults = function(){
 actionheroClient.prototype.connect = function(callback){
   var self = this;
   
-  if(!self.client){
-    self.client = Primus.connect(%%URL%%, self.options);
+  if(self.client == null){
+    self.client = Primus.connect(self.options.url, self.options);
   }else{
     self.client.end();
     self.client.open();
@@ -160,7 +160,7 @@ actionheroClient.prototype.actionWeb = function(params, callback){
   if(params.httpMethod){
     method = params.httpMethod;
   }
-  var url = %%URL%% + this.options.apiPath + qs;
+  var url = this.options.url + this.options.apiPath + qs;
   xmlhttp.open(method, url, true);
   xmlhttp.send();
 }
