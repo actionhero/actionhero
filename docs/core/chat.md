@@ -73,7 +73,7 @@ These methods are to be used within your server (perhaps an action or initialize
 - callback is of the form (error, wasAdded)
 - you can add connections from this or any other server in the cluster
 
-### api.chatRoom.removeMember(connectionId, callback)
+### api.chatRoom.removeMember(connectionId, room, callback)
 - callback is of the form (error, wasRemoved)
 - you can remove connections from this or any other server in the cluster
 
