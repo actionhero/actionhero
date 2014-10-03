@@ -6,7 +6,7 @@ var actionProcessor = function(api, next){
   var duplicateCallbackErrorTimeout = 500;
   
   api.actionProcessor = function(data){
-    if(data.connection == null){ throw new Error('data.connection is required') }
+    if(!data.connection){ throw new Error('data.connection is required') }
     this.connection = this.buildProxyConnection(data.connection);
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
@@ -21,70 +21,70 @@ var actionProcessor = function(api, next){
         proxyConnection[i] = connection[i];
       }
     }
-    proxyConnection._original_connection = connection
+    proxyConnection._originalConnection = connection
     return proxyConnection;
   }
 
   api.actionProcessor.prototype.incrementTotalActions = function(count){
-    if(count == null){ count = 1 }
-    this.connection._original_connection.totalActions = this.connection._original_connection.totalActions + count;
+    if(!count){ count = 1 }
+    this.connection._originalConnection.totalActions = this.connection._originalConnection.totalActions + count;
   }
 
   api.actionProcessor.prototype.incrementPendingActions = function(count){
-    if(count == null){ count = 1 }
-    this.connection._original_connection.pendingActions = this.connection._original_connection.pendingActions + count;
+    if(!count){ count = 1 }
+    this.connection._originalConnection.pendingActions = this.connection._originalConnection.pendingActions + count;
   }
 
   api.actionProcessor.prototype.getPendingActionCount = function(){
-    return this.connection._original_connection.pendingActions;
+    return this.connection._originalConnection.pendingActions;
   }
 
   api.actionProcessor.prototype.completeAction = function(status, toRender, actionDomain){
     var self = this;
-    if(actionDomain != null){ actionDomain.exit(); }
+    if(actionDomain){ actionDomain.exit(); }
     var error = null
 
-    if(status == 'server_shutting_down'){
+    if(status === 'server_shutting_down'){
       error = api.config.errors.serverShuttingDown();
-    }else if(status == 'too_many_requests'){
+    }else if(status === 'too_many_requests'){
       error = api.config.errors.tooManyPendingActions();
-    }else if(status == 'unknown_action'){
+    }else if(status === 'unknown_action'){
       error = api.config.errors.unknownAction(self.connection.action);
-    }else if(status == 'unsupported_server_type'){
+    }else if(status === 'unsupported_server_type'){
       error = api.config.errors.unsupportedServerType(self.connection.type);
-    }else if(status == 'missing_params'){
+    }else if(status === 'missing_params'){
       error = api.config.errors.missingParams(self.missingParams) ;
     }
 
     if(error !== null){
-      if(typeof error === "string") self.connection.error = new Error( error );
+      if(typeof error === 'string') self.connection.error = new Error( error );
       else self.connection.error = error;
     }
     if(self.connection.error instanceof Error){
       self.connection.error = String(self.connection.error);
     }
-    if(self.connection.error != null && self.connection.response.error == null){
+    if(self.connection.error && !self.connection.response.error){
       self.connection.response.error = self.connection.error;
     }
 
-    if(toRender == null){ toRender = true }
+    if(toRender === null){ toRender = true }
     self.incrementPendingActions(-1);
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
 
     process.nextTick(function(){
-      self.connection._original_connection.action = self.connection.action;
-      self.connection._original_connection.actionStatus = status;
-      self.connection._original_connection.error = self.connection.error;
-      self.connection._original_connection.response = self.connection.response || {};
+      self.connection._originalConnection.action = self.connection.action;
+      self.connection._originalConnection.actionStatus = status;
+      self.connection._originalConnection.error = self.connection.error;
+      self.connection._originalConnection.response = self.connection.response || {};
 
-      if(typeof self.callback == 'function'){
-        self.callback(self.connection._original_connection, toRender, self.messageCount);
+      if(typeof self.callback === 'function'){
+        self.callback(self.connection._originalConnection, toRender, self.messageCount);
       }
     });
 
     var logLevel = 'info';
-    if(self.actionTemplate != null && self.actionTemplate.logLevel != null){
+    if(self.actionTemplate && self.actionTemplate.logLevel){
       logLevel = self.actionTemplate.logLevel;
     }
     var stringifiedError = '';
@@ -96,8 +96,8 @@ var actionProcessor = function(api, next){
     
     var filteredParams = {}
     for(var i in self.connection.params){
-      if(api.config.general.filteredParams != null && api.config.general.filteredParams.indexOf(i) >= 0){
-        filteredParams[i] = "[FILTERED]";
+      if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
+        filteredParams[i] = '[FILTERED]';
       }else{
         filteredParams[i] = self.connection.params[i];
       }
@@ -129,7 +129,7 @@ var actionProcessor = function(api, next){
           if(toProcess === true){
             processor(self.connection, self.actionTemplate, function(connection, localToProcess){
               self.connection = connection;
-              if(localToProcess != null){ toProcess = localToProcess; }
+              if(localToProcess !== null){ toProcess = localToProcess; }
               next();
             });
           } else { next(toProcess) }
@@ -155,7 +155,7 @@ var actionProcessor = function(api, next){
         processors.push(function(next){
           processor(self.connection, self.actionTemplate, toRender, function(connection, localToRender){
             self.connection = connection;
-            if(localToRender != null){ toRender = localToRender; }
+            if(localToRender !== null){ toRender = localToRender; }
             next();
           });
         });
@@ -183,7 +183,7 @@ var actionProcessor = function(api, next){
 
   api.actionProcessor.prototype.duplicateCallbackHandler = function(actionDomain){
     var self = this;
-    if(self.working == true){
+    if(self.working === true){
       setTimeout(function(){
         self.duplicateCallbackHandler(actionDomain);
       }, duplicateCallbackErrorTimeout)
@@ -201,26 +201,26 @@ var actionProcessor = function(api, next){
     self.incrementTotalActions();
     self.incrementPendingActions();
 
-    self.connection.action = self.connection.params['action'];
-    if(api.actions.versions[self.connection.action] != null){
-      if(self.connection.params.apiVersion == null){
+    self.connection.action = self.connection.params.action;
+    if(api.actions.versions[self.connection.action]){
+      if(!self.connection.params.apiVersion){
         self.connection.params.apiVersion = api.actions.versions[self.connection.action][api.actions.versions[self.connection.action].length - 1];
       }
       self.actionTemplate = api.actions.actions[self.connection.action][self.connection.params.apiVersion];
     }
     api.stats.increment('actions:actionsCurrentlyProcessing');
 
-    if(api.running != true){
+    if(api.running !== true){
       self.completeAction('server_shutting_down');
     } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
       self.completeAction('too_many_requests');
     } else if(self.connection.error !== null){
       self.completeAction(false);
-    } else if(self.connection.action == null || self.actionTemplate == null){
+    } else if(!self.connection.action || !self.actionTemplate){
       api.stats.increment('actions:actionsNotFound');
-      if(self.connection.action == '' || self.connection.action == null){ self.connection.action = '{no action}'; }
+      if(self.connection.action === '' || !self.connection.action){ self.connection.action = '{no action}'; }
       self.completeAction('unknown_action');
-    } else if(self.actionTemplate.blockedConnectionTypes != null && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
+    } else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
       self.completeAction('unsupported_server_type');
     } else {
       api.stats.increment('actions:totalProcessedActions');
@@ -238,7 +238,7 @@ var actionProcessor = function(api, next){
           self.reduceParams();
 
           self.actionTemplate.inputs.required.forEach(function(param){
-            if(self.connection.error === null && (self.connection.params[param] == null || self.connection.params[param].length == 0)){
+            if(self.connection.error === null && (!self.connection.params[param] || self.connection.params[param].length === 0)){
               self.missingParams.push(param);
             }
           });
