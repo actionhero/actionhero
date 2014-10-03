@@ -101,7 +101,7 @@ api.chatRoom.addLeaveCallback(function(connection, room){
 When you set a rooms' authentication paten with `api.chatRoom.setAuthenticationPatern`, you are describing a hash which a client needs to match to enter the room.
 
 - `api.chatRoom.setAuthenticationPatern('myRoom', 'type', 'websocket')` would only allow websocket clients in
-- `api.chatRoom.setAuthenticationPatern('myRoom', 'auteneticated', true)` would only allow clients in which have previously been modified by `connection.authenticated = true; connection._original_connection.authenticated = true;` probably in an action or middleware.
+- `api.chatRoom.setAuthenticationPatern('myRoom', 'auteneticated', true)` would only allow clients in which have previously been modified by `connection.authenticated = true; connection._originalConnection.authenticated = true;` probably in an action or middleware.
 
 Clients' authentication is re-checked when you make a change, and when they join the room.
 
@@ -126,5 +126,5 @@ The flow for an authenticated rooom is:
 - Once a room is created, you can then set an authentication rule for clients joining it: `api.chatRoom.setAuthenticationPattern('secretRoom','authenticated', true)`
   - This means that every `connection` which attempts to join this room, actionhero will check that `connection.authenticated == true` before allowing them in.
 - `connection`s can only modify their `connection.params` hash, which means that only the sever can ever modify `connection.authenticated`, which makes it a safe key for authentication.
-- In your authentication (login) action, you can set that authentication bit, ie: `connection.authenticated = true; connection._original_connection.authenticated = true; `. 
+- In your authentication (login) action, you can set that authentication bit, ie: `connection.authenticated = true; connection._originalConnection.authenticated = true; `. 
 - You can get more elaborate with this kind of thing.  Perhaps you only want each user to be allowed in one room at all.  Then do something like `api.chatRoom.setAuthenticationPattern('secretRoom','authorizedRoom','secretRoom')`. 
