@@ -67,7 +67,7 @@ var actionProcessor = function(api, next){
       self.connection.response.error = self.connection.error;
     }
 
-    if(toRender === null){ toRender = true }
+    if(toRender === null || toRender === undefined){ toRender = true; }
     self.incrementPendingActions(-1);
     api.stats.increment('actions:actionsCurrentlyProcessing', -1);
     self.duration = new Date().getTime() - self.actionStartTime;
