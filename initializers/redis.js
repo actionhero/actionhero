@@ -9,7 +9,8 @@ var redis = function(api, next){
   api.redis.status = {
     client: false,
     subscriber: false,
-    subscribed: false
+    subscribed: false,
+    calledback: false,
   };
 
   var redisPackage = require(api.config.redis.package);
@@ -82,7 +83,10 @@ var redis = function(api, next){
       api.log('connected to redis (client)', 'debug');
       api.redis.status.client = true;
       process.nextTick(function(){
-        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){ 
+          api.redis.status.calledback = true;
+          callback(); 
+        }
       });
     });
 
@@ -94,7 +98,10 @@ var redis = function(api, next){
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
       process.nextTick(function(){
-        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
+          api.redis.status.calledback = true;
+          callback();
+        }
       });
     });
 
@@ -106,7 +113,8 @@ var redis = function(api, next){
         api.redis.subscriber.select(api.config.redis.database); 
       }
       process.nextTick(function(){
-        if(api.redis.status.client === true && api.redis.status.subscriber === true){ callback(); }
+        api.redis.status.calledback = true;
+        callback();
       });
     }
   };
