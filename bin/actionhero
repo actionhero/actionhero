@@ -122,6 +122,8 @@ if(process.env.PWD){
 
 if(process.env.projectRoot){
   binary.paths.projectRoot = process.env.projectRoot;
+} else if(process.env.project_root){
+  binary.paths.projectRoot = process.env.project_root;
 } else if(process.env.PROJECT_ROOT){
   binary.paths.projectRoot = process.env.PROJECT_ROOT;
 } else {

@@ -27,11 +27,13 @@ actionhero.prototype.initialize = function(params, callback){
     restart: self.restart
   };
 
-  self.api.project_root = process.cwd();
-  if(process.env.project_root != null){
-    self.api.project_root = process.env.project_root;
-  } else if(process.env.PROJECT_ROOT != null){
-    self.api.project_root = process.env.PROJECT_ROOT;
+  self.api.projectRoot = process.cwd();
+  if(process.env.project_root){
+    self.api.projectRoot = process.env.project_root;
+  } else if(process.env.projectRoot){
+    self.api.projectRoot = process.env.projectRoot;
+  } else if(process.env.PROJECT_ROOT){
+    self.api.projectRoot = process.env.PROJECT_ROOT;
   }
 
   if(callback == null && typeof params == 'function'){

@@ -4,7 +4,7 @@ var routes = function(api, next){
 
   api.routes = {};
   api.routes.routes = {};
-  api.routes.routesFile = api.project_root + '/routes.js'; //deprecated, see github issue #450
+  api.routes.routesFile = api.projectRoot + '/routes.js'; //deprecated, see github issue #450
 
   ////////////////////////////////////////////////////////////////////////////
   // route processing for web clients
