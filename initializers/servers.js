@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 
 var servers = function(api, next){
@@ -9,7 +8,7 @@ var servers = function(api, next){
   api.servers._start = function(api, next){
 
     var started = 0;
-    if(api.utils.hashLength(api.servers.servers) == 0){ next() }
+    if(api.utils.hashLength(api.servers.servers) === 0){ next() }
     for(var server in api.servers.servers){
       started++;
       if(api.config.servers[server].enabled === true){
@@ -17,13 +16,13 @@ var servers = function(api, next){
         api.servers.servers[server]._start(function(){
           process.nextTick(function(){
             started--;
-            if(started == 0){ next() }
+            if(started === 0){ next() }
           });
         });
       }else{
         process.nextTick(function(){
           started--;
-          if(started == 0){ next() }
+          if(started === 0){ next() }
         });
       }
     }
@@ -31,7 +30,7 @@ var servers = function(api, next){
 
   api.servers._stop = function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.servers.servers) == 0){ next() }
+    if(api.utils.hashLength(api.servers.servers) === 0){ next() }
     for(var server in api.servers.servers){
       started++;
       (function(server){
@@ -40,7 +39,7 @@ var servers = function(api, next){
           process.nextTick(function(){
             api.log('server stopped: ' + server, 'debug');
             started--;
-            if(started == 0){ next() }
+            if(started === 0){ next() }
           });
         });
       })(server)
@@ -66,7 +65,7 @@ var servers = function(api, next){
     api.utils.recursiveDirectoryGlob(p).forEach(function(f){
       var parts = f.split(/[\/\\]+/)
       var server = parts[(parts.length - 1)].split('.')[0];
-      if(api.config.servers[server] != null && api.config.servers[server].enabled === true){
+      if(api.config.servers[server] && api.config.servers[server].enabled === true){
         inits[server] = require(f)[server];
       }
       api.watchFileAndAct(f, function(){
@@ -86,12 +85,12 @@ var servers = function(api, next){
         api.log('initialized server: ' + server, 'debug');
         process.nextTick(function(){
           started--;
-          if(started == 0){ next() }
+          if(started === 0){ next() }
         });
       });
     })(server)
   }
-  if(started == 0){ next() }
+  if(started === 0){ next() }
 }
 
 exports.servers = servers;
