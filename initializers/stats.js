@@ -16,9 +16,9 @@ var stats = function(api, next){
   }
 
   api.stats.increment = function(key, count){
-    if(count == null){ count = 1 }
+    if(!count){ count = 1; }
     count = parseFloat(count);
-    if(api.stats.pendingIncrements[key] == null){ api.stats.pendingIncrements[key] = 0 }
+    if(!api.stats.pendingIncrements[key]){ api.stats.pendingIncrements[key] = 0 }
     api.stats.pendingIncrements[key] = api.stats.pendingIncrements[key] + count;
   }
 
@@ -40,42 +40,42 @@ var stats = function(api, next){
           }
           multi.exec(function(){
             started--;
-            if(started == 0){
+            if(started === 0){
               setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
-              if(typeof next == 'function'){ next() }
+              if(typeof next === 'function'){ next() }
             }
           });
         })(collection);
       }
     } else {
       setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency );
-      if(typeof next == 'function'){ next() }
+      if(typeof next === 'function'){ next() }
     }
   }
 
   api.stats.get = function(key, collection, next){
-    if(next == null && typeof collection == 'function'){ next = collection; collection = null; }
-    if(collection == null){ collection = api.config.stats.keys[0] }
+    if(!next && typeof collection === 'function'){ next = collection; collection = null; }
+    if(!collection){ collection = api.config.stats.keys[0] }
     api.redis.client.hget(collection, key, function(err, value){
       next(err, value);
     });
   }
 
   api.stats.getAll = function(collections, next){
-    if(next == null && typeof collections == 'function'){ next = collections; collections = null; }
-    if(collections == null){ collections = api.config.stats.keys }
+    if(!next && typeof collections === 'function'){ next = collections; collections = null; }
+    if(!collections){ collections = api.config.stats.keys }
 
     var results = {};
-    if(collections.length == 0){
+    if(collections.length === 0){
       next(null, results);
     } else {
       for(var i in collections){
         var collection = collections[i];
         (function(collection){
           api.redis.client.hgetall(collection, function(err, data){
-            if(data == null){ data = {} }
+            if(!data){ data = {} }
             results[collection] = data;
-            if(api.utils.hashLength(results) == collections.length){
+            if(api.utils.hashLength(results) === collections.length){
               next(err, results);
             }
           });
