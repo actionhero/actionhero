@@ -208,7 +208,7 @@
 
   client.prototype.connect = function(){
     var self = this;
-    self.client = new actionheroClient();
+    self.client = new ActionheroClient();
     self.client.on('connected',    function(){ console.log('['+self.id+'] ' + 'connected!') })
     self.client.on('disconnected', function(){ console.log('['+self.id+'] ' + 'disconnected :(') })
     self.client.on('alert',        function(message){ alert('['+self.id+'] ' + JSON.stringify(message) ) })

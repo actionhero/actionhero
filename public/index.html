@@ -38,7 +38,7 @@
 
   <script type="text/javascript">
     var populateServerInfo = function(data){
-      if(data.serverInformation != null){
+      if(data.serverInformation){
         document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
         document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
       }
@@ -59,7 +59,7 @@
       }
     }
 
-    var client = new actionheroClient();
+    var client = new ActionheroClient();
     client.action('showDocumentation', function(err, data){
       populateServerInfo(data)
     });

@@ -21,9 +21,9 @@ var connectClients = function(callback){
   var client_2_socket = new S(url);
   var client_3_socket = new S(url);
 
-  client_1 = new actionheroClient({}, client_1_socket);
-  client_2 = new actionheroClient({}, client_2_socket);
-  client_3 = new actionheroClient({}, client_3_socket);
+  client_1 = new ActionheroClient({}, client_1_socket);
+  client_2 = new ActionheroClient({}, client_2_socket);
+  client_3 = new ActionheroClient({}, client_3_socket);
 
   setTimeout(function(){
     callback();

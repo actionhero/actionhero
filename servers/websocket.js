@@ -146,6 +146,7 @@ var websocket = function(api, options, next){
       + '(function(exports){ \r\n' 
       + ahClientSource
       + '\r\n'
+      + 'exports.ActionheroClient = ActionheroClient; \r\n'
       + 'exports.actionheroClient = actionheroClient; \r\n'
       + '})(typeof exports === \'undefined\' ? window : exports);' ;
     if(minimize){
