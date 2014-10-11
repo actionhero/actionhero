@@ -36,7 +36,7 @@ actionhero.prototype.initialize = function(params, callback){
     self.api.projectRoot = process.env.PROJECT_ROOT;
   }
 
-  if(callback == null && typeof params == 'function'){
+  if(!callback && typeof params === 'function'){
     callback = params; params = {};
   }
   if(params === null){ params = {} }
@@ -82,18 +82,18 @@ actionhero.prototype.initialize = function(params, callback){
     };
   });
 
-  orderedInitializers['_projectInitializers'] = function(next){
+  orderedInitializers._projectInitializers = function(next){
 
     var projectInitializers = {};
   
     self.api.config.general.paths.initializer.forEach(function(initPath){
-      if(path.resolve(initPath) != path.resolve(__dirname + '/initializers')){
+      if(path.resolve(initPath) !== path.resolve(__dirname + '/initializers')){
         var localInitializerPath = path.resolve(initPath);
         if( fs.existsSync(localInitializerPath) ){
           var fileSet = fs.readdirSync(localInitializerPath).sort();
           fileSet.forEach(function(f){
             var file = path.resolve(initPath + '/' + f);
-            if(file[0] != '.'){
+            if(file[0] !== '.'){
               var initializer = f.split('.')[0];
               var fileParts = file.split('.');
               var ext = fileParts[(fileParts.length - 1)];
@@ -119,14 +119,14 @@ actionhero.prototype.initialize = function(params, callback){
       }
     })
 
-    projectInitializers['_complete'] = function(){
+    projectInitializers._complete = function(){
       process.nextTick(function(){ next(); });
     }
 
     async.series(projectInitializers);
   }
 
-  orderedInitializers['_complete'] = function(){
+  orderedInitializers._complete = function(){
     self.api.initialized = true;
     callback(null, self.api);
   };
@@ -137,7 +137,7 @@ actionhero.prototype.initialize = function(params, callback){
 actionhero.prototype.start = function(params, callback){
   var self = this;
 
-  if(callback == null && typeof params == 'function'){
+  if(!callback && typeof params === 'function'){
     callback = params; params = {};
   }
 
@@ -145,14 +145,14 @@ actionhero.prototype.start = function(params, callback){
     self.api.running = true;
     self._starters = [];
     for(var i in self.api){
-      if(typeof self.api[i]._start == 'function'){
+      if(typeof self.api[i]._start === 'function'){
         self._starters.push(i);
       }
     }
 
     var started = 0;
     var successMessage = '*** Server Started @ ' + self.api.utils.sqlDateTime() + ' ***';
-    if(self._starters.length == 0){
+    if(self._starters.length === 0){
       self.api.bootTime = new Date().getTime();
       self.api.log('server ID: ' + self.api.id, 'notice');
       self.api.log(successMessage, 'notice');
@@ -164,7 +164,7 @@ actionhero.prototype.start = function(params, callback){
           process.nextTick(function(){
             self.api.log(' > start: ' + starter,'debug');
             started--;
-            if(started == 0){
+            if(started === 0){
               self.api.bootTime = new Date().getTime();
               self.api.log('server ID: ' + self.api.id, 'notice');
               self.api.log(successMessage, 'notice');
@@ -179,7 +179,7 @@ actionhero.prototype.start = function(params, callback){
   if(self.api.initialized === true){
     start()
   } else {
-    self.initialize(params, function(err){
+    self.initialize(params, function(){
       start();
     })
   }
@@ -201,7 +201,7 @@ actionhero.prototype.stop = function(callback){
       'webSocketServer',
       'socketServer'
     ].forEach(function(stopper){
-      if(self.api[stopper] != null && typeof self.api[stopper]._stop == 'function'){
+      if(self.api[stopper] && typeof self.api[stopper]._stop === 'function'){
         (function(name) {
           orderedStopper[name] = function(next){
             self.api.log(' > stop: ' + name, 'debug');
@@ -212,7 +212,7 @@ actionhero.prototype.stop = function(callback){
     });
 
     for(var i in self.api){
-      if(typeof self.api[i]._stop == 'function' && orderedStopper[i] == null){
+      if(typeof self.api[i]._stop === 'function' && !orderedStopper[i]){
         (function(name) {
           orderedStopper[name] = function(next){
             self.api.log(' > stop: ' + name, 'debug');
@@ -222,14 +222,14 @@ actionhero.prototype.stop = function(callback){
       }
     }
 
-    orderedStopper['_complete'] = function(){
+    orderedStopper._complete = function(){
       setTimeout(function(){
         self.api.unWatchAllFiles();
         self.api.pids.clearPidFile();
         self.api.log('The actionhero has been stopped', 'alert');
         self.api.log('***', 'debug');
         delete self.api.shuttingDown;
-        if(typeof callback == 'function'){ callback(null, self.api) }
+        if(typeof callback === 'function'){ callback(null, self.api) }
       }, 500);
     };
 
@@ -238,7 +238,7 @@ actionhero.prototype.stop = function(callback){
     // double sigterm; ignore it
   } else {
     self.api.log('Cannot shut down (not running any servers)', 'info');
-    if(typeof callback == 'function'){ callback(null, self.api) }
+    if(typeof callback === 'function'){ callback(null, self.api) }
   }
 };
 
@@ -246,16 +246,16 @@ actionhero.prototype.restart = function(callback){
   var self = this;
 
   if(self.api.running === true){
-    self.stop(function(err){
+    self.stop(function(){
       self.start(self.startingParams, function(err, api){
         api.log('actionhero restarted', 'notice');
-        if(typeof callback == 'function'){ callback(null, self.api) }
+        if(typeof callback === 'function'){ callback(null, self.api) }
       });
     });
   } else {
     self.start(self.startingParams, function(err, api){
       api.log('actionhero restarted', 'notice');
-      if(typeof callback == 'function'){ callback(null, self.api) }
+      if(typeof callback === 'function'){ callback(null, self.api) }
     });
   }
 };
