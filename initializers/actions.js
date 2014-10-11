@@ -70,6 +70,7 @@ var actions = function(api, next){
     api.watchFileAndAct(fullFilePath, function(){
       api.actions.loadFile(fullFilePath, true);
       api.params.buildPostVariables();
+      api.routes.loadRoutes();
     })
 
     try {
