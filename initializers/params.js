@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 var params = function(api, next){
 
   api.params = {};

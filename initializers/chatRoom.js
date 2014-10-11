@@ -160,8 +160,8 @@ var chatRoom = function(api, next){
                   for(var member in members){
                     authenticators.push(async.apply(api.chatRoom.reAuthenticate, member));
                   }
-                  async.series(authenticators, function(err){
-                    if(typeof callback === 'function'){ callback(err); }
+                  async.parallel(authenticators, function(err){
+                    if(typeof callback === 'function'){ callback(); }
                   })
                 }else{
                   if(typeof callback === 'function'){ callback(err); }
@@ -245,14 +245,14 @@ var chatRoom = function(api, next){
               if(authorized === false){ failed.push(room); }
               if(started === 0){
                 if(failed.length === 0){
-                  if(typeof callback === 'function'){ callback(failed); }
+                  if(typeof callback === 'function'){ callback(err, failed); }
                 }else{
                   failed.forEach(function(room){
                     started++;
                     api.chatRoom.removeMember(connectionId, room, function(){
                       started--;
                       if(started === 0){
-                        if(typeof callback === 'function'){ callback(failed); }
+                        if(typeof callback === 'function'){ callback(err, failed); }
                       }
                     });
                   });

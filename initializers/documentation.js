@@ -7,7 +7,7 @@ var documentation = function(api, next){
         for(var j in api.actions.actions[i]){
           var action = api.actions.actions[i][j];
           if(action.toDocument !== false){
-            if(api.documentation.documentation[action.name] == null){ api.documentation.documentation[action.name] = {} }
+            if(!api.documentation.documentation[action.name]){ api.documentation.documentation[action.name] = {} }
             api.documentation.documentation[action.name][action.version] = {
               name: action.name,
               version: action.version,

@@ -473,14 +473,18 @@ describe('Core: Action Cluster', function(){
         var clientA = new api_1.specHelper.connection();
         var clientB = new api_1.specHelper.connection();
         clientA.auth = true;
+        clientA._name = 'a';
         clientB.auth = false;
+        clientB._name = 'b';
         api_1.chatRoom.add('newRoom', function(err){
           api_1.chatRoom.addMember(clientA.id, 'newRoom', function(err, didAdd){
             api_1.chatRoom.addMember(clientB.id, 'newRoom', function(err, didAdd){
               clientA.rooms[0].should.equal('newRoom');
               clientB.rooms[0].should.equal('newRoom');
               api_1.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
+                should.not.exist(err);
                 clientA.rooms[0].should.equal('newRoom');
+                clientA.rooms.length.should.equal(1);
                 clientB.rooms.length.should.equal(0);
                 clientA.destroy();
                 clientB.destroy();

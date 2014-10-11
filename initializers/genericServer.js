@@ -32,7 +32,7 @@ var genericServer = function(api, next){
     // you can overwrite attributes with options
     // this could cause some problems, be careful
     for(var key in this.options){
-      if(this.attributes[key] != null){
+      if(this.attributes[key] !== null && this.attributes[key] !== undefined){
         this.attributes[key] = this.options[key];
       }
     }
@@ -50,7 +50,7 @@ var genericServer = function(api, next){
       rawConnection: data.rawConnection
     }
     if(self.attributes.canChat === true){ details.canChat = true; }
-    if(data.fingerprint != null ){ details.fingerprint = data.fingerprint; }
+    if(data.fingerprint){ details.fingerprint = data.fingerprint; }
     var connection = new api.connection(details);
     
     connection.sendMessage = function(message){
