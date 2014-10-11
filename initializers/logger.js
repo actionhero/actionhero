@@ -32,7 +32,8 @@ var logger = function(api, next){
   }
 
   api.log = function(message, severity){
-    if(!severity || !api.logger.levels.severity){ severity = 'info' }
+    if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info' }
+    // if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
     var args = [ severity, message ];
     args.push.apply(args, Array.prototype.slice.call(arguments, 2));
     api.logger.log.apply(api.logger, args);
