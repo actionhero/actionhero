@@ -56,9 +56,9 @@ var specHelper = function(api, next){
         };
 
         try{ 
-          if(error == null){
+          if(!error){
             fileStream.on('data', function(d){ content+= d; });
-            fileStream.on('end', function(d){
+            fileStream.on('end', function(){
               response.content = content;
               server.sendMessage(connection, response, connection.messageCount);
             });
@@ -71,7 +71,7 @@ var specHelper = function(api, next){
         }
       };
 
-      server.goodbye = function(connection, reason){
+      server.goodbye = function(){
         //
       };
 
@@ -118,11 +118,11 @@ var specHelper = function(api, next){
     // data can be a params hash or a connection
     api.specHelper.runAction = function(actionName, input, next){
       var connection;
-      if(typeof input === 'function' && next == null){
+      if(typeof input === 'function' && !next){
         next = input;
         input = {};
       }
-      if(input.id != null && input.type === 'testServer'){
+      if(input.id && input.type === 'testServer'){
         connection = input;
       }else{
         connection = new api.specHelper.connection();
