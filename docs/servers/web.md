@@ -403,7 +403,7 @@ Although the `actionheroClient` client-side library is mostly for websockets, it
 <script src="/public/javascript/actionheroClient.js"></script>
 
 <script>
-var client = new actionheroClient();
+var client = new ActionheroClient();
 client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
    // do stuff
 }); 

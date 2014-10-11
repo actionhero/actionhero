@@ -105,7 +105,7 @@ title: Documentation - Example Angular Clients
         var ChatClient = function(callback){
           var self = this;
 
-          self.client = new actionheroClient();
+          self.client = new ActionheroClient();
           self.messages = [];
           self.error = null;
           self.rooms = rooms;
