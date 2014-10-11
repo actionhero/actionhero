@@ -8,7 +8,7 @@ var utils = function(api, next){
   ////////////////////////////////////////////////////////////////////////////
   // sqlDateTime
   api.utils.sqlDateTime = function(time){
-    if(time == null){ time = new Date() }
+    if(!time){ time = new Date() }
     var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
@@ -20,7 +20,7 @@ var utils = function(api, next){
   }
 
   api.utils.sqlDate = function(time){
-    if(time == null){ time = new Date() }
+    if(!time){ time = new Date() }
     var dateStr =
       api.utils.padDateDoubleStr(time.getFullYear()) +
       '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
@@ -36,7 +36,7 @@ var utils = function(api, next){
   // generate a random string
   api.utils.randomString = function(length, chars){
     var result = '';
-    if(chars == null){
+    if(!chars){
       chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     }
     for(var i = length; i > 0; --i){ result += chars[Math.round(Math.random() * (chars.length - 1))] }
@@ -57,14 +57,14 @@ var utils = function(api, next){
   // merge two hashes recursively 
   api.utils.hashMerge = function(a, b, arg){
     var c = {};
-    var i;
+    var i, response;
 
     for(i in a){
       if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0 ){
         c[i] = api.utils.hashMerge(c[i], a[i], arg);
       }else{
         if(typeof a[i] === 'function'){
-          var response = a[i](arg);
+          response = a[i](arg);
           if( api.utils.isPlainObject(response) ){
             c[i] = api.utils.hashMerge(c[i], response, arg);
           }else{
@@ -80,7 +80,7 @@ var utils = function(api, next){
         c[i] = api.utils.hashMerge(c[i], b[i], arg);
       }else{
         if(typeof b[i] === 'function'){
-          var response = b[i](arg);
+          response = b[i](arg);
           if( api.utils.isPlainObject(response) ){
             c[i] = api.utils.hashMerge(c[i], response, arg);
           }else{
@@ -98,17 +98,18 @@ var utils = function(api, next){
     var safeTypes     = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
     var safeInstances = [ 'boolean', 'number', 'string', 'function' ];
     var expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
+    var i;
 
-    if(o == null){ return false }
-    if((o instanceof Object) == false){ return false }
-    for(var i in safeTypes){
+    if(!o){ return false }
+    if((o instanceof Object) === false){ return false }
+    for(i in safeTypes){
       if(o instanceof safeTypes[i]){ return false }
     }
-    for(var i in safeInstances){
+    for(i in safeInstances){
       if(typeof o === safeInstances[i]){ return false }
     }
     if(o[expandPreventMatchKey] === false){ return false }
-    return (o.toString() == '[object Object]');
+    return (o.toString() === '[object Object]');
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -141,7 +142,7 @@ var utils = function(api, next){
 
   ////////////////////////////////////////////////////////////////////////////
   // randomly sort an array
-  api.utils.randomArraySort = function(a,b){
+  api.utils.randomArraySort = function(){
     return(parseInt( Math.random()*10 ) %2);
   }
 
@@ -163,21 +164,22 @@ var utils = function(api, next){
   api.utils.recursiveDirectoryGlob = function(dir, extension){
     var results = [];
 
-    if(extension == null){ extension = 'js'; }
+    if(!extension){ extension = 'js'; }
     extension = extension.replace('.','');
-    if(dir[dir.length - 1] != '/'){ dir += '/' }
+    if(dir[dir.length - 1] !== '/'){ dir += '/' }
 
     if(fs.existsSync(dir)){
       fs.readdirSync(dir).forEach( function(file) {
         var fullFilePath = path.normalize(dir + file);
-        if(file[0] != '.'){ // ignore 'system' files
+        if(file[0] !== '.'){ // ignore 'system' files
           var stats = fs.statSync(fullFilePath);
+          var child;
           if(stats.isDirectory()){
-            var child = api.utils.recursiveDirectoryGlob(fullFilePath, extension);
+            child = api.utils.recursiveDirectoryGlob(fullFilePath, extension);
             child.forEach(function(c){ results.push(c); })
           } else if(stats.isSymbolicLink()){
             var realPath = fs.readlinkSync(fullFilePath);
-            var child = api.utils.recursiveDirectoryGlob(realPath);
+            child = api.utils.recursiveDirectoryGlob(realPath);
             child.forEach(function(c){ results.push(c); })
           } else if(stats.isFile()){
             var fileParts = file.split('.');
@@ -228,9 +230,8 @@ var utils = function(api, next){
     var ifaces = os.networkInterfaces();
     var ip = false;
     for(var dev in ifaces){
-      var alias = 0;
       ifaces[dev].forEach(function(details){
-        if(details.family == 'IPv4' && details.address != '127.0.0.1'){
+        if(details.family === 'IPv4' && details.address !== '127.0.0.1'){
           ip = details.address;
         }
       });
@@ -242,7 +243,7 @@ var utils = function(api, next){
   // cookie parse from headers of http(s) requests
   api.utils.parseCookies = function(req){
     var cookies = {};
-    if(req.headers.cookie != null){
+    if(req.headers.cookie){
       req.headers.cookie.split(';').forEach(function(cookie){
         var parts = cookie.split('=');
         cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
