@@ -202,7 +202,7 @@ connections should use the verbs `roomChange` or `listenToRom` to move around ro
 - callback is of the form (error, authorized), which is `true` or `false`
 
 ### api.chatRoom.reAuthenticate(connectionId, callback)
-- callback contains an array of rooms the connection is still in and rooms the connection was removed from
+- callback contains error and then an array of rooms the connection is still in and rooms the connection was removed from
 - you can check on connections from this or any other server in the cluster
 
 ### api.chatRoom.addMember(connectionId, room, callback)
