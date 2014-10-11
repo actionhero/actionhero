@@ -1,5 +1,6 @@
-var os = require('os');
-var NR = require('node-resque');
+var os    = require('os');
+var async = require('async');
+var NR    = require('node-resque');
 
 var resque = function(api, next){
 
@@ -61,7 +62,7 @@ var resque = function(api, next){
 
     stopScheduler: function(callback){
       var self = this;
-      if(self.scheduler == null){
+      if(!self.scheduler){
         callback();
       } else {
         self.scheduler.end(function(){
@@ -74,44 +75,44 @@ var resque = function(api, next){
     startWorkers: function(callback){
       var self = this;
       var i = 0;
-      var started = 0;
-      if(api.config.tasks.queues == null || api.config.tasks.queues.length === 0){
+      if(!api.config.tasks.queues || api.config.tasks.queues.length === 0){
         callback();
       } else {
+        var starters = [];
         while(i < api.config.tasks.queues.length){
-          (function(i){
-            var timeout = api.config.tasks.timeout;
-            var name = os.hostname() + ':' + process.pid + '+' + (i+1);
-            // var name = os.hostname() + ':' + process.pid;
-            var worker = new NR.worker({
-              connection: self.connectionDetails,
-              name: name,
-              queues: api.config.tasks.queues[i],
-              timeout: timeout
-            }, api.tasks.jobs, function(){
-              worker.on('start',           function(){                   api.log('resque worker #'+(i+1)+' started (queues: ' + worker.options.queues + ')', 'info'); })
-              worker.on('end',             function(){                   api.log('resque worker #'+(i+1)+' ended', 'info'); })
-              worker.on('cleaning_worker', function(worker, pid){        api.log('resque cleaning old worker ' + worker, 'info'); })
-              // worker.on('poll',            function(queue){              api.log('resque worker #'+(i+1)+' polling ' + queue, 'debug'); })
-              worker.on('job',             function(queue, job){         api.log('resque worker #'+(i+1)+' working job ' + queue, 'debug', job); })
-              worker.on('success',         function(queue, job, result){ api.log('resque worker #'+(i+1)+' job success ' + queue, 'info', {job: job, result: result}); })
-              // worker.on('pause',           function(){                   api.log('resque worker #'+(i+1)+'  paused', 'debug'); })
-              worker.on('failure',         function(queue, job, f){ api.exceptionHandlers.task(f, queue, job) })
-              worker.on('error',           function(queue, job, error){ api.exceptionHandlers.task(error, queue, job) })
-
-              worker.workerCleanup();
-              worker.start();
-              self.workers[i] = worker;
-
-              started++;
-              if(started === api.config.tasks.queues.length){
-                callback();
-              }
-            });
-          })(i)
+          starters.push( async.apply(self.startWorker, i) )
           i++;
         }
+        async.parallel(starters, callback);
       }
+    },
+
+    startWorker: function(counter, callback){
+      var timeout = api.config.tasks.timeout;
+      var name = os.hostname() + ':' + process.pid + '+' + (counter+1);
+      // var name = os.hostname() + ':' + process.pid;
+      var worker = new NR.worker({
+        connection: api.resque.connectionDetails,
+        name: name,
+        queues: api.config.tasks.queues[counter],
+        timeout: timeout
+      }, api.tasks.jobs, function(){
+        worker.on('start',           function(){                   api.log('resque worker #'+(counter+1)+' started (queues: ' + worker.options.queues + ')', 'info'); })
+        worker.on('end',             function(){                   api.log('resque worker #'+(counter+1)+' ended', 'info'); })
+        worker.on('cleaning_worker', function(worker, pid){        api.log('resque cleaning old worker ' + worker + '(' + pid + ')', 'info'); })
+        // worker.on('poll',            function(queue){              api.log('resque worker #'+(counter+1)+' polling ' + queue, 'debug'); })
+        worker.on('job',             function(queue, job){         api.log('resque worker #'+(counter+1)+' working job ' + queue, 'debug', job); })
+        worker.on('success',         function(queue, job, result){ api.log('resque worker #'+(counter+1)+' job success ' + queue, 'info', {job: job, result: result}); })
+        // worker.on('pause',           function(){                   api.log('resque worker #'+(counter+1)+'  paused', 'debug'); })
+        worker.on('failure',         function(queue, job, f){ api.exceptionHandlers.task(f, queue, job) })
+        worker.on('error',           function(queue, job, error){ api.exceptionHandlers.task(error, queue, job) })
+
+        worker.workerCleanup();
+        worker.start();
+        api.resque.workers[counter] = worker;
+
+        callback();
+      });
     },
 
     stopWorkers: function(callback){
