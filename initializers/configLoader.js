@@ -24,7 +24,7 @@ var configLoader = function(api, next){
               cleanPath = file.replace(/\//g, '\\');
             }
             delete require.cache[require.resolve(cleanPath)];
-            callback();
+            callback(file);
           });
         }
       });
@@ -62,6 +62,12 @@ var configLoader = function(api, next){
     throw new Error(configPath + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
   }
 
+  var rebootCallback = function(file){
+    api.log('\r\n\r\n*** rebooting due to config change (' + file + ') ***\r\n\r\n', 'info');
+    delete require.cache[require.resolve(file)];
+    api.commands.restart.call(api._self);
+  }
+
   api.loadConfigDirectory = function(configPath, watch){
     var configFiles = api.utils.recursiveDirectoryGlob(configPath);
     
@@ -95,11 +101,7 @@ var configLoader = function(api, next){
 
       if(watch !== false){
         // configuration file loaded: set watch
-        api.watchFileAndAct(f, function(){
-          api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
-          delete require.cache[require.resolve(f)];
-          api.commands.restart.call(api._self);
-        });
+        api.watchFileAndAct(f, rebootCallback);
       }      
     }
 
