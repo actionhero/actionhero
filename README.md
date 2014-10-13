@@ -31,6 +31,8 @@ Currently actionhero supports:
 - `./node_modules/.bin/actionhero generate`
 - `npm start`
 
+Or [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/evantahler/actionhero)
+
 ## Want more?
 
 - [Getting Started](http://actionherojs.com/docs/ops/getting-started.html)
