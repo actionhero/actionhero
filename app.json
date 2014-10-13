@@ -1,0 +1,7 @@
+{
+    "name": "Actionhero.js Sample",
+    "description": "A simple API demo using Actionhero.js",
+    "repository": "https://github.com/benburwell/actionhero",
+    "logo": "http://actionherojs.com/img/logo/actionhero_400.png",
+    "keywords": ["actionhero", "api", "node"]
+}
