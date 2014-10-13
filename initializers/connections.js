@@ -112,6 +112,7 @@ var connections = function(api, next){
 
     var connectionDefaults = {
       error: null,
+      fingerprint: null,
       rooms: [],
       params: {},
       response: {},
@@ -122,7 +123,8 @@ var connections = function(api, next){
     }
 
     for(var i in connectionDefaults){
-      self[i] = connectionDefaults[i];
+      if(self[i] == null && data[i] != null){ self[i] = data[i]; }
+      if(self[i] == null){ self[i] = connectionDefaults[i]; }
     }
   }
 
@@ -243,6 +245,7 @@ var connections = function(api, next){
       } else if(verb === 'detailsView'){
         var details            = {};
         details.id             = self.id;
+        details.fingerprint    = self.fingerprint;
         details.remoteIP       = self.remoteIP;
         details.remotePort     = self.remotePort;
         details.params         = self.params;

@@ -107,6 +107,22 @@ describe('Core: Cache', function(){
     });
   });
 
+  it('cache.load without changing the expireTime will re-apply the redis expire', function(done){
+    var key = 'testKey'
+    api.cache.save(key, 'val', 1000, function(err, save_resp){
+      api.cache.load(key, function(err, load_resp){
+        load_resp.should.equal('val');
+        setTimeout(function(){
+          api.cache.load(key, function(err, load_resp){
+            String(err).should.equal('Error: Object not found')
+            should.equal(null, load_resp);
+            done();
+          });
+        }, 1001);
+      });
+    });
+  });
+
   it('cache.load with options that extending expireTime should return cached item', function(done){
     var expireTime = 400
     var timeout = 320
@@ -124,7 +140,7 @@ describe('Core: Cache', function(){
               //wait another `timeout` and the key load should fail without the extension
               setTimeout(function(){
                 api.cache.load('testKey_slow', function(err, loadResp){
-                  String(err).should.equal('Error: Object expired')
+                  String(err).should.equal('Error: Object not found')
                   should.equal(null, loadResp)
                   done()
                 })
@@ -176,6 +192,97 @@ describe('Core: Cache', function(){
         });
       });
     });
+  });
+
+  describe('locks', function(){
+
+    var key = 'testKey';
+    afterEach(function(done){
+      api.cache.lockName = api.id;
+      api.cache.unlock(key, function(err, lockOk){
+        done();
+      });
+    })
+
+    it('things can be locked, checked, and unlocked aribitrarily', function(done){
+      api.cache.lock(key, 100, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.checkLock(key, null, function(err, lockOk){
+          lockOk.should.equal(true);
+          api.cache.unlock(key, function(err, lockOk){
+            lockOk.should.equal(true);
+            done();
+          });
+        });
+      });
+    });
+
+    it('locks have a TTL and the default will be assumed from config', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.redis.client.ttl(api.cache.lockPrefix + key, function(err, ttl){
+          (ttl >= 9).should.equal(true);
+          (ttl <= 10).should.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('you can save an item if you do hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.save(key, 'value', function(err, success){
+          success.should.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('you cannot save a locked item if you do not hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.lockName = 'otherId';
+        api.cache.save(key, 'value', function(err, success){
+          String(err).should.equal('Error: Object Locked')
+          done();
+        });
+      });
+    });
+
+    it('you cannot destroy a locked item if you do not hold the lock', function(done){
+      api.cache.lock(key, null, function(err, lockOk){
+        lockOk.should.equal(true);
+        api.cache.lockName = 'otherId';
+        api.cache.destroy(key, function(err, success){
+          String(err).should.equal('Error: Object Locked')
+          done();
+        });
+      });
+    });
+
+    it('you can opt to retry to obtaina lock if a lock is held (READ)', function(done){
+      api.cache.lock(key, 1, function(err, lockOk){ // will be rounded up to 1s
+        lockOk.should.equal(true);
+        api.cache.save(key, 'value', function(err, success){
+          success.should.equal(true);
+
+          api.cache.lockName = 'otherId';
+          api.cache.checkLock(key, null, function(err, lockOk){
+            lockOk.should.equal(false);
+
+            var start = new Date().getTime();
+            api.cache.load(key, {retry: 2000}, function(err, data){
+              data.should.equal('value');
+              var delta = new Date().getTime() - start;
+              (delta >= 1000).should.equal(true)
+              done();
+            });
+
+          });
+        });
+      });
+    });
+
   });
 
   describe('cache dump files', function(){

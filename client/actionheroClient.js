@@ -35,7 +35,7 @@ actionheroClient.prototype.connect = function(callback){
   var self = this;
   
   if(self.client == null){
-    self.client = Primus.connect(%%URL%%, self.options);
+    self.client = Primus.connect(self.options.url, self.options);
   }else{
     self.client.end();
     self.client.open();
@@ -75,7 +75,8 @@ actionheroClient.prototype.configure = function(callback){
 
   self.messageCount = 0;
   self.detailsView(function(details){
-    self.id = details.data.id;
+    self.id          = details.data.id;
+    self.fingerprint = details.data.fingerprint;
     if(self.rooms.length > 0){
       self.rooms.forEach(function(room){
         self.send({event: 'roomAdd', room: room});
@@ -158,7 +159,7 @@ actionheroClient.prototype.actionWeb = function(params, callback){
   if(params.httpMethod != null){
     method = params.httpMethod;
   }
-  var url = %%URL%% + this.options.apiPath + qs;
+  var url = this.options.url + this.options.apiPath + qs;
   xmlhttp.open(method, url, true);
   xmlhttp.send();
 }

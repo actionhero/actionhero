@@ -5,7 +5,7 @@ exports.default = {
     websocket: function(api){
       return {
         enabled:          true,
-        // you can pass a FQDN here, or function to be called / window object to be inspected
+        // you can pass a FQDN (string) here or 'window.location.origin'
         clientUrl:        'window.location.origin',        
         // Directory to render client-side JS.  
         // Path should start with "/" and will be built starting from api.config..general.paths.public
@@ -27,7 +27,6 @@ exports.default = {
           // methods:       ['GET','HEAD','PUT','POST','DELETE','OPTIONS'],
           // credentials:   true,
           // maxAge:        '30 days',
-          // headers:       false,
           // exposed:       false,
         },
 

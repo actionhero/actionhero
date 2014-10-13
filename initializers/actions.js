@@ -8,10 +8,6 @@ var actions = function(api, next){
   api.actions.preProcessors = {};
   api.actions.postProcessors = {};
 
-  if(api.config.general.simultaneousActions == null){
-    api.config.general.simultaneousActions = 5;
-  }
-
   api.actions.addPreProcessor = function(func, priority) {
     if(!priority) priority = api.config.general.defaultMiddlewarePriority;
     priority = Number(priority); // ensure priority is numeric
@@ -28,6 +24,7 @@ var actions = function(api, next){
   api.actions.validateAction = function(action){
     var fail = function(msg){
       api.log(msg + '; exiting.', 'emerg');
+      process.exit();
     }
 
     if(typeof action.name != 'string' || action.name.length < 1){
@@ -75,6 +72,7 @@ var actions = function(api, next){
     api.watchFileAndAct(fullFilePath, function(){
       api.actions.loadFile(fullFilePath, true);
       api.params.buildPostVariables();
+      api.routes.loadRoutes();
     })
 
     try {

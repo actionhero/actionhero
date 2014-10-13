@@ -6,26 +6,32 @@ var staticFile = function(api, next){
 
   api.staticFile = {
 
-    path: function(connection){
-      return api.config.general.paths.public[0];
+    path: function(connection, counter){
+      if(counter == null){ counter = 0; }
+      if(api.config.general.paths == null || api.config.general.paths.public.length == 0 || counter >= api.config.general.paths.public.length){
+        return null;
+      }else{
+        return api.config.general.paths.public[counter];
+      }
     },
 
     // connection.params.file should be set
     // callback is of the form: callback(connection, error, fileStream, mime, length)
-    get: function(connection, callback){
+    get: function(connection, callback, counter){
       var self = this;
-      if(connection.params.file == null){
+      if(counter == null){ counter = 0; }
+      if(connection.params.file == null || api.staticFile.path(connection, counter) == null){
         self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
       } else {
-        var file = path.normalize(api.staticFile.path(connection) + '/' + connection.params.file);
-        if(file.indexOf(path.normalize(api.staticFile.path(connection))) != 0){
-          self.sendFileNotFound(connection, api.config.errors.fileInvalidPath(), callback);
+        var file = path.normalize(api.staticFile.path(connection, counter) + '/' + connection.params.file);
+        if(file.indexOf(path.normalize(api.staticFile.path(connection, counter))) != 0){
+          api.staticFile.get(connection, callback, counter + 1);
         } else {
           self.checkExistence(file, function(exists, truePath){
             if(exists){
               self.sendFile(truePath, connection, callback);
             } else {
-              self.sendFileNotFound(connection, api.config.errors.fileNotFound(), callback);
+              api.staticFile.get(connection, callback, counter + 1);
             }
           });
         }

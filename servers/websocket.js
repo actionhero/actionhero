@@ -1,8 +1,9 @@
-var primus   = require('primus');
-var UglifyJS = require('uglify-js');
-var fs       = require('fs');
-var path     = require('path');
-var util     = require('util');
+var primus              = require('primus');
+var UglifyJS            = require('uglify-js');
+var fs                  = require('fs');
+var path                = require('path');
+var util                = require('util');
+var browser_fingerprint = require('browser_fingerprint');
 
 var websocket = function(api, options, next){
 
@@ -123,12 +124,16 @@ var websocket = function(api, options, next){
 
   server.compileActionheroClientJS = function(){
     var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
-    ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + util.inspect(api.config.servers.websocket.client));
     var url = api.config.servers.websocket.clientUrl;
-    if(url.indexOf('http://') == 0 || url.indexOf('https://') == 0){
-      url = "'" + url + "'";
-    }
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
+    var defaults = {}
+    for(var i in api.config.servers.websocket.client){
+      defaults[i] = api.config.servers.websocket.client[i]
+    }
+    defaults.url = url;
+    var defaultsString = util.inspect(defaults);
+    defaultsString = defaultsString.replace("'window.location.origin'", 'window.location.origin');
+    ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + defaultsString);
 
     return ahClientSource;
   }
@@ -137,7 +142,8 @@ var websocket = function(api, options, next){
     if(minimize == null){ minimize = false; }
     var libSource = api.servers.servers.websocket.server.library();
     var ahClientSource = server.compileActionheroClientJS();
-    ahClientSource = '(function(exports){ \r\n' 
+    ahClientSource = ';;;\r\n'
+      + '(function(exports){ \r\n' 
       + ahClientSource
       + '\r\n'
       + 'exports.actionheroClient = actionheroClient; \r\n'
@@ -150,9 +156,12 @@ var websocket = function(api, options, next){
   }
 
   server.writeClientJS = function(){
+    if(api.config.general.paths.public == null || api.config.general.paths.public.length == 0){
+      return;
+    }
     if(api.config.servers.websocket.clientJsPath != null && api.config.servers.websocket.clientJsName != null){
       var base = path.normalize(
-        api.config.general.paths.public + 
+        api.config.general.paths.public[0] + 
         path.sep + 
         api.config.servers.websocket.clientJsPath + 
         path.sep + 
@@ -176,10 +185,13 @@ var websocket = function(api, options, next){
   /////////////
 
   var handleConnection = function(rawConnection){
+    var parsedCookies   = browser_fingerprint.parseCookies(rawConnection);
+    var fingerprint     = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey];
     server.buildConnection({
       rawConnection  : rawConnection,
       remoteAddress  : rawConnection.address.ip,
-      remotePort     : rawConnection.address.port
+      remotePort     : rawConnection.address.port,
+      fingerprint    : fingerprint,
     });
   }
 

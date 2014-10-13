@@ -1,9 +1,7 @@
 # actionhero.js 
 ## The Reusable, Scalable, and Quick node.js API Server
 
-**Note that this project has recently been renamed `actionhero` (lowercase) on NPM.  Update your projects**
-
-**Links: [NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Client](https://github.com/evantahler/actionhero_client)**
+**Links: [NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](https://gitter.im/evantahler/actionhero) | [Client](https://github.com/evantahler/actionhero_client)**
 
 <img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/>
 
@@ -13,7 +11,7 @@
 
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionhero.png)](http://demo.actionherojs.com)
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) [![Dependency Status](https://gemnasium.com/evantahler/actionhero.svg)](https://gemnasium.com/evantahler/actionhero)
+[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) [![Dependency Status](https://gemnasium.com/evantahler/actionhero.svg)](https://gemnasium.com/evantahler/actionhero) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
 ## Who is the actionhero?

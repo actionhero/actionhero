@@ -28,7 +28,7 @@ describe('Core: specHelper', function(){
 
   it('will return metadata like the web server', function(done){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
-      response.error.should.equal('Error: x is not a known action or that is not a valid apiVersion.');
+      response.error.should.equal('Error: unknown action or invalid apiVersion');
       response.messageCount.should.equal(1);
       response.serverInformation.serverName.should.equal('actionhero API');
       response.requesterInformation.remoteIP.should.equal('testServer');
@@ -40,7 +40,7 @@ describe('Core: specHelper', function(){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
       connection.messages.length.should.equal(2);
       connection.messages[0].welcome.should.equal('Hello! Welcome to the actionhero api');
-      connection.messages[1].error.should.equal('Error: x is not a known action or that is not a valid apiVersion.');
+      connection.messages[1].error.should.equal('Error: unknown action or invalid apiVersion');
       done();
     });
   });
