@@ -4,6 +4,7 @@ pids/*
 tmp/*
 log/*
 cache/*
+coverage/*
 node_modules/*
 public/javascript/actionheroClient.js
 public/javascript/actionheroClient.min.js
