@@ -45,9 +45,9 @@
     "uglify-js": "~2.4.14"
   },
   "devDependencies": {
-    "mocha": "~1.21.3",
-    "should": "~4.0.1",
-    "request": "~2.39.0",
+    "mocha": "~1.x",
+    "should": "~4.x",
+    "request": "~2.x",
     "redis-sentinel-client": "latest"
   },
   "optionalDependencies": {},
