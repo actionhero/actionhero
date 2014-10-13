@@ -22,13 +22,14 @@ var chatRoom = function(api, next){
     if(api.config.general.startingChatRooms){
       for(var room in api.config.general.startingChatRooms){
         api.log('ensuring the existence of the chatRoom: ' + room);
-        api.chatRoom.add(room);
-        if(api.config.general.startingChatRooms[room]){
-          for(var authKey in api.config.general.startingChatRooms[room]){
-            var authValue = api.config.general.startingChatRooms[room][authKey];
-            api.chatRoom.setAuthenticationPattern(room, authKey, authValue);
+        api.chatRoom.add(room, function(){
+          if(api.config.general.startingChatRooms[room]){
+            for(var authKey in api.config.general.startingChatRooms[room]){
+              var authValue = api.config.general.startingChatRooms[room][authKey];
+              api.chatRoom.setAuthenticationPattern(room, authKey, authValue);
+            }
           }
-        }
+        });
       }
     }
     next();
