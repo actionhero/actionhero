@@ -101,14 +101,6 @@ var routes = function(api, next){
         } else {
           api.routes.routes[method].push({ path: route.path, action: route.action });
         }
-        var words = route.path.split('/');
-        for(var w in words){
-          var word = words[w];
-          if(word[0] === ':'){
-            var cleanedWord = word.replace(':', '');
-            api.params.postVariables.push(cleanedWord);
-          }
-        }
         counter++;
       }
     }

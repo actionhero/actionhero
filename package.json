@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "9.3.1",
+  "version": "9.3.2",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -45,9 +45,9 @@
     "uglify-js": "~2.4.14"
   },
   "devDependencies": {
-    "mocha": "~1.21.3",
-    "should": "~4.0.1",
-    "request": "~2.39.0",
+    "mocha": "~1.x",
+    "should": "~4.x",
+    "request": "~2.x",
     "redis-sentinel-client": "latest"
   },
   "optionalDependencies": {},

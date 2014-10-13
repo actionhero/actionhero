@@ -588,13 +588,29 @@ describe('Server: Web', function(){
         }
       }
 
+      api.actions.versions.login = [1]
+      api.actions.actions.login = {
+        '1': {
+          name: 'login',
+          description: 'login',
+          matchExtensionMimeType: true,
+          inputs: { required: ['userID'], optional: [] },
+          outputExample: {},
+          run:function(api, connection, next){
+            connection.response.userID = connection.params.userID;
+            next(connection, true);
+          }
+        }
+      }
+
+      api.params.buildPostVariables();
       api.routes.loadRoutes({
         all: [
           { path: '/user/:userID', action: 'user' }
         ],
         get: [
+          { path: '/bogus/:bogusID', action: 'bogusAction' },
           { path: '/users', action: 'usersList' },
-          { path: '/search/:term', action: 'search' },
           { path: '/c/:key/:value', action: 'cacheTest' },
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
           { path: '/thing', action: 'thing' },
@@ -612,11 +628,13 @@ describe('Server: Web', function(){
       api.routes.routes = {};
       delete api.actions.versions.mimeTestAction;
       delete api.actions.actions.mimeTestAction;
+      delete api.actions.versions.login;
+      delete api.actions.actions.login;
       done();
     });
 
-    it('new params will be allowed in route definitions', function(done){
-      (api.params.postVariables.indexOf('userID') >= 0).should.equal(true);
+    it('new params will not be allowed in route definitions (an action should do it)', function(done){
+      (api.params.postVariables.indexOf('bogusID') < 0).should.equal(true);
       done();
     });
 
@@ -700,10 +718,10 @@ describe('Server: Web', function(){
     });
 
     it('route params trump explicit params', function(done){
-      request.get(url + '/api/search/SearchTerm?term=otherSearchTerm', function(err, response, body){
+      request.get(url + '/api/user/1?userID=2', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('search')
-        body.requesterInformation.receivedParams.term.should.equal('SearchTerm')
+        body.requesterInformation.receivedParams.action.should.equal('user')
+        body.requesterInformation.receivedParams.userID.should.equal('1')
         done();
       });
     });
