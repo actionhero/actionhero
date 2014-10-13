@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -13,7 +13,7 @@ describe('Core: Middleware', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -32,7 +32,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       });
 
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._preProcessorNote.should.equal('note');
         done();
       });
@@ -69,7 +69,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       }, api.config.general.defaultProcessorPriority+1);
       
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteEarly.should.equal('early');
         response._processorNoteDefault.should.equal('default');
@@ -89,7 +89,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       }, api.config.general.defaultProcessorPriority-1);
       
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteSecond.should.equal('second');
         done();
@@ -102,7 +102,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       });
 
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._postProcessorNote.should.equal('note');
         done();
       });
@@ -139,7 +139,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       }, api.config.general.defaultProcessorPriority+1);
       
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteEarly.should.equal('early');
         response._processorNoteDefault.should.equal('default');
@@ -159,7 +159,7 @@ describe('Core: Middleware', function(){
         next(connection, true);
       }, api.config.general.defaultProcessorPriority-1);
       
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteSecond.should.equal('second');
         done();
@@ -184,7 +184,7 @@ describe('Core: Middleware', function(){
         next(connection, false);
       });
 
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(){
         throw new Error('should not get a response');
       });
       setTimeout(function(){
@@ -209,16 +209,16 @@ describe('Core: Middleware', function(){
     })
 
     it('can create callbacks on connection creation', function(done){
-      api.connections.addCreateCallback(function(c){
+      api.connections.addCreateCallback(function(){
         done();
       });
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(){
         //
       });
     });
 
     it('can create callbacks on connection destroy', function(done){
-      api.connections.addDestroyCallback(function(c){
+      api.connections.addDestroyCallback(function(){
         done();
       });
 

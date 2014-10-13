@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -12,7 +12,7 @@ describe('Core: Tasks', function(){
     actionhero.start(function(err, a){
       api = a;
 
-      api.tasks.tasks['regular_task'] = {
+      api.tasks.tasks.regularTask = {
         name: 'regular',
         description: 'task: ' + this.name,
         queue: queue,
@@ -25,32 +25,32 @@ describe('Core: Tasks', function(){
         }
       }
 
-      api.tasks.tasks['periodic_task'] = {
-        name: 'periodic_task',
+      api.tasks.tasks.periodicTask = {
+        name: 'periodicTask',
         description: 'task: ' + this.name,
         queue: queue,
         frequency: 100,
         plugins: [],
         pluginOptions: {},
         run: function(api, params, next){
-          taskOutput.push('periodic_task');
+          taskOutput.push('periodicTask');
           next();
         }
       }
 
-      api.tasks.jobs['regular_task']  = api.tasks.jobWrapper('regular_task');
-      api.tasks.jobs['periodic_task'] = api.tasks.jobWrapper('periodic_task');
+      api.tasks.jobs.regularTask  = api.tasks.jobWrapper('regularTask');
+      api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask');
 
       done();
     })
   });
 
   after(function(done){
-    delete api.tasks.tasks['regular_task'];
-    delete api.tasks.tasks['periodic_task'];
-    delete api.tasks.jobs['regular_task'];
-    delete api.tasks.jobs['periodic_task'];
-    actionhero.stop(function(err){
+    delete api.tasks.tasks.regularTask;
+    delete api.tasks.tasks.periodicTask;
+    delete api.tasks.jobs.regularTask;
+    delete api.tasks.jobs.periodicTask;
+    actionhero.stop(function(){
       done();
     });
   });
@@ -104,14 +104,14 @@ describe('Core: Tasks', function(){
   });
 
   it('can run a task manually', function(done){
-    api.specHelper.runTask('regular_task', {word: 'theWord'}, function(){
+    api.specHelper.runTask('regularTask', {word: 'theWord'}, function(){
       taskOutput[0].should.equal('theWord');
       done();
     })
   });
 
   it('no delayed tasks should be scheduled', function(done){
-    api.resque.queue.scheduledAt(queue, 'periodic_task', {}, function(err, timestamps){
+    api.resque.queue.scheduledAt(queue, 'periodicTask', {}, function(err, timestamps){
       should.not.exist(err);
       timestamps.length.should.equal(0);
       done();
@@ -129,8 +129,10 @@ describe('Core: Tasks', function(){
   });
 
   it('re-enqueuing a periodic task should not enqueue it again', function(done){
-    api.tasks.enqueue('periodic_task', function(err){
-      api.tasks.enqueue('periodic_task', function(err){
+    api.tasks.enqueue('periodicTask', function(err){
+      should.not.exist(err);
+      api.tasks.enqueue('periodicTask', function(err){
+        should.not.exist(err);
         api.resque.queue.length(queue, function(err, length){
           should.not.exist(err);
           length.should.equal(1);
@@ -141,7 +143,8 @@ describe('Core: Tasks', function(){
   });
 
   it('can add a normal job', function(done){
-    api.tasks.enqueue('regular_task', {word: 'first'}, function(err){
+    api.tasks.enqueue('regularTask', {word: 'first'}, function(err){
+      should.not.exist(err);
       api.resque.queue.length(queue, function(err, length){
         should.not.exist(err);
         length.should.equal(1);
@@ -152,22 +155,24 @@ describe('Core: Tasks', function(){
 
   it('can add a delayed job', function(done){
     var time = new Date().getTime() + 1000;
-    api.tasks.enqueueAt(time, 'regular_task', {word: 'first'}, function(err){
-      api.resque.queue.scheduledAt(queue, 'regular_task', {word: 'first'}, function(err, timestamps){
+    api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, function(err){
+      should.not.exist(err);
+      api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, function(err, timestamps){
         should.not.exist(err);
         timestamps.length.should.equal(1);
-        var complete_time = Math.floor(time / 1000);
-        Number(timestamps[0]).should.be.within(complete_time, complete_time + 2)
+        var completeTime = Math.floor(time / 1000);
+        Number(timestamps[0]).should.be.within(completeTime, completeTime + 2)
         done();
       });
     });
   });
 
   it('I can remove an enqueued job', function(done){
-    api.tasks.enqueue('regular_task', {word: 'first'}, function(err){
+    api.tasks.enqueue('regularTask', {word: 'first'}, function(err){
+      should.not.exist(err);
       api.resque.queue.length(queue, function(err, length){
         length.should.equal(1);
-        api.tasks.del(queue, 'regular_task', {word: 'first'}, function(err, count){
+        api.tasks.del(queue, 'regularTask', {word: 'first'}, function(err, count){
           count.should.equal(1);
           api.resque.queue.length(queue, function(err, length){
             length.should.equal(0);
@@ -179,12 +184,13 @@ describe('Core: Tasks', function(){
   });
 
   it('I can remove a delayed job', function(done){
-    api.tasks.enqueueIn(1000, 'regular_task', {word: 'first'}, function(err){
-      api.resque.queue.scheduledAt(queue, 'regular_task', {word: 'first'}, function(err, timestamps){
+    api.tasks.enqueueIn(1000, 'regularTask', {word: 'first'}, function(err){
+      should.not.exist(err);
+      api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, function(err, timestamps){
         timestamps.length.should.equal(1);
-        api.tasks.delDelayed(queue, 'regular_task', {word: 'first'}, function(err, timestamps){
+        api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, function(err, timestamps){
           timestamps.length.should.equal(1);
-          api.tasks.delDelayed(queue, 'regular_task', {word: 'first'}, function(err, timestamps){
+          api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, function(err, timestamps){
             timestamps.length.should.equal(0);
             done();
           });
@@ -195,9 +201,11 @@ describe('Core: Tasks', function(){
 
   it('I can remove and stop a recurring task', function(done){
     // enqueue the delayed job 2x, one in each type of queue
-    api.tasks.enqueue('periodic_task', {}, function(err){
-      api.tasks.enqueueIn(1000, 'periodic_task', {}, function(err){
-        api.tasks.stopRecurrentJob('periodic_task', function(err, count){
+    api.tasks.enqueue('periodicTask', {}, function(err){
+      should.not.exist(err);
+      api.tasks.enqueueIn(1000, 'periodicTask', {}, function(err){
+        should.not.exist(err);
+        api.tasks.stopRecurrentJob('periodicTask', function(err, count){
           count.should.equal(2);
           done();
         });
@@ -205,10 +213,11 @@ describe('Core: Tasks', function(){
     });
   });
 
-  describe('full worker flow', function(done){
+  describe('full worker flow', function(){
 
     it('normal tasks work', function(done){
-      api.tasks.enqueue('regular_task', {word: 'first'}, function(err){
+      api.tasks.enqueue('regularTask', {word: 'first'}, function(err){
+        should.not.exist(err);
         api.config.tasks.queues = ['*'];
         api.resque.startWorkers(function(){
           setTimeout(function(){
@@ -220,7 +229,8 @@ describe('Core: Tasks', function(){
     });
 
     it('delayed tasks work', function(done){
-      api.tasks.enqueueIn(100, 'regular_task', {word: 'delayed'}, function(err){
+      api.tasks.enqueueIn(100, 'regularTask', {word: 'delayed'}, function(err){
+        should.not.exist(err);
         api.config.tasks.queues = ['*'];
         api.config.tasks.scheduler = true;
         api.resque.startScheduler(function(){
@@ -235,15 +245,15 @@ describe('Core: Tasks', function(){
     });
 
     it('recurrent tasks work', function(done){
-      api.tasks.enqueueRecurrentJob('periodic_task', function(){
+      api.tasks.enqueueRecurrentJob('periodicTask', function(){
         api.config.tasks.queues = ['*'];
         api.config.tasks.scheduler = true;
         api.resque.startScheduler(function(){
           api.resque.startWorkers(function(){
             setTimeout(function(){
-              taskOutput[0].should.equal('periodic_task');
-              taskOutput[1].should.equal('periodic_task');
-              taskOutput[2].should.equal('periodic_task');
+              taskOutput[0].should.equal('periodicTask');
+              taskOutput[1].should.equal('periodicTask');
+              taskOutput[2].should.equal('periodicTask');
               // the task may have run more than 3 times, we just want to ensure that it happened more than once
               done();
             }, 1500);

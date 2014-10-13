@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -23,13 +23,13 @@ describe('Plugin', function(){
     //delete the ACTIONHERO_CONFIG env to prevent some errors on other tests
     delete process.env.ACTIONHERO_CONFIG;
     
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
 
   it('plugin action should be loaded', function(done){
-    api.specHelper.runAction('test_action', function(response, connection){
+    api.specHelper.runAction('test_action', function(response){
       response.test.should.be.equal('OK');
       done();
     });
@@ -48,7 +48,7 @@ describe('Plugin', function(){
   });
   
   it('plugin should be able to add other paths (actions2)', function(done){
-    api.specHelper.runAction('test_action2', function(response, connection){
+    api.specHelper.runAction('test_action2', function(response){
       response.test.should.be.equal('OK');
       done();
     });

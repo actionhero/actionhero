@@ -2,7 +2,7 @@ var fs = require('fs');
 var os = require('os');
 var path = require('path');
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -16,7 +16,7 @@ describe('Core: Cache', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -74,12 +74,12 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load with expired items should not return them', function(done){
-    api.cache.save('testKey_slow', 'abc123', 10, function(err, save_resp){
-      save_resp.should.equal(true);
+    api.cache.save('testKey_slow', 'abc123', 10, function(err, saveResp){
+      saveResp.should.equal(true);
       setTimeout(function(){
-        api.cache.load('testKey_slow', function(err, load_resp){
+        api.cache.load('testKey_slow', function(err, loadResp){
           String(err).should.equal('Error: Object expired')
-          should.equal(null, load_resp);
+          should.equal(null, loadResp);
           done();
         });
       }, 20);
@@ -87,21 +87,21 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load with negative expire times will never load', function(done){
-    api.cache.save('testKeyInThePast', 'abc123', -1, function(err, save_resp){
-      save_resp.should.equal(true);
-      api.cache.load('testKeyInThePast', function(err, load_resp){
+    api.cache.save('testKeyInThePast', 'abc123', -1, function(err, saveResp){
+      saveResp.should.equal(true);
+      api.cache.load('testKeyInThePast', function(err, loadResp){
         (String(err).indexOf('Error: Object') >= 0).should.equal(true)
-        should.equal(null, load_resp);
+        should.equal(null, loadResp);
         done();
       });
     });
   });
 
   it('cache.save does not need to pass expireTime', function(done){
-    api.cache.save('testKeyForNullExpireTime', 'abc123', function(err, save_resp){
-      save_resp.should.equal(true);
-      api.cache.load('testKeyForNullExpireTime', function(err, load_resp){
-        load_resp.should.equal('abc123');
+    api.cache.save('testKeyForNullExpireTime', 'abc123', function(err, saveResp){
+      saveResp.should.equal(true);
+      api.cache.load('testKeyForNullExpireTime', function(err, loadResp){
+        loadResp.should.equal('abc123');
         done();
       });
     });
@@ -109,13 +109,13 @@ describe('Core: Cache', function(){
 
   it('cache.load without changing the expireTime will re-apply the redis expire', function(done){
     var key = 'testKey'
-    api.cache.save(key, 'val', 1000, function(err, save_resp){
-      api.cache.load(key, function(err, load_resp){
-        load_resp.should.equal('val');
+    api.cache.save(key, 'val', 1000, function(){
+      api.cache.load(key, function(err, loadResp){
+        loadResp.should.equal('val');
         setTimeout(function(){
-          api.cache.load(key, function(err, load_resp){
+          api.cache.load(key, function(err, loadResp){
             String(err).should.equal('Error: Object not found')
-            should.equal(null, load_resp);
+            should.equal(null, loadResp);
             done();
           });
         }, 1001);
@@ -153,12 +153,12 @@ describe('Core: Cache', function(){
   })
 
   it('cache.save works with arrays', function(done){
-    api.cache.save('array_key', [1, 2, 3], function(err, save_resp){
-      save_resp.should.equal(true);
-      api.cache.load('array_key', function(err, load_resp){
-        load_resp[0].should.equal(1);
-        load_resp[1].should.equal(2);
-        load_resp[2].should.equal(3);
+    api.cache.save('array_key', [1, 2, 3], function(err, saveResp){
+      saveResp.should.equal(true);
+      api.cache.load('array_key', function(err, loadResp){
+        loadResp[0].should.equal(1);
+        loadResp[1].should.equal(2);
+        loadResp[2].should.equal(3);
         done();
       });
     });
@@ -168,13 +168,13 @@ describe('Core: Cache', function(){
     var data = {};
     data.thing = 'stuff';
     data.otherThing = [1, 2, 3];
-    api.cache.save('obj_key', data, function(err, save_resp){
-      save_resp.should.equal(true);
-      api.cache.load('obj_key', function(err, load_resp){
-        load_resp.thing.should.equal('stuff');
-        load_resp.otherThing[0].should.equal(1);
-        load_resp.otherThing[1].should.equal(2);
-        load_resp.otherThing[2].should.equal(3);
+    api.cache.save('obj_key', data, function(err, saveResp){
+      saveResp.should.equal(true);
+      api.cache.load('obj_key', function(err, loadResp){
+        loadResp.thing.should.equal('stuff');
+        loadResp.otherThing[0].should.equal(1);
+        loadResp.otherThing[1].should.equal(2);
+        loadResp.otherThing[2].should.equal(3);
         done();
       });
     });
@@ -199,7 +199,7 @@ describe('Core: Cache', function(){
     var key = 'testKey';
     afterEach(function(done){
       api.cache.lockName = api.id;
-      api.cache.unlock(key, function(err, lockOk){
+      api.cache.unlock(key, function(){
         done();
       });
     })
@@ -242,7 +242,7 @@ describe('Core: Cache', function(){
       api.cache.lock(key, null, function(err, lockOk){
         lockOk.should.equal(true);
         api.cache.lockName = 'otherId';
-        api.cache.save(key, 'value', function(err, success){
+        api.cache.save(key, 'value', function(err){
           String(err).should.equal('Error: Object Locked')
           done();
         });
@@ -253,7 +253,7 @@ describe('Core: Cache', function(){
       api.cache.lock(key, null, function(err, lockOk){
         lockOk.should.equal(true);
         api.cache.lockName = 'otherId';
-        api.cache.destroy(key, function(err, success){
+        api.cache.destroy(key, function(err){
           String(err).should.equal('Error: Object Locked')
           done();
         });
@@ -287,7 +287,7 @@ describe('Core: Cache', function(){
 
   describe('cache dump files', function(){
 
-    if (typeof os.tmpdir != 'function'){ os.tmpdir = os.tmpDir } // resolution for node v0.8.x
+    if (typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir } // resolution for node v0.8.x
     var file = os.tmpdir() + path.sep + "cacheDump";
 
     it('can read write the cache to a dump file', function(done){

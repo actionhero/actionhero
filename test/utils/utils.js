@@ -1,11 +1,7 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
-
-var testCounterName = 'testCounterName';
-var oldValues = { global: 0, local: 0 };
-var testKey = 'test:stats'
 
 describe('Utils', function(){
 
@@ -17,7 +13,7 @@ describe('Utils', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -29,7 +25,7 @@ describe('Utils', function(){
 
   it('utils.sqlDateTime specific time', function(done){
     var now = new Date(0);
-    var now_utc = new Date(
+    var nowUtc = new Date(
       now.getUTCFullYear(),
       now.getUTCMonth(),
       now.getUTCDate(),
@@ -37,7 +33,7 @@ describe('Utils', function(){
       now.getUTCMinutes(),
       now.getUTCSeconds()
     );
-    api.utils.sqlDateTime(now_utc).should.equal('1970-01-01 00:00:00');
+    api.utils.sqlDateTime(nowUtc).should.equal('1970-01-01 00:00:00');
     done();
   });
 
@@ -155,6 +151,7 @@ describe('Utils', function(){
       var uri = '[2604:4480:z:5]:80';
       try{
         var parts = api.utils.parseIPv6URI(uri);
+        console.log(parts);
       }catch(e){
         e.message.should.equal('failed to parse address');
       }

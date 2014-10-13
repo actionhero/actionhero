@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -13,7 +13,7 @@ describe('Core: Exceptions', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -47,8 +47,8 @@ describe('Core: Exceptions', function(){
         }
       }
     }
-    api.actions.versions['badAction'] = [1];
-    api.actions.actions['badAction'].should.be.an.instanceOf(Object);
+    api.actions.versions.badAction = [1];
+    api.actions.actions.badAction.should.be.an.instanceOf(Object);
     done();
   });
 
@@ -71,7 +71,7 @@ describe('Core: Exceptions', function(){
      * still pass in normal environments.
      */
     if(9 < parseInt(process.version.split('.')[1],10)){
-      api.specHelper.runAction('badAction', {}, function(response, connection){
+      api.specHelper.runAction('badAction', {}, function(response){
         response.error.should.equal('Error: The server experienced an internal error');
         done();
       });
@@ -81,16 +81,16 @@ describe('Core: Exceptions', function(){
   });
 
   it('other actions still work', function(done){
-    api.specHelper.runAction('randomNumber', {}, function(response, connection){
+    api.specHelper.runAction('randomNumber', {}, function(response){
       should.not.exist(response.error);
       done();
     });
   });
 
   it('I can remove the bad action', function(done){
-    delete api.actions.actions['badAction'];
-    delete api.actions.versions['badAction'];
-    should.not.exist(api.actions.actions['badAction']);
+    delete api.actions.actions.badAction;
+    delete api.actions.versions.badAction;
+    should.not.exist(api.actions.actions.badAction);
     done();
   });
 });

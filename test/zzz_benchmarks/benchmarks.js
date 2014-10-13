@@ -1,4 +1,4 @@
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 var messages = [];
@@ -16,11 +16,11 @@ var multiAction = function(action, count, params, next){
         theseParams[x] = theseParams[x]();
       }
     }
-    api.specHelper.runAction(action, theseParams, function(response, connection){
+    api.specHelper.runAction(action, theseParams, function(){
       started--;
       if(started === 0){
         var durationSeconds = ((new Date().getTime()) - start) / 1000;
-        messages.push('benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + "s");
+        messages.push('benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + 's');
         next(durationSeconds);
       }
     });
@@ -38,7 +38,7 @@ describe('Benchmarks', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       console.log('');
       console.log('');
       messages.forEach(function(message){
@@ -50,14 +50,14 @@ describe('Benchmarks', function(){
 
   it('status', function(done){
     this.timeout(10 * 1000)
-    multiAction('randomNumber', 1000, {}, function(duration){
+    multiAction('randomNumber', 1000, {}, function(){
       done();
     });
   });
 
   it('status', function(done){
     this.timeout(10 * 1000)
-    multiAction('status', 1000, {}, function(duration){
+    multiAction('status', 1000, {}, function(){
       done();
     });
   });
@@ -67,21 +67,21 @@ describe('Benchmarks', function(){
     multiAction('cacheTest', 1000, {
       key:   function(){ return api.utils.randomString(32) }, 
       value: function(){ return api.utils.randomString(32) }
-    }, function(duration){
+    }, function(){
       done();
     });
   });
 
   it('sleepTest', function(done){
     this.timeout(10 * 1000)
-    multiAction('sleepTest', 1000, {}, function(duration){
+    multiAction('sleepTest', 1000, {}, function(){
       done();
     });
   });
 
   it('debug', function(done){
     this.timeout(10 * 1000)
-    multiAction('debug', 1000, {}, function(duration){
+    multiAction('debug', 1000, {}, function(){
       done();
     });
   });

@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -13,7 +13,7 @@ describe('Core: API', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -109,22 +109,22 @@ describe('Core: API', function(){
     });
 
     after(function(done){
-      delete api.actions.actions['versionedAction'];
-      delete api.actions.versions['versionedAction'];
+      delete api.actions.actions.versionedAction;
+      delete api.actions.versions.versionedAction;
       done();
     })
 
     it('will default actions to version 1', function(done){
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         response.requesterInformation.receivedParams.apiVersion.should.equal(1)
         done();
       });
     });
 
     it('can specify an apiVersion', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 1}, function(response, connection){
+      api.specHelper.runAction('versionedAction', {apiVersion: 1}, function(response){
         response.requesterInformation.receivedParams.apiVersion.should.equal(1);
-        api.specHelper.runAction('versionedAction', {apiVersion: 2}, function(response, connection){
+        api.specHelper.runAction('versionedAction', {apiVersion: 2}, function(response){
           response.requesterInformation.receivedParams.apiVersion.should.equal(2);
           done();
         });
@@ -132,21 +132,21 @@ describe('Core: API', function(){
     });
 
     it('will default clients to the latest version of the action', function(done){
-      api.specHelper.runAction('versionedAction', function(response, connection){
+      api.specHelper.runAction('versionedAction', function(response){
         response.requesterInformation.receivedParams.apiVersion.should.equal(3)
         done();
       });
     });
 
     it('will fail on a missing action + version', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 10}, function(response, connection){
+      api.specHelper.runAction('versionedAction', {apiVersion: 10}, function(response){
         response.error.should.equal('Error: unknown action or invalid apiVersion');
         done();
       });
     });
 
     it('can return complex error responses', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 3}, function(response, connection){
+      api.specHelper.runAction('versionedAction', {apiVersion: 3}, function(response){
         response.error.a.complex.should.equal('error');
         done();
       });
@@ -179,14 +179,14 @@ describe('Core: API', function(){
 
     after(function(done){
       api.actions.preProcessors = {};
-      delete api.actions.actions['badAction'];
-      delete api.actions.versions['badAction'];
+      delete api.actions.actions.badAction;
+      delete api.actions.versions.badAction;
       done();
     });
 
     it('will only callback once for a bad action and only the first response will be returned', function(done){
       var responses = [];
-      api.specHelper.runAction('badAction', function(response, connection){
+      api.specHelper.runAction('badAction', function(response){
         responses.push( api.utils.objClone(response) );
       });
 
@@ -204,7 +204,7 @@ describe('Core: API', function(){
       }
 
       var responses = [];
-      api.specHelper.runAction('randomNumber', function(response, connection){
+      api.specHelper.runAction('randomNumber', function(response){
         responses.push( api.utils.objClone(response) );
       });
 

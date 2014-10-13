@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -8,8 +8,8 @@ var client = {};
 var client2 = {};
 var client3 = {};
 
-var client_details = {};
-var client_2_details = {};
+var clientDetails = {};
+var client2Details = {};
 
 function makeSocketRequest(thisClient, message, cb){
   var lines = [];
@@ -23,11 +23,11 @@ function makeSocketRequest(thisClient, message, cb){
 
   setTimeout(function(){
     var lastLine = lines[(lines.length - 1)];
-    if(lastLine == ''){ lastLine = lines[(lines.length - 2)] }
+    if(lastLine === ''){ lastLine = lines[(lines.length - 2)] }
     var parsed = null;
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
-    if(typeof cb == 'function'){ cb(parsed) }
+    if(typeof cb === 'function'){ cb(parsed) }
   }, 100);
 
   thisClient.on('data', rsp);
@@ -63,7 +63,7 @@ describe('Server: Socket', function(){
     client.write('quit\r\n');
     client2.write('quit\r\n');
     client3.write('quit\r\n');
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -113,7 +113,7 @@ describe('Server: Socket', function(){
       response.data.should.be.an.instanceOf(Object)
       response.data.params.should.be.an.instanceOf(Object)
       response.data.connectedAt.should.be.within(10, new Date().getTime())
-      client_2_details = response.data; // save for later!
+      client2Details = response.data; // save for later!
       done();
     });
   });
@@ -129,7 +129,7 @@ describe('Server: Socket', function(){
   });
 
   it('actions will fail without proper params set to the connection', function(done){
-    makeSocketRequest(client, 'paramDelete key', function(response){
+    makeSocketRequest(client, 'paramDelete key', function(){
       makeSocketRequest(client, 'cacheTest', function(response){
         response.error.should.equal('Error: key is a required parameter for this action')
         done();
@@ -201,11 +201,11 @@ describe('Server: Socket', function(){
           responses.push(JSON.parse(line));
         }
       })
-      if(responses.length == 6){
+      if(responses.length === 6){
         client.removeListener('data', checkResponses);
         for(var i in responses){
           var response = responses[i];
-          if(i == 0){
+          if(i === '0'){
             response.error.should.eql('Error: you have too many pending requests');
           } else {
             should.not.exist(response.error)
@@ -274,7 +274,7 @@ describe('Server: Socket', function(){
     });
 
     it('rooms can be changed', function(done){
-      makeSocketRequest(client, 'roomAdd otherRoom', function(response){
+      makeSocketRequest(client, 'roomAdd otherRoom', function(){
       makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
         response.status.should.equal('OK')
         makeSocketRequest(client, 'roomView otherRoom', function(response){
@@ -286,8 +286,8 @@ describe('Server: Socket', function(){
     });
 
     it('connections in the first room see the count go down', function(done){
-      makeSocketRequest(client, 'roomAdd   otherRoom', function(response){
-      makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
+      makeSocketRequest(client, 'roomAdd   otherRoom', function(){
+      makeSocketRequest(client, 'roomLeave defaultRoom', function(){
         makeSocketRequest(client2, 'roomView defaultRoom', function(response){
           response.data.room.should.equal('defaultRoom');
           response.data.membersCount.should.equal(2)
@@ -307,7 +307,7 @@ describe('Server: Socket', function(){
     });
 
     it('folks NOT in my room DON\'T hear what I say', function(done){
-      makeSocketRequest(client, 'roomLeave defaultRoom', function(response){
+      makeSocketRequest(client, 'roomLeave defaultRoom', function(){
         makeSocketRequest(client, '', function(response){
           should.not.exist(response);
           done();
@@ -317,11 +317,11 @@ describe('Server: Socket', function(){
     });
 
     it('Folks are notified when I join a room', function(done){
-      makeSocketRequest(client, 'roomAdd otherRoom', function(response){
+      makeSocketRequest(client, 'roomAdd otherRoom', function(){
         makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n');
         makeSocketRequest(client, '', function(response){
           response.message.should.equal('I have entered the room');
-          response.from.should.equal(client_2_details.id);
+          response.from.should.equal(client2Details.id);
           done();
         });
       });
@@ -330,7 +330,7 @@ describe('Server: Socket', function(){
     it('Folks are notified when I leave a room', function(done){
       makeSocketRequest(client, '', function(response){
         response.message.should.equal('I have left the room');
-        response.from.should.equal(client_2_details.id);
+        response.from.should.equal(client2Details.id);
         done();
       });
 
@@ -339,26 +339,35 @@ describe('Server: Socket', function(){
 
     it('I can get my id', function(done){
       makeSocketRequest(client, 'detailsView' + '\r\n', function(response){
-        client_details = response.data;
+        clientDetails = response.data;
         done();
       });
     });
 
     it('can join secure rooms when applicable', function(done){
-      api.connections.connections[client_details.id].authorized = true;
-      makeSocketRequest(client, 'roomAdd secureRoom', function(response){
-        response.data.should.equal(true);
-        response.status.should.equal('OK');
-        done();
+      api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
+        api.utils.hashLength(roomDetails.members).should.equal(0);
+        api.connections.connections[clientDetails.id].authorized = true;
+        makeSocketRequest(client, 'roomAdd secureRoom', function(response){
+          response.data.should.equal(true);
+          response.status.should.equal('OK');
+          api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
+            api.utils.hashLength(roomDetails.members).should.equal(1);
+            done();
+          });
+        });
       });
     });
 
     it('cannot join secure rooms when missing attributes', function(done){
-      api.connections.connections[client_details.id].authorized = false;
-      makeSocketRequest(client, 'roomAdd secureRoom', function(response){
-        response.data.should.equal(false);
-        response.status.should.equal('not authorized to join room');
-        done();
+      api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
+        api.connections.connections[clientDetails.id].authorized = false;
+        api.utils.hashLength(roomDetails.members).should.equal(0);
+        makeSocketRequest(client, 'roomAdd secureRoom', function(response){
+          response.data.should.equal(false);
+          response.status.should.equal('not authorized to join room');
+          done();
+        });
       });
     });
   

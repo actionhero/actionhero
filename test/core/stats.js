@@ -1,10 +1,7 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
-
-var testCounterName = 'testCounterName';
-var oldValues = { global: 0, local: 0 };
 var testKey = 'test:stats'
 
 describe('Core: Stats', function(){
@@ -17,7 +14,7 @@ describe('Core: Stats', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -28,7 +25,7 @@ describe('Core: Stats', function(){
   })
 
   afterEach(function(done){
-    api.redis.client.del(testKey, function(err){
+    api.redis.client.del(testKey, function(){
       done();
     });
   })
@@ -46,8 +43,8 @@ describe('Core: Stats', function(){
     api.stats.increment('thing');
     api.stats.increment('Otherthing', -1);
 
-    api.stats.pendingIncrements['thing'].should.equal(2);
-    api.stats.pendingIncrements['Otherthing'].should.equal(-1);
+    api.stats.pendingIncrements.thing.should.equal(2);
+    api.stats.pendingIncrements.Otherthing.should.equal(-1);
 
     done();
   });
