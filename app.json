@@ -1,0 +1,22 @@
+{
+    "name": "actionhero.js",
+    "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
+    "repository": "https://github.com/evantahler/actionhero",
+    "logo": "https://raw.githubusercontent.com/evantahler/actionhero/master/public/logo/actionhero.png",
+    "keywords": [
+        "api",
+        "realtime",
+        "socket",
+        "http",
+        "https",
+        "web",
+        "game",
+        "cluster",
+        "soa",
+        "action",
+        "task",
+        "delay",
+        "service",
+        "tcp"
+    ]
+}
