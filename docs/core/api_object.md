@@ -58,7 +58,7 @@ Collections that you are reccomended not leave unmodifeid are un-expanded `[Obje
         sleepSync: [Function],
         randomArraySort: [Function],
         inArray: [Function],
-        recusiveDirecotryGlob: [Function],
+        recursiveDirectoryGlob: [Function],
         objClone: [Function],
         collapseObjectToArray: [Function],
         getExternalIPAddress: [Function],
