@@ -64,7 +64,6 @@ exports.test = {
         'otherRoom': {},
         'secureRoom': {authorized: true}
       },
-      developmentMode: true
     }
   }
 }

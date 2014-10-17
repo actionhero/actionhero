@@ -35,7 +35,7 @@ exports.default = {
 exports.test = { 
   redis: function(api){
     var package = 'fakeredis';
-    if(process.env.FAKEREDIS == 'false'){
+    if(process.env.FAKEREDIS === 'false'){
       package = 'redis';
     }
 

@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 var actions = function(api, next){
   api.actions = {};
   api.actions.actions = {};
@@ -27,28 +25,28 @@ var actions = function(api, next){
       process.exit();
     }
 
-    if(typeof action.name != 'string' || action.name.length < 1){
+    if(typeof action.name !== 'string' || action.name.length < 1){
       fail('an action is missing \'action.name\'');
       return false;
-    } else if(typeof action.description != 'string' || action.description.length < 1){
+    } else if(typeof action.description !== 'string' || action.description.length < 1){
       fail('Action ' + action.name + ' is missing \'action.description\'');
       return false;
-    } else if(typeof action.inputs != 'object'){
+    } else if(typeof action.inputs !== 'object'){
       fail('Action ' + action.name + ' has no inputs');
       return false;
-    } else if(typeof action.inputs.required != 'object'){
+    } else if(typeof action.inputs.required !== 'object'){
       fail('Action ' + action.name + ' has no required inputs');
       return false;
-    } else if(typeof action.inputs.optional != 'object'){
+    } else if(typeof action.inputs.optional !== 'object'){
       fail('Action ' + action.name + ' has no optional inputs');
       return false;
-    } else if(typeof action.outputExample != 'object'){
+    } else if(typeof action.outputExample !== 'object'){
       fail('Action ' + action.name + ' has no outputExample');
       return false;
-    } else if(typeof action.run != 'function'){
+    } else if(typeof action.run !== 'function'){
       fail('Action ' + action.name + ' has no run method');
       return false;
-    } else if(api.connections != null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
+    } else if(api.connections !== null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
       fail(action.name + ' is a reserved verb for connections. choose a new name');
       return false;
     } else {
@@ -57,7 +55,7 @@ var actions = function(api, next){
   }
 
   api.actions.loadFile = function(fullFilePath, reload){
-    if(reload == null){ reload = false; }
+    if(reload === null){ reload = false; }
 
     var loadMessage = function(action){
       var msgString = '';
@@ -79,10 +77,12 @@ var actions = function(api, next){
       var collection = require(fullFilePath);
       for(var i in collection){
         var action = collection[i];
-        if(action.version == null){ action.version = 1.0 }
-        if(api.actions.actions[action.name] == null){ api.actions.actions[action.name] = {} }
+        if(action.version === null || action.version === undefined){ action.version = 1.0 }
+        if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){ 
+          api.actions.actions[action.name] = {} 
+        }
         api.actions.actions[action.name][action.version] = action;
-        if(api.actions.versions[action.name] == null){
+        if(api.actions.versions[action.name] === null || api.actions.versions[action.name] === undefined){
           api.actions.versions[action.name] = [];
         }
         api.actions.versions[action.name].push(action.version);

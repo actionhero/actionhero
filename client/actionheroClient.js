@@ -1,4 +1,5 @@
-var actionheroClient = function(options, client){
+var ActionheroClient = function(options, client){
+
   var self = this;
 
   self.callbacks = {};
@@ -12,18 +13,18 @@ var actionheroClient = function(options, client){
     self.options[i] = options[i];
   }
 
-  if(client != null){
+  if(client){
     self.client = client;
   }
 }
 
 if(typeof Primus === 'undefined'){
-  actionheroClient.prototype = new EventEmitter();
+  ActionheroClient.prototype = new EventEmitter();
 }else{
-  actionheroClient.prototype = new Primus.EventEmitter();
+  ActionheroClient.prototype = new Primus.EventEmitter();
 }
 
-actionheroClient.prototype.defaults = function(){
+ActionheroClient.prototype.defaults = function(){
   %%DEFAULTS%%
 }
 
@@ -31,10 +32,10 @@ actionheroClient.prototype.defaults = function(){
 // CONNECTION //
 ////////////////
 
-actionheroClient.prototype.connect = function(callback){
+ActionheroClient.prototype.connect = function(callback){
   var self = this;
   
-  if(self.client == null){
+  if(!self.client){
     self.client = Primus.connect(self.options.url, self.options);
   }else{
     self.client.end();
@@ -70,7 +71,7 @@ actionheroClient.prototype.connect = function(callback){
   });
 }
 
-actionheroClient.prototype.configure = function(callback){
+ActionheroClient.prototype.configure = function(callback){
   var self = this;
 
   self.messageCount = 0;
@@ -90,7 +91,7 @@ actionheroClient.prototype.configure = function(callback){
 // MESSAGING //
 ///////////////
 
-actionheroClient.prototype.send = function(args, callback){
+ActionheroClient.prototype.send = function(args, callback){
   // primus will buffer messages when not connected
   var self = this;
   self.messageCount++;
@@ -100,7 +101,7 @@ actionheroClient.prototype.send = function(args, callback){
   self.client.write(args);
 }
 
-actionheroClient.prototype.handleMessage = function(message){
+ActionheroClient.prototype.handleMessage = function(message){
   var self = this;
   self.emit('message', message);
   if(message.context === 'response'){
@@ -112,7 +113,7 @@ actionheroClient.prototype.handleMessage = function(message){
     self.emit('say', message);
   } else if(message.context === 'alert'){
     self.emit('alert', message);
-  } else if(message.welcome != null && message.context == 'api'){
+  } else if(message.welcome && message.context === 'api'){
     self.welcomeMessage = message.welcome;
     self.emit('welcome', message);
   } else if(message.context === 'api'){
@@ -124,12 +125,12 @@ actionheroClient.prototype.handleMessage = function(message){
 // ACTIONS //
 /////////////
 
-actionheroClient.prototype.action = function(action, params, callback){
-  if(callback == null && typeof params == 'function'){
+ActionheroClient.prototype.action = function(action, params, callback){
+  if(!callback && typeof params === 'function'){
     callback = params;
     params = null;
   }
-  if(params == null){ params = {} }
+  if(!params){ params = {}; }
   params.action = action;
   
   if(this.state !== 'connected'){
@@ -139,11 +140,11 @@ actionheroClient.prototype.action = function(action, params, callback){
   }
 }
 
-actionheroClient.prototype.actionWeb = function(params, callback){
+ActionheroClient.prototype.actionWeb = function(params, callback){
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function(){
-    if(xmlhttp.readyState == 4){
-      if(xmlhttp.status == 200){
+    if(xmlhttp.readyState === 4){
+      if(xmlhttp.status === 200){
         var response = JSON.parse(xmlhttp.responseText);
         callback(null, response);
       }else{
@@ -151,12 +152,12 @@ actionheroClient.prototype.actionWeb = function(params, callback){
       }
     }
   }
-  var qs = "?"
+  var qs = '?';
   for(var i in params){
-    qs += i + "=" + params[i] + "&";
+    qs += i + '=' + params[i] + '&';
   }
   var method = 'GET';
-  if(params.httpMethod != null){
+  if(params.httpMethod){
     method = params.httpMethod;
   }
   var url = this.options.url + this.options.apiPath + qs;
@@ -164,7 +165,7 @@ actionheroClient.prototype.actionWeb = function(params, callback){
   xmlhttp.send();
 }
 
-actionheroClient.prototype.actionWebSocket = function(params, callback){
+ActionheroClient.prototype.actionWebSocket = function(params, callback){
   this.send({event: 'action',params: params}, callback);
 }
 
@@ -172,37 +173,40 @@ actionheroClient.prototype.actionWebSocket = function(params, callback){
 // COMMANDS //
 //////////////
 
-actionheroClient.prototype.say = function(room, message, callback){
+ActionheroClient.prototype.say = function(room, message, callback){
   this.send({event: 'say', room: room, message: message}, callback);
 }
 
-actionheroClient.prototype.file = function(file, callback){
+ActionheroClient.prototype.file = function(file, callback){
   this.send({event: 'file', file: file}, callback);
 }
 
-actionheroClient.prototype.detailsView = function(callback){
+ActionheroClient.prototype.detailsView = function(callback){
   this.send({event: 'detailsView'}, callback);
 }
 
-actionheroClient.prototype.roomView = function(room, callback){
+ActionheroClient.prototype.roomView = function(room, callback){
   this.send({event: 'roomView', room: room}, callback);
 }
 
-actionheroClient.prototype.roomAdd = function(room, callback){
+ActionheroClient.prototype.roomAdd = function(room, callback){
   this.rooms.push(room); // only a list of *intended* rooms to join; might fail
   this.send({event: 'roomAdd', room: room}, callback);
 }
 
-actionheroClient.prototype.roomLeave = function(room, callback){
+ActionheroClient.prototype.roomLeave = function(room, callback){
   this.send({event: 'roomLeave', room: room}, callback);
 }
 
-actionheroClient.prototype.documentation = function(callback){
+ActionheroClient.prototype.documentation = function(callback){
   this.send({event: 'documentation'}, callback);
 }
 
-actionheroClient.prototype.disconnect = function(){
+ActionheroClient.prototype.disconnect = function(){
   this.state = 'disconnected';
   this.client.end();
   this.emit('disconnected');
 }
+
+// depricated lowercase name
+var actionheroClient = ActionheroClient;

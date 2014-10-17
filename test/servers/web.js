@@ -1,7 +1,7 @@
 var should  = require('should');
 var request = require('request');
 var fs      = require('fs');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 var url
@@ -17,7 +17,7 @@ describe('Server: Web', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
@@ -50,7 +50,7 @@ describe('Server: Web', function(){
   it('params are ignored unless they are in the whitelist', function(done){
     request.get(url + '/api?crazyParam123=something', function(err, response, body){
       body = JSON.parse(body);
-      should.not.exist(body.requesterInformation.receivedParams['crazyParam123']);
+      should.not.exist(body.requesterInformation.receivedParams.crazyParam123);
       done();
     });
   });
@@ -72,7 +72,7 @@ describe('Server: Web', function(){
       it('params are not ignored', function(done){
         request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
           body = JSON.parse(body);
-          body.requesterInformation.receivedParams['crazyParam123'].should.equal('something');
+          body.requesterInformation.receivedParams.crazyParam123.should.equal('something');
           done();
         });
       });
@@ -166,8 +166,8 @@ describe('Server: Web', function(){
     });
 
     after(function(done){
-      delete api.actions.actions['paramTestAction'];
-      delete api.actions.versions['paramTestAction'];
+      delete api.actions.actions.paramTestAction;
+      delete api.actions.versions.paramTestAction;
       done();
     });
 
@@ -175,7 +175,7 @@ describe('Server: Web', function(){
     it('.query should contain unfiltered query params', function (done) {
       request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
         body = JSON.parse(body);
-        body.query['crazyParam123'].should.equal('something');
+        body.query.crazyParam123.should.equal('something');
         done();
       });
     })
@@ -221,11 +221,11 @@ describe('Server: Web', function(){
           inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
-            connection.rawConnection.responseHeaders.push(['thing', "A"]);
-            connection.rawConnection.responseHeaders.push(['thing', "B"]);
-            connection.rawConnection.responseHeaders.push(['thing', "C"]);
-            connection.rawConnection.responseHeaders.push(['Set-Cookie', "value_1=1"]);
-            connection.rawConnection.responseHeaders.push(['Set-Cookie', "value_2=2"]);
+            connection.rawConnection.responseHeaders.push(['thing', 'A']);
+            connection.rawConnection.responseHeaders.push(['thing', 'B']);
+            connection.rawConnection.responseHeaders.push(['thing', 'C']);
+            connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_1=1']);
+            connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_2=2']);
             next(connection, true);
           }
         }
@@ -236,8 +236,8 @@ describe('Server: Web', function(){
     });
 
     after(function(done){
-      delete api.actions.actions['headerTestAction'];
-      delete api.actions.versions['headerTestAction'];
+      delete api.actions.actions.headerTestAction;
+      delete api.actions.versions.headerTestAction;
       done();
     })
 
@@ -245,7 +245,7 @@ describe('Server: Web', function(){
       request.get(url + '/api/headerTestAction', function(err, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(200);
-        response.headers['thing'].should.eql('C');
+        response.headers.thing.should.eql('C');
         done();
       });
     });
@@ -262,7 +262,7 @@ describe('Server: Web', function(){
     });
 
     it('should respond to OPTIONS with only HTTP headers', function(done){
-      request({method: 'options', url: url + '/api/cacheTest'}, function(err, response, body){
+      request({method: 'options', url: url + '/api/cacheTest'}, function(err, response){
         response.statusCode.should.eql(200);
         response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE');
         response.headers['access-control-allow-origin'].should.equal('*');
@@ -305,10 +305,10 @@ describe('Server: Web', function(){
               should.not.exist(response3.headers['set-cookie']);
               should.not.exist(response4.headers['set-cookie']);
 
-              var fingerprint1 = body1.requesterInformation.id.split("-")[0];
-              var fingerprint2 = body2.requesterInformation.id.split("-")[0];
-              var fingerprint3 = body3.requesterInformation.id.split("-")[0];
-              var fingerprint4 = body4.requesterInformation.id.split("-")[0];
+              var fingerprint1 = body1.requesterInformation.id.split('-')[0];
+              var fingerprint2 = body2.requesterInformation.id.split('-')[0];
+              var fingerprint3 = body3.requesterInformation.id.split('-')[0];
+              var fingerprint4 = body4.requesterInformation.id.split('-')[0];
 
               fingerprint1.should.equal(fingerprint2);
               fingerprint1.should.equal(fingerprint3);
@@ -340,7 +340,7 @@ describe('Server: Web', function(){
           inputs: { required: ['key'], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
-            if(connection.params.key != 'value'){
+            if(connection.params.key !== 'value'){
               connection.error = 'key != value';
               connection.rawConnection.responseHttpCode = 402;
             } else {
@@ -371,10 +371,10 @@ describe('Server: Web', function(){
 
     after(function(done){
       api.config.servers.web.returnErrorCodes = false;
-      delete api.actions.versions['statusTestAction'];
-      delete api.actions.actions['statusTestAction'];
-      delete api.actions.versions['brokenAction'];
-      delete api.actions.actions['brokenAction'];
+      delete api.actions.versions.statusTestAction;
+      delete api.actions.actions.statusTestAction;
+      delete api.actions.versions.brokenAction;
+      delete api.actions.actions.brokenAction;
       done();
     });
 
@@ -455,7 +455,7 @@ describe('Server: Web', function(){
   describe('files', function(){
 
     it('file: an HTML file', function(done){
-      request.get(url + '/public/simple.html', function(err, response, body){
+      request.get(url + '/public/simple.html', function(err, response){
         response.statusCode.should.equal(200);
         response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
         done();
@@ -463,14 +463,14 @@ describe('Server: Web', function(){
     });
 
     it('file: 404 pages', function(done){
-      request.get(url + '/public/notARealFile', function(err, response, body){
+      request.get(url + '/public/notARealFile', function(err, response){
         response.statusCode.should.equal(404)
         done();
       });
     });
 
     it('I should not see files outside of the public dir', function(done){
-      request.get(url + '/public/../config.json', function(err, response, body){
+      request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
         response.body.should.equal( api.config.errors.fileNotFound() );
         done();
@@ -478,7 +478,7 @@ describe('Server: Web', function(){
     });
 
     it('file: index page should be served when requesting a path (trailing slash)', function(done){
-      request.get(url + '/public/', function(err, response, body){
+      request.get(url + '/public/', function(err, response){
         response.statusCode.should.equal(200);
         response.body.should.be.a.String;
         done();
@@ -486,7 +486,7 @@ describe('Server: Web', function(){
     });
 
     it('file: index page should be served when requesting a path (no trailing slash)', function(done){
-      request.get(url + '/public', function(err, response, body){
+      request.get(url + '/public', function(err, response){
         response.statusCode.should.equal(200);
         response.body.should.be.a.String;
         done();
@@ -494,7 +494,7 @@ describe('Server: Web', function(){
     });
 
     describe('can serve files from more than one directory', function(){
-      var source = __dirname + "/../../public/simple.html"
+      var source = __dirname + '/../../public/simple.html'
 
       before(function(done){
         fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
@@ -513,7 +513,7 @@ describe('Server: Web', function(){
       });
 
       it('works for secondary paths', function(done){
-        request.get(url + '/public/testFile.html', function(err, response, body){
+        request.get(url + '/public/testFile.html', function(err, response){
           response.statusCode.should.equal(200);
           response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
           done();
@@ -533,28 +533,28 @@ describe('Server: Web', function(){
       })
 
       it('old action routes stop working', function(done){
-        request.get(url + '/api/randomNumber', function(err, response, body){
+        request.get(url + '/api/randomNumber', function(err, response){
           response.statusCode.should.equal(404);
           done();
         });
       });
 
       it('can ask for nested URL actions', function(done){
-        request.get(url + '/craz/y/action/path/randomNumber', function(err, response, body){
+        request.get(url + '/craz/y/action/path/randomNumber', function(err, response){
           response.statusCode.should.equal(200);
           done();
         });
       });
 
       it('old file routes stop working', function(done){
-        request.get(url + '/public/simple.html', function(err, response, body){
+        request.get(url + '/public/simple.html', function(err, response){
           response.statusCode.should.equal(404);
           done();
         });
       });
 
       it('can ask for nested URL files', function(done){
-        request.get(url + '/a/b/c/simple.html', function(err, response, body){
+        request.get(url + '/a/b/c/simple.html', function(err, response){
           response.statusCode.should.equal(200);
           response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
           done();
@@ -562,7 +562,7 @@ describe('Server: Web', function(){
       });
 
       it('can ask for nested URL files with depth', function(done){
-        request.get(url + '/a/b/c/css/actionhero.css', function(err, response, body){
+        request.get(url + '/a/b/c/css/actionhero.css', function(err, response){
           response.statusCode.should.equal(200);
           done();
         });
@@ -626,10 +626,10 @@ describe('Server: Web', function(){
 
     after(function(done){
       api.routes.routes = {};
-      delete api.actions.versions['mimeTestAction'];
-      delete api.actions.actions['mimeTestAction'];
-      delete api.actions.versions['login'];
-      delete api.actions.actions['login'];
+      delete api.actions.versions.mimeTestAction;
+      delete api.actions.actions.mimeTestAction;
+      delete api.actions.versions.login;
+      delete api.actions.actions.login;
       done();
     });
 
@@ -769,7 +769,7 @@ describe('Server: Web', function(){
     describe('file extensions + routes', function(){
 
       it('will change header information based on extension (when active)', function(done){
-        request.get(url + '/api/mimeTestAction/val.png', function(err, response, body){
+        request.get(url + '/api/mimeTestAction/val.png', function(err, response){
           response.headers['content-type'].should.equal('image/png');
           done();
         });

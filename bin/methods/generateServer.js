@@ -1,20 +1,20 @@
 var fs = require('fs');
 
-exports['generateServer'] = function(binary, next){
+exports.generateServer = function(binary, next){
 
-  if(binary.argv.name == null){ binary.utils.hardError('name is a required input') }
+  if(!binary.argv.name){ binary.utils.hardError('name is a required input') }
 
-  var data = fs.readFileSync(binary.paths.actionhero_root + '/bin/templates/server.js');
+  var data = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/server.js');
   data = String(data);
 
   [
     'name',
   ].forEach(function(v){
-    var regex = new RegExp('%%' + v + '%%', "g");
+    var regex = new RegExp('%%' + v + '%%', 'g');
     data = data.replace(regex, binary.argv[v]);
   });
 
-  binary.utils.create_file_safely(binary.paths.config.server + '/' + binary.argv['name'] + '.js', data);
+  binary.utils.createFileSafely(binary.paths.config.server + '/' + binary.argv.name + '.js', data);
 
   next();
 

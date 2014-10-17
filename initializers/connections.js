@@ -34,7 +34,7 @@ var connections = function(api, next){
     },
 
     apply: function(connectionId, method, args, callback){
-      if(args == null && callback == null && typeof method === 'function'){
+      if(args === undefined && callback === undefined && typeof method === 'function'){
         callback = method; args = null; method = null;
       }
       api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback);
@@ -42,7 +42,7 @@ var connections = function(api, next){
 
     applyCatch: function(connectionId, method, args, callback){
       var connection = api.connections.connections[connectionId];
-      if(method != null && args != null){
+      if(method && args){
         connection[method].apply(connection, args);
       }
       if(typeof callback === 'function'){
@@ -56,7 +56,7 @@ var connections = function(api, next){
   var cleanConnection = function(connection){
     var clean = {};
     for(var i in connection){
-      if(i != 'rawConnection'){
+      if(i !== 'rawConnection'){
         clean[i] = connection[i];
       }
     }
@@ -99,14 +99,14 @@ var connections = function(api, next){
 
   api.connection.prototype.setup = function(data){
     var self = this;
-    if(data.id != null){
+    if(data.id){
       self.id = data.id;
     } else {
       self.id = self.generateID();
     }
     self.connectedAt = new Date().getTime();
     ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
-      if(data[req] == null){ throw new Error(req + ' is required to create a new connection object') }
+      if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
       self[req] = data[req];
     });
 
@@ -123,8 +123,8 @@ var connections = function(api, next){
     }
 
     for(var i in connectionDefaults){
-      if(self[i] == null && data[i] != null){ self[i] = data[i]; }
-      if(self[i] == null){ self[i] = connectionDefaults[i]; }
+      if(self[i] === undefined && data[i] !== undefined){ self[i] = data[i]; }
+      if(self[i] === undefined){ self[i] = connectionDefaults[i]; }
     }
   }
 
@@ -133,11 +133,11 @@ var connections = function(api, next){
   }
 
   api.connection.prototype.sendMessage = function(message){
-    throw new Error('I should be replaced with a connection-specific method');
+    throw new Error('I should be replaced with a connection-specific method ['+message+']');
   }
 
   api.connection.prototype.sendFile = function(path){
-    throw new Error('I should be replaced with a connection-specific method');
+    throw new Error('I should be replaced with a connection-specific method ['+path+']');
   }
 
   api.connection.prototype.destroy = function(callback){
@@ -165,7 +165,7 @@ var connections = function(api, next){
       server.log('connection closed', 'info', {to: self.remoteIP});
     }
     if(typeof server.goodbye === 'function'){ server.goodbye(self); }
-    if(typeof callback == 'function'){ callback() }
+    if(typeof callback === 'function'){ callback() }
   }
 
   api.connection.prototype.set = function(key, value){
@@ -175,10 +175,10 @@ var connections = function(api, next){
 
   api.connection.prototype.verbs = function(verb, words, callback){
     var self = this;
-    var key,value,room;
+    var key, value, room;
     var server = api.servers.servers[self.type];
     var allowedVerbs = server.attributes.verbs;
-    if(typeof words === 'function' && callback == null){
+    if(typeof words === 'function' && !callback){
       callback = words;
       words = [];
     }
@@ -203,12 +203,12 @@ var connections = function(api, next){
         }
         if(typeof callback === 'function'){ callback(null, null); }
       } else if(verb === 'paramDelete'){
-        var key = words[0];
+        key = words[0];
         delete self.params[key];
         if(typeof callback === 'function'){ callback(null, null); }
 
       } else if(verb === 'paramView'){
-        var key = words[0];
+        key = words[0];
         if(typeof callback === 'function'){ callback(null, self.params[key]); }
 
       } else if(verb === 'paramsView'){
@@ -221,19 +221,19 @@ var connections = function(api, next){
         if(typeof callback === 'function'){ callback(null, null); }
 
       } else if(verb === 'roomAdd'){
-        var room = words[0];
+        room = words[0];
         api.chatRoom.addMember(self.id, room, function(err, didHappen){
           if(typeof callback === 'function'){ callback(err, didHappen); }
         });
 
       } else if(verb === 'roomLeave'){
-        var room = words[0];
+        room = words[0];
         api.chatRoom.removeMember(self.id, room, function(err, didHappen){
           if(typeof callback === 'function'){ callback(err, didHappen); }
         });
 
       } else if(verb === 'roomView'){
-        var room = words[0];
+        room = words[0];
         if(self.rooms.indexOf(room) > -1){
           api.chatRoom.roomStatus(room, function(err, roomStatus){
             if(typeof callback === 'function'){ callback(err, roomStatus); }
@@ -259,7 +259,7 @@ var connections = function(api, next){
         if(typeof callback === 'function'){ callback(null, api.documentation.documentation); }
 
       } else if(verb === 'say'){
-        var room = words.shift();
+        room = words.shift();
         api.chatRoom.broadcast(self, room, words.join(' '), function(err){
           if(typeof callback === 'function'){ callback(err); }
         });

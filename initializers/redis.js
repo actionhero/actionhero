@@ -47,7 +47,7 @@ var redis = function(api, next){
       api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
     }
-    if(api.config.redis.password != null && api.config.redis.password != ''){
+    if(api.config.redis.password !== undefined && api.config.redis.password !== ''){
       try{ 
         api.redis.client.auth(api.config.redis.password);
         api.redis.subscriber.auth(api.config.redis.password);
@@ -75,11 +75,11 @@ var redis = function(api, next){
       api.redis.status.subscribed = false;
     });
 
-    api.redis.client.on('connect', function(err){
-      if(api.config.redis.password != null && api.config.redis.password != ''){
+    api.redis.client.on('connect', function(){
+      if(api.config.redis.password && api.config.redis.password !== ''){
         api.redis.client.auth(api.config.redis.password);
       }
-      if(api.config.redis.database != null){ api.redis.client.select(api.config.redis.database); }
+      if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
       api.log('connected to redis (client)', 'debug');
       api.redis.status.client = true;
       process.nextTick(function(){
@@ -90,11 +90,11 @@ var redis = function(api, next){
       });
     });
 
-    api.redis.subscriber.on('connect', function(err){
-      if(api.config.redis.password != null && api.config.redis.password != ''){
+    api.redis.subscriber.on('connect', function(){
+      if(api.config.redis.password && api.config.redis.password !== ''){
         api.redis.subscriber.auth(api.config.redis.password);
       }
-      if(api.config.redis.database != null){ api.redis.subscriber.select(api.config.redis.database); }
+      if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
       api.log('connected to redis (subscriber)', 'debug');
       api.redis.status.subscriber = true;
       process.nextTick(function(){
@@ -108,7 +108,7 @@ var redis = function(api, next){
     if(api.config.redis.package === 'fakeredis'){
       api.redis.status.client = true;
       api.redis.status.subscriber = true;
-      if(api.config.redis.database != null){ 
+      if(api.config.redis.database){ 
         api.redis.client.select(api.config.redis.database); 
         api.redis.subscriber.select(api.config.redis.database); 
       }
@@ -128,7 +128,7 @@ var redis = function(api, next){
       return callback();
     }
 
-    api.redis.subscriber.on('subscribe', function(messageChannel, count){
+    api.redis.subscriber.on('subscribe', function(){
       api.redis.status.subscribed = true;
       callback();
     });
@@ -136,7 +136,7 @@ var redis = function(api, next){
     api.redis.subscriber.on('message', function(messageChannel, message){
       try{ message = JSON.parse(message) }catch(e){ message = {}; }
       if(messageChannel === channel && message.serverToken === api.config.general.serverToken){
-        if(api.redis.subsciptionHandlers[message.messageType] != null){
+        if(api.redis.subsciptionHandlers[message.messageType]){
           api.redis.subsciptionHandlers[message.messageType](message);
         }
       }
@@ -152,8 +152,8 @@ var redis = function(api, next){
 
   // Subsciption Handlers
 
-  api.redis.subsciptionHandlers['do'] = function(message){
-    if(message.connectionId == null || ( api.connections != null && api.connections.connections[message.connectionId] != null) ){
+  api.redis.subsciptionHandlers.do = function(message){
+    if(!message.connectionId || ( api.connections && api.connections.connections[message.connectionId]) ){
       var method = eval(message.method); //TODO: Eval makes me sad
       var callback = function(){
         var responseArgs = Array.apply(null, arguments).sort();
@@ -169,8 +169,8 @@ var redis = function(api, next){
     }
   }
 
-  api.redis.subsciptionHandlers['doResponse'] = function(message){
-    if(api.redis.clusterCallbaks[message.requestId] != null){
+  api.redis.subsciptionHandlers.doResponse = function(message){
+    if(api.redis.clusterCallbaks[message.requestId]){
       clearTimeout(api.redis.clusterCallbakTimeouts[message.requestId]);
       api.redis.clusterCallbaks[message.requestId].apply(null, message.response);
       delete api.redis.clusterCallbaks[message.requestId];

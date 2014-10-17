@@ -36,7 +36,7 @@ var websocket = function(api, options, next){
   //////////////////////
 
   server._start = function(next){
-    var webserver = api.servers.servers['web'];
+    var webserver = api.servers.servers.web;
     server.server = new primus(webserver.server, api.config.servers.websocket.server);
 
     server.server.on('connection', function(rawConnection){
@@ -66,9 +66,9 @@ var websocket = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
-    if(message.context == null){ message.context = 'response'; }
-    if(messageCount == null){ messageCount = connection.messageCount; }
-    if(message.context === 'response' && message.messageCount == null){ message.messageCount = messageCount; }
+    if(!message.context){ message.context = 'response'; }
+    if(!messageCount){ messageCount = connection.messageCount; }
+    if(message.context === 'response' && !message.messageCount){ message.messageCount = messageCount; }
     connection.rawConnection.write(message);
   }
 
@@ -82,9 +82,9 @@ var websocket = function(api, options, next){
     };
 
     try{ 
-      if(error == null){
+      if(!error){
         fileStream.on('data', function(d){ content+= d; });
-        fileStream.on('end', function(d){
+        fileStream.on('end', function(){
           response.content = content;
           server.sendMessage(connection, response, connection.messageCount);
         });
@@ -97,7 +97,7 @@ var websocket = function(api, options, next){
     }
   };
 
-  server.goodbye = function(connection, reason){
+  server.goodbye = function(connection){
     connection.rawConnection.end();
   };
 
@@ -112,7 +112,7 @@ var websocket = function(api, options, next){
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
-    if(toRender != false){
+    if(toRender !== false){
       connection.response.messageCount = messageCount;
       server.sendMessage(connection, connection.response, messageCount)
     }
@@ -132,22 +132,24 @@ var websocket = function(api, options, next){
     }
     defaults.url = url;
     var defaultsString = util.inspect(defaults);
-    defaultsString = defaultsString.replace("'window.location.origin'", 'window.location.origin');
+    defaultsString = defaultsString.replace('\'window.location.origin\'', 'window.location.origin');
     ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + defaultsString);
 
     return ahClientSource;
   }
 
   server.renderClientJS = function(minimize){
-    if(minimize == null){ minimize = false; }
+    if(!minimize){ minimize = false; }
     var libSource = api.servers.servers.websocket.server.library();
     var ahClientSource = server.compileActionheroClientJS();
-    ahClientSource = ';;;\r\n'
-      + '(function(exports){ \r\n' 
-      + ahClientSource
-      + '\r\n'
-      + 'exports.actionheroClient = actionheroClient; \r\n'
-      + '})(typeof exports === \'undefined\' ? window : exports);' ;
+    ahClientSource = 
+      ';;;\r\n' +
+      '(function(exports){ \r\n' +
+      ahClientSource +
+      '\r\n' +
+      'exports.ActionheroClient = ActionheroClient; \r\n' +
+      'exports.actionheroClient = actionheroClient; \r\n' +
+      '})(typeof exports === \'undefined\' ? window : exports);' ;
     if(minimize){
       return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
     }else{
@@ -156,10 +158,10 @@ var websocket = function(api, options, next){
   }
 
   server.writeClientJS = function(){
-    if(api.config.general.paths.public == null || api.config.general.paths.public.length == 0){
+    if(!api.config.general.paths.public || api.config.general.paths.public.length === 0){
       return;
     }
-    if(api.config.servers.websocket.clientJsPath != null && api.config.servers.websocket.clientJsName != null){
+    if(api.config.servers.websocket.clientJsPath !== undefined && api.config.servers.websocket.clientJsName !== undefined){
       var base = path.normalize(
         api.config.general.paths.public[0] + 
         path.sep + 
@@ -197,7 +199,7 @@ var websocket = function(api, options, next){
 
   var handleDisconnection = function(rawConnection){
     for(var i in server.connections()){
-      if(server.connections()[i] != null && rawConnection.id === server.connections()[i].rawConnection.id){
+      if(server.connections()[i] && rawConnection.id === server.connections()[i].rawConnection.id){
         server.connections()[i].destroy();
         break;
       }
@@ -208,27 +210,28 @@ var websocket = function(api, options, next){
     var verb = data.event;
     delete data.event;
     connection.messageCount++;
-    if(verb == 'action'){
+    if(verb === 'action'){
       for(var v in data.params){
         connection.params[v] = data.params[v];
-      };
+      }
       connection.error = null;
       connection.response = {};
       server.processAction(connection);
-    } else if(verb == 'file'){
+    } else if(verb === 'file'){
       connection.params = {
         file: data.file
       }
       server.processFile(connection);
     } else {
-      var words = []
+      var words = [];
+      var message;
       for(var i in data){ words.push(data[i]); }
       connection.verbs(verb, words, function(error, data){
-        if(error == null){
-          var message = {status: 'OK', context: 'response', data: data};
+        if(!error){
+          message = {status: 'OK', context: 'response', data: data};
           server.sendMessage(connection, message);
         } else {
-          var message = {status: error, context: 'response', data: data}
+          message = {status: error, context: 'response', data: data}
           server.sendMessage(connection, message);
         }
       });

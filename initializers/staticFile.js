@@ -7,8 +7,8 @@ var staticFile = function(api, next){
   api.staticFile = {
 
     path: function(connection, counter){
-      if(counter == null){ counter = 0; }
-      if(api.config.general.paths == null || api.config.general.paths.public.length == 0 || counter >= api.config.general.paths.public.length){
+      if(!counter){ counter = 0; }
+      if(api.config.general.paths === undefined || api.config.general.paths.public.length === 0 || counter >= api.config.general.paths.public.length){
         return null;
       }else{
         return api.config.general.paths.public[counter];
@@ -19,12 +19,12 @@ var staticFile = function(api, next){
     // callback is of the form: callback(connection, error, fileStream, mime, length)
     get: function(connection, callback, counter){
       var self = this;
-      if(counter == null){ counter = 0; }
-      if(connection.params.file == null || api.staticFile.path(connection, counter) == null){
+      if(!counter){ counter = 0; }
+      if(!connection.params.file || !api.staticFile.path(connection, counter) ){
         self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
       } else {
         var file = path.normalize(api.staticFile.path(connection, counter) + '/' + connection.params.file);
-        if(file.indexOf(path.normalize(api.staticFile.path(connection, counter))) != 0){
+        if(file.indexOf(path.normalize(api.staticFile.path(connection, counter))) !== 0){
           api.staticFile.get(connection, callback, counter + 1);
         } else {
           self.checkExistence(file, function(exists, truePath){
@@ -70,9 +70,8 @@ var staticFile = function(api, next){
     },
 
     checkExistence: function(file, callback){
-      var self = this;
       fs.stat(file, function(err, stats){
-        if(err != null){
+        if(err){
           callback(false, file);
         } else {
           if(stats.isDirectory()){
@@ -80,10 +79,10 @@ var staticFile = function(api, next){
             api.staticFile.checkExistence(indexPath, callback);
           } else if(stats.isSymbolicLink()){
             fs.readLink(file, function(err, truePath){
-              if(err != null){
+              if(err){
                 callback(false, file);
               } else {
-                var truePath = path.normalize(truePath);
+                truePath = path.normalize(truePath);
                 api.staticFile.checkExistence(truePath, callback);
               }
             });

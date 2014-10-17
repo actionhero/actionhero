@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -13,14 +13,14 @@ describe('Action: Status', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
 
   it('stats should be returned and make sense', function(done){
     setTimeout(function(){
-      api.specHelper.runAction('status', function(response, connection){
+      api.specHelper.runAction('status', function(response){
         response.uptime.should.be.above(0);
         response.id.length.should.be.above(0);
         response.stats.should.exist

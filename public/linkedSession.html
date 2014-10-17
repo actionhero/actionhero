@@ -17,7 +17,7 @@
           console.log("Web sessionId: "    + data.requesterInformation.id);
           console.log("Web fingerprint: "  + data.requesterInformation.fingerprint);
           // start the websocket client
-          client = new actionheroClient;
+          client = new ActionheroClient;
           client.connect(function(err, details){
             console.log("WebSocket cleintId: " + client.id);
             console.log("WebSocket fingerprint: " + client.fingerprint);

@@ -14,7 +14,7 @@ var configLoader = function(api, next){
   api.watchedFiles = [];
 
   api.watchFileAndAct = function(file, callback){
-    if(api.config.general.developmentMode == true && api.watchedFiles.indexOf(file) < 0){
+    if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
       api.watchedFiles.push(file);
       fs.watchFile(file, {interval: 1000}, function(curr, prev){
         if(curr.mtime > prev.mtime){
@@ -24,7 +24,7 @@ var configLoader = function(api, next){
               cleanPath = file.replace(/\//g, '\\');
             }
             delete require.cache[require.resolve(cleanPath)];
-            callback();
+            callback(file);
           });
         }
       });
@@ -38,28 +38,34 @@ var configLoader = function(api, next){
     api.watchedFiles = [];
   };
 
-  if(api._startingParams.api != null){
+  if(api._startingParams.api){
     api.utils.hashMerge(api, api._startingParams.api);
   }
 
   api.env = 'development'
 
-  if(argv['NODE_ENV'] != null){
-    api.env = argv['NODE_ENV'];
-  } else if(process.env.NODE_ENV != null){
+  if(argv.NODE_ENV){
+    api.env = argv.NODE_ENV;
+  } else if(process.env.NODE_ENV){
     api.env = process.env.NODE_ENV;
   }
 
-  var configPath = path.resolve(api.project_root, 'config');
+  var configPath = path.resolve(api.projectRoot, 'config');
 
-  if(argv['config'] != null){
-    if(argv['config'].charAt(0) == '/'){ configPath = argv['config'] }
-    else { configPath = path.resolve(api.project_root, argv['config']) }
-  } else if(process.env.ACTIONHERO_CONFIG != null) {
-    if(process.env.ACTIONHERO_CONFIG.charAt(0) == '/'){ configPath = process.env.ACTIONHERO_CONFIG }
-    else { configPath = path.resolve(api.project_root, process.env.ACTIONHERO_CONFIG) }
+  if(argv.config){
+    if(argv.config.charAt(0) === '/'){ configPath = argv.config }
+    else { configPath = path.resolve(api.projectRoot, argv.config) }
+  } else if(process.env.ACTIONHERO_CONFIG) {
+    if(process.env.ACTIONHERO_CONFIG.charAt(0) === '/'){ configPath = process.env.ACTIONHERO_CONFIG }
+    else { configPath = path.resolve(api.projectRoot, process.env.ACTIONHERO_CONFIG) }
   } else if(!fs.existsSync(configPath)){
     throw new Error(configPath + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
+  }
+
+  var rebootCallback = function(file){
+    api.log('\r\n\r\n*** rebooting due to config change (' + file + ') ***\r\n\r\n', 'info');
+    delete require.cache[require.resolve(file)];
+    api.commands.restart.call(api._self);
   }
 
   api.loadConfigDirectory = function(configPath, watch){
@@ -72,8 +78,8 @@ var configLoader = function(api, next){
       try{
         // attempt configuration file load
         var localConfig = require(f);
-        if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
-        if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+        if(localConfig.default){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+        if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
         // configuration file load success: clear retries and
         // errors since progress has been made
         loadRetries = 0;
@@ -83,7 +89,7 @@ var configLoader = function(api, next){
         // configuration files have been tried and failed
         // indicating inability to progress 
         loadErrors[f] = error.toString();
-        if(++loadRetries == limit-i){
+        if(++loadRetries === limit-i){
             throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
         }
         // adjust configuration files list: remove and push
@@ -95,11 +101,7 @@ var configLoader = function(api, next){
 
       if(watch !== false){
         // configuration file loaded: set watch
-        api.watchFileAndAct(f, function(){
-          api.log('\r\n\r\n*** rebooting due to config change ***\r\n\r\n', 'info');
-          delete require.cache[require.resolve(f)];
-          api.commands.restart.call(api._self);
-        });
+        api.watchFileAndAct(f, rebootCallback);
       }      
     }
 
@@ -107,8 +109,8 @@ var configLoader = function(api, next){
     // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
     configFiles.forEach(function(f){
       var localConfig = require(f);
-      if(localConfig.default != null){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
-      if(localConfig[api.env] != null){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
+      if(localConfig.default){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+      if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
     });
   
   }
@@ -121,33 +123,33 @@ var configLoader = function(api, next){
   //load the project specific config
   api.loadConfigDirectory(configPath);
   
-  var plugin_actions      = [];
-  var plugin_tasks        = [];
-  var plugin_servers      = [];
-  var plugin_initializers = [];
-  var plugin_publics      = [];
+  var pluginActions      = [];
+  var pluginTasks        = [];
+  var pluginServers      = [];
+  var pluginInitializers = [];
+  var pluginPublics      = [];
   
   //loop over it's plugins
   api.config.general.paths.plugin.forEach(function(p){
     api.config.general.plugins.forEach(function(plugin){
       var pluginPackageBase = path.normalize(p + '/' + plugin);
-      if(api.project_root != pluginPackageBase){
-        if(fs.existsSync(pluginPackageBase + "/config")){
+      if(api.projectRoot !== pluginPackageBase){
+        if(fs.existsSync(pluginPackageBase + '/config')){
           //and merge the plugin config 
           api.loadConfigDirectory( pluginPackageBase + '/config', false);
           //collect all paths that could have multiple target folders
-          plugin_actions      = plugin_actions.concat(api.config.general.paths.action);
-          plugin_tasks        = plugin_tasks.concat(api.config.general.paths.task);
-          plugin_servers      = plugin_servers.concat(api.config.general.paths.server);
-          plugin_initializers = plugin_initializers.concat(api.config.general.paths.initializer);
-          plugin_publics      = plugin_publics.concat(api.config.general.paths.public);
+          pluginActions      = pluginActions.concat(api.config.general.paths.action);
+          pluginTasks        = pluginTasks.concat(api.config.general.paths.task);
+          pluginServers      = pluginServers.concat(api.config.general.paths.server);
+          pluginInitializers = pluginInitializers.concat(api.config.general.paths.initializer);
+          pluginPublics      = pluginPublics.concat(api.config.general.paths.public);
         }
         //additionally add the following paths if they exists
-        if(fs.existsSync(pluginPackageBase + "/actions")){      plugin_actions.unshift(      pluginPackageBase + '/actions'      );}
-        if(fs.existsSync(pluginPackageBase + "/tasks")){        plugin_tasks.unshift(        pluginPackageBase + '/tasks'        );}
-        if(fs.existsSync(pluginPackageBase + "/servers")){      plugin_servers.unshift(      pluginPackageBase + '/servers'      );}
-        if(fs.existsSync(pluginPackageBase + "/initializers")){ plugin_initializers.unshift( pluginPackageBase + '/initializers' );}
-        if(fs.existsSync(pluginPackageBase + "/public")){       plugin_publics.unshift(      pluginPackageBase + '/public'       );}
+        if(fs.existsSync(pluginPackageBase + '/actions')){      pluginActions.unshift(      pluginPackageBase + '/actions'      );}
+        if(fs.existsSync(pluginPackageBase + '/tasks')){        pluginTasks.unshift(        pluginPackageBase + '/tasks'        );}
+        if(fs.existsSync(pluginPackageBase + '/servers')){      pluginServers.unshift(      pluginPackageBase + '/servers'      );}
+        if(fs.existsSync(pluginPackageBase + '/initializers')){ pluginInitializers.unshift( pluginPackageBase + '/initializers' );}
+        if(fs.existsSync(pluginPackageBase + '/public')){       pluginPublics.unshift(      pluginPackageBase + '/public'       );}
       }
     });    
   });
@@ -156,17 +158,17 @@ var configLoader = function(api, next){
   api.loadConfigDirectory(configPath);
   
   //apply plugin paths for actions, tasks, servers and initializers
-  api.config.general.paths.action      = plugin_actions.concat(api.config.general.paths.action);
-  api.config.general.paths.task        = plugin_tasks.concat(api.config.general.paths.task);
-  api.config.general.paths.server      = plugin_servers.concat(api.config.general.paths.server);
-  api.config.general.paths.initializer = plugin_initializers.concat(api.config.general.paths.initializer);
-  api.config.general.paths.public      = plugin_publics.concat(api.config.general.paths.public);
+  api.config.general.paths.action      = pluginActions.concat(api.config.general.paths.action);
+  api.config.general.paths.task        = pluginTasks.concat(api.config.general.paths.task);
+  api.config.general.paths.server      = pluginServers.concat(api.config.general.paths.server);
+  api.config.general.paths.initializer = pluginInitializers.concat(api.config.general.paths.initializer);
+  api.config.general.paths.public      = pluginPublics.concat(api.config.general.paths.public);
         
   // the first plugin path shoud alawys be the local project
   api.config.general.paths.public.reverse();
 
   //finally merge starting params into the config
-  if(api._startingParams.configChanges != null){
+  if(api._startingParams.configChanges){
     api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
   }
 

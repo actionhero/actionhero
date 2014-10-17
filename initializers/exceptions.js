@@ -17,7 +17,11 @@ var exceptions = function(api, next){
       extraMessages.push('! connection details:');
       var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
       for(var i in relevantDetails){
-        if(objects.connection[relevantDetails[i]] != null && typeof objects.connection[relevantDetails[i]] != 'function'){
+        if(
+          objects.connection[relevantDetails[i]] !== null && 
+          objects.connection[relevantDetails[i]] !== undefined &&
+          typeof objects.connection[relevantDetails[i]] !== 'function'
+        ){
           extraMessages.push('!     ' + relevantDetails[i] + ': ' + JSON.stringify(objects.connection[relevantDetails[i]]));
         }
       }
@@ -35,12 +39,12 @@ var exceptions = function(api, next){
       extraMessages.push('!     Data: ' + JSON.stringify(objects));
     }
 
-    for(var i in extraMessages){
-      api.log(extraMessages[i], severity);
+    for(var m in extraMessages){
+      api.log(extraMessages[m], severity);
     }
     var lines = err.stack.split(os.EOL);
-    for(var i in lines){
-      var line = lines[i];
+    for(var l in lines){
+      var line = lines[l];
       api.log('! ' + line, severity);
     }
     api.log('*', severity);
@@ -49,7 +53,7 @@ var exceptions = function(api, next){
   api.exceptionHandlers.reporters.push(consoleReporter);
 
   api.exceptionHandlers.report = function(err, type, name, objects, severity){
-    if(severity == null){ severity = 'error'; }
+    if(!severity){ severity = 'error'; }
     for(var i in api.exceptionHandlers.reporters){
       api.exceptionHandlers.reporters[i](err, type, name, objects, severity);
     }
@@ -60,15 +64,16 @@ var exceptions = function(api, next){
   ///////////
 
   api.exceptionHandlers.loader = function(fullFilePath, err){
-    var name = "loader:" + fullFilePath;
+    var name = 'loader:' + fullFilePath;
     api.exceptionHandlers.report(err, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
   };
 
   api.exceptionHandlers.action = function(domain, err, connection, next){
+    var simpleName;
     try{
-      var simpleName = connection.action;
+      simpleName = connection.action;
     }catch(e){
-      var simpleName = err.message;
+      simpleName = err.message;
     }
     var name = 'action:' + simpleName;
     api.stats.increment('exceptions:actions');
@@ -80,10 +85,11 @@ var exceptions = function(api, next){
   };
 
   api.exceptionHandlers.task = function(err, queue, task){
+    var simpleName
     try{
-      var simpleName = task.class;
+      simpleName = task.class;
     }catch(e){
-      var simpleName = err.message;
+      simpleName = err.message;
     }
     var name = 'task:' + simpleName;
     api.stats.increment('exceptions:tasks');

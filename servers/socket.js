@@ -1,6 +1,5 @@
 var net = require('net');
 var tls = require('tls');
-var fs = require('fs');
 
 var socket = function(api, options, next){
   
@@ -39,7 +38,7 @@ var socket = function(api, options, next){
   //////////////////////
 
   server._start = function(next){
-    if(options.secure == false){
+    if(options.secure === false){
       server.server = net.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
       });
@@ -65,11 +64,11 @@ var socket = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
-    if(connection.respondingTo != null){
+    if(connection.respondingTo){
       message.messageCount = messageCount;
       connection.respondingTo = null;
-    } else if(message.context == 'response'){
-      if(messageCount != null){
+    } else if(message.context === 'response'){
+      if(messageCount){
         message.messageCount = messageCount;
       } else {
         message.messageCount = connection.messageCount;
@@ -88,8 +87,8 @@ var socket = function(api, options, next){
     } catch(e){}
   }
 
-  server.sendFile = function(connection, error, fileStream, mime, length){
-    if(error != null){
+  server.sendFile = function(connection, error, fileStream){
+    if(error){
       server.sendMessage(connection, error, connection.messageCount);
     } else {
       fileStream.pipe(connection.rawConnection, {end: false});
@@ -108,7 +107,7 @@ var socket = function(api, options, next){
         connection.destroy();
       } else {
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
-        var index, line;
+        var index;
         while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1) {
           var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
@@ -154,27 +153,27 @@ var socket = function(api, options, next){
   var parseRequest = function(connection, line){
     var words = line.split(' ');
     var verb = words.shift();
-    if(verb == 'file'){
+    if(verb === 'file'){
       if(words.length > 0){
         connection.params.file = words[0];
       }
       server.processFile(connection);
     } else {
       connection.verbs(verb, words, function(error, data){
-        if(error == null){
+        if(!error){
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
         } else if(error === 'verb not found or not allowed'){
           // check for and attempt to check single-use params
           try {
-            var request_hash = JSON.parse(line);
-            if(request_hash['params'] != null){
+            var requestHash = JSON.parse(line);
+            if(requestHash.params !== undefined){
               connection.params = {};
-              for(var v in request_hash['params']){
-                connection.params[v] = request_hash['params'][v];
-              };
+              for(var v in requestHash.params){
+                connection.params[v] = requestHash.params[v];
+              }
             }
-            if(request_hash['action'] != null){
-              connection.params['action'] = request_hash['action'];
+            if(requestHash.action){
+              connection.params.action = requestHash.action;
             }
           } catch(e){
             connection.params.action = verb;
@@ -205,25 +204,25 @@ var socket = function(api, options, next){
   var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
-    if(hexChunk == 'fff4fffd06'){
+    if(hexChunk === 'fff4fffd06'){
       found = true // CTRL + C
-    } else if(hexChunk == '04'){
+    } else if(hexChunk === '04'){
       found = true // CTRL + D
     }
     return found
   }
 
   var gracefulShutdown = function(next, alreadyShutdown){
-    if(alreadyShutdown == null || alreadyShutdown == false){
+    if(!alreadyShutdown || alreadyShutdown === false){
       server.server.close();
     }
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
-      if(connection.pendingActions == 0){
+      if(connection.pendingActions === 0){
         connection.destroy();
       } else {
         pendingConnections++;
-        if(connection.rawConnection.shutDownTimer == null){
+        if(!connection.rawConnection.shutDownTimer){
           connection.rawConnection.shutDownTimer = setTimeout(function(){
             connection.destroy();
           }, attributes.pendingShutdownWaitLimit);
@@ -235,7 +234,7 @@ var socket = function(api, options, next){
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    } else if(typeof next == 'function'){ next() }
+    } else if(typeof next === 'function'){ next() }
   }
 
   next(server);

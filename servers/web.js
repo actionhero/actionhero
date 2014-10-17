@@ -35,7 +35,7 @@ var web = function(api, options, next){
   //////////////////////
 
   server._start = function(next){
-    if(options.secure == false){
+    if(options.secure === false){
       var http = require('http');
       server.server = http.createServer(function(req, res){
         handleRequest(req, res);
@@ -79,7 +79,7 @@ var web = function(api, options, next){
 
   server.sendMessage = function(connection, message){
     var stringResponse = '';
-    if(connection.rawConnection.method != 'HEAD'){
+    if(connection.rawConnection.method !== 'HEAD'){
       stringResponse = String(message);
     }
     connection.rawConnection.responseHeaders.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);
@@ -99,10 +99,10 @@ var web = function(api, options, next){
     connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
-    if(error != null){ connection.rawConnection.responseHttpCode = 404 }
+    if(error){ connection.rawConnection.responseHttpCode = 404 }
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
     connection.rawConnection.res.writeHead(responseHttpCode, headers);
-    if(error != null){
+    if(error){
       connection.rawConnection.res.end(String(error));
       connection.destroy();
     } else {
@@ -123,13 +123,13 @@ var web = function(api, options, next){
 
   server.on('connection', function(connection){
     determineRequestParams(connection, function(requestMode){
-      if(requestMode == 'api'){
+      if(requestMode === 'api'){
         server.processAction(connection);
-      } else if(requestMode == 'file'){
+      } else if(requestMode === 'file'){
         server.processFile(connection);
-      } else if(requestMode == 'options'){
+      } else if(requestMode === 'options'){
         respondToOptions(connection);
-      } else if(requestMode == 'trace'){
+      } else if(requestMode === 'trace'){
         respondToTrace(connection);
       }
     });
@@ -158,37 +158,36 @@ var web = function(api, options, next){
       // https://github.com/evantahler/actionhero/issues/189
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
 
-      if(typeof(api.config.servers.web.httpHeaders) != null){
-        for(i in api.config.servers.web.httpHeaders){
-          responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
-        }
+      for(i in api.config.servers.web.httpHeaders){
+        responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
       }
 
       var remoteIP = req.connection.remoteAddress;
       var remotePort = req.connection.remotePort;
 
       // helpers for unix socket bindings with no forward
-      if(remoteIP == null && remotePort == null){
+      if(!remoteIP && !remotePort){
         remoteIP   = '0.0.0.0';
         remotePort = '0';
       }
 
-      if(req.headers['x-forwarded-for'] != null){
-        var forwardedIp = req.headers['x-forwarded-for'].split(",")[0];
-        if(forwardedIp.indexOf(".") >= 0 || (forwardedIp.indexOf(".") < 0 && forwardedIp.indexOf(":") < 0)){
+      if(req.headers['x-forwarded-for']){
+        var parts;
+        var forwardedIp = req.headers['x-forwarded-for'].split(',')[0];
+        if(forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)){
           // IPv4
           forwardedIp = forwardedIp.replace('::ffff:',''); // remove any IPv6 information, ie: '::ffff:127.0.0.1'
-          var parts = forwardedIp.split(":");
-          if(parts[0] != null){ remoteIP = parts[0]; }
-          if(parts[1] != null){ remotePort = parts[1]; }
+          parts = forwardedIp.split(':');
+          if(parts[0]){ remoteIP = parts[0]; }
+          if(parts[1]){ remotePort = parts[1]; }
         }else{
           // IPv6
-          var parts = api.utils.parseIPv6URI(forwardedIp);
-          if(parts['host'] != null){ remoteIP = parts['host']; }
-          if(parts['port'] != null){ remotePort = parts['port']; }
+          parts = api.utils.parseIPv6URI(forwardedIp);
+          if(parts.host){ remoteIP = parts.host; }
+          if(parts.port){ remotePort = parts.port; }
         }
 
-        if(req.headers['x-forwarded-port'] != null){
+        if(req.headers['x-forwarded-port']){
           remotePort = req.headers['x-forwarded-port'];
         }
       }
@@ -213,7 +212,7 @@ var web = function(api, options, next){
     });
   }
 
-  var completeResponse = function(connection, toRender, messageCount){
+  var completeResponse = function(connection, toRender){
     if(toRender === true){
       if(api.config.servers.web.metadataOptions.serverInformation){
         var stopTime = new Date().getTime();
@@ -229,9 +228,9 @@ var web = function(api, options, next){
         connection.response.requesterInformation = buildRequesterInformation(connection);
       }
 
-      if(connection.response.error != null){
-        if(api.config.servers.web.returnErrorCodes == true && connection.rawConnection.responseHttpCode == 200){
-          if(connection.actionStatus == 'unknown_action'){
+      if(connection.response.error !== undefined){
+        if(api.config.servers.web.returnErrorCodes === true && connection.rawConnection.responseHttpCode === 200){
+          if(connection.actionStatus === 'unknown_action'){
             connection.rawConnection.responseHttpCode = 404;
           }else if(connection.actionStatus === 'missing_params'){
             connection.rawConnection.responseHttpCode = 422;
@@ -243,11 +242,12 @@ var web = function(api, options, next){
         }
       }
 
-      if(connection.response.error == null &&
-          connection.action != null &&
-          connection.params.apiVersion != null &&
+      if(
+          (connection.response.error === null || connection.response.error === undefined ) &&
+          connection.action &&
+          connection.params.apiVersion &&
           api.actions.actions[connection.action][connection.params.apiVersion].matchExtensionMimeType === true &&
-          connection.extension != null
+          connection.extension
         ){
           connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(connection.extension)]);
       }
@@ -256,7 +256,7 @@ var web = function(api, options, next){
 
       if( extractHeader(connection, 'Content-Type').match(/json/) ){
         stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
-        if(connection.params.callback != null){
+        if(connection.params.callback){
           connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
           stringResponse = connection.params.callback + '(' + stringResponse + ');';
         }
@@ -280,11 +280,11 @@ var web = function(api, options, next){
   }
 
   var respondToOptions = function(connection){
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] == null && extractHeader(connection, 'Access-Control-Allow-Methods') == null){
+    if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] && !extractHeader(connection, 'Access-Control-Allow-Methods')){
       var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
-    if(api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] == null && extractHeader(connection, 'Access-Control-Allow-Origin') == null){
+    if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] && !extractHeader(connection, 'Access-Control-Allow-Origin')){
       var origin = '*';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }
@@ -302,23 +302,24 @@ var web = function(api, options, next){
     var requestMode = api.config.servers.web.rootEndpointType;
     var pathname = connection.rawConnection.parsedURL.pathname
     var pathParts = pathname.split('/');
+    var matcherLength, i;
     while(pathParts[0] === ''){ pathParts.shift(); }
     if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
 
-    if(pathParts[0] != null && pathParts[0] === api.config.servers.web.urlPathForActions){
+    if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForActions){
       requestMode = 'api';
       pathParts.shift();
-    }else if(pathParts[0] != null && pathParts[0] === api.config.servers.web.urlPathForFiles){
+    }else if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForFiles){
       requestMode = 'file'
       pathParts.shift();
-    }else if(pathParts[0] != null && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
       requestMode = 'api';
-      var matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
-      for(var i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
-    }else if(pathParts[0] != null && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
+      matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
+      for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
       requestMode = 'file'
-      var matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
-      for(var i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
+      matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
+      for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
     }
 
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
@@ -339,15 +340,15 @@ var web = function(api, options, next){
       fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query);
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;        
       if(
-          connection.rawConnection.method !== 'GET' 
-          && connection.rawConnection.method !== 'HEAD' 
-          && ( 
-            connection.rawConnection.req.headers['content-type'] != null 
-            || connection.rawConnection.req.headers['Content-Type'] != null 
+          connection.rawConnection.method !== 'GET' &&
+          connection.rawConnection.method !== 'HEAD' && 
+          ( 
+            connection.rawConnection.req.headers['content-type'] ||
+            connection.rawConnection.req.headers['Content-Type']  
           )
       ){
         connection.rawConnection.form = new formidable.IncomingForm();
-        for(var i in api.config.servers.web.formOptions){
+        for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
         connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files) {
@@ -374,11 +375,11 @@ var web = function(api, options, next){
     // FILE
 
     else if(requestMode === 'file'){
-      if(connection.params['file'] == null){
-        connection.params['file'] = pathParts.join(path.sep);
+      if(!connection.params.file){
+        connection.params.file = pathParts.join(path.sep);
       }
-      if(connection.params['file'] == '' || connection.params['file'][connection.params['file'].length - 1] === '/'){
-        connection.params['file'] = connection.params['file'] + api.config.general.directoryFileType;
+      if(connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/'){
+        connection.params.file = connection.params.file + api.config.general.directoryFileType;
       }
       callback(requestMode);
     }
@@ -390,13 +391,11 @@ var web = function(api, options, next){
     var collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
     if(collapsedVarsHash !== false){
       varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
-    }else if(api.utils.hashLength(varsHash) == 1){
-      var key = Object.keys(varsHash)[0];
     }
-
+    
     for(var v in varsHash){
       connection.params[v] = varsHash[v];
-    };
+    }
   }
 
   var buildRequesterInformation = function(connection){
@@ -425,7 +424,7 @@ var web = function(api, options, next){
       var value = originalHeaders[i][1];
       if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
         // ignore, it's a duplicate
-      } else if(connection.rawConnection.method == 'HEAD' && key == 'Transfer-Encoding'){
+      } else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
         // ignore, we can't send this header for HEAD requests
       } else {
         foundHeaders.push(key.toLowerCase());
@@ -436,7 +435,7 @@ var web = function(api, options, next){
   }
 
   var cleanSocket = function(bindIP, port){
-    if(bindIP == null && port.indexOf("/") >= 0){ 
+    if(!bindIP && port.indexOf('/') >= 0){
       fs.unlink(port, function(err){
         if(err){
           server.log('cannot remove stale socket @' + port + ' : ' + err);
@@ -448,7 +447,7 @@ var web = function(api, options, next){
   }
 
   var chmodSocket = function(bindIP, port){
-    if(options.bindIP == null && options.port.indexOf("/") >= 0){ 
+    if(!options.bindIP && options.port.indexOf('/') >= 0){ 
       fs.chmodSync(port, 0777); 
     } 
   }

@@ -1,5 +1,5 @@
 var should = require('should');
-var actionheroPrototype = require(__dirname + "/../../actionhero.js").actionheroPrototype;
+var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
 
@@ -13,13 +13,13 @@ describe('Core: specHelper', function(){
   });
 
   after(function(done){
-    actionhero.stop(function(err){
+    actionhero.stop(function(){
       done();
     });
   });
 
   it('can make a requset with just params', function(done){
-    api.specHelper.runAction('randomNumber', function(response, connection){
+    api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.a.Number;
       response.randomNumber.should.be.within(0,1);
       done();
@@ -27,7 +27,7 @@ describe('Core: specHelper', function(){
   });
 
   it('will return metadata like the web server', function(done){
-    api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
+    api.specHelper.runAction('x', {thing: 'stuff'}, function(response){
       response.error.should.equal('Error: unknown action or invalid apiVersion');
       response.messageCount.should.equal(1);
       response.serverInformation.serverName.should.equal('actionhero API');
@@ -48,7 +48,7 @@ describe('Core: specHelper', function(){
   describe('test callbacks', function(){
 
     it('will not report a broken test as a broken action (sync)', function(done){
-      api.specHelper.runAction('randomNumber', function(response, conn){
+      api.specHelper.runAction('randomNumber', function(response){
         try{
           response.not.a.real.thing
         }catch(e){
@@ -59,7 +59,7 @@ describe('Core: specHelper', function(){
     });
 
     it('will not report a broken test as a broken action (async)', function(done){
-      api.specHelper.runAction('sleepTest', function(response, conn){
+      api.specHelper.runAction('sleepTest', function(response){
         try{
           response.thing.should.equal('this will break')
         }catch(e){
@@ -125,8 +125,8 @@ describe('Core: specHelper', function(){
   describe('tasks', function(){
 
     before(function(done){
-      api.tasks.tasks['test_task'] = {
-        name: 'test_task',
+      api.tasks.tasks.testTask = {
+        name: 'testTask',
         description: 'task: ' + this.name,
         queue: 'default',
         frequency: 0,
@@ -138,18 +138,18 @@ describe('Core: specHelper', function(){
         }
       }
 
-      api.tasks.jobs['test_task']  = api.tasks.jobWrapper('test_task');
+      api.tasks.jobs.testTask  = api.tasks.jobWrapper('testTask');
       done();
     });
 
     after(function(done){
-      delete api['testOutput']
-      delete api.tasks.tasks['test_task'];
+      delete api.testOutput
+      delete api.tasks.tasks.testTask;
       done();
     });
 
     it('can run tasks', function(done){
-      api.specHelper.runTask('test_task', {}, function(response){
+      api.specHelper.runTask('testTask', {}, function(response){
         response.should.equal('OK');
         api.testOutput.should.equal('OK');
         done();
