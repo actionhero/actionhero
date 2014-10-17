@@ -161,7 +161,7 @@ connection = new api.connection({
 
 ## Chat Rooms
 
-connections should use the verbs `roomChange` or `listenToRom` to move around rooms.  These methods are for the server to manage rooms.
+connections should use the verbs `roomChange` or `listenToRoom` to move around rooms.  These methods are for the server to manage rooms.
 
 ### api.chatRoom.socketRoomBroadcast(connection, message, callback)
 - tell a message to all members in a room.
