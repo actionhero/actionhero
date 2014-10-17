@@ -28,7 +28,7 @@ An example web socket session might be the following:
 
 <script>
 
-  client = new actionheroClient;
+  client = new ActionheroClient;
 
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })

@@ -54,13 +54,13 @@ All connection objects have these properties by the time they reach middleware o
   canChat: false,
   room: null,
   sendMessage: [Function],
-  _original_connection: {},
+  _originalConnection: {},
   action: 'status',
   actionStatus: true
 }
 {% endhighlight %}
 
-- All connections which appear to your actions are "proxy" connections built at the start of the request, and `_original_connection` is a refrence back to the "real" connection object.  If you are modifying a long-lasting connection (perhaps for chat auth), be sure to modify both `connection.value` and `connection._original_connection.value`.
+- All connections which appear to your actions are "proxy" connections built at the start of the request, and `_originalConnection` is a refrence back to the "real" connection object.  If you are modifying a long-lasting connection (perhaps for chat auth), be sure to modify both `connection.value` and `connection._originalConnection.value`.
 - `rawConnection` contains the actual socket or connection object for the connection.  This will change based on the server type.  
 
 {% highlight javascript %}
@@ -202,7 +202,7 @@ connections should use the verbs `roomChange` or `listenToRoom` to move around r
 - callback is of the form (error, authorized), which is `true` or `false`
 
 ### api.chatRoom.reAuthenticate(connectionId, callback)
-- callback contains an array of rooms the connection is still in and rooms the connection was removed from
+- callback contains error and then an array of rooms the connection is still in and rooms the connection was removed from
 - you can check on connections from this or any other server in the cluster
 
 ### api.chatRoom.addMember(connectionId, room, callback)
