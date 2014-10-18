@@ -52,8 +52,8 @@ or more concisely:
     inputs: { required: [], optional: [] },
     outputExample: { randomNumber: 123 },
     run:function(api, connection, next){
-    connection.response.randomNumber = Math.random();
-    next(connection, true);
+      connection.response.randomNumber = Math.random();
+      next(connection, true);
     }
   }
 
@@ -95,8 +95,8 @@ You can also define more than one action per file if you would like:
 
 ActionHero supports multiple versions of the same action.  This will allow you to support actions/routes of the same name with upgraded functionality.
 
-- actions optionally have the `action.version` attribute
-- a reserved param, `apiVersion` is used to directly specify the version of an action a client may request
+- actions optionally have the `action.version` attribute.
+- a reserved param, `apiVersion` is used to directly specify the version of an action a client may request.
 - if a client doesn't specify an `apiVersion`, they will be directed to the highest numerical version of that action.
 
 You can optionally create routes to handle your API versioning:
@@ -115,7 +115,7 @@ exports.routes = {
 };
 {% endhighlight %}
 
-*As a note, if a client accessing actionhero via routes does not provide an apiVersion and it is explicitly defined in the route, the highest number will not be assigned automatically, as will be seen as a routing error.*
+*As a note, if a client accessing actionhero via routes does not provide an apiVersion and it is explicitly defined in the route, the highest number will not be assigned automatically, and will be seen as a routing error.*
 
 ## Options
 
