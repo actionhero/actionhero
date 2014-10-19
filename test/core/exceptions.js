@@ -70,7 +70,7 @@ describe('Core: Exceptions', function(){
      * So, it is best just to ignore this test in node ~0.8.9 and below and it should
      * still pass in normal environments.
      */
-    if(9 < parseInt(process.version.split('.')[1],10)){
+    if(9 < parseInt(process.version.split('.')[1],10) && api.config.general.actionDomains === true){
       api.specHelper.runAction('badAction', {}, function(response){
         response.error.should.equal('Error: The server experienced an internal error');
         done();

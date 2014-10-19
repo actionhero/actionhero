@@ -395,11 +395,16 @@ describe('Server: Web', function(){
     });
 
     it('server errors should return a 500', function(done){
-      request.post(url + '/api/brokenAction', function(err, response, body){
-        body = JSON.parse(body);
-        response.statusCode.should.eql(500);
+      if(api.config.general.actionDomains === true){
+        request.post(url + '/api/brokenAction', function(err, response, body){
+          body = JSON.parse(body);
+          response.statusCode.should.eql(500);
+          done();
+        });
+      }else{
+        console.log("skipping broken action test; api.config.general.actionDomains != true")
         done();
-      });
+      }
     });
 
     it('status codes can be set for errors', function(done){
