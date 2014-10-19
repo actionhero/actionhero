@@ -225,45 +225,56 @@ var actionProcessor = function(api, next){
     } else {
       api.stats.increment('actions:totalProcessedActions');
       api.stats.increment('actions:processedActions:' + self.connection.action);
-      var actionDomain = domain.create();
-      actionDomain.on('error', function(err){
-        api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
-          self.completeAction('server_error', true, actionDomain);
-        });
-      });
-      actionDomain.run(function(){
-        var toProcess = true;
-        var callbackCount = 0;
-        self.preProcessAction(toProcess, function(toProcess){
-          self.reduceParams();
-
-          self.actionTemplate.inputs.required.forEach(function(param){
-            if(self.connection.error === null && (!self.connection.params[param] || self.connection.params[param].length === 0)){
-              self.missingParams.push(param);
-            }
+      
+      if(api.config.general.actionDomains === true){
+        var actionDomain = domain.create();
+        actionDomain.on('error', function(err){
+          api.exceptionHandlers.action(actionDomain, err, self.connection, function(){
+            self.completeAction('server_error', true, actionDomain);
           });
+        });
+        actionDomain.run(function(){
+          self.runAction();
+        });
+      }else{
+        self.runAction();
+      }
 
-          if(self.missingParams.length > 0){
-            self.completeAction('missing_params');
-          }else if(toProcess === true && self.connection.error === null){
-            self.actionTemplate.run(api, self.connection, function(connection, toRender){
-              callbackCount++;
-              if(callbackCount !== 1){ 
-                callbackCount = 1; 
-                self.duplicateCallbackHandler(actionDomain); 
-              }else{
-                self.connection = connection;
-                self.postProcessAction(toRender, function(toRender){
-                  self.completeAction(true, toRender, actionDomain);
-                });
-              }
-            });
+    }
+  }
+
+  api.actionProcessor.prototype.runAction = function(actionDomain){
+    var self = this;
+    var toProcess = true;
+    var callbackCount = 0;
+    self.preProcessAction(toProcess, function(toProcess){
+      self.reduceParams();
+
+      self.actionTemplate.inputs.required.forEach(function(param){
+        if(self.connection.error === null && (!self.connection.params[param] || self.connection.params[param].length === 0)){
+          self.missingParams.push(param);
+        }
+      });
+
+      if(self.missingParams.length > 0){
+        self.completeAction('missing_params');
+      }else if(toProcess === true && self.connection.error === null){
+        self.actionTemplate.run(api, self.connection, function(connection, toRender){
+          callbackCount++;
+          if(callbackCount !== 1){ 
+            callbackCount = 1; 
+            self.duplicateCallbackHandler(actionDomain); 
           }else{
-            self.completeAction(false, true, actionDomain);
+            self.connection = connection;
+            self.postProcessAction(toRender, function(toRender){
+              self.completeAction(true, toRender, actionDomain);
+            });
           }
         });
-      });
-    }
+      }else{
+        self.completeAction(false, true, actionDomain);
+      }
+    });
   }
 
   next();

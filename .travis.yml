@@ -8,6 +8,8 @@ node_js:
 env:
   - "FAKEREDIS=true"
   - "FAKEREDIS=false"
+  - "ACTIONDOMAINS=false"
+  - "ACTIONDOMAINS=true"
 branches:
   only:
     - master

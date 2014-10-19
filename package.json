@@ -58,7 +58,7 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "echo \"** Running with FakeRedis -> `echo $FAKEREDIS` **\" && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
+    "test": "echo \"** FakeRedis -> `echo $FAKEREDIS`, ActionDomains -> `echo $ACTIONDOMAINS` **\" && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
     "start": "node ./bin/actionhero"
   },
   "subdomain": "actionhero",

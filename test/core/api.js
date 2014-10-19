@@ -198,10 +198,10 @@ describe('Core: API', function(){
     });
 
     it('can also prevent double callbacks from middleware', function(done){
-      api.actions.preProcessors[1] = function(connection, actionTemplate, next){
+      api.actions.addPreProcessor(function(connection, actionTemplate, next){
         next(connection, true);
         next(connection, true);
-      }
+      });
 
       var responses = [];
       api.specHelper.runAction('randomNumber', function(response){

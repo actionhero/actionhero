@@ -18,6 +18,8 @@ exports.default = {
       lockDuration: 1000 * 10, // 10 seconds
       // Watch for changes in actions and tasks, and reload/restart them on the fly
       developmentMode: true,
+      // Should we run each action within a domain? Makes your app safer but slows it down
+      actionDomains: true,
       // How many pending actions can a single connection be working on
       simultaneousActions: 5,
       // disables the whitelisting of client params
@@ -56,9 +58,15 @@ exports.default = {
 
 exports.test = { 
   general: function(api){
+    var actiondomains = true;
+    if(process.env.ACTIONDOMAINS === 'false'){
+      actiondomains = false;
+    }
+
     return {
       id: 'test-server',
       developmentMode: true,
+      actiondomains: actiondomains,
       startingChatRooms: {
         'defaultRoom': {},
         'otherRoom': {},
