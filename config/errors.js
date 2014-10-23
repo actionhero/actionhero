@@ -23,6 +23,11 @@ exports.default = {
         return params[0] + ' is a required parameter for this action';
       },
 
+      // When a param doesn't pass the validation as defined in the action
+      invalidParams: function(params){
+        return 'the following parameters do not pass validation '+ JSON.stringify(params);
+      },
+
       // user requested an unknown action
       unknownAction: function(action){
         return 'unknown action or invalid apiVersion';

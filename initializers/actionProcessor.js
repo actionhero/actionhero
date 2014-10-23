@@ -1,5 +1,6 @@
 var domain = require('domain');
 var async = require('async');
+var validator = require('validator');
 
 var actionProcessor = function(api, next){
 
@@ -11,6 +12,7 @@ var actionProcessor = function(api, next){
     this.messageCount = this.connection.messageCount
     this.callback = data.callback;
     this.missingParams = [];
+    this.invalidParams = [];
     this.working = false;
   }
 
@@ -54,7 +56,9 @@ var actionProcessor = function(api, next){
       error = api.config.errors.unsupportedServerType(self.connection.type);
     }else if(status === 'missing_params'){
       error = api.config.errors.missingParams(self.missingParams) ;
-    }
+    }else if(status == 'invalid_params'){
+      error = api.config.errors.invalidParams(self.invalidParams);
+     }
 
     if(error !== null){
       if(typeof error === 'string') self.connection.error = new Error( error );
@@ -181,6 +185,26 @@ var actionProcessor = function(api, next){
     }
   }
 
+  api.actionProcessor.prototype.validateParams = function(){
+    var self = this;
+    if(api.config.general.disableParamValidation !== true){
+      for(var p in self.connection.params){
+        if(typeof(self.actionTemplate.inputs.validate) !== 'undefined'){
+          if(typeof(self.actionTemplate.inputs.validate[p]) !== 'undefined'){
+            console.log(!validator[self.actionTemplate.inputs.validate[p]](self.connection.params[p]));
+            if(!validator[self.actionTemplate.inputs.validate[p]](self.connection.params[p])){
+              self.invalidParams.push({
+                param : p,
+                value : self.connection.params[p],
+                validation : self.actionTemplate.inputs.validate[p]
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
   api.actionProcessor.prototype.duplicateCallbackHandler = function(actionDomain){
     var self = this;
     if(self.working === true){
@@ -236,6 +260,7 @@ var actionProcessor = function(api, next){
         var callbackCount = 0;
         self.preProcessAction(toProcess, function(toProcess){
           self.reduceParams();
+          self.validateParams();
 
           self.actionTemplate.inputs.required.forEach(function(param){
             if(self.connection.error === null && (!self.connection.params[param] || self.connection.params[param].length === 0)){
@@ -245,6 +270,8 @@ var actionProcessor = function(api, next){
 
           if(self.missingParams.length > 0){
             self.completeAction('missing_params');
+          }else if(self.invalidParams.length > 0){
+            self.completeAction('invalid_params');
           }else if(toProcess === true && self.connection.error === null){
             self.actionTemplate.run(api, self.connection, function(connection, toRender){
               callbackCount++;

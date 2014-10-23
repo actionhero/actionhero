@@ -43,7 +43,8 @@
     "fakeredis": "~0.2.0",
     "primus": "~2.4.0",
     "uglify-js": "~2.4.14",
-    "istanbul": "^0.3.2"
+    "istanbul": "^0.3.2",
+    "validator": "^3.22.0"
   },
   "devDependencies": {
     "mocha": "~1.x",

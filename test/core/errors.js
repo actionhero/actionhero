@@ -43,6 +43,20 @@ describe('Core: Errors', function(){
       done();
     });
   });
-  
+
+  it('accepts an int to add to the random number', function(done){
+    api.specHelper.runAction('randomNumber', { toAdd : 1 }, function(response, connection){
+      response.randomNumber.should.be.a.Number;
+      response.randomNumber.should.be.within(1,2);
+      done();
+    });
+  });
+
+  it('rejects a float param', function(done){
+    api.specHelper.runAction('randomNumber', { toAdd : 1.5 }, function(response, connection){
+      should.exist(response.error);
+      done();
+    });
+  });
 
 });
