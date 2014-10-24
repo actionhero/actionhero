@@ -79,3 +79,6 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 - [ah-ratelimit-plugin](https://github.com/innerdvations/ah-ratelimit-plugin) Rate Limits
 - [ah-autosession-plugin](https://github.com/innerdvations/ah-autosession-plugin) Sessions (based off of redis-sessions)
 - [ah-dashboard-plugin](https://github.com/S3bb1/ah-dashboard-plugin) Dashboard for ActionHero
+- [ah-jwtauth-plugin](https://github.com/lookaflyingdonkey/ah-jwtauth-plugin) JSON Web Token Authentication
+- [ah-mongoose-plugin](https://github.com/lookaflyingdonkey/ah-mongoose-plugin) Mongoose Model Loader
+- [ah-xsignature-plugin](https://github.com/lookaflyingdonkey/ah-xsignature-plugin) Content Checksum for Actions
