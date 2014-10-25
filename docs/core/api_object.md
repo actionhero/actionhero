@@ -17,7 +17,7 @@ Collections that you are reccomended not leave unmodifeid are un-expanded `[Obje
     initialized: true,
     shuttingDown: false,
     bootTime: 1403066471765
-    project_root: '/Users/evantahler/Dropbox/Projects/actionhero',
+    projectRoot: '/Users/evantahler/Dropbox/Projects/actionhero',
     env: 'development',
     id: '127.0.0.1',
 
