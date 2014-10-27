@@ -46,7 +46,7 @@
     "istanbul": "^0.3.2"
   },
   "devDependencies": {
-    "mocha": "~1.x",
+    "mocha": "~2.x",
     "should": "~4.x",
     "request": "~2.x",
     "redis-sentinel-client": "latest"
