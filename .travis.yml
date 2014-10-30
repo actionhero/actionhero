@@ -10,6 +10,10 @@ env:
   - "FAKEREDIS=true  ACTIONDOMAINS=false"
   - "FAKEREDIS=false ACTIONDOMAINS=true"
   - "FAKEREDIS=false ACTIONDOMAINS=false"
+os:
+  - linux
+  - osx
+  - windows
 
 branches:
   only:
