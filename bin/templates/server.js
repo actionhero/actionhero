@@ -48,7 +48,7 @@ var %%name%% = function(api, options, next){
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
-    
+
   });
 
   /////////////
