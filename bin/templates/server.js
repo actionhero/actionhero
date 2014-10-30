@@ -10,7 +10,7 @@ var %%name%% = function(api, options, next){
     logConnections: true,
     logExits: true,
     sendWelcomeMessage: true,
-    verbs: [],
+    verbs: []
   }
 
   var server = new api.genericServer(type, options, attributes);
@@ -48,7 +48,7 @@ var %%name%% = function(api, options, next){
   });
 
   server.on('actionComplete', function(connection, toRender, messageCount){
-    
+
   });
 
   /////////////
