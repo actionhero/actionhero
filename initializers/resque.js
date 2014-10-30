@@ -45,7 +45,7 @@ var resque = function(api, next){
         self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
           self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info') })
           self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
-          //self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug') })
+          self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug') })
           self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug') })
           self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enqueuing job ' + timestamp, 'debug', job) })
 
@@ -100,10 +100,10 @@ var resque = function(api, next){
         worker.on('start',           function(){                   api.log('resque worker #'+(counter+1)+' started (queues: ' + worker.options.queues + ')', 'info'); })
         worker.on('end',             function(){                   api.log('resque worker #'+(counter+1)+' ended', 'info'); })
         worker.on('cleaning_worker', function(worker, pid){        api.log('resque cleaning old worker ' + worker + '(' + pid + ')', 'info'); })
-        // worker.on('poll',            function(queue){              api.log('resque worker #'+(counter+1)+' polling ' + queue, 'debug'); })
+        worker.on('poll',            function(queue){              api.log('resque worker #'+(counter+1)+' polling ' + queue, 'debug'); })
         worker.on('job',             function(queue, job){         api.log('resque worker #'+(counter+1)+' working job ' + queue, 'debug', job); })
         worker.on('success',         function(queue, job, result){ api.log('resque worker #'+(counter+1)+' job success ' + queue, 'info', {job: job, result: result}); })
-        // worker.on('pause',           function(){                   api.log('resque worker #'+(counter+1)+'  paused', 'debug'); })
+        worker.on('pause',           function(){                   api.log('resque worker #'+(counter+1)+'  paused', 'debug'); })
         worker.on('failure',         function(queue, job, f){ api.exceptionHandlers.task(f, queue, job) })
         worker.on('error',           function(queue, job, error){ api.exceptionHandlers.task(error, queue, job) })
 
