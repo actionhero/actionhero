@@ -9,7 +9,7 @@ exports.action = {
 
   inputs: {
     required: [],
-    optional: [],
+    optional: []
   },
 
   run: function(api, connection, next){
