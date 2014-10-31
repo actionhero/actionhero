@@ -42,7 +42,12 @@ var exceptions = function(api, next){
     for(var m in extraMessages){
       api.log(extraMessages[m], severity);
     }
-    var lines = err.stack.split(os.EOL);
+    var lines;
+    try{
+      lines = err.stack.split(os.EOL);
+    }catch(e){
+      lines = new Error(err).stack.split(os.EOL);
+    }
     for(var l in lines){
       var line = lines[l];
       api.log('! ' + line, severity);
