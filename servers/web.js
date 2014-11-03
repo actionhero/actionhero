@@ -97,12 +97,12 @@ var web = function(api, options, next){
     var foundExpires = false;
     var foundCacheControl = false;
 
-    for(var pair in connection.rawConnection.responseHeaders){
+    connection.rawConnection.responseHeaders.forEach(function(pair){
       if( pair[0].toLowerCase() === 'content-type' ) { foundContentType = true; }
       if( pair[0].toLowerCase() === 'content-length'){ foundContentLength = true; }
       if( pair[0].toLowerCase() === 'expires' )      { foundExpires = true; }
       if( pair[0].toLowerCase() === 'cache-control' ){ foundCacheControl = true; }
-    }
+    })
 
     if(foundContentType === false)  { connection.rawConnection.responseHeaders.push(['Content-Type', mime]); }
     if(foundContentLength === false){ connection.rawConnection.responseHeaders.push(['Content-Length', length]); }
