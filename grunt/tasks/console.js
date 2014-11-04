@@ -2,7 +2,7 @@ var repl = require('repl');
 
 module.exports = function(grunt) {
   
-  grunt.registerTask('console', 'get a REPL/console into your application', function(){
+  grunt.registerTask('console', 'Get a REPL/console into your application', function(){
     var done = this.async();
     grunt.startActionhero(function(api, actionhero){
 
