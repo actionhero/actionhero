@@ -92,11 +92,19 @@ var web = function(api, options, next){
   }
 
   server.sendFile = function(connection, error, fileStream, mime, length){
+    var foundExpires = false;
+    var foundCacheControl = false;
+
+    connection.rawConnection.responseHeaders.forEach(function(pair){
+      if( pair[0].toLowerCase() === 'expires' )      { foundExpires = true; }
+      if( pair[0].toLowerCase() === 'cache-control' ){ foundCacheControl = true; }
+    })
+
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    connection.rawConnection.responseHeaders.push(['Content-Length', length]); // Don't send both content-length and transfer-encoding
-    // connection.rawConnection.responseHeaders.push(['Transfer-Encoding', 'Chunked'])
-    connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]);
-    connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']);
+    connection.rawConnection.responseHeaders.push(['Content-Length', length]);
+    if(foundExpires === false)      { connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
+    if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']); }
+    
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404 }
