@@ -97,8 +97,13 @@ var actions = function(api, next){
         loadMessage(action);
       }
     } catch(err){
-      api.exceptionHandlers.loader(fullFilePath, err);
-      delete api.actions.actions[action.name][action.version];
+      try {
+        api.exceptionHandlers.loader(fullFilePath, err);
+        delete api.actions.actions[action.name][action.version];  
+      } catch(err2) {
+        throw err;
+      }
+      
     }
   }
 
