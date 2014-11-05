@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var actions = function(api, next){
   api.actions = {};
   api.actions.actions = {};
@@ -70,7 +72,11 @@ var actions = function(api, next){
     api.watchFileAndAct(fullFilePath, function(){
       api.actions.loadFile(fullFilePath, true);
       api.params.buildPostVariables();
-      api.routes.loadRoutes();
+      if(fs.existsSync(api.routes.routesFile)){
+        api.routes.loadRoutes();
+      }else{
+        api.routes.loadRoutes(api.config.routes);
+      }  
     })
 
     try {
