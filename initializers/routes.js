@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 var routes = function(api, next){
 
   api.routes = {};
