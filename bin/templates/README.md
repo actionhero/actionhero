@@ -3,7 +3,7 @@
 *visit www.actionherojs.com for more information*
 
 ## To install:
-(assuming you [have](http://nodejs.org/) node and NPM installed)
+(assuming you have [node](http://nodejs.org/) and NPM installed)
 
 `npm install`
 
