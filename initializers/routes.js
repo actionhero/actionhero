@@ -1,10 +1,7 @@
-var fs = require('fs');
-
 var routes = function(api, next){
 
   api.routes = {};
   api.routes.routes = {};
-  api.routes.routesFile = api.projectRoot + '/routes.js'; //deprecated, see github issue #450
 
   api.routes.verbs = ['get', 'post', 'put', 'patch', 'delete'];
 
@@ -80,11 +77,8 @@ var routes = function(api, next){
     api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
     if(!rawRoutes){
-      //depricated, see github issue #450
-      if(fs.existsSync(api.routes.routesFile)){
-        api.log('Using the routes.js in your project root is depricated.', 'warning')
-        delete require.cache[require.resolve(api.routes.routesFile)];
-        rawRoutes = require(api.routes.routesFile).routes;
+      if(api.config.routes){
+        rawRoutes = api.config.routes;
       }
     }
 
@@ -124,16 +118,7 @@ var routes = function(api, next){
     }
   };
 
-  //depricated, see github issue #450
-  if(fs.existsSync(api.routes.routesFile)){
-    api.routes.loadRoutes();
-    api.watchFileAndAct(api.routes.routesFile, function(){
-      api.routes.loadRoutes();
-    });
-  }else{
-    api.routes.loadRoutes(api.config.routes);
-  }  
-  
+  api.routes.loadRoutes();
   next();
 }
 
