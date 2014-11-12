@@ -38,7 +38,7 @@
     "redis": "~0.12.0",
     "ws": "~0.4.31",
     "optimist": "~0.6.1",
-    "winston": "0.7.2",
+    "winston": "0.8.1",
     "node-uuid": "~1.4.1",
     "fakeredis": "~0.2.0",
     "primus": "~2.4.0",
