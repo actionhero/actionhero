@@ -125,6 +125,10 @@ var tasks = function(api, next){
       api.resque.queue.delDelayed(q, taskName, args, callback);
     },
 
+    scheduledAt: function(q, taskName, args, callback){
+      api.resque.queue.scheduledAt(q, taskName, args, callback);
+    },
+
     enqueueRecurrentJob: function(taskName, callback){
       var self = this;
       var task = self.tasks[taskName];
