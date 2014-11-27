@@ -149,6 +149,11 @@ If you run these 2 tasks, you will see output in your console like this:
 ## Queue Inspection
 actionhero provides some methods to help inspect the state of your queue
 
+#### api.tasks.scheduledAt(queue, taskName, args, next)
+- next(err, timestamps)
+- finds all matching instances of queue + taskName + args from the delayed queues
+- timestamps will be an array of the delayed timestamps
+
 #### api.tasks.del(queue, taskName, args, count, next)
 - next(err, count)
 - removes all matching instances of queue + taskName + args from the normal queues
