@@ -176,6 +176,10 @@ var chatRoom = function(api, next){
       }
     });
   }
+  
+  api.chatRoom.sanitizeMemberDetails = function(memberData){
+  	return { joinedAt: data.joinedAt };
+  }
 
   api.chatRoom.roomStatus = function(room, callback){
     if(room){
@@ -187,10 +191,8 @@ var chatRoom = function(api, next){
             var count = 0;
             for(var id in members){
               var data = JSON.parse(members[id])
-              cleanedMembers[id] = {
-                id: id,
-                joinedAt: data.joinedAt
-              }
+              cleanedMembers[id] = api.chatRoom.sanitizeMemberDetails(data);
+              cleanedMembers[id].id = id;
               count++;
             }
             callback(null, {
@@ -267,6 +269,13 @@ var chatRoom = function(api, next){
       api.redis.doCluster('api.chatRoom.reAuthenticate', [connectionId], connectionId, callback);
     }
   }
+  
+  api.chatRoom.generateMemberDetails = function(connection){
+  	return { id:       connection.id,
+             joinedAt: new Date().getTime(),
+             host:     api.id
+           };
+  }
 
   api.chatRoom.addMember = function(connectionId, room, callback){
     if(api.connections.connections[connectionId]){
@@ -278,11 +287,7 @@ var chatRoom = function(api, next){
               if(authorized === true){
                 api.redis.client.hget(api.chatRoom.keys.members + room, connection.id, function(err, memberDetails){
                   if(memberDetails === null || memberDetails === undefined){
-                    memberDetails = {
-                      id:       connection.id,
-                      joinedAt: new Date().getTime(),
-                      host:     api.id
-                    };
+                    memberDetails = api.chatRoom.generateMemberDetails( connection );
                     api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
                       connection.rooms.push(room);
                       api.stats.increment('chatRoom:roomMembers:' + room);
