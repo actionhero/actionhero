@@ -251,7 +251,7 @@ var actionProcessor = function(api, next){
       self.reduceParams();
 
       self.actionTemplate.inputs.required.forEach(function(param){
-        if(self.connection.error === null && (!self.connection.params[param] || self.connection.params[param].length === 0)){
+        if(self.connection.error === null && self.connection.params[param] === undefined){
           self.missingParams.push(param);
         }
       });
