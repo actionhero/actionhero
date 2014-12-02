@@ -178,7 +178,7 @@ var chatRoom = function(api, next){
   }
   
   api.chatRoom.sanitizeMemberDetails = function(memberData){
-  	return { joinedAt: data.joinedAt };
+  	return { joinedAt: memberData.joinedAt };
   }
 
   api.chatRoom.roomStatus = function(room, callback){
@@ -271,9 +271,7 @@ var chatRoom = function(api, next){
   }
   
   api.chatRoom.generateMemberDetails = function(connection){
-  	return { id:       connection.id,
-             joinedAt: new Date().getTime(),
-             host:     api.id
+  	return { id:       connection.id
            };
   }
 
@@ -288,6 +286,8 @@ var chatRoom = function(api, next){
                 api.redis.client.hget(api.chatRoom.keys.members + room, connection.id, function(err, memberDetails){
                   if(memberDetails === null || memberDetails === undefined){
                     memberDetails = api.chatRoom.generateMemberDetails( connection );
+                    memberDetails.joinedAt = new Date().getTime();
+                    memberDetails.host = api.id;
                     api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
                       connection.rooms.push(room);
                       api.stats.increment('chatRoom:roomMembers:' + room);

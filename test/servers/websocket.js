@@ -30,7 +30,7 @@ var connectClients = function(callback){
   }, 100);
 }
 
-describe('Server: Web Socket', function(){
+describe.only('Server: Web Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -166,6 +166,16 @@ describe('Server: Web Socket', function(){
       api.chatRoom.addLeaveCallback(function(connection, room){
         api.chatRoom.broadcast(connection, room, 'I have left the room');
       });
+      
+      api.chatRoom.sanitizeMemberDetails = function(data){
+  	    return { joinedAt: data.joinedAt,
+  	             type: data.type };
+      }
+  
+      api.chatRoom.generateMemberDetails = function(connection){
+  	    return { joinedAt: new Date().getTime(),
+  	         type : connection.type };
+      }
 
       done();
     })
@@ -275,6 +285,9 @@ describe('Server: Web Socket', function(){
     it('connections can see member counts changing within rooms as folks join and leave', function(done){
       clientA.roomView('defaultRoom', function(response){
         response.data.membersCount.should.equal(3);
+        for( var key in response.data.members ){
+          	response.data.members[key].type.should.eql('websocket');
+          }
         clientB.roomLeave('defaultRoom', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.membersCount.should.equal(2);

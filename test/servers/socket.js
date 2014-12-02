@@ -50,7 +50,7 @@ var connectClients = function(callback){
   });
 }
 
-describe('Server: Socket', function(){
+describe.only('Server: Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -228,6 +228,20 @@ describe('Server: Socket', function(){
       api.chatRoom.addLeaveCallback(function(connection, room){
         api.chatRoom.broadcast(connection, room, 'I have left the room');
       });
+      
+      api.chatRoom.sanitizeMemberDetails = function(connection){
+      	return 
+      }
+
+      api.chatRoom.sanitizeMemberDetails = function(data){
+  	    return { joinedAt: data.joinedAt,
+  	             type: data.type };
+      }
+  
+      api.chatRoom.generateMemberDetails = function(connection){
+  	    return { joinedAt: new Date().getTime(),
+  	         type : connection.type };
+      }
 
       done();
     })
@@ -290,6 +304,9 @@ describe('Server: Socket', function(){
       makeSocketRequest(client, 'roomLeave defaultRoom', function(){
         makeSocketRequest(client2, 'roomView defaultRoom', function(response){
           response.data.room.should.equal('defaultRoom');
+          for( var key in response.data.members ){
+          	response.data.members[key].type.should.eql('socket');
+          }
           response.data.membersCount.should.equal(2)
           done();
         });
