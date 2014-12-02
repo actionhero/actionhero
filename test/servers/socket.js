@@ -229,18 +229,6 @@ describe('Server: Socket', function(){
         api.chatRoom.broadcast(connection, room, 'I have left the room');
       });
 
-      api.chatRoom.sanitizeMemberDetails = function(data){
-  	    return { id: data.id,
-  	             joinedAt: data.joinedAt,
-  	             type: data.type };
-      }
-  
-      api.chatRoom.generateMemberDetails = function(connection){
-  	    return { id: connection.id,
-  	             joinedAt: new Date().getTime(),
-  	             type : connection.type };
-      }
-
       done();
     })
 
@@ -302,15 +290,85 @@ describe('Server: Socket', function(){
       makeSocketRequest(client, 'roomLeave defaultRoom', function(){
         makeSocketRequest(client2, 'roomView defaultRoom', function(response){
           response.data.room.should.equal('defaultRoom');
-          for( var key in response.data.members ){
-          	response.data.members[key].type.should.eql('socket');
-          }
           response.data.membersCount.should.equal(2)
           done();
         });
       });
       });
     });
+    
+    describe('custom room member data', function(){
+    
+    	var currentSanitize;
+    	var currentGenerate;
+    	
+    	
+    	before(function(done){
+    	    //Ensure that default behavior works
+			makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
+			  makeSocketRequest(client2, 'roomView defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					(response.data.members[key].type === undefined ).should.eql(true);
+				  }
+				  makeSocketRequest(client2, 'roomLeave defaultRoom');
+
+				  //save off current functions
+				  currentSanitize = api.chatRoom.sanitizeMemberDetails;
+				  currentGenerate = api.chatRoom.generateMemberDetails;
+
+	 			  //override functions
+				  api.chatRoom.sanitizeMemberDetails = function(data){
+					return { id: data.id,
+							 joinedAt: data.joinedAt,
+							 type: data.type };
+				  }
+  
+				  api.chatRoom.generateMemberDetails = function(connection){
+					return { id: connection.id,
+							 joinedAt: new Date().getTime(),
+							 type : connection.type };
+				  }			  
+				  done();
+			  });
+			});
+        })
+
+		after(function(done){
+		  api.chatRoom.joinCallbacks  = {};
+		  api.chatRoom.leaveCallbacks = {};
+		  
+		  api.chatRoom.sanitizeMemberDetails = currentSanitize;
+		  api.chatRoom.generateMemberDetails = currentGenerate;
+		          
+		  //Check that everything is back to normal
+		  makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
+			  makeSocketRequest(client2, 'roomView defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					(response.data.members[key].type === undefined ).should.eql(true);
+				  }
+				  makeSocketRequest(client2, 'roomLeave defaultRoom');
+
+				  done();
+			  });
+		  });
+		})
+		
+		it('should view non-default member data', function(done){
+			makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
+				makeSocketRequest(client2, 'roomView defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					response.data.members[key].type.should.eql('socket');
+				  }
+				  makeSocketRequest(client2, 'roomLeave defaultRoom');
+				  done();
+				});
+			})
+		});	
+    
+    } );
 
     it('folks in my room hear what I say (and say works)', function(done){
       makeSocketRequest(client3, '', function(response){

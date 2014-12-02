@@ -166,18 +166,6 @@ describe('Server: Web Socket', function(){
       api.chatRoom.addLeaveCallback(function(connection, room){
         api.chatRoom.broadcast(connection, room, 'I have left the room');
       });
-      
-      api.chatRoom.sanitizeMemberDetails = function(data){
-  	    return { id: data.id,
-  	             joinedAt: data.joinedAt,
-  	             type: data.type };
-      }
-  
-      api.chatRoom.generateMemberDetails = function(connection){
-  	    return { id: connection.id,
-  	             joinedAt: new Date().getTime(),
-  	             type : connection.type };
-      }
 
       done();
     })
@@ -287,9 +275,6 @@ describe('Server: Web Socket', function(){
     it('connections can see member counts changing within rooms as folks join and leave', function(done){
       clientA.roomView('defaultRoom', function(response){
         response.data.membersCount.should.equal(3);
-        for( var key in response.data.members ){
-          	response.data.members[key].type.should.eql('websocket');
-          }
         clientB.roomLeave('defaultRoom', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.membersCount.should.equal(2);
@@ -298,6 +283,79 @@ describe('Server: Web Socket', function(){
         });
       });
     });
+    
+    describe('custom room member data', function(){
+    
+    	var currentSanitize;
+    	var currentGenerate;
+    	
+    	
+    	before(function(done){
+    	    //Ensure that default behavior works
+			clientA.roomAdd('defaultRoom',function(){
+			  clientA.roomView('defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					(response.data.members[key].type === undefined ).should.eql(true);
+				  }
+				  clientA.roomLeave('defaultRoom');
+
+				  //save off current functions
+				  currentSanitize = api.chatRoom.sanitizeMemberDetails;
+				  currentGenerate = api.chatRoom.generateMemberDetails;
+
+	 			  //override functions
+				  api.chatRoom.sanitizeMemberDetails = function(data){
+					return { id: data.id,
+							 joinedAt: data.joinedAt,
+							 type: data.type };
+				  }
+  
+				  api.chatRoom.generateMemberDetails = function(connection){
+					return { id: connection.id,
+							 joinedAt: new Date().getTime(),
+							 type : connection.type };
+				  }			  
+				  done();
+			  });
+			});
+        })
+
+		after(function(done){
+		  api.chatRoom.joinCallbacks  = {};
+		  api.chatRoom.leaveCallbacks = {};
+		  
+		  api.chatRoom.sanitizeMemberDetails = currentSanitize;
+		  api.chatRoom.generateMemberDetails = currentGenerate;
+		          
+		  //Check that everything is back to normal
+		  clientA.roomAdd('defaultRoom',function(){
+			  clientA.roomView('defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					(response.data.members[key].type === undefined ).should.eql(true);
+				  }
+				  clientA.roomLeave('defaultRoom');
+
+				  done();
+			  });
+		  });
+		})
+		
+		it('should view non-default member data', function(done){
+			clientA.roomAdd('defaultRoom',function(){
+				clientA.roomView('defaultRoom', function(response){
+				  response.data.room.should.equal('defaultRoom');
+				  for( var key in response.data.members ){
+					response.data.members[key].type.should.eql('websocket');
+				  }
+				  clientA.roomLeave('defaultRoom');
+				  done();
+				});
+			})
+		});	
+    
+    } );
 
     it('connections can join secure rooms', function(done){
       api.connections.connections[clientA.id].authorized = true;
