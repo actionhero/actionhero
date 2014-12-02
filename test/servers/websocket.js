@@ -168,13 +168,15 @@ describe('Server: Web Socket', function(){
       });
       
       api.chatRoom.sanitizeMemberDetails = function(data){
-  	    return { joinedAt: data.joinedAt,
+  	    return { id: data.id,
+  	             joinedAt: data.joinedAt,
   	             type: data.type };
       }
   
       api.chatRoom.generateMemberDetails = function(connection){
-  	    return { joinedAt: new Date().getTime(),
-  	         type : connection.type };
+  	    return { id: connection.id,
+  	             joinedAt: new Date().getTime(),
+  	             type : connection.type };
       }
 
       done();
