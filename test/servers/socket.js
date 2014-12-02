@@ -50,7 +50,7 @@ var connectClients = function(callback){
   });
 }
 
-describe.only('Server: Socket', function(){
+describe('Server: Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){

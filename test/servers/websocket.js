@@ -30,7 +30,7 @@ var connectClients = function(callback){
   }, 100);
 }
 
-describe.only('Server: Web Socket', function(){
+describe('Server: Web Socket', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
