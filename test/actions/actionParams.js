@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe.only('Action Input Params', function(){
+describe('Action Input Params', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -43,7 +43,13 @@ describe.only('Action Input Params', function(){
       response.param.should.equal(false);
       api.specHelper.runAction('testAction', {testParam: [] }, function(response){
         response.param.should.be.Array.and.be.empty;
-        done();
+        api.specHelper.runAction('testAction', {testParam: '' }, function(response){
+          response.error.should.containEql('required parameter for this action');
+          api.specHelper.runAction('testAction', { }, function(response){
+            response.error.should.containEql('required parameter for this action');
+            done();
+          });
+        });
       });
     });
   });
