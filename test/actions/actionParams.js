@@ -43,16 +43,20 @@ describe('Action Input Params', function(){
       response.param.should.equal(false);
       api.specHelper.runAction('testAction', {testParam: [] }, function(response){
         response.param.should.be.Array.and.be.empty;
-        api.specHelper.runAction('testAction', {testParam: '' }, function(response){
-          response.error.should.containEql('required parameter for this action');
-          api.specHelper.runAction('testAction', { }, function(response){
-            response.error.should.containEql('required parameter for this action');
-            done();
-          });
-        });
+        done();
       });
     });
   });
+  
+  it( 'will fail for missing or empty string params', function(done){
+    api.specHelper.runAction('testAction', {testParam: '' }, function(response){
+      response.error.should.containEql('required parameter for this action');
+      api.specHelper.runAction('testAction', { }, function(response){
+        response.error.should.containEql('required parameter for this action');
+        done();
+      });
+    });
+  } );
   
   it('correct params respect config options', function(done){
   	api.config.general.missingParamChecks = [ undefined ]
