@@ -54,30 +54,5 @@ describe('Action: Cache Test', function(){
       done();
     });
   });
-  
-  
-  it('correct params that are falsey (false booleans, null, "")', function(done){
-    api.specHelper.runAction('cacheTest', {key: 'testKey2', value: false }, function(response){
-      response.cacheTestResults.saveResp.should.equal(true);
-      response.cacheTestResults.loadResp.value.should.equal(false);
-      response.cacheTestResults.deleteResp.should.equal(true);
-      api.specHelper.runAction('cacheTest', {key: 'testKey3', value: null }, function(response){
-        response.cacheTestResults.saveResp.should.equal(true);
-        should(response.cacheTestResults.loadResp.value).equal(null);
-        response.cacheTestResults.deleteResp.should.equal(true);
-        api.specHelper.runAction('cacheTest', {key: 'testKey4', value: '' }, function(response){
-          response.cacheTestResults.saveResp.should.equal(true);
-          response.cacheTestResults.loadResp.value.should.equal('');
-          response.cacheTestResults.deleteResp.should.equal(true);
-          api.specHelper.runAction('cacheTest', {key: 'testKey5', value: [] }, function(response){
-            response.cacheTestResults.saveResp.should.equal(true);
-            response.cacheTestResults.loadResp.value.should.be.Array.and.be.empty;
-            response.cacheTestResults.deleteResp.should.equal(true);
-            done();
-          });
-        });
-      });
-    });
-  });
 
 });
