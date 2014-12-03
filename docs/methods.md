@@ -213,6 +213,36 @@ connections should use the verbs `roomChange` or `listenToRoom` to move around r
 - callback is of the form (error, wasRemoved)
 - you can remove connections from this or any other server in the cluster
 
+### api.chatRoom.generateMemberDetails( connection )
+- defines what is stored from the connection object in the member data
+- default is `id: connection.id`
+- other data that is stored by default is `host: api.id` and `joinedAt: new Date().getTime()`
+- override the entire method to store custom data *that is on the connection*
+
+### api.chatRoom.sanitizeMemberDetails( memberData )
+- Defines what is pulled out of the member data when returning roomStatus
+- Defaults to `joinedAt : memberData.joinedAt`
+- After method call, always filled with `id`, based on the `connection.id` used to store the data
+- Override the entire method to use custom data as defined in `api.chatRoom.generateMemberDetails`
+
+**Example:**
+{% highlight javascript %}
+  api.chatRoom.sanitizeMemberDetails = function( memberData ) {
+    return {
+      joinedAt: memberData.joinedAt,
+      userId: memberData.userId
+    };
+  }
+
+  api.chatRoom.generateMemberDetails = function( connection ) {
+    return {
+      id: connection.id,
+      userId: connection.userId
+    };
+  }
+{% endhighlight %}
+Now data stored for room members will contain the `userId`, that can be mapped to project database or what have you.
+
 ## File Server
 
 ### api.staticFile.staticFile(file, next)

@@ -193,6 +193,8 @@ Collections that you are reccomended not leave unmodifeid are un-expanded `[Obje
         reAuthenticate: [Function],
         addMember: [Function],
         removeMember: [Function],
+        sanitizeMemberDetails: [Function],
+        generateMemberDetails: [Function],
         // announceMember: [Function] 
     },
 
