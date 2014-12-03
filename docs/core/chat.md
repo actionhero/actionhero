@@ -77,6 +77,18 @@ These methods are to be used within your server (perhaps an action or initialize
 - callback is of the form (error, wasRemoved)
 - you can remove connections from this or any other server in the cluster
 
+### api.chatRoom.generateMemberDetails( connection )
+- defines what is stored from the connection object in the member data
+- default is `id: connection.id`
+- other data that is stored by default is `host: api.id` and `joinedAt: new Date().getTime()`
+- override the entire method to store custom data *that is on the connection*
+
+### api.chatRoom.sanitizeMemberDetails( memberData )
+- Defines what is pulled out of the member data when returning roomStatus
+- Defaults to `joinedAt : memberData.joinedAt`
+- After method call, always filled with `id`, based on the `connection.id` used to store the data
+- Override the entire method to use custom data as defined in `api.chatRoom.generateMemberDetails`
+
 ## Middleware
 
 As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is executed "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
