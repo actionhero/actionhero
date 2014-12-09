@@ -13,6 +13,7 @@ var url
 
 var connectClients = function(callback){
   // get actionheroClient in scope
+  // TODO: Perhaps we read this from disk after server boot.
   eval( api.servers.servers.websocket.compileActionheroClientJS() );
   
   var S = api.servers.servers.websocket.server.Socket;
