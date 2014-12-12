@@ -60,15 +60,15 @@ exports.default = {
 
 exports.test = { 
   general: function(api){
-    var actiondomains = true;
+    var actionDomains = true;
     if(process.env.ACTIONDOMAINS === 'false'){
-      actiondomains = false;
+      actionDomains = false;
     }
 
     return {
       id: 'test-server',
       developmentMode: true,
-      actiondomains: actiondomains,
+      actionDomains: actionDomains,
       startingChatRooms: {
         'defaultRoom': {},
         'otherRoom': {},
