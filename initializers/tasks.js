@@ -188,23 +188,30 @@ var tasks = function(api, next){
     },
 
     details: function(callback){
-      var details = {'queues': {}};
-      api.resque.queue.queues(function(err, queues){
+      var details = {'queues': {}, 'workers': {} };
+      api.resque.queue.allWorkingOn(function(err, workers){
         if(err){
-          callback(err, null)
-        }
-        else if(queues.length === 0){ callback(null, details) }
-        else {
-          var started = 0;
-          queues.forEach(function(queue){
-            started++;
-            api.resque.queue.length(queue, function(err, length){
-              details.queues[queue] = {
-                length: length
-              }
-              started--;
-              if(started === 0){ callback(err, details) }
-            });
+          callback(err, details);
+        }else{
+          details.workers = workers;
+          api.resque.queue.queues(function(err, queues){
+            if(err){
+              callback(err, details);
+            }
+            else if(queues.length === 0){ callback(null, details) }
+            else {
+              var started = 0;
+              queues.forEach(function(queue){
+                started++;
+                api.resque.queue.length(queue, function(err, length){
+                  details.queues[queue] = {
+                    length: length
+                  }
+                  started--;
+                  if(started === 0){ callback(err, details) }
+                });
+              });
+            }
           });
         }
       });
