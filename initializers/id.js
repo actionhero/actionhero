@@ -1,4 +1,5 @@
 var cluster = require('cluster');
+var path = require('path');
 var argv = require('optimist').argv;
 
 var id = function(api, next){
@@ -24,6 +25,8 @@ var id = function(api, next){
   } else {
     api.id = api.config.general.id;
   }
+
+  api.actionhero_version = require('..' + path.sep + 'package.json').version;
   
   next();
 }
