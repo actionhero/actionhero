@@ -40,21 +40,22 @@ exports.generate = function(binary, next){
   documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
   documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
 
-  // Add matching package.json dependencies to the dedicated plugins config file
-  var dep;
+  // Add plugins (from --plugins argument) to the dedicated plugins config file
   var pluginsArrayContents="";
-  if(typeof(JSON.parse(documents.packageJson).dependencies)==="object" && documents.configApiJs.packageJSONDependencyNameRegexForPlugins)
+  if(binary.argv.plugins)
   {
-    for(dep in JSON.parse(documents.packageJson).dependencies)
+    var pluginsArg=binary.argv.plugins.split(",");
+
+    pluginsArg.forEach(function(dep)
     {
-      if(JSON.parse(documents.packageJson).dependencies.hasOwnProperty(dep))
+      // if(dep.match(/^ah-.*-plugin$/g)!==null)
+      if(typeof(dep)==="string")
       {
-        if(dep.match(documents.configApiJs.packageJSONDependencyNameRegexForPlugins))
-        {
-          pluginsArrayContents+=dep.trim()+"\n";  
-        }
+        pluginsArrayContents+="\""+dep.trim()+"\",\n";
       }
-    }
+    });
+
+    pluginsArrayContents=pluginsArrayContents.trim();
   }
 
   documents.configPluginsJs = String(documents.configPluginsJs).replace('%%REPLACE%%', pluginsArrayContents);

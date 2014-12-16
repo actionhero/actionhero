@@ -43,8 +43,6 @@ exports.default = {
         'initializer': [ __dirname + '/../initializers' ] ,
         'plugin':      [ __dirname + '/../node_modules' ] 
       },
-      // Regex to match package.json dependencies to try to automatically detect actionhero plugins
-      packageJSONDependencyNameRegexForPlugins:/^ah-[a-z\-]+-plugin$/g,
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
