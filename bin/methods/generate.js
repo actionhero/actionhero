@@ -41,22 +41,23 @@ exports.generate = function(binary, next){
   documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
 
   // Add matching package.json dependencies to the dedicated plugins config file
+  var dep;
   var pluginsArrayContents="";
-  if(typeof(JSON.parse(documents.packageJson).dependencies)==="object")
+  if(typeof(JSON.parse(documents.packageJson).dependencies)==="object" && documents.configApiJs.packageJSONDependencyNameRegexForPlugins)
   {
-    JSON.parse(documents.packageJson).dependencies.forEach(function(dep)
+    for(dep in JSON.parse(documents.packageJson).dependencies)
     {
-      if(dep.match(documents.configApiJs.packageJSONDependencyNameRegexForPlugins))
+      if(JSON.parse(documents.packageJson).dependencies.hasOwnProperty(dep))
       {
-        pluginsArrayContents+dep.trim()+"\n";
+        if(dep.match(documents.configApiJs.packageJSONDependencyNameRegexForPlugins))
+        {
+          pluginsArrayContents+=dep.trim()+"\n";  
+        }
       }
-    });
+    }
   }
-  documents.configPluginsJs = documents.configPluginsJs.replace('%%REPLACE%%', pluginsArrayContents);
 
-console.dir(documents.configPluginsJs);
-process.exit();
-
+  documents.configPluginsJs = String(documents.configPluginsJs).replace('%%REPLACE%%', pluginsArrayContents);
 
   //////// LOGIC ////////
 
@@ -68,6 +69,7 @@ process.exit();
     '/pids',
     '/config',
     '/config/servers',
+    '/config/plugins',
     '/initializers',
     '/log',
     '/servers',
