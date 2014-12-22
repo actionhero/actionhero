@@ -6,6 +6,18 @@ title: Documentation - Production Notes
 # Production Notes
 A collection of thoughts on deploying actionhero apps
 
+## Topology Example
+
+Here is a common actionhero production topology:
+
+![cluster](/img/cluster.png)
+
+Notes:
+
+- It's best to seperate the "worekrs" from the web "servers"
+   - be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)
+- Always have a replica of redis!
+
 ## Paths and Environments
 
 You can set a few environment variables to affect how actionhero runs:

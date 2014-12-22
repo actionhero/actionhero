@@ -22,6 +22,9 @@ actionhero will also serve static files for you, but actionhero is not a 'render
 ## request flow
 <img src="/img/connection_flow.png" />
 
+## cluster topology
+<img src="/img/cluster.png" />
+
 ---
 
 # Contributing
