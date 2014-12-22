@@ -129,6 +129,18 @@ var tasks = function(api, next){
       api.resque.queue.scheduledAt(q, taskName, args, callback);
     },
 
+    timestamps: function(callback){
+      api.resque.queue.timestamps(callback);
+    },
+
+    delayedAt: function(timestamp, callback){
+      api.resque.queue.delayedAt(timestamp, callback);
+    },
+
+    allDelayed: function(callback){
+      api.resque.queue.allDelayed(callback);
+    },
+
     enqueueRecurrentJob: function(taskName, callback){
       var self = this;
       var task = self.tasks[taskName];
