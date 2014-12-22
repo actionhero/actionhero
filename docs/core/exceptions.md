@@ -26,6 +26,42 @@ Other exceptions, perhaps occurring in an initializer, will not be caught.  Thes
 
 `api.exceptionHandlers.reporters` is an array that contains all the error reporters.  Upon an uncaught exception from an error or task, all the reporters in the array will be invoked with `(err, type, name, objects, severity)`.  You can remove the default `stdout` reporter by setting `api.exceptionHandlers.reporters = [];`
 
+
+So, say you wanted to send yourself an email when an error occured:
+
+{% highlight javascript %}
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'gmail.user@gmail.com',
+        pass: 'userpass'
+    }
+});
+
+var emailErrorReporter = function(err, type, name, objects, severity){
+  var lines = [];
+  lines.push('! Error: ' + err.message + ' @ ' + severity);
+  lines.push('!     When: ' + new Date().getTime());
+  lines.push('!     Env: '  + api.env);
+  lines.push('!     Type: ' + type);
+  lines.push('!     Name: ' + name);
+  lines.push('!     Data: ' + JSON.stringify(objects));
+
+  var mailOptions = {
+    from: 'actionhero@actionhero.com',
+    to: 'you@site.com',
+    subject: 'actionhero error!',
+    text: lines.join("\r\n")
+  };
+
+  transporter.sendMail(mailOptions);
+}
+
+
+api.exceptionHandlers.reporters.push(emailErrorReporter);
+{% endhighlight %}
+
 As an example, here is the default `stdout` logger:
 
 {% highlight javascript %}
