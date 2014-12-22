@@ -36,11 +36,11 @@
     "formidable": "~1.0.14",
     "mime": "~1.2.11",
     "redis": "~0.12.0",
-    "ws": "~0.5.0",
+    "ws": "~0.6.0",
     "optimist": "~0.6.1",
     "winston": "~0.8.1",
     "node-uuid": "~1.4.1",
-    "fakeredis": "~0.2.0",
+    "fakeredis": "~0.3.0",
     "primus": "~2.4.0",
     "uglify-js": "~2.4.14",
     "istanbul": "^0.3.2"
@@ -48,7 +48,7 @@
   "devDependencies": {
     "mocha": "~2.x",
     "should": "~4.x",
-    "request": "~2.47.x",
+    "request": "~2.51.x",
     "redis-sentinel-client": "latest"
   },
   "optionalDependencies": {},
