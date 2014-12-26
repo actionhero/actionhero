@@ -7,11 +7,11 @@ exports.default = {
       queues: ['*'],
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
-      // at minimum, how many workers should this node spawn?
+      // at minimum, how many parallel taskProcessors should this node spawn?
       // (have number > 0 to enable, and < 1 to disable)
-      minWorkers: 0,
-      // at maximum, how many workers should this node spawn?
-      maxWorkers: 0,
+      minTaskProcessors: 0,
+      // at maximum, how many parallel taskProcessors should this node spawn?
+      maxTaskProcessors: 0,
       // how often should we check the event loop to spawn more workers?
       checkTimeout: 500,
       // how many ms would constitue an event loop delay to hald worker spawning?

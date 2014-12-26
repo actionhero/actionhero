@@ -12,8 +12,8 @@ describe('Core: Tasks', function(){
     actionhero.start(function(err, a){
       api = a;
 
-      api.config.tasks.minWorkers = 1;
-      api.config.tasks.maxWorkers = 1;
+      api.config.tasks.minTaskProcessors = 1;
+      api.config.tasks.maxTaskProcessors = 1;
 
       api.tasks.tasks.regularTask = {
         name: 'regular',
@@ -54,8 +54,8 @@ describe('Core: Tasks', function(){
     delete api.tasks.jobs.regularTask;
     delete api.tasks.jobs.periodicTask;
 
-    api.config.tasks.minWorkers = 0;
-    api.config.tasks.maxWorkers = 0;
+    api.config.tasks.minTaskProcessors = 0;
+    api.config.tasks.maxTaskProcessors = 0;
 
     actionhero.stop(function(){
       done();

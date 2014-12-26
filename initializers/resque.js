@@ -12,8 +12,8 @@ var resque = function(api, next){
     _start: function(api, next){
       var self = this;
 
-      if(api.config.tasks.minWorkers === 0 && api.config.tasks.maxWorkers > 0){
-        api.config.tasks.minWorkers = 1;
+      if(api.config.tasks.minTaskProcessors === 0 && api.config.tasks.maxTaskProcessors > 0){
+        api.config.tasks.minTaskProcessors = 1;
       }
 
       self.startQueue(function(){
@@ -84,8 +84,8 @@ var resque = function(api, next){
         queues:            api.config.tasks.queues,
         timeout:           api.config.tasks.timeout,
         checkTimeout:      api.config.tasks.checkTimeout,
-        minWorkers:        api.config.tasks.minWorkers,
-        maxWorkers:        api.config.tasks.maxWorkers,
+        minTaskProcessors: api.config.tasks.minTaskProcessors,
+        maxTaskProcessors: api.config.tasks.maxTaskProcessors,
         maxEventLoopDelay: api.config.tasks.maxEventLoopDelay,
       }, api.tasks.jobs, function(){
         // normal worker emitters
@@ -105,7 +105,7 @@ var resque = function(api, next){
         self.multiWorker.on('internalError',     function(error){                         api.log(error, 'error'); })
         self.multiWorker.on('miltiWorkerAction', function(verb, delay){                   api.log("*** checked for worker status: " + verb + " (event loop delay: " + delay + "ms)", 'debug'); })
         
-        if(api.config.tasks.minWorkers > 0){
+        if(api.config.tasks.minTaskProcessors > 0){
           self.multiWorker.start(function(){
             callback();
           });
