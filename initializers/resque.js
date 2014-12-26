@@ -1,20 +1,24 @@
 var os    = require('os');
-var async = require('async');
 var NR    = require('node-resque');
 
 var resque = function(api, next){
 
   api.resque = {
     queue: null,
-    workers: [],
+    multiWorker: null,
     scheduler: null,
     connectionDetails: api.config.tasks.redis || {},
 
     _start: function(api, next){
       var self = this;
+
+      if(api.config.tasks.minWorkers === 0 && api.config.tasks.maxWorkers > 0){
+        api.config.tasks.minWorkers = 1;
+      }
+
       self.startQueue(function(){
         self.startScheduler(function(){
-          self.startWorkers(function(){
+          self.startMultiWorker(function(){
             next();
           });
         });
@@ -24,7 +28,7 @@ var resque = function(api, next){
     _stop: function(api, next){
       var self = this;
       self.stopScheduler(function(){
-        self.stopWorkers(function(){
+        self.stopMultiWorker(function(){
           self.queue.end(function(){
             next();
           });
@@ -72,65 +76,54 @@ var resque = function(api, next){
       }
     },
 
-    startWorkers: function(callback){
+    startMultiWorker: function(callback){
       var self = this;
-      var i = 0;
-      if(!api.config.tasks.queues || api.config.tasks.queues.length === 0){
-        callback();
-      } else {
-        var starters = [];
-        while(i < api.config.tasks.queues.length){
-          starters.push( async.apply(self.startWorker, i) )
-          i++;
-        }
-        async.parallel(starters, callback);
-      }
-    },
-
-    startWorker: function(counter, callback){
-      var timeout = api.config.tasks.timeout;
-      var name = os.hostname() + ':' + process.pid + '+' + (counter+1);
-      // var name = os.hostname() + ':' + process.pid;
-      var worker = new NR.worker({
-        connection: api.resque.connectionDetails,
-        name: name,
-        queues: api.config.tasks.queues[counter],
-        timeout: timeout
+      
+      self.multiWorker = new NR.multiWorker({
+        connection:        api.resque.connectionDetails,
+        queues:            api.config.tasks.queues,
+        timeout:           api.config.tasks.timeout,
+        checkTimeout:      api.config.tasks.checkTimeout,
+        minWorkers:        api.config.tasks.minWorkers,
+        maxWorkers:        api.config.tasks.maxWorkers,
+        maxEventLoopDelay: api.config.tasks.maxEventLoopDelay,
       }, api.tasks.jobs, function(){
-        worker.on('start',           function(){                   api.log('resque worker #'+(counter+1)+' started (queues: ' + worker.options.queues + ')', 'info'); })
-        worker.on('end',             function(){                   api.log('resque worker #'+(counter+1)+' ended', 'info'); })
-        worker.on('cleaning_worker', function(worker, pid){        api.log('resque cleaning old worker ' + worker + '(' + pid + ')', 'info'); })
-        worker.on('poll',            function(queue){              api.log('resque worker #'+(counter+1)+' polling ' + queue, 'debug'); })
-        worker.on('job',             function(queue, job){         api.log('resque worker #'+(counter+1)+' working job ' + queue, 'debug', {job: {class: job.class, queue: job.queue}}); })
-        worker.on('success',         function(queue, job, result){ api.log('resque worker #'+(counter+1)+' job success ' + queue, 'info', {job: {class: job.class, queue: job.queue}, result: result}); })
-        worker.on('pause',           function(){                   api.log('resque worker #'+(counter+1)+'  paused', 'debug'); })
-        worker.on('failure',         function(queue, job, f){ api.exceptionHandlers.task(f, queue, job) })
-        worker.on('error',           function(queue, job, error){ api.exceptionHandlers.task(error, queue, job) })
+        // normal worker emitters
+        self.multiWorker.on('start',             function(workerId){                      api.log("worker: started", 'info',                 {workerId: workerId}                                                            ); })
+        self.multiWorker.on('end',               function(workerId){                      api.log("worker: ended", 'info',                   {workerId: workerId}                                                            ); })
+        self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log("worker: cleaning old worker " + worker, 'info'                                                                            ); })
+        self.multiWorker.on('poll',              function(workerId, queue){               api.log("worker: polling " + queue, 'debug',       {workerId: workerId}                                                            ); })
+        self.multiWorker.on('job',               function(workerId, queue, job){          api.log("worker: working job " + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
+        self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log("worker: reEnqueue job", 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
+        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log("worker: job success " + queue, 'info',    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
+        self.multiWorker.on('pause',             function(workerId){                      api.log("worker: paused", 'debug', {workerId: workerId}                                                                            ); })
 
-        worker.workerCleanup();
-        worker.start();
-        api.resque.workers[counter] = worker;
-
-        callback();
+        self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); })
+        self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   x})
+        
+        // multiWorker emitters
+        self.multiWorker.on('internalError',     function(error){                         api.log(error, 'error'); })
+        self.multiWorker.on('miltiWorkerAction', function(verb, delay){                   api.log("*** checked for worker status: " + verb + " (event loop delay: " + delay + "ms)", 'debug'); })
+        
+        if(api.config.tasks.minWorkers > 0){
+          self.multiWorker.start(function(){
+            callback();
+          });
+        }else{
+          callback();
+        }
       });
     },
 
-    stopWorkers: function(callback){
+    stopMultiWorker: function(callback){
       var self = this;
-      if(self.workers.length === 0){
-        callback();
-      } else {
-        var ended = 0;
-        self.workers.forEach(function(worker){
-          api.log('stopping worker: ' + worker.name, 'debug');
-          worker.end(function(){
-            ended++;
-            if(ended === self.workers.length){
-              self.workers = [];
-              callback();
-            }
-          });
+      if(api.config.tasks.minWorkers > 0){
+        self.multiWorker.stop(function(){
+          api.log("task workers stopped");
+          callback();
         });
+      }else{
+        callback();
       }
     }
   }

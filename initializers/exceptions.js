@@ -28,7 +28,7 @@ var exceptions = function(api, next){
     }
 
     else if(type === 'task'){
-      extraMessages.push('! uncaught error from task: ' + name + ' on queue ' + objects.queue);
+      extraMessages.push('! uncaught error from task: ' + name + ' on queue ' + objects.queue + ' (worker #' + objects.workerId + ')');
       extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
     }
 
@@ -89,7 +89,7 @@ var exceptions = function(api, next){
     if(typeof next === 'function'){ next(connection, true); }
   };
 
-  api.exceptionHandlers.task = function(err, queue, task){
+  api.exceptionHandlers.task = function(err, queue, task, workerId){
     var simpleName
     try{
       simpleName = task.class;
@@ -99,7 +99,7 @@ var exceptions = function(api, next){
     var name = 'task:' + simpleName;
     api.stats.increment('exceptions:tasks');
     api.stats.increment('exceptions:tasks:' + simpleName);
-    api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue}, 'error');
+    api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, 'error');
   };
   
   next();
