@@ -107,10 +107,10 @@ var resque = function(api, next){
         
         if(api.config.tasks.minTaskProcessors > 0){
           self.multiWorker.start(function(){
-            callback();
+            if(typeof callback === 'function'){ callback(); }
           });
         }else{
-          callback();
+          if(typeof callback === 'function'){ callback(); }
         }
       });
     },
