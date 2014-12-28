@@ -91,6 +91,9 @@ Here is an example nginx config for interfacing with actionhero, including using
 - Note the proxy-pass format to the socket: proxy_pass http://unix:/path/to/socket
 - Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)
 
+
+From `config/servers/web.js`
+
 {% highlight javascript %}
 exports.production = { 
   servers: {
@@ -107,6 +110,8 @@ exports.production = {
   }
 }
 {% endhighlight %}
+
+The nginx.conf:
 
 {% highlight bash %}
 #user  nobody;
