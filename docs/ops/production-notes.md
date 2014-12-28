@@ -86,7 +86,7 @@ You can add local references to your $PATH like so to use these local binaries:
 
 While actionhero can be the font-line server your users' hit, it's probably best to proxy actionhero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.  Here is an example nginx config for interfacing with actionhero, including using sockets (not http) and handing the websocket upgrade path.
 
-```
+{% highlight %}
 #user  nobody;
 worker_processes  4;
 
@@ -156,7 +156,7 @@ http {
     }
 
 }
-```
+{% endhighlight %}
 
 ## Security
 
