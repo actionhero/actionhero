@@ -84,7 +84,29 @@ You can add local references to your $PATH like so to use these local binaries:
 
 ## Nginx Example
 
-While actionhero can be the font-line server your users' hit, it's probably best to proxy actionhero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.  Here is an example nginx config for interfacing with actionhero, including using sockets (not http) and handing the websocket upgrade path.
+While actionhero can be the font-line server your users hit, it's probably best to proxy actionhero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.  
+
+Here is an example nginx config for interfacing with actionhero, including using sockets (not http) and handing the websocket upgrade path.
+
+- Note the proxy-pass format to the socket: proxy_pass http://unix:/path/to/socket
+- Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)
+
+{% highlight javascript %}
+exports.production = { 
+  servers: {
+    web: function(api){
+      return {
+        port: '/home/USER/www/APP/current/tmp/sockets/actionhero.sock',
+        bindIP: null,
+        metadataOptions: {
+          serverInformation: false,
+          requesterInformation: false
+        }
+      }
+    }
+  }
+}
+{% endhighlight %}
 
 {% highlight bash %}
 #user  nobody;
