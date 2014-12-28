@@ -82,6 +82,82 @@ You can add local references to your $PATH like so to use these local binaries:
 
 `export PATH=$PATH:node_modules/.bin`
 
+## Nginx Example
+
+While actionhero can be the font-line server your users' hit, it's probably best to proxy actionhero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.  Here is an example nginx config for interfacing with actionhero, including using sockets (not http) and handing the websocket upgrade path.
+
+```
+#user  nobody;
+worker_processes  4;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+  worker_connections 1024;
+  accept_mutex on;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    server_tokens off;
+    sendfile        on;
+    keepalive_timeout  65;
+
+    set_real_ip_from  X.X.X.X/24;
+    real_ip_header    X-Forwarded-For;
+
+    gzip on;
+    gzip_http_version 1.0;
+    gzip_comp_level 9;
+    gzip_proxied any;
+    gzip_types text/plain text/xml text/css text/comma-separated-values text/javascript application/x-javascript font/ttf font/otf image/svg+xml application/atom+xml;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for" $request_time';
+
+    server {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X_FORWARDED_PROTO https;
+        proxy_redirect off;
+
+        listen       80;
+        server_name  _;
+
+        access_log  /var/log/nginx/access.log  main;
+        error_log   /var/log/nginx/error.log;
+
+        root        /home/XXUSERXX/XXAPPLICATIONXX/www/current/public/;
+        try_files /$uri/index.html /cache/$uri/index.html /$uri.html /cache/$uri.html /$uri /cache/$uri @app;
+
+        client_max_body_size 50M;
+
+        location /primus {
+            proxy_http_version 1.1;
+            proxy_buffering off;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+
+            proxy_pass http://unix:/home/XXUSERXX/www/XXAPPLICATIONXX/shared/tmp/sockets/actionhero.sock;
+        }
+
+        location / {
+            proxy_http_version 1.1;
+            proxy_buffering off;
+            proxy_cache_bypass $http_pragma $http_authorization;
+            proxy_no_cache $http_pragma $http_authorization;
+
+            proxy_pass http://unix:/home/XXUSERXX/www/XXAPPLICATIONXX/shared/tmp/sockets/actionhero.sock;
+        }
+    }
+
+}
+```
+
 ## Security
 
 Be sure to change `api.config.general.serverToken` to something unique for your application
