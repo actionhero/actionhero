@@ -6,12 +6,6 @@ var api;
 describe('Action: Cache Test', function(){
 
   before(function(done){
-
-
-// NC TMP
-console.dir(actionhero);
-
-
     actionhero.start(function(err, a){
       api = a;
       done();
