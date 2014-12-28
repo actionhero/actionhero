@@ -8,5 +8,5 @@ exports.default = {
 			%%REPLACE%%
 			]
 		};
-	};
+	}
 };
