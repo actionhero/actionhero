@@ -19,7 +19,7 @@ action.outputExample = {
 // functional
 action.run = function(api, connection, next){
   connection.response.id = api.id;
-  connection.response.actionhero_version = api.actionhero_version;
+  connection.response.actionheroVersion = api.actionheroVersion;
   var now = new Date().getTime();
   connection.response.uptime = now - api.bootTime;
   api.stats.getAll(function(err, stats){

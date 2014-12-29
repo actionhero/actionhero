@@ -26,6 +26,15 @@
     <div class="server_info">
       <div class="box"><div class="left">Server Name:</div><div class="right" id="serverName"></div></div>
       <div class="box"><div class="left">API Version:</div><div class="right" id="serverVersion"></div></div>
+      <div class="box"><div class="left">Actionhero Version:</div><div class="right" id="actionheroVersion"></div></div>
+      <div class="box"><div class="left">Updtime (min):</div><div class="right" id="uptime"></div></div>
+    </div>
+  </div>
+
+  <div class="body_container">
+    <h2>Stats:</h2>
+    <div class="server_info" id="stats">
+
     </div>
   </div>
 
@@ -37,11 +46,28 @@
   </div>
 
   <script type="text/javascript">
-    var populateServerInfo = function(data){
+    var populateStatus = function(data){
       if(data.serverInformation){
         document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
         document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
       }
+      document.getElementById('actionheroVersion').innerHTML = data.actionheroVersion;
+      document.getElementById('uptime').innerHTML = Math.round( data.uptime / 1000 / 60 );
+      var html = '<ul>';
+      for(var stat in data.stats['actionhero:stats']){
+        var v = data.stats['actionhero:stats'][stat];
+        var row = '';
+        row += '<li>';
+        row += '<strong>' + stat + '</strong>:&nbsp;';
+        row += v;
+        row += '</li>';
+        html += row;
+      }
+      html += '</ul>';
+      document.getElementById('stats').innerHTML = html
+    }
+
+    var populateDocumentation = function(data){
       for(var actionName in data.documentation){
         for(var version in data.documentation[actionName]){
           var action = data.documentation[actionName][version];
@@ -61,7 +87,11 @@
 
     var client = new ActionheroClient();
     client.action('showDocumentation', function(err, data){
-      populateServerInfo(data)
+      populateDocumentation(data)
+    });
+
+    client.action('status', function(err, data){
+      populateStatus(data)
     });
   </script>
 

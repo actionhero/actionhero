@@ -26,7 +26,7 @@ var id = function(api, next){
     api.id = api.config.general.id;
   }
 
-  api.actionhero_version = require('..' + path.sep + 'package.json').version;
+  api.actionheroVersion = require('..' + path.sep + 'package.json').version;
   
   next();
 }
