@@ -4,6 +4,7 @@ var path                = require('path');
 var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
+var uuid                = require('node-uuid');
 
 var web = function(api, options, next){
 
@@ -212,7 +213,7 @@ var web = function(api, options, next){
           responseHttpCode: responseHttpCode,
           parsedURL: parsedURL
         },
-        id: fingerprint + '-' + api.utils.randomString(16),
+        id: fingerprint + '-' + uuid.v4(),
         fingerprint: fingerprint,
         remoteAddress: remoteIP,
         remotePort: remotePort
