@@ -21,10 +21,10 @@ branches:
   only:
     - master
     - develop
-    
+
 services:
   - redis-server
-  
+
 before_script:
   - npm install -g grunt-cli
 
