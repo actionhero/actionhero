@@ -14,6 +14,8 @@ exports.default = {
         // do not include the file exension
         // set to `null` to not render the client-side JS on boot
         clientJsName:     'actionheroClient',
+        // should the server signal clients to not reconnect when the server is shutdown/reboot
+        destroyClientsOnShutdown: false,
 
         // Primus Server Options: 
         server: {

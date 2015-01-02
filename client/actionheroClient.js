@@ -54,7 +54,16 @@ ActionheroClient.prototype.connect = function(callback){
     });
   })
 
+  self.client.on('error', function(err){
+    selt.emit('error', err);
+  });
+
+  self.client.on('reconnect', function(){
+    self.emit('reconnect');
+  });
+
   self.client.on('reconnecting', function(){
+    self.emit('reconnecting');
     self.state = 'reconnecting';
     self.emit('disconnected');
   });

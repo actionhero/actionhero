@@ -57,9 +57,11 @@ var websocket = function(api, options, next){
 
   server._stop = function(next){
     server.active = false;
-    server.connections().forEach(function(connection){
-      connection.destroy();
-    });
+    if( api.config.servers.websocket.destroyClientsOnShutdown === true ){
+      server.connections().forEach(function(connection){
+        connection.destroy();
+      });
+    }
     process.nextTick(function(){
       next();
     });
