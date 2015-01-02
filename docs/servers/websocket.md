@@ -32,6 +32,10 @@ An example web socket session might be the following:
 
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })
+
+  client.on('error',        function(){ console.log('error', err.stack) })
+  client.on('reconnect',    function(){ console.log('reconnect') })
+  client.on('reconnecting', function(){ console.log('reconnecting') })
   
   // this will log all messages send the client
   // client.on('message',      function(message){ console.log(message) })
