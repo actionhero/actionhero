@@ -17,6 +17,11 @@ var actionhero = function(){
   };
 };
 
+var configInitializers       = [];
+var loadInitializers         = [];
+var startInitializers        = [];
+var stopInitializers         = [];
+
 actionhero.prototype.initialize = function(params, callback){
   var self = this;
   self.api._self = self;
@@ -43,95 +48,137 @@ actionhero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
-  // run the initializers
-  var orderedInitializers = {};
-
-  [
-    'utils',
-    'configLoader',
-    'id',
-    'pids',
-    'logger',
-    'exceptions',
-    'stats',
-    'redis',
-    'cache',
-    'connections',
-    'actions',
-    'documentation',
-    'actionProcessor',
-    'params',
-    'staticFile',
-    'chatRoom',
-    'resque',
-    'tasks',
-    'routes',
-    'genericServer',
-    'servers',
-    'specHelper'
-  ].forEach(function(initializer){
-    var file = __dirname + '/initializers/' + initializer + '.js';
-    delete require.cache[require.resolve(file)];
-    self.initializers[initializer] = require(file)[initializer];
-    orderedInitializers[initializer] = function(next){
-      self.initializers[initializer](self.api, next);
-      self.api.watchFileAndAct(file, function(){
-        self.api.log('\r\n\r\n*** rebooting due to initializer change ('+file+') ***\r\n\r\n', 'info');
-        self.api.commands.restart.call(self.api._self);
-      });
-    };
-  });
-
-  orderedInitializers._projectInitializers = function(next){
-
-    var projectInitializers = {};
-  
-    self.api.config.general.paths.initializer.forEach(function(initPath){
-      if(path.resolve(initPath) !== path.resolve(__dirname + '/initializers')){
-        var localInitializerPath = path.resolve(initPath);
-        if( fs.existsSync(localInitializerPath) ){
-          var fileSet = fs.readdirSync(localInitializerPath).sort();
-          fileSet.forEach(function(f){
-            var file = path.resolve(initPath + '/' + f);
-            if(file[0] !== '.'){
-              var initializer = f.split('.')[0];
-              var fileParts = file.split('.');
-              var ext = fileParts[(fileParts.length - 1)];
-              if(ext === 'js'){
-                if(require.cache[require.resolve(file)] !== null){
-                  delete require.cache[require.resolve(file)];
-                }
-                self.initializers[initializer] = require(file)[initializer];
-                projectInitializers[initializer] = function(next){
-                  self.api.log('running custom initializer: ' + initializer, 'info');
-                  self.initializers[initializer](self.api, next);
-                  self.api.watchFileAndAct(file, function(){
-                    self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-                    self.api.commands.restart.call(self.api._self);
-                  });
-                };
-              }
-            }
-          });
-        }else{
-          self.api.log('local initializer path not found: ' + localInitializerPath, 'alert');
-        }
-      }
-    })
-
-    projectInitializers._complete = function(){
-      process.nextTick(function(){ next(); });
-    }
-
-    async.series(projectInitializers);
+  self.api.initializerDefauls = {
+    load:  1000,
+    start: 1000,
+    stop:  1000,
   }
 
-  orderedInitializers._complete = function(){
-    self.api.initialized = true;
-    callback(null, self.api);
-  };
+  var loadInitializerRankings  = {};
+  var startInitializerRankings = {};
+  var stopInitializerRankings  = {};
 
-  async.series(orderedInitializers);
+  // we need to load the config first
+  [
+    path.resolve( __dirname + '/initializers/' + 'utils.js'        ),
+    path.resolve( __dirname + '/initializers/' + 'configLoader.js' ),
+  ].forEach(function(file){
+    var filename = file.replace(/^.*[\\\/]/, '');
+    var initializer = filename.split('.')[0];
+    delete require.cache[require.resolve(file)];
+    self.initializers[initializer] = require(file);
+    configInitializers.push( function(next){
+      self.initializers[initializer].initialize(self.api, next);
+      self.api.watchFileAndAct(file, function(){
+        self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+        self.api.commands.restart.call(self.api._self);
+      });
+    } );
+  });
+
+  configInitializers.push( function(){
+
+    // load all other initializers based on thier name
+    self.api.utils.arrayUniqueify(
+      [
+        __dirname + path.sep + 'initializers'
+      ].concat(
+        self.api.config.general.paths.initializer
+      )
+    ).forEach(function(dir){
+
+      dir = path.normalize(dir);
+      fs.readdirSync(dir).sort().forEach(function(f){
+        var file = path.resolve(dir + '/' + f);
+        var initializer = f.split('.')[0];
+        var fileParts = file.split('.');
+        var ext = fileParts[(fileParts.length - 1)];
+        if(ext === 'js'){
+          delete require.cache[require.resolve(file)];
+          self.initializers[initializer] = require(file);
+
+          var loadFunction = function(next){
+            if(typeof self.initializers[initializer].initialize === 'function'){
+              if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+              self.initializers[initializer].initialize(self.api, next);
+              self.api.watchFileAndAct(file, function(){
+                self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+                self.api.commands.restart.call(self.api._self);
+              });
+            }else{
+              next();
+            }
+          };
+
+          var startFunction = function(next){
+            if(typeof self.initializers[initializer].start === 'function'){
+              if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
+              self.initializers[initializer].start(self.api, next);
+            }else{
+              next();
+            }
+          };
+
+          var stopFunction = function(next){
+            if(typeof self.initializers[initializer].stop === 'function'){
+              if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
+              self.initializers[initializer].stop(self.api, next);
+            }else{
+              next();
+            }
+          };
+
+          if(self.initializers[initializer].loadPriority === undefined){ 
+            self.initializers[initializer].loadPriority = self.api.initializerDefauls.load;
+          }
+          if(self.initializers[initializer].startPriority === undefined){ 
+            self.initializers[initializer].startPriority = self.api.initializerDefauls.start;
+          }
+          if(self.initializers[initializer].stopPriority === undefined){ 
+            self.initializers[initializer].stopPriority = self.api.initializerDefauls.stop;
+          }
+
+          if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
+            loadInitializerRankings[ self.initializers[initializer].loadPriority ] = [];
+          }
+          if( startInitializerRankings[ self.initializers[initializer].startPriority ] === undefined ){
+            startInitializerRankings[ self.initializers[initializer].startPriority ] = [];
+          }
+          if( stopInitializerRankings[ self.initializers[initializer].stopPriority ] === undefined ){
+            stopInitializerRankings[ self.initializers[initializer].stopPriority ] = [];
+          }
+
+          if(self.initializers[initializer].loadPriority > 0){
+            loadInitializerRankings[  self.initializers[initializer].loadPriority  ].push( loadFunction );
+          }
+
+          if(self.initializers[initializer].startPriority > 0){
+            startInitializerRankings[ self.initializers[initializer].startPriority ].push( startFunction );
+          }
+
+          if(self.initializers[initializer].stopPriority > 0){
+            stopInitializerRankings[  self.initializers[initializer].stopPriority  ].push( stopFunction );
+          }
+        }
+      });
+    });
+
+    // flatten all the ordered initializer methods
+    loadInitializers  = flattenOrderedInitialzer(loadInitializerRankings);
+    startInitializers = flattenOrderedInitialzer(startInitializerRankings);
+    stopInitializers  = flattenOrderedInitialzer(stopInitializerRankings);
+
+    loadInitializers.push( function(){
+      process.nextTick(function(){
+        self.api.initialized = true;
+        callback(null, self.api);
+      });
+    } );
+
+    async.series(loadInitializers);
+  } );
+
+  async.series(configInitializers);
 };
 
 actionhero.prototype.start = function(params, callback){
@@ -143,37 +190,14 @@ actionhero.prototype.start = function(params, callback){
 
   var start = function(){
     self.api.running = true;
-    self._starters = [];
-    for(var i in self.api){
-      if(typeof self.api[i]._start === 'function'){
-        self._starters.push(i);
-      }
-    }
 
-    var started = 0;
-    var successMessage = '*** Server Started @ ' + self.api.utils.sqlDateTime() + ' ***';
-    if(self._starters.length === 0){
+    startInitializers.push(function(){
       self.api.bootTime = new Date().getTime();
-      self.api.log('server ID: ' + self.api.id, 'notice');
-      self.api.log(successMessage, 'notice');
-      if(callback !== null){ callback(null, self.api); }
-    } else {
-      self._starters.forEach(function(starter){
-        started++;
-        self.api[starter]._start(self.api, function(){
-          process.nextTick(function(){
-            self.api.log(' > start: ' + starter,'debug');
-            started--;
-            if(started === 0){
-              self.api.bootTime = new Date().getTime();
-              self.api.log('server ID: ' + self.api.id, 'notice');
-              self.api.log(successMessage, 'notice');
-              if(callback !== null){ callback(null, self.api); }
-            }
-          });
-        });
-      });
-    }
+      self.api.log('*** Server Started @ ' + self.api.utils.sqlDateTime() + ' ***', 'notice');
+      callback(null, self.api);
+    });
+
+    async.series(startInitializers);
   }
 
   if(self.api.initialized === true){
@@ -259,5 +283,23 @@ actionhero.prototype.restart = function(callback){
     });
   }
 };
+
+//
+
+var flattenOrderedInitialzer = function(collection){
+  var output = [];
+  var keys = [];
+  for(var key in collection){
+    keys.push(key);
+  }
+  keys.sort();
+  keys.forEach(function(key){
+    collection[key].forEach(function(d){
+      output.push(d);
+    })
+  });
+
+  return output;
+}
 
 exports.actionheroPrototype = actionhero;
