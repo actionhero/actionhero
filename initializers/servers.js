@@ -61,7 +61,7 @@ module.exports = {
     if(api.utils.hashLength(api.servers.servers) === 0){ next() }
     for(var server in api.servers.servers){
       started++;
-      if(api.config.servers[server].enabled === true){
+      if(api.config.servers[server] && api.config.servers[server].enabled === true){
         api.log('starting server: ' + server, 'notice');
         api.servers.servers[server]._start(function(){
           process.nextTick(function(){
