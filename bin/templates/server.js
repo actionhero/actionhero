@@ -1,4 +1,4 @@
-var %%name%% = function(api, options, next){
+var initialize = function(api, options, next){
 
   //////////
   // INIT //
@@ -19,11 +19,11 @@ var %%name%% = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){
+  server.start = function(next){
     next();
   }
 
-  server._stop = function(next){
+  server.stop = function(next){
     next();
   }
 
@@ -58,4 +58,4 @@ var %%name%% = function(api, options, next){
   next(server);
 }
 
-exports.%%name%% = %%name%%;
+exports.initialize = initialize;

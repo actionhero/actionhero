@@ -1,7 +1,7 @@
 var net = require('net');
 var tls = require('tls');
 
-var socket = function(api, options, next){
+var initialize = function(api, options, next){
   
   //////////
   // INIT //
@@ -37,7 +37,7 @@ var socket = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){
+  server.start = function(next){
     if(options.secure === false){
       server.server = net.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
         handleConnection(rawConnection);
@@ -59,7 +59,7 @@ var socket = function(api, options, next){
     });
   }
 
-  server._stop = function(next){
+  server.stop = function(next){
     gracefulShutdown(next);
   }
 
@@ -243,4 +243,4 @@ var socket = function(api, options, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.socket = socket;
+exports.initialize = initialize;

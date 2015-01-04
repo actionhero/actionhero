@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     var done = this.async();
     grunt.startActionhero(function(api, actionhero){
 
-      // note this REPL will not run _start commands, only the intilizers     
+      // note this REPL will not run start commands, only the intilizers     
       var r = repl.start({
         prompt: '',
         useGlobal: false
