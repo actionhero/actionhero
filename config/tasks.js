@@ -16,6 +16,8 @@ exports.default = {
       checkTimeout: 500,
       // how many ms would constitue an event loop delay to hald worker spawning?
       maxEventLoopDelay: 5,
+      // When we kill off a taskProcessor, should we disonnect that local redis connection?
+      toDisconnectProcessors: true,
       // What redis server should we connect to for tasks / delayed jobs?
       redis: api.config.redis
     }
