@@ -19,11 +19,11 @@ var %%name%% = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){
+  server.start = function(next){
     next();
   }
 
-  server._stop = function(next){
+  server.stop = function(next){
     next();
   }
 

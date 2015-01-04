@@ -35,7 +35,7 @@ var web = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){
+  server.start = function(next){
     if(options.secure === false){
       var http = require('http');
       server.server = http.createServer(function(req, res){
@@ -71,7 +71,7 @@ var web = function(api, options, next){
     });
   }
 
-  server._stop = function(next){
+  server.stop = function(next){
     server.server.close();
     process.nextTick(function(){
       next();

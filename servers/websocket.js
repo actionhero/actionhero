@@ -35,7 +35,7 @@ var websocket = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){
+  server.start = function(next){
     var webserver = api.servers.servers.web;
     server.server = new primus(webserver.server, api.config.servers.websocket.server);
 
@@ -55,7 +55,7 @@ var websocket = function(api, options, next){
     next();
   }
 
-  server._stop = function(next){
+  server.stop = function(next){
     server.active = false;
     if( api.config.servers.websocket.destroyClientsOnShutdown === true ){
       server.connections().forEach(function(connection){

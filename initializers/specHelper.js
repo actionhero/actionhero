@@ -20,12 +20,12 @@ module.exports = {
 
         var server = new api.genericServer(type, options, attributes);
 
-        server._start = function(next){
+        server.start = function(next){
           api.log('loading the testServer', 'warning');
           next();
         }
 
-        server._stop = function(next){
+        server.stop = function(next){
           next();
         }
 
@@ -162,7 +162,7 @@ module.exports = {
     if(api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true){
       new api.specHelper.testServer(api, {}, function(serverObject){
         api.servers.servers.testServer = serverObject;
-        api.servers.servers.testServer._start(function(){
+        api.servers.servers.testServer.start(function(){
           next();
         });
       });

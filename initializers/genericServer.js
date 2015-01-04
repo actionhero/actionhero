@@ -125,10 +125,10 @@ module.exports = {
     ///////////////////////////////////////
 
     // I am invoked as part of boot
-    api.genericServer.prototype._start = function(next){ methodNotDefined() }
+    api.genericServer.prototype.start = function(next){ methodNotDefined() }
 
     // I am invoked as part of shutdown
-    api.genericServer.prototype._stop = function(next){ methodNotDefined() }
+    api.genericServer.prototype.stop = function(next){ methodNotDefined() }
 
     // This method will be appended to the connection as 'connection.sendMessage'
     api.genericServer.prototype.sendMessage = function(connection, message){ methodNotDefined() }
