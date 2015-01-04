@@ -130,13 +130,13 @@ actionhero.prototype.initialize = function(params, callback){
           };
 
           if(self.initializers[initializer].loadPriority === undefined){ 
-            self.initializers[initializer].loadPriority = self.api.#initializerDefaults.load;
+            self.initializers[initializer].loadPriority = self.api.initializerDefaults.load;
           }
           if(self.initializers[initializer].startPriority === undefined){ 
-            self.initializers[initializer].startPriority = self.api.#initializerDefaults.start;
+            self.initializers[initializer].startPriority = self.api.initializerDefaults.start;
           }
           if(self.initializers[initializer].stopPriority === undefined){ 
-            self.initializers[initializer].stopPriority = self.api.#initializerDefaults.stop;
+            self.initializers[initializer].stopPriority = self.api.initializerDefaults.stop;
           }
 
           if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
