@@ -47,7 +47,7 @@ var websocket = function(api, options, next){
       handleDisconnection(rawConnection);
     });
 
-    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port, 'notice');
+    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port, 'debug');
     server.active = true;
 
     server.writeClientJS();

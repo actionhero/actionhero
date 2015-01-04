@@ -1,4 +1,8 @@
-exports.test_initializer = function(api, done){
-  api.test_initializer = 'OK';
-  done();
+module.exports = {
+  initialize: function(api, next){
+    api.test_initializer = 'OK';
+    next();
+  }
 }
+
+
