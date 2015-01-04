@@ -80,13 +80,14 @@ var resque = function(api, next){
       var self = this;
       
       self.multiWorker = new NR.multiWorker({
-        connection:        api.resque.connectionDetails,
-        queues:            api.config.tasks.queues,
-        timeout:           api.config.tasks.timeout,
-        checkTimeout:      api.config.tasks.checkTimeout,
-        minTaskProcessors: api.config.tasks.minTaskProcessors,
-        maxTaskProcessors: api.config.tasks.maxTaskProcessors,
-        maxEventLoopDelay: api.config.tasks.maxEventLoopDelay,
+        connection:             api.resque.connectionDetails,
+        queues:                 api.config.tasks.queues,
+        timeout:                api.config.tasks.timeout,
+        checkTimeout:           api.config.tasks.checkTimeout,
+        minTaskProcessors:      api.config.tasks.minTaskProcessors,
+        maxTaskProcessors:      api.config.tasks.maxTaskProcessors,
+        maxEventLoopDelay:      api.config.tasks.maxEventLoopDelay,
+        toDisconnectProcessors: api.config.tasks.toDisconnectProcessors,
       }, api.tasks.jobs, function(){
         // normal worker emitters
         self.multiWorker.on('start',             function(workerId){                      api.log("worker: started", 'info',                 {workerId: workerId}                                                            ); })
