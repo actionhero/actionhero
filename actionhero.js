@@ -44,7 +44,7 @@ actionhero.prototype.initialize = function(params, callback){
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
-  self.api.initializerDefauls = {
+  self.api.initializerDefaults = {
     load:  1000,
     start: 1000,
     stop:  1000,
@@ -130,13 +130,13 @@ actionhero.prototype.initialize = function(params, callback){
           };
 
           if(self.initializers[initializer].loadPriority === undefined){ 
-            self.initializers[initializer].loadPriority = self.api.initializerDefauls.load;
+            self.initializers[initializer].loadPriority = self.api.#initializerDefaults.load;
           }
           if(self.initializers[initializer].startPriority === undefined){ 
-            self.initializers[initializer].startPriority = self.api.initializerDefauls.start;
+            self.initializers[initializer].startPriority = self.api.#initializerDefaults.start;
           }
           if(self.initializers[initializer].stopPriority === undefined){ 
-            self.initializers[initializer].stopPriority = self.api.initializerDefauls.stop;
+            self.initializers[initializer].stopPriority = self.api.#initializerDefaults.stop;
           }
 
           if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
