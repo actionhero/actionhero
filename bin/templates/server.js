@@ -1,4 +1,4 @@
-var %%name%% = function(api, options, next){
+var initialize = function(api, options, next){
 
   //////////
   // INIT //
@@ -58,4 +58,4 @@ var %%name%% = function(api, options, next){
   next(server);
 }
 
-exports.%%name%% = %%name%%;
+exports.initialize = initialize;

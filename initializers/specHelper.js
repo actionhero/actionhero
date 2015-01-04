@@ -8,7 +8,7 @@ module.exports = {
       api.specHelper = {};
 
       // create a test 'server' to run actions
-      api.specHelper.testServer = function(api, options, next){
+      api.specHelper.initialize = function(api, options, next){
         var type = 'testServer'
         var attributes = {
           canChat: true,
@@ -160,7 +160,7 @@ module.exports = {
 
   start: function(api, next){
     if(api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true){
-      new api.specHelper.testServer(api, {}, function(serverObject){
+      new api.specHelper.initialize(api, {}, function(serverObject){
         api.servers.servers.testServer = serverObject;
         api.servers.servers.testServer.start(function(){
           next();

@@ -1,7 +1,7 @@
 var net = require('net');
 var tls = require('tls');
 
-var socket = function(api, options, next){
+var initialize = function(api, options, next){
   
   //////////
   // INIT //
@@ -238,8 +238,9 @@ var socket = function(api, options, next){
   }
 
   next(server);
+
 }
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.socket = socket;
+exports.initialize = initialize;

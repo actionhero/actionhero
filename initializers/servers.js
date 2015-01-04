@@ -29,7 +29,7 @@ module.exports = {
         var parts = f.split(/[\/\\]+/)
         var server = parts[(parts.length - 1)].split('.')[0];
         if(api.config.servers[server] && api.config.servers[server].enabled === true){
-          inits[server] = require(f)[server];
+          inits[server] = require(f)['initialize'];
         }
         api.watchFileAndAct(f, function(){
           api.log('\r\n\r\n*** rebooting due to server ('+server+') change ***\r\n\r\n', 'info');
