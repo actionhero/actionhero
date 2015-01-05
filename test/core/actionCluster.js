@@ -481,16 +481,16 @@ describe('Core: Action Cluster', function(){
           });
         });
 
-        it('can add middleware in a particular order', function(done){
+        it('can add middleware in a particular order and will be passed modified messagePayloads', function(done){
           apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
             messagePayload.message = 'MIDDLEWARE 1';
             callback(null, messagePayload);
-          }, 2000);
+          }, 1000);
 
           apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
-            messagePayload.message = 'MIDDLEWARE 2';
+            messagePayload.message = messagePayload.message + ' MIDDLEWARE 2';
             callback(null, messagePayload);
-          }, 1000);
+          }, 2000);
 
           clientA.verbs('roomAdd','defaultRoom', function(err, data){
           clientB.verbs('roomAdd','defaultRoom', function(err, data){
@@ -498,7 +498,7 @@ describe('Core: Action Cluster', function(){
 
             setTimeout(function(){
               var lastMessage = clientA.messages[(clientA.messages.length - 1)]
-              lastMessage.message.should.equal('MIDDLEWARE 1');
+              lastMessage.message.should.equal('MIDDLEWARE 1 MIDDLEWARE 2');
 
               done();
             }, 100);

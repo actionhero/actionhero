@@ -226,10 +226,10 @@ module.exports = {
     }
 
     api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, next){
-      //callbacks should be of the form f(callback, )
-
       var collecton;
       var orderedCallbacks = [];
+      var newMessagePaylaod = messagePayload;
+
       if(direction === 'join'){
         collecton = api.chatRoom.joinCallbacks;
       } else if(direction === 'leave' ) {
@@ -244,7 +244,10 @@ module.exports = {
         collecton[priority].forEach(function(c){
           if(messagePayload){
             orderedCallbacks.push( function(callback){
-              c(connection, room, messagePayload, callback);
+              c(connection, room, newMessagePaylaod, function(err, data){
+                if(data){ newMessagePaylaod = data; }
+                callback(err, data)
+              });
             }); 
           }else{
             orderedCallbacks.push( function(callback){
@@ -255,13 +258,10 @@ module.exports = {
       });
 
       async.series(orderedCallbacks, function(err, data){
-        var newMessagePaylaod = messagePayload;
+        
         while(data.length > 0){
-          var thisData = data.pop();
-          if(thisData){ 
-            newMessagePaylaod = thisData; 
-            break;
-          }
+          var thisData = data.shift();
+          if(thisData){ newMessagePaylaod = thisData; }
         }
         next(err, newMessagePaylaod)
       });
