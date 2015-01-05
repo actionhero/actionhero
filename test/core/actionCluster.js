@@ -334,34 +334,6 @@ describe('Core: Action Cluster', function(){
         });
       });
 
-      // it('can add authorized members to secure rooms', function(done){
-      //   var client = new apiA.specHelper.connection();
-      //   apiA.chatRoom.add('newRoom', function(err){
-      //     apiA.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
-      //       client.auth = true;
-      //       apiA.chatRoom.addMember(client.id, 'newRoom', function(err, didAdd){
-      //         didAdd.should.equal(true);
-      //         client.destroy();
-      //         done();
-      //       });
-      //     });
-      //   });
-      // });
-
-      // it('will not add a member with bad auth to a secure room', function(done){
-      //   var client = new apiA.specHelper.connection();
-      //   apiA.chatRoom.add('newRoom', function(err){
-      //     apiA.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
-      //       client.auth = false;
-      //       apiA.chatRoom.addMember(client.id, 'newRoom', function(err, didAdd){
-      //         didAdd.should.equal(false);
-      //         client.destroy();
-      //         done();
-      //       });
-      //     });
-      //   });
-      // })
-
       it('server will not remove a member not in a room', function(done){
         var client = new apiA.specHelper.connection();
         apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
@@ -425,62 +397,6 @@ describe('Core: Action Cluster', function(){
           });            
         });
       })
-
-      // it('can authorize clients against rooms PASSING', function(done){
-      //   var client = new apiA.specHelper.connection();
-      //   client.auth = true;
-      //   apiA.chatRoom.add('newRoom', function(err){
-      //     apiA.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
-      //       apiA.chatRoom.authorize(client, 'newRoom', function(err, authed){
-      //         should.not.exist(err);
-      //         authed.should.equal(true);
-      //         client.destroy();
-      //         done();
-      //       });
-      //     });
-      //   });
-      // });
-
-      // it('can authorize clients against rooms FAILING', function(done){
-      //   var client = new apiA.specHelper.connection();
-      //   client.auth = false;
-      //   apiA.chatRoom.add('newRoom', function(err){
-      //     apiA.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
-      //       apiA.chatRoom.authorize(client, 'newRoom', function(err, authed){
-      //         should.not.exist(err);
-      //         authed.should.equal(false);
-      //         client.destroy();
-      //         done();
-      //       });
-      //     });
-      //   });
-      // });
-
-      // it('server change auth for a room and all connections will be checked', function(done){
-      //   var clientA = new apiA.specHelper.connection();
-      //   var clientB = new apiA.specHelper.connection();
-      //   clientA.auth = true;
-      //   clientA._name = 'a';
-      //   clientB.auth = false;
-      //   clientB._name = 'b';
-      //   apiA.chatRoom.add('newRoom', function(err){
-      //     apiA.chatRoom.addMember(clientA.id, 'newRoom', function(err, didAdd){
-      //       apiA.chatRoom.addMember(clientB.id, 'newRoom', function(err, didAdd){
-      //         clientA.rooms[0].should.equal('newRoom');
-      //         clientB.rooms[0].should.equal('newRoom');
-      //         apiA.chatRoom.setAuthenticationPattern('newRoom', 'auth', true, function(err){
-      //           should.not.exist(err);
-      //           clientA.rooms[0].should.equal('newRoom');
-      //           clientA.rooms.length.should.equal(1);
-      //           clientB.rooms.length.should.equal(0);
-      //           clientA.destroy();
-      //           clientB.destroy();
-      //           done();
-      //         });
-      //       });
-      //     });
-      //   });
-      // });
 
       describe('chat middleware', function(){
 
