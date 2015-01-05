@@ -102,10 +102,6 @@ exports.default = {
         return 'this room has been deleted';
       },
 
-      connectionNotAuthorized: function(room){
-        return 'not authorized to join room';
-      },
-
       connectionRoomNotExist: function(room){
         return 'room does not exist';
       },
