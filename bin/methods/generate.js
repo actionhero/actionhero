@@ -10,12 +10,13 @@ exports.generate = function(binary, next){
 
   var oldFileMap = {
     configApiJs                 : '/config/api.js',
+    configPluginsJs             : '/bin/templates/plugins.js',
     configLoggerJs              : '/config/logger.js',
     configRedisJs               : '/config/redis.js',
     configStatsJs               : '/config/stats.js',
     configTasksJs               : '/config/tasks.js',
     configErrorsJs              : '/config/errors.js',
-    configRoutesJs              : '/config/routes.js',    
+    configRoutesJs              : '/config/routes.js',
     configSocketJs              : '/config/servers/socket.js',
     configWebJs                 : '/config/servers/web.js',
     configWebsocketJs           : '/config/servers/websocket.js',
@@ -27,7 +28,7 @@ exports.generate = function(binary, next){
     publicChat                   : '/public/chat.html',
     publicLogo                   : '/public/logo/actionhero.png',
     publicCss                    : '/public/css/actionhero.css',
-    exampleTest                  : '/test/template.js.example',
+    exampleTest                  : '/test/template.js.example'
   }
   for(var name in oldFileMap){
     documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
@@ -39,6 +40,26 @@ exports.generate = function(binary, next){
   documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
   documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
 
+  // Add plugins (from --plugins argument) to the dedicated plugins config file
+  var pluginsArrayContents='';
+  if(binary.argv.plugins)
+  {
+    var pluginsArg=binary.argv.plugins.split(',');
+
+    pluginsArg.forEach(function(dep)
+    {
+      // if(dep.match(/^ah-.*-plugin$/g)!==null)
+      if(typeof(dep)==='string')
+      {
+        pluginsArrayContents+='"'+dep.trim()+'",\n';
+      }
+    });
+
+    pluginsArrayContents=pluginsArrayContents.trim();
+  }
+
+  documents.configPluginsJs = String(documents.configPluginsJs).replace('\'%%REPLACE%%\'', pluginsArrayContents);
+
   //////// LOGIC ////////
 
   binary.log('Generating a new actionhero project...');
@@ -49,6 +70,7 @@ exports.generate = function(binary, next){
     '/pids',
     '/config',
     '/config/servers',
+    '/config/plugins',
     '/initializers',
     '/log',
     '/servers',
@@ -57,7 +79,7 @@ exports.generate = function(binary, next){
     '/public/css',
     '/public/logo',
     '/tasks',
-    '/test',
+    '/test'
   ].forEach(function(dir){
     binary.utils.createDirSafely(binary.paths.projectRoot + dir);
   });
@@ -65,6 +87,7 @@ exports.generate = function(binary, next){
   // make files
   var newFileMap = {
     '/config/api.js'                                : 'configApiJs',
+    '/config/plugins.js'                            : 'configPluginsJs',
     '/config/logger.js'                             : 'configLoggerJs',
     '/config/redis.js'                              : 'configRedisJs',
     '/config/stats.js'                              : 'configStatsJs',
@@ -83,7 +106,7 @@ exports.generate = function(binary, next){
     '/public/logo/actionhero.png'                   : 'publicLogo',
     '/README.md'                                    : 'readmeMd',
     '/gruntfile.js'                                 : 'gruntfile',
-    '/test/example.js'                              : 'exampleTest',
+    '/test/example.js'                              : 'exampleTest'
   }
   for(var file in newFileMap){
     binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
@@ -95,6 +118,6 @@ exports.generate = function(binary, next){
   binary.log('you may need to run `npm install` to install some dependancies');
   binary.log('run \'npm start\' to start your server');
 
-  next(); 
+  next();
 
 }

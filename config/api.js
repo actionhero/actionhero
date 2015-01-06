@@ -43,11 +43,6 @@ exports.default = {
         'initializer': [ __dirname + '/../initializers' ] ,
         'plugin':      [ __dirname + '/../node_modules' ] 
       },
-      // list of actionhero plugins you want to load
-      plugins: [
-        // this is a list of plugin names
-        // plugin still need to be included in `package.json` or the path defined in `api.config.general.paths.plugin`
-      ],
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
