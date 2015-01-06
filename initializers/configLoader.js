@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
 var argv = require('optimist').argv;
 
 module.exports = {
@@ -45,16 +46,39 @@ module.exports = {
       api.env = process.env.NODE_ENV;
     }
 
-    var configPath = path.resolve(api.projectRoot, 'config');
+    // We now support multiple configuration paths. Repeated uses of --config will add paths to examine. But note that
+    // the old behavior <10.x was that specifying --config would OVERRIDE the default path (the configs that ship with
+    // AH). To preserve that behavior, we use the AH default here as before, but overwrite below if config is specified.
+    //
+    // Load order:
+    // 1. Project 'config' folder, if exists
+    // 2. "actionhero --config=PATH"
+    // 3. "ACTIONHERO_CONFIG=PATH npm start"
+    var configPaths = [];
 
-    if(argv.config){
-      if(argv.config.charAt(0) === '/'){ configPath = argv.config }
-      else { configPath = path.resolve(api.projectRoot, argv.config) }
-    } else if(process.env.ACTIONHERO_CONFIG) {
-      if(process.env.ACTIONHERO_CONFIG.charAt(0) === '/'){ configPath = process.env.ACTIONHERO_CONFIG }
-      else { configPath = path.resolve(api.projectRoot, process.env.ACTIONHERO_CONFIG) }
-    } else if(!fs.existsSync(configPath)){
-      throw new Error(configPath + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
+    function addConfigPath(pathToCheck, alreadySplit) {
+      if (typeof pathToCheck === 'string') {
+        if (!alreadySplit) {
+          addConfigPath(pathToCheck.split(','), true);
+        }
+        else {
+          if (pathToCheck.charAt(0) !== '/') pathToCheck = path.resolve(api.projectRoot, pathToCheck);
+          if (fs.existsSync(pathToCheck)) {
+            configPaths.push(pathToCheck);
+          }
+        }
+      } else if (util.isArray(pathToCheck)) {
+        pathToCheck.map(function(entry) {
+          addConfigPath(entry, alreadySplit);
+        });
+      }
+    }
+
+    ['config', argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) {
+      addConfigPath(entry, false);
+    });
+    if (configPaths.length < 1) {
+      throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
     }
 
     var rebootCallback = function(file){
@@ -65,7 +89,7 @@ module.exports = {
 
     api.loadConfigDirectory = function(configPath, watch){
       var configFiles = api.utils.recursiveDirectoryGlob(configPath);
-      
+
       var loadRetries = 0;
       var loadErrors = {};
       for(var i = 0, limit = configFiles.length; (i < limit); i++){
@@ -82,7 +106,7 @@ module.exports = {
         } catch(error){
           // error loading configuration, abort if all remaining
           // configuration files have been tried and failed
-          // indicating inability to progress 
+          // indicating inability to progress
           loadErrors[f] = error.toString();
           if(++loadRetries === limit-i){
               throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
@@ -97,7 +121,7 @@ module.exports = {
         if(watch !== false){
           // configuration file loaded: set watch
           api.watchFileAndAct(f, rebootCallback);
-        }      
+        }
       }
 
       // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
@@ -107,30 +131,30 @@ module.exports = {
         if(localConfig.default){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
         if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
       });
-    
+
     }
 
     api.config = {};
-    
+
     //load the default config of actionhero
     api.loadConfigDirectory(__dirname + '/../config', false);
 
     //load the project specific config
-    api.loadConfigDirectory(configPath);
-    
+    configPaths.map(api.loadConfigDirectory);
+
     var pluginActions      = [];
     var pluginTasks        = [];
     var pluginServers      = [];
     var pluginInitializers = [];
     var pluginPublics      = [];
-    
+
     //loop over it's plugins
     api.config.general.paths.plugin.forEach(function(p){
       api.config.general.plugins.forEach(function(plugin){
         var pluginPackageBase = path.normalize(p + '/' + plugin);
         if(api.projectRoot !== pluginPackageBase){
           if(fs.existsSync(pluginPackageBase + '/config')){
-            //and merge the plugin config 
+            //and merge the plugin config
             api.loadConfigDirectory( pluginPackageBase + '/config', false);
             //collect all paths that could have multiple target folders
             pluginActions      = pluginActions.concat(api.config.general.paths.action);
@@ -146,19 +170,19 @@ module.exports = {
           if(fs.existsSync(pluginPackageBase + '/initializers')){ pluginInitializers.unshift( pluginPackageBase + '/initializers' );}
           if(fs.existsSync(pluginPackageBase + '/public')){       pluginPublics.unshift(      pluginPackageBase + '/public'       );}
         }
-      });    
+      });
     });
-    
+
     //now load the project config again to overrule plugin configs
-    api.loadConfigDirectory(configPath);
-    
+    configPaths.map(api.loadConfigDirectory);
+
     //apply plugin paths for actions, tasks, servers and initializers
     api.config.general.paths.action      = pluginActions.concat(api.config.general.paths.action);
     api.config.general.paths.task        = pluginTasks.concat(api.config.general.paths.task);
     api.config.general.paths.server      = pluginServers.concat(api.config.general.paths.server);
     api.config.general.paths.initializer = pluginInitializers.concat(api.config.general.paths.initializer);
     api.config.general.paths.public      = pluginPublics.concat(api.config.general.paths.public);
-          
+
     // the first plugin path shoud alawys be the local project
     api.config.general.paths.public.reverse();
 
@@ -184,5 +208,5 @@ module.exports = {
     api.log('environment: ' + api.env, 'notice');
     callback();
   }
-  
+
 }
