@@ -160,12 +160,16 @@ describe('Server: Web Socket', function(){
   describe('chat', function(){
 
     before(function(done){
-      api.chatRoom.addJoinCallback(function(connection, room){
-        api.chatRoom.broadcast(connection, room, 'I have entered the room');
+      api.chatRoom.addJoinCallback(function(connection, room, callback){
+        api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+          callback();
+        });
       });
 
-      api.chatRoom.addLeaveCallback(function(connection, room){
-        api.chatRoom.broadcast(connection, room, 'I have left the room');
+      api.chatRoom.addLeaveCallback(function(connection, room, callback){
+        api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+          callback();
+        });
       });
 
       done();
@@ -191,17 +195,14 @@ describe('Server: Web Socket', function(){
     });
 
     afterEach(function(done){
-      clientA.roomLeave('defaultRoom',function(){
+      clientA.roomLeave('defaultRoom',function(err){
       clientB.roomLeave('defaultRoom',function(){
       clientC.roomLeave('defaultRoom',function(){
       clientA.roomLeave('otherRoom',function(){
       clientB.roomLeave('otherRoom',function(){
       clientC.roomLeave('otherRoom',function(){
-      clientA.roomLeave('secureRoom',function(){
-      clientB.roomLeave('secureRoom',function(){
-      clientC.roomLeave('secureRoom',function(){
           done();
-      }); }); }); }); }); }); }); }); });
+      }); }); }); }); }); });
     });
 
     it('can change rooms and get room details', function(done){
@@ -218,6 +219,22 @@ describe('Server: Web Socket', function(){
       });
     });
 
+    it('will update client room info when they change rooms', function(done){
+      clientA.rooms[0].should.equal('defaultRoom');
+      should.not.exist( clientA.rooms[1] );
+      clientA.roomAdd('otherRoom', function(response){
+        should.not.exist(response.error);
+        clientA.rooms[0].should.equal('defaultRoom');
+        clientA.rooms[1].should.equal('otherRoom');
+        clientA.roomLeave('defaultRoom', function(response){
+          should.not.exist(response.error);
+          clientA.rooms[0].should.equal('otherRoom');
+          should.not.exist( clientA.rooms[1] );
+          done();
+        });
+      });
+    })
+
     it('Clients can talk to each other', function(done){
       var listener = function(response){
         clientA.removeListener('say', listener);
@@ -230,28 +247,11 @@ describe('Server: Web Socket', function(){
       clientB.say('defaultRoom', 'hello from client 2');
     });
 
-    it('will not get messages for rooms I am not in', function(done){
-      var listener = function(response){
-        response.should.not.exist();
-      };
-
-      clientA.on('say', listener);
-
-      setTimeout(function(){
-        clientA.removeListener('say', listener);
-        done();
-      }, 500)
-
-      clientB.roomAdd('otherRoom', function(){
-        clientB.say('otherRoom', 'you should not hear this');
-      });
-    });
-
     it('connections are notified when I join a room', function(done){
       var listener = function(response){
         clientA.removeListener('say', listener);
         response.context.should.equal('user');
-        response.message.should.equal('I have entered the room');
+        response.message.should.equal('I have entered the room: ' + clientB.id);
         done();
       };
 
@@ -265,13 +265,35 @@ describe('Server: Web Socket', function(){
       var listener = function(response){
         clientA.removeListener('say', listener);
         response.context.should.equal('user');
-        response.message.should.equal('I have left the room');
+        response.message.should.equal('I have left the room: ' + clientB.id);
         done();
       }
 
       clientA.on('say', listener);
       clientB.roomLeave('defaultRoom');
-    })
+    });
+
+    it('will not get messages for rooms I am not in', function(done){
+      clientB.roomAdd('otherRoom', function(response){
+        should.not.exist(response.error);
+        clientB.rooms.length.should.equal(2);
+
+        var listener = function(response){
+          clientC.removeListener('say', listener);
+          should.not.exist(response);
+        };
+
+        clientC.rooms.length.should.equal(1);
+        clientC.on('say', listener);
+
+        setTimeout(function(){
+          clientC.removeListener('say', listener);
+          done();
+        }, 1000)
+
+        clientB.say('otherRoom', 'you should not hear this');
+      });
+    });
 
     it('connections can see member counts changing within rooms as folks join and leave', function(done){
       clientA.roomView('defaultRoom', function(response){
@@ -287,91 +309,75 @@ describe('Server: Web Socket', function(){
     
     describe('custom room member data', function(){
     
-    	var currentSanitize;
-    	var currentGenerate;
-    	
-    	
-    	before(function(done){
-    	    //Ensure that default behavior works
-			clientA.roomAdd('defaultRoom',function(){
-			  clientA.roomView('defaultRoom', function(response){
-				  response.data.room.should.equal('defaultRoom');
-				  for( var key in response.data.members ){
-					(response.data.members[key].type === undefined ).should.eql(true);
-				  }
-				  clientA.roomLeave('defaultRoom');
+      var currentSanitize;
+      var currentGenerate;
+      
+      
+      before(function(done){
+        //Ensure that default behavior works
+        clientA.roomAdd('defaultRoom',function(){
+          clientA.roomView('defaultRoom', function(response){
+            response.data.room.should.equal('defaultRoom');
+            for( var key in response.data.members ){
+            (response.data.members[key].type === undefined ).should.eql(true);
+            }
+            clientA.roomLeave('defaultRoom');
 
-				  //save off current functions
-				  currentSanitize = api.chatRoom.sanitizeMemberDetails;
-				  currentGenerate = api.chatRoom.generateMemberDetails;
+            //save off current functions
+            currentSanitize = api.chatRoom.sanitizeMemberDetails;
+            currentGenerate = api.chatRoom.generateMemberDetails;
 
-	 			  //override functions
-				  api.chatRoom.sanitizeMemberDetails = function(data){
-					return { id: data.id,
-							 joinedAt: data.joinedAt,
-							 type: data.type };
-				  }
-  
-				  api.chatRoom.generateMemberDetails = function(connection){
-					return { id: connection.id,
-							 joinedAt: new Date().getTime(),
-							 type : connection.type };
-				  }			  
-				  done();
-			  });
-			});
-        })
-
-		after(function(done){
-		  api.chatRoom.joinCallbacks  = {};
-		  api.chatRoom.leaveCallbacks = {};
-		  
-		  api.chatRoom.sanitizeMemberDetails = currentSanitize;
-		  api.chatRoom.generateMemberDetails = currentGenerate;
-		          
-		  //Check that everything is back to normal
-		  clientA.roomAdd('defaultRoom',function(){
-			  clientA.roomView('defaultRoom', function(response){
-				  response.data.room.should.equal('defaultRoom');
-				  for( var key in response.data.members ){
-					(response.data.members[key].type === undefined ).should.eql(true);
-				  }
-				  clientA.roomLeave('defaultRoom');
-
-				  done();
-			  });
-		  });
-		})
-		
-		it('should view non-default member data', function(done){
-			clientA.roomAdd('defaultRoom',function(){
-				clientA.roomView('defaultRoom', function(response){
-				  response.data.room.should.equal('defaultRoom');
-				  for( var key in response.data.members ){
-					response.data.members[key].type.should.eql('websocket');
-				  }
-				  clientA.roomLeave('defaultRoom');
-				  done();
-				});
-			})
-		});	
+            //override functions
+            api.chatRoom.sanitizeMemberDetails = function(data){
+            return { id: data.id,
+                 joinedAt: data.joinedAt,
+                 type: data.type };
+            }
     
-    } );
-
-    it('connections can join secure rooms', function(done){
-      api.connections.connections[clientA.id].authorized = true;
-      clientA.roomAdd('secureRoom', function(data){
-        data.status.should.equal('OK');
-        done();
+            api.chatRoom.generateMemberDetails = function(connection){
+            return { id: connection.id,
+                 joinedAt: new Date().getTime(),
+                 type : connection.type };
+            }       
+            done();
+          });
+        });
       });
-    });
 
-    it('connections can be blocked from secure rooms', function(done){
-      api.connections.connections[clientA.id].authorized = false;
-      clientA.roomAdd('secureRoom', function(data){
-        data.status.should.equal('not authorized to join room');
-        done();
+      after(function(done){
+        api.chatRoom.joinCallbacks  = {};
+        api.chatRoom.leaveCallbacks = {};
+        
+        api.chatRoom.sanitizeMemberDetails = currentSanitize;
+        api.chatRoom.generateMemberDetails = currentGenerate;
+                
+        //Check that everything is back to normal
+        clientA.roomAdd('defaultRoom',function(){
+          clientA.roomView('defaultRoom', function(response){
+            response.data.room.should.equal('defaultRoom');
+            for( var key in response.data.members ){
+            (response.data.members[key].type === undefined ).should.eql(true);
+            }
+            clientA.roomLeave('defaultRoom');
+
+            done();
+          });
+        });
       });
+    
+      it('should view non-default member data', function(done){
+        clientA.roomAdd('defaultRoom',function(){
+          clientA.roomView('defaultRoom', function(response){
+            response.data.room.should.equal('defaultRoom');
+            for( var key in response.data.members ){
+            response.data.members[key].type.should.eql('websocket');
+            }
+            clientA.roomLeave('defaultRoom');
+            done();
+          });
+        })
+      }); 
+    
     });
 
   });

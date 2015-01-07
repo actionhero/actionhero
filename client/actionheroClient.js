@@ -43,6 +43,7 @@ ActionheroClient.prototype.connect = function(callback){
   }
 
   self.client.on('open', function(){
+    self.messageCount = 0;
     self.configure(function(details){
       self.emit('connected');
       if(self.state === 'connected'){
@@ -83,15 +84,14 @@ ActionheroClient.prototype.connect = function(callback){
 ActionheroClient.prototype.configure = function(callback){
   var self = this;
 
-  self.messageCount = 0;
+  self.rooms.forEach(function(room){
+    self.send({event: 'roomAdd', room: room});
+  });
+
   self.detailsView(function(details){
     self.id          = details.data.id;
     self.fingerprint = details.data.fingerprint;
-    if(self.rooms.length > 0){
-      self.rooms.forEach(function(room){
-        self.send({event: 'roomAdd', room: room});
-      });
-    }
+    self.rooms       = details.data.rooms;
     callback(details);
   }); 
 }
@@ -199,12 +199,23 @@ ActionheroClient.prototype.roomView = function(room, callback){
 }
 
 ActionheroClient.prototype.roomAdd = function(room, callback){
-  this.rooms.push(room); // only a list of *intended* rooms to join; might fail
-  this.send({event: 'roomAdd', room: room}, callback);
+  var self = this;
+  self.send({event: 'roomAdd', room: room}, function(data){
+    self.configure(function(details){
+      if(typeof callback === 'function'){ callback(data); }
+    });
+  });
 }
 
 ActionheroClient.prototype.roomLeave = function(room, callback){
-  this.send({event: 'roomLeave', room: room}, callback);
+  var self = this;
+  var index = self.rooms.indexOf(room);
+  if(index > -1){ self.rooms.splice(index, 1); }
+  this.send({event: 'roomLeave', room: room}, function(data){
+    self.configure(function(details){
+      if(typeof callback === 'function'){ callback(data); }
+    });
+  });
 }
 
 ActionheroClient.prototype.documentation = function(callback){

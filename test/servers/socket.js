@@ -221,12 +221,16 @@ describe('Server: Socket', function(){
   describe('chat', function(){
 
     before(function(done){
-      api.chatRoom.addJoinCallback(function(connection, room){
-        api.chatRoom.broadcast(connection, room, 'I have entered the room');
+      api.chatRoom.addJoinCallback(function(connection, room, callback){
+        api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+          callback();
+        });
       });
 
-      api.chatRoom.addLeaveCallback(function(connection, room){
-        api.chatRoom.broadcast(connection, room, 'I have left the room');
+      api.chatRoom.addLeaveCallback(function(connection, room, callback){
+        api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+          callback();
+        });
       });
 
       done();
@@ -249,7 +253,7 @@ describe('Server: Socket', function(){
     });
 
     afterEach(function(done){
-      ['defaultRoom', 'otherRoom', 'secureRoom'].forEach(function(room){
+      ['defaultRoom', 'otherRoom'].forEach(function(room){
         makeSocketRequest(client,  'roomLeave ' + room);
         makeSocketRequest(client2, 'roomLeave ' + room);
         makeSocketRequest(client3, 'roomLeave ' + room);
@@ -393,8 +397,8 @@ describe('Server: Socket', function(){
       makeSocketRequest(client, 'roomAdd otherRoom', function(){
         makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n');
         makeSocketRequest(client, '', function(response){
-          response.message.should.equal('I have entered the room');
-          response.from.should.equal(client2Details.id);
+          response.message.should.equal('I have entered the room: ' + client2Details.id);
+          response.from.should.equal(0);
           done();
         });
       });
@@ -402,8 +406,8 @@ describe('Server: Socket', function(){
 
     it('Folks are notified when I leave a room', function(done){
       makeSocketRequest(client, '', function(response){
-        response.message.should.equal('I have left the room');
-        response.from.should.equal(client2Details.id);
+        response.message.should.equal('I have left the room: ' + client2Details.id);
+        response.from.should.equal(0);
         done();
       });
 
@@ -414,33 +418,6 @@ describe('Server: Socket', function(){
       makeSocketRequest(client, 'detailsView' + '\r\n', function(response){
         clientDetails = response.data;
         done();
-      });
-    });
-
-    it('can join secure rooms when applicable', function(done){
-      api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
-        api.utils.hashLength(roomDetails.members).should.equal(0);
-        api.connections.connections[clientDetails.id].authorized = true;
-        makeSocketRequest(client, 'roomAdd secureRoom', function(response){
-          response.data.should.equal(true);
-          response.status.should.equal('OK');
-          api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
-            api.utils.hashLength(roomDetails.members).should.equal(1);
-            done();
-          });
-        });
-      });
-    });
-
-    it('cannot join secure rooms when missing attributes', function(done){
-      api.chatRoom.roomStatus('secureRoom', function(err, roomDetails){
-        api.connections.connections[clientDetails.id].authorized = false;
-        api.utils.hashLength(roomDetails.members).should.equal(0);
-        makeSocketRequest(client, 'roomAdd secureRoom', function(response){
-          response.data.should.equal(false);
-          response.status.should.equal('not authorized to join room');
-          done();
-        });
       });
     });
   
