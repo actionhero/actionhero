@@ -13,11 +13,11 @@ Custom Initializers to your project will always be loaded after core actionhero 
 
 To use a custom initializer, create a `initializers` directory in your project.  Ensure that the file name matches the export, IE:
 
-**initStuff.js**
+**stuff.js**
 
 {% highlight javascript %}
 exports.stuff = function(api, next){
-	  
+
   api.stuff = {}; // now api.stuff is globally available to my project
   api.stuff.magicNumber = 1234;
 
@@ -35,7 +35,7 @@ For Example:
 
 {% highlight javascript %}
 exports.stuff = function(api, next){
-	  
+
   api.stuff = {
     _start: function(api, next){ api.log('hi', 'bold'); next(); }
   };
@@ -54,7 +54,7 @@ For Example:
 
 {% highlight javascript %}
 exports.stuff = function(api, next){
-	  
+
   api.stuff = {
     magicNumber: 1234,
     _stop: function(api, next){ api.stuff.magicNumber = null; next(); }
