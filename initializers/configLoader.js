@@ -54,6 +54,11 @@ module.exports = {
     // 1. Project 'config' folder, if exists
     // 2. "actionhero --config=PATH"
     // 3. "ACTIONHERO_CONFIG=PATH npm start"
+    //
+    // NOTE: The original behavior was to REPLACE the default 'config' folder if either --config or ACTIONHERO_CONFIG
+    // were specified. This means if you want to use 'config' and 'local-config' together, for example, you need to
+    // re-specify both (e.g. "--config=config --config=local-config" or "--config=config,local-config".) If you just
+    // specify "--config=local-config", the default 'config' folder will be ignored.
     var configPaths = [];
 
     function addConfigPath(pathToCheck, alreadySplit) {
@@ -74,9 +79,12 @@ module.exports = {
       }
     }
 
-    ['config', argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) {
+    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) {
       addConfigPath(entry, false);
     });
+    if (configPaths.length < 1) {
+      addConfigPath('config', false);
+    }
     if (configPaths.length < 1) {
       throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
     }
