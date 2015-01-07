@@ -46,19 +46,16 @@ module.exports = {
       api.env = process.env.NODE_ENV;
     }
 
-    // We now support multiple configuration paths. Repeated uses of --config will add paths to examine. But note that
-    // the old behavior <10.x was that specifying --config would OVERRIDE the default path (the configs that ship with
-    // AH). To preserve that behavior, we use the AH default here as before, but overwrite below if config is specified.
+    // We support multiple configuration paths as follows:
     //
-    // Load order:
-    // 1. Project 'config' folder, if exists
-    // 2. "actionhero --config=PATH"
-    // 3. "ACTIONHERO_CONFIG=PATH npm start"
+    // 1. Use the project 'config' folder, if it exists.
+    // 2. "actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4"
+    // 3. "ACTIONHERO_CONFIG=PATH1,PATH2 npm start"
     //
-    // NOTE: The original behavior was to REPLACE the default 'config' folder if either --config or ACTIONHERO_CONFIG
-    // were specified. This means if you want to use 'config' and 'local-config' together, for example, you need to
-    // re-specify both (e.g. "--config=config --config=local-config" or "--config=config,local-config".) If you just
-    // specify "--config=local-config", the default 'config' folder will be ignored.
+    // Note that if --config or ACTIONHERO_CONFIG are used, they _overwrite_ the use of the default "config" folder. If
+    // you wish to use both, you need to re-specify "config", e.g. "--config=config,local-config". Also, note that
+    // specifying multiple --config options on the command line does exactly the same thing as using one parameter with
+    // comma separators, however the environment variable method only supports the comma-delimited syntax.
     var configPaths = [];
 
     function addConfigPath(pathToCheck, alreadySplit) {
