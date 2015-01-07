@@ -13,8 +13,6 @@ exports.action = {
   },
 
   run: function(api, connection, next){
-    // console.log(connection)
-    
     connection.response.id          = connection.id;
     connection.response.remotePort  = connection.remotePort;
     connection.response.remoteIP    = connection.remoteIP;
