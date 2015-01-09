@@ -114,7 +114,7 @@ describe('Core: API', function(){
       done();
     })
 
-    it('will default actions to version 1', function(done){
+    it('will default actions to version 1 when no version is provided by the defintion', function(done){
       api.specHelper.runAction('randomNumber', function(response){
         response.requesterInformation.receivedParams.apiVersion.should.equal(1)
         done();
