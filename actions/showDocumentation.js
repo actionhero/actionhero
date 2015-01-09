@@ -1,11 +1,7 @@
-exports.action = {
-  name:                   'showDocumentation',
-  description:            'return API documentation',
-  blockedConnectionTypes: [],
-  outputExample:          {},
-  matchExtensionMimeType: false,
-  version:                1.0,
-  toDocument:             true,
+exports.showDocumentation = {
+  name: 'showDocumentation',
+  description: 'return API documentation',
+  outputExample: {},
 
   inputs: {
     required: [],
