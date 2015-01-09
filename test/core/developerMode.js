@@ -8,16 +8,19 @@ var originalFile =    './actions/randomNumber.js';
 var originalContent = fs.readFileSync(originalFile);
 
 var newFileContent = '';
-newFileContent += 'var action = {};';
-newFileContent += 'action.name = \'randomNumber\';';
-newFileContent += 'action.description = \'HACK\';';
-newFileContent += 'action.inputs = { \'required\' : [], \'optional\' : [] };';
-newFileContent += 'action.outputExample = {randomNumber: 123};';
-newFileContent += 'action.run = function(api, connection, next){';
-newFileContent += '  connection.response.randomNumber = \'not a number!\';';
-newFileContent += '  next(connection, true);';
+newFileContent += 'exports.randomNumber = {';
+newFileContent += '  name: "randomNumber",';
+newFileContent += '  description: "HACK",';
+newFileContent += '  outputExample: {},';
+newFileContent += '  inputs: {';
+newFileContent += '    required : [],';
+newFileContent += '    optional : []';
+newFileContent += '  },';
+newFileContent += '  run: function(api, connection, next){';
+newFileContent += '    connection.response.randomNumber = "not a number!";';
+newFileContent += '    next(connection, true);';
+newFileContent += '  }';
 newFileContent += '};';
-newFileContent += 'exports.action = action;';
 
 describe('Core: Developer Mode', function(){
 

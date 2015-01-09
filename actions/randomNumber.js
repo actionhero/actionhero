@@ -1,25 +1,16 @@
-var action = {};
+exports.randomNumber = {
+  name: 'randomNumber',
+  description: 'I am an API method which will generate a random number',
+  outputExample: {},
 
-/////////////////////////////////////////////////////////////////////
-// metadata
-action.name = 'randomNumber';
-action.description = 'I am an API method which will generate a random number';
-action.inputs = {
-  'required' : [],
-  'optional' : []
+  inputs: {
+    required : [],
+    optional : []
+  },
+
+  run: function(api, connection, next){
+    connection.response.randomNumber = Math.random();
+    next(connection, true);
+  }
+
 };
-action.blockedConnectionTypes = [];
-action.outputExample = {
-  randomNumber: 123
-}
-
-/////////////////////////////////////////////////////////////////////
-// functional
-action.run = function(api, connection, next){
-  connection.response.randomNumber = Math.random();
-  next(connection, true);
-};
-
-/////////////////////////////////////////////////////////////////////
-// exports
-exports.action = action;
