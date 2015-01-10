@@ -380,6 +380,72 @@ describe('Server: Web Socket', function(){
     
     });
 
+
+    describe('custom room message data', function(){
+      this.timeout(20000);
+      var currentMessagePayload;
+      
+      
+      before(function(done){
+        //Ensure that default behavior works
+        clientA.roomAdd('defaultRoom',function(){
+          clientA.roomView('defaultRoom', function(response){
+            response.data.room.should.equal('defaultRoom');
+            
+            //save off current functions
+            currentMessagePayload = api.chatRoom.generateMessagePayload;
+
+            //override functions
+            api.chatRoom.generateMessagePayload = function(message){
+                return {
+                    message: message.message,
+                    room: message.connection.room,
+                    from: message.connection.id,
+                    anotherData:'test',
+                    context: 'user',
+                    sentAt: message.sentAt
+                };
+            }
+    
+            done();
+          });
+        });
+      });
+
+      after(function(done){
+        api.chatRoom.joinCallbacks  = {};
+        api.chatRoom.leaveCallbacks = {};
+        
+        api.chatRoom.generateMessagePayload = currentMessagePayload;
+
+
+        //Check that everything is back to normal
+        clientA.roomAdd('defaultRoom',function(){
+          clientA.roomView('defaultRoom', function(response){
+            response.data.room.should.equal('defaultRoom');
+            
+            clientA.roomLeave('defaultRoom');
+
+            done();
+          });
+        });
+
+      });
+    
+      it('should view non-default message data', function(done){
+        var listener = function(response){
+          clientA.removeListener('say', listener);
+          response.context.should.equal('user');
+          response.anotherData.should.equal('test');
+          response.message.should.equal('hello from client 2');
+          done();
+        };
+        clientA.on('say', listener);
+        clientB.say('defaultRoom', 'hello from client 2');
+      });
+    
+    });
+
   });
 
   describe('fingerprint', function(){
