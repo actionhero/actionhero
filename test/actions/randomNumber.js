@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe('Action: Random Number', function(){
+describe('Action: RandomNumber', function(){
 
   before(function(done){
     actionhero.start(function(err, a){

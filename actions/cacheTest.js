@@ -1,11 +1,20 @@
 exports.cacheTest = {
   name: 'cacheTest',
   description: 'I will test the internal cache functions of the API',
-  outputExample: {},
 
-  inputs:{
-    required: ['key', 'value'],
-    optional: []
+  inputs: {
+    key: { 
+      required: true,
+      formatter: function(s){ return String(s); }
+    },
+    value: { 
+      required: true,
+      formatter: function(s){ return String(s); },
+      validator: function(s){
+        if(s.length < 3){ return '`value` should be at least 3 letters long' } 
+        else{ return true; }
+      }
+    },
   },
 
   run: function(api, connection, next){

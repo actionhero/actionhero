@@ -52,10 +52,12 @@ describe('Core: API', function(){
 
   it('should have loaded postVariables properly', function(done){
     [
+      'file',
       'callback',
       'action',
-      'key', // from action
-      'value' // from action
+      'apiVersion',
+      'key',  // from cacheTest action
+      'value' // from cacheTest action
     ].forEach(function(item){
       (api.params.postVariables.indexOf(item) >= 0).should.equal(true);
     });
@@ -216,7 +218,7 @@ describe('Core: API', function(){
 
   });
 
-  describe('Action Input Params', function(){
+  describe('Action Params', function(){
 
     before(function(done){
 
@@ -226,10 +228,27 @@ describe('Core: API', function(){
           name: 'testAction',
           description: 'this action has some required params',
           version: 1,
-          inputs: { required: [ 'testParam' ], optional: [] },
-          outputExample: {},
+          inputs: { 
+            requiredParam: {
+              required: true
+            },
+            optionalParam: {
+              required: false
+            },
+            fancyParam: {
+              required: false,
+              default: function(){ return 'abc123'; },
+              validator: function(s){
+                if(s === 'abc123'){ return true; }
+                else{ return 'fancyParam should be "abc123"'; }
+              },
+              formatter: function(s){
+                return String(s);
+              }
+            }
+          },
           run:function(api, connection, next){
-            connection.response.param = connection.params.testParam;
+            connection.response.params = connection.params;
             next(connection, true);
           }
         }
@@ -245,18 +264,18 @@ describe('Core: API', function(){
     });
     
     
-    it('correct params that are falsey (false booleans, [])', function(done){
-      api.specHelper.runAction('testAction', {testParam: false }, function(response){
-        response.param.should.equal(false);
-        api.specHelper.runAction('testAction', {testParam: [] }, function(response){
-          response.param.should.be.Array.and.be.empty;
+    it('correct params that are falsey (false, []) should be allowed', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: false }, function(response){
+        response.params.requiredParam.should.equal(false);
+        api.specHelper.runAction('testAction', {requiredParam: [] }, function(response){
+          response.params.requiredParam.should.be.Array.and.be.empty;
           done();
         });
       });
     });
     
     it( 'will fail for missing or empty string params', function(done){
-      api.specHelper.runAction('testAction', {testParam: '' }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: '' }, function(response){
         response.error.should.containEql('required parameter for this action');
         api.specHelper.runAction('testAction', { }, function(response){
           response.error.should.containEql('required parameter for this action');
@@ -267,12 +286,33 @@ describe('Core: API', function(){
     
     it('correct params respect config options', function(done){
       api.config.general.missingParamChecks = [ undefined ]
-      api.specHelper.runAction('testAction', {testParam: '' }, function(response){
-        response.param.should.equal('');
-        api.specHelper.runAction('testAction', {testParam: null }, function(response){
-          should(response.param).eql(null);
+      api.specHelper.runAction('testAction', {requiredParam: '' }, function(response){
+        response.params.requiredParam.should.equal('');
+        api.specHelper.runAction('testAction', {requiredParam: null }, function(response){
+          should(response.params.requiredParam).eql(null);
           done();
         });
+      });
+    });
+
+    it('will set a default when params are not provided', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: true }, function(response){
+        response.params.fancyParam.should.equal('abc123');
+        done();
+      });
+    });
+
+    it('will use validator if provided', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+        response.error.should.equal('Error: fancyParam should be "abc123"');
+        done();
+      });
+    });
+
+    it('will use formater if provided (and still use validator)', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+        response.requesterInformation.receivedParams.fancyParam.should.equal('123');
+        done();
       });
     });
 

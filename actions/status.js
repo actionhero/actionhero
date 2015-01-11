@@ -1,13 +1,7 @@
 exports.status = {
    name: 'status',
    description: 'I will return some basic information about the API',
-   outputExample: {},
    
-   inputs: {
-    required: [],
-    optional: []
-  },
-
   run: function(api, connection, next){
     connection.response.id = api.id;
     connection.response.actionheroVersion = api.actionheroVersion;

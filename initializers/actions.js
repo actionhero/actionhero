@@ -28,23 +28,15 @@ module.exports = {
         process.exit();
       }
 
+      if(action.inputs === undefined){
+        action.inputs = {};
+      }
+
       if(typeof action.name !== 'string' || action.name.length < 1){
         fail('an action is missing \'action.name\'');
         return false;
       } else if(typeof action.description !== 'string' || action.description.length < 1){
         fail('Action ' + action.name + ' is missing \'action.description\'');
-        return false;
-      } else if(typeof action.inputs !== 'object'){
-        fail('Action ' + action.name + ' has no inputs');
-        return false;
-      } else if(typeof action.inputs.required !== 'object'){
-        fail('Action ' + action.name + ' has no required inputs');
-        return false;
-      } else if(typeof action.inputs.optional !== 'object'){
-        fail('Action ' + action.name + ' has no optional inputs');
-        return false;
-      } else if(typeof action.outputExample !== 'object'){
-        fail('Action ' + action.name + ' has no outputExample');
         return false;
       } else if(typeof action.run !== 'function'){
         fail('Action ' + action.name + ' has no run method');

@@ -14,25 +14,21 @@ module.exports = {
 
     api.params.buildPostVariables = function(){
       var postVariables = [];
+      var i, j;
+      
       api.params.globalSafeParams.forEach(function(p){
         postVariables.push(p);
       });
-      var i, j, k;
+
       for(i in api.actions.actions){
         for(j in api.actions.actions[i]){
           var action = api.actions.actions[i][j];
-          if(action.inputs.required.length > 0){
-            for(k in action.inputs.required){
-              postVariables.push(action.inputs.required[k]);
-            }
-          }
-          if(action.inputs.optional.length > 0){
-            for(k in action.inputs.optional){
-              postVariables.push(action.inputs.optional[k]);
-            }
+          for(var key in action.inputs){
+            postVariables.push(key);
           }
         }
       }
+      
       api.params.postVariables = api.utils.arrayUniqueify(postVariables);
       return api.params.postVariables;
     }

@@ -13,6 +13,7 @@ module.exports = {
       this.messageCount = this.connection.messageCount
       this.callback = data.callback;
       this.missingParams = [];
+      this.validatorErrors = [];
       this.working = false;
     }
 
@@ -56,6 +57,8 @@ module.exports = {
         error = api.config.errors.unsupportedServerType(self.connection.type);
       }else if(status === 'missing_params'){
         error = api.config.errors.missingParams(self.missingParams) ;
+      }else if(status === 'validator_errors'){
+        error = self.validatorErrors.join(', ') ;
       }
 
       if(error !== null){
@@ -174,10 +177,45 @@ module.exports = {
         for(var p in self.connection.params){
           if(
               api.params.postVariables.indexOf(p) < 0 &&
-              self.actionTemplate.inputs.required.indexOf(p) < 0 &&
-              self.actionTemplate.inputs.optional.indexOf(p) < 0
+              Object.keys(self.actionTemplate.inputs).indexOf(p) < 0
           ){
             delete self.connection.params[p];
+          }
+        }
+      }
+    }
+
+    api.actionProcessor.prototype.validateParams = function(){
+      var self = this;
+      for(var key in self.actionTemplate.inputs){
+        var props = self.actionTemplate.inputs[key];
+        
+        // default
+        if(self.connection.params[key] === undefined && props.default !== undefined){
+          if(typeof props.default === 'function'){
+            self.connection.params[key] = props.default(self.connection.params[key], self.connection, self.actionTemplate);
+          }else{
+            self.connection.params[key] = props.default;
+          }
+        }
+
+        // formatter
+        if(self.connection.params[key] !== undefined && typeof props.formatter === 'function'){
+          self.connection.params[key] = props.formatter(self.connection.params[key], self.connection, self.actionTemplate);
+        }
+
+        // validator
+        if(self.connection.params[key] !== undefined && typeof props.validator === 'function'){
+          var validatorResponse = props.validator(self.connection.params[key], self.connection, self.actionTemplate);
+          if(validatorResponse !== true){
+            self.validatorErrors.push(validatorResponse);
+          }
+        }
+
+        // required
+        if(props.required === true){
+          if( api.config.general.missingParamChecks.indexOf(self.connection.params[key]) >= 0){
+            self.missingParams.push(key);
           }
         }
       }
@@ -250,20 +288,14 @@ module.exports = {
       var toProcess = true;
       var callbackCount = 0;
       self.preProcessAction(toProcess, function(toProcess){
+        
         self.reduceParams();
-
-        self.actionTemplate.inputs.required.forEach(function(param){
-          if(self.connection.error === null 
-             && api.config.general.missingParamChecks.some( function(check){
-              return self.connection.params[param] === check;
-             }))
-          {
-            self.missingParams.push(param);
-          }
-        });
+        self.validateParams();
 
         if(self.missingParams.length > 0){
           self.completeAction('missing_params');
+        }else if(self.validatorErrors.length > 0){
+          self.completeAction('validator_errors');
         }else if(toProcess === true && self.connection.error === null){
           self.actionTemplate.run(api, self.connection, function(connection, toRender){
             callbackCount++;

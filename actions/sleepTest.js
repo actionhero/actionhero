@@ -1,24 +1,17 @@
-var isNumber = function(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
 exports.sleepTest = {
   name: 'sleepTest',
   description: 'I will sleep and then return',
-  outputExample: {},
 
   inputs: {
-    required: [],
-    optional: ['sleepDuration']
+    sleepDuration: {
+      required: true,
+      formatter: function(n){ return parseInt(n); },
+      default: function(){ return 1000; }
+    }
   },
 
   run: function(api, connection, next){
     var sleepDuration = connection.params.sleepDuration;
-    if(!isNumber(sleepDuration)){
-      sleepDuration = 1000;
-    }else{
-      sleepDuration = parseFloat(sleepDuration);
-    }
 
     var sleepStarted = new Date().getTime();
     setTimeout(function(){
