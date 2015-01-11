@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe('Action: Cache Test', function(){
+describe('Action: Cache', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -42,6 +42,13 @@ describe('Action: Cache Test', function(){
   it('gibberish param', function(done){
     api.specHelper.runAction('cacheTest', {thingy: 'abc123'}, function(response){
       response.error.should.be.equal('Error: key is a required parameter for this action');
+      done();
+    });
+  });
+
+  it('requires value to be longer than 2 letters', function(done){
+    api.specHelper.runAction('cacheTest', {key: 'abc123', value: 'v'}, function(response){
+      response.error.should.be.equal('Error: `value` should be at least 3 letters long');
       done();
     });
   });

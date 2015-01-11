@@ -337,8 +337,9 @@ describe('Server: Web', function(){
         '1': {
           name: 'statusTestAction',
           description: 'I am a test',
-          inputs: { required: ['key'], optional: [] },
-          outputExample: {},
+          inputs: {
+            key: {required:true}
+          },
           run:function(api, connection, next){
             if(connection.params.key !== 'value'){
               connection.error = 'key != value';
@@ -356,8 +357,6 @@ describe('Server: Web', function(){
         '1': {
           name: 'brokenAction',
           description: 'I am broken',
-          inputs: { required: [], optional: [] },
-          outputExample: {},
           run:function(api, connection, next){
             BREAK; // undefiend
             next(connection, true);
@@ -446,8 +445,7 @@ describe('Server: Web', function(){
             action.name.should.be.a.String;
             action.description.should.be.a.String;
             action.inputs.should.be.a.Object;
-            action.inputs.required.should.be.an.instanceOf(Array)
-            action.inputs.optional.should.be.an.instanceOf(Array)
+            action.inputs.should.be.an.instanceOf(Object)
             action.outputExample.should.be.a.Object;
           }
         }
@@ -585,7 +583,9 @@ describe('Server: Web', function(){
           name: 'mimeTestAction',
           description: 'I am a test',
           matchExtensionMimeType: true,
-          inputs: { required: ['key'], optional: [] },
+          inputs: {
+            key: {required:true}
+          },
           outputExample: {},
           run:function(api, connection, next){
             next(connection, true);
@@ -599,7 +599,9 @@ describe('Server: Web', function(){
           name: 'login',
           description: 'login',
           matchExtensionMimeType: true,
-          inputs: { required: ['userID'], optional: [] },
+          inputs: {
+            userID: {required:true}
+          },
           outputExample: {},
           run:function(api, connection, next){
             connection.response.userID = connection.params.userID;
