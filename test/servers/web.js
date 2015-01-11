@@ -444,9 +444,7 @@ describe('Server: Web', function(){
             var action = body.documentation[actionName][version];
             action.name.should.be.a.String;
             action.description.should.be.a.String;
-            action.inputs.should.be.a.Object;
             action.inputs.should.be.an.instanceOf(Object)
-            action.outputExample.should.be.a.Object;
           }
         }
         done();
