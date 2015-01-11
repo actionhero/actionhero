@@ -21,7 +21,7 @@ exports.default = {
     try{
       fs.mkdirSync('./log');
     } catch(e) {
-      if(e.code != 'EEXIST'){ console.log(e); process.exit(); }
+      if(e.code !== 'EEXIST'){ console.log(e); process.exit(); }
     }
     logger.transports.push(function(api, winston) {
       return new (winston.transports.File)({
