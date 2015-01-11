@@ -61,9 +61,19 @@ module.exports = {
       }
     }
 
+    api.chatRoom.generateMessagePayload = function(message){
+      return {
+        message: message.message,
+        room: message.connection.room,
+        from: message.connection.id,
+        context: 'user',
+        sentAt: message.sentAt
+      };
+    }
+
     api.chatRoom.incomingMessage = function(message){
       api.stats.increment('chatRoom:messagesReceived');
-      var messagePayload = {message: message.message, room: message.connection.room, from: message.connection.id, context: 'user', sentAt: message.sentAt };
+      var messagePayload = api.chatRoom.generateMessagePayload(message);
       for(var i in api.connections.connections){
         var thisConnection = api.connections.connections[i];
         if(thisConnection.canChat === true){

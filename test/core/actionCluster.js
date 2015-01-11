@@ -401,8 +401,10 @@ describe('Core: Action Cluster', function(){
       describe('chat middleware', function(){
 
         var clientA, clientB;
+        var originalGenerateMessagePayload;
 
         beforeEach(function(done){
+          originalGenerateMessagePayload = apiA.chatRoom.generateMessagePayload;
           clientA = new apiA.specHelper.connection();
           clientB = new apiA.specHelper.connection();
 
@@ -416,9 +418,36 @@ describe('Core: Action Cluster', function(){
 
           clientA.destroy();
           clientB.destroy();
+
+          apiA.chatRoom.generateMessagePayload = originalGenerateMessagePayload;
           setTimeout(function(){
             done();
           }, 100);
+        });
+
+        it('generateMessagePayload can be overloaded', function(done){
+          apiA.chatRoom.generateMessagePayload = function(message){
+            return { 
+              thing: 'stuff',
+              room: message.connection.room,
+              from: message.connection.id,
+            };
+          };
+
+          clientA.verbs('roomAdd','defaultRoom', function(err, data){
+            should.not.exist(err);
+          clientB.verbs('roomAdd','defaultRoom', function(err, data){
+            should.not.exist(err);
+          clientA.verbs('say', ['defaultRoom', 'hi there'], function(err, data){
+            setTimeout(function(){
+              var message = clientB.messages[(clientB.messages.length - 1)];
+              message.thing.should.equal('stuff');
+              should.not.exist(message.message);
+              done();
+            }, 100);
+          });
+          });
+          });
         });
 
         it('(join + leave) can add middleware to announce members', function(done){
