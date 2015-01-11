@@ -9,26 +9,27 @@ exports.generate = function(binary, next){
   documents.projectMap = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
-    configApiJs                 : '/config/api.js',
-    configPluginsJs             : '/bin/templates/plugins.js',
-    configLoggerJs              : '/config/logger.js',
-    configRedisJs               : '/config/redis.js',
-    configStatsJs               : '/config/stats.js',
-    configTasksJs               : '/config/tasks.js',
-    configErrorsJs              : '/config/errors.js',
-    configRoutesJs              : '/config/routes.js',
-    configSocketJs              : '/config/servers/socket.js',
-    configWebJs                 : '/config/servers/web.js',
-    configWebsocketJs           : '/config/servers/websocket.js',
-    packageJson                  : '/package.json',
-    actionStatus                 : '/actions/status.js',
-    actionDocumentation          : '/actions/showDocumentation.js',
-    gruntfile                     : '/bin/templates/gruntfile.js',
-    publicIndex                  : '/public/index.html',
-    publicChat                   : '/public/chat.html',
-    publicLogo                   : '/public/logo/actionhero.png',
-    publicCss                    : '/public/css/actionhero.css',
-    exampleTest                  : '/test/template.js.example'
+    configApiJs          : '/config/api.js',
+    configPluginsJs      : '/bin/templates/plugins.js',
+    configLoggerJs       : '/config/logger.js',
+    configRedisJs        : '/config/redis.js',
+    configStatsJs        : '/config/stats.js',
+    configTasksJs        : '/config/tasks.js',
+    configErrorsJs       : '/config/errors.js',
+    configRoutesJs       : '/config/routes.js',
+    configSocketJs       : '/config/servers/socket.js',
+    configWebJs          : '/config/servers/web.js',
+    configWebsocketJs    : '/config/servers/websocket.js',
+    packageJson          : '/package.json',
+    actionStatus         : '/actions/status.js',
+    actionDocumentation  : '/actions/showDocumentation.js',
+    gruntfile            : '/bin/templates/gruntfile.js',
+    publicIndex          : '/public/index.html',
+    publicChat           : '/public/chat.html',
+    publicLogo           : '/public/logo/actionhero.png',
+    publicSky            : '/public/logo/sky.png',
+    publicCss            : '/public/css/actionhero.css',
+    exampleTest          : '/test/template.js.example'
   }
   for(var name in oldFileMap){
     documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
@@ -104,6 +105,7 @@ exports.generate = function(binary, next){
     '/public/chat.html'                             : 'publicChat',
     '/public/css/actionhero.css'                    : 'publicCss',
     '/public/logo/actionhero.png'                   : 'publicLogo',
+    '/public/logo/sky.png'                          : 'publicSky',
     '/README.md'                                    : 'readmeMd',
     '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'exampleTest'
