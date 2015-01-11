@@ -2,6 +2,21 @@ exports.cacheTest = {
   name: 'cacheTest',
   description: 'I will test the internal cache functions of the API',
 
+  outputExample: {
+    "cacheTestResults": {
+      "saveResp": true,
+      "sizeResp": 1,
+      "loadResp": {
+        "key": "cacheTest_key",
+        "value": "value",
+        "expireTimestamp": 1420953274716,
+        "createdAt": 1420953269716,
+        "readAt": null
+      },
+      "deleteResp": true
+    }
+  },
+
   inputs: {
     key: { 
       required: true,
