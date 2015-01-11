@@ -1,7 +1,6 @@
 exports.status = {
    name: 'status',
    description: 'I will return some basic information about the API',
-   outputExample: {},
    
   run: function(api, connection, next){
     connection.response.id = api.id;

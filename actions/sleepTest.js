@@ -1,7 +1,6 @@
 exports.sleepTest = {
   name: 'sleepTest',
   description: 'I will sleep and then return',
-  outputExample: {},
 
   inputs: {
     sleepDuration: {

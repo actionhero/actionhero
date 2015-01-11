@@ -1,7 +1,6 @@
 exports.cacheTest = {
   name: 'cacheTest',
   description: 'I will test the internal cache functions of the API',
-  outputExample: {},
 
   // inputs:{
   //   required: ['key', 'value'],
