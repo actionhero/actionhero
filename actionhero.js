@@ -272,13 +272,17 @@ actionhero.prototype.restart = function(callback){
 
 //
 
+var sortNumber = function(a,b) {
+    return a - b;
+}
+
 var flattenOrderedInitialzer = function(collection){
   var output = [];
   var keys = [];
   for(var key in collection){
-    keys.push(key);
+    keys.push(parseInt(key));
   }
-  keys.sort();
+  keys.sort(sortNumber);
   keys.forEach(function(key){
     collection[key].forEach(function(d){
       output.push(d);
