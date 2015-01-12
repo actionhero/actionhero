@@ -134,6 +134,18 @@ module.exports = {
         api.resque.queue.allDelayed(callback);
       },
 
+      workers: function(callback){
+        api.resque.queue.workers(callback);
+      },
+
+      workingOn: function(workerName, queues, callback){
+        api.resque.queue.workingOn(workerName, queues, callback);
+      },
+
+      allWorkingOn: function(callback){
+        api.resque.queue.allWorkingOn(callback);
+      },
+
       enqueueRecurrentJob: function(taskName, callback){
         var self = this;
         var task = self.tasks[taskName];
@@ -194,7 +206,7 @@ module.exports = {
 
       details: function(callback){
         var details = {'queues': {}, 'workers': {} };
-        api.resque.queue.allWorkingOn(function(err, workers){
+        api.tasks.allWorkingOn(function(err, workers){
           if(err){
             callback(err, details);
           }else{

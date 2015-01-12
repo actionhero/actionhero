@@ -3,7 +3,7 @@ exports.default = {
     return {
       // Should this node run a scheduler to promote delayed tasks?
       scheduler: false,
-      // what queues should the workers work?
+      // what queues should the taskProcessors work?
       queues: ['*'],
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
@@ -12,9 +12,9 @@ exports.default = {
       minTaskProcessors: 0,
       // at maximum, how many parallel taskProcessors should this node spawn?
       maxTaskProcessors: 0,
-      // how often should we check the event loop to spawn more workers?
+      // how often should we check the event loop to spawn more taskProcessors?
       checkTimeout: 500,
-      // how many ms would constitue an event loop delay to hald worker spawning?
+      // how many ms would constitue an event loop delay to halt taskProcessors spawning?
       maxEventLoopDelay: 5,
       // When we kill off a taskProcessor, should we disonnect that local redis connection?
       toDisconnectProcessors: true,
