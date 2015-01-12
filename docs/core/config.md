@@ -68,3 +68,11 @@ actionhero.start(params, function(err, api){
 ## Boot Options
 
 When launching actionhero you can specify which config directory to use with `--config=/path/to/dir` or the environment variable `ACTIONHERO_CONFIG`, otherwise `/config/` will be used from your working directory. 
+
+The priority of arguments is:
+
+1. Use the project 'config' folder, if it exists.
+2. "actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4"
+3. "ACTIONHERO_CONFIG=PATH1,PATH2 npm start"
+
+Note that if `--config` or `ACTIONHERO_CONFIG` are used, they _overwrite_ the use of the default `/config` folder. If you wish to use both, you need to re-specify "config", e.g. `--config=config,local-config`. Also, note that specifying multiple `--config` options on the command line does exactly the same thing as using one parameter with comma separators, however the environment variable method only supports the comma-delimited syntax.

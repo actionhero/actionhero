@@ -13,45 +13,24 @@ Using the [Sequelize](http://sequelizejs.com/) ORM.
 var Sequelize = require("sequelize");
 var SequelizeFixtures = require('sequelize-fixtures');
 
-exports.mySQL = function(api, next){
+module.exports = {
+  start: function(api, next){
+    api.mySQL.sequelize = new Sequelize(api.config.mySQL.database, null, null, api.config.mySQL);
 
-  api.mySQL = {
-    _start: function(api, next){
-      var self = this;
-
-      api.mySQL.sequelize = new Sequelize(api.config.mySQL.database, null, null, api.config.mySQL);
-
-      api.models = {
-        user: api.mySQL.sequelize.import(__dirname + "/../models/user.js"),
-        slug: api.mySQL.sequelize.import(__dirname + "/../models/slug.js"),
-        // ...
-      }
-
-      if(api.env === "test"){  
-        SequelizeFixtures.loadFile(__dirname + '/../test/fixtures/*.json', api.models, function(){
-          self.test(next);
-        });
-      }else{
-        self.test(next);
-      }
-    },
-
-    _teardown: function(api, next){
-      next();
-    },
-
-    test: function(next){
-      api.models.user.count().success(function(count){
-        api.log("Connected to DB and coutned " + count + " users.")
-        next();
-      }).error(function(e){
-        api.log(e, 'warning');
-        process.exit();
-      });
+    api.models = {
+      user: api.mySQL.sequelize.import(__dirname + "/../models/user.js"),
+      slug: api.mySQL.sequelize.import(__dirname + "/../models/slug.js"),
+      // ...
     }
-  }
 
-  next();
+    next();
+  },
+  
+  stop: {
+    api.mySQL.sequelize.disconnect(function(){
+      next();
+    });
+  },
 }
 {% endhighlight %}
 

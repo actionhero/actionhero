@@ -7,7 +7,7 @@ title: Documentation - Chat
 
 ## General
 
-actionhero ships with a chat framework which may be used by all persistent connections (socket and websocket).  There are methods to create chat rooms, and once rooms are created, they can have authentication rules placed on them which will inspect clients as they attempt to join them.  Chat does not have to be for peer-to-peer communication, and is a metaphor used for many things, including game state in MMOs.
+actionhero ships with a chat framework which may be used by all persistent connections (socket and websocket).  There are methods to create and manage chat rooms and control the users in those rooms.  Chat does not have to be for peer-to-peer communication, and is a metaphor used for many things, including game state in MMOs.
 
 Clients themselves interact with rooms via `verbs`.  Verbs are short-form commands that will attempt to modify the connection's state, either joining or leaving a room.  Clients can be in many rooms at once.
 
@@ -16,12 +16,13 @@ Relevant chat verbs are:
 - `roomAdd`
 - `roomLeave`
 - `roomView`
+- `say`
 
-The special verb for persistent connections `say` makes use of `api.chatRoom.broadcast` to tell a message to all other users in the room, IE: `say myRoom Hello World` from a socket client or `client.say("myRoom", 'Hello World")` for a websocket..
+The special verb for persistent connections `say` makes use of `api.chatRoom.broadcast` to tell a message to all other users in the room, IE: `say myRoom Hello World` from a socket client or `client.say("myRoom", 'Hello World")` for a websocket.
 
-Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if `api.config.redis.fake = true`, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all actionhero servers you are running in parallel. 
+Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if `api.config.redis.fake = true`, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all actionhero servers you are running in parallel.  This is how actionhero scales the chat features.
 
-There is no limit to the number of rooms which can be created, but keep in mind that each room stores information in redis, and is load on the clients connected to it.
+There is no limit to the number of rooms which can be created, but keep in mind that each room stores information in redis, and there load created for each connection.
 
 ## Methods
 
@@ -44,9 +45,6 @@ These methods are to be used within your server (perhaps an action or initialize
 ### api.chatRoom.roomStatus(room, callback)
 - callback returns (error, details); details is a hash containing room information
 
-### api.chatRoom.setAuthenticationPattern(room, key, value, callback)
-- callback returns (error)
-
 ### api.chatRoom.roomStatus(room, callback)
 - callback return (error, data)
 - data is of the form:
@@ -61,13 +59,6 @@ These methods are to be used within your server (perhaps an action or initialize
   }
 }
 {% endhighlight %}
-
-### api.chatRoom.authorize(connection, room, callback)
-- callback is of the form (error, authorized), which is `true` or `false`
-
-### api.chatRoom.reAuthenticate(connectionId, callback)
-- callback contains error and then an array of rooms the connection is still in and rooms the connection was removed from
-- you can check on connections from this or any other server in the cluster
 
 ### api.chatRoom.addMember(connectionId, room, callback)
 - callback is of the form (error, wasAdded)
@@ -89,35 +80,78 @@ These methods are to be used within your server (perhaps an action or initialize
 - After method call, always filled with `id`, based on the `connection.id` used to store the data
 - Override the entire method to use custom data as defined in `api.chatRoom.generateMemberDetails`
 
+### api.chatRoom.generateMessagePayload( message )
+- Defiens how messages from clients are sanitized
+- Override the entire method to use custom data as defined in `api.chatRoom.generateMessagePayload`
+
 ## Middleware
 
-As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is executed "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
+There are 3 types of middelware you can install for the chat system: `sayCallbacks`, `joinCallbacks`, and `leaveCallbacks`.  All chat callbacks process serially and require a callback.  This means that you can use a number of middleware to control things like room authentication and message logging/parsing. This is a signifigant change from earlier versions of actionhero.
 
-Use `api.chatRoom.addJoinCallback(function(connection, room), priority)` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room), priority)` to handle connections leaving a room. 
+### Methods
+The 3 middleware controll methods are:
 
-You can optionally provide a `priority` to control the order of operations in the middleware.
-
-You can announce to everyone else in the room when a connection joins and leaves:
 {% highlight javascript %}
-api.chatRoom.addJoinCallback(function(connection, room){
-  api.chatRoom.broadcast(connection, room, 'I have entered the room');
-});
+api.chatRoom.addJoinCallback(function(connection, room, callback){}, priority);
+// callback is of the form `function(error)`
 
-api.chatRoom.addLeaveCallback(function(connection, room){
-  api.chatRoom.broadcast(connection, room, 'I have left the room');
-});
+api.chatRoom.addLeaveCallback(function(connection, room, callback){}, priority);
+// callback is of the form `function(error)`
+
+api.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){}, priority);
+// callback is of the form `function(error, modifiedMessagePayload)`
 {% endhighlight %}
 
-## Authentication
+Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb will not complete.
 
-When you set a rooms' authentication paten with `api.chatRoom.setAuthenticationPatern`, you are describing a hash which a client needs to match to enter the room.
+### Examples
+Here are examples on how to use each type:
 
-- `api.chatRoom.setAuthenticationPatern('myRoom', 'type', 'websocket')` would only allow websocket clients in
-- `api.chatRoom.setAuthenticationPatern('myRoom', 'auteneticated', true)` would only allow clients in which have previously been modified by `connection.authenticated = true; connection._originalConnection.authenticated = true;` probably in an action or middleware.
+{% highlight javascript %}
+var chatMiddlewareToAnnounceNewMembers = function(connection, room, callback){
+  api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+      callback();
+  });
+}
 
-Clients' authentication is re-checked when you make a change, and when they join the room.
+api.chatRoom.addJoinCallback(chatMiddlewareToAnnounceNewMembers, 100);
 
-If you delete a room with connections still in it, clients will be notified and kicked out.
+var chatMiddlewareToAnnounceGoneMembers = function(connection, room, callback){
+  api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+      callback();
+  });
+}
+
+api.chatRoom.addLeaveCallback(chatMiddlewareToAnnounceGoneMembers, 100);
+
+var middlewareToAddSimleyFacesToAllMessages = function(connection, room, messagePayload, callback){
+  messagePayload.message = messagePayload.message + ' :)';
+  callback(null, messagePayload);
+}
+
+api.chatRoom.addSayCallback(middlewareToAddSimleyFacesToAllMessages, 100);
+{% endhighlight %}
+
+### Notes
+- In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty `{}` connection is used to proxy the message coming from the 'system'
+- Only the `sayCallbacks` have a second return value on the callback, `messagePayload`.  This allows you to modify the message being sent to your clients. 
+- `messagePayload` will be modified and and passed on to all `addSayCallback` middlewares inline, so you can append and modify it as you go
+- If you have a number of callbacks (`sayCallbacks`, `joinCallbacks` or  `leaveCallbacks`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.  
+
+{% highlight javascript %}
+// in this example no one will be able to join any room, and the broadcast callback will never be invoked.
+api.chatRoom.addJoinCallback(function(connection, room, callback){
+  callback(new Error('blocked from joining the room'));
+}, 100);
+
+api.chatRoom.addJoinCallback(function(connection, room, callback){
+  api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+    callback();
+  });
+}, 200);
+{% endhighlight %}
+
+If a `sayCallback` is blocked/errored, the message will simply not be delivered to the client.  If a  `joinCallbacks` or  `leaveCallbacks` is blocked/errored, the verb or method used to invoke the call will be returned that error.
 
 ## Chatting to specific clients
 
@@ -132,11 +166,7 @@ The details of communicating within a chat room are up to each individual server
 - Once a client is in a room, they will revive messages from other members of the room as events.  For example, catching say events from the websocket client looks like `client.on('say', function(message){ console.log(message); })`.  You can inspect `message.room` if you are in more than one room.
   - The payload of a message will contain the room, sender, and the message body: `{message: "Hello World", room: "SecretRoom", from: "7d419af9-accf-40ac-8d78-9281591dd59e", context: "user", sentAt: 1399437579346} `
 
-The flow for an authenticated rooom is: 
+If you want to create an authenticated room, there are 2 steps:
 
-- Only the server(s) can create rooms with `api.chatRoom.add('secretRoom')`
-- Once a room is created, you can then set an authentication rule for clients joining it: `api.chatRoom.setAuthenticationPattern('secretRoom','authenticated', true)`
-  - This means that every `connection` which attempts to join this room, actionhero will check that `connection.authenticated == true` before allowing them in.
-- `connection`s can only modify their `connection.params` hash, which means that only the sever can ever modify `connection.authenticated`, which makes it a safe key for authentication.
-- In your authentication (login) action, you can set that authentication bit, ie: `connection.authenticated = true; connection._originalConnection.authenticated = true; `. 
-- You can get more elaborate with this kind of thing.  Perhaps you only want each user to be allowed in one room at all.  Then do something like `api.chatRoom.setAuthenticationPattern('secretRoom','authorizedRoom','secretRoom')`. 
+- First, create an action which modifies some property eitehr on the connection object it self, or stores permissions to a database.
+- Then, create a `joinCallback`-style middleware which cheks these values.

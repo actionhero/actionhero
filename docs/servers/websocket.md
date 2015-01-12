@@ -13,7 +13,7 @@ Actionhero will generate the client-side javascript needed for you (based on the
 
 **Warning**
 
-In `v9.0.0`, actionhero will no longer attempt to manage non-sticky client connections. This means if you have a multi-server actionhero deployment and you use long-polling in your websocket transport, you will need to ensure that your load balancer can enforce sticky connections, meaning every request from the client will hit the same actionhero node.
+In `v9.0.0` and later, actionhero will no longer attempt to manage non-sticky client connections. This means if you have a multi-server actionhero deployment and you use long-polling in your websocket transport, you will need to ensure that your load balancer can enforce sticky connections, meaning every request from the client will hit the same actionhero node.
 
 ## Connection Details
 
@@ -33,7 +33,7 @@ An example web socket session might be the following:
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })
 
-  client.on('error',        function(){ console.log('error', err.stack) })
+  client.on('error',        function(err){ console.log('error', err.stack) })
   client.on('reconnect',    function(){ console.log('reconnect') })
   client.on('reconnecting', function(){ console.log('reconnecting') })
   
@@ -68,25 +68,42 @@ If you want to communicate with a websocket client outside of an action, you can
 
 Methods which the provided actionheroWebSocket object expose are:
 
-- `client.connect(callback)`
-- `client.action(action, params, callback)`
+#### client.connect(callback)
+  - `callback` will contain (error, detauils)
+  - details here is the same as the `detailsView` method
+
+#### client.action(action, params, callback)
   - `action` is a string, like "login"
   - `params` is an object
   - `callback` will be passed `response` (and you can inspect `response.error`)
-- `client.say(room, message, callback)`
+
+#### client.say(room, message, callback)
   - `message` is a string
-  - `callback` will be passed `error`, `response`
-- `client.detailsView(callback)`
+  - may contain an `error`
+  - note that you have to first join a room with `roomAdd` to chat within it of recieve events
+
+#### client.detailsView(callback)
   - `callback` will be passed `error`, `response` 
-- `client.roomView(room, callback)`
-- `client.roomAdd(room, callback)`
+  - the first response from detailsView will also always be saved to `client.details` for later inspection
+  - may contain an `error`
+
+#### client.roomView(room, callback)
+  - will return metadata about the room 
+  - may contain an `error`
+
+#### client.roomAdd(room, callback)
   - `room` is a string
-  - `callback` will be passed `error`, `response`
-- `client.roomLeave(room, callback)`
+  - may contain an `error`
+
+#### client.roomLeave(room, callback)
   - `room` is a string
-  - `callback` will be passed `error`, `response`
-- `client.file(callback)`
-- `client.disconnect()`
+  - may contain an `error`
+
+#### client.file(callback)
+  - see below for details
+
+#### client.disconnect()
+  - instantly sever the connection to the server
 
 The contents of the `file` callback look like:
 {% highlight javascript %}
@@ -99,6 +116,41 @@ The contents of the `file` callback look like:
   mime: "text/html"
 }
 {% endhighlight %}
+
+## Events
+
+#### client.on('connected',    function(){ console.log('connected!') })
+  - no event data
+
+#### client.on('disconnected', function(){ console.log('disconnected :(') })
+  - no event data
+
+#### client.on('error',        function(error){ console.log('error', error.stack) })
+  - this is fired when a general error is encountered (outside of an action or verb)
+  - this may fire when a general server error occurs
+
+#### client.on('reconnect',    function(){ console.log('reconnect') })
+  - fired when client has reconnected
+  - this will indicate that details, connection.id and other server-generated settings may have changed
+
+#### client.on('reconnecting', function(){ console.log('reconnecting') })
+  - client is attempting to reconnect to server
+
+#### client.on('message',      function(message){ console.log(message) })
+  - this is VERY noisy, and is fired on all messages from the server, regardless of context or callback
+
+#### client.on('alert',        function(message){ alert(message) })
+  - fired when message recieved from the server's context is specifically 'alert'
+
+#### client.on('api',          function(message){ alert(message) })
+  - fired when message recieved from the server's context is unknown
+
+#### client.on('welcome',      function(message){ appendMessage(message); })
+  - server's welcome message
+
+#### client.on('say',          function(message){ appendMessage(message); })
+  - fired on all say messages from other clients in all rooms
+  - message.room can be inspected
 
 ## Linking websockets to web auth
 
@@ -121,6 +173,8 @@ clientJsPath:     'javascript/',
 // do not include the file exension
 // set to `null` to not render the client-side JS on boot
 clientJsName:     'actionheroClient',
+// should the server signal clients to not reconnect when the server is shutdown/reboot
+destroyClientsOnShutdown: false,
 
 // Primus Server Options: 
 server: {

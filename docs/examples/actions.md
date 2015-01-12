@@ -11,8 +11,6 @@ title: Documentation - Example Actions
 
 **[status](https://github.com/evantahler/actionhero/blob/master/actions/status.js)**: This action will render some statistics about this actionhero node, and all nodes in the cluster.  Useful for health checks.
 
-**[inspectTasks](https://gist.github.com/4399793)**: This action will retrieve the status of the task queue.
-
 **[SimpleFileResponder](https://gist.github.com/evantahler/9541992)**: This action demonstrates how you can can manually send files from within actions.
 
 **[JadefileResponder](https://gist.github.com/connanp/6169574)**: This snippet is for rendering Jade templates on the server for pushState single page apps in actionhero. Useful when you need to bootstrap model data on initial page load. It also pre-compiles the templates on server start and will recompile if they change.

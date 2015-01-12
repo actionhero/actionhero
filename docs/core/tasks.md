@@ -7,11 +7,11 @@ title: Documentation - Tasks
 
 ## General
 
-Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem. There are [a number of example tasks provided](Example-tasks).
+Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem.
 
 There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `periodic`.
 
-  * `normal` tasks are enqueued and processed one-by-one by the task workers
+  * `normal` tasks are enqueued and processed one-by-one by the task TaskProcessors
   * `delayed` tasks are enqueued in a special 'delayed' queue to only be processed at some time in the future (defined either by a timestamp or seconds-from-now)
   * `periodic` tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).  Delayed tasks can take no input parameters.
 
@@ -20,26 +20,29 @@ There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `per
 When enqueuing a task from your code, it's as simple as
 
 {% highlight javascript %}
+// api.tasks.enqueue(nameOfTask, args, queue, callback)
 api.tasks.enqueue("sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
-  // done!
+  // enqueued!
 });
 {% endhighlight %}
 
-"sendWelcomeEmail" should be a task defined in the project, and `{to: 'evan@evantahler.com'}` are arguments to that task.  This task will be processed by workers assigned to the 'default queue'.
+"sendWelcomeEmail" should be a task defined in the project, and `{to: 'evan@evantahler.com'}` are arguments to that task.  This task will be processed by TaskProcessors assigned to the 'default queue'.
 
 You can also enqueue tasks to be run at some time in the future:
 
 {% highlight javascript %}
+// api.tasks.enqueue(timestamp, nameOfTask, args, queue, callback)
 api.tasks.enqueueAt(1234556, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
-  // done!
+  // enqueued!
 });
 {% endhighlight %}
 
 or
 
 {% highlight javascript %}
+// api.tasks.enqueue(delay, nameOfTask, args, queue, callback)
 api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
-  // done!
+  // enqueued!
 });
 {% endhighlight %}
 
@@ -49,22 +52,45 @@ The final type of task, periodic tasks, are defined with a `task.frequency` of g
 
 ## Processing Tasks
 
-To work these tasks, you need to run actionhero with at least one worker.  Workers are defined by the queues they are to work within `config/tasks.js`.  Workers run in-line with the rest of your server and process jobs.  
+To work these tasks, you need to run actionhero with at least one `taskProcessor`.  `TaskProcessor`s run in-line with the rest of your server and process jobs.  This is controlled by settings in [/config/tasks.js](https://github.com/evantahler/actionhero/blob/master/config/tasks.js).
 
-If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of actionhero that will periodically check the delayed queues for jobs that are ready to work now, and pass them to the normal queues.
+If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of actionhero that will periodically check the delayed queues for jobs that are ready to work now, and move them to the normal queues when the time comes.
 
-If I wanted to run 2 workers and a scheduler to run the jobs enqueued in the default queues above, I would do the following:
+Because node and actionhero are asynchronous, we can process more than one job at a time.  However, if the jobs we are processing are CPU-intensive, we want to limit how many we are working.  To do this, we tell actionhero to work somewhere between `minTaskProcessors` and `maxTaskProcessors` and check every so often if the server could be working more or less jobs at a time.  Depending on the response charecteristics you want for your server, you will be modifying these values.  
+
+In production, it is best to set up some actionhero servers that only handle requests from clients (servers, and no TaskProcessors) and other that handle no requests, and only process jobs (no servers, many `TaskProcessor`s).
+
+As you noticed above, when you enqueue a task, you tell it which queue to be enqueued within.  This is so you can separate load or priority.  For example, you might have a `high` priority queue which does jobs like "sendPushMessage" and a `low` priority queue which does a task like "cleanupCache".  You tell the `taskProcessor`s which jobs to work, and in which priority. For the example above, you would ensure that all `high` jobs happen before all `low` jobs by setting: `api.config.tasks.queues = ['high', 'low']`
+
+From the /config/tasks.js:
 
 {% highlight javascript %}
-config.tasks = {
-  scheduler: true,    
-  queues: ['default', 'default'],   
-  timeout: 5000,
-  redis: config.redis,
+exports.default = { 
+  tasks: function(api){
+    return {
+      // Should this node run a scheduler to promote delayed tasks?
+      scheduler: false,
+      // what queues should the TaskProcessors work?
+      queues: ['*'],
+      // how long to sleep between jobs / scheduler checks
+      timeout: 5000,
+      // at minimum, how many parallel taskProcessors should this node spawn?
+      // (have number > 0 to enable, and < 1 to disable)
+      minTaskProcessors: 0,
+      // at maximum, how many parallel taskProcessors should this node spawn?
+      maxTaskProcessors: 0,
+      // how often should we check the event loop to spawn more TaskProcessors?
+      checkTimeout: 500,
+      // how many ms would constitue an event loop delay to halt TaskProcessors spawning?
+      maxEventLoopDelay: 5,
+      // When we kill off a taskProcessor, should we disonnect that local redis connection?
+      toDisconnectProcessors: true,
+      // What redis server should we connect to for tasks / delayed jobs?
+      redis: api.config.redis
+    }
+  }
 }
 {% endhighlight %}
-
-You can also set workers to work the `"*"` queue, and process any job they can find.
 
 ## Creating a Task
 
@@ -73,8 +99,8 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 * `task.name`: The unique name of your task
 * `task.description`: a description
 * `task.queue`: the default queue to run this task within (can be overwritten when enqueued)
-* `task.frequency`: In milliseconds, how often should I run?.  A frequency of >0 denotes this task as periodic and actionhero will automatically enqueue it when required.
-* `task.plugins`: You can use resque plugins in your task from the node-resque project.  Plugins modify how your tasks are enqueued.  For example, if you use the `queue-lock` plugin, only one instance of any job (with similar arguments) can be enqueued at a time.
+* `task.frequency`: In milliseconds, how often should I run?.  A frequency of >0 denotes this task as periodic and actionhero will automatically enqueued when the server boots.  Only one instance of a periodic task will be enqueued within the cluster at a time, regardless of how many actionhero nodes are connected.
+* `task.plugins`: You can use resque plugins in your task from the node-resque project.  Plugins modify how your tasks are enqueued.  For example, if you use the `queue-lock` plugin, only one instance of any job (with similar arguments) can be enqueued at a time.  You can learn more about plugins from the [node-resque project](https://github.com/taskrabbit/node-resque#plugins).
 * `task.pluginOptions`: a hash of options for the plugins
     
 
@@ -174,13 +200,39 @@ actionhero provides some methods to help inspect the state of your queue
 - will remove all instances of `taskName` from the delayed queues and normal queues
 - removedCount will inform you of how many instances of this job were removed
 
+#### api.tasks.timestamps(next)
+- next(err, timestamps)
+- will return an array of all timesamps which have at least one job scheduled to be run 
+- for use with `api.tasks.delayedAt`
+
+#### api.tasks.delayedAt(timestamp, next)
+- next(err, jobs)
+- will return the list of jobs enqueued to run after this timestamp
+
+#### api.tasks.allDelayed(next)
+- next(err, jobs)
+- will return the list of all jobs enqueued by the timestamp they are enqueued to run at
+
+#### api.tasks.workers(next)
+- next(err, workers)
+- list all taskProcessors
+
+#### api.tasks.queue.workingOn(workerName, queues, next)
+- next(err, status)
+- list what a specific taskProcessors (defined by the name of the server + queues) is working on (or sleeping)
+
+#### api.tasks.queue.allWorkingOn(workerName, queues, next)
+- next(err, workers)
+- list what all taskProcessors are working on (or sleeping)
+
 #### api.tasks.details(next)
 - next(err, details)
 - details is a hash of all the queues in the system and how long they are
+- this method also returns metadata about the taskProcessors and what they are currently working on
 
 ## Notes
 
-Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is **allowed** to run, not when it **will** run.  Workers will work tasks in a first-in-first-out manner.  Workers also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
+Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is **allowed** to run, not when it **will** run.  TaskProcessors will work tasks in a first-in-first-out manner.  TaskProcessors also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
 
 Remember that each actionhero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this **will** block tasks, actions, and clients from working.  However, if your tasks are meant to communication with external services (reading from a database, sending an email, etc), then these are perfect candidates to be run simultaneously.  
 
