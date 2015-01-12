@@ -27,7 +27,7 @@ exports.generate = function(binary, next){
     publicIndex          : '/public/index.html',
     publicChat           : '/public/chat.html',
     publicLogo           : '/public/logo/actionhero.png',
-    publicSky            : '/public/logo/sky.png',
+    publicSky            : '/public/logo/sky.jpg',
     publicCss            : '/public/css/actionhero.css',
     exampleTest          : '/test/template.js.example'
   }
@@ -105,7 +105,7 @@ exports.generate = function(binary, next){
     '/public/chat.html'                             : 'publicChat',
     '/public/css/actionhero.css'                    : 'publicCss',
     '/public/logo/actionhero.png'                   : 'publicLogo',
-    '/public/logo/sky.png'                          : 'publicSky',
+    '/public/logo/sky.jpg'                          : 'publicSky',
     '/README.md'                                    : 'readmeMd',
     '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'exampleTest'
