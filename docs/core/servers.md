@@ -10,7 +10,7 @@ In actionhero v6.0.0 and later, we have introduced a modular server system which
 To get started, you can use the `generateServer action` (name is required).  This will generate a template server which looks like this:
 
 {% highlight javascript %}
-var test = function(api, options, next){
+var initialize = function(api, options, next){
 
   //////////
   // INIT //
@@ -31,9 +31,9 @@ var test = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server._start = function(next){}
+  server.start = function(next){}
 
-  server._stop = function(next){}
+  server.stop = function(next){}
 
   server.sendMessage = function(connection, message, messageCount){}
 
@@ -58,11 +58,11 @@ var test = function(api, options, next){
 
 /////////////////////////////////////////////////////////////////////
 // exports
-exports.test = test;
+exports.initialize = initialize;
 
 {% endhighlight %}
 
-Like initializers, the `_start` and `_stop` methods will be called when the server is to boot up in actionhero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
+Like initializers, the `start()` and `stop()` methods will be called when the server is to boot up in actionhero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
 
 Your job, as a server designer, is to coerce every client's connection into a connection object.  This is done with the `sever.buildConnection` helper.  Here is an example from the `web` server:
 

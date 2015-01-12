@@ -163,10 +163,10 @@ connection = new api.connection({
 
 connections should use the verbs `roomChange` or `listenToRoom` to move around rooms.  These methods are for the server to manage rooms.
 
-### api.chatRoom.socketRoomBroadcast(connection, message, callback)
+### api.chatRoom.broadcast(connection, room, message, callback)
 - tell a message to all members in a room.
 - connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form `{room: "someOtherRoom}`.  mockConnections without an id will be assigned the id of 0
-- The `context` of messages sent with `api.chatRoom.socketRoomBroadcast` always be `user` to differentiate these responses from a `responsee` to a request
+- The `context` of messages sent with `api.chatRoom.broadcast` always be `user` to differentiate these responses from a `responsee` to a request
 
 ### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
@@ -179,9 +179,6 @@ connections should use the verbs `roomChange` or `listenToRoom` to move around r
 
 ### api.chatRoom.roomStatus(room, callback)
 - callback returns (error, details); details is a hash containing room information
-
-### api.chatRoom.setAuthenticationPattern(room, key, value, callback)
-- callback returns (error)
 
 ### api.chatRoom.roomStatus(room, callback)
 - callback return (error, data)
@@ -198,18 +195,11 @@ connections should use the verbs `roomChange` or `listenToRoom` to move around r
 }
 {% endhighlight %}
 
-### api.chatRoom.authorize(connection, room, callback)
-- callback is of the form (error, authorized), which is `true` or `false`
-
-### api.chatRoom.reAuthenticate(connectionId, callback)
-- callback contains error and then an array of rooms the connection is still in and rooms the connection was removed from
-- you can check on connections from this or any other server in the cluster
-
 ### api.chatRoom.addMember(connectionId, room, callback)
 - callback is of the form (error, wasAdded)
 - you can add connections from this or any other server in the cluster
 
-### api.chatRoom.removeMember(connectionId, callback)
+### api.chatRoom.removeMember(connectionId, room, callback)
 - callback is of the form (error, wasRemoved)
 - you can remove connections from this or any other server in the cluster
 
@@ -242,6 +232,10 @@ connections should use the verbs `roomChange` or `listenToRoom` to move around r
   }
 {% endhighlight %}
 Now data stored for room members will contain the `userId`, that can be mapped to project database or what have you.
+
+### api.chatRoom.generateMessagePayload( message )
+- Defiens how messages from clients are sanitized
+- Override the entire method to use custom data as defined in `api.chatRoom.generateMessagePayload`
 
 ## File Server
 
@@ -308,6 +302,11 @@ next(connection, false);
 - next()
 - enqueue a task to run in `time`ms from now
 
+### api.tasks.scheduledAt(queue, taskName, args, next)
+- next(err, timestamps)
+- finds all matching instances of queue + taskName + args from the delayed queues
+- timestamps will be an array of the delayed timestamps
+
 ### api.tasks.del(queue, taskName, args, count, next)
 - next(err, count)
 - removes all matching instances of queue + taskName + args from the normal queues
@@ -328,9 +327,35 @@ next(connection, false);
 - will remove all instances of `taskName` from the delayed queues and normal queues
 - removedCount will inform you of how many instances of this job were removed
 
+### api.tasks.timestamps(next)
+- next(err, timestamps)
+- will return an array of all timesamps which have at least one job scheduled to be run 
+- for use with `api.tasks.delayedAt`
+
+### api.tasks.delayedAt(timestamp, next)
+- next(err, jobs)
+- will return the list of jobs enqueued to run after this timestamp
+
+### api.tasks.allDelayed(next)
+- next(err, jobs)
+- will return the list of all jobs enqueued by the timestamp they are enqueued to run at
+
+### api.tasks.workers(next)
+- next(err, workers)
+- list all taskProcessors
+
+### api.tasks.queue.workingOn(workerName, queues, next)
+- next(err, status)
+- list what a specific taskProcessors (defined by the name of the server + queues) is working on (or sleeping)
+
+### api.tasks.queue.allWorkingOn(workerName, queues, next)
+- next(err, workers)
+- list what all taskProcessors are working on (or sleeping)
+
 ### api.tasks.details(next)
 - next(err, details)
 - details is a hash of all the queues in the system and how long they are
+- this method also returns metadata about the taskProcessors and what they are currently working on
 
 ## Log
 
@@ -368,18 +393,27 @@ next(connection, false);
 - called when a connection leaves the server
 - priority is optional
 
-### api.chatRoom.addJoinCallback(function(connection, room), priority)
+### api.chatRoom.addJoinCallback(function(connection, room, callback), priority)
 - chat middleware
-- there is no callback
 - called when a connection joins a room
 - priority is optional
+- callback(error)
+  - error will block the client from joining the room
 
-### api.chatRoom.addLeaveCallback(function(connection, room), priority)
+### api.chatRoom.addLeaveCallback(function(connection, room, callback), priority)
 - chat middleware
-- there is no callback
 - called when a connection leaves a room
 - priority is optional
+- callback(error)
+  - error will block the client from leaving the room
 
+### api.chatRoom.addSayCallback(function(connection, room, messagePayload, callback), priority)
+- chat middleware
+- there is no callback
+- priority is optional
+- callback(error, modifiedMessagePayload)
+  - error will block the client sending the message
+  - modifiedMessagePayload will be passed to next middleware and eventually on to the client 
 
 ## Testing
 

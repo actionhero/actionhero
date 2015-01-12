@@ -5,13 +5,13 @@ title: Documentation - Plugins
 
 # Plugins
 
-As of actionhero version 8.0.0, you can create and include plugins for you actionhero project.  Plugins are collections of `tasks`, `actions`, `servers`, and `initializers` that are collected as a module.  You can install plugins via NPM or keep them in a local path.
+As of actionhero version `v8.0.0`, you can create and include plugins for you actionhero project.  Plugins are collections of `tasks`, `actions`, `servers`, and `initializers` that are collected as a module.  You can install plugins via NPM or keep them in a local path.
 
-Plugins are loaded after all local actionhero project files.
+Plugins are loaded after all local actionhero project files, but initializers follow the same priority scheme as all other initializers.
 
 ## Including Plugins
 
-`api.config.general.paths.plugin` is an array which contains the search path for your plugins.  This will default to `./node_modules`, but you can add a local path to your project.  Once you have the plugin search paths set up, you use `api.config.general.plugins` to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.
+`api.config.general.paths.plugin` (loaded from `/config/api.js`) is an array which contains the search path for your plugins.  This will default to `./node_modules`, but you can add a local path to your project.  Once you have the plugin search paths set up, you use `api.config.general.plugins` (loaded from `/config/plugins.js`) to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.
 
 ## Creating Plugins
 

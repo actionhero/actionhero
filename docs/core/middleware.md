@@ -71,19 +71,44 @@ api.connections.addDestroyCallback(function(connection){
 
 ## Chat Middleware
 
-The last type of middleware is used to act when a connection joins or leads a chat room.  As we do not want to block the ability for a connection to join a room (we already have authentication tools in place), Chat Middleare does not have a callback and is executed "in parallel" to the connection actually joining the room.  This middleware can be used for announcing members joining and leaving to other members in the chat room or logging stats.
+The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 3 types of middleware for each step: `sayCallbacks`, `joinCallbacks`, and `leaveCallbacks`.
 
-Use `api.chatRoom.addJoinCallback(function(connection, room), priority)` to add a Join Callback, and use `api.chatRoom.addLeaveCallback(function(connection, room), priority)` to handle connections leaving a room.
-
-You can optionally provide a `priority` to control the order of operations in the middleware.
-
-You can announce to everyone else in the room when a connection joins and leaves:
 {% highlight javascript %}
-api.chatRoom.addJoinCallback(function(connection, room){
-  api.chatRoom.broadcast(connection, room, 'I have entered the room');
-});
+api.chatRoom.addJoinCallback(function(connection, room, callback){}, priority);
+// callback is of the form `function(error)`
 
-api.chatRoom.addLeaveCallback(function(connection, room){
-  api.chatRoom.broadcast(connection, room, 'I have left the room');
-});
+api.chatRoom.addLeaveCallback(function(connection, room, callback){}, priority);
+// callback is of the form `function(error)`
+
+api.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){}, priority);
+// callback is of the form `function(error, modifiedMessagePayload)`
 {% endhighlight %}
+
+{% highlight javascript %}
+var chatMiddlewareToAnnounceNewMembers = function(connection, room, callback){
+  api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+      callback();
+  });
+}
+
+api.chatRoom.addJoinCallback(chatMiddlewareToAnnounceNewMembers, 100);
+
+var chatMiddlewareToAnnounceGoneMembers = function(connection, room, callback){
+  api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+      callback();
+  });
+}
+
+api.chatRoom.addLeaveCallback(chatMiddlewareToAnnounceGoneMembers, 100);
+
+var middlewareToAddSimleyFacesToAllMessages = function(connection, room, messagePayload, callback){
+  messagePayload.message = messagePayload.message + ' :)';
+  callback(null, messagePayload);
+}
+
+api.chatRoom.addSayCallback(middlewareToAddSimleyFacesToAllMessages, 100);
+{% endhighlight %}
+
+Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb will not complete.
+
+More detail and nuance on chat middleware can be found in the [chat section](/docs/core/chat.html)

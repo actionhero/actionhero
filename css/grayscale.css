@@ -263,12 +263,12 @@ a:focus {
 }
 
 .content-section {
-    padding-top: 100px;
+    padding-top: 50px;
 }
 
 .thin-content-section {
-    /*padding-top: 10px;*/
-    padding-bottom: 10px;
+    padding-top: 30px;
+    padding-bottom: 0px;
 }
 
 .highlight {
@@ -317,11 +317,11 @@ a:focus {
 
 @media(min-width:767px) {
     .content-section {
-        padding-top: 250px;
+        padding-top: 50px;
     }
 
     .download-section {
-        padding: 100px 0;
+        padding: 50px 0;
     }
 
     #map {
