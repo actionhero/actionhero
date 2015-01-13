@@ -27,11 +27,8 @@ exports.default = {
 exports.test = {
   tasks: function(api){
     return {
-      scheduler: false,
       timeout: 100,
-      queues: ['*'],
-      checkTimeout: 50,
-      redis: api.config.redis
+      checkTimeout: 50
     }  
   }
 }
