@@ -179,7 +179,7 @@ describe('Core: Binary', function(){
     });
   });
 
-  it('can generate can run a single server')
-  it('can generate can run a cluster')
+  it('can run a single server')
+  it('can run a cluster')
 
 });
