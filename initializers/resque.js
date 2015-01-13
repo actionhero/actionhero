@@ -95,7 +95,7 @@ module.exports = {
 
       stopMultiWorker: function(callback){
         var self = this;
-        if(api.config.tasks.minWorkers > 0){
+        if(api.config.tasks.minTaskProcessors > 0){
           self.multiWorker.stop(function(){
             api.log("task workers stopped");
             callback();
