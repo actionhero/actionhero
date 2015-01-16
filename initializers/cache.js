@@ -269,16 +269,5 @@ module.exports = {
     }
 
     next();
-  },
-
-  start: function(api, next){
-    api.cache.size(function(err, count){
-      if(err){
-        api.log('error connecting to the cache: ' + String(err), 'fatal');
-      }
-      api.log('connected to the cache with ' + count + ' existing objects', 'debug');
-      
-      next();
-    });
   }
 }
