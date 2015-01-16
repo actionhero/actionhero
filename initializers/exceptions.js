@@ -31,7 +31,9 @@ module.exports = {
 
       else if(type === 'task'){
         extraMessages.push('! uncaught error from task: ' + name + ' on queue ' + objects.queue + ' (worker #' + objects.workerId + ')');
-        extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
+        try{
+          extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
+        }catch(e){}
       }
 
       else {
