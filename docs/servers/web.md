@@ -243,8 +243,9 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
   - IE: /api/user/123?userId=456 => `connection.userId = 123`
 - routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"
 - use ":variable" to define "variable"
-- an undefined ":variable" will match
-  - IE: "/api/user/" WILL match "/api/user/:userId"
+- an undefined ":variable" will not match
+  - IE: "/api/user/" will not match "/api/user/:userId"
+  - You would need a second route in this case to match "/api/user"
 - routes are matched as defined top-down in `routes.js`
 - you can optionally define a regex match along with your route variable
   - IE: `{ path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }`
