@@ -164,6 +164,21 @@ a:focus {
     vertical-align: middle;
 }
 
+.learn-more-intro {
+    display: table;
+    width: 100%;
+    height: auto;
+    padding: 100px 0;
+    text-align: center;
+    color: #fff;
+    background: url(/img/actionheroBoot.gif) no-repeat bottom left scroll;
+    background-color: #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
 .brand-heading {
     font-size: 40px;
 }
@@ -313,6 +328,17 @@ a:focus {
 .feature-description {
     font-size: 120%;
     text-align: left;
+}
+
+.learn-more-section {
+    width: 100%;
+    padding: 0px 0;
+    color: #fff;
+    background-color: red;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
 }
 
 @media(min-width:767px) {
