@@ -26,11 +26,12 @@ Currently actionhero supports:
 [You can also make your own servers and transports.](http://actionherojs.com/docs/core/servers.html)
 
 ## Quick Start
-
-- `mkdir new_project; cd new_project`
-- `npm install actionhero`
-- `./node_modules/.bin/actionhero generate`
-- `npm start`
+```bash
+# mkdir new_project; cd new_project
+npm install actionhero
+./node_modules/.bin/actionhero generate
+npm start
+```
 
 Or spawn a web API server now:
 
