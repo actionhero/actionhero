@@ -27,6 +27,7 @@ Currently actionhero supports:
 
 ## Quick Start
 
+- `mkdir new_project; cd new_project`
 - `npm install actionhero`
 - `./node_modules/.bin/actionhero generate`
 - `npm start`
