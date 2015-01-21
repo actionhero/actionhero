@@ -11,6 +11,7 @@
 [![Build Status](https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat)](http://travis-ci.org/evantahler/actionhero)
 [![Dependency Status](https://img.shields.io/gemnasium/evantahler/actionhero.svg?style=flat)](https://gemnasium.com/evantahler/actionhero)
 [![Gitter](http://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-2DCC76.svg?style=flat)](https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Coverage Status](https://coveralls.io/repos/evantahler/actionhero/badge.svg)](https://coveralls.io/r/evantahler/actionhero)
 
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionhero.png)](http://demo.actionherojs.com)
 
