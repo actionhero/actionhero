@@ -1,17 +1,20 @@
-# actionhero.js 
+# actionhero.js
 ## The Reusable, Scalable, and Quick node.js API Server
+<p align="center"><img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/></p>
 
-**Links: [NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](https://gitter.im/evantahler/actionhero) | [Client](https://github.com/evantahler/actionhero_client)**
+***
+**[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](https://gitter.im/evantahler/actionhero) | [Client](https://github.com/evantahler/actionhero_client)**
+***
 
-<img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/>
-
-[![Nodei stats](https://nodei.co/npm/actionhero.png?downloads=true)](https://npmjs.org/package/actionhero)
-
-[![NPM](https://nodei.co/npm-dl/actionhero.png)](https://npmjs.org/package/actionhero)
+![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat)
+![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat)
+[![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat)](https://npmjs.org/package/actionhero)
 
 [![Nodejitsu Deploy Status Badges](https://webhooks.nodejitsu.com/evantahler/actionhero.png)](http://demo.actionherojs.com)
 
-[![Build Status](https://secure.travis-ci.org/evantahler/actionhero.png?branch=master)](http://travis-ci.org/evantahler/actionhero) [![Dependency Status](https://gemnasium.com/evantahler/actionhero.svg)](https://gemnasium.com/evantahler/actionhero) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat)](http://travis-ci.org/evantahler/actionhero)
+[![Dependency Status](https://img.shields.io/gemnasium/evantahler/actionhero.svg?style=flat)](https://gemnasium.com/evantahler/actionhero)
+[![Gitter](http://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-2DCC76.svg?style=flat)](https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
 ## Who is the actionhero?
@@ -35,7 +38,7 @@ npm start
 
 Or spawn a web API server now:
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/evantahler/actionhero)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/evantahler/actionhero)
 
 ## Want more?
 
