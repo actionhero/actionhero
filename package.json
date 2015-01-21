@@ -29,27 +29,29 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "grunt": "~0.4.2",
-    "browser_fingerprint": "~0.0.6",
-    "node-resque": "0.11.5",
     "async": "~0.9.0",
-    "formidable": "~1.0.14",
-    "mime": "~1.2.11",
-    "redis": "~0.12.0",
-    "ws": "~0.6.3",
-    "optimist": "~0.6.1",
-    "winston": "~0.8.1",
-    "node-uuid": "~1.4.1",
+    "browser_fingerprint": "~0.0.6",
     "fakeredis": "~0.3.0",
+    "formidable": "~1.0.14",
+    "grunt": "~0.4.2",
+    "mime": "~1.2.11",
+    "node-resque": "0.11.5",
+    "node-uuid": "~1.4.1",
+    "optimist": "~0.6.1",
     "primus": "~2.4.0",
+    "redis": "~0.12.0",
     "uglify-js": "~2.4.14",
-    "istanbul": "^0.3.2"
+    "winston": "~0.8.1",
+    "ws": "~0.6.3"
   },
   "devDependencies": {
     "mocha": "~2.x",
     "should": "~4.x",
     "request": "~2.51.x",
-    "redis-sentinel-client": "latest"
+    "redis-sentinel-client": "latest",
+    "blanket": "^1.1.6",
+    "coveralls": "^2.11.2",
+    "mocha-lcov-reporter": "0.0.1"
   },
   "optionalDependencies": {},
   "bin": {
@@ -58,8 +60,16 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "echo \"** FakeRedis -> `echo $FAKEREDIS`, ActionDomains -> `echo $ACTIONDOMAINS` **\" && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
+    "test": "echo \"** FakeRedis -> `echo $FAKEREDIS`, ActionDomains -> `echo $ACTIONDOMAINS` **\" && NODE_ENV=test node ./node_modules/.bin/mocha",
+    "coverage": "NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha --require blanket --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero"
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "actions", "bin", "client", "config", "grunt", "initializers", "servers", "tasks"
+      ]
+    }
   },
   "subdomain": "actionhero",
   "domains": [
