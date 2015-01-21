@@ -66,9 +66,8 @@
   },
   "config": {
     "blanket": {
-      "pattern": [
-        "actions", "bin", "client", "config", "grunt", "initializers", "servers", "tasks"
-      ]
+      "pattern": [ "actions", "bin", "client", "config", "grunt", "initializers", "servers", "tasks" ],
+      "data-cover-never": "node_modules"
     }
   },
   "subdomain": "actionhero",
