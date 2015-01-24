@@ -1,6 +1,6 @@
 exports.middleware = {
     name: 'middleware',
-    description: 'I am an example of using middleware defined per-action.',
+    description: 'I am an example of using middleware defined on a per-action basis.',
     middleware: {
         preprocess: {
             'jwtSession': {},
