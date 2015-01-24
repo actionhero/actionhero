@@ -8,6 +8,7 @@ module.exports = {
 
     api.actions.preProcessors = {};
     api.actions.postProcessors = {};
+    api.actions.middleware = {};
 
     api.actions.addPreProcessor = function(func, priority) {
       if(!priority) priority = api.config.general.defaultMiddlewarePriority;
@@ -15,12 +16,17 @@ module.exports = {
       if(!api.actions.preProcessors[priority]) api.actions.preProcessors[priority] = [];
       return api.actions.preProcessors[priority].push(func);
     }
+    
     api.actions.addPostProcessor = function(func, priority) {
       if(!priority) priority = api.config.general.defaultMiddlewarePriority;
       priority = Number(priority); // ensure priority is numeric
       if(!api.actions.postProcessors[priority]) api.actions.postProcessors[priority] = [];
       return api.actions.postProcessors[priority].push(func);
     }
+
+    api.actions.addMiddleware = function(name, middleware) {
+      api.actions.middleware[name] = middleware;
+    };
     
     api.actions.validateAction = function(action){
       var fail = function(msg){

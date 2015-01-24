@@ -21,6 +21,7 @@ describe('Core: Middleware', function(){
   afterEach(function(done){
     api.actions.preProcessors  = {};
     api.actions.postProcessors = {};
+    api.actions.middleware = {};
     done();
   });
   
@@ -192,6 +193,35 @@ describe('Core: Middleware', function(){
       }, 500);
     })
   
+    it('actions can request custom middleware handlers', function(done) {
+      api.actions.addMiddleware('jwtSession', {
+        preprocess: function(connection, actionTemplate, next) {
+          connection.response.executed = 'A';
+          next(connection, true);
+        }
+      });
+
+      api.actions.addMiddleware('quotaManager', {
+        preprocess: function(connection, actionTemplate, next) {
+          connection.response.executed += 'B';
+          next(connection, true);
+        }
+      });
+
+      api.actions.addMiddleware('requestAuditor', {
+        postprocess: function(connection, actionTemplate, toRender, next) {
+          connection.response.executed += 'C';
+          next(connection, toRender);
+        }
+      });
+
+      api.specHelper.runAction('middleware', function(response, connection) {
+        console.log(connection);
+        connection.response.status.should.equal('OK');
+        connection.response.executed.should.equal('ABC');
+        done();
+      });
+    });
   })
 
   describe('connection create/destroy callbacks', function(){
