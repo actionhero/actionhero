@@ -74,7 +74,6 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 1,
-          inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
@@ -85,7 +84,6 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 2,
-          inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
@@ -96,7 +94,6 @@ describe('Core: API', function(){
           name: 'versionedAction',
           description: 'I am a test',
           version: 3,
-          inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
             connection.response.version = 1;
@@ -164,7 +161,6 @@ describe('Core: API', function(){
           name: 'badAction',
           description: 'I double callback',
           version: 1,
-          inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
             connection.response.count = 1
@@ -229,12 +225,8 @@ describe('Core: API', function(){
           description: 'this action has some required params',
           version: 1,
           inputs: { 
-            requiredParam: {
-              required: true
-            },
-            optionalParam: {
-              required: false
-            },
+            requiredParam: {required: true},
+            optionalParam: {required: false},
             fancyParam: {
               required: false,
               default: function(){ return 'abc123'; },

@@ -152,7 +152,7 @@ describe('Server: Web', function(){
           name: 'paramTestAction',
           description: 'I return connection.rawConnection.params',
           version: 1,
-          inputs: { required: [], optional: [] },
+          // inputs: {},
           outputExample: {},
           run:function(api, connection, next){
             connection.response = connection.rawConnection.params;
@@ -175,6 +175,7 @@ describe('Server: Web', function(){
     it('.query should contain unfiltered query params', function (done) {
       request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
         body = JSON.parse(body);
+        // console.log(body)
         body.query.crazyParam123.should.equal('something');
         done();
       });
@@ -218,7 +219,6 @@ describe('Server: Web', function(){
           name: 'headerTestAction',
           description: 'I am a test',
           version: 1,
-          inputs: { required: [], optional: [] },
           outputExample: {},
           run:function(api, connection, next){
             connection.rawConnection.responseHeaders.push(['thing', 'A']);

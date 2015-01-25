@@ -38,7 +38,6 @@ describe('Core: Exceptions', function(){
       '1': {
         name: 'badAction',
         description: 'I will break',
-        inputs: { required: [], optional: [] },
         outputExample: {},
         version: 1,
         run: function(api, connection, next){
