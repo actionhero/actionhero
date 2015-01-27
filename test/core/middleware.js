@@ -192,8 +192,31 @@ describe('Core: Middleware', function(){
         done();
       }, 500);
     })
+  })
   
-    it('actions can request custom middleware handlers', function(done) {
+  describe('middleware handling', function() {
+    before(function(done) {
+      api.actions.versions.middlewareAction = [1];
+      api.actions.actions.middlewareAction = {
+        '1': {
+          name: 'middlewareAction',
+          description: 'I am an example of using middleware defined on a per-action basis.',
+          middleware: {
+            preprocess: {
+              'jwtSession': {},
+              'quotaManager': {}
+            },
+            postprocess: {
+              'requestAuditor': {}
+            }
+          },
+          run: function(api, connection, next) {
+            connection.response.status = 'OK';
+            next(connection, true);
+          }
+        }
+      };
+
       api.actions.addMiddleware('jwtSession', {
         preprocess: function(connection, actionTemplate, next) {
           connection.response.executed = 'A';
@@ -215,14 +238,24 @@ describe('Core: Middleware', function(){
         }
       });
 
-      api.specHelper.runAction('middleware', function(response, connection) {
-        console.log(connection);
+      api.routes.loadRoutes();
+      done();
+    });
+
+    it('can use middleware in the correct order', function(done) {
+      api.specHelper.runAction('middlewareAction', function(response, connection) {
         connection.response.status.should.equal('OK');
         connection.response.executed.should.equal('ABC');
         done();
       });
     });
-  })
+
+    after(function(done) {
+      delete api.actions.actions.middlewareAction;
+      delete api.actions.versions.middlewareAction;
+      done();
+    });
+  });
 
   describe('connection create/destroy callbacks', function(){
 
