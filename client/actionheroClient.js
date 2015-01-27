@@ -34,6 +34,7 @@ ActionheroClient.prototype.defaults = function(){
 
 ActionheroClient.prototype.connect = function(callback){
   var self = this;
+  self.messageCount = 0;
   
   if(!self.client){
     self.client = Primus.connect(self.options.url, self.options);
@@ -43,7 +44,6 @@ ActionheroClient.prototype.connect = function(callback){
   }
 
   self.client.on('open', function(){
-    self.messageCount = 0;
     self.configure(function(details){
       self.emit('connected');
       if(self.state === 'connected'){
@@ -60,6 +60,7 @@ ActionheroClient.prototype.connect = function(callback){
   });
 
   self.client.on('reconnect', function(){
+    self.messageCount = 0;
     self.emit('reconnect');
   });
 
@@ -70,6 +71,7 @@ ActionheroClient.prototype.connect = function(callback){
   });
 
   self.client.on('end', function(){
+    self.messageCount = 0;
     if(self.state !== 'disconnected'){
       self.state = 'disconnected';
       self.emit('disconnected');
