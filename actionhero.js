@@ -78,90 +78,91 @@ actionhero.prototype.initialize = function(params, callback){
   });
 
   self.configInitializers.push( function(){
-
+    var customInitializers = [];
+    var recursiveGlob = self.api.utils.recursiveDirectoryGlob;
+    self.api.config.general.paths.initializer.forEach(function(startPath) {
+      customInitializers = customInitializers.concat(recursiveGlob(startPath));
+    });
     // load all other initializers
     self.api.utils.arrayUniqueify(
-      [
-        __dirname + path.sep + 'initializers'
-      ].concat(
-        self.api.config.general.paths.initializer
+      recursiveGlob(__dirname + path.sep + 'initializers')
+      .sort()
+      .concat(
+        customInitializers
+        .sort()
       )
-    ).forEach(function(dir){
+    ).forEach(function(f) {
+      var file = path.normalize(f);
+      var initializer = f.split('.')[0];
+      var fileParts = file.split('.');
+      var ext = fileParts[(fileParts.length - 1)];
+      if(ext === 'js'){
+        delete require.cache[require.resolve(file)];
+        self.initializers[initializer] = require(file);
 
-      dir = path.normalize(dir);
-      fs.readdirSync(dir).sort().forEach(function(f){
-        var file = path.resolve(dir + '/' + f);
-        var initializer = f.split('.')[0];
-        var fileParts = file.split('.');
-        var ext = fileParts[(fileParts.length - 1)];
-        if(ext === 'js'){
-          delete require.cache[require.resolve(file)];
-          self.initializers[initializer] = require(file);
+        var loadFunction = function(next){
+          if(typeof self.initializers[initializer].initialize === 'function'){
+            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+            self.initializers[initializer].initialize(self.api, next);
+            self.api.watchFileAndAct(file, function(){
+              self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+              self.api.commands.restart.call(self.api._self);
+            });
+          }else{
+            next();
+          }
+        };
 
-          var loadFunction = function(next){
-            if(typeof self.initializers[initializer].initialize === 'function'){
-              if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
-              self.initializers[initializer].initialize(self.api, next);
-              self.api.watchFileAndAct(file, function(){
-                self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-                self.api.commands.restart.call(self.api._self);
-              });
-            }else{
-              next();
-            }
-          };
+        var startFunction = function(next){
+          if(typeof self.initializers[initializer].start === 'function'){
+            if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
+            self.initializers[initializer].start(self.api, next);
+          }else{
+            next();
+          }
+        };
 
-          var startFunction = function(next){
-            if(typeof self.initializers[initializer].start === 'function'){
-              if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
-              self.initializers[initializer].start(self.api, next);
-            }else{
-              next();
-            }
-          };
+        var stopFunction = function(next){
+          if(typeof self.initializers[initializer].stop === 'function'){
+            if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
+            self.initializers[initializer].stop(self.api, next);
+          }else{
+            next();
+          }
+        };
 
-          var stopFunction = function(next){
-            if(typeof self.initializers[initializer].stop === 'function'){
-              if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
-              self.initializers[initializer].stop(self.api, next);
-            }else{
-              next();
-            }
-          };
-
-          if(self.initializers[initializer].loadPriority === undefined){ 
-            self.initializers[initializer].loadPriority = self.api.initializerDefaults.load;
-          }
-          if(self.initializers[initializer].startPriority === undefined){ 
-            self.initializers[initializer].startPriority = self.api.initializerDefaults.start;
-          }
-          if(self.initializers[initializer].stopPriority === undefined){ 
-            self.initializers[initializer].stopPriority = self.api.initializerDefaults.stop;
-          }
-
-          if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
-            loadInitializerRankings[ self.initializers[initializer].loadPriority ] = [];
-          }
-          if( startInitializerRankings[ self.initializers[initializer].startPriority ] === undefined ){
-            startInitializerRankings[ self.initializers[initializer].startPriority ] = [];
-          }
-          if( stopInitializerRankings[ self.initializers[initializer].stopPriority ] === undefined ){
-            stopInitializerRankings[ self.initializers[initializer].stopPriority ] = [];
-          }
-
-          if(self.initializers[initializer].loadPriority > 0){
-            loadInitializerRankings[  self.initializers[initializer].loadPriority  ].push( loadFunction );
-          }
-
-          if(self.initializers[initializer].startPriority > 0){
-            startInitializerRankings[ self.initializers[initializer].startPriority ].push( startFunction );
-          }
-
-          if(self.initializers[initializer].stopPriority > 0){
-            stopInitializerRankings[  self.initializers[initializer].stopPriority  ].push( stopFunction );
-          }
+        if(self.initializers[initializer].loadPriority === undefined){ 
+          self.initializers[initializer].loadPriority = self.api.initializerDefaults.load;
         }
-      });
+        if(self.initializers[initializer].startPriority === undefined){ 
+          self.initializers[initializer].startPriority = self.api.initializerDefaults.start;
+        }
+        if(self.initializers[initializer].stopPriority === undefined){ 
+          self.initializers[initializer].stopPriority = self.api.initializerDefaults.stop;
+        }
+
+        if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
+          loadInitializerRankings[ self.initializers[initializer].loadPriority ] = [];
+        }
+        if( startInitializerRankings[ self.initializers[initializer].startPriority ] === undefined ){
+          startInitializerRankings[ self.initializers[initializer].startPriority ] = [];
+        }
+        if( stopInitializerRankings[ self.initializers[initializer].stopPriority ] === undefined ){
+          stopInitializerRankings[ self.initializers[initializer].stopPriority ] = [];
+        }
+
+        if(self.initializers[initializer].loadPriority > 0){
+          loadInitializerRankings[  self.initializers[initializer].loadPriority  ].push( loadFunction );
+        }
+
+        if(self.initializers[initializer].startPriority > 0){
+          startInitializerRankings[ self.initializers[initializer].startPriority ].push( startFunction );
+        }
+
+        if(self.initializers[initializer].stopPriority > 0){
+          stopInitializerRankings[  self.initializers[initializer].stopPriority  ].push( stopFunction );
+        }
+      }
     });
 
     // flatten all the ordered initializer methods
