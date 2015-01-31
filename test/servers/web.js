@@ -273,7 +273,7 @@ describe('Server: Web', function(){
 
     it('should respond to TRACE with parsed params received', function(done){
       request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, function(err, response, body){
-        body = JSON.parse(body);  
+        body = JSON.parse(body);
         response.statusCode.should.eql(200);
         body.receivedParams.key.should.equal('someKey');
         body.receivedParams.value.should.equal('someValue');
@@ -331,7 +331,7 @@ describe('Server: Web', function(){
 
     before(function(done){
       api.config.servers.web.returnErrorCodes = true;
-      
+
       api.actions.versions.statusTestAction = [1]
       api.actions.actions.statusTestAction = {
         '1': {
@@ -450,7 +450,7 @@ describe('Server: Web', function(){
         done();
       });
     });
-    
+
   });
 
   describe('files', function(){
@@ -500,16 +500,16 @@ describe('Server: Web', function(){
       before(function(done){
         fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
         api.config.general.paths.public.push('/tmp');
-        process.nextTick(function(){ 
-          done(); 
+        process.nextTick(function(){
+          done();
         });
       });
 
       after(function(done){
         fs.unlink('/tmp/testFile.html');
         api.config.general.paths.public.pop();
-        process.nextTick(function(){ 
-          done(); 
+        process.nextTick(function(){
+          done();
         });
       });
 
@@ -573,7 +573,7 @@ describe('Server: Web', function(){
   });
 
   describe('routes', function(){
-    
+
     before(function(done){
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
@@ -622,7 +622,7 @@ describe('Server: Web', function(){
           { path: '/thing/stuff', action: 'thingStuff' }
         ],
         post: [
-          { path: '/login/:userID(^\\d{3}$)', action: 'login' }
+          { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
         ]
       });
 
@@ -650,7 +650,7 @@ describe('Server: Web', function(){
       });
       done();
     })
-  
+
     it('unknown actions are still unknown', function(done){
       request.get(url + '/api/a_crazy_action', function(err, response, body){
         body = JSON.parse(body);
@@ -735,7 +735,7 @@ describe('Server: Web', function(){
       request.get(url + '/api/thing', function(err, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('thing')
-        
+
         request.get(url + '/api/thing/stuff', function(err, response, body){
           body = JSON.parse(body);
           body.requesterInformation.receivedParams.action.should.equal('thingStuff')
@@ -749,7 +749,13 @@ describe('Server: Web', function(){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('login');
         body.requesterInformation.receivedParams.userID.should.equal('123');
-        done();
+
+        request.post(url + '/api/login/admin', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('login');
+          body.requesterInformation.receivedParams.userID.should.equal('admin');
+          done();
+        });
       });
     });
 
