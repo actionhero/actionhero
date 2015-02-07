@@ -227,6 +227,10 @@ var initialize = function(api, options, next){
     } else {
       var words = [];
       var message;
+      if(data.room){
+        words.push(data.room);
+        delete data.room;
+      }
       for(var i in data){ words.push(data[i]); }
       connection.verbs(verb, words, function(error, data){
         if(!error){

@@ -247,6 +247,22 @@ describe('Server: Web Socket', function(){
       clientB.say('defaultRoom', 'hello from client 2');
     });
 
+    it('The client say method does not rely on order', function(done){
+      var listener = function(response){
+        clientA.removeListener('say', listener);
+        response.context.should.equal('user');
+        response.message.should.equal('hello from client 2');
+        done();
+      };
+
+      clientB.say = function(room, message, callback){
+        this.send({message: message, room: room, event: 'say'}, callback);
+      }
+
+      clientA.on('say', listener);
+      clientB.say('defaultRoom', 'hello from client 2');
+    });
+
     it('connections are notified when I join a room', function(done){
       var listener = function(response){
         clientA.removeListener('say', listener);
