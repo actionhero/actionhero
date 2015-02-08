@@ -463,24 +463,26 @@ describe('Core: Action Cluster', function(){
             });
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
-            should.not.exist(err);
-            clientB.verbs('roomAdd','defaultRoom', function(err, data){
+          setTimeout(function(){
+            clientA.verbs('roomAdd','defaultRoom', function(err, data){
               should.not.exist(err);
-              clientB.verbs('roomLeave','defaultRoom', function(err, data){
+              clientB.verbs('roomAdd','defaultRoom', function(err, data){
                 should.not.exist(err);
+                clientB.verbs('roomLeave','defaultRoom', function(err, data){
+                  should.not.exist(err);
 
-                setTimeout(function(){
-                  clientA.messages[1].message.should.equal('I have entered the room: ' + clientA.id)
-                  clientA.messages[2].message.should.equal('I have entered the room: ' + clientB.id)
-                  clientA.messages[3].message.should.equal('I have left the room: ' + clientB.id)
+                  setTimeout(function(){
+                    clientA.messages[1].message.should.equal('I have entered the room: ' + clientA.id)
+                    clientA.messages[2].message.should.equal('I have entered the room: ' + clientB.id)
+                    clientA.messages[3].message.should.equal('I have left the room: ' + clientB.id)
 
-                  done();
-                }, 100);
+                    done();
+                  }, 100);
 
+                });
               });
             });
-          });
+          }, 500);
         });
 
         it('(say) can modify message payloads', function(done){
