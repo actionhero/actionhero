@@ -8,6 +8,7 @@ node_js:
   - "0.10"
   - "0.11"
   - "0.12"
+  - "iojs"
 env:
   - "FAKEREDIS=true  ACTIONDOMAINS=true"
   - "FAKEREDIS=true  ACTIONDOMAINS=false"
