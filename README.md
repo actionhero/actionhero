@@ -5,7 +5,7 @@
 <p align="center"><img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/></p>
 
 ***
-**[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](https://gitter.im/evantahler/actionhero) | [Client](https://github.com/evantahler/actionhero_client)**
+**[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](https://gitter.im/evantahler/actionhero) | [Client](https://github.com/evantahler/actionhero-client)**
 ***
 
 [![Build Status](https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat)](http://travis-ci.org/evantahler/actionhero)
