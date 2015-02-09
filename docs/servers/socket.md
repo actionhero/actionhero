@@ -120,6 +120,6 @@ The default method of using actions for TCP clients is to use the methods above 
 
 The main `trick` to working with TCP/wire connections directly is to remember that you can have many 'pending' requests at the same time.  Also, the order in which you receive responses back can be variable.  if you request `slowAction` and then `fastAction`, it's fairly likely that you will get a response to `fastAction` first.
 
-[The actionhero client library](https://github.com/evantahler/actionhero_client) uses TCP/TLS connections, and makes use of actionhero's `messageCount` parameter to keep track of requests, and keeps response callbacks for actions in a pending queue.  You can check out the [example here](https://github.com/evantahler/actionhero_client/blob/master/actionhero_client.js)
+[The actionhero client library](https://github.com/evantahler/actionhero-client) uses TCP/TLS connections, and makes use of actionhero's `messageCount` parameter to keep track of requests, and keeps response callbacks for actions in a pending queue.  You can check out the [example here](https://github.com/evantahler/actionhero_client/blob/master/actionhero_client.js)
 
 Note that only requests the client makes increment the `messageCount`, but broadcasts do not (the `say` command, etc)
