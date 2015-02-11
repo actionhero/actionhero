@@ -22,7 +22,7 @@ npm start
 
 * Create a new directory `mkdir ~/project && cd ~/project`
 * Checkout the actionhero source `npm install actionhero`
-* Use the generator to create a template project `./node_modeules/.bin/actionhero generate`
+* Use the generator to create a template project `./node_modules/.bin/actionhero generate`
 * You can now start up the server: `npm start`
 
 Visit `http://127.0.0.1:8080/public` in your browser to see the actionhero in action!
