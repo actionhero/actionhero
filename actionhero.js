@@ -93,7 +93,7 @@ actionhero.prototype.initialize = function(params, callback){
       )
     ).forEach(function(f) {
       var file = path.normalize(f);
-      var initializer = f.split('.')[0];
+      var initializer = path.basename(f).split('.')[0];
       var fileParts = file.split('.');
       var ext = fileParts[(fileParts.length - 1)];
       if(ext === 'js'){
