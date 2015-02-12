@@ -310,6 +310,7 @@ describe('Core: API', function(){
 
     it('will filter params not set in the target action or global safelist', function(done){
       api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true }, function(response){
+        should.exist(response.requesterInformation.receivedParams.requiredParam);
         should.not.exist(response.requesterInformation.receivedParams.sleepDuration);
         done();
       });
