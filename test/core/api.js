@@ -308,6 +308,13 @@ describe('Core: API', function(){
       });
     });
 
+    it('will filter params not set in the target action or global safelist', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true }, function(response){
+        should.not.exist(response.requesterInformation.receivedParams.sleepDuration);
+        done();
+      });
+    });
+
   });
 
 });

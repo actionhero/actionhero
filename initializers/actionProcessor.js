@@ -176,7 +176,7 @@ module.exports = {
       if(api.config.general.disableParamScrubbing !== true){
         for(var p in self.connection.params){
           if(
-              api.params.postVariables.indexOf(p) < 0 &&
+              api.params.globalSafeParams.indexOf(p) < 0 &&
               self.actionTemplate.inputs &&
               Object.keys(self.actionTemplate.inputs).indexOf(p) < 0
           ){
