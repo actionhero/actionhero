@@ -6,7 +6,7 @@ module.exports = {
   initialize: function(api, next){
 
     var duplicateCallbackErrorTimeout = 500;
-    
+
     api.actionProcessor = function(data){
       if(!data.connection){ throw new Error('data.connection is required') }
       this.connection = this.buildProxyConnection(data.connection);
@@ -58,7 +58,7 @@ module.exports = {
       }else if(status === 'missing_params'){
         error = api.config.errors.missingParams(self.missingParams) ;
       }else if(status === 'validator_errors'){
-        error = self.validatorErrors.join(', ') ;
+        error = api.config.errors.invalidParams(self.validatorErrors);
       }
 
       if(error !== null){
@@ -118,7 +118,7 @@ module.exports = {
 
       self.working = false;
     }
-    
+
     api.actionProcessor.prototype.preProcessAction = function(toProcess, callback){
       var self = this;
       var priorities = [];
@@ -145,7 +145,7 @@ module.exports = {
       processors.push(function(){ callback(toProcess) });
       async.series(processors);
     }
-    
+
     api.actionProcessor.prototype.postProcessAction = function(toRender, callback){
       var self = this;
       var priorities = [];
@@ -190,7 +190,7 @@ module.exports = {
       var self = this;
       for(var key in self.actionTemplate.inputs){
         var props = self.actionTemplate.inputs[key];
-        
+
         // default
         if(self.connection.params[key] === undefined && props.default !== undefined){
           if(typeof props.default === 'function'){
@@ -266,7 +266,7 @@ module.exports = {
       } else {
         api.stats.increment('actions:totalProcessedActions');
         api.stats.increment('actions:processedActions:' + self.connection.action);
-        
+
         if(api.config.general.actionDomains === true){
           var actionDomain = domain.create();
           actionDomain.on('error', function(err){
@@ -289,7 +289,7 @@ module.exports = {
       var toProcess = true;
       var callbackCount = 0;
       self.preProcessAction(toProcess, function(toProcess){
-        
+
         self.reduceParams();
         self.validateParams();
 
@@ -300,9 +300,9 @@ module.exports = {
         }else if(toProcess === true && self.connection.error === null){
           self.actionTemplate.run(api, self.connection, function(connection, toRender){
             callbackCount++;
-            if(callbackCount !== 1){ 
-              callbackCount = 1; 
-              self.duplicateCallbackHandler(actionDomain); 
+            if(callbackCount !== 1){
+              callbackCount = 1;
+              self.duplicateCallbackHandler(actionDomain);
             }else{
               self.connection = connection;
               self.postProcessAction(toRender, function(toRender){
