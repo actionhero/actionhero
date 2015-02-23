@@ -35,6 +35,9 @@ exports.default = {
         queryRouting : true,
         // The header which will be returned for all flat file served from /public; defined in seconds
         flatFileCacheDuration : 60,
+        // How many times should we try to boot the srever?
+        // This might happen if the port is in use by another process or the socketfile is claimed
+        bootAttempts: 1,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
         fingerprintOptions : {
           cookieKey: 'sessionID',
