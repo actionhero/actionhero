@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "mocha": "~2.x",
-    "should": "~4.x",
+    "should": "~5.x",
     "request": "~2.53.x",
     "redis-sentinel-client": "latest",
     "blanket": "^1.1.6",
