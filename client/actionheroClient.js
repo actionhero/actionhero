@@ -19,7 +19,9 @@ var ActionheroClient = function(options, client){
 }
 
 if(typeof Primus === 'undefined'){
-  ActionheroClient.prototype = new EventEmitter();
+  var util = require('util');
+  var EventEmitter = require('events').EventEmitter;
+  util.inherits(ActionheroClient, EventEmitter);
 }else{
   ActionheroClient.prototype = new Primus.EventEmitter();
 }
