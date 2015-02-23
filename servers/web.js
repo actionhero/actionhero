@@ -51,7 +51,7 @@ var initialize = function(api, options, next){
     var bootAttempts = 0
     server.server.on('error', function(e){
       bootAttempts++;
-      if(bootAttempts < 5){
+      if(bootAttempts < api.config.servers.web.bootAttempts){
         server.log('cannot boot web server; trying again [' + String(e) + ']', 'error');
         if(bootAttempts === 1){ cleanSocket(options.bindIP, options.port); }
         setTimeout(function(){

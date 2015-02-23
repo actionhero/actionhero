@@ -28,12 +28,14 @@ var cluster = require('cluster');
 var path = require('path');
 var async = require('async');
 var readline = require('readline');
+var flapCount = 0;
 
 exports.startCluster = function(binary){
 
   var loopSleep = 1500;
 
   async.series({
+
     setup: function(next){
       binary.numCPUs = require('os').cpus().length
       binary.numWorkers = binary.numCPUs - 2;
@@ -42,6 +44,7 @@ exports.startCluster = function(binary){
       binary.execCMD = path.normalize(binary.paths.actionheroRoot + '/bin/actionhero');
       next();
     },
+
     pids: function(next){
       binary.pidPath = process.cwd() + '/pids';
       var stats = null;
@@ -57,6 +60,7 @@ exports.startCluster = function(binary){
       }
       next();
     },
+
     config: function(next){
       binary.clusterConfig = {
         exec: binary.execCMD,
@@ -78,12 +82,14 @@ exports.startCluster = function(binary){
 
       next();
     },
+
     log: function(next){
       var winston = require('winston');
       binary.logger.add(winston.transports.File, { filename: binary.clusterConfig.log });
 
       next();
     },
+
     displaySetup: function(next){
       binary.log(' - STARTING CLUSTER -', 'notice');
       binary.log('pid: ' + process.pid, 'notice');
@@ -95,6 +101,7 @@ exports.startCluster = function(binary){
 
       next();
     },
+
     pidFile: function(next){
       if(binary.clusterConfig.pidfile){
         fs.writeFileSync(binary.clusterConfig.pidfile, process.pid.toString(), 'ascii');
@@ -102,7 +109,9 @@ exports.startCluster = function(binary){
 
       next();
     },
+
     workerMethods: function(next){
+
       binary.claimWorkerId = function(){
         var expectedWorkerIds = []
         var i = 1;
@@ -118,9 +127,11 @@ exports.startCluster = function(binary){
         binary.claimedWorkerIds.push(workerId);
         return workerId;
       }
+
       binary.releaseWorkerId = function(thisWorkerId){
         binary.claimedWorkerIds.splice(binary.claimedWorkerIds.indexOf(thisWorkerId),1);
       }
+
       binary.startAWorker = function(){
         var workerID = binary.claimWorkerId();
         if(binary.workerRestartArray.length > 0){
@@ -140,12 +151,15 @@ exports.startCluster = function(binary){
       }
 
       binary.setupShutdown = function(){
-        binary.log('Cluster manager quitting', 'warning');
-        binary.log('Stopping each worker...', 'info');
-        for(var i in cluster.workers){
-          cluster.workers[i].send('stopProcess');
+        if(binary.workersExpected > 0){
+          binary.workersExpected = 0;
+          binary.log('Cluster manager quitting', 'warning');
+          binary.log('Stopping each worker...', 'info');
+          for(var i in cluster.workers){
+            cluster.workers[i].send('stopProcess');
+          }
+          setTimeout(binary.loopUntilNoWorkers, loopSleep);
         }
-        setTimeout(binary.loopUntilNoWorkers, loopSleep);
       }
 
       binary.loopUntilNoWorkers = function(){
@@ -179,6 +193,14 @@ exports.startCluster = function(binary){
         }
       }
 
+      binary.detectFlapping = function(){
+        flapCount++;
+        if(binary.workersExpected > 0 && flapCount > (binary.workersExpected * 3)){
+          binary.log('cluster is flapping, exiting now', 'warning');
+          binary.setupShutdown();
+        }
+      }
+
       binary.cleanup = function(){
         
       }
@@ -193,19 +215,17 @@ exports.startCluster = function(binary){
 
       // signals
       process.on('SIGINT', function(){
-        binary.log('Signal: SIGINT', 'debug');
-        binary.workersExpected = 0;
+        binary.log('Signal: SIGINT', 'info');
         binary.setupShutdown();
       });
 
       process.on('SIGTERM', function(){
-        binary.log('Signal: SIGTERM', 'debug');
-        binary.workersExpected = 0;
+        binary.log('Signal: SIGTERM', 'info');
         binary.setupShutdown();
       });
 
       process.on('SIGUSR2', function(){
-        binary.log('Signal: SIGUSR2', 'debug');
+        binary.log('Signal: SIGUSR2', 'info');
         binary.log('swap out new workers one-by-one', 'info');
         binary.workerRestartArray = [];
         for(var i in cluster.workers){
@@ -216,7 +236,7 @@ exports.startCluster = function(binary){
       });
 
       process.on('SIGHUP', function(){
-        binary.log('Signal: SIGHUP', 'debug');
+        binary.log('Signal: SIGHUP', 'info');
         binary.log('reload all workers now', 'info');
         for (var i in cluster.workers){
           var worker = cluster.workers[i];
@@ -226,7 +246,7 @@ exports.startCluster = function(binary){
 
       process.on('SIGWINCH', function(){
         if(binary.isDaemon){
-          binary.log('Signal: SIGWINCH', 'debug');
+          binary.log('Signal: SIGWINCH', 'info');
           binary.log('stop all workers', 'info');
           binary.workersExpected = 0;
           for (var i in cluster.workers){
@@ -237,14 +257,14 @@ exports.startCluster = function(binary){
       });
 
       process.on('SIGTTIN', function(){
-        binary.log('Signal: SIGTTIN', 'debug');
+        binary.log('Signal: SIGTTIN', 'info');
         binary.log('add a worker', 'info');
         binary.workersExpected++;
         binary.startAWorker();
       });
 
       process.on('SIGTTOU', function(){
-        binary.log('Signal: SIGTTOU', 'debug');
+        binary.log('Signal: SIGTTOU', 'info');
         binary.log('remove a worker', 'info');
         binary.workersExpected--;
         for(var i in cluster.workers){
@@ -283,17 +303,21 @@ exports.startCluster = function(binary){
       for (var i = 0; i < binary.clusterConfig.workers; i++) {
         binary.workersExpected++;
       }
+
+      setInterval(function(){
+        flapCount = 0;
+      }, binary.workersExpected * loopSleep * 4);
+
       cluster.on('fork', function(worker) {
         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has spawned', 'info');
       });
-      cluster.on('listening', function(){
-        // TODO?
-      });
+
       cluster.on('exit', function(worker) {
         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has exited', 'alert');
         binary.releaseWorkerId(worker.workerID);
         // to prevent CPU explosions if crashing too fast
         setTimeout(binary.reloadAWorker, loopSleep / 2);
+        binary.detectFlapping();
       });
 
       binary.loopUntilAllWorkers();
