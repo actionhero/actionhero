@@ -188,7 +188,9 @@ See the [file server](/docs/core/file-server.html) page for more documentation
 
 ## Routes
 
-Web clients (http and https) you can define an optional RESTful mapping to help route requests to actions.  If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `routes.js` file.
+Web clients (http and https) you can define an optional RESTful mapping to help route requests to actions.  If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
+
+As of ActionHero v10, this file is considered to be a config, rather than a top level file as it was previously.
 
 #### Example
 
@@ -196,7 +198,7 @@ This variables in play here are:
 
 - `api.config.servers.web.urlPathForActions`
 - `api.config.servers.web.rootEndpointType`
-- and of course the content of `routes.js`
+- and of course the content of `config/routes.js`
 
 Say you have an action called 'status' (like in a freshly generated actionhero project). 
 Lets start with actionhero's default config:
@@ -214,11 +216,13 @@ There are 3 ways a client can access actions via the web server.
 - or you can modify this with routes. Say you want `server.com/api/stuff/statusPage`
 
 {% highlight javascript %}
-exports.routes = {
-  get: [
-    { path: '/stuff/statusPage', action: 'status' }
-  ]
-};
+exports.default = function(api) {
+  return {
+    get: [
+      { path: '/stuff/statusPage', action: 'status' }
+    ]
+  };
+}
 {% endhighlight %}
 
 The `api.config.servers.web.rootEndpointType` is "file" which means that the routes you are making are active only under the `/api` path.  If you wanted the route example to become  `server.com/stuff/statusPage`, you would need to change `api.config.servers.web.rootEndpointType` to be 'api'.  Note that making this change doesn't stop `server.com/api/stuff/statusPage` from working as well, as you still have `api.config.servers.web.urlPathForActions` set to be 'api', so both will continue to work.
@@ -226,12 +230,14 @@ The `api.config.servers.web.rootEndpointType` is "file" which means that the rou
 For a route to match, all params must be satisfied.  So, if you expect a route to provide `api/:a/:b/:c` and the request is only for `api/:a/:c`, the route won't match (save some fancy regexp). This holds for any variable, including `:apiVersion`.  If you want to match both with and without apiVersion, just define the rote 2x, IE:
 
 {% highlight javascript %}
-exports.routes = {
-  all: [
-    { path: "/cache/:key/:value",             action:  "cacheTest" },
-    { path: "/:apiVersion/cache/:key/:value", action:  "cacheTest" },
-  ]
-};
+exports.default = function(api) {
+  return {
+    all: [
+      { path: "/cache/:key/:value",             action:  "cacheTest" },
+      { path: "/:apiVersion/cache/:key/:value", action:  "cacheTest" },
+    ]
+  };
+}
 {% endhighlight %}
 
 If you want to shut off access to your action at `server.com/api/stuff/statusPage` and only allow access via `server.com/stuff/statusPage`, you can disable `api.config.servers.web.urlPathForActions` by setting it equal to `null` (but keeping the `api.config.servers.web.rootEndpointType` equal to 'api'). 
@@ -254,19 +260,21 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
 **example**:
 
 {% highlight javascript %}
-{
-  get: [
-    { path: "/users", action: "usersList" }, // (GET) /api/users
-    { path: "/search/:term/limit/:limit/offset/:offset", action: "search" }, // (GET) /api/search/car/limit/10/offset/100
-  ],
+exports.default = function(api) {
+  return {
+    get: [
+      { path: "/users", action: "usersList" }, // (GET) /api/users
+      { path: "/search/:term/limit/:limit/offset/:offset", action: "search" }, // (GET) /api/search/car/limit/10/offset/100
+    ],
 
-  post: [
-    { path: "/login/:userID(^\\d{3}$)", action: "login" } // (POST) /api/login/123
-  ],
+    post: [
+      { path: "/login/:userID(^\\d{3}$)", action: "login" } // (POST) /api/login/123
+    ],
 
-  all: [
-    { path: "/user/:userID", action: "user" } // (*) / /api/user/123
-  ]
+    all: [
+      { path: "/user/:userID", action: "user" } // (*) / /api/user/123
+    ]
+  };
 }
 {% endhighlight %}
 
