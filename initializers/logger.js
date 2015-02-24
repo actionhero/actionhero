@@ -17,14 +17,15 @@ module.exports = {
     api.logger = new (winston.Logger)({
       // TODO We need to manually make these levels until winston switches the order back
       levels: {
-        emerg: 7,
-        alert: 6,
-        crit: 5,
-        error: 4,
-        warning: 3,
-        notice: 2,
-        info: 1,
-        debug: 0
+        emerg: 8,
+        alert: 7,
+        crit: 6,
+        error: 5,
+        warning: 4,
+        notice: 3,
+        info: 2,
+        debug: 1,
+        trace: 0
       },
       transports: transports
     });
