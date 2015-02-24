@@ -7,15 +7,15 @@ title: Documentation - Initializers
 
 Initializers are the main way you expand your actionhero server.  This is where you connect to databases, modify the global `api` object with new classes and helper methods, and set up your [middleware](/docs/core/middleware.html).
 
-Initializers run in 3 phases coenciding with the lifecytles of the application: `init`. `start`, and `stop`.  All "init" steps happen before all "start" steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle:
+Initializers run in 3 phases coinciding with the lifecycles of the application: `init`. `start`, and `stop`.  All "init" steps happen before all "start" steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle.
 
-System initilizers (like setting up redis and the cache) have prioirty levels in the 100 to 1000 level range.  Application initilizers should run with a priority level of over 1000 to use methods created by the system.
+System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.
 
-In general, `initialize()` methods should create prototypes and new object, and `start()` should boot things or connect to external resources.
+In general, `initialize()` methods should create prototypes and new objects, and `start()` should boot things or connect to external resources.
 
 ## Format
 
-To use a custom initializer, create a `initializers` directory in your project.  Ensure that the file name matches the export, IE:
+To use a custom initializer, create a `initializers` directory in your project. Export an object with at least one of `start`, `stop` or `initialize` and specify your priorities.
 
 {% highlight javascript %}
 module.exports = {
