@@ -272,7 +272,7 @@ If you want to shut off access to your action at `server.com/api/stuff/statusPag
 
 ## Params
 
-Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `/config/servers/web.js`).  Variables defined in your actions by `action.inputs.required` and `action.inputs.optional` will be aded to your whitelist.  Special params which the api will always accept are: 
+Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `/config/servers/web.js`).  Variables defined in your actions by `action.inputs` will be added to your whitelist.  Special params which the api will always accept are: 
 
 {% highlight javascript %}
   [ 'file',
@@ -281,9 +281,9 @@ Params provided by the user (GET, POST, etc for http and https servers, setParam
     'action', ]
 {% endhighlight %}
 	
-Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have {url}?key=getValue and you post a variable `key`=`postValue` as well, the postValue will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in you initializers. 
+Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have `{url}?key=getValue` and you post a variable `key=postValue` as well, the `postValue` will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in your initializers. 
 
-File uploads from forms will also appear in `connection.params`, but will be an object with more information.  IE: if you uploaded "image" from a form, you would have `connection.params.image.path`, `connection.params.image.name` (original file name), and `connection.params.image.type` available to you. 
+File uploads from forms will also appear in `connection.params`, but will be an object with more information.  That is, if you uploaded a file called "image", you would have `connection.params.image.path`, `connection.params.image.name` (original file name), and `connection.params.image.type` available to you. 
 
 A note on JSON payloads:
 
