@@ -190,8 +190,6 @@ See the [file server](/docs/core/file-server.html) page for more documentation
 
 Web clients (http and https) you can define an optional RESTful mapping to help route requests to actions.  If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
 
-As of ActionHero v10, this file is considered to be a config, rather than a top level file as it was previously.
-
 #### Example
 
 This variables in play here are:
