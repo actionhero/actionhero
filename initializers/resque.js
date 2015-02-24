@@ -25,7 +25,7 @@ module.exports = {
           self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout}, function(){
             self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info') })
             self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
-            self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'debug') })
+            self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'trace') })
             self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug') })
             self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enqueuing job ' + timestamp, 'debug', job) })
 
@@ -69,11 +69,11 @@ module.exports = {
           self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', 'info',                 {workerId: workerId}                                                            ); })
           self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', 'info',                   {workerId: workerId}                                                            ); })
           self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', 'info'                                                                            ); })
-          self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'debug',       {workerId: workerId}                                                            ); })
+          self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'trace',       {workerId: workerId}                                                            ); })
           self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
           self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
           self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, 'info',    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
-          self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', 'debug', {workerId: workerId}                                                                            ); })
+          self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', 'trace', {workerId: workerId}                                                                            ); })
 
           self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); })
           self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   })
