@@ -18,6 +18,8 @@ In general, `initialize()` methods should create prototypes and new objects, and
 To use a custom initializer, create a `initializers` directory in your project. Export an object with at least one of `start`, `stop` or `initialize` and specify your priorities.
 
 {% highlight javascript %}
+// initializers/stuffInit.js
+
 module.exports = {
   loadPriority:  1000,
   startPriority: 1000,
