@@ -146,17 +146,31 @@ exports.action = {
 
 The properties of an input are:
 
-- `required` (boolean)
+- `required` (boolean) 
+  - Default: `false`
 - `formatter = function(param, connection, actionTemplate)`
   - will return the new value of the param
+  - Default: The parameter is not reformatted
 - `default = function(param, connection, actionTemplate)`
   - will return the default value of the param
   - you can also have a static assignment for `default` father than a function, ie: `default: 123`
+  - Default: Parameter has no default value
 - `validator = function(param, connection, actionTemplate)`
   - should return `true` if validation passed
   - should return an error message if validation fails which will be returned to the client
+  - Default: Parameter is always valid
 
-You can define `api.config.general.missingParamChecks = [null, '', undefined]` to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit `null` values in a JSON payload but not `undifined`, you can now opt-in to that behavior.  This is what `action.inputs.x.required = true` will check against.
+You can define `api.config.general.missingParamChecks = [null, '', undefined]` to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit `null` values in a JSON payload but not `undefined`, you can now opt-in to that behavior.  This is what `action.inputs.x.required = true` will check against.
+
+Since all properties of an input are optional, the smallest possible definition of an input is:
+
+{% highlight javascript %}
+action.inputs = {
+  minimalInput: {}
+};
+{% endhighlight %}
+
+However, you should usually specify that an input is required (or not).
 
 ## Notes
 
