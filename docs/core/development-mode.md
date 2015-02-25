@@ -49,7 +49,7 @@ You can use actionhero's `watchFileAndAct()` method to watch additional files yo
 
 {% highlight javascript %}
 api.watchFileAndAct(path_to_file, function(){
-  api.log(rebooting due to config change: ' + path_to_file, 'info');
+  api.log('rebooting due to config change: ' + path_to_file, 'info');
   api.commands.restart.call(api._self);
 });
 {% endhighlight %}
