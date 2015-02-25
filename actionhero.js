@@ -102,7 +102,7 @@ actionhero.prototype.initialize = function(params, callback){
 
         var loadFunction = function(next){
           if(typeof self.initializers[initializer].initialize === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'trace', file); }
             self.initializers[initializer].initialize(self.api, next);
             self.api.watchFileAndAct(file, function(){
               self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
