@@ -101,13 +101,14 @@ actionhero.prototype.initialize = function(params, callback){
         self.initializers[initializer] = require(file);
 
         var loadFunction = function(next){
+          self.api.watchFileAndAct(file, function(){
+            self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+            self.api.commands.restart.call(self.api._self);
+          });
+
           if(typeof self.initializers[initializer].initialize === 'function'){
             if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
             self.initializers[initializer].initialize(self.api, next);
-            self.api.watchFileAndAct(file, function(){
-              self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-              self.api.commands.restart.call(self.api._self);
-            });
           }else{
             next();
           }

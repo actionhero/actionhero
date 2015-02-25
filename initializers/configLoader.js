@@ -10,6 +10,10 @@ module.exports = {
     api.watchedFiles = [];
 
     api.watchFileAndAct = function(file, callback){
+      file = path.normalize(file);
+      if(!fs.existsSync(file)){
+        throw new Error(file + ' does not exist, and cannot be watched')
+      }
       if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
         api.watchedFiles.push(file);
         fs.watchFile(file, {interval: 1000}, function(curr, prev){
