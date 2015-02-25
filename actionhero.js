@@ -107,7 +107,7 @@ actionhero.prototype.initialize = function(params, callback){
           });
 
           if(typeof self.initializers[initializer].initialize === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'trace', file); }
             self.initializers[initializer].initialize(self.api, next);
           }else{
             next();
