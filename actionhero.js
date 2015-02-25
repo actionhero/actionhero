@@ -275,13 +275,13 @@ actionhero.prototype.restart = function(callback){
 
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
-  errors.forEach(function(){
+  if(errors){ 
     api.log('Error with initilizer step: ' + type, 'emerg');
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });
-  });
-  if(errors){ process.exit(1); }
+    process.exit(1); 
+  }
 }
 
 var sortNumber = function(a,b) {
