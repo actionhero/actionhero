@@ -177,10 +177,10 @@ actionhero.prototype.initialize = function(params, callback){
       });
     } );
 
-    async.series(self.loadInitializers);
+    async.series(self.loadInitializers, function(errors){ fatalError(self.api, errors, 'initialize'); });
   } );
 
-  async.series(self.configInitializers);
+  async.series(self.configInitializers, function(errors){ fatalError(self.api, errors, 'config'); });
 };
 
 actionhero.prototype.start = function(params, callback){
@@ -203,7 +203,7 @@ actionhero.prototype.start = function(params, callback){
       callback(null, self.api);
     });
 
-    async.series(self.startInitializers);
+    async.series(self.startInitializers, function(errors){ fatalError(self.api, errors, 'start'); });
   }
 
   if(self.api.initialized === true){
@@ -240,7 +240,7 @@ actionhero.prototype.stop = function(callback){
       });
     });
 
-    async.series(self.stopInitializers);
+    async.series(self.stopInitializers, function(errors){ fatalError(self.api, errors, 'stop'); });
 
   } else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
@@ -272,6 +272,17 @@ actionhero.prototype.restart = function(callback){
 };
 
 //
+
+var fatalError = function(api, errors, type){
+  if(errors && !(errors instanceof Array)){ errors = [errors]; }
+  if(errors){ 
+    api.log('Error with initilizer step: ' + type, 'emerg');
+    errors.forEach(function(err){
+      api.log(err.stack, 'emerg');
+    });
+    process.exit(1); 
+  }
+}
 
 var sortNumber = function(a,b) {
     return a - b;

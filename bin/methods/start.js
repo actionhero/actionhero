@@ -16,9 +16,8 @@ exports.start = function(binary, next){
     if(cluster.isWorker){ process.send(state); }
     actionhero.start(function(err, apiFromCallback){
       if(err){
-        if(cluster.isWorker){ process.send('failed_to_boot'); }
         binary.log(err);
-        process.exit();
+        process.exit(1);
       } else {
         state = 'started';
         if(cluster.isWorker){ process.send(state); }
@@ -53,7 +52,9 @@ exports.start = function(binary, next){
   }
 
   var stopProcess = function(){
-    setTimeout(process.exit, shutdownTimeout)
+    setTimeout(function(){
+      process.exit(1);
+    }, shutdownTimeout)
     // finalTimer.unref();
     stopServer(function(){
       process.nextTick(function(){

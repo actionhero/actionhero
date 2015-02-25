@@ -24,8 +24,7 @@ module.exports = {
     
     api.actions.validateAction = function(action){
       var fail = function(msg){
-        api.log(msg + '; exiting.', 'emerg');
-        process.exit();
+        return next( new Error(msg) )
       }
 
       if(action.inputs === undefined){

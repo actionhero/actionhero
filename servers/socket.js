@@ -49,13 +49,13 @@ var initialize = function(api, options, next){
     }
 
     server.server.on('error', function(e){
-      api.log('Cannot start socket server @ ' + options.bindIP + ':' + options.port + '; Exiting.', 'emerg');
-      api.log(e, 'error');
-      process.exit();
+      return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
     });
     
     server.server.listen(options.port, options.bindIP, function(){
-      next();
+      process.nextTick(function(){
+        next();
+      });
     });
   }
 
