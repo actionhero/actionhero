@@ -6,7 +6,7 @@ var task = {
   pluginOptions: [],
   frequency:     0,
   run: function(api, params, next){
-    if(params == null){ params = {} }
+    if(!params){ params = {} }
 
     var connection = new api.connection({
       type: 'task',
@@ -14,19 +14,24 @@ var task = {
       remoteIP: '0',
       rawConnection: {}
     });
-    // params.action should be set
+    
     connection.params = params;
 
-    var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection, cont){
+    var actionProcessor = new api.actionProcessor({connection: connection, callback: function(connection){
       if(connection.error){
         api.log('task error: ' + connection.error, 'error', {params: JSON.stringify(params)});
       } else {
         api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)});
       }
+
+      var error    = connection.error;
+      var response = connection.response;
+
       connection.destroy(function(){
-        next();
+        next(error, response);
       });
     }});
+    
     actionProcessor.processAction();
   }
 };

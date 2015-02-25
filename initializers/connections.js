@@ -155,10 +155,12 @@ module.exports = {
       }
       delete api.connections.connections[self.id];
       var server = api.servers.servers[self.type];
-      if(server.attributes.logExits === true){
-        server.log('connection closed', 'info', {to: self.remoteIP});
+      if(server){
+        if(server.attributes.logExits === true){
+          server.log('connection closed', 'info', {to: self.remoteIP});
+        }
+        if(typeof server.goodbye === 'function'){ server.goodbye(self); }
       }
-      if(typeof server.goodbye === 'function'){ server.goodbye(self); }
       if(typeof callback === 'function'){ callback() }
     }
 
@@ -179,7 +181,7 @@ module.exports = {
       if(!(words instanceof Array)){
         words = [words];
       }
-      if(allowedVerbs.indexOf(verb) >= 0){
+      if(server && allowedVerbs.indexOf(verb) >= 0){
         server.log('verb', 'debug', {verb: verb, to: self.remoteIP, params: JSON.stringify(words)});
         if(verb === 'quit' || verb === 'exit'){
           server.goodbye(self);
