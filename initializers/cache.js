@@ -30,7 +30,7 @@ module.exports = {
         if(keys){
           length = keys.length;
         }
-        next(null, length);
+        next(err, length);
       });
     }
 
