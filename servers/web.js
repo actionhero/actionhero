@@ -26,10 +26,8 @@ var initialize = function(api, options, next){
   var server = new api.genericServer(type, options, attributes);
 
   if(['api', 'file'].indexOf(api.config.servers.web.rootEndpointType) < 0){
-    server.log('api.config.servers.web.rootEndpointType can only be \'api\' or \'file\'', 'emerg');
-    process.exit();
+    throw new Error('api.config.servers.web.rootEndpointType can only be \'api\' or \'file\'');
   }
-
 
   //////////////////////
   // REQUIRED METHODS //
@@ -59,15 +57,13 @@ var initialize = function(api, options, next){
           server.server.listen(options.port, options.bindIP);
         }, 1000)
       }else{
-        server.log('cannot start web server @ ' + options.bindIP + ':' + options.port + '; exiting.', 'emerg');
-        server.log(e, 'error');
-        process.exit(1);
+        return next(new Error('cannot start web server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
       }
     });
 
     server.server.listen(options.port, options.bindIP, function(){
       chmodSocket(options.bindIP, options.port);
-      next(server);
+      next();
     });
   }
 
