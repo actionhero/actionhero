@@ -63,20 +63,5 @@
     "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero"
-  },
-  "config": {
-    "blanket": {
-      "pattern": [
-        "actions",
-        "bin",
-        "client",
-        "config",
-        "grunt",
-        "initializers",
-        "servers",
-        "tasks"
-      ],
-      "data-cover-never": "node_modules"
-    }
   }
 }
