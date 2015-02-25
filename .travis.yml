@@ -1,28 +1,25 @@
 sudo: false
 
-notifications:
-  email:
-    - evantahler@gmail.com
 language: node_js
+
 node_js:
   - "0.10"
   - "0.11"
   - "0.12"
   - "iojs"
+
 env:
   - "FAKEREDIS=true  ACTIONDOMAINS=true"
   - "FAKEREDIS=true  ACTIONDOMAINS=false"
   - "FAKEREDIS=false ACTIONDOMAINS=true"
   - "FAKEREDIS=false ACTIONDOMAINS=false"
+
 os:
   - linux
   - osx
   - windows
 
-branches:
-  only:
-    - master
-    - develop
+script: npm run-script test-travis
 
 services:
   - redis-server
@@ -33,6 +30,9 @@ before_script:
 after_script:
   - npm run-script coverage
 
+after_failure:
+  - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
+
 notifications:
   webhooks:
     urls:
@@ -41,6 +41,3 @@ notifications:
     on_success: always
     on_failure: always
     on_start:   true
-
-after_failure:
-  - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"

@@ -6,7 +6,8 @@ exports.start = function(binary, next){
   var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
   // var actionheroPrototype = require('./../../actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
-  var shutdownTimeout = 1000 * 30 // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
+  // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
+  var shutdownTimeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT || 1000 * 30 
   var api = {};
   var state;
 

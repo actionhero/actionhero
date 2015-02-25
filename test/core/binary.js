@@ -179,7 +179,21 @@ describe('Core: Binary', function(){
     });
   });
 
-  it('can run a single server')
-  it('can run a cluster')
+  describe('can run a single server', function(){
+    it('can boot a single server')
+    it('can handle signals to reboot')
+    it('can handle signals to stop')
+    it('will shutdown after the alloted time')
+  });
+
+  describe('can run a cluster', function(){
+    it('can handle signals to reboot (graceful)')
+    it('can handle signals to reboot (hup)')
+    it('can handle signals to stop')
+    it('can handle signals to add a worker')
+    it('can handle signals to remove a worker')
+    it('can detect flapping and exit')
+    it('can reboot and abosrb code changes without downtime')
+  });
 
 });
