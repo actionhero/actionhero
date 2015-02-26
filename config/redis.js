@@ -39,18 +39,11 @@ exports.default = {
   }
 }
 
-var notified = false;
-
 exports.test = { 
   redis: function(api){
     var package = 'fakeredis';
     if(process.env.FAKEREDIS === 'false'){
       package = 'redis';
-    }
-
-    if(notified === false){
-      notified = true;
-      console.log('\n\n*This test suite is running with redis=' + package + '*\n\n');
     }
 
     return {
