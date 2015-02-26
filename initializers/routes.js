@@ -73,9 +73,15 @@ module.exports = {
       return response;
     }
 
+
+    api.routes.registerRoute = function(method, path, action) {
+      api.routes.routes[method].push({ path: path, action: action });
+    }
+
     // load in the routes file
     api.routes.loadRoutes = function(rawRoutes){
       var counter = 0;
+
       api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
       if(!rawRoutes){
@@ -92,10 +98,10 @@ module.exports = {
           if(method === 'all'){
             for(v in api.routes.verbs){
               verb = api.routes.verbs[v];
-              api.routes.routes[verb].push({ path: route.path, action: route.action });
+              api.routes.registerRoute(verb, route.path, route.action);
             }
           } else {
-            api.routes.routes[method].push({ path: route.path, action: route.action });
+            api.routes.registerRoute(method, route.path, route.action);
           }
           counter++;
         }
@@ -111,7 +117,7 @@ module.exports = {
           // api.routes.verbs.forEach(function(verb){
           for(v in api.routes.verbs){
             verb = api.routes.verbs[v];
-            api.routes.routes[verb].push({ path: '/' + action, action: action });
+            api.routes.registerRoute(verb, '/' + action, action);
           }
         }
         api.log(simplePaths.length + ' simple routes loaded from action names', 'debug');
