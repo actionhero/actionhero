@@ -17,14 +17,27 @@ module.exports = {
     api.logger = new (winston.Logger)({
       // TODO We need to manually make these levels until winston switches the order back
       levels: {
-        emerg: 7,
-        alert: 6,
-        crit: 5,
-        error: 4,
-        warning: 3,
-        notice: 2,
-        info: 1,
-        debug: 0
+        emerg: 8,
+        alert: 7,
+        crit: 6,
+        error: 5,
+        warning: 4,
+        notice: 3,
+        info: 2,
+        debug: 1,
+        trace: 0
+      },
+      colors: {
+        trace: 'magenta',
+        input: 'grey',
+        verbose: 'cyan',
+        prompt: 'grey',
+        debug: 'blue',
+        info: 'green',
+        data: 'grey',
+        help: 'cyan',
+        warn: 'yellow',
+        error: 'red'
       },
       transports: transports
     });
@@ -45,7 +58,7 @@ module.exports = {
     for(i in api.logger.levels){ logLevels.push(i) }
 
     api.log('*** starting actionhero ***', 'notice')
-    api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
+    api.log('Logger loaded.  Possible levels include: ', 'trace', logLevels);
 
     next();
 
