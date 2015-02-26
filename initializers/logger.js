@@ -27,6 +27,18 @@ module.exports = {
         debug: 1,
         trace: 0
       },
+      colors: {
+        trace: 'magenta',
+        input: 'grey',
+        verbose: 'cyan',
+        prompt: 'grey',
+        debug: 'blue',
+        info: 'green',
+        data: 'grey',
+        help: 'cyan',
+        warn: 'yellow',
+        error: 'red'
+      },
       transports: transports
     });
 
