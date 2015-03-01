@@ -41,3 +41,7 @@ module.exports = {
 {% endhighlight %}
 
 You can generate a file of this type with `actionhero generateInitializer --name=stuffInit`
+
+## Errors
+
+You can pass an error to the callback of any step in the initializer.  Doing so will cause actionhero to log the error and stop the server.  For example, you might throw an error if you cannot connect to an external service at boot, [like a database](https://github.com/evantahler/ah-sequelize-plugin/blob/master/initializers/sequelize.js). 
