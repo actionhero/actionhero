@@ -30,7 +30,7 @@ The Stats redis server is defined by `api.config.redis`. Note that if `api.confi
 
 ## Notes
 - in `api.stats.increment`, the count can be negative or positive
-- `api.config.stats.witeFrequency` is how often the local stats buffer is written to redis.  Faster frequencies will keep your stats up to date faster, but slow down the rest of your server due to constant writes to redis.
+- `api.config.stats.writeFrequency` is how often the local stats buffer is written to redis.  Faster frequencies will keep your stats up to date faster, but slow down the rest of your server due to constant writes to redis.
 - You can configure actionhero to store stats changes to more than one redis hash.  You might wish to do this so that you may keep 'local' stats and 'global' stats.  For example, if you set `api.config.stats.keys = ['actionhero:stats', process.pid + ':stats']`.  All servers in your cluster will contribute to `actionhero:stats` and just this server's information will be logged in `process.pid + ':stats'`
   
 ## Example: 
