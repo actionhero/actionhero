@@ -66,9 +66,9 @@ module.exports = {
           toDisconnectProcessors: api.config.tasks.toDisconnectProcessors,
         }, api.tasks.jobs, function(){
           // normal worker emitters
-          self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', 'info',                 {workerId: workerId}                                                            ); })
-          self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', 'info',                   {workerId: workerId}                                                            ); })
-          self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', 'info'                                                                            ); })
+          self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', 'trace',                 {workerId: workerId}                                                            ); })
+          self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', 'trace',                   {workerId: workerId}                                                            ); })
+          self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', 'debug'                                                                            ); })
           self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'trace',       {workerId: workerId}                                                            ); })
           self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
           self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
