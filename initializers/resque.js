@@ -80,7 +80,7 @@ module.exports = {
           
           // multiWorker emitters
           self.multiWorker.on('internalError',     function(error){                         api.log(error, 'error'); })
-          self.multiWorker.on('multiWorkerAction', function(verb, delay){                   api.log('*** checked for worker status: ' + verb + ' (event loop delay: ' + delay + 'ms)', 'debug'); })
+          self.multiWorker.on('multiWorkerAction', function(verb, delay){                   api.log('*** checked for worker status: ' + verb + ' (event loop delay: ' + delay + 'ms)', 'trace'); })
           
           if(api.config.tasks.minTaskProcessors > 0){
             self.multiWorker.start(function(){
