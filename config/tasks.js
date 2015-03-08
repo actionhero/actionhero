@@ -2,18 +2,18 @@ exports.default = {
   tasks: function(api){
     return {
       // Should this node run a scheduler to promote delayed tasks?
-      scheduler: true,
+      scheduler: false,
       // what queues should the taskProcessors work?
       queues: ['*'],
-	  // Verbosity of task logging
-	  verbose: true,
+      // Verbosity of task logging
+      verbose: true,
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
       // at minimum, how many parallel taskProcessors should this node spawn?
       // (have number > 0 to enable, and < 1 to disable)
-      minTaskProcessors: 1,
+      minTaskProcessors: 0,
       // at maximum, how many parallel taskProcessors should this node spawn?
-      maxTaskProcessors: 3,
+      maxTaskProcessors: 0,
       // how often should we check the event loop to spawn more taskProcessors?
       checkTimeout: 500,
       // how many ms would constitue an event loop delay to halt taskProcessors spawning?
