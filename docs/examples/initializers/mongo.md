@@ -41,7 +41,7 @@ exports.mongo = mongo;
 
 {% endhighlight %}
 
-And this type of configurations would require a file to be craeated in `./config/mongo.js`:
+And this type of initializer would require a file to be created in `./config/mongo.js`:
 
 {% highlight javascript %}
 
