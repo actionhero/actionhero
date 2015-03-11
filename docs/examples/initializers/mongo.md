@@ -40,3 +40,20 @@ var mongo = function (api, next) {
 exports.mongo = mongo;
 
 {% endhighlight %}
+
+And this type of configurations would require a file to be craeated in `./config/mongo.js`:
+
+{% highlight javascript %}
+
+exports.default = { 
+  mongo: function(api){
+    return {
+        enable: true,
+        host: '1.2.3.4'
+        port: 27017
+        db: 'myDatabase'
+    }
+  }
+}
+
+{% endhighlight %}
