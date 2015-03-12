@@ -100,7 +100,7 @@ var initialize = function(api, options, next){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     connection.rawConnection.responseHeaders.push(['Content-Length', length]);
     if(foundExpires === false)      { connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
-    if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate']); }
+    if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
     
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
