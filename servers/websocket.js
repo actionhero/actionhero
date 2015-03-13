@@ -83,7 +83,7 @@ var initialize = function(api, options, next){
       length     : length
     };
 
-    try{ 
+    try{
       if(!error){
         fileStream.on('data', function(d){ content+= d; });
         fileStream.on('end', function(){
@@ -144,7 +144,7 @@ var initialize = function(api, options, next){
     if(!minimize){ minimize = false; }
     var libSource = api.servers.servers.websocket.server.library();
     var ahClientSource = server.compileActionheroClientJS();
-    ahClientSource = 
+    ahClientSource =
       ';;;\r\n' +
       '(function(exports){ \r\n' +
       ahClientSource +
@@ -156,19 +156,19 @@ var initialize = function(api, options, next){
       return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
     }else{
       return (libSource + '\r\n\r\n\r\n' + ahClientSource);
-    }    
+    }
   }
 
   server.writeClientJS = function(){
     if(!api.config.general.paths.public || api.config.general.paths.public.length === 0){
       return;
     }
-    if(api.config.servers.websocket.clientJsPath !== undefined && api.config.servers.websocket.clientJsName !== undefined){
+    if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
       var base = path.normalize(
-        api.config.general.paths.public[0] + 
-        path.sep + 
-        api.config.servers.websocket.clientJsPath + 
-        path.sep + 
+        api.config.general.paths.public[0] +
+        path.sep +
+        api.config.servers.websocket.clientJsPath +
+        path.sep +
         api.config.servers.websocket.clientJsName
       );
       try{
