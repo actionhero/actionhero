@@ -1,4 +1,4 @@
-# actionhero.js ![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat) ![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat) [![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat)](https://npmjs.org/package/actionhero)
+# actionhero.js [![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat)](https://www.npmjs.com/package/actionhero) ![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat) [![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat)](https://npmjs.org/package/actionhero)
 
 ## The Reusable, Scalable, and Quick node.js API Server
 
