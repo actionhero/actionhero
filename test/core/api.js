@@ -95,12 +95,12 @@ describe('Core: API', function(){
           description: 'I am a test',
           version: 3,
           outputExample: {},
-          run:function(api, connection, next){
-            connection.response.version = 1;
-            connection.error = {
+          run:function(api, data, next){
+            data.response.version = 1;
+            var error = {
               'a' : {'complex': 'error'}
             }
-            next(connection, true);
+            next(error);
           }
         }
       }

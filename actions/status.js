@@ -33,17 +33,17 @@ exports.status = {
     }
   },
 
-  run: function(api, connection, next){
-    connection.response.id = api.id;
-    connection.response.actionheroVersion = api.actionheroVersion;
-    var now = new Date().getTime();
-    connection.response.uptime = now - api.bootTime;
+  run: function(api, data, next){
     api.stats.getAll(function(err, stats){
-      connection.response.stats = stats;
       api.tasks.details(function(err, details){
-        connection.response.queues  = details.queues;
-        connection.response.workers = details.workers;
-        next(connection, true);
+        data.response.id                = api.id;
+        data.response.actionheroVersion = api.actionheroVersion;
+        data.response.uptime            = new Date().getTime() - api.bootTime;
+        data.response.stats             = stats;
+        data.response.queues            = details.queues;
+        data.response.workers           = details.workers;
+        
+        next(err);
       });
     });
   }

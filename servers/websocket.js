@@ -113,10 +113,10 @@ var initialize = function(api, options, next){
     });
   });
 
-  server.on('actionComplete', function(connection, toRender, messageCount){
-    if(toRender !== false){
-      connection.response.messageCount = messageCount;
-      server.sendMessage(connection, connection.response, messageCount)
+  server.on('actionComplete', function(data){
+    if(data.toRender !== false){
+      data.connection.response.messageCount = data.messageCount;
+      server.sendMessage(data.connection, data.response, data.messageCount)
     }
   });
 
