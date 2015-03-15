@@ -335,7 +335,10 @@ exports.action = {
   name: 'uploader',
   description: 'uploader',
   inputs: {
-    required: [], optional: ['file1', 'file2', 'key1', 'key2']
+    file1: {optional: true},
+    file2: {optional: true},
+    key1: {optional: true},
+    key2: {optional: true},
   }, 
   outputExample: null,
   run: function(api, connection, next){
