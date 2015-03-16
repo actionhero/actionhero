@@ -52,10 +52,14 @@ describe('Core: Exceptions', function(){
   });
 
   it('the bad action should fail gracefully', function(done){
-    api.specHelper.runAction('badAction', {}, function(response){
-      response.error.should.equal('Error: The server experienced an internal error');
+    if(api.config.general.actionDomains === true){
+      api.specHelper.runAction('badAction', {}, function(response){
+        response.error.should.equal('Error: The server experienced an internal error');
+        done();
+      });
+    }else{
       done();
-    });
+    }
   });
 
   it('other actions still work', function(done){
