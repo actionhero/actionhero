@@ -256,8 +256,8 @@ module.exports = {
         if(api.config.general.actionDomains === true){
           self.actionDomain = domain.create();
           self.actionDomain.on('error', function(err){
-            api.exceptionHandlers.action(self.actionDomain, err, self.connection, function(){
-              self.completeAction();
+            api.exceptionHandlers.action(self.actionDomain, err, self, function(connectionError){
+              self.completeAction(connectionError);
             });
           });
           self.actionDomain.run(function(){
