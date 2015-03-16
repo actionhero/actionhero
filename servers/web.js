@@ -257,14 +257,14 @@ var initialize = function(api, options, next){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
       }
 
-      var stringResponse = '';
-
-      try{ 
-        data.response.error = data.response.error.message; 
-      }catch(e){
-        data.response.error = String( data.response.error.message ); 
+      if(data.response.error){
+        try{ 
+          data.response.error = String( data.response.error.message ); 
+        }catch(e){ }
       }
       
+      var stringResponse = '';
+
       if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
         stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
         if(data.params.callback){

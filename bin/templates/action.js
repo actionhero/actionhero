@@ -14,6 +14,6 @@ exports.action = {
 
     // your logic here
     
-    next(error, response, true);
+    next(error);
   }
 };

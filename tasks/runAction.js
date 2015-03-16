@@ -17,18 +17,15 @@ var task = {
     
     connection.params = params;
 
-    var actionProcessor = new api.actionProcessor(connection, function(error){
-      if(error){
-        api.log('task error: ' + connection.error, 'error', {params: JSON.stringify(params)});
+    var actionProcessor = new api.actionProcessor(connection, function(data){
+      if(data.response.error){
+        api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)});
       } else {
         api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)});
       }
 
-      var error    = connection.error;
-      var response = connection.response;
-
       connection.destroy(function(){
-        next(error, response);
+        next(data.response.error, data.response);
       });
     });
     

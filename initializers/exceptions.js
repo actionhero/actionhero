@@ -89,8 +89,7 @@ module.exports = {
       api.stats.increment('exceptions:actions:' + simpleName);    
       api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
-      var connectionError = new Error( api.config.errors.serverErrorMessage() );
-      if(typeof next === 'function'){ next(connectionError); }
+      if(typeof next === 'function'){ next(); }
     };
 
     api.exceptionHandlers.task = function(err, queue, task, workerId){

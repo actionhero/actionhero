@@ -53,6 +53,8 @@ module.exports = {
 
       if(status instanceof Error){    
         error = status;
+      }else if(status === 'server_error'){
+        error = api.config.errors.serverErrorMessage();
       }else if(status === 'server_shutting_down'){
         error = api.config.errors.serverShuttingDown();
       }else if(status === 'too_many_requests'){
@@ -256,8 +258,8 @@ module.exports = {
         if(api.config.general.actionDomains === true){
           self.actionDomain = domain.create();
           self.actionDomain.on('error', function(err){
-            api.exceptionHandlers.action(self.actionDomain, err, self, function(connectionError){
-              self.completeAction(connectionError);
+            api.exceptionHandlers.action(self.actionDomain, err, self, function(){
+              self.completeAction('server_error');
             });
           });
           self.actionDomain.run(function(){

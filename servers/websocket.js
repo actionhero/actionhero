@@ -68,6 +68,12 @@ var initialize = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
+    if(message.error && message.error instanceof Error){
+      try{ 
+        message.error = String( message.error.message ); 
+      }catch(e){ }
+    }
+    
     if(!message.context){ message.context = 'response'; }
     if(!messageCount){ messageCount = connection.messageCount; }
     if(message.context === 'response' && !message.messageCount){ message.messageCount = messageCount; }
