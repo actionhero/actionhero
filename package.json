@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
     "request": "~2.53.x",
     "redis-sentinel-client": "latest",
     "coveralls": "^2.11.2",
-    "istanbul": "^0.3.6"
+    "istanbul": "^0.3.8"
   },
   "optionalDependencies": {},
   "bin": {
