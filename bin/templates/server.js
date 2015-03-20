@@ -4,14 +4,15 @@ var initialize = function(api, options, next){
   // INIT //
   //////////
 
-  var type = '%%name%%'
+  var type = '%%name%%';
+
   var attributes = {
     canChat: true,
     logConnections: true,
     logExits: true,
     sendWelcomeMessage: true,
     verbs: []
-  }
+  };
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -21,15 +22,15 @@ var initialize = function(api, options, next){
 
   server.start = function(next){
     next();
-  }
+  };
 
   server.stop = function(next){
     next();
-  }
+  };
 
   server.sendMessage = function(connection, message, messageCount){
 
-  }
+  };
 
   server.sendFile = function(connection, error, fileStream, mime, length){
 
@@ -56,6 +57,6 @@ var initialize = function(api, options, next){
   /////////////
 
   next(server);
-}
+};
 
 exports.initialize = initialize;

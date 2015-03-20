@@ -1,2 +1,2 @@
-var grunt = require('grunt')
-require('actionhero/grunt')(grunt)
+var grunt = require('grunt');
+require('actionhero/grunt')(grunt);
