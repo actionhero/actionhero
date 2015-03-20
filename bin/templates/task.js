@@ -5,7 +5,7 @@ exports.task = {
   queue:         '%%queue%%',
   plugins:       [],
   pluginOptions: {},
-  
+
   run: function(api, params, next){
     // your logic here');
     next();

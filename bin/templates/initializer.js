@@ -13,4 +13,4 @@ module.exports = {
   stop: function(api, next){
     next();
   }
-}
+};
