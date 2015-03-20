@@ -108,7 +108,10 @@ actionhero.prototype.initialize = function(params, callback){
 
           if(typeof self.initializers[initializer].initialize === 'function'){
             if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'trace', file); }
-            self.initializers[initializer].initialize(self.api, next);
+            self.initializers[initializer].initialize(self.api, function(err){
+              try{ self.api.log('loaded initializer: ' + initializer, 'trace', file); }catch(e){ }
+              next(err);
+            });
           }else{
             next();
           }
@@ -117,7 +120,10 @@ actionhero.prototype.initialize = function(params, callback){
         var startFunction = function(next){
           if(typeof self.initializers[initializer].start === 'function'){
             if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
-            self.initializers[initializer].start(self.api, next);
+            self.initializers[initializer].start(self.api, function(err){
+              self.api.log('   started: ' + initializer, 'debug', file);
+              next(err);
+            });
           }else{
             next();
           }
@@ -126,7 +132,10 @@ actionhero.prototype.initialize = function(params, callback){
         var stopFunction = function(next){
           if(typeof self.initializers[initializer].stop === 'function'){
             if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
-            self.initializers[initializer].stop(self.api, next);
+            self.initializers[initializer].stop(self.api, function(err){
+              self.api.log('   stoped: ' + initializer, 'debug', file);
+              next(err);
+            });
           }else{
             next();
           }
