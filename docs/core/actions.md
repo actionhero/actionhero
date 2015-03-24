@@ -14,7 +14,7 @@ You can create you own actions by placing them in a `./actions/` folder at the r
 Here's an example of a simple action which will return a random number to the client:
 
 {% highlight javascript %}
-exports.randomNumber = {
+exports.action = {
   name: 'randomNumber',
   description: 'I am an API method which will generate a random number',
   outputExample: {
