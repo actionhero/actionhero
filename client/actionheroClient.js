@@ -166,17 +166,17 @@ ActionheroClient.prototype.actionWeb = function (params, callback) {
     }
   };
 
-  var method = typeof params == "object" ? "POST" : 'GET';
+  var method = typeof params == 'object' ? 'POST' : 'GET';
   if (params.httpMethod) {
     method = params.httpMethod;
   }
 
-  var url = this.options.url + this.options.apiPath + "?";
-  if (method == "POST") {
-    url += "action=" + params.action;
+  var url = this.options.url + this.options.apiPath + '?';
+  if (method == 'POST') {
+    url += 'action=' + params.action;
     xmlhttp.open(method, url, true);
-    if (typeof params == "object") {
-      xmlhttp.setRequestHeader("Content-Type", "application/json");
+    if (typeof params == 'object') {
+      xmlhttp.setRequestHeader('Content-Type', 'application/json');
       params = JSON.stringify(params)
     }
     xmlhttp.send(params);
