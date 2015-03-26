@@ -153,30 +153,44 @@ ActionheroClient.prototype.action = function(action, params, callback){
   }
 }
 
-ActionheroClient.prototype.actionWeb = function(params, callback){
+ActionheroClient.prototype.actionWeb = function (params, callback) {
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange = function(){
-    if(xmlhttp.readyState === 4){
-      if(xmlhttp.status === 200){
+  xmlhttp.onreadystatechange = function () {
+    if (xmlhttp.readyState === 4) {
+      if (xmlhttp.status === 200) {
         var response = JSON.parse(xmlhttp.responseText);
         callback(null, response);
-      }else{
+      } else {
         callback(xmlhttp.statusText, xmlhttp.responseText);
       }
     }
-  }
-  var qs = '?';
-  for(var i in params){
-    qs += i + '=' + params[i] + '&';
-  }
-  var method = 'GET';
-  if(params.httpMethod){
+  };
+
+  var method = typeof params == "object" ? "POST" : 'GET';
+  if (params.httpMethod) {
     method = params.httpMethod;
   }
-  var url = this.options.url + this.options.apiPath + qs;
-  xmlhttp.open(method, url, true);
-  xmlhttp.send();
+
+  var url = this.options.url + this.options.apiPath + "?";
+  if (method == "POST") {
+    url += "action=" + params.action;
+    xmlhttp.open(method, url, true);
+    if (typeof params == "object") {
+      xmlhttp.setRequestHeader("Content-Type", "application/json");
+      params = JSON.stringify(params)
+    }
+    xmlhttp.send(params);
+  } else {
+    var qs = '';
+    for (var i in params) {
+      qs += i + '=' + params[i] + '&';
+    }
+    url += qs;
+    xmlhttp.open(method, url, true);
+    xmlhttp.send();
+  }
 }
+
 
 ActionheroClient.prototype.actionWebSocket = function(params, callback){
   this.send({event: 'action',params: params}, callback);
