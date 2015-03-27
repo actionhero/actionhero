@@ -167,7 +167,7 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
   };
   
   var method = params.httpMethod || 'POST';
-  var url = this.options.url + this.options.apiPath;
+  var url = this.options.url + this.options.apiPath + '?action=' + params.action;
   xmlhttp.open(method, url, true);
   xmlhttp.setRequestHeader('Content-Type', 'application/json');
   xmlhttp.send(JSON.stringify(params));	
