@@ -5,9 +5,9 @@ exports.randomNumber = {
     randomNumber: 0.123
   },
   
-  run: function(api, connection, next){
-    connection.response.randomNumber = Math.random();
-    next(connection, true);
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next(null);
   }
 
 };

@@ -109,7 +109,6 @@ module.exports = {
         fingerprint: null,
         rooms: [],
         params: {},
-        response: {},
         pendingActions: 0,
         totalActions: 0,
         messageCount: 0,

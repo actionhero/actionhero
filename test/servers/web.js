@@ -82,7 +82,7 @@ describe('Server: Web', function(){
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
       body = JSON.parse(body);
-      body.error.should.equal('Error: unknown action or invalid apiVersion')
+      body.error.should.equal('unknown action or invalid apiVersion')
       done();
     });
   });
@@ -152,11 +152,9 @@ describe('Server: Web', function(){
           name: 'paramTestAction',
           description: 'I return connection.rawConnection.params',
           version: 1,
-          // inputs: {},
-          outputExample: {},
-          run:function(api, connection, next){
-            connection.response = connection.rawConnection.params;
-            next(connection, true);
+          run:function(api, data, next){
+            data.response = data.connection.rawConnection.params;
+            next();
           }
         }
       }
@@ -175,7 +173,6 @@ describe('Server: Web', function(){
     it('.query should contain unfiltered query params', function (done) {
       request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
         body = JSON.parse(body);
-        // console.log(body)
         body.query.crazyParam123.should.equal('something');
         done();
       });
@@ -220,13 +217,13 @@ describe('Server: Web', function(){
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run:function(api, connection, next){
-            connection.rawConnection.responseHeaders.push(['thing', 'A']);
-            connection.rawConnection.responseHeaders.push(['thing', 'B']);
-            connection.rawConnection.responseHeaders.push(['thing', 'C']);
-            connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_1=1']);
-            connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_2=2']);
-            next(connection, true);
+          run:function(api, data, next){
+            data.connection.rawConnection.responseHeaders.push(['thing', 'A']);
+            data.connection.rawConnection.responseHeaders.push(['thing', 'B']);
+            data.connection.rawConnection.responseHeaders.push(['thing', 'C']);
+            data.connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_1=1']);
+            data.connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_2=2']);
+            next();
           }
         }
       }
@@ -340,14 +337,15 @@ describe('Server: Web', function(){
           inputs: {
             key: {required:true}
           },
-          run:function(api, connection, next){
-            if(connection.params.key !== 'value'){
-              connection.error = 'key != value';
-              connection.rawConnection.responseHttpCode = 402;
+          run:function(api, data, next){
+            var error;
+            if(data.params.key !== 'value'){
+              error = 'key != value';
+              data.connection.rawConnection.responseHttpCode = 402;
             } else {
-              connection.response.good = true;
+              data.response.good = true;
             }
-            next(connection, true);
+            next(error);
           }
         }
       }
@@ -357,9 +355,9 @@ describe('Server: Web', function(){
         '1': {
           name: 'brokenAction',
           description: 'I am broken',
-          run:function(api, connection, next){
+          run:function(api, data, next){
             BREAK; // undefiend
-            next(connection, true);
+            next();
           }
         }
       }
@@ -397,6 +395,7 @@ describe('Server: Web', function(){
       if(api.config.general.actionDomains === true){
         request.post(url + '/api/brokenAction', function(err, response, body){
           body = JSON.parse(body);
+          body.error.should.eql( 'The server experienced an internal error' );
           response.statusCode.should.eql(500);
           done();
         });
@@ -585,8 +584,8 @@ describe('Server: Web', function(){
             key: {required:true}
           },
           outputExample: {},
-          run:function(api, connection, next){
-            next(connection, true);
+          run:function(api, data, next){
+            next();
           }
         }
       }
@@ -601,9 +600,9 @@ describe('Server: Web', function(){
             userID: {required:true}
           },
           outputExample: {},
-          run:function(api, connection, next){
-            connection.response.userID = connection.params.userID;
-            next(connection, true);
+          run:function(api, data, next){
+            data.response.userID = data.params.userID;
+            next();
           }
         }
       }
@@ -654,7 +653,7 @@ describe('Server: Web', function(){
     it('unknown actions are still unknown', function(done){
       request.get(url + '/api/a_crazy_action', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('Error: unknown action or invalid apiVersion')
+        body.error.should.equal('unknown action or invalid apiVersion')
         done();
       });
     });
@@ -771,7 +770,7 @@ describe('Server: Web', function(){
     it('regexp match failures will be rejected', function(done){
       request.post(url + '/api/login/1234', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('Error: unknown action or invalid apiVersion');
+        body.error.should.equal('unknown action or invalid apiVersion');
         should.not.exist(body.requesterInformation.receivedParams.userID);
         done();
       });
@@ -790,7 +789,7 @@ describe('Server: Web', function(){
         request.get(url + '/api/mimeTestAction', function(err, response, body){
           body = JSON.parse(body);
           response.headers['content-type'].should.equal('application/json; charset=utf-8');
-          body.error.should.equal('Error: key is a required parameter for this action');
+          body.error.should.equal('key is a required parameter for this action');
           done();
         });
       });

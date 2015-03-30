@@ -42,7 +42,7 @@ describe('Core: Exceptions', function(){
         version: 1,
         run: function(api, connection, next){
           thing // undefined
-          next(connection, true);
+          next();
         }
       }
     }
@@ -52,30 +52,13 @@ describe('Core: Exceptions', function(){
   });
 
   it('the bad action should fail gracefully', function(done){
-    /**
-     * @nullivex
-     * This test in particular is interesting because of the way it expects
-     * mocha to handle and rethrow the exception.
-     *
-     * Implementing grunt and grunt-mocha-test will run this code inside a domain
-     * and the action runner also creates a domain so they are nested. In node ~0.8.9
-     * this seems to cause the exception to land in mocha's lap rather than being
-     * rethrown to the child domain.
-     *
-     * I believe this works fine in node ~0.9.0 because they ironed out some of the
-     * issues especially with nested domains and how exceptions are bubbled in those
-     * environments there is an issue about this here: https://github.com/joyent/node/issues/4375
-     *
-     * So, it is best just to ignore this test in node ~0.8.9 and below and it should
-     * still pass in normal environments.
-     */
-    if(9 < parseInt(process.version.split('.')[1],10) && api.config.general.actionDomains === true){
+    if(api.config.general.actionDomains === true){
       api.specHelper.runAction('badAction', {}, function(response){
         response.error.should.equal('Error: The server experienced an internal error');
         done();
       });
-    } else {
-      done()
+    }else{
+      done();
     }
   });
 
