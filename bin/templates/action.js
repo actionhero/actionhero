@@ -9,7 +9,7 @@ exports.action = {
 
   inputs: {},
 
-  run: function(api, params, response, connection, next){
+  run: function(api, data, next){
     var error = null;
 
     // your logic here
