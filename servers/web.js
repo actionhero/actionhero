@@ -1,6 +1,7 @@
 var url                 = require('url');
 var fs                  = require('fs');
 var path                = require('path');
+var util                = require('util');
 var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
@@ -257,10 +258,8 @@ var initialize = function(api, options, next){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
       }
 
-      if(data.response.error){
-        try{ 
-          data.response.error = String( data.response.error.message ); 
-        }catch(e){ }
+      if(data.response.error && util.isError(data.response.error)){
+        data.response.error = String( data.response.error.message ); 
       }
       
       var stringResponse = '';

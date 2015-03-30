@@ -55,6 +55,86 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('errors', function(){
+
+    before(function(done){
+      api.actions.versions.stringErrorTestAction = [1]
+      api.actions.actions.stringErrorTestAction = {
+        '1': {
+          name: 'stringErrorTestAction',
+          description: 'stringErrorTestAction',
+          version: 1,
+          run:function(api, data, next){
+            next('broken');
+          }
+        }
+      }
+
+      api.actions.versions.errorErrorTestAction = [1]
+      api.actions.actions.errorErrorTestAction = {
+        '1': {
+          name: 'errorErrorTestAction',
+          description: 'errorErrorTestAction',
+          version: 1,
+          run:function(api, data, next){
+            next(new Error('broken'));
+          }
+        }
+      }
+
+      api.actions.versions.complexErrorTestAction = [1]
+      api.actions.actions.complexErrorTestAction = {
+        '1': {
+          name: 'complexErrorTestAction',
+          description: 'complexErrorTestAction',
+          version: 1,
+          run:function(api, data, next){
+            next({ error: 'broken', reason: 'stuff'});
+          }
+        }
+      }
+
+      api.routes.loadRoutes();
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.actions.stringErrorTestAction;
+      delete api.actions.versions.stringErrorTestAction;
+      delete api.actions.actions.errorErrorTestAction;
+      delete api.actions.versions.errorErrorTestAction;
+      delete api.actions.actions.complexErrorTestAction;
+      delete api.actions.versions.complexErrorTestAction;
+      done();
+    });
+
+    it('errors can be error strings', function(done){
+      request.get(url + '/api/stringErrorTestAction/', function(err, response, body){
+        body = JSON.parse(body);
+        body.error.should.equal('broken')
+        done();
+      });
+    });
+
+    it('errors can be error objects and returned plainly', function(done){
+      request.get(url + '/api/errorErrorTestAction/', function(err, response, body){
+        body = JSON.parse(body);
+        body.error.should.equal('broken')
+        done();
+      });
+    }); 
+
+    it('errors can be complex JSON payloads', function(done){
+      request.get(url + '/api/complexErrorTestAction/', function(err, response, body){
+        body = JSON.parse(body);
+        body.error.error.should.equal('broken')
+        body.error.reason.should.equal('stuff')
+        done();
+      });
+    });
+
+  });
+
   describe('if disableParamScrubbing is set ', function () {
     var orig;
 
