@@ -126,7 +126,7 @@ describe('Core: Binary', function(){
       var data = String( fs.readFileSync(testDir + '/actions/myAction.js') );
       data.should.containEql('name:                   \'myAction\'');
       data.should.containEql('description:            \'my_description\'');
-      data.should.containEql('next(connection, true)');
+      data.should.containEql('next(error);');
       done();
     });
   });

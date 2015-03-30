@@ -84,12 +84,11 @@ module.exports = {
     
     api.genericServer.prototype.processAction = function(connection){
       var self = this;
-      var actionProcessor = new api.actionProcessor({
-        connection: connection,
-        callback: function(connection, toRender, messageCount){
-          self.emit('actionComplete', connection, toRender, messageCount);
-        }
+      var actionProcessor = new api.actionProcessor(connection,
+      function(data){
+        self.emit('actionComplete', data);
       });
+
       actionProcessor.processAction();
     }
 

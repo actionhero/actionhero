@@ -88,7 +88,7 @@ describe('Server: Web Socket', function(){
 
   it('can run actions with errors', function(done){
     clientA.action('cacheTest', function(response){
-      response.error.should.equal('Error: key is a required parameter for this action');
+      response.error.should.equal('key is a required parameter for this action');
       done();
     });
   });
@@ -127,7 +127,7 @@ describe('Server: Web Socket', function(){
       for(var i in responses){
         var response = responses[i];
         if(i === 0 || i === '0'){
-          response.error.should.eql('Error: you have too many pending requests');
+          response.error.should.eql('you have too many pending requests');
         } else {
           should.not.exist(response.error)
         }

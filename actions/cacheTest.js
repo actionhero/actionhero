@@ -32,18 +32,18 @@ exports.cacheTest = {
     },
   },
 
-  run: function(api, connection, next){
-    var key = 'cacheTest_' + connection.params.key;
-    var value = connection.params.value;
+  run: function(api, data, next){
+    var key = 'cacheTest_' + data.params.key;
+    var value = data.params.value;
 
-    connection.response.cacheTestResults = {};
+    data.response.cacheTestResults = {};
 
     api.cache.save(key, value, 5000, function(err, resp){
-      connection.response.cacheTestResults.saveResp = resp;
+      data.response.cacheTestResults.saveResp = resp;
       api.cache.size(function(err, numberOfCacheObjects){
-        connection.response.cacheTestResults.sizeResp = numberOfCacheObjects;
+        data.response.cacheTestResults.sizeResp = numberOfCacheObjects;
         api.cache.load(key, function(err, resp, expireTimestamp, createdAt, readAt){
-          connection.response.cacheTestResults.loadResp = {
+          data.response.cacheTestResults.loadResp = {
             key: key,
             value: resp,
             expireTimestamp: expireTimestamp,
@@ -51,8 +51,8 @@ exports.cacheTest = {
             readAt: readAt
           };
           api.cache.destroy(key, function(err, resp){
-            connection.response.cacheTestResults.deleteResp = resp;
-            next(connection, true);
+            data.response.cacheTestResults.deleteResp = resp;
+            next(err);
           });
         });
       });

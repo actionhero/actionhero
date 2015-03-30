@@ -95,12 +95,12 @@ describe('Core: API', function(){
           description: 'I am a test',
           version: 3,
           outputExample: {},
-          run:function(api, connection, next){
-            connection.response.version = 1;
-            connection.error = {
+          run:function(api, data, next){
+            data.response.version = 1;
+            var error = {
               'a' : {'complex': 'error'}
             }
-            next(connection, true);
+            next(error);
           }
         }
       }
@@ -150,68 +150,6 @@ describe('Core: API', function(){
         done();
       });
     });
-  })
-
-  describe('duplicate callback prevention', function(){
-
-    before(function(done){
-      api.actions.versions.badAction = [1]
-      api.actions.actions.badAction = {
-        '1': {
-          name: 'badAction',
-          description: 'I double callback',
-          version: 1,
-          outputExample: {},
-          run:function(api, connection, next){
-            connection.response.count = 1
-            next(connection, true);
-            setTimeout(function(){
-              connection.response.count = 2
-              next(connection, true);
-            }, 1000)
-          }
-        }
-      }
-      done();
-    });
-
-    after(function(done){
-      api.actions.preProcessors = {};
-      delete api.actions.actions.badAction;
-      delete api.actions.versions.badAction;
-      done();
-    });
-
-    it('will only callback once for a bad action and only the first response will be returned', function(done){
-      var responses = [];
-      api.specHelper.runAction('badAction', function(response){
-        responses.push( api.utils.objClone(response) );
-      });
-
-      setTimeout(function(){
-        responses.length.should.equal(1);
-        responses[0].count.should.equal(1)
-        done();
-      }, 2000)
-    });
-
-    it('can also prevent double callbacks from middleware', function(done){
-      api.actions.addPreProcessor(function(connection, actionTemplate, next){
-        next(connection, true);
-        next(connection, true);
-      });
-
-      var responses = [];
-      api.specHelper.runAction('randomNumber', function(response){
-        responses.push( api.utils.objClone(response) );
-      });
-
-      setTimeout(function(){
-        responses.length.should.equal(1);
-        done();
-      }, 2000)
-    });
-
   });
 
   describe('Action Params', function(){
