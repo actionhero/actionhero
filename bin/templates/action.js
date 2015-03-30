@@ -9,11 +9,8 @@ exports.action = {
 
   inputs: {},
 
-  run: function(api, params, response, connection, next){
-    var error = null;
-
+  run: function(api, connection, next){
     // your logic here
-    
-    next(error);
+    next(connection, true);
   }
 };

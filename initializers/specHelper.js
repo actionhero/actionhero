@@ -74,27 +74,22 @@ module.exports = {
           connection.actionCallbacks = {};
         });
 
-        server.on('actionComplete', function(data){
-          data.response.messageCount = data.messageCount;
-          data.response.serverInformation = {
+        server.on('actionComplete', function(connection, toRender, messageCount){
+          connection.response.messageCount = messageCount;
+          connection.response.serverInformation = {
             serverName:      api.config.general.serverName,
             apiVersion:      api.config.general.apiVersion,
           };
-          data.response.requesterInformation = {
-            id: data.connection.id,
-            remoteIP: data.connection.remoteIP,
+          connection.response.requesterInformation = {
+            id: connection.id,
+            remoteIP: connection.remoteIP,
             receivedParams: {}
           };
-
-          if(data.response.error instanceof Error){   
-            data.response.error = 'Error: ' + data.response.error.message; 
+          for(var k in connection.params){
+            connection.response.requesterInformation.receivedParams[k] = connection.params[k];
           }
-
-          for(var k in data.params){
-            data.response.requesterInformation.receivedParams[k] = data.params[k];
-          }
-          if(data.toRender === true){
-            server.sendMessage(data.connection, data.response, data.messageCount);
+          if(toRender === true){
+            server.sendMessage(connection, connection.response, messageCount);
           }
         });
 
