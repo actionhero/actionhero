@@ -188,14 +188,14 @@ describe('Server: Web Socket', function(){
       clientC.roomAdd('defaultRoom',function(){
         setTimeout(function(){ // timeout to skip welcome messages as clients join rooms
           done();
-        }, 100);
+        }, 500);
       });
       });
       });
     });
 
     afterEach(function(done){
-      clientA.roomLeave('defaultRoom',function(err){
+      clientA.roomLeave('defaultRoom',function(){
       clientB.roomLeave('defaultRoom',function(){
       clientC.roomLeave('defaultRoom',function(){
       clientA.roomLeave('otherRoom',function(){
