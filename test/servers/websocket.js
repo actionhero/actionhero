@@ -335,27 +335,31 @@ describe('Server: Web Socket', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
             for( var key in response.data.members ){
-            (response.data.members[key].type === undefined ).should.eql(true);
+              (response.data.members[key].type === undefined ).should.eql(true);
             }
-            clientA.roomLeave('defaultRoom');
 
-            //save off current functions
-            currentSanitize = api.chatRoom.sanitizeMemberDetails;
-            currentGenerate = api.chatRoom.generateMemberDetails;
+            clientA.roomLeave('defaultRoom', function(){
 
-            //override functions
-            api.chatRoom.sanitizeMemberDetails = function(data){
-            return { id: data.id,
-                 joinedAt: data.joinedAt,
-                 type: data.type };
-            }
-    
-            api.chatRoom.generateMemberDetails = function(connection){
-            return { id: connection.id,
-                 joinedAt: new Date().getTime(),
-                 type : connection.type };
-            }       
-            done();
+              //save off current functions
+              currentSanitize = api.chatRoom.sanitizeMemberDetails;
+              currentGenerate = api.chatRoom.generateMemberDetails;
+
+              //override functions
+              api.chatRoom.sanitizeMemberDetails = function(data){
+              return { id: data.id,
+                   joinedAt: data.joinedAt,
+                   type: data.type };
+              }
+
+              api.chatRoom.generateMemberDetails = function(connection){
+              return { id: connection.id,
+                   joinedAt: new Date().getTime(),
+                   type : connection.type };
+              }
+
+              done();
+
+            });
           });
         });
       });
