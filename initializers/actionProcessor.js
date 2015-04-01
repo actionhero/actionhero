@@ -123,10 +123,11 @@ module.exports = {
       var self = this;
       var priorities = [];
       var processors = [];
+      var actionMiddleware = self.actionTemplate.middleware;
       for(var p in api.actions.preProcessors) priorities.push(p);
       priorities.sort();
 
-      if(priorities.length === 0) return callback(toProcess);
+      if(priorities.length === 0 && !actionMiddleware) return callback(toProcess);
 
       priorities.forEach(function(priority){
         api.actions.preProcessors[priority].forEach(function(processor){
@@ -141,6 +142,29 @@ module.exports = {
           });
         });
       });
+      
+      // TODO: If this PR is approved, we can refactor this with the code above (and in postProcess...) to
+      // have a common thingstoprocess.push(callback) helper and cut down these four blocks of code.
+      if (actionMiddleware && actionMiddleware.preprocess) {
+        Object.keys(actionMiddleware.preprocess).map(function(name) {
+          var middleware = api.actions.middleware[name];
+          if (middleware && middleware.preprocess) {
+            processors.push(function(next) {
+              if (toProcess === true) {
+                middleware.preprocess(self.connection, self.actionTemplate, function(connection, localToProcess) {
+                  self.connection = connection;
+                  if (localToProcess !== null) {
+                    toProcess = localToProcess;
+                  }
+                  next();
+                });
+              } else {
+                next(toProcess)
+              }
+            });
+          }
+        });
+      }
 
       processors.push(function(){ callback(toProcess) });
       async.series(processors);
@@ -150,10 +174,11 @@ module.exports = {
       var self = this;
       var priorities = [];
       var processors = [];
+      var actionMiddleware = self.actionTemplate.middleware;
       for(var p in api.actions.postProcessors) priorities.push(p);
       priorities.sort();
 
-      if(priorities.length === 0) return callback(toRender);
+      if(priorities.length === 0 && !actionMiddleware) return callback(toRender);
 
       priorities.forEach(function(priority){
         api.actions.postProcessors[priority].forEach(function(processor){
@@ -167,6 +192,20 @@ module.exports = {
         });
       });
 
+      if (actionMiddleware && actionMiddleware.postprocess) {
+        Object.keys(actionMiddleware.postprocess).map(function(name) {
+          var middleware = api.actions.middleware[name];
+          if (middleware && middleware.postprocess) {
+            processors.push(function(next) {
+              middleware.postprocess(self.connection, self.actionTemplate, toRender, function(connection, localToRender) {
+                self.connection = connection;
+                if (localToRender !== null) { toRender = localToRender; }
+                next();
+              });
+            });
+          }
+        });
+      }
       processors.push(function(){ callback(toRender) });
       async.series(processors);
     }

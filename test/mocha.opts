@@ -3,3 +3,4 @@
 --reporter spec
 --timeout 5000
 --check-leaks
+--slow 2000
