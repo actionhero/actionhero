@@ -63,6 +63,7 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'first test middleware',
         global: true,
+        priority: 1,
         preProcessor: function(data, next){
           data.response._processorNoteFirst = 'first';
           data.response._processorNoteEarly = 'first';
@@ -70,19 +71,20 @@ describe('Core: Middleware', function(){
           data.response._processorNoteDefault = 'first';
           next();
         }
-      }, 1);
+      });
       
       // lower number priority (runs sooner)
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         preProcessor: function(data, next){
           data.response._processorNoteEarly = 'early';
           data.response._processorNoteLate = 'early';
           data.response._processorNoteDefault = 'early';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       // old style "default" priority
       api.actions.addMiddleware({
@@ -99,11 +101,12 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority + 1,
         preProcessor: function(data, next){
           data.response._processorNoteLate = 'late';
           next();
         }
-      }, api.config.general.defaultProcessorPriority+1);
+      });
       
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
@@ -118,20 +121,22 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'first test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         preProcessor: function(data, next){
           data.response._processorNoteFirst = 'first';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         preProcessor: function(data, next){
           data.response._processorNoteSecond = 'second';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
@@ -161,6 +166,7 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'first test middleware',
         global: true,
+        priority: 1,
         postProcessor: function(data, next){
           data.response._processorNoteFirst = 'first';
           data.response._processorNoteEarly = 'first';
@@ -168,19 +174,20 @@ describe('Core: Middleware', function(){
           data.response._processorNoteDefault = 'first';
           next();
         }
-      }, 1);
+      });
       
       // lower number priority (runs sooner)
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         postProcessor: function(data, next){
           data.response._processorNoteEarly = 'early';
           data.response._processorNoteLate = 'early';
           data.response._processorNoteDefault = 'early';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       // old style "default" priority
       api.actions.addMiddleware({
@@ -197,11 +204,12 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority + 1,
         postProcessor: function(data, next){
           data.response._processorNoteLate = 'late';
           next();
         }
-      }, api.config.general.defaultProcessorPriority+1);
+      });
       
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
@@ -216,20 +224,22 @@ describe('Core: Middleware', function(){
       api.actions.addMiddleware({
         name: 'first middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         postProcessor: function(data, next){
           data.response._processorNoteFirst = 'first';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       api.actions.addMiddleware({
         name: 'second middleware',
         global: true,
+        priority: api.config.general.defaultProcessorPriority - 1,
         postProcessor: function(data, next){
           data.response._processorNoteSecond = 'second';
           next();
         }
-      }, api.config.general.defaultProcessorPriority-1);
+      });
       
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
