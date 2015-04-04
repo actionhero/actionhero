@@ -6,6 +6,7 @@ exports.action = {
   matchExtensionMimeType: false,
   version:                1.0,
   toDocument:             true,
+  middleware:             [],
 
   inputs: {},
 

@@ -6,20 +6,24 @@ module.exports = {
     api.actions.actions = {};
     api.actions.versions = {};
 
-    api.actions.preProcessors = {};
-    api.actions.postProcessors = {};
+    api.actions.middleware = {};
+    api.actions.globalMiddleware = [];
 
-    api.actions.addPreProcessor = function(func, priority) {
-      if(!priority) priority = api.config.general.defaultMiddlewarePriority;
-      priority = Number(priority); // ensure priority is numeric
-      if(!api.actions.preProcessors[priority]) api.actions.preProcessors[priority] = [];
-      return api.actions.preProcessors[priority].push(func);
-    }
-    api.actions.addPostProcessor = function(func, priority) {
-      if(!priority) priority = api.config.general.defaultMiddlewarePriority;
-      priority = Number(priority); // ensure priority is numeric
-      if(!api.actions.postProcessors[priority]) api.actions.postProcessors[priority] = [];
-      return api.actions.postProcessors[priority].push(func);
+    api.actions.addMiddleware = function(data){
+      if(!data.name){ throw new Error('middleware.name is required'); }
+      if(!data.priority){ data.priority = api.config.general.defaultMiddlewarePriority; }
+      data.priority = Number(data.priority);
+      api.actions.middleware[data.name] = data;
+      if(data.global === true){ 
+        api.actions.globalMiddleware.push(data.name);
+        api.actions.globalMiddleware.sort(function(a,b){
+          if(api.actions.middleware[a].priority > api.actions.middleware[b].priority){
+            return 1;
+          }else{
+            return -1;
+          }
+        });
+      }
     }
     
     api.actions.validateAction = function(action){

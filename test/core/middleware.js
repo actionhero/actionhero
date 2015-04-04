@@ -19,17 +19,21 @@ describe('Core: Middleware', function(){
   });
 
   afterEach(function(done){
-    api.actions.preProcessors  = {};
-    api.actions.postProcessors = {};
+    api.actions.middleware  = {};
+    api.actions.globalMiddleware = [];
     done();
   });
   
   describe('action preProcessors', function(){
 
-    it('I can define an action preProcessor and it can append the connection', function(done){
-      api.actions.addPreProcessor(function(data, next){
-        data.response._preProcessorNote = 'note'
-        next();
+    it('I can define a global preProcessor and it can append the connection', function(done){
+      api.actions.addMiddleware({
+        name: 'test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._preProcessorNote = 'note'
+          next();
+        }
       });
 
       api.specHelper.runAction('randomNumber', function(response){
@@ -37,36 +41,68 @@ describe('Core: Middleware', function(){
         done();
       });
     });
+
+    it('I can define a local preProcessor and it will not append the connection', function(done){
+      api.actions.addMiddleware({
+        name: 'test middleware',
+        global: false,
+        preProcessor: function(data, next){
+          data.response._preProcessorNote = 'note'
+          next();
+        }
+      });
+
+      api.specHelper.runAction('randomNumber', function(response){
+        should.not.exist( response._preProcessorNote );
+        done();
+      });
+    });
     
     it('preProcessors with priorities run in the right order', function(done){
       // first priority
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteFirst = 'first';
-        data.response._processorNoteEarly = 'first';
-        data.response._processorNoteLate = 'first';
-        data.response._processorNoteDefault = 'first';
-        next();
+      api.actions.addMiddleware({
+        name: 'first test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteFirst = 'first';
+          data.response._processorNoteEarly = 'first';
+          data.response._processorNoteLate = 'first';
+          data.response._processorNoteDefault = 'first';
+          next();
+        }
       }, 1);
       
       // lower number priority (runs sooner)
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteEarly = 'early';
-        data.response._processorNoteLate = 'early';
-        data.response._processorNoteDefault = 'early';
-        next();
+      api.actions.addMiddleware({
+        name: 'early test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteEarly = 'early';
+          data.response._processorNoteLate = 'early';
+          data.response._processorNoteDefault = 'early';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
       // old style "default" priority
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteLate = 'default';
-        data.response._processorNoteDefault = 'default';
-        next();
+      api.actions.addMiddleware({
+        name: 'default test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteLate = 'default';
+          data.response._processorNoteDefault = 'default';
+          next();
+        }
       });
       
       // higher number priority (runs later)
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteLate = 'late';
-        next();
+      api.actions.addMiddleware({
+        name: 'late test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteLate = 'late';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority+1);
       
       api.specHelper.runAction('randomNumber', function(response){
@@ -79,14 +115,22 @@ describe('Core: Middleware', function(){
     });
     
     it('multiple preProcessors with same priority are executed', function(done){
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteFirst = 'first';
-        next();
+      api.actions.addMiddleware({
+        name: 'first test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteFirst = 'first';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
-      api.actions.addPreProcessor(function(data, next){
-        data.response._processorNoteSecond = 'second';
-        next();
+      api.actions.addMiddleware({
+        name: 'late test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          data.response._processorNoteSecond = 'second';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
       api.specHelper.runAction('randomNumber', function(response){
@@ -97,9 +141,13 @@ describe('Core: Middleware', function(){
     });
 
     it('postProcessors can append the connection', function(done){
-      api.actions.addPostProcessor(function(data, next){
-        data.response._postProcessorNote = 'note'
-        next();
+      api.actions.addMiddleware({
+        name: 'test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._postProcessorNote = 'note'
+          next();
+        }
       });
 
       api.specHelper.runAction('randomNumber', function(response){
@@ -110,33 +158,49 @@ describe('Core: Middleware', function(){
 
     it('postProcessors with priorities run in the right order', function(done){
       // first priority
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteFirst = 'first';
-        data.response._processorNoteEarly = 'first';
-        data.response._processorNoteLate = 'first';
-        data.response._processorNoteDefault = 'first';
-        next();
+      api.actions.addMiddleware({
+        name: 'first test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteFirst = 'first';
+          data.response._processorNoteEarly = 'first';
+          data.response._processorNoteLate = 'first';
+          data.response._processorNoteDefault = 'first';
+          next();
+        }
       }, 1);
       
       // lower number priority (runs sooner)
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteEarly = 'early';
-        data.response._processorNoteLate = 'early';
-        data.response._processorNoteDefault = 'early';
-        next();
+      api.actions.addMiddleware({
+        name: 'early test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteEarly = 'early';
+          data.response._processorNoteLate = 'early';
+          data.response._processorNoteDefault = 'early';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
       // old style "default" priority
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteLate = 'default';
-        data.response._processorNoteDefault = 'default';
-        next();
+      api.actions.addMiddleware({
+        name: 'default test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteLate = 'default';
+          data.response._processorNoteDefault = 'default';
+          next();
+        }
       });
       
       // higher number priority (runs later)
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteLate = 'late';
-        next();
+      api.actions.addMiddleware({
+        name: 'late test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteLate = 'late';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority+1);
       
       api.specHelper.runAction('randomNumber', function(response){
@@ -149,14 +213,22 @@ describe('Core: Middleware', function(){
     });
     
     it('multiple postProcessors with same priority are executed', function(done){
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteFirst = 'first';
-        next();
+      api.actions.addMiddleware({
+        name: 'first middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteFirst = 'first';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
-      api.actions.addPostProcessor(function(data, next){
-        data.response._processorNoteSecond = 'second';
-        next();
+      api.actions.addMiddleware({
+        name: 'second middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.response._processorNoteSecond = 'second';
+          next();
+        }
       }, api.config.general.defaultProcessorPriority-1);
       
       api.specHelper.runAction('randomNumber', function(response){
@@ -167,8 +239,12 @@ describe('Core: Middleware', function(){
     });
 
     it('preProcessors can block actions', function(done){
-      api.actions.addPreProcessor(function(data, next){
-        next(new Error( 'BLOCKED' ));
+      api.actions.addMiddleware({
+        name: 'test middleware',
+        global: true,
+        preProcessor: function(data, next){
+          next(new Error( 'BLOCKED' ));
+        }
       });
 
       api.specHelper.runAction('randomNumber', function(response){
@@ -179,9 +255,13 @@ describe('Core: Middleware', function(){
     })
 
     it('postProcessors can modify toRender', function(done){
-      api.actions.addPostProcessor(function(data, next){
-        data.toRender = false;
-        next();
+      api.actions.addMiddleware({
+        name: 'test middleware',
+        global: true,
+        postProcessor: function(data, next){
+          data.toRender = false;
+          next();
+        }
       });
 
       api.specHelper.runAction('randomNumber', function(){

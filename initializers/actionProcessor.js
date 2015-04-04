@@ -125,22 +125,17 @@ module.exports = {
 
     api.actionProcessor.prototype.preProcessAction = function(callback){
       var self = this;
-      var priorities = [];
-      var processors = [];
+      var processors     = [];
+      var processorNames = api.actions.globalMiddleware.slice(0);
 
-      for(var p in api.actions.preProcessors) priorities.push(p);
-      priorities.sort();
+      if(self.actionTemplate.middleware){
+        self.actionTemplate.middleware.forEach(function(m){ processorNames.push(m); });
+      }
 
-      if(priorities.length === 0) return callback(null);
-
-      priorities.forEach(function(priority){
-        api.actions.preProcessors[priority].forEach(function(processor){
-          processors.push(function(next){
-            processor(self, function(error){
-              next(error);
-            });
-          });
-        });
+      processorNames.forEach(function(name){
+        if(typeof api.actions.middleware[name].preProcessor === 'function'){
+          processors.push(function(next){ api.actions.middleware[name].preProcessor(self, next); });
+        }
       });
 
       async.series(processors, function(err){
@@ -150,22 +145,17 @@ module.exports = {
 
     api.actionProcessor.prototype.postProcessAction = function(callback){
       var self = this;
-      var priorities = [];
-      var processors = [];
+      var processors     = [];
+      var processorNames = api.actions.globalMiddleware.slice(0);
 
-      for(var p in api.actions.postProcessors) priorities.push(p);
-      priorities.sort();
+      if(self.actionTemplate.middleware){
+        self.actionTemplate.middleware.forEach(function(m){ processorNames.push(m); });
+      }
 
-      if(priorities.length === 0) return callback(null);
-
-      priorities.forEach(function(priority){
-        api.actions.postProcessors[priority].forEach(function(processor){
-          processors.push(function(next){
-            processor(self, function(error){
-              next(error);
-            });
-          });
-        });
+      processorNames.forEach(function(name){
+        if(typeof api.actions.middleware[name].postProcessor === 'function'){
+          processors.push(function(next){ api.actions.middleware[name].postProcessor(self, next); });
+        }
       });
 
       async.series(processors, function(err){
