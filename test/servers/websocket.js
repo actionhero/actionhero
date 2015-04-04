@@ -372,15 +372,21 @@ describe('Server: Web Socket', function(){
         api.chatRoom.generateMemberDetails = currentGenerate;
                 
         //Check that everything is back to normal
+        console.log(">> A");
         clientA.roomAdd('defaultRoom',function(){
+          console.log(">> B");
           clientA.roomView('defaultRoom', function(response){
+            console.log(">> C");
             response.data.room.should.equal('defaultRoom');
+            console.log(">> D");
             for( var key in response.data.members ){
-            (response.data.members[key].type === undefined ).should.eql(true);
+            ( response.data.members[key].type === undefined ).should.eql(true);
             }
-            clientA.roomLeave('defaultRoom');
-
-            done();
+            console.log(">> E");
+            clientA.roomLeave('defaultRoom', function(){
+              console.log(">> F");
+              done();
+            });
           });
         });
       });
