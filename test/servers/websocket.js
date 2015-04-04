@@ -194,7 +194,7 @@ describe('Server: Web Socket', function(){
       clientC.roomAdd('defaultRoom',function(){
         setTimeout(function(){ // timeout to skip welcome messages as clients join rooms
           done();
-        }, 500);
+        }, 100);
       });
       });
       });
