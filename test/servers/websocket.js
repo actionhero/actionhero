@@ -324,20 +324,19 @@ describe('Server: Web Socket', function(){
     });
     
     describe('custom room member data', function(){
-    
+
       var currentSanitize;
       var currentGenerate;
-      
-      
+
       before(function(done){
         //Ensure that default behavior works
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
+            
             for( var key in response.data.members ){
-            (response.data.members[key].type === undefined ).should.eql(true);
+              ( response.data.members[key].type === undefined ).should.eql(true);
             }
-            clientA.roomLeave('defaultRoom');
 
             //save off current functions
             currentSanitize = api.chatRoom.sanitizeMemberDetails;
@@ -349,13 +348,16 @@ describe('Server: Web Socket', function(){
                  joinedAt: data.joinedAt,
                  type: data.type };
             }
-    
+
             api.chatRoom.generateMemberDetails = function(connection){
             return { id: connection.id,
                  joinedAt: new Date().getTime(),
                  type : connection.type };
-            }       
-            done();
+            }
+
+            clientA.roomLeave('defaultRoom', function(){
+              done();
+            });
           });
         });
       });
