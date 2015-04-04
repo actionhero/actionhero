@@ -372,11 +372,13 @@ describe('Server: Web Socket', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
             for( var key in response.data.members ){
-            (response.data.members[key].type === undefined ).should.eql(true);
+              ( response.data.members[key].type === undefined ).should.eql(true);
             }
-            clientA.roomLeave('defaultRoom');
-
-            done();
+            setTimeout(function(){
+              clientA.roomLeave('defaultRoom', function(){
+                done();
+              });
+            }, 100);
           });
         });
       });
