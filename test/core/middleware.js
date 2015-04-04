@@ -287,20 +287,23 @@ describe('Core: Middleware', function(){
   describe('connection create/destroy callbacks', function(){
 
     beforeEach(function(done){
-      api.connections.createCallbacks = {};
-      api.connections.destroyCallbacks = {};
+      api.connections.middleware = {};
+      api.connections.globalMiddleware = [];
       done();
     })
 
     afterEach(function(done){
-      api.connections.createCallbacks = {};
-      api.connections.destroyCallbacks = {};
+      api.connections.middleware = {};
+      api.connections.globalMiddleware = [];
       done();
     })
 
     it('can create callbacks on connection creation', function(done){
-      api.connections.addCreateCallback(function(){
-        done();
+      api.connections.addMiddleware({
+        name: 'connection middleware',
+        create: function(){
+          done();
+        }
       });
       api.specHelper.runAction('randomNumber', function(){
         //
@@ -308,8 +311,11 @@ describe('Core: Middleware', function(){
     });
 
     it('can create callbacks on connection destroy', function(done){
-      api.connections.addDestroyCallback(function(){
-        done();
+      api.connections.addMiddleware({
+        name: 'connection middleware',
+        destroy: function(){
+          done();
+        }
       });
 
       api.specHelper.runAction('randomNumber', function(response, connection){
