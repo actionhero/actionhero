@@ -26,7 +26,8 @@ var initialize = function(api, options, next){
       'roomView',
       'detailsView',
       'say'
-    ]
+    ],
+    stickyParams: api.config.servers.websocket.stickyParams || []
   }
 
   var server = new api.genericServer(type, options, attributes);
@@ -213,9 +214,17 @@ var initialize = function(api, options, next){
     delete data.event;
     connection.messageCount++;
     if(verb === 'action'){
-      for(var v in data.params){
-        connection.params[v] = data.params[v];
+      var params = {};
+      for(var i=0; i<attributes.stickyParams.length; i++) {
+        var param = attributes.stickyParams[i], val;
+        if ((val = connection.params[param]) != null) {
+          params[param] = val
+        }
       }
+      for(var v in data.params){
+        params[v] = data.params[v];
+      }
+      connection.params = params;
       connection.error = null;
       connection.response = {};
       server.processAction(connection);
