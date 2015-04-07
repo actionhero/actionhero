@@ -100,14 +100,13 @@ describe('Server: Web Socket', function(){
     });
   });
 
-  it('has sticky params', function(done){
+  it('does not have sticky params', function(done){
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
       should.not.exist(response.error);
       response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
       response.cacheTestResults.loadResp.value.should.equal('test value');
-      clientA.action('cacheTest', function(response){ // would normally fail without params
-        response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
-        response.cacheTestResults.loadResp.value.should.equal('test value');
+      clientA.action('cacheTest', function(response){
+        response.error.should.equal('key is a required parameter for this action');
         done();
       });
     });

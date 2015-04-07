@@ -218,6 +218,7 @@ var initialize = function(api, options, next){
     var verb = data.event;
     delete data.event;
     connection.messageCount++;
+    connection.params = {};
     if(verb === 'action'){
       for(var v in data.params){
         connection.params[v] = data.params[v];
