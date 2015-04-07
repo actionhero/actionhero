@@ -46,6 +46,10 @@ exports.default = {
           // transport:        {},
           // queueSize:        Infinity,
         },
+
+        // Parameters you wish to have persisted between requests
+        // Common use cases will be an authentication token or a user id
+        stickyParams: ['token']
       }
     }
   }
