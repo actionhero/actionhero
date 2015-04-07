@@ -160,24 +160,30 @@ describe('Server: Web Socket', function(){
   describe('chat', function(){
 
     before(function(done){
-      api.chatRoom.addJoinCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'join chat middleware',
+        join: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
-      api.chatRoom.addLeaveCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'leave chat middleware',
+        leave: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
       done();
     })
 
     after(function(done){
-      api.chatRoom.joinCallbacks  = {};
-      api.chatRoom.leaveCallbacks = {};
+      api.chatRoom.middleware = {};
+      api.chatRoom.globalMiddleware = [];
 
       done();
     })

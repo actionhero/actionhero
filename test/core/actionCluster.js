@@ -412,9 +412,8 @@ describe('Core: Action Cluster', function(){
         });
 
         afterEach(function(done){
-          apiA.chatRoom.joinCallbacks  = {};
-          apiA.chatRoom.leaveCallbacks = {};
-          apiA.chatRoom.sayCallbacks   = {};
+          apiA.chatRoom.middleware = {};
+          apiA.chatRoom.globalMiddleware = [];
 
           clientA.destroy();
           clientB.destroy();
@@ -451,23 +450,29 @@ describe('Core: Action Cluster', function(){
         });
 
         it('(join + leave) can add middleware to announce members', function(done){
-          apiA.chatRoom.addJoinCallback(function(connection, room, callback){
-            apiA.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
-              callback();
-            });
+          apiA.chatRoom.addMiddleware({
+            name: 'add chat middleware',
+            join: function(connection, room, callback){
+              apiA.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(){
+                callback();
+              });
+            }
           });
 
-          apiA.chatRoom.addLeaveCallback(function(connection, room, callback){
-            apiA.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
-              callback();
-            });
+          apiA.chatRoom.addMiddleware({
+            name: 'leave chat middleware',
+            leave: function(connection, room, callback){
+              apiA.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(){
+                callback();
+              });
+            }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
+          clientA.verbs('roomAdd','defaultRoom', function(err){
             should.not.exist(err);
-            clientB.verbs('roomAdd','defaultRoom', function(err, data){
+            clientB.verbs('roomAdd','defaultRoom', function(err){
               should.not.exist(err);
-              clientB.verbs('roomLeave','defaultRoom', function(err, data){
+              clientB.verbs('roomLeave','defaultRoom', function(err){
                 should.not.exist(err);
 
                 setTimeout(function(){
@@ -483,18 +488,21 @@ describe('Core: Action Cluster', function(){
         });
 
         it('(say) can modify message payloads', function(done){
-          apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
-            if(messagePayload.from !== 0){
-              messagePayload.message = 'something else';
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            say: function(connection, room, messagePayload, callback){
+              if(messagePayload.from !== 0){
+                messagePayload.message = 'something else';
+              }
+              callback(null, messagePayload);
             }
-            callback(null, messagePayload);
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
+          clientA.verbs('roomAdd','defaultRoom', function(err){
             should.not.exist(err);
-          clientB.verbs('roomAdd','defaultRoom', function(err, data){
+          clientB.verbs('roomAdd','defaultRoom', function(err){
             should.not.exist(err);
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err, data){
+          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
             should.not.exist(err);
 
             setTimeout(function(){
@@ -510,19 +518,27 @@ describe('Core: Action Cluster', function(){
         });
 
         it('can add middleware in a particular order and will be passed modified messagePayloads', function(done){
-          apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
-            messagePayload.message = 'MIDDLEWARE 1';
-            callback(null, messagePayload);
-          }, 1000);
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware 1',
+            priority: 1000,
+            say: function(connection, room, messagePayload, callback){
+              messagePayload.message = 'MIDDLEWARE 1';
+              callback(null, messagePayload);
+            }
+          });
 
-          apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
-            messagePayload.message = messagePayload.message + ' MIDDLEWARE 2';
-            callback(null, messagePayload);
-          }, 2000);
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware 2',
+            priority: 2000,
+            say: function(connection, room, messagePayload, callback){
+              messagePayload.message = messagePayload.message + ' MIDDLEWARE 2';
+              callback(null, messagePayload);
+            }
+          });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
-          clientB.verbs('roomAdd','defaultRoom', function(err, data){
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err, data){
+          clientA.verbs('roomAdd','defaultRoom', function(){
+          clientB.verbs('roomAdd','defaultRoom', function(){
+          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(){
 
             setTimeout(function(){
               var lastMessage = clientA.messages[(clientA.messages.length - 1)]
@@ -537,13 +553,16 @@ describe('Core: Action Cluster', function(){
         });
 
         it('say middleware can block excecution', function(done){
-          apiA.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){
-            callback(new Error('messages blocked'));
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            say: function(connection, room, messagePayload, callback){
+              callback(new Error('messages blocked'));
+            }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
-          clientB.verbs('roomAdd','defaultRoom', function(err, data){
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err, data){
+          clientA.verbs('roomAdd','defaultRoom', function(){
+          clientB.verbs('roomAdd','defaultRoom', function(){
+          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(){
 
             setTimeout(function(){
               // welcome message is passed, no join/leave/or say messages
@@ -558,8 +577,11 @@ describe('Core: Action Cluster', function(){
         });
 
         it('join middleware can block excecution', function(done){
-          apiA.chatRoom.addJoinCallback(function(connection, room, callback){
-            callback(new Error('joining rooms blocked'));
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            join: function(connection, room, callback){
+              callback(new Error('joining rooms blocked'));
+            }
           });
 
           clientA.verbs('roomAdd','defaultRoom', function(error, didJoin){
@@ -572,8 +594,11 @@ describe('Core: Action Cluster', function(){
         });
 
         it('leave middleware can block excecution', function(done){
-          apiA.chatRoom.addLeaveCallback(function(connection, room, callback){
-            callback(new Error('Hotel California'));
+          apiA.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            leave: function(connection, room, callback){
+              callback(new Error('Hotel California'));
+            }
           });
 
           clientA.verbs('roomAdd','defaultRoom', function(error, didJoin){
