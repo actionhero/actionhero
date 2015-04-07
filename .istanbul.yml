@@ -1,0 +1,6 @@
+instrumentation:
+  excludes:
+    - config
+    - test
+    - bin/templates
+    - public
