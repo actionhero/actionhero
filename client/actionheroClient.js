@@ -170,12 +170,18 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
   var url = this.options.url + this.options.apiPath + '?action=' + params.action;
   xmlhttp.open(method, url, true);
   xmlhttp.setRequestHeader('Content-Type', 'application/json');
-  xmlhttp.send(JSON.stringify(params));	
+  xmlhttp.send(JSON.stringify(params)); 
 }
 
 
 ActionheroClient.prototype.actionWebSocket = function(params, callback){
-  this.send({event: 'action',params: params}, callback);
+  this.send({event: 'action',params: params}, function(res) {
+    if(res.error) {
+      callback(res.error, res);
+    }else{
+      callback(null, res);
+    }
+  });
 }
 
 //////////////
