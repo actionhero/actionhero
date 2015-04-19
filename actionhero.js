@@ -19,6 +19,7 @@ var actionhero = function(){
 
 actionhero.prototype.initialize = function(params, callback){
   var self = this;
+  if(this._self){ self = this._self; }
 
   self.api._self = self;
   self.api.commands = {
@@ -195,6 +196,7 @@ actionhero.prototype.initialize = function(params, callback){
 
 actionhero.prototype.start = function(params, callback){
   var self = this;
+  if(this._self){ self = this._self; }
 
   if(!callback && typeof params === 'function'){
     callback = params; params = {};
@@ -227,6 +229,7 @@ actionhero.prototype.start = function(params, callback){
 
 actionhero.prototype.stop = function(callback){
   var self = this;
+  if(this._self){ self = this._self; }
 
   if(self.api.running === true){
     self.api.shuttingDown = true;
@@ -262,6 +265,7 @@ actionhero.prototype.stop = function(callback){
 
 actionhero.prototype.restart = function(callback){
   var self = this;
+  if(this._self){ self = this._self; }
 
   if(self.api.running === true){
     self.stop(function(err){
