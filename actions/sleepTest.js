@@ -23,18 +23,20 @@ exports.sleepTest = {
     }
   },
 
-  run: function(api, connection, next){
-    var sleepDuration = connection.params.sleepDuration;
-
+  run: function(api, data, next){
+    var sleepDuration = data.params.sleepDuration;
     var sleepStarted = new Date().getTime();
+    
     setTimeout(function(){
       var sleepEnded = new Date().getTime();
       var sleepDelta = sleepEnded - sleepStarted;
-      connection.response.sleepStarted = sleepStarted;
-      connection.response.sleepEnded = sleepEnded;
-      connection.response.sleepDelta = sleepDelta;
-      connection.response.sleepDuration = sleepDuration;
-      next(connection, true);
+      
+      data.response.sleepStarted  = sleepStarted;
+      data.response.sleepEnded    = sleepEnded;
+      data.response.sleepDelta    = sleepDelta;
+      data.response.sleepDuration = sleepDuration;
+      
+      next();
     }, sleepDuration);
   }
 };

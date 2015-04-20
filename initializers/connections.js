@@ -6,8 +6,8 @@ module.exports = {
 
     api.connections = {
 
-      createCallbacks: {},
-      destroyCallbacks: {},
+      middleware: {},
+      globalMiddleware: [],
 
       allowedVerbs: [
         'quit',
@@ -44,6 +44,22 @@ module.exports = {
             callback(cleanConnection(connection));
           });
         }
+      },
+
+      addMiddleware: function(data){
+        if(!data.name){ throw new Error('middleware.name is required'); }
+        if(!data.priority){ data.priority = api.config.general.defaultMiddlewarePriority; }
+        data.priority = Number(data.priority);
+        api.connections.middleware[data.name] = data;
+
+        this.globalMiddleware.push(data.name);
+        this.globalMiddleware.sort(function(a,b){
+          if(api.connections.middleware[a].priority > api.connections.middleware[b].priority){
+            return 1;
+          }else{
+            return -1;
+          }
+        });
       }
     };
 
@@ -56,21 +72,7 @@ module.exports = {
       }
       return clean;
     }
-
-    api.connections.addCreateCallback = function(func, priority) {
-      if(!priority) priority = api.config.general.defaultMiddlewarePriority;
-      priority = Number(priority); // ensure priority is numeric
-      if(!api.connections.createCallbacks[priority]) api.connections.createCallbacks[priority] = [];
-      return api.connections.createCallbacks[priority].push(func);
-    }
-    api.connections.addDestroyCallback = function(func, priority) {
-      if(!priority) priority = api.config.general.defaultMiddlewarePriority;
-      priority = Number(priority); // ensure priority is numeric
-      if(!api.connections.destroyCallbacks[priority]) api.connections.destroyCallbacks[priority] = [];
-      return api.connections.destroyCallbacks[priority].push(func);
-    }
     
-
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
     api.connection = function(data){
@@ -82,12 +84,10 @@ module.exports = {
       api.stats.increment('connections:connections:' + self.type);
       api.connections.connections[self.id] = self;
 
-      var priorities = [];
-      for(var c in api.connections.createCallbacks) priorities.push(c);
-      priorities.forEach(function(priority){
-        api.connections.createCallbacks[priority].forEach(function(c){
-          c(self);   
-        });
+      api.connections.globalMiddleware.forEach(function(middlewareName){
+        if(typeof api.connections.middleware[middlewareName].create === 'function'){
+          api.connections.middleware[middlewareName].create(self);
+        }
       });
     }
 
@@ -109,7 +109,6 @@ module.exports = {
         fingerprint: null,
         rooms: [],
         params: {},
-        response: {},
         pendingActions: 0,
         totalActions: 0,
         messageCount: 0,
@@ -138,12 +137,10 @@ module.exports = {
       var self = this;
       self.destroyed = true;
       
-      var priorities = [];
-      for(var c in api.connections.destroyCallbacks) priorities.push(c);
-      priorities.forEach(function(priority){
-        api.connections.destroyCallbacks[priority].forEach(function(c){
-          c(self);   
-        });
+      api.connections.globalMiddleware.forEach(function(middlewareName){
+        if(typeof api.connections.middleware[middlewareName].destroy === 'function'){
+          api.connections.middleware[middlewareName].destroy(self);
+        }
       });
 
       api.stats.increment('connections:totalActiveConnections', -1);

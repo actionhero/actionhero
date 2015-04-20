@@ -68,6 +68,12 @@ var initialize = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
+    if(message.error && message.error instanceof Error){
+      try{ 
+        message.error = String( message.error.message ); 
+      }catch(e){ }
+    }
+    
     if(!message.context){ message.context = 'response'; }
     if(!messageCount){ messageCount = connection.messageCount; }
     if(message.context === 'response' && !message.messageCount){ message.messageCount = messageCount; }
@@ -113,10 +119,10 @@ var initialize = function(api, options, next){
     });
   });
 
-  server.on('actionComplete', function(connection, toRender, messageCount){
-    if(toRender !== false){
-      connection.response.messageCount = messageCount;
-      server.sendMessage(connection, connection.response, messageCount)
+  server.on('actionComplete', function(data){
+    if(data.toRender !== false){
+      data.connection.response.messageCount = data.messageCount;
+      server.sendMessage(data.connection, data.response, data.messageCount)
     }
   });
 
@@ -212,6 +218,7 @@ var initialize = function(api, options, next){
     var verb = data.event;
     delete data.event;
     connection.messageCount++;
+    connection.params = {};
     if(verb === 'action'){
       for(var v in data.params){
         connection.params[v] = data.params[v];
