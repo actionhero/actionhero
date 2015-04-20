@@ -341,9 +341,9 @@ exports.action = {
     key2: {optional: true},
   }, 
   outputExample: null,
-  run: function(api, connection, next){
+  run: function(api, data, next){
     console.log("\r\n\r\n")
-    console.log(connection.params);
+    console.log(data.params);
     console.log("\r\n\r\n")
     next(connection, true);
   }

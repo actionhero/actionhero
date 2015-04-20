@@ -47,7 +47,9 @@ var initialize = function(api, options, next){
 
   server.on("connection", function(connection){});
 
-  server.on("actionComplete", function(connection, toRender, messageCount){});
+  server.on('actionComplete', function(data){
+    completeResponse(data);
+  });
 
   /////////////
   // HELPERS //

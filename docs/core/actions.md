@@ -7,7 +7,7 @@ title: Documentation - Actions
 
 ## General
 
-The core of actionhero is the Action framework, and **actions** are the basic units of work.  All connection types from all servers can use actions.  The goal of an action is to read `connection.params`, do work, and set the `connection.response` (and `connection.error` when needed) values to build the response to the client.
+The core of actionhero is the Action framework, and **actions** are the basic units of work.  All connection types from all servers can use actions.  The goal of an action is to read `data.params` (which are the arguments a connection provides), do work, and set the `data.response` (and `error` when needed) values to build the response to the client.
 
 You can create you own actions by placing them in a `./actions/` folder at the root of your application.  You can use the generator with `actionhero generateAction --name=myAction`
 
@@ -21,9 +21,9 @@ exports.action = {
     randomNumber: 0.123
   },
   
-  run: function(api, connection, next){
-    connection.response.randomNumber = Math.random();
-    next(connection, true);
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next();
   }
 
 };
@@ -32,6 +32,10 @@ exports.action = {
 You can also define more than one action per file if you would like, to share common methods and componants (like input parsers):
 
 {% highlight javascript %}
+
+//////////////////////////
+// shared input parsing //
+//////////////////////////
 
     var commonInputs = {
       email: {
@@ -60,23 +64,28 @@ You can also define more than one action per file if you would like, to share co
       }
     };
 
+/////////////////
+// the actions //
+/////////////////
+
     exports.userAdd = {
       name: 'userAdd',
-      description: 'i add a user',
+      description: 'I add a user',
       inputs: commonInputs,
-      run: function(api, connection, next){
+      run: function(api, data, next){
         // your code here
-        next(connection, true);
-      }
+        next(error);
+      },
+      middleware = [],
     };
     
     exports.userDelete = {
       name: 'userDelete',
-      description: 'i delete a user',
+      description: 'I delete a user',
       inputs: commonInputs,
-      run: function(api, connection, next){
+      run: function(api, data, next){
         // your code here
-        next(connection, true);
+        next(error);
       }
     }
 {% endhighlight %}
@@ -129,15 +138,18 @@ exports.action = {
       },
     }
   },
+  middleware: [],
   outputExample: { randomNumber: 123 },
   blockedConnectionTypes: ["webSocket"],
   logLevel: "warning",
   matchExtensionMimeType: true,
   toDocument: true,
 
-  run: function(api, connection, next){
-    connection.response.randomNumber = Math.random() * connection.params.multiplier;
-    next(connection, true);
+  run: function(api, data, next){
+    var error = null;
+
+    data.response.randomNumber = Math.random() * data.params.multiplier;
+    next(error);
   }
 }
 {% endhighlight %}
@@ -172,14 +184,39 @@ action.inputs = {
 
 However, you should usually specify that an input is required (or not).
 
+## The Data Object
+
+The `data` object passed into your action captures the state of of the connection at the time the action was started.  Midleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the `data` object:
+
+{% highlight javascript %}
+data = {
+  connection: connection,
+  action: 'randomNumber',
+  toProcess: true,
+  toRender: true,
+  messageCount: 123,
+  params: { action: 'randomNumber', apiVersion: 1 },
+  actionStartTime: 123,
+  response: {},
+}
+{% endhighlight %}
+
+The goal of most actions is to do work and then modify the value of `data.response`, which will eventually be sent down to the client.  You can modify properties of the connection by accessing `data.connection`.  If you don't want your action to respond to the client, of you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
+
+## Middleware
+
+You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, speficied in each action via `action.middleware = []`.  Supply the `names` of any middleware you want to use.
+
+You can [learn more about middleware here](/docs/core/middleware.html).
+
 ## Notes
 
-* Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(connection, toRender)`.  The second param in the callback is a boolean to let the framework know if it needs to render anything else to the client.  There are some actions where you may have already sent the user output (perhaps you already rendered a file to them or sent an error HTTP header) where you would not want to render the default messages.
+* Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).  
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaniousActions`
 * `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](/docs/core/middleware.html) preProcessors will always have access to all params pre-scrubbing.
 * `matchExtensionMimeType` is curently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
-* actionhero strives to keep the `connection` object uniform among various client types.  All connections have the `connection.response` and `connection.error` objects.  You can inspect `connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `connection.rawConnection = {req: req, res: res}` for example.  
+* actionhero strives to keep the `connection` object uniform among various client types, and more importantly, present `data.params` in a homogenous way.  You can inspect `connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `connection.rawConnection = {req: req, res: res}` for example.  
   * You can learn more about some of the `rawConnection` options by learning how to [send files from actions](/docs/core/file-server.html#sending-files-from-actions).
 
 [You can learn more about handling HTTP verbs and file uploads here](/docs/servers/web.html) and [TCP Clients](/docs/servers/socket.html) and [Web-Socket Clients](/docs/servers/websocket.html)

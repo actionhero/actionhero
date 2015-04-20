@@ -46,9 +46,9 @@ exports.randomNumber = {
     randomNumber: 0.123
   },
   
-  run: function(api, connection, next){
-    connection.response.randomNumber = Math.random();
-    next(connection, true);
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next();
   }
 
 };
@@ -110,7 +110,7 @@ exports.task = {
     frequency:    0,
     run: function(api, params, next){
         // email sending stub
-        api.user.sendEmail(function(error, done){
+        api.users.sendEmail(params.userId, function(error, done){
             next(error);
         });
     });
