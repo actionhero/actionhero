@@ -86,72 +86,60 @@ These methods are to be used within your server (perhaps an action or initialize
 
 ## Middleware
 
-There are 3 types of middelware you can install for the chat system: `sayCallbacks`, `joinCallbacks`, and `leaveCallbacks`.  All chat callbacks process serially and require a callback.  This means that you can use a number of middleware to control things like room authentication and message logging/parsing. This is a signifigant change from earlier versions of actionhero.
+There are 3 types of middelware you can install for the chat system: `say`, `join`, and `leave`.  All chat callbacks process serially and require a callback.  This means that you can use a number of middleware to control things like room authentication and message logging/parsing. This is a signifigant change from earlier versions of actionhero.
 
 ### Methods
 The 3 middleware controll methods are:
 
 {% highlight javascript %}
-api.chatRoom.addJoinCallback(function(connection, room, callback){}, priority);
-// callback is of the form `function(error)`
-
-api.chatRoom.addLeaveCallback(function(connection, room, callback){}, priority);
-// callback is of the form `function(error)`
-
-api.chatRoom.addSayCallback(function(connection, room, messagePayload, callback){}, priority);
-// callback is of the form `function(error, modifiedMessagePayload)`
-{% endhighlight %}
-
-Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb will not complete.
-
-### Examples
-Here are examples on how to use each type:
-
-{% highlight javascript %}
-var chatMiddlewareToAnnounceNewMembers = function(connection, room, callback){
-  api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+var chatMiddleware = {
+  name: 'chat middleware',
+  priority: 1000,
+  join: function(connection, room, callback){
+    // announce all connections entering a room
+    api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, function(e){
       callback();
-  });
-}
-
-api.chatRoom.addJoinCallback(chatMiddlewareToAnnounceNewMembers, 100);
-
-var chatMiddlewareToAnnounceGoneMembers = function(connection, room, callback){
-  api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+    });
+  },
+  leave: function(connection, room, callback){
+    // announce all connections leaving a room
+    api.chatRoom.broadcast({}, room, 'I have levt the room: ' + connection.id, function(e){
       callback();
-  });
-}
+    });
+  },
+  say: function(connection, room, messagePayload, callback){
+    // do stuff
+    api.log(messagePayload);
+    callback();
+  }
+};
 
-api.chatRoom.addLeaveCallback(chatMiddlewareToAnnounceGoneMembers, 100);
-
-var middlewareToAddSimleyFacesToAllMessages = function(connection, room, messagePayload, callback){
-  messagePayload.message = messagePayload.message + ' :)';
-  callback(null, messagePayload);
-}
-
-api.chatRoom.addSayCallback(middlewareToAddSimleyFacesToAllMessages, 100);
+api.connections.addMiddleware(chatMiddleware);
 {% endhighlight %}
 
 ### Notes
 - In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty `{}` connection is used to proxy the message coming from the 'system'
 - Only the `sayCallbacks` have a second return value on the callback, `messagePayload`.  This allows you to modify the message being sent to your clients. 
 - `messagePayload` will be modified and and passed on to all `addSayCallback` middlewares inline, so you can append and modify it as you go
-- If you have a number of callbacks (`sayCallbacks`, `joinCallbacks` or  `leaveCallbacks`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.  
+- If you have a number of callbacks (`say`, `join` or  `leave`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.  
 
 {% highlight javascript %}
-// in this example no one will be able to join any room, and the broadcast callback will never be invoked.
-api.chatRoom.addJoinCallback(function(connection, room, callback){
-  callback(new Error('blocked from joining the room'));
-}, 100);
+// in this example no one will be able to join any room, and the `say` callback will never be invoked.
 
-api.chatRoom.addJoinCallback(function(connection, room, callback){
-  api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
-    callback();
-  });
-}, 200);
+api.connections.addMiddleware({
+  name: 'blocking chat middleware',
+  join: function(connection, room, callback){
+    callback(new Error('blocked from joining the room'));
+  }),
+  say: function(connection, room, messagePayload, callback){
+    api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+      callback();
+    });
+  },
+});
 {% endhighlight %}
 
-If a `sayCallback` is blocked/errored, the message will simply not be delivered to the client.  If a  `joinCallbacks` or  `leaveCallbacks` is blocked/errored, the verb or method used to invoke the call will be returned that error.
+If a `say` is blocked/errored, the message will simply not be delivered to the client.  If a  `join` or  `leave` is blocked/errored, the verb or method used to invoke the call will be returned that error.
 
 ## Chatting to specific clients
 
