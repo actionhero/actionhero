@@ -327,7 +327,7 @@ describe('Server: Web Socket', function(){
         });
       });
     });
-    
+
     describe('custom room member data', function(){
 
       var currentSanitize;
@@ -338,7 +338,7 @@ describe('Server: Web Socket', function(){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            
+
             for( var key in response.data.members ){
               ( response.data.members[key].type === undefined ).should.eql(true);
             }
@@ -370,10 +370,10 @@ describe('Server: Web Socket', function(){
       after(function(done){
         api.chatRoom.joinCallbacks  = {};
         api.chatRoom.leaveCallbacks = {};
-        
+
         api.chatRoom.sanitizeMemberDetails = currentSanitize;
         api.chatRoom.generateMemberDetails = currentGenerate;
-                
+
         //Check that everything is back to normal
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -389,7 +389,7 @@ describe('Server: Web Socket', function(){
           });
         });
       });
-    
+
       it('should view non-default member data', function(done){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -401,28 +401,95 @@ describe('Server: Web Socket', function(){
             done();
           });
         })
-      }); 
-    
+      });
+
     });
 
   });
 
   describe('fingerprint', function(){
-    
-    // TODO: Cannot test socket within a browser context
-    // public/linkedSession.html has been provided as an example for now
-    it('will have the same fingerprint as the browser cookie which spawned the connection');
+    var cookieHeader;
+    var oldRequest;
 
+    beforeEach(function(done){
+      try{
+        clientA.disconnect();
+      }catch(e){}
+      cookieHeader = '';
+      connectClients(done);
+    });
+
+    before(function(done) {
+      // Override http.request to test fingerprint
+      var module = require('http');
+      oldRequest = module.request;
+      module.request = function(options, callback) {
+        options.headers.Cookie = cookieHeader;
+        return oldRequest.apply(module, arguments);
+      }
+      done();
+    });
+
+    after(function(done) {
+      // Restore http.request
+      var module = require('http');
+      module.request = oldRequest;
+      done();
+    });
+
+    it('should exist when web server been called', function(done){
+      request.get(url + '/api/', function(err, response, body) {
+        body = JSON.parse(body);
+        var fingerprint = body.requesterInformation.fingerprint;
+        cookieHeader = response.headers['set-cookie'][0];
+        clientA.connect(function (err, response) {
+          response.status.should.equal('OK');
+          should(response.data).have.property('id');
+          var id = response.data.id;
+          api.connections.connections[id].fingerprint.should.equal(fingerprint);
+          done();
+        });
+      });
+    });
+
+    it('should not exist when web server has not been called', function(done){
+      clientA.connect(function(err, response){
+        response.status.should.equal('OK');
+        should(response.data).have.property('id');
+        var id = response.data.id;
+        api.connections.connections[id].should.have.property('fingerprint').which.is.null;
+        done();
+      });
+    });
+
+    it('should exist as long as cookie is passed', function(done){
+      cookieHeader = api.config.servers.web.fingerprintOptions.cookieKey + '=dummyvalue';
+      clientA.connect(function (err, response) {
+        response.status.should.equal('OK');
+        should(response.data).have.property('id');
+        var id = response.data.id;
+        api.connections.connections[id].should.have.property('fingerprint').which.is.not.null;
+        done();
+      });
+    });
   });
 
   describe('disconnect', function(){
+
+    before(function(done) {
+      // Cleanup any stale connections
+      for(var id in api.connections.connections){
+        api.connections.connections[id].destroy();
+      }
+      done();
+    });
 
     beforeEach(function(done){
       try{
         clientA.disconnect();
         clientB.disconnect();
         clientC.disconnect();
-      }catch(e){} 
+      }catch(e){}
 
       connectClients(function(){
         clientA.connect();
@@ -446,7 +513,7 @@ describe('Server: Web Socket', function(){
     it('can be sent disconnect events from the server', function(done){
       clientA.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
-        
+
         var count = 0
         for(var id in api.connections.connections){
           count++;
