@@ -114,7 +114,7 @@ var chatMiddleware = {
   }
 };
 
-api.connections.addMiddleware(chatMiddleware);
+api.chatRoom.addMiddleware(chatMiddleware);
 {% endhighlight %}
 
 Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb/message will not be sent.
