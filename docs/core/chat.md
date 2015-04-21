@@ -114,7 +114,7 @@ var chatMiddleware = {
   }
 };
 
-api.connections.addMiddleware(chatMiddleware);
+api.chatRoom.addMiddleware(chatMiddleware);
 {% endhighlight %}
 
 ### Notes
@@ -126,7 +126,7 @@ api.connections.addMiddleware(chatMiddleware);
 {% highlight javascript %}
 // in this example no one will be able to join any room, and the `say` callback will never be invoked.
 
-api.connections.addMiddleware({
+api.chatRoom.addMiddleware({
   name: 'blocking chat middleware',
   join: function(connection, room, callback){
     callback(new Error('blocked from joining the room'));
