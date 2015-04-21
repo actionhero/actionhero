@@ -17,6 +17,12 @@ module.exports = {
           var route = api.routes.routes[method][i];
           var match = api.routes.matchURL(pathParts, route.path);
           if(match.match === true){
+            if(route.params){
+              for(var param in route.params){
+                connection.params[param] = connection.params[param] || route.params[param];
+              }
+            }
+            
             for(var param in match.params){
               try{
                 var decodedName = decodeURIComponent(param.replace(/\+/g, ' '));
@@ -74,8 +80,8 @@ module.exports = {
     }
 
 
-    api.routes.registerRoute = function(method, path, action) {
-      api.routes.routes[method].push({ path: path, action: action });
+    api.routes.registerRoute = function(method, path, action, params) {
+      api.routes.routes[method].push({ path: path, action: action, params:params});
     }
 
     // load in the routes file
@@ -98,10 +104,10 @@ module.exports = {
           if(method === 'all'){
             for(v in api.routes.verbs){
               verb = api.routes.verbs[v];
-              api.routes.registerRoute(verb, route.path, route.action);
+              api.routes.registerRoute(verb, route.path, route.action, route.params);
             }
           } else {
-            api.routes.registerRoute(method, route.path, route.action);
+            api.routes.registerRoute(method, route.path, route.action, route.params);
           }
           counter++;
         }
