@@ -409,14 +409,6 @@ describe('Server: Web Socket', function(){
 
   describe('disconnect', function(){
 
-    before(function(done) {
-      // Cleanup any stale connections
-      for(var id in api.connections.connections){
-        api.connections.connections[id].destroy();
-      }
-      done();
-    });
-
     beforeEach(function(done){
       try{
         clientA.disconnect();
