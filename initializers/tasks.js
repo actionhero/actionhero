@@ -146,6 +146,22 @@ module.exports = {
         api.resque.queue.allWorkingOn(callback);
       },
 
+      failedCount: function(callback){
+        api.resque.queue.failedCount(callback);
+      },
+
+      failed: function(start, stop, callback){
+        api.resque.queue.failed(start, stop, callback);
+      },
+
+      removeFailed: function(failedJob, callback){
+        api.resque.queue.removeFailed(failedJob, callback);
+      },
+
+      retryAndRemoveFailed: function(failedJob, callback){
+        api.resque.queue.retryAndRemoveFailed(failedJob, callback);
+      },
+
       enqueueRecurrentJob: function(taskName, callback){
         var self = this;
         var task = self.tasks[taskName];
