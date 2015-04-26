@@ -713,8 +713,7 @@ describe('Server: Web', function(){
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
           { path: '/thing', action: 'thing' },
           { path: '/thing/stuff', action: 'thingStuff' },
-          { path: '/phil', action: 'login', params:{ userID: '5' } },
-          { path: '/old_login', action: 'login', params:{ apiVersion: '1' } }
+          { path: '/old_login', action: 'login', apiVersion: '1' }
         ],
         post: [
           { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
@@ -766,26 +765,6 @@ describe('Server: Web', function(){
       request.get(url + '/api/user/123?action=someFakeAction', function(err, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user')
-        done();
-      });
-    });
-
-    it('Routes should use default params', function(done){
-      request.get(url + '/api/phil', function(err, response, body){
-        body = JSON.parse(body);
-        body.userID.should.equal('5');
-        body.requesterInformation.receivedParams.action.should.equal('login')
-        body.requesterInformation.receivedParams.userID.should.equal('5')
-        done();
-      });
-    });
-    
-    it('Routes should use given params over default', function(done){
-      request.get(url + '/api/phil?userID=10', function(err, response, body){
-        body = JSON.parse(body);
-        body.userID.should.equal('10');
-        body.requesterInformation.receivedParams.action.should.equal('login')
-        body.requesterInformation.receivedParams.userID.should.equal('10')
         done();
       });
     });
