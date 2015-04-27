@@ -86,8 +86,8 @@ module.exports = {
 
     api.chatRoom.incomingMessage = function(message){
       api.stats.increment('chatRoom:messagesReceived');
-      var messagePayload = api.chatRoom.generateMessagePayload(message);
       for(var i in api.connections.connections){
+        var messagePayload = api.chatRoom.generateMessagePayload(message);
         var thisConnection = api.connections.connections[i];
         if(thisConnection.canChat === true){
           if(thisConnection.rooms.indexOf(messagePayload.room) > -1){
