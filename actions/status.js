@@ -1,13 +1,13 @@
 exports.status = {
   name: 'status',
   description: 'I will return some basic information about the API',
-   
-  outputExample:{  
+
+  outputExample:{
     "id":"192.168.2.11",
     "actionheroVersion":"9.4.1",
     "uptime":10469,
-    "stats":{  
-      "actionhero:stats":{  
+    "stats":{
+      "actionhero:stats":{
         "actions:actionsCurrentlyProcessing":"0",
         "actions:processedActions:showDocumentation":"1",
         "actions:processedActions:status":"1",
@@ -19,13 +19,13 @@ exports.status = {
         "staticFiles:filesSent":"5"
       }
     },
-    "queues":{  
+    "queues":{
 
     },
-    "workers":{  
+    "workers":{
 
     },
-    "serverInformation":{  
+    "serverInformation":{
       "serverName":"actionhero API",
       "apiVersion":"0.0.1",
       "requestDuration":12,
@@ -42,7 +42,8 @@ exports.status = {
         data.response.stats             = stats;
         data.response.queues            = details.queues;
         data.response.workers           = details.workers;
-        
+        data.response.gc_exposed        = global.gc ? true : false;
+
         next(err);
       });
     });
