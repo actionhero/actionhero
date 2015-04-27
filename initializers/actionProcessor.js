@@ -99,7 +99,10 @@ module.exports = {
       var filteredParams = {}
       for(var i in self.params){
         if((api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i)) >= 0
-            || (self.actionTemplate.inputs[i] && self.actionTemplate.inputs[i].filterInLog===true)){
+            || (self.actionTemplate 
+                && self.actionTemplate.inputs
+                && self.actionTemplate.inputs[i] 
+                && self.actionTemplate.inputs[i].filterInLog===true)){
           filteredParams[i] = '[FILTERED]';
         }else{
           filteredParams[i] = self.params[i];
