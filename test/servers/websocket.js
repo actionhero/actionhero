@@ -370,18 +370,29 @@ describe('Server: Web Socket', function(){
         var listenerA = function(response){
           clientA.removeListener('say', listenerA);
           response.message.should.equal('Test Message - To: ' + clientA.id); // clientA.id (Receiever)
-          done();
         };
 
         var listenerB = function(response){
           clientB.removeListener('say', listenerB);
           response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Receiever)
-          done();
+        };
+
+        var listenerC = function(response){
+          clientC.removeListener('say', listenerC);
+          response.message.should.equal('Test Message - To: ' + clientC.id); // clientC.id (Receiever)
         };
 
         clientA.on('say', listenerA);
         clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
         clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          done();
+        }, 1000)
       });
 
       it('each listener receive same custom message', function(done){
@@ -396,18 +407,29 @@ describe('Server: Web Socket', function(){
         var listenerA = function(response){
           clientA.removeListener('say', listenerA);
           response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
-          done();
         };
 
         var listenerB = function(response){
           clientB.removeListener('say', listenerB);
           response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
-          done();
+        };
+
+        var listenerC = function(response){
+          clientC.removeListener('say', listenerC);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
         };
 
         clientA.on('say', listenerA);
         clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
         clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          done();
+        }, 1000)
       });
     });
 
