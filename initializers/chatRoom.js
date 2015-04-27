@@ -73,11 +73,9 @@ module.exports = {
         var thisConnection = api.connections.connections[i];
         if(thisConnection.canChat === true){
           if(thisConnection.rooms.indexOf(messagePayload.room) > -1){
-            if(message.connection === undefined || thisConnection.id !== messagePayload.from){
-              api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
-                if(!err){ thisConnection.sendMessage(newMessagePaylaod, 'say'); }
-              });
-            }
+            api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
+              if(!err){ thisConnection.sendMessage(newMessagePaylaod, 'say'); }
+            });
           }
         }
       }
