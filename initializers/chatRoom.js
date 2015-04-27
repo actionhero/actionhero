@@ -49,8 +49,26 @@ module.exports = {
             room: room
           }
         };
-        api.redis.publish(payload);
-        if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+        var messagePayload = api.chatRoom.generateMessagePayload(payload);
+        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, newPayload){
+          if(err){
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(err); }) }
+          } else {
+            var payloadToSend = {
+              messageType: 'chat',
+              serverToken: api.config.general.serverToken,
+              serverId: api.id,
+              message: newPayload.message,
+              sentAt: newPayload.sentAt,
+              connection: {
+                id: newPayload.from,
+                room: newPayload.room
+              }
+            };
+            api.redis.publish(payloadToSend);
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+          }
+        });
       } else {
         if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(room) ); }) }
       }

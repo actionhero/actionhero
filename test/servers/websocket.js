@@ -327,7 +327,90 @@ describe('Server: Web Socket', function(){
         });
       });
     });
-    
+
+    describe('middleware - say and onSayReceive', function() {
+      before(function(done){
+        clientA.roomAdd('defaultRoom',function(){
+          clientB.roomAdd('defaultRoom',function(){
+            clientC.roomAdd('defaultRoom',function(){
+              setTimeout(function(){ // timeout to skip welcome messages as clients join rooms
+                done();
+              }, 100);
+            });
+          });
+        });
+      });
+
+      after(function(done){
+        clientA.roomLeave('defaultRoom',function(){
+          clientB.roomLeave('defaultRoom',function(){
+            clientC.roomLeave('defaultRoom',function(){
+              done();
+            });
+          });
+        });
+      });
+
+      afterEach(function(done){
+        api.chatRoom.middleware = {};
+        api.chatRoom.globalMiddleware = [];
+
+        done();
+      });
+
+      it('each listener receive custom message', function(done){
+        api.chatRoom.addMiddleware({
+          name: 'say for each',
+          say: function(connection, room, messagePayload, callback){
+            messagePayload.message+= ' - To: ' + connection.id;
+            callback(null, messagePayload);
+          }
+        });
+
+        var listenerA = function(response){
+          clientA.removeListener('say', listenerA);
+          response.message.should.equal('Test Message - To: ' + clientA.id); // clientA.id (Receiever)
+          done();
+        };
+
+        var listenerB = function(response){
+          clientB.removeListener('say', listenerB);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Receiever)
+          done();
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientB.say('defaultRoom', 'Test Message');
+      });
+
+      it('each listener receive same custom message', function(done){
+        api.chatRoom.addMiddleware({
+          name: 'say for each',
+          onSayReceive: function(connection, room, messagePayload, callback){
+            messagePayload.message+= ' - To: ' + connection.id;
+            callback(null, messagePayload);
+          }
+        });
+
+        var listenerA = function(response){
+          clientA.removeListener('say', listenerA);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
+          done();
+        };
+
+        var listenerB = function(response){
+          clientB.removeListener('say', listenerB);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
+          done();
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientB.say('defaultRoom', 'Test Message');
+      });
+    });
+
     describe('custom room member data', function(){
 
       var currentSanitize;
