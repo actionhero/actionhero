@@ -42,7 +42,6 @@ exports.status = {
         data.response.stats             = stats;
         data.response.queues            = details.queues;
         data.response.workers           = details.workers;
-        data.response.gc_exposed        = global.gc ? true : false;
 
         next(err);
       });
