@@ -175,18 +175,21 @@ binary.isDaemon = (binary.argv.isDaemon === 'true');
 if(binary.actions[binary.mainAction]){
   if(binary.argv.daemon){
     var args = process.argv.splice(2);
+
     var nodeArgs = [];
-    var workArgs = [path.normalize(binary.paths.actionheroRoot + '/bin/actionhero'), binary.mainAction, '--isDaemon=true'];
+    var workArgs = [path.normalize(binary.paths.actionheroRoot + '/bin/actionhero')].concat(args);
 
     for(var i in args){
       if(args[i].indexOf('--node') >= 0){
         nodeArgs.push('-' + args[i].slice(6));
+        workArgs.splice(workArgs.indexOf(args[i]), 1);
       }
     }
-    var spawnArgs = nodeArgs.concat(workArgs);
-    var child = spawn(process.argv[0], spawnArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
+
+    workArgs[workArgs.indexOf('--daemon')] = '--isDaemon';
+    var child = spawn(process.argv[0], nodeArgs.concat(workArgs), { detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
     // child.unref();
-    binary.log(spawnArgs.join(' '), 'info');
+    binary.log('['+nodeArgs.join(' ')+'] '+ workArgs.join(' '), 'info');
     binary.log('spawned child process with pid ' + child.pid, 'notice');
     setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
   } else if(binary.argv.isDaemon){
