@@ -395,6 +395,49 @@ describe('Server: Web Socket', function(){
         }, 1000)
       });
 
+      it('only one message should be received per connection', function(done){
+        var firstSayCall = true;
+        api.chatRoom.addMiddleware({
+          name: 'first say middleware',
+          say: function(connection, room, messagePayload, callback){
+            if (firstSayCall) {
+              firstSayCall = false;
+              setTimeout(function() {
+                callback();
+              }, 200);
+            } else {
+              callback();
+            }
+          }
+        });
+
+        var messagesReceived = 0;
+        var listenerA = function(response){
+          messagesReceived+=1;
+        };
+
+        var listenerB = function(response){
+          messagesReceived+=2;
+        };
+
+        var listenerC = function(response){
+          messagesReceived+= 4;
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
+        clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          messagesReceived.should.equal(7);
+          done();
+        }, 1000)
+      });
+
       it('each listener receive same custom message', function(done){
         api.chatRoom.addMiddleware({
           name: 'say for each',
