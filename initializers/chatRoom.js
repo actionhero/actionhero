@@ -50,7 +50,7 @@ module.exports = {
           }
         };
         var messagePayload = api.chatRoom.generateMessagePayload(payload);
-        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, newPayload){
+        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, connection, newPayload){
           if(err){
             if(typeof callback === 'function'){ process.nextTick(function(){ callback(err); }) }
           } else {
@@ -91,8 +91,8 @@ module.exports = {
         var thisConnection = api.connections.connections[i];
         if(thisConnection.canChat === true){
           if(thisConnection.rooms.indexOf(messagePayload.room) > -1){
-            api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
-              if(!err){ thisConnection.sendMessage(newMessagePaylaod, 'say'); }
+            api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, connection, newMessagePaylaod){
+              if(!err){ connection.sendMessage(newMessagePaylaod, 'say'); }
             });
           }
         }
@@ -271,7 +271,7 @@ module.exports = {
           var thisData = data.shift();
           if(thisData){ newMessagePaylaod = thisData; }
         }
-        next(err, newMessagePaylaod)
+        next(err, connection, newMessagePaylaod)
       });
     }
 
