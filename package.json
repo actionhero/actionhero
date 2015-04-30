@@ -62,6 +62,6 @@
     "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
-    "publish-docs": "git subtree push --prefix docs origin gh-pages"
+    "build-gh-pages": "git subtree push --prefix docs origin gh-pages"
   }
 }
