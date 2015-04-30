@@ -7,7 +7,11 @@ exports.start = function(binary, next){
   // var actionheroPrototype = require('./../../actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
-  var shutdownTimeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT || 1000 * 30 
+  var shutdownTimeout = 1000 * 30;
+  if(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT){
+    shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+  }
+
   var api = {};
   var state;
 
