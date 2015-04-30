@@ -35,7 +35,6 @@ after_failure:
 notifications:
   webhooks:
     urls:
-      - 'http://webhooks.nodejitsu.com/1/deploy'
       - 'https://webhooks.gitter.im/e/0b77e5af8eb07ea0ea0c'
     on_success: always
     on_failure: always
