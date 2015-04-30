@@ -26,6 +26,8 @@ exports.default = {
       disableParamScrubbing: false,
       // params you would like hidden from any logs
       filteredParams: [],
+      // the maximum length of param to log (we will truncate)
+      maxLogStringLength: 100,
       // values that signify missing params
       missingParamChecks: [null, '', undefined],
       // The default filetype to server when a user requests a directory
