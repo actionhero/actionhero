@@ -113,10 +113,14 @@ module.exports = {
       };
 
       if(error){
-        try {
-          logLine.error = JSON.stringify(error);
-        } catch(e){
+        if(error instanceof Error){
           logLine.error = String(error);
+        }else{
+          try {
+            logLine.error = JSON.stringify(error);
+          } catch(e){
+            logLine.error = String(error);
+          }
         }
       }
 
