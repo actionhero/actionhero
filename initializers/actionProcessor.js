@@ -226,7 +226,7 @@ module.exports = {
       self.working = true;
       self.incrementTotalActions();
       self.incrementPendingActions();
-      self.action = self.params.action;
+      self.connection.action = self.action = self.params.action;
 
       if(api.actions.versions[self.action]){
         if(!self.params.apiVersion){
