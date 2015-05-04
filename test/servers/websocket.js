@@ -415,6 +415,38 @@ describe('Server: Web Socket', function(){
 
   });
 
+  describe('param collisions', function(){
+    var originalSimultaneousActions
+
+    before(function(){
+      originalSimultaneousActions = api.config.general.simultaneousActions;
+      api.config.general.simultaneousActions = 99999999;
+    });
+
+    after(function(){
+      api.config.general.simultaneousActions = originalSimultaneousActions;
+    });
+
+    it('will not have param colisions', function(done){
+      var completed = 0;
+      var started   = 0;
+      var sleeps = [ 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
+
+      var toComplete = function(sleep, response){
+        sleep.should.equal(response.sleepDuration);
+        completed++;
+        if(completed === started){
+          done();
+        }
+      }
+
+      sleeps.forEach(function(sleep){
+        started++;
+        clientA.action('sleepTest', {sleepDuration: sleep}, function(response){ toComplete(sleep, response); })
+      });
+    });
+  });
+
   describe('disconnect', function(){
 
     beforeEach(function(done){
