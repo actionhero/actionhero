@@ -188,7 +188,7 @@ See the [file server](/docs/core/file-server.html) page for more documentation
 
 ## Routes
 
-Web clients (http and https) you can define an optional RESTful mapping to help route requests to actions.  If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
+For web clients (http and https), you can define an optional RESTful mapping to help route requests to actions.  If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
 
 #### Example
 
@@ -223,9 +223,9 @@ exports.default = function(api) {
 }
 {% endhighlight %}
 
-The `api.config.servers.web.rootEndpointType` is "file" which means that the routes you are making are active only under the `/api` path.  If you wanted the route example to become  `server.com/stuff/statusPage`, you would need to change `api.config.servers.web.rootEndpointType` to be 'api'.  Note that making this change doesn't stop `server.com/api/stuff/statusPage` from working as well, as you still have `api.config.servers.web.urlPathForActions` set to be 'api', so both will continue to work.
+If the `api.config.servers.web.rootEndpointType` is `"file"` which means that the routes you are making are active only under the `/api` path.  If you wanted the route example to become  `server.com/stuff/statusPage`, you would need to change `api.config.servers.web.rootEndpointType` to be 'api'.  Note that making this change doesn't stop `server.com/api/stuff/statusPage` from working as well, as you still have `api.config.servers.web.urlPathForActions` set to be 'api', so both will continue to work.
 
-For a route to match, all params must be satisfied.  So, if you expect a route to provide `api/:a/:b/:c` and the request is only for `api/:a/:c`, the route won't match (save some fancy regexp). This holds for any variable, including `:apiVersion`.  If you want to match both with and without apiVersion, just define the rote 2x, IE:
+For a route to match, all params must be satisfied.  So, if you expect a route to provide `api/:a/:b/:c` and the request is only for `api/:a/:c`, the route won't match. This holds for any variable, including `:apiVersion`.  If you want to match both with and without apiVersion, just define the rote 2x, IE:
 
 {% highlight javascript %}
 exports.default = function(api) {
@@ -239,6 +239,21 @@ exports.default = function(api) {
 {% endhighlight %}
 
 If you want to shut off access to your action at `server.com/api/stuff/statusPage` and only allow access via `server.com/stuff/statusPage`, you can disable `api.config.servers.web.urlPathForActions` by setting it equal to `null` (but keeping the `api.config.servers.web.rootEndpointType` equal to 'api'). 
+
+Routes will match the newest version of `apiVersion`.  If you want to have a specific route match a specific version of an action, you can provide the `apiVersion` param in your route definitions:
+
+{% highlight javascript %}
+exports.default = function(api) {
+  return {
+    get: [
+      { path: "/myAction/old", action:  "myAction", apiVersion: 1 },
+      { path: "/myAction/new", action:  "myAction", apiVersion: 2 },
+    ]
+  };
+}
+{% endhighlight %}
+
+This would create both `/api/myAction/old` and `/api/myAction/new`, mapping to apiVersion 1 and 2 respectively. 
 
 #### Notes
 
