@@ -30,7 +30,7 @@ exports.default = {
       missingParamChecks: [null, '', undefined],
       // The default filetype to server when a user requests a directory
       directoryFileType : 'index.html',
-      // The default priority level given to preProcessors, postProcessors, createCallbacks, and destroyCallbacks
+      // The default priority level given to middleware of all types (action, connection, and say)
       defaultMiddlewarePriority : 100,
       // configuration for your actionhero project structure
       paths: {

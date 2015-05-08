@@ -71,7 +71,7 @@ describe('Server: Socket', function(){
   it('socket connections should be able to connect and get JSON', function(done){
     makeSocketRequest(client, 'hello', function(response){
       response.should.be.an.instanceOf(Object)
-      response.error.should.equal('Error: unknown action or invalid apiVersion');
+      response.error.should.equal('unknown action or invalid apiVersion');
       done();
     });
   });
@@ -131,7 +131,7 @@ describe('Server: Socket', function(){
   it('actions will fail without proper params set to the connection', function(done){
     makeSocketRequest(client, 'paramDelete key', function(){
       makeSocketRequest(client, 'cacheTest', function(response){
-        response.error.should.equal('Error: key is a required parameter for this action')
+        response.error.should.equal('key is a required parameter for this action')
         done();
       });
     });
@@ -181,7 +181,7 @@ describe('Server: Socket', function(){
 
   it('only params sent in a JSON block are used', function(done){
     makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), function(response){
-      response.error.should.equal('Error: value is a required parameter for this action')
+      response.error.should.equal('value is a required parameter for this action')
       done();
     });
   });
@@ -206,7 +206,7 @@ describe('Server: Socket', function(){
         for(var i in responses){
           var response = responses[i];
           if(i === '0'){
-            response.error.should.eql('Error: you have too many pending requests');
+            response.error.should.eql('you have too many pending requests');
           } else {
             should.not.exist(response.error)
           }
@@ -221,24 +221,30 @@ describe('Server: Socket', function(){
   describe('chat', function(){
 
     before(function(done){
-      api.chatRoom.addJoinCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'join chat middleware',
+        join: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
-      api.chatRoom.addLeaveCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'leave chat middleware',
+        leave: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
       done();
     })
 
     after(function(done){
-      api.chatRoom.joinCallbacks  = {};
-      api.chatRoom.leaveCallbacks = {};
+      api.chatRoom.middleware = {};
+      api.chatRoom.globalMiddleware = [];
 
       done();
     })

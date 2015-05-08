@@ -68,12 +68,6 @@
       var message = div.value;
       div.value = "";
       client.say(client.rooms[0], message);
-      appendMessage({
-        me: true,
-        message: message,
-        from: client.id,
-        sentAt: new Date().getTime()
-      })
     }
 
     var formatTime = function(timestamp){

@@ -55,7 +55,7 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
-		this.verbose = api.config.tasks.verbose;
+    		self.verbose = api.config.tasks.verbose;
         
         self.multiWorker = new NR.multiWorker({
           connection:             api.resque.connectionDetails,

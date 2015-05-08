@@ -1,6 +1,7 @@
 var url                 = require('url');
 var fs                  = require('fs');
 var path                = require('path');
+var util                = require('util');
 var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
@@ -140,8 +141,8 @@ var initialize = function(api, options, next){
     });
   });
 
-  server.on('actionComplete', function(connection, toRender, messageCount){
-    completeResponse(connection, toRender, messageCount);
+  server.on('actionComplete', function(data){
+    completeResponse(data);
   });
 
   /////////////
@@ -217,59 +218,63 @@ var initialize = function(api, options, next){
     });
   }
 
-  var completeResponse = function(connection, toRender){
-    if(toRender === true){
+  var completeResponse = function(data){
+    if(data.toRender === true){
       if(api.config.servers.web.metadataOptions.serverInformation){
         var stopTime = new Date().getTime();
-        connection.response.serverInformation = {
+        data.response.serverInformation = {
           serverName:      api.config.general.serverName,
           apiVersion:      api.config.general.apiVersion,
-          requestDuration: (stopTime - connection.connectedAt),
+          requestDuration: (stopTime - data.connection.connectedAt),
           currentTime:     stopTime
         };
       }
 
       if(api.config.servers.web.metadataOptions.requesterInformation){
-        connection.response.requesterInformation = buildRequesterInformation(connection);
+        data.response.requesterInformation = buildRequesterInformation(data.connection);
       }
 
-      if(connection.response.error !== undefined){
-        if(api.config.servers.web.returnErrorCodes === true && connection.rawConnection.responseHttpCode === 200){
-          if(connection.actionStatus === 'unknown_action'){
-            connection.rawConnection.responseHttpCode = 404;
-          }else if(connection.actionStatus === 'missing_params'){
-            connection.rawConnection.responseHttpCode = 422;
-          }else if(connection.actionStatus === 'server_error'){
-            connection.rawConnection.responseHttpCode = 500;
+      if(data.response.error){
+        if(api.config.servers.web.returnErrorCodes === true && data.connection.rawConnection.responseHttpCode === 200){
+          if(data.actionStatus === 'unknown_action'){
+            data.connection.rawConnection.responseHttpCode = 404;
+          }else if(data.actionStatus === 'missing_params'){
+            data.connection.rawConnection.responseHttpCode = 422;
+          }else if(data.actionStatus === 'server_error'){
+            data.connection.rawConnection.responseHttpCode = 500;
           }else{
-            connection.rawConnection.responseHttpCode = 400;
+            data.connection.rawConnection.responseHttpCode = 400;
           }
         }
       }
 
       if(
-          (connection.response.error === null || connection.response.error === undefined ) &&
-          connection.action &&
-          connection.params.apiVersion &&
-          api.actions.actions[connection.action][connection.params.apiVersion].matchExtensionMimeType === true &&
-          connection.extension
+          !data.response.error &&
+          data.action &&
+          data.params.apiVersion &&
+          api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
+          data.connection.extension
         ){
-          connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(connection.extension)]);
+          data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
       }
 
+      if(data.response.error && util.isError(data.response.error)){
+        data.response.error = String( data.response.error.message ); 
+      }
+      
       var stringResponse = '';
 
-      if( extractHeader(connection, 'Content-Type').match(/json/) ){
-        stringResponse = JSON.stringify(connection.response, null, api.config.servers.web.padding);
-        if(connection.params.callback){
-          connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
-          stringResponse = connection.params.callback + '(' + stringResponse + ');';
+      if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
+        stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
+        if(data.params.callback){
+          data.connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
+          stringResponse = data.connection.params.callback + '(' + stringResponse + ');';
         }
       }else{
-        stringResponse = connection.response;
+        stringResponse = data.response;
       }
 
-      server.sendMessage(connection, stringResponse);
+      server.sendMessage(data.connection, stringResponse);
     }
   }
 

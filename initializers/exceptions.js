@@ -77,20 +77,19 @@ module.exports = {
       api.exceptionHandlers.report(err, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
     };
 
-    api.exceptionHandlers.action = function(domain, err, connection, next){
+    api.exceptionHandlers.action = function(domain, err, data, next){
       var simpleName;
       try{
-        simpleName = connection.action;
+        simpleName = data.action;
       }catch(e){
         simpleName = err.message;
       }
       var name = 'action:' + simpleName;
       api.stats.increment('exceptions:actions');
       api.stats.increment('exceptions:actions:' + simpleName);    
-      api.exceptionHandlers.report(err, 'action', name, {connection: connection}, 'error');
-      connection.error = new Error( api.config.errors.serverErrorMessage() );
-      connection.response = {}; // no partial responses
-      if(typeof next === 'function'){ next(connection, true); }
+      api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
+      data.connection.response = {}; // no partial responses
+      if(typeof next === 'function'){ next(); }
     };
 
     api.exceptionHandlers.task = function(err, queue, task, workerId){

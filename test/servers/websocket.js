@@ -88,7 +88,7 @@ describe('Server: Web Socket', function(){
 
   it('can run actions with errors', function(done){
     clientA.action('cacheTest', function(response){
-      response.error.should.equal('Error: key is a required parameter for this action');
+      response.error.should.equal('key is a required parameter for this action');
       done();
     });
   });
@@ -100,14 +100,13 @@ describe('Server: Web Socket', function(){
     });
   });
 
-  it('has sticky params', function(done){
+  it('does not have sticky params', function(done){
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, function(response){
       should.not.exist(response.error);
       response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
       response.cacheTestResults.loadResp.value.should.equal('test value');
-      clientA.action('cacheTest', function(response){ // would normally fail without params
-        response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key');
-        response.cacheTestResults.loadResp.value.should.equal('test value');
+      clientA.action('cacheTest', function(response){
+        response.error.should.equal('key is a required parameter for this action');
         done();
       });
     });
@@ -127,7 +126,7 @@ describe('Server: Web Socket', function(){
       for(var i in responses){
         var response = responses[i];
         if(i === 0 || i === '0'){
-          response.error.should.eql('Error: you have too many pending requests');
+          response.error.should.eql('you have too many pending requests');
         } else {
           should.not.exist(response.error)
         }
@@ -160,24 +159,30 @@ describe('Server: Web Socket', function(){
   describe('chat', function(){
 
     before(function(done){
-      api.chatRoom.addJoinCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'join chat middleware',
+        join: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
-      api.chatRoom.addLeaveCallback(function(connection, room, callback){
-        api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
-          callback();
-        });
+      api.chatRoom.addMiddleware({
+        name: 'leave chat middleware',
+        leave: function(connection, room, callback){
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+            callback();
+          });
+        }
       });
 
       done();
     })
 
     after(function(done){
-      api.chatRoom.joinCallbacks  = {};
-      api.chatRoom.leaveCallbacks = {};
+      api.chatRoom.middleware = {};
+      api.chatRoom.globalMiddleware = [];
 
       done();
     })
@@ -324,41 +329,39 @@ describe('Server: Web Socket', function(){
     });
     
     describe('custom room member data', function(){
-    
+
       var currentSanitize;
       var currentGenerate;
-      
-      
+
       before(function(done){
         //Ensure that default behavior works
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
+            
             for( var key in response.data.members ){
-              (response.data.members[key].type === undefined ).should.eql(true);
+              ( response.data.members[key].type === undefined ).should.eql(true);
+            }
+
+            //save off current functions
+            currentSanitize = api.chatRoom.sanitizeMemberDetails;
+            currentGenerate = api.chatRoom.generateMemberDetails;
+
+            //override functions
+            api.chatRoom.sanitizeMemberDetails = function(data){
+            return { id: data.id,
+                 joinedAt: data.joinedAt,
+                 type: data.type };
+            }
+
+            api.chatRoom.generateMemberDetails = function(connection){
+            return { id: connection.id,
+                 joinedAt: new Date().getTime(),
+                 type : connection.type };
             }
 
             clientA.roomLeave('defaultRoom', function(){
-
-              //save off current functions
-              currentSanitize = api.chatRoom.sanitizeMemberDetails;
-              currentGenerate = api.chatRoom.generateMemberDetails;
-
-              //override functions
-              api.chatRoom.sanitizeMemberDetails = function(data){
-              return { id: data.id,
-                   joinedAt: data.joinedAt,
-                   type: data.type };
-              }
-
-              api.chatRoom.generateMemberDetails = function(connection){
-              return { id: connection.id,
-                   joinedAt: new Date().getTime(),
-                   type : connection.type };
-              }
-
               done();
-
             });
           });
         });
@@ -376,11 +379,13 @@ describe('Server: Web Socket', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
             for( var key in response.data.members ){
-            (response.data.members[key].type === undefined ).should.eql(true);
+              ( response.data.members[key].type === undefined ).should.eql(true);
             }
-            clientA.roomLeave('defaultRoom');
-
-            done();
+            setTimeout(function(){
+              clientA.roomLeave('defaultRoom', function(){
+                done();
+              });
+            }, 100);
           });
         });
       });
@@ -408,6 +413,38 @@ describe('Server: Web Socket', function(){
     // public/linkedSession.html has been provided as an example for now
     it('will have the same fingerprint as the browser cookie which spawned the connection');
 
+  });
+
+  describe('param collisions', function(){
+    var originalSimultaneousActions
+
+    before(function(){
+      originalSimultaneousActions = api.config.general.simultaneousActions;
+      api.config.general.simultaneousActions = 99999999;
+    });
+
+    after(function(){
+      api.config.general.simultaneousActions = originalSimultaneousActions;
+    });
+
+    it('will not have param colisions', function(done){
+      var completed = 0;
+      var started   = 0;
+      var sleeps = [ 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
+
+      var toComplete = function(sleep, response){
+        sleep.should.equal(response.sleepDuration);
+        completed++;
+        if(completed === started){
+          done();
+        }
+      }
+
+      sleeps.forEach(function(sleep){
+        started++;
+        clientA.action('sleepTest', {sleepDuration: sleep}, function(response){ toComplete(sleep, response); })
+      });
+    });
   });
 
   describe('disconnect', function(){
