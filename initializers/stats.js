@@ -34,14 +34,14 @@ module.exports = {
             multi.exec(function(){
               started--;
               if(started === 0){
-                setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
+                api.stats.timer = setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
                 if(typeof next === 'function'){ next() }
               }
             });
           })(collection);
         }
       } else {
-        setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency );
+        api.stats.timer = setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency );
         if(typeof next === 'function'){ next() }
       }
     }
@@ -82,7 +82,7 @@ module.exports = {
 
   start: function(api, next){
     if(api.config.stats.writeFrequency > 0){
-      setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
+      api.stats.timer = setTimeout(api.stats.writeIncrements, api.config.stats.writeFrequency);
     }
     next();
   },
