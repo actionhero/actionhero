@@ -21,7 +21,10 @@ exports.default = {
       // When we kill off a taskProcessor, should we disonnect that local redis connection?
       toDisconnectProcessors: true,
       // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis
+      redis: api.config.redis,
+      // When actionhero starts, remove stuck worker which are older than X ms?
+      // (disabled if -1)
+      removeStuckWorkersOlderThan: -1
     }
   }
 }
