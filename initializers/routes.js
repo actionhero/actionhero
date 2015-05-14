@@ -17,6 +17,10 @@ module.exports = {
           var route = api.routes.routes[method][i];
           var match = api.routes.matchURL(pathParts, route.path);
           if(match.match === true){
+            if(route.apiVersion){
+              connection.params.apiVersion = connection.params.apiVersion || route.apiVersion;
+            }
+            
             for(var param in match.params){
               try{
                 var decodedName = decodeURIComponent(param.replace(/\+/g, ' '));
@@ -74,8 +78,8 @@ module.exports = {
     }
 
 
-    api.routes.registerRoute = function(method, path, action) {
-      api.routes.routes[method].push({ path: path, action: action });
+    api.routes.registerRoute = function(method, path, action, apiVersion) {
+      api.routes.routes[method].push({ path: path, action: action, apiVersion:apiVersion});
     }
 
     // load in the routes file
@@ -98,10 +102,10 @@ module.exports = {
           if(method === 'all'){
             for(v in api.routes.verbs){
               verb = api.routes.verbs[v];
-              api.routes.registerRoute(verb, route.path, route.action);
+              api.routes.registerRoute(verb, route.path, route.action, route.apiVersion);
             }
           } else {
-            api.routes.registerRoute(method, route.path, route.action);
+            api.routes.registerRoute(method, route.path, route.action, route.apiVersion);
           }
           counter++;
         }

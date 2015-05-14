@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "11.2.0",
+  "version": "11.2.1",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -61,6 +61,7 @@
     "test": "NODE_ENV=test mocha",
     "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "start": "node ./bin/actionhero"
+    "start": "node ./bin/actionhero",
+    "build-gh-pages": "git subtree push --prefix docs origin gh-pages"
   }
 }
