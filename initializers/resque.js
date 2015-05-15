@@ -16,20 +16,7 @@ module.exports = {
       startQueue: function(callback){
         var self = this;
         self.queue = new NR.queue({connection: self.connectionDetails}, api.tasks.jobs, function(){
-          if(api.config.tasks.removeStuckWorkersOlderThan > 0){
-            api.log('removing stuck workers solder than ' + api.config.tasks.removeStuckWorkersOlderThan + 'ms', 'info');
-            self.queue.cleanOldWorkers(api.config.tasks.removeStuckWorkersOlderThan, function(err, result){
-              if(err){
-                api.log(err, 'error'); 
-              }
-              if(Object.keys(result).length > 0){
-                api.log('removed stuck workers with errors: ', 'info', result);
-              }
-              callback();
-            });
-          } else {
-            callback();
-          }
+          callback();
         });
       },
 
