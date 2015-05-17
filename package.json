@@ -35,7 +35,7 @@
     "formidable": "1.0.17",
     "grunt": "0.4.5",
     "mime": "1.3.4",
-    "node-resque": "0.12.0",
+    "node-resque": "0.14.0",
     "node-uuid": "1.4.3",
     "optimist": "0.6.1",
     "primus": "3.0.2",
