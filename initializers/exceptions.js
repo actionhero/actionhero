@@ -80,7 +80,7 @@ module.exports = {
     api.exceptionHandlers.action = function(domain, err, data, next){
       var simpleName;
       try{
-        simpleName = data.connection.action;
+        simpleName = data.action;
       }catch(e){
         simpleName = err.message;
       }

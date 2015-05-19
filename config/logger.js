@@ -32,6 +32,9 @@ exports.default = {
       });
     });
 
+    // the maximum length of param to log (we will truncate)
+    logger.maxLogStringLength = 100;
+
     return logger;
   }
 }

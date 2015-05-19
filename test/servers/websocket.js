@@ -327,7 +327,7 @@ describe('Server: Web Socket', function(){
         });
       });
     });
-    
+
     describe('custom room member data', function(){
 
       var currentSanitize;
@@ -338,7 +338,7 @@ describe('Server: Web Socket', function(){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            
+
             for( var key in response.data.members ){
               ( response.data.members[key].type === undefined ).should.eql(true);
             }
@@ -370,10 +370,10 @@ describe('Server: Web Socket', function(){
       after(function(done){
         api.chatRoom.joinCallbacks  = {};
         api.chatRoom.leaveCallbacks = {};
-        
+
         api.chatRoom.sanitizeMemberDetails = currentSanitize;
         api.chatRoom.generateMemberDetails = currentGenerate;
-                
+
         //Check that everything is back to normal
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -389,7 +389,7 @@ describe('Server: Web Socket', function(){
           });
         });
       });
-    
+
       it('should view non-default member data', function(done){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -401,18 +401,42 @@ describe('Server: Web Socket', function(){
             done();
           });
         })
-      }); 
-    
+      });
+
     });
 
   });
 
-  describe('fingerprint', function(){
-    
-    // TODO: Cannot test socket within a browser context
-    // public/linkedSession.html has been provided as an example for now
-    it('will have the same fingerprint as the browser cookie which spawned the connection');
+  describe('param collisions', function(){
+    var originalSimultaneousActions
 
+    before(function(){
+      originalSimultaneousActions = api.config.general.simultaneousActions;
+      api.config.general.simultaneousActions = 99999999;
+    });
+
+    after(function(){
+      api.config.general.simultaneousActions = originalSimultaneousActions;
+    });
+
+    it('will not have param colisions', function(done){
+      var completed = 0;
+      var started   = 0;
+      var sleeps = [ 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ];
+
+      var toComplete = function(sleep, response){
+        sleep.should.equal(response.sleepDuration);
+        completed++;
+        if(completed === started){
+          done();
+        }
+      }
+
+      sleeps.forEach(function(sleep){
+        started++;
+        clientA.action('sleepTest', {sleepDuration: sleep}, function(response){ toComplete(sleep, response); })
+      });
+    });
   });
 
   describe('disconnect', function(){
@@ -422,7 +446,7 @@ describe('Server: Web Socket', function(){
         clientA.disconnect();
         clientB.disconnect();
         clientC.disconnect();
-      }catch(e){} 
+      }catch(e){}
 
       connectClients(function(){
         clientA.connect();
@@ -446,7 +470,7 @@ describe('Server: Web Socket', function(){
     it('can be sent disconnect events from the server', function(done){
       clientA.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
-        
+
         var count = 0
         for(var id in api.connections.connections){
           count++;

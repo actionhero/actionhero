@@ -670,9 +670,23 @@ describe('Server: Web', function(){
         }
       }
 
-      api.actions.versions.login = [1]
+      api.actions.versions.login = [1, 2]
       api.actions.actions.login = {
         '1': {
+          name: 'login',
+          description: 'login',
+          matchExtensionMimeType: true,
+          inputs: {
+            user_id: {required:true}
+          },
+          outputExample: {},
+          run:function(api, data, next){
+            data.response.user_id = data.params.user_id;
+            next();
+          }
+        },
+        
+        '2': {
           name: 'login',
           description: 'login',
           matchExtensionMimeType: true,
@@ -698,7 +712,8 @@ describe('Server: Web', function(){
           { path: '/c/:key/:value', action: 'cacheTest' },
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
           { path: '/thing', action: 'thing' },
-          { path: '/thing/stuff', action: 'thingStuff' }
+          { path: '/thing/stuff', action: 'thingStuff' },
+          { path: '/old_login', action: 'login', apiVersion: '1' }
         ],
         post: [
           { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
@@ -750,6 +765,15 @@ describe('Server: Web', function(){
       request.get(url + '/api/user/123?action=someFakeAction', function(err, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user')
+        done();
+      });
+    });
+    
+    it('Routes should recognize apiVersion as default param', function(done){
+      request.get(url + '/api/old_login?user_id=7', function(err, response, body){
+        body = JSON.parse(body);
+        body.user_id.should.equal('7');
+        body.requesterInformation.receivedParams.action.should.equal('login')
         done();
       });
     });

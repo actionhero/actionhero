@@ -17,7 +17,7 @@ exports.default = {
         // should the server signal clients to not reconnect when the server is shutdown/reboot
         destroyClientsOnShutdown: false,
 
-        // Primus Server Options:
+        // websocket Server Options:
         server: {
           // authorization: null,
           // pathname:      '/primus',
@@ -32,7 +32,7 @@ exports.default = {
           // exposed:       false,
         },
 
-        // Priumus Client Options:
+        // websocket Client Options:
         client: {
           apiPath:             '/api', // the api base endpoint on your actionhero server
           // reconnect:        {},
