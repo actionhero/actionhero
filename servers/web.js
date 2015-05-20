@@ -63,9 +63,7 @@ var initialize = function(api, options, next){
       }
     });
 
-    if (api.config.servers.web.swaggerEnabled) {
-      server.writeSwaggerHtml();
-    }
+    server.writeSwaggerHtml();
 
     server.server.listen(options.port, options.bindIP, function(){
       chmodSocket(options.bindIP, options.port);
@@ -130,7 +128,7 @@ var initialize = function(api, options, next){
 
   server.compileSwaggerHtml = function(config) {
     var basePath = '<head><base href="/' + config.urlPathForSwagger + '/">';
-    var swaggerAction = '/' + config.urlPathForActions + '/' + config.swaggerAction;
+    var swaggerAction = '/' + config.urlPathForActions + '/showDocumentation';
     var swaggerHtml = fs.readFileSync(swaggerPath + 'index.html').toString();
     return swaggerHtml.replace(/<head>/g, basePath).replace(/http:\/\/petstore.swagger.io\/v2\/swagger.json/g, swaggerAction);
   }
@@ -138,18 +136,17 @@ var initialize = function(api, options, next){
   server.writeSwaggerHtml = function() {
     var swagConfig = api.config.servers.web;
 
-    if (swagConfig.swaggerEnabled) {
-      try {
-        fs.writeFileSync(swaggerPath + 'actionhero.html', server.compileSwaggerHtml(swagConfig));
-        api.log('wrote ' + swaggerPath + 'actionhero.html', 'debug');
-      } catch (_error) {
-        var e = _error;
-        api.log('Cannot write swagger index html', 'warning');
-        api.log(e, 'warning');
-        throw e;
-      }
+    try {
+      fs.writeFileSync(swaggerPath + 'actionhero.html', server.compileSwaggerHtml(swagConfig));
+      api.log('wrote ' + swaggerPath + 'actionhero.html', 'debug');
+    } catch (_error) {
+      var e = _error;
+      api.log('Cannot write swagger index html', 'warning');
+      api.log(e, 'warning');
+      throw e;
     }
   }
+
 
   ////////////
   // EVENTS //
@@ -360,7 +357,7 @@ var initialize = function(api, options, next){
       if (pathParts[0] === api.config.servers.web.urlPathForActions) {
         requestMode = 'api';
         pathParts.shift();
-      } else if (pathParts[0] === api.config.servers.web.urlPathForSwagger && api.config.servers.web.swaggerEnabled) {
+      } else if (pathParts[0] === api.config.servers.web.urlPathForSwagger) {
         requestMode = 'swagger';
         pathParts.shift();
       } else if (pathParts[0] === api.config.servers.web.urlPathForFiles) {
