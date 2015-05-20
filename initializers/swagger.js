@@ -20,7 +20,7 @@ module.exports = {
           description: config.general.welcomeMessage,
           version: "" + config.general.apiVersion
         },
-        host: actionUrl + ':' + serverPort,
+        host: bindIp + ':' + serverPort,
         basePath: '/' + actionUrl || 'swagger',
         schemes: ['http'],
         consumes: ['application/json'],
