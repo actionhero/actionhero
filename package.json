@@ -40,6 +40,7 @@
     "optimist": "0.6.1",
     "primus": "3.0.2",
     "redis": "0.12.1",
+    "swagger-ui": "^2.1.5-M2",
     "uglify-js": "2.4.19",
     "winston": "1.0.0",
     "ws": "0.7.1"

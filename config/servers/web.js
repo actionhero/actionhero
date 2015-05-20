@@ -19,6 +19,12 @@ exports.default = {
           'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
+        // enable or disable the swagger endpoint 
+        swaggerEnabled: true,
+        // rename or change the swagger endpoint http://hose:port/{urlPathForSwagger} || http://hose:port/{urlPathForSwagger}/
+        urlPathForSwagger: 'swagger',
+        // the action hero action name for the swagger json 
+        swaggerAction: 'swaggerDocumentation',
         // Route that actions will be served from; secondary route against this route will be treated as actions,
         //  IE: /api/?action=test == /api/test/
         urlPathForActions : 'api',

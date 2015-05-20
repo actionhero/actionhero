@@ -1,0 +1,161 @@
+module.exports = {
+  loadPriority: 999,
+  initialize: function(api, next) {
+    var actions, config;
+    config = api.config;
+    actions = api.actions.actions;
+    api.swagger = {
+      actionToSwagger: {
+        swagger: '2.0',
+        info: {
+          title: config.general.serverName,
+          description: config.general.welcomeMessage,
+          version: "" + config.general.apiVersion
+        },
+        host: config.servers.web.bindIP + ':' + config.servers.web.port,
+        basePath: '/' + config.servers.web.urlPathForActions,
+        schemes: ['http'],
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        paths: {},
+        definitions: {},
+        parameters: {
+          apiVersion: {
+            name: 'apiVersion',
+            "in": 'path',
+            required: true,
+            type: 'string'
+          }
+        }
+      },
+      buildPath: function(name, parameters, desc) {
+        if (desc == null) {
+          desc = '';
+        }
+        return {
+          description: desc,
+          operationId: name,
+          parameters: parameters,
+          responses: {
+            "default": {
+              description: 'successful operation',
+              schema: {
+                items: {
+                  $ref: "#/definitions/" + name
+                }
+              }
+            }
+          }
+        };
+      },
+      build: function() {
+        var action, definition, i, input, j, k, key, len, method, parameters, path, ref, ref1, ref2, required, results, route, routes, verb;
+        for (i in api.actions.actions) {
+          for (j in api.actions.actions[i]) {
+            action = api.actions.actions[i][j];
+            parameters = [];
+            required = [];
+            definition = this.actionToSwagger.definitions[action.name] = {
+              properties: {}
+            };
+            ref = action.inputs;
+            for (key in ref) {
+              input = ref[key];
+              this.actionToSwagger.parameters[action.name + "_" + key] = {
+                name: key,
+                "in": 'query',
+                type: 'string'
+              };
+              parameters.push({
+                $ref: "#/parameters/" + action.name + "_" + key
+              });
+              definition.properties[key] = {
+                type: 'string'
+              };
+              if (input.required) {
+                required.push(key);
+              }
+            }
+            if (required.length > 0) {
+              definition.required = required;
+            }
+            parameters.push({
+              name: 'body',
+              "in": 'body',
+              schema: {
+                $ref: "#/definitions/" + action.name
+              }
+            });
+            if (!this.actionToSwagger.paths["/" + action.name]) {
+              this.actionToSwagger.paths["/" + action.name] = {};
+            }
+            ref1 = api.routes.verbs;
+            for (k = 0, len = ref1.length; k < len; k++) {
+              method = ref1[k];
+              this.actionToSwagger.paths["/" + action.name][method] = this.buildPath(action.name, parameters, action.description);
+            }
+          }
+        }
+        if (api.config.routes) {
+          ref2 = api.config.routes;
+          results = [];
+          for (verb in ref2) {
+            routes = ref2[verb];
+            results.push((function() {
+              var l, len1, results1;
+              results1 = [];
+              for (l = 0, len1 = routes.length; l < len1; l++) {
+                route = routes[l];
+                parameters = [];
+                path = route.path.replace(/\/:([\w]*)/g, (function(_this) {
+                  return function(match, p1) {
+                    parameters.push({
+                      $ref: "#/parameters/" + route.action + "_" + p1 + "_path"
+                    });
+                    _this.actionToSwagger.parameters[route.action + "_" + p1 + "_path"] = {
+                      name: p1,
+                      "in": 'path',
+                      type: 'string'
+                    };
+                    if (p1 === 'apiVersion') {
+                      if (route.apiVersion) {
+                        return "/{" + route.apiVersion + "}";
+                      }
+                      return false;
+                    } else {
+                      return "/{" + p1 + "}";
+                    }
+                  };
+                })(this));
+                if (!this.actionToSwagger.paths["" + path]) {
+                  this.actionToSwagger.paths["" + path] = {};
+                }
+                if (verb.toLowerCase() === 'all') {
+                  results1.push((function() {
+                    var len2, m, ref3, results2;
+                    ref3 = api.routes.verbs;
+                    results2 = [];
+                    for (m = 0, len2 = ref3.length; m < len2; m++) {
+                      method = ref3[m];
+                      results2.push(this.actionToSwagger.paths["" + path][method] = this.buildPath(route.action, parameters));
+                    }
+                    return results2;
+                  }).call(this));
+                } else {
+                  results1.push(this.actionToSwagger.paths["" + path][verb] = this.buildPath(route.action, parameters));
+                }
+              }
+              return results1;
+            }).call(this));
+          }
+          return results;
+        }
+      }
+    };
+    next();
+  },
+  start: function(api, next) {
+    api.swagger.build();
+    next();
+  }
+};

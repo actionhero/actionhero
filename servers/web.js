@@ -6,6 +6,7 @@ var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
 var uuid                = require('node-uuid');
+var swaggerPath         = path.dirname(require.resolve('swagger-ui')) + '/';
 
 var initialize = function(api, options, next){
 
@@ -61,6 +62,10 @@ var initialize = function(api, options, next){
         return next(new Error('cannot start web server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
       }
     });
+
+    if (api.config.servers.web.swaggerEnabled) {
+      server.writeSwaggerHtml();
+    }
 
     server.server.listen(options.port, options.bindIP, function(){
       chmodSocket(options.bindIP, options.port);
@@ -123,6 +128,29 @@ var initialize = function(api, options, next){
     // disconnect handlers
   }
 
+  server.compileSwaggerHtml = function(config) {
+    var basePath = '<head><base href="/' + config.urlPathForSwagger + '/">';
+    var swaggerAction = '/' + config.urlPathForActions + '/' + config.swaggerAction;
+    var swaggerHtml = fs.readFileSync(swaggerPath + 'index.html').toString();
+    return swaggerHtml.replace(/<head>/g, basePath).replace(/http:\/\/petstore.swagger.io\/v2\/swagger.json/g, swaggerAction);
+  }
+
+  server.writeSwaggerHtml = function() {
+    var swagConfig = api.config.servers.web;
+
+    if (swagConfig.swaggerEnabled) {
+      try {
+        fs.writeFileSync(swaggerPath + 'actionhero.html', server.compileSwaggerHtml(swagConfig));
+        api.log('wrote ' + swaggerPath + 'actionhero.html', 'debug');
+      } catch (_error) {
+        var e = _error;
+        api.log('Cannot write swagger index html', 'warning');
+        api.log(e, 'warning');
+        throw e;
+      }
+    }
+  }
+
   ////////////
   // EVENTS //
   ////////////
@@ -133,6 +161,8 @@ var initialize = function(api, options, next){
         server.processAction(connection);
       } else if(requestMode === 'file'){
         server.processFile(connection);
+      } else if (requestMode === 'swagger') {
+        server.processSwagger(connection);
       } else if(requestMode === 'options'){
         respondToOptions(connection);
       } else if(requestMode === 'trace'){
@@ -307,29 +337,45 @@ var initialize = function(api, options, next){
     server.sendMessage(connection, stringResponse);
   }
 
-  var determineRequestParams = function(connection, callback){
+  var determineRequestParams = function(connection, callback) {
     // determine file or api request
     var requestMode = api.config.servers.web.rootEndpointType;
     var pathname = connection.rawConnection.parsedURL.pathname
     var pathParts = pathname.split('/');
     var matcherLength, i;
+
+    var findUrlPath = function(matchType) {
+      var i, results;
+      results = [];
+      for (i in api.config.servers.web[matchType].split('/')) {
+        results.push(pathParts.shift());
+      }
+      return results;
+    }
+
     while(pathParts[0] === ''){ pathParts.shift(); }
     if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
 
-    if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForActions){
-      requestMode = 'api';
-      pathParts.shift();
-    }else if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForFiles){
-      requestMode = 'file'
-      pathParts.shift();
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
-      requestMode = 'api';
-      matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
-      for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
-      requestMode = 'file'
-      matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
-      for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
+    if (pathParts[0]) {
+      if (pathParts[0] === api.config.servers.web.urlPathForActions) {
+        requestMode = 'api';
+        pathParts.shift();
+      } else if (pathParts[0] === api.config.servers.web.urlPathForSwagger && api.config.servers.web.swaggerEnabled) {
+        requestMode = 'swagger';
+        pathParts.shift();
+      } else if (pathParts[0] === api.config.servers.web.urlPathForFiles) {
+        requestMode = 'file';
+        pathParts.shift();
+      } else if (pathname.indexOf(api.config.servers.web.urlPathForActions) === 0) {
+        requestMode = 'api';
+        findUrlPath('urlPathForActions');
+      } else if (pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0) {
+        requestMode = 'file';
+        findUrlPath('urlPathForFiles');
+      } else if (pathname.indexOf(api.config.servers.web.urlPathForSwagger) === 0) {
+        requestMode = 'swagger';
+        findUrlPath('urlPathForSwagger');
+      }
     }
 
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
@@ -382,18 +428,24 @@ var initialize = function(api, options, next){
       }
     }
 
-    // FILE
+    // FILE AND SWAGGER DOCS
 
-    else if(requestMode === 'file'){
+    else if (requestMode === 'file' || requestMode === 'swagger'){
       if(!connection.params.file){
         connection.params.file = pathParts.join(path.sep);
       }
-      if(connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/'){
-        connection.params.file = connection.params.file + api.config.general.directoryFileType;
-      }
+      var isBaseDirectory = connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/';
+        if (requestMode === 'swagger') {
+          if (isBaseDirectory) {
+            connection.params.file = swaggerPath + 'actionhero.html';
+          } else {
+            connection.params.file = swaggerPath + connection.params.file;
+          }
+        } else if (isBaseDirectory) {
+          connection.params.file = connection.params.file + api.config.general.directoryFileType;
+        }
       callback(requestMode);
     }
-
   }
 
   var fillParamsFromWebRequest = function(connection, varsHash){
