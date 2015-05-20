@@ -1,9 +1,17 @@
 module.exports = {
   loadPriority: 999,
   initialize: function(api, next) {
-    var actions, config;
-    config = api.config;
-    actions = api.actions.actions;
+    var config = api.config;
+    var actions = api.actions.actions;
+
+    var actionUrl, bindIp, serverPort;
+
+    if (config.servers.web && config.servers.web.enabled) {
+      actionUrl = config.servers.web.urlPathForActions;
+      bindIp = config.servers.web.bindIP || 'http://localhost/';
+      serverPort = config.servers.web.port || '';
+    };
+
     api.swagger = {
       actionToSwagger: {
         swagger: '2.0',
@@ -12,8 +20,8 @@ module.exports = {
           description: config.general.welcomeMessage,
           version: "" + config.general.apiVersion
         },
-        host: config.servers.web.bindIP + ':' + config.servers.web.port,
-        basePath: '/' + config.servers.web.urlPathForActions,
+        host: actionUrl + ':' + serverPort,
+        basePath: '/' + actionUrl || 'swagger',
         schemes: ['http'],
         consumes: ['application/json'],
         produces: ['application/json'],
@@ -155,7 +163,9 @@ module.exports = {
     next();
   },
   start: function(api, next) {
-    api.swagger.build();
+    if (api.config.servers.web && api.config.servers.web.enabled) {
+      api.swagger.build();
+    };
     next();
   }
 };
