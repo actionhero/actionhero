@@ -510,7 +510,7 @@ describe('Server: Web', function(){
     it('documentation can be returned via a documentation action', function(done){
       request.get(url + '/api/showDocumentation', function(err, response, body){
         body = JSON.parse(body);
-        body.documentation.should.be.an.instanceOf(Object);
+        body.should.be.an.instanceOf(Object);
         done();
       });
     });

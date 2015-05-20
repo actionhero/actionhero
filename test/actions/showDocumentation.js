@@ -20,7 +20,7 @@ describe('Action: Show Documentation', function(){
 
   it('returns the correct parts', function(done){
     api.specHelper.runAction('showDocumentation', function(response){
-        Object.keys(response.paths).length.should.equal(5); // 6 actions
+        Object.keys(response.paths).length.should.equal(5); // 5 actions
         response.serverInformation.serverName.should.equal('actionhero API')
         done();
     });

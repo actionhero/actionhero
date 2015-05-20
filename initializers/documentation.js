@@ -4,12 +4,28 @@ module.exports = {
     var config = api.config;
     var actions = api.actions.actions;
 
-    var actionUrl, bindIp, serverPort;
+    var actionUrl = 'api' 
+    var bindIp = api.utils.getExternalIPAddress()
+    var serverPort = null
 
-    if (config.servers.web && config.servers.web.enabled) {
-      actionUrl = config.servers.web.urlPathForActions;
-      bindIp = config.servers.web.bindIP || 'http://localhost/';
-      serverPort = config.servers.web.port || '';
+    if (config.servers.web) {
+      serverPort =  config.servers.web.port  
+      actionUrl = config.servers.web.urlPathForActions
+    }
+
+    var buildPath = function(name, parameters, desc) {
+      if (desc == null) { desc = ''; }
+      return {
+        description: desc,
+        operationId: name,
+        parameters: parameters,
+        responses: {
+          "default": {
+            description: 'successful operation',
+            schema: { items: { $ref: "#/definitions/" + name } }
+          }
+        }
+      };
     };
 
     api.documentation = {
@@ -36,43 +52,23 @@ module.exports = {
           }
         }
       },
-      buildPath: function(name, parameters, desc) {
-        if (desc == null) {
-          desc = '';
-        }
-        return {
-          description: desc,
-          operationId: name,
-          parameters: parameters,
-          responses: {
-            "default": {
-              description: 'successful operation',
-              schema: {
-                items: {
-                  $ref: "#/definitions/" + name
-                }
-              }
-            }
-          }
-        };
-      },
       build: function() {
-        var action, definition, i, input, j, k, key, len, method, parameters, path, ref, ref1, ref2, required, results, route, routes, verb;
-        for (i in api.actions.actions) {
-          for (j in api.actions.actions[i]) {
-            action = api.actions.actions[i][j];
-            parameters = [];
-            required = [];
-            definition = this.documentation.definitions[action.name] = {
+        // sinple routes 
+        var verbs = api.routes.verbs;
+        
+        for (var i in actions) {
+          for (var j in actions[i]) {
+            var action = actions[i][j];
+            var parameters = [];
+            var required = [];
+
+            var definition = this.documentation.definitions[action.name] = {
               properties: {}
             };
-            ref = action.inputs;
-            for (key in ref) {
-              input = ref[key];
+
+            for (var key in action.inputs) {
               this.documentation.parameters[action.name + "_" + key] = {
-                name: key,
-                "in": 'query',
-                type: 'string'
+                name: key, "in": 'query', type: 'string'
               };
               parameters.push({
                 $ref: "#/parameters/" + action.name + "_" + key
@@ -80,92 +76,77 @@ module.exports = {
               definition.properties[key] = {
                 type: 'string'
               };
-              if (input.required) {
+              if (action.inputs[key].required) {
                 required.push(key);
               }
             }
+
             if (required.length > 0) {
               definition.required = required;
             }
+
             parameters.push({
-              name: 'body',
-              "in": 'body',
-              schema: {
-                $ref: "#/definitions/" + action.name
-              }
+              name: 'body', "in": 'body', schema: { $ref: "#/definitions/" + action.name }
             });
+
             if (!this.documentation.paths["/" + action.name]) {
               this.documentation.paths["/" + action.name] = {};
             }
-            ref1 = api.routes.verbs;
-            for (k = 0, len = ref1.length; k < len; k++) {
-              method = ref1[k];
-              this.documentation.paths["/" + action.name][method] = this.buildPath(action.name, parameters, action.description);
+
+            for (var k = 0, len = verbs.length; k < len; k++) {
+              method = verbs[k];
+              this.documentation.paths["/" + action.name][method] = buildPath(action.name, parameters, action.description);
             }
+
           }
         }
+
+        // config routes
         if (api.config.routes) {
-          ref2 = api.config.routes;
-          results = [];
-          for (verb in ref2) {
-            routes = ref2[verb];
-            results.push((function() {
-              var l, len1, results1;
-              results1 = [];
-              for (l = 0, len1 = routes.length; l < len1; l++) {
-                route = routes[l];
-                parameters = [];
-                path = route.path.replace(/\/:([\w]*)/g, (function(_this) {
-                  return function(match, p1) {
-                    parameters.push({
-                      $ref: "#/parameters/" + route.action + "_" + p1 + "_path"
-                    });
-                    _this.documentation.parameters[route.action + "_" + p1 + "_path"] = {
-                      name: p1,
-                      "in": 'path',
-                      type: 'string'
-                    };
-                    if (p1 === 'apiVersion') {
-                      if (route.apiVersion) {
-                        return "/{" + route.apiVersion + "}";
-                      }
-                      return false;
-                    } else {
-                      return "/{" + p1 + "}";
-                    }
-                  };
-                })(this));
-                if (!this.documentation.paths["" + path]) {
-                  this.documentation.paths["" + path] = {};
-                }
-                if (verb.toLowerCase() === 'all') {
-                  results1.push((function() {
-                    var len2, m, ref3, results2;
-                    ref3 = api.routes.verbs;
-                    results2 = [];
-                    for (m = 0, len2 = ref3.length; m < len2; m++) {
-                      method = ref3[m];
-                      results2.push(this.documentation.paths["" + path][method] = this.buildPath(route.action, parameters));
-                    }
-                    return results2;
-                  }).call(this));
-                } else {
-                  results1.push(this.documentation.paths["" + path][verb] = this.buildPath(route.action, parameters));
-                }
+          for (var method in api.config.routes) {
+            var routes = api.config.routes[method];
+            for (var l = 0, len1 = routes.length; l < len1; l++) {
+              var route = routes[l]; var parameters = [];
+
+              var path = route.path.replace(/\/:([\w]*)/g, function(match, p1) {
+                parameters.push({
+                  $ref: "#/parameters/" + route.action + "_" + p1 + "_path"
+                });
+
+                api.documentation.documentation.parameters[route.action + "_" + p1 + "_path"] = {
+                  name: p1, "in": 'path', type: 'string'
+                };
+
+                if (p1 === 'apiVersion') {
+                  if (route.apiVersion) {
+                    return "/{" + route.apiVersion + "}";
+                  }
+                  return false;
+                } else { return "/{" + p1 + "}"; }
+              });
+
+              if (!this.documentation.paths["" + path]) {
+                this.documentation.paths["" + path] = {};
               }
-              return results1;
-            }).call(this));
+
+              if (method.toLowerCase() === 'all') {
+                var verbsLength = verbs.length
+                for (var m = 0, verbsLength; m < verbsLength; m++) {
+                  this.documentation.paths["" + path][verbs[m]] = buildPath(route.action, parameters);
+                }
+              } else {
+                this.documentation.paths["" + path][method] = buildPath(route.action, parameters);
+              }
+            }
           }
-          return results;
         }
       }
     };
     next();
   },
+
   start: function(api, next) {
-    if (api.config.servers.web && api.config.servers.web.enabled) {
-      api.documentation.build();
-    };
+    api.documentation.build();
     next();
   }
 };
