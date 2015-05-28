@@ -1,151 +1,25 @@
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="content-language" content="en" />
-    <meta name="description" content="actionhero.js" />
-    <link rel="stylesheet" href="/public/css/actionhero.css" type="text/css">
-    <link rel="icon" href="/public/favicon.ico">
-    <title>actionhero.js</title>
+<!doctype html>
 
-    <script src="/public/javascript/actionheroClient.js"></script>
+<html lang="en" ng-app="ah">
 
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>actionhero.js</title>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="app.css"/>
+  <link rel="stylesheet prefetch" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+</head>
 
   <body>
 
-  <section class="intro">
-    <div class="intro-body">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8 col-md-offset-2">
-            <h1 class="brand-heading">actionhero</h1>
-            <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server.</p>
-            <a href="http://github.com/evantahler/actionhero">
-                <img src="/public/logo/actionhero.png" width="300" />
-            </a>
-            <h2>Congratulations!</h2> 
-            <h3>Your actionhero server is working.</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <ui-view></ui-view>
 
-  <section class="container content-section text-center">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
-        <h2>About actionhero</h2>
-        <p>actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks.</p>
-        <p>actionhero was built from the ground up to include all the features you expect from a modern API framework. This includes all the features listed below and more.  actionhero also knows when to get out of the way to allow you to customize your stack to fit your needs.</p>
-        <br />
-        <br />
-        <br />
-        <h2><a href="/chat.html">Try a realtime-chat with websockets</a></h2>
-        <br />
-        <br />
-        <br />
-        <h2>Learn more @ <a href="http://www.actionherojs.com/docs">www.actionherojs.com/docs</a></h2>
-      </div>
-    </div>
-  </section>
+  <!-- App -->
+  <script src="http://localhost:8080/public/javascript/actionheroClient.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js"></script>
+  <script src="app.js"></script>
+</body>
 
-  <section class="content-section text-center">
-    <div class="features-section">
-      <div class="container">
-
-        <div class="row">
-          <h2>This Server</h2>
-
-          <div class="col-6 col-sm-6 col-lg-6">
-            <h4>Server Information:</h4>
-            <pre>
-Server Name:        <span class="right" id="serverName"></span>
-API Version:        <span class="right" id="serverVersion"></span>
-Actionhero Version  <span class="right" id="actionheroVersion"></span>
-Updtime (min):      <span class="right" id="uptime"></span>
-            </pre>
-          </div>
-
-          <div class="col-6 col-sm-6 col-lg-6">
-            <h4>Server Stats:</h4>
-            <pre>
-<span class="server_info" id="stats"></span>
-            </pre>
-          </div>
-      </div>
-
-    </div>
-    </div>
-  </section>
-        
-
-  <!--<section class="container content-section text-center">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
-        <h2>Actions on This Server:</h2>
-        <span class="server_info" id="actions"></span>
-      </div>
-    </div>
-  </section>-->
-
-  <script type="text/javascript">
-    var populateStatus = function(data){
-      if(data.serverInformation){
-        document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
-        document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
-      }
-      document.getElementById('actionheroVersion').innerHTML = data.actionheroVersion;
-      document.getElementById('uptime').innerHTML = Math.round( data.uptime / 1000 / 60 );
-
-      var statWordLength = 0;
-      for(var stat in data.stats['actionhero:stats']){
-        if(stat.length > statWordLength){ statWordLength = stat.length + 4; }
-      }
-
-      var html = '';
-      for(var stat in data.stats['actionhero:stats']){
-        var v = data.stats['actionhero:stats'][stat];
-        var row = '';
-        var spaces = Array.apply(null, new Array(statWordLength - stat.length)).map(String.prototype.valueOf,"&nbsp;");
-        row += stat + spaces.join('');
-        row += v;
-        row += '<br />';
-        html += row;
-      }
-      document.getElementById('stats').innerHTML = html
-    }
-
-    /*
-    var populateDocumentation = function(data){
-      for(var actionName in data.documentation){
-        for(var version in data.documentation[actionName]){
-          var action = data.documentation[actionName][version];
-          var row = '';
-          row += '<h4><a href="/api/' + action.name + '?apiVersion=' + version + '">' + action.name + ' (v' + version + ')</a></h4>';
-          row += '<pre>';
-          row += '<strong>Description</strong>: ' + action.description;
-          row += '<br /><br />';
-          row += '<strong>inputs</strong>: ' + JSON.stringify(action.inputs, null, 4);
-          row += '<br /><br />';
-          row += '<strong>output example</strong>: ' + JSON.stringify(action.outputExample, null, 4);
-          row += '</pre>';
-          row += '<br/>';
-          row += '<br/>';
-          document.getElementById('actions').innerHTML += row;
-        }
-      }
-    }
-
-    client.action('showDocumentation', function(err, data){
-      populateDocumentation(data)
-    });*/
-
-    var client = new ActionheroClient();
-
-    client.action('status', function(err, data){
-      populateStatus(data)
-    });
-  </script>
-
-  </body>
 </html>
