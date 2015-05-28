@@ -92,6 +92,14 @@ module.exports = {
       actionProcessor.processAction();
     }
 
+    api.genericServer.prototype.processSwagger = function(connection){
+      var self = this;
+      var file = connection.params.file
+      api.staticFile.sendFile(file, connection, function(connection, error, fileStream, mime, length){
+        self.sendFile(connection, error, fileStream, mime, length);
+      });
+    }
+
     api.genericServer.prototype.processFile = function(connection){
       var self = this;
       api.staticFile.get(connection, function(connection, error, fileStream, mime, length){
