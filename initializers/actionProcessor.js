@@ -89,6 +89,11 @@ module.exports = {
       });
 
       self.working = false;
+      self.logAction(error);
+    }
+
+    api.actionProcessor.prototype.logAction = function(error){
+      var self = this;
 
       // logging
       var logLevel = 'info';
@@ -100,8 +105,10 @@ module.exports = {
       for(var i in self.params){
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
           filteredParams[i] = '[FILTERED]';
+        }else if(typeof self.params[i] === 'string'){
+          filteredParams[i] = self.params[i].substring(0,api.config.logger.maxLogStringLength);
         }else{
-          filteredParams[i] = self.params[i];
+          filteredParams[i] = self.params[i]
         }
       }
 
@@ -124,7 +131,7 @@ module.exports = {
         }
       }
 
-      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, logLine);      
+      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, logLine);
     }
 
     api.actionProcessor.prototype.preProcessAction = function(callback){

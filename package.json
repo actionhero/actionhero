@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "11.2.1",
+  "version": "11.2.2",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -29,13 +29,13 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "async": "0.9.0",
+    "async": "1.0.0",
     "browser_fingerprint": "0.0.6",
     "fakeredis": "0.3.1",
     "formidable": "1.0.17",
     "grunt": "0.4.5",
     "mime": "1.3.4",
-    "node-resque": "0.12.0",
+    "node-resque": "0.14.1",
     "node-uuid": "1.4.3",
     "optimist": "0.6.1",
     "primus": "3.0.2",
@@ -63,6 +63,7 @@
     "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
-    "build-gh-pages": "git subtree push --prefix docs origin gh-pages"
+    "build-gh-pages": "git subtree push --prefix docs origin gh-pages", 
+    "postpublish" : "npm run-script build-gh-pages"
   }
 }
