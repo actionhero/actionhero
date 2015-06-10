@@ -254,6 +254,30 @@ actionhero provides some methods to help inspect the state of your queue
 - next(err, failedJob)
 - the input `failedJob` is an expanded node object representing the failed job, retrieved via `api.tasks.failed`
 
+### Failed Job Management
+
+Sometimes a worker crashes is a severe way, and it doesn't get the time/chance to notifiy redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker's "working on" status, but also remove the stuck worker. To aid you in these edge cases, `queue.cleanOldWorkers(age, callback) is available.
+
+Because there are no 'heartbeats' in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use queue.retryAndRemoveFailed) to re-enqueue the job.
+
+You can handle this with an own initializer and the following logic :
+
+{% highlight javascript %}
+
+var removeStuckWorkersOlderThan = 10000; // 10000ms
+api.log('removing stuck workers solder than ' + removeStuckWorkersOlderThan + 'ms', 'info');
+api.resque.queue.cleanOldWorkers(removeStuckWorkersOlderThan, function(err, result){
+  if(err){
+    api.log(err, 'error'); 
+  }
+  if(Object.keys(result).length > 0){
+    api.log('removed stuck workers with errors: ', 'info', result);
+  }
+  callback();
+});
+
+{% endhighlight %}
+
 ## Notes
 
 Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is **allowed** to run, not when it **will** run.  TaskProcessors will work tasks in a first-in-first-out manner.  TaskProcessors also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
