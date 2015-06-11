@@ -71,10 +71,6 @@ actionhero.prototype.initialize = function(params, callback){
     self.initializers[initializer] = require(file);
     self.configInitializers.push( function(next){
       self.initializers[initializer].initialize(self.api, next);
-      self.api.watchFileAndAct(file, function(){
-        self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-        self.api.commands.restart.call(self.api._self);
-      });
     } );
   });
 

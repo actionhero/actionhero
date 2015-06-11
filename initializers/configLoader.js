@@ -210,7 +210,7 @@ module.exports = {
     api.config.general.paths.log         = api.utils.arrayUniqueify( api.config.general.paths.log.map(path.normalize) );
     api.config.general.paths.plugin      = api.utils.arrayUniqueify( api.config.general.paths.plugin.map(path.normalize) );
 
-    next();
+    process.nextTick(next);
   },
 
   start: function(api, callback){

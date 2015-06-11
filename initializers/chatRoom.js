@@ -70,13 +70,16 @@ module.exports = {
       api.stats.increment('chatRoom:messagesReceived');
       var messagePayload = api.chatRoom.generateMessagePayload(message);
       for(var i in api.connections.connections){
-        var thisConnection = api.connections.connections[i];
-        if(thisConnection.canChat === true){
-          if(thisConnection.rooms.indexOf(messagePayload.room) > -1){
-            api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
-              if(!err){ thisConnection.sendMessage(newMessagePaylaod, 'say'); }
-            });
-          }
+        api.chatRoom.incomingMessagePerConnection(api.connections.connections[i], messagePayload);
+      }
+    }
+
+    api.chatRoom.incomingMessagePerConnection = function(connection, messagePayload){
+      if(connection.canChat === true){
+        if(connection.rooms.indexOf(messagePayload.room) > -1){
+          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
+            if(!err){ connection.sendMessage(newMessagePaylaod, 'say'); }
+          });
         }
       }
     }
@@ -229,8 +232,9 @@ module.exports = {
     }
 
     api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, next){
-      var newMessagePaylaod = messagePayload;
       var jobs = [];
+      var newMessagePaylaod;
+      if(messagePayload){ newMessagePaylaod = api.utils.objClone( messagePayload ); }
 
       api.chatRoom.globalMiddleware.forEach(function(name){
         var m = api.chatRoom.middleware[name]
