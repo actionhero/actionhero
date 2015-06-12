@@ -44,10 +44,7 @@ These methods are to be used within your server (perhaps an action or initialize
 
 ### api.chatRoom.roomStatus(room, callback)
 - callback returns (error, details); details is a hash containing room information
-
-### api.chatRoom.roomStatus(room, callback)
-- callback return (error, data)
-- data is of the form:
+- details of the form:
 
 {% highlight javascript %}
 {
@@ -98,19 +95,19 @@ var chatMiddleware = {
   join: function(connection, room, callback){
     // announce all connections entering a room
     api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, function(e){
-      callback();
+      callback(null);
     });
   },
   leave: function(connection, room, callback){
     // announce all connections leaving a room
     api.chatRoom.broadcast({}, room, 'I have levt the room: ' + connection.id, function(e){
-      callback();
+      callback(null);
     });
   },
   say: function(connection, room, messagePayload, callback){
     // do stuff
     api.log(messagePayload);
-    callback();
+    callback(null, messagePayload);
   }
 };
 
