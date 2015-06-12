@@ -48,7 +48,7 @@ describe('Benchmarks', function(){
     });
   });
 
-  it('status', function(done){
+  it('randomNumber', function(done){
     this.timeout(10 * 1000)
     multiAction('randomNumber', 1000, {}, function(){
       done();
