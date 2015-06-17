@@ -83,10 +83,10 @@ These methods are to be used within your server (perhaps an action or initialize
 
 ## Middleware
 
-There are 3 types of middelware you can install for the chat system: `say`, `join`, and `leave`.  All chat callbacks process serially and require a callback.  This means that you can use a number of middleware to control things like room authentication and message logging/parsing. This is a signifigant change from earlier versions of actionhero.
+There are 4 types of middelware you can install for the chat system: `say`, `onSayReceive`, `join`, and `leave`.  All chat callbacks process serially and require a callback.  This means that you can use a number of middleware to control things like room authentication and message logging/parsing. This is a signifigant change from earlier versions of actionhero.
 
 ### Methods
-The 3 middleware controll methods are:
+The 4 middleware controll methods are:
 
 {% highlight javascript %}
 var chatMiddleware = {
@@ -100,11 +100,22 @@ var chatMiddleware = {
   },
   leave: function(connection, room, callback){
     // announce all connections leaving a room
-    api.chatRoom.broadcast({}, room, 'I have levt the room: ' + connection.id, function(e){
+    api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
       callback(null);
     });
   },
+  /**
+   * Will be executed once per client connection before delivering the message.
+   */
   say: function(connection, room, messagePayload, callback){
+    // do stuff
+    api.log(messagePayload);
+    callback(null, messagePayload);
+  },
+  /**
+   * Will be executed only once, when the message is sent to the server.
+   */
+  onSayReceive: function(connection, room, messagePayload, callback){
     // do stuff
     api.log(messagePayload);
     callback(null, messagePayload);
@@ -118,7 +129,9 @@ api.chatRoom.addMiddleware(chatMiddleware);
 - In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty `{}` connection is used to proxy the message coming from the 'system'
 - Only the `sayCallbacks` have a second return value on the callback, `messagePayload`.  This allows you to modify the message being sent to your clients. 
 - `messagePayload` will be modified and and passed on to all `addSayCallback` middlewares inline, so you can append and modify it as you go
-- If you have a number of callbacks (`say`, `join` or  `leave`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.  
+- If you have a number of callbacks (`say`, `onSayReceive`, `join` or  `leave`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.
+- `sayCallbacks` are executed once per client connection. This makes it suitable for customizing the message based on the individual client.
+- `onSayReceiveCallbacks` are executed only once, when the message is sent to the server.
 
 {% highlight javascript %}
 // in this example no one will be able to join any room, and the `say` callback will never be invoked.
