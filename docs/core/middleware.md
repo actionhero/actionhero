@@ -34,7 +34,7 @@ var middleware = {
 api.actions.addMiddleware(middleware);
 {% endhighlight %}
 
-Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action'd definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
+Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
 
 Each processor is passed `data` and the callback `next`.  Just like within actions, you can modify the `data` object to add to `data.resposne` to create a response to the client.  If you pass `error` to the callback `next`, that error will be returned to the client.  If a `preProcessor` has an error, the action will never be called.
 
