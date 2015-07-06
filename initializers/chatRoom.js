@@ -49,8 +49,26 @@ module.exports = {
             room: room
           }
         };
-        api.redis.publish(payload);
-        if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+        var messagePayload = api.chatRoom.generateMessagePayload(payload);
+        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, newPayload){
+          if(err){
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(err); }) }
+          } else {
+            var payloadToSend = {
+              messageType: 'chat',
+              serverToken: api.config.general.serverToken,
+              serverId: api.id,
+              message: newPayload.message,
+              sentAt: newPayload.sentAt,
+              connection: {
+                id: newPayload.from,
+                room: newPayload.room
+              }
+            };
+            api.redis.publish(payloadToSend);
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+          }
+        });
       } else {
         if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(room) ); }) }
       }
@@ -77,8 +95,8 @@ module.exports = {
     api.chatRoom.incomingMessagePerConnection = function(connection, messagePayload){
       if(connection.canChat === true){
         if(connection.rooms.indexOf(messagePayload.room) > -1){
-          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
-            if(!err){ connection.sendMessage(newMessagePaylaod, 'say'); }
+          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(err, newMessagePayload){
+            if(!err){ connection.sendMessage(newMessagePayload, 'say'); }
           });
         }
       }
@@ -233,16 +251,16 @@ module.exports = {
 
     api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, next){
       var jobs = [];
-      var newMessagePaylaod;
-      if(messagePayload){ newMessagePaylaod = api.utils.objClone( messagePayload ); }
+      var newMessagePayload;
+      if(messagePayload){ newMessagePayload = api.utils.objClone( messagePayload ); }
 
       api.chatRoom.globalMiddleware.forEach(function(name){
         var m = api.chatRoom.middleware[name]
         if(typeof m[direction] === 'function' ){
           jobs.push( function(callback){
             if(messagePayload){
-              m[direction](connection, room, newMessagePaylaod, function(err, data){
-                if(data){ newMessagePaylaod = data; }
+              m[direction](connection, room, newMessagePayload, function(err, data){
+                if(data){ newMessagePayload = data; }
                 callback(err, data)
               });
             }else{
@@ -255,9 +273,9 @@ module.exports = {
       async.series(jobs, function(err, data){
         while(data.length > 0){
           var thisData = data.shift();
-          if(thisData){ newMessagePaylaod = thisData; }
+          if(thisData){ newMessagePayload = thisData; }
         }
-        next(err, newMessagePaylaod)
+        next(err, newMessagePayload)
       });
     }
 
