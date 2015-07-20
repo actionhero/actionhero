@@ -159,9 +159,9 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
     if(xmlhttp.readyState === 4) {
       if(xmlhttp.status === 200) {
         var response = JSON.parse(xmlhttp.responseText);
-        callback(null, response);
+        callback(response);
       } else {
-        callback(xmlhttp.statusText, xmlhttp.responseText);
+        callback({statusText: xmlhttp.statusText, responseText: xmlhttp.responseText});
       }
     }
   };
