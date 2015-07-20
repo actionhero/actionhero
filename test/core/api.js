@@ -198,7 +198,7 @@ describe('Core: API', function(){
       api.specHelper.runAction('testAction', {requiredParam: false }, function(response){
         response.params.requiredParam.should.equal(false);
         api.specHelper.runAction('testAction', {requiredParam: [] }, function(response){
-          response.params.requiredParam.should.be.Array.and.be.empty;
+          response.params.requiredParam.should.eql( [] );
           done();
         });
       });
