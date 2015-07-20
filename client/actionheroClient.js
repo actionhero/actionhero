@@ -156,13 +156,18 @@ ActionheroClient.prototype.action = function(action, params, callback){
 ActionheroClient.prototype.actionWeb = function(params, callback) {
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function () {
+    var response;
     if(xmlhttp.readyState === 4) {
       if(xmlhttp.status === 200) {
-        var response = JSON.parse(xmlhttp.responseText);
-        callback(response);
-      } else {
-        callback({statusText: xmlhttp.statusText, responseText: xmlhttp.responseText});
+        response = JSON.parse(xmlhttp.responseText);
+      }else{
+        try{
+          response = JSON.parse(xmlhttp.responseText);
+        }catch(e){
+          response = { error: {statusText: xmlhttp.statusText, responseText: xmlhttp.responseText} };
+        }
       }
+      callback(response);
     }
   };
   
