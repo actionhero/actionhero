@@ -136,11 +136,13 @@ Updtime (min):      <span class="right" id="uptime"></span>
     }
 
     var client = new ActionheroClient();
-    client.action('showDocumentation', function(err, data){
+    client.action('showDocumentation', function(data){
+      if(data.error){ window.alert(data.error); }
       populateDocumentation(data)
     });
 
-    client.action('status', function(err, data){
+    client.action('status', function(data){
+      if(data.error){ window.alert(data.error); }
       populateStatus(data)
     });
   </script>
