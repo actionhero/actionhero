@@ -210,7 +210,7 @@ module.exports = {
       api.redis.subscribe(function(){
         process.nextTick(function(){
           api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
-          next();
+          process.nextTick(next);
         });
       });
     });
