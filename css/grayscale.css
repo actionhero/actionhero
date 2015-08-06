@@ -290,6 +290,34 @@ a:focus {
     background-color: #176e61;
 }
 
+.ad-section {
+    width: 100%;
+    margin-top: -30px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: url(/img/ads-background.jpg) no-repeat center center scroll;
+    background-color: #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+.carbon-text {
+    color: blue;
+    font-size: 10px;
+    display: block;
+}
+.carbon-poweredby {
+    color: blue;
+    font-size: 8px;
+    display: block;
+}
+.carbon-poweredby:after {
+    content: " ~ ads support actionhero development"
+}
+
 .download-section {
     width: 100%;
     padding: 50px 0;
