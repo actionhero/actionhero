@@ -64,10 +64,8 @@ var initialize = function(api, options, next){
   }
 
   server.sendMessage = function(connection, message, messageCount){
-    if(message.error && message.error instanceof Error){
-      try{ 
-        message.error = String( message.error.message ); 
-      }catch(e){ }
+    if(message.error){
+      message.error = api.config.errors.serializers.servers.socket(message.error);
     }
 
     if(connection.respondingTo){
