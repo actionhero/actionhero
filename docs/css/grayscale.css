@@ -304,19 +304,57 @@ a:focus {
     -o-background-size: cover;
 }
 
-.carbon-text {
-    color: blue;
-    font-size: 10px;
-    display: block;
-}
-.carbon-poweredby {
-    color: blue;
-    font-size: 8px;
-    display: block;
-}
+
 .carbon-poweredby:after {
     content: " ~ ads support actionhero development"
 }
+
+#carbonads {
+  margin: 0 auto;
+  padding: 1.5em 1em;
+  max-width: 29em;
+  background: hsla(0, 0%, 0%, .5);
+  font-size: .9em;
+  font-family: Verdana, sans-serif;
+  line-height: 1.5;
+}
+
+#carbonads span,
+#carbonads a {
+  display: block !important;
+  overflow: hidden;
+}
+
+#carbonads a { color: orange;}
+#carbonads a:hover { text-decoration: underline; }
+
+.carbon-text,
+.carbon-poweredby {
+  font-size: inherit !important;
+}
+
+.carbon-img {
+  margin-bottom: .5em;
+}
+
+.carbon-text {
+  margin-bottom: .2em;
+}
+
+.carbon-poweredby {
+  font-size: .9em !important;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .download-section {
     width: 100%;
