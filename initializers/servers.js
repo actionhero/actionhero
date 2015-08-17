@@ -85,7 +85,7 @@ module.exports = {
     for(var server in api.servers.servers){
       started++;
       (function(server){
-        if(api.config.servers[server].enabled === true){
+        if((api.config.servers[server] && api.config.servers[server].enabled === true) || !api.config.servers[server]){
           api.log('stopping server: ' + server, 'notice');
           api.servers.servers[server].stop(function(error){
             if(error){ return next(error); }
