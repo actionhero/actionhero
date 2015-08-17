@@ -12,8 +12,9 @@ module.exports = function(grunt) {
       for(var i in api.config.servers){
         api.config.servers[i].enabled = false;
       }
-      api.config.tasks.scheduler = false;
-      api.config.tasks.queues    = [];
+      api.config.general.developmentMode = false;
+      api.config.tasks.scheduler         = false;
+      api.config.tasks.queues            = [];
             
       actionhero.start(function(){
 

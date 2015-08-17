@@ -17,7 +17,7 @@ module.exports = {
       if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
         api.watchedFiles.push(file);
         fs.watchFile(file, {interval: 1000}, function(curr, prev){
-          if(curr.mtime > prev.mtime){
+          if(curr.mtime > prev.mtime && api.config.general.developmentMode === true){
             process.nextTick(function(){
               var cleanPath = file;
               if(process.platform === 'win32'){
