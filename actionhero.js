@@ -286,7 +286,7 @@ actionhero.prototype.restart = function(callback){
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){ 
-    api.log('Error with initilizer step: ' + type, 'emerg');
+    api.log('Error with initializer step: ' + type, 'emerg');
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });
