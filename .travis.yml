@@ -16,7 +16,7 @@ env:
 os:
   - linux
   - osx
-  - windows
+  # - windows
 
 script: npm run-script test-travis
 
