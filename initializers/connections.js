@@ -99,11 +99,19 @@ module.exports = {
         self.id = self.generateID();
       }
       self.connectedAt = new Date().getTime();
-      ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
+      
+      ['type', 'rawConnection'].forEach(function(req){
         if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
         self[req] = data[req];
       });
 
+      if(api.config.general.enforceConnectionProperties === true){
+        ['remotePort', 'remoteIP'].forEach(function(req){
+          if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
+          self[req] = data[req];
+        });
+      }
+      
       var connectionDefaults = {
         error: null,
         fingerprint: null,
