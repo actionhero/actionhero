@@ -256,9 +256,9 @@ actionhero provides some methods to help inspect the state of your queue
 
 ### Job Schedules
 
-You may want to schedule jobs every minute/hour/day, like a distribued CRON job.  There are a nuber of excelent node packages to help you with this, like [node-schedule](https://github.com/tejasmanohar/node-schedule) and [node-cron](https://github.com/ncb000gt/node-cron).  Actionhero exposes [node-resque's](https://github.com/taskrabbit/node-resque) scheduler to you so you can use the scheduler packge of your choice.  
+You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like [node-schedule](https://github.com/tejasmanohar/node-schedule) and [node-cron](https://github.com/ncb000gt/node-cron).  Actionhero exposes [node-resque's](https://github.com/taskrabbit/node-resque) scheduler to you so you can use the scheduler package of your choice.  
 
-Assuming you are running actionhero across multiple machines, you will need to ensure that only one of your processes is actually scheduluing the jobs.  To help you with this, you can inspect which of the scheduler processes is corrently acting as master, and flag only the master scheduler process to run the schedule.  An [initiilzer for this](/docs/core/initializers.html) would look like:
+Assuming you are running actionhero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An [initializer for this](/docs/core/initializers.html) would look like:
 
 {% highlight javascript %}
 var schedule = require('node-schedule');
@@ -273,7 +273,7 @@ module.exports = {
     
     // do this job every 10 seconds, cron style
     var job = schedule.scheduleJob('0,10,20,30,40,50 * * * * *', function(){ 
-      // we want to ensure that only one instance of this job is scheduled in our enviornment at once, 
+      // we want to ensure that only one instance of this job is scheduled in our environment at once, 
       // no matter how many schedulers we have running
 
       if(api.resque.scheduler && api.resque.scheduler.master){ 
@@ -302,7 +302,7 @@ Be sure to have the scheduler enabled on at least on of our actionhero servers!
 
 ### Failed Job Management
 
-Sometimes a worker crashes is a severe way, and it doesn't get the time/chance to notifiy redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker's "working on" status, but also remove the stuck worker. To aid you in these edge cases, `queue.cleanOldWorkers(age, callback) is available.
+Sometimes a worker crashes is a severe way, and it doesn't get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker's "working on" status, but also remove the stuck worker. To aid you in these edge cases, `queue.cleanOldWorkers(age, callback) is available.
 
 Because there are no 'heartbeats' in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use queue.retryAndRemoveFailed) to re-enqueue the job.
 
