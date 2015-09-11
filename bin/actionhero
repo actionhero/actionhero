@@ -181,11 +181,12 @@ if(binary.actions[binary.mainAction]){
         break;
       }
     }
-    args.push('--isDaemon=true')
+    args.push('--isDaemon=true');
+    var nodeArgs = process.execArgv;
     var command = path.normalize(binary.paths.actionheroRoot + '/bin/actionhero');
-    var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
+    var child = spawn(process.argv[0], nodeArgs.concat([command].concat(args)), {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
     // child.unref();
-    binary.log(command + ' ' + args.join(' '), 'info');
+    binary.log('['+nodeArgs.join(' ')+'] '+command + ' ' + args.join(' '), 'info');
     binary.log('spawned child process with pid ' + child.pid, 'notice');
     setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
   } else if(binary.argv.isDaemon){
