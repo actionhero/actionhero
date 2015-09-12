@@ -79,7 +79,6 @@ module.exports = {
       }
 
       self.incrementPendingActions(-1);
-      api.stats.increment('actions:actionsCurrentlyProcessing', -1);
       self.duration = new Date().getTime() - self.actionStartTime;
 
       process.nextTick(function(){
@@ -241,20 +240,16 @@ module.exports = {
         }
         self.actionTemplate = api.actions.actions[self.action][self.params.apiVersion];
       }
-      api.stats.increment('actions:actionsCurrentlyProcessing');
 
       if(api.running !== true){
         self.completeAction('server_shutting_down');
       } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
         self.completeAction('too_many_requests');
       } else if(!self.action || !self.actionTemplate){
-        api.stats.increment('actions:actionsNotFound');
         self.completeAction('unknown_action');
       } else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
         self.completeAction('unsupported_server_type');
       } else {
-        api.stats.increment('actions:totalProcessedActions');
-        api.stats.increment('actions:processedActions:' + self.connection.action);
 
         if(api.config.general.actionDomains === true){
           self.actionDomain = domain.create();

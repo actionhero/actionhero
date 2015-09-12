@@ -52,29 +52,20 @@
   <section class="content-section text-center">
     <div class="features-section">
       <div class="container">
-
         <div class="row">
           <h2>This Server</h2>
 
-          <div class="col-6 col-sm-6 col-lg-6">
+          <div class="col-md-12">
             <h4>Server Information:</h4>
             <pre>
 Server Name:        <span class="right" id="serverName"></span>
 API Version:        <span class="right" id="serverVersion"></span>
 Actionhero Version  <span class="right" id="actionheroVersion"></span>
-Updtime (min):      <span class="right" id="uptime"></span>
+Uptime (min):       <span class="right" id="uptime"></span>
             </pre>
           </div>
-
-          <div class="col-6 col-sm-6 col-lg-6">
-            <h4>Server Stats:</h4>
-            <pre>
-<span class="server_info" id="stats"></span>
-            </pre>
-          </div>
+        </div>
       </div>
-
-    </div>
     </div>
   </section>
         
@@ -96,23 +87,6 @@ Updtime (min):      <span class="right" id="uptime"></span>
       }
       document.getElementById('actionheroVersion').innerHTML = data.actionheroVersion;
       document.getElementById('uptime').innerHTML = Math.round( data.uptime / 1000 / 60 );
-
-      var statWordLength = 0;
-      for(var stat in data.stats['actionhero:stats']){
-        if(stat.length > statWordLength){ statWordLength = stat.length + 4; }
-      }
-
-      var html = '';
-      for(var stat in data.stats['actionhero:stats']){
-        var v = data.stats['actionhero:stats'][stat];
-        var row = '';
-        var spaces = Array.apply(null, new Array(statWordLength - stat.length)).map(String.prototype.valueOf,"&nbsp;");
-        row += stat + spaces.join('');
-        row += v;
-        row += '<br />';
-        html += row;
-      }
-      document.getElementById('stats').innerHTML = html
     }
 
     var populateDocumentation = function(data){

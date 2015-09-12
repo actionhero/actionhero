@@ -45,7 +45,6 @@ describe('Core: API', function(){
     });
 
     api.config.should.be.an.instanceOf(Object);
-    api.stats.should.be.an.instanceOf(Object);
 
     done();
   });

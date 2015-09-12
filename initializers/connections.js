@@ -78,10 +78,6 @@ module.exports = {
     api.connection = function(data){
       var self = this;
       self.setup(data)
-      api.stats.increment('connections:totalActiveConnections');
-      api.stats.increment('connections:activeConnections:' + self.type);
-      api.stats.increment('connections:totalConnections');
-      api.stats.increment('connections:connections:' + self.type);
       api.connections.connections[self.id] = self;
 
       api.connections.globalMiddleware.forEach(function(middlewareName){
@@ -143,8 +139,6 @@ module.exports = {
         }
       });
 
-      api.stats.increment('connections:totalActiveConnections', -1);
-      api.stats.increment('connections:activeConnections:' + self.type, -1);
       if(self.canChat === true){ 
         self.rooms.forEach(function(room){
           api.chatRoom.removeMember(self.id, room); 
