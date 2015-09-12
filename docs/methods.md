@@ -269,24 +269,6 @@ next(connection, false);
 - if you provide `connectionId`, only the one server who has that connection present will act, otherwise all servers will (including the sending server)
 - doCluster can timeout, and this value is set at `api.config.redis.rpcTimeout`
 
-## Stats
-
-### api.stats.increment(key, count)
-- key is a string of the form ("thing:stuff")
-- count is a signed integer
-
-### api.stats.get(key, collection, next)
-- next(err, data)
-- key is a string of the form ("thing:stuff")
-- collection (optional) is one of the collections used for stats set in `api.config.stats.keys`
-
-### api.stats.getAll(collections, next)
-- next(err, stats)
-- collections (optional) is an array of one or more of the keys used for stats set in `api.config.stats.keys`
-- stats is a hash of `{key1: stats {}, key2: stats {} }`
-- keys will be collapsed into a hash 
-
-
 ## Tasks
 
 ### api.tasks.enqueue(taskName, params, queue, next)
