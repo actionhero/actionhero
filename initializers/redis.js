@@ -22,8 +22,6 @@ module.exports = {
       api.log('running with fakeredis', 'warning');
       redisPackage.fast = true;
     }
-
-    // connect
       
     api.redis.initialize = function(callback){
       if(api.config.redis.package === 'fakeredis'){
@@ -32,14 +30,6 @@ module.exports = {
       }else{
         api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
         api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
-      }
-      if(api.config.redis.password !== undefined && api.config.redis.password !== ''){
-        try{ 
-          api.redis.client.auth(api.config.redis.password);
-          api.redis.subscriber.auth(api.config.redis.password);
-        }catch(e){
-          //
-        }
       }
       
       api.redis.client.on('error', function(err){
@@ -62,42 +52,30 @@ module.exports = {
       });
 
       api.redis.client.on('connect', function(){
-        if(api.config.redis.password && api.config.redis.password !== ''){
-          api.redis.client.auth(api.config.redis.password);
-        }
+        if(api.config.redis.password && api.config.redis.password !== ''){ api.redis.client.auth(api.config.redis.password); }
         if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
         api.log('connected to redis (client)', 'debug');
         api.redis.status.client = true;
-        process.nextTick(function(){
-          if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){ 
-            api.redis.status.calledback = true;
-            callback(); 
-          }
-        });
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){ 
+          api.redis.status.calledback = true;
+          callback(); 
+        }
       });
 
       api.redis.subscriber.on('connect', function(){
-        if(api.config.redis.password && api.config.redis.password !== ''){
-          api.redis.subscriber.auth(api.config.redis.password);
-        }
-        if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
+        if(api.config.redis.password && api.config.redis.password !== ''){ api.redis.subscriber.auth(api.config.redis.password); }
+        // if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
         api.log('connected to redis (subscriber)', 'debug');
         api.redis.status.subscriber = true;
-        process.nextTick(function(){
-          if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
-            api.redis.status.calledback = true;
-            callback();
-          }
-        });
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
+          api.redis.status.calledback = true;
+          callback();
+        }
       });
 
       if(api.config.redis.package === 'fakeredis'){
         api.redis.status.client = true;
         api.redis.status.subscriber = true;
-        if(api.config.redis.database){ 
-          api.redis.client.select(api.config.redis.database); 
-          api.redis.subscriber.select(api.config.redis.database); 
-        }
         process.nextTick(function(){
           api.redis.status.calledback = true;
           callback();
@@ -110,14 +88,9 @@ module.exports = {
     api.redis.subscribe = function(callback){
       var channel = api.config.redis.channel;
 
-      if (api.redis.status.subscribed) {
+      if(api.redis.status.subscribed){
         return callback();
       }
-
-      api.redis.subscriber.on('subscribe', function(){
-        api.redis.status.subscribed = true;
-        callback();
-      });
 
       api.redis.subscriber.on('message', function(messageChannel, message){
         try{ message = JSON.parse(message) }catch(e){ message = {}; }
@@ -128,13 +101,16 @@ module.exports = {
         }
       });
 
-      api.redis.subscriber.subscribe(channel);
-    }
+      api.redis.subscriber.subscribe(channel, function(){
+        api.redis.status.subscribed = true;
+        callback();
+      });
+    };
 
     api.redis.publish = function(payload){
       var channel = api.config.redis.channel;
       api.redis.client.publish(channel, JSON.stringify(payload));
-    }
+    };
 
     // Subsciption Handlers
 
@@ -153,7 +129,7 @@ module.exports = {
         args.push(callback);
         method.apply(null, args);
       }
-    }
+    };
 
     api.redis.subsciptionHandlers.doResponse = function(message){
       if(api.redis.clusterCallbaks[message.requestId]){
@@ -162,7 +138,7 @@ module.exports = {
         delete api.redis.clusterCallbaks[message.requestId];
         delete api.redis.clusterCallbakTimeouts[message.requestId];
       }
-    }
+    };
 
     // RPC
 
@@ -190,7 +166,7 @@ module.exports = {
           delete api.redis.clusterCallbakTimeouts[requestId];
         }, api.config.redis.rpcTimeout, requestId);
       }
-    }
+    };
 
     api.redis.respondCluster = function(requestId, response){
       var payload = {
@@ -202,16 +178,14 @@ module.exports = {
       };
 
       api.redis.publish(payload);
-    }
+    };
 
     // Boot
 
     api.redis.initialize(function(){
       api.redis.subscribe(function(){
-        process.nextTick(function(){
-          api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
-          process.nextTick(next);
-        });
+        api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+        process.nextTick(next);
       });
     });
 
