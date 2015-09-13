@@ -28,7 +28,7 @@ exports.test = {
   redis: function(api){
     var package = 'fakeredis';
     if(process.env.FAKEREDIS === 'false'){
-      package = 'redis';
+      package = 'ioredis';
     }
 
     return {

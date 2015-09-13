@@ -64,7 +64,7 @@ module.exports = {
 
       api.redis.subscriber.on('connect', function(){
         if(api.config.redis.password && api.config.redis.password !== ''){ api.redis.subscriber.auth(api.config.redis.password); }
-        if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
+        // if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
         api.log('connected to redis (subscriber)', 'debug');
         api.redis.status.subscriber = true;
         if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
@@ -76,10 +76,6 @@ module.exports = {
       if(api.config.redis.package === 'fakeredis'){
         api.redis.status.client = true;
         api.redis.status.subscriber = true;
-        if(api.config.redis.database){ 
-          api.redis.client.select(api.config.redis.database); 
-          api.redis.subscriber.select(api.config.redis.database); 
-        }
         process.nextTick(function(){
           api.redis.status.calledback = true;
           callback();
