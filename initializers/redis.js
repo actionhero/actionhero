@@ -52,7 +52,6 @@ module.exports = {
       });
 
       api.redis.client.on('connect', function(){
-        if(api.config.redis.password && api.config.redis.password !== ''){ api.redis.client.auth(api.config.redis.password); }
         if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
         api.log('connected to redis (client)', 'debug');
         api.redis.status.client = true;
@@ -63,7 +62,6 @@ module.exports = {
       });
 
       api.redis.subscriber.on('connect', function(){
-        if(api.config.redis.password && api.config.redis.password !== ''){ api.redis.subscriber.auth(api.config.redis.password); }
         // if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
         api.log('connected to redis (subscriber)', 'debug');
         api.redis.status.subscriber = true;

@@ -15,9 +15,10 @@ exports.default = {
       // learn more @ https://github.com/luin/ioredis
       redisDetails.host     = process.env.REDIS_HOST || '127.0.0.1';
       redisDetails.port     = process.env.REDIS_PORT || 6379;
-      redisDetails.password = process.env.REDIS_PASS || null;
       redisDetails.database = process.env.REDIS_DB   || 0;
-      redisDetails.options  = null;
+      redisDetails.options  = {
+        password: (process.env.REDIS_PASS || null),
+      };
     }
 
     return redisDetails;
@@ -32,12 +33,11 @@ exports.test = {
     }
 
     return {
-      'package': package,
-      'host': '127.0.0.1',
-      'port': 6379,
-      'password': null,
-      'options': null,
-      'database': 2
+      package: package,
+      host: '127.0.0.1',
+      port: 6379,
+      database: 2,
+      options: {},
     }
   }
 }
