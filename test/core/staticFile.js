@@ -46,7 +46,7 @@ describe('Core: Static File', function(){
     api.specHelper.getStaticFile('logo/actionhero.png', function(response){
       response.mime.should.equal('image/png');
       response.length.should.equal(142141);
-      response.content.length.should.be.within(136836, 136920); // wacky per-OS encoding issues I guess
+      response.content.length.should.be.within(136836, 137500); // wacky per-OS encoding issues I guess
       done();
     });
   });

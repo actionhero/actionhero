@@ -73,10 +73,6 @@ actionhero.prototype.initialize = function(params, callback){
     self.initializers[initializer] = require(file);
     self.configInitializers.push( function(next){
       self.initializers[initializer].initialize(self.api, next);
-      self.api.watchFileAndAct(file, function(){
-        self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
-        self.api.commands.restart.call(self.api._self);
-      });
     } );
   });
 
@@ -296,7 +292,7 @@ actionhero.prototype.restart = function(callback){
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){ 
-    api.log('Error with initilizer step: ' + type, 'emerg');
+    api.log('Error with initializer step: ' + type, 'emerg');
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });

@@ -34,7 +34,7 @@ var middleware = {
 api.actions.addMiddleware(middleware);
 {% endhighlight %}
 
-Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action'd definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
+Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
 
 Each processor is passed `data` and the callback `next`.  Just like within actions, you can modify the `data` object to add to `data.resposne` to create a response to the client.  If you pass `error` to the callback `next`, that error will be returned to the client.  If a `preProcessor` has an error, the action will never be called.
 
@@ -89,7 +89,7 @@ api.connections.addMiddleware(connectionMiddleware);
 
 ## Chat Middleware
 
-The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 3 types of middleware for each step: `say`, `join`, and `leave`.
+The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 4 types of middleware for each step: `say`, `onSayReceive`, `join`, and `leave`.
 
 {% highlight javascript %}
 var chatMiddleware = {
@@ -98,19 +98,30 @@ var chatMiddleware = {
   join: function(connection, room, callback){
     // announce all connections entering a room
     api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, function(e){
-      callback();
+      callback(null);
     });
   },
   leave: function(connection, room, callback){
     // announce all connections leaving a room
-    api.chatRoom.broadcast({}, room, 'I have levt the room: ' + connection.id, function(e){
-      callback();
+    api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function(e){
+      callback(null);
     });
   },
+  /**
+   * Will be executed once per client connection before delivering the message.
+   */
   say: function(connection, room, messagePayload, callback){
     // do stuff
     api.log(messagePayload);
-    callback();
+    callback(null, messagePayload);
+  },
+  /**
+   * Will be executed only once, when the message is sent to the server.
+   */
+  onSayReceive: function(connection, room, messagePayload, callback){
+    // do stuff
+    api.log(messagePayload);
+    callback(null, messagePayload);
   }
 };
 

@@ -84,9 +84,7 @@ module.exports = {
       }catch(e){
         simpleName = err.message;
       }
-      var name = 'action:' + simpleName;
-      api.stats.increment('exceptions:actions');
-      api.stats.increment('exceptions:actions:' + simpleName);    
+      var name = 'action:' + simpleName;    
       api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
       if(typeof next === 'function'){ next(); }
@@ -100,8 +98,6 @@ module.exports = {
         simpleName = err.message;
       }
       var name = 'task:' + simpleName;
-      api.stats.increment('exceptions:tasks');
-      api.stats.increment('exceptions:tasks:' + simpleName);
       api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, 'error');
     };
     

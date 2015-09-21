@@ -86,8 +86,8 @@ module.exports = {
             receivedParams: {}
           };
 
-          if(data.response.error instanceof Error){   
-            data.response.error = 'Error: ' + data.response.error.message; 
+          if(data.response.error){
+            data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
           }
 
           for(var k in data.params){

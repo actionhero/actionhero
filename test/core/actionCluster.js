@@ -536,9 +536,9 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(){
-          clientB.verbs('roomAdd','defaultRoom', function(){
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(){
+          clientA.verbs('roomAdd','defaultRoom', function(err){
+          clientB.verbs('roomAdd','defaultRoom', function(err){
+          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
 
             setTimeout(function(){
               var lastMessage = clientA.messages[(clientA.messages.length - 1)]

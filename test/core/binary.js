@@ -64,7 +64,6 @@ describe('Core: Binary', function(){
         'config/redis.js',
         'config/routes.js',
         'config/servers',
-        'config/stats.js',
         'config/tasks.js',
         'config/servers/web.js',
         'config/servers/websocket.js',
