@@ -13,7 +13,7 @@ There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `per
 
   * `normal` tasks are enqueued and processed one-by-one by the task TaskProcessors
   * `delayed` tasks are enqueued in a special 'delayed' queue to only be processed at some time in the future (defined either by a timestamp in ms or miliseconds-from-now)
-  * `periodic` tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).  Delayed tasks can take no input parameters.
+  * `periodic` tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).  Periodic tasks can take no input parameters.
 
 ## Enqueuing a Task
 
