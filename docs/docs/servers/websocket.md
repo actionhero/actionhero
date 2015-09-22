@@ -51,7 +51,7 @@ An example web socket session might be the following:
       console.log(err);
     }else{
       client.roomAdd("defaultRoom");
-      client.action('someAction', {key: 'k', value: 'v', function(error data){
+      client.action('someAction', {key: 'k', value: 'v'}, function(error, data){
         // do stuff
       });
     }
