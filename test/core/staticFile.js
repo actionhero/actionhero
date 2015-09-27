@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe('Core: Static File', function(){
+describe.only('Core: Static File', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -49,6 +49,23 @@ describe('Core: Static File', function(){
       response.content.length.should.be.within(136836, 137500); // wacky per-OS encoding issues I guess
       done();
     });
+  });
+
+
+  it('should send back the last modified tiem', function (done) {
+    api.specHelper.getStaticFile('simple.html', function (response, connection) {
+      console.log(response)
+      console.log(connection)
+      done();
+    })
+  });
+
+  it('should send back a 304 if the header "if-modified-since" is present and condition matches', function (done) {
+    done();
+  });
+
+  it('should send back the file if the header "if-modified-since" is present but condition does not match', function (done) {
+    done()
   });
 
 });
