@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe('Core: Static File', function(){
+describe.only('Core: Static File', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -54,6 +54,11 @@ describe('Core: Static File', function(){
 
   it('should send back the last modified tiem', function (done) {
     api.specHelper.getStaticFile('simple.html', function (response, connection) {
+<<<<<<< HEAD
+=======
+      console.log(response)
+      console.log(connection)
+>>>>>>> feat(files): use last-modified spec
       done();
     })
   });
