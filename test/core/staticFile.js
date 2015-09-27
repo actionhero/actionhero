@@ -3,7 +3,7 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
-describe.only('Core: Static File', function(){
+describe('Core: Static File', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
@@ -54,8 +54,6 @@ describe.only('Core: Static File', function(){
 
   it('should send back the last modified tiem', function (done) {
     api.specHelper.getStaticFile('simple.html', function (response, connection) {
-      console.log(response)
-      console.log(connection)
       done();
     })
   });
