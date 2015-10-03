@@ -3,6 +3,8 @@
 // http://www.actionherojs.com
 // https://github.com/evantahler/actionhero
 
+require('coffee-script/register');
+
 var fs = require('fs');
 var path = require('path');
 var async = require('async');
@@ -79,6 +81,10 @@ actionhero.prototype.initialize = function(params, callback){
     var recursiveGlob = self.api.utils.recursiveDirectoryGlob;
     self.api.config.general.paths.initializer.forEach(function(startPath) {
       customInitializers = customInitializers.concat(recursiveGlob(startPath));
+      var extensions = ['cs','coffee', 'litcoffee'];
+      for(var i in extensions) {
+        customInitializers = customInitializers.concat(recursiveGlob(startPath, extensions[i]));
+      }
     });
     // load all other initializers
     self.api.utils.arrayUniqueify(
@@ -93,7 +99,7 @@ actionhero.prototype.initialize = function(params, callback){
       var initializer = path.basename(f).split('.')[0];
       var fileParts = file.split('.');
       var ext = fileParts[(fileParts.length - 1)];
-      if(ext === 'js'){
+      if(ext === 'js' || ext === 'cs' || ext === 'coffee' || ext === 'litcoffee'){
         delete require.cache[require.resolve(file)];
         self.initializers[initializer] = require(file);
 

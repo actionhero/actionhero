@@ -98,6 +98,10 @@ module.exports = {
 
     api.loadConfigDirectory = function(configPath, watch){
       var configFiles = api.utils.recursiveDirectoryGlob(configPath);
+      var extensions = ['cs','coffee', 'litcoffee'];
+      for(var i in extensions) {
+        configFiles = configFiles.concat(api.utils.recursiveDirectoryGlob(configPath, extensions[i]));
+      }
 
       var loadRetries = 0;
       var loadErrors = {};

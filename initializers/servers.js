@@ -25,7 +25,13 @@ module.exports = {
     var inits = {}
 
     serverFolders.forEach(function(p){
-      api.utils.recursiveDirectoryGlob(p).forEach(function(f){
+      var files = api.utils.recursiveDirectoryGlob(p);
+      var extensions = ['cs','coffee', 'litcoffee'];
+      for(var i in extensions) {
+        files = files.concat(api.utils.recursiveDirectoryGlob(p, extensions[i]));
+      }
+
+      files.forEach(function(f){
         var parts = f.split(/[\/\\]+/)
         var server = parts[(parts.length - 1)].split('.')[0];
         if(api.config.servers[server] && api.config.servers[server].enabled === true){

@@ -252,7 +252,12 @@ module.exports = {
     }
 
     api.config.general.paths.task.forEach(function(p){
-      api.utils.recursiveDirectoryGlob(p).forEach(function(f){
+      var files = api.utils.recursiveDirectoryGlob(p);
+      var extensions = ['cs','coffee', 'litcoffee'];
+      for(var i in extensions) {
+        files = files.concat(api.utils.recursiveDirectoryGlob(p, extensions[i]));
+      }
+      files.forEach(function(f){
         api.tasks.loadFile(f);
       });
     })
