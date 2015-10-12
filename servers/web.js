@@ -119,10 +119,10 @@ var initialize = function(api, options, next){
     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
     if(api.config.servers.web.compress === true){
       if(acceptEncoding.match(/\bdeflate\b/)) {
-        headers['Content-Encoding'] = 'deflate';
+        headers.push(['Content-Encoding', 'deflate']);
         compressor = zlib.createDeflate();
       }else if (acceptEncoding.match(/\bgzip\b/)){
-        headers['Content-Encoding'] = 'gzip';
+        headers.push(['Content-Encoding', 'gzip']);
         compressor = zlib.createGzip();
       }
     }
@@ -137,22 +137,21 @@ var initialize = function(api, options, next){
         connection.rawConnection.res.writeHead(responseHttpCode, headers);
         fileStream.pipe(connection.rawConnection.res);
       }
-      compressor.on('end', function(){ connection.destroy(); });
     }else{
       if(compressor){
         compressor(stringResponse, function(error, zippedString){
           headers.push(['Content-Length', Buffer.byteLength(zippedString, 'utf8')]);
           connection.rawConnection.res.writeHead(responseHttpCode, headers);
           connection.rawConnection.res.end(zippedString);
-          connection.destroy();
         });
       }else{
         headers.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);
         connection.rawConnection.res.writeHead(responseHttpCode, headers);
         connection.rawConnection.res.end(stringResponse);
-        connection.destroy();
       }
     }
+
+    connection.rawConnection.res.on('end', function(){ connection.destroy(); });
   };
 
   server.goodbye = function(connection){
