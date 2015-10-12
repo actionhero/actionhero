@@ -111,7 +111,7 @@ var initialize = function(api, options, next){
 
   server.sendWithCompression = function(connection, responseHttpCode, headers, stringResponse, fileStream, fileLength){
     var acceptEncoding = connection.rawConnection.req.headers['accept-encoding'];
-    var compressor;
+    var compressor, stringEncoder;
     if(!acceptEncoding){ acceptEncoding = ''; }
 
     // Note: this is not a conformant accept-encoding parser.
@@ -121,37 +121,41 @@ var initialize = function(api, options, next){
       if(acceptEncoding.match(/\bdeflate\b/)) {
         headers.push(['Content-Encoding', 'deflate']);
         compressor = zlib.createDeflate();
-      }else if (acceptEncoding.match(/\bgzip\b/)){
+        stringEncoder = zlib.deflate;
+      }else if(acceptEncoding.match(/\bgzip\b/)){
         headers.push(['Content-Encoding', 'gzip']);
         compressor = zlib.createGzip();
+        stringEncoder = zlib.gzip;
       }
     }
 
+    connection.rawConnection.res.on('end', function(){ 
+      connection.destroy(); 
+    });
+
     if(fileStream){
       if(compressor){
-        // headers.push(['Content-Length', fileLength]);
+        // headers.push(['Content-Length', fileLength]); // TODO
         connection.rawConnection.res.writeHead(responseHttpCode, headers);
         fileStream.pipe(compressor).pipe(connection.rawConnection.res);
       }else{
-        // headers.push(['Content-Length', fileLength]);
+        headers.push(['Content-Length', fileLength]);
         connection.rawConnection.res.writeHead(responseHttpCode, headers);
         fileStream.pipe(connection.rawConnection.res);
       }
     }else{
-      if(compressor){
-        compressor(stringResponse, function(error, zippedString){
-          headers.push(['Content-Length', Buffer.byteLength(zippedString, 'utf8')]);
+      if(stringEncoder){
+        stringEncoder(stringResponse, function(error, zippedString){
+          headers.push(['Content-Length', zippedString.length]);
           connection.rawConnection.res.writeHead(responseHttpCode, headers);
           connection.rawConnection.res.end(zippedString);
         });
       }else{
-        headers.push(['Content-Length', Buffer.byteLength(stringResponse, 'utf8')]);
+        headers.push(['Content-Length', Buffer.byteLength(stringResponse)]);
         connection.rawConnection.res.writeHead(responseHttpCode, headers);
         connection.rawConnection.res.end(stringResponse);
       }
     }
-
-    connection.rawConnection.res.on('end', function(){ connection.destroy(); });
   };
 
   server.goodbye = function(connection){
