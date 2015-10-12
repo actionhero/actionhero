@@ -106,7 +106,11 @@ var initialize = function(api, options, next){
     if(error){ connection.rawConnection.responseHttpCode = 404 }
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
 
-    server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+    if(error){
+      server.sendWithCompression(connection, responseHttpCode, headers, String(error));
+    }else{
+      server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+    }
   };
 
   server.sendWithCompression = function(connection, responseHttpCode, headers, stringResponse, fileStream, fileLength){
