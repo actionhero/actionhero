@@ -37,7 +37,11 @@ module.exports = {
       applyCatch: function(connectionId, method, args, callback){
         var connection = api.connections.connections[connectionId];
         if(method && args){
-          connection[method].apply(connection, args);
+          if(method === 'sendMessage' || method === 'sendFile'){
+            connection[method](args);
+          }else{
+            connection[method].apply(connection, args);
+          }          
         }
         if(typeof callback === 'function'){
           process.nextTick(function(){

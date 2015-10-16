@@ -233,6 +233,17 @@ describe('Core: Action Cluster', function(){
         });
       });
 
+      it('can send arbitraty messages to connections connected to other servers', function(done){
+        var client = new apiA.specHelper.connection();
+
+        apiB.connections.apply(client.id, 'sendMessage', {message: 'hi'}, function(connection){
+          var message = connection.messages[( connection.messages.length - 1 )];
+          message.message.should.equal('hi');
+
+          done();
+        });
+      });
+
       it('failing RPC calls with a callback will have a failure callback', function(done){
         this.timeout(apiA.config.redis.rpcTimeout * 2);
 
