@@ -24,3 +24,5 @@ cd $DESTINATION && npm install
 echo ""
 echo "***************"
 echo "cd $DESTINATION"
+
+cd $DESTINATION

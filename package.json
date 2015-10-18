@@ -32,7 +32,7 @@
   "dependencies": {
     "async": "1.4.2",
     "browser_fingerprint": "0.0.6",
-    "fakeredis": "0.3.3",
+    "fakeredis": "0.3.4",
     "formidable": "1.0.17",
     "grunt": "0.4.5",
     "ioredis": "1.9.1",
@@ -50,7 +50,7 @@
     "should": "7.1.0",
     "request": "2.65.0",
     "coveralls": "2.11.4",
-    "istanbul": "0.3.22"
+    "istanbul": "0.4.0"
   },
   "optionalDependencies": {},
   "bin": {
