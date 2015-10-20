@@ -94,8 +94,8 @@ module.exports = {
 
     api.genericServer.prototype.processFile = function(connection){
       var self = this;
-      api.staticFile.get(connection, function(connection, error, fileStream, mime, length){
-        self.sendFile(connection, error, fileStream, mime, length);
+      api.staticFile.get(connection, function(connection, error, fileStream, mime, length, lastModified){
+        self.sendFile(connection, error, fileStream, mime, length, lastModified);
       });
     }
 
