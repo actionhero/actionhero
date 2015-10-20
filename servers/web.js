@@ -106,19 +106,18 @@ var initialize = function(api, options, next){
     if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
 
     connection.rawConnection.responseHeaders.push(['Last-Modified',new Date(lastModified)]);
-
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404 }
     if(ifModifiedSince && lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304}
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-
     if(error){
       server.sendWithCompression(connection, responseHttpCode, headers, String(error));
     }
     else if(responseHttpCode !== 304){
       server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
     } else {
+      connection.rawConnection.res.writeHead(responseHttpCode, headers);
       connection.rawConnection.res.end();
       connection.destroy();
     }
