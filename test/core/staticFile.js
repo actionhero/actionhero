@@ -54,6 +54,10 @@ describe('Core: Static File', function(){
     });
   });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 69be6778b74f4ef8bea3c103d90f810bd9c262bb
   it('should send back the last modified time', function (done) {
     request.get(url+'/simple.html', function (err, response, body) {
       response.statusCode.should.eql(200);
