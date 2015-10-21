@@ -88,28 +88,38 @@ var initialize = function(api, options, next){
     server.sendWithCompression(connection, responseHttpCode, headers, stringResponse);
   }
 
-  server.sendFile = function(connection, error, fileStream, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
     var foundExpires = false;
     var foundCacheControl = false;
-
+    var ifModifiedSince;
+    var reqHeaders;
     connection.rawConnection.responseHeaders.forEach(function(pair){
       if( pair[0].toLowerCase() === 'expires' )      { foundExpires = true; }
       if( pair[0].toLowerCase() === 'cache-control' ){ foundCacheControl = true; }
     })
 
+    reqHeaders = connection.rawConnection.req.headers;
+    if(reqHeaders['if-modified-since']){ifModifiedSince = new Date(reqHeaders['if-modified-since'])}
+
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     if(foundExpires === false)      { connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
     if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
-    
+
+    connection.rawConnection.responseHeaders.push(['Last-Modified',new Date(lastModified)]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404 }
+    if(ifModifiedSince && lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304}
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-
     if(error){
       server.sendWithCompression(connection, responseHttpCode, headers, String(error));
-    }else{
+    }
+    else if(responseHttpCode !== 304){
       server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+    } else {
+      connection.rawConnection.res.writeHead(responseHttpCode, headers);
+      connection.rawConnection.res.end();
+      connection.destroy();
     }
   };
 
@@ -304,7 +314,7 @@ var initialize = function(api, options, next){
       if(data.response.error){
         data.response.error = api.config.errors.serializers.servers.web(data.response.error);
       }
-      
+
       var stringResponse = '';
 
       if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
@@ -391,13 +401,13 @@ var initialize = function(api, options, next){
       if(connection.rawConnection.method === 'TRACE'){ requestMode = 'trace'; }
 
       fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query);
-      connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;        
+      connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;
       if(
           connection.rawConnection.method !== 'GET' &&
-          connection.rawConnection.method !== 'HEAD' && 
-          ( 
+          connection.rawConnection.method !== 'HEAD' &&
+          (
             connection.rawConnection.req.headers['content-type'] ||
-            connection.rawConnection.req.headers['Content-Type']  
+            connection.rawConnection.req.headers['Content-Type']
           )
       ){
         connection.rawConnection.form = new formidable.IncomingForm();
@@ -445,7 +455,7 @@ var initialize = function(api, options, next){
     if(collapsedVarsHash !== false){
       varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
     }
-    
+
     for(var v in varsHash){
       connection.params[v] = varsHash[v];
     }
@@ -496,13 +506,13 @@ var initialize = function(api, options, next){
           server.log('removed stale unix socket @ ' + port);
         }
       });
-    } 
+    }
   }
 
   var chmodSocket = function(bindIP, port){
-    if(!options.bindIP && options.port.indexOf('/') >= 0){ 
-      fs.chmodSync(port, 0777); 
-    } 
+    if(!options.bindIP && options.port.indexOf('/') >= 0){
+      fs.chmodSync(port, 0777);
+    }
   }
 
   next(server);
