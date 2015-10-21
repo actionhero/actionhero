@@ -5,7 +5,7 @@ var actionhero = new actionheroPrototype();
 var api;
 var url;
 
-describe.only('Core: Static File', function(){
+describe('Core: Static File', function(){
 
   before(function(done){
     actionhero.start(function(err, a){
