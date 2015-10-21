@@ -78,13 +78,14 @@ var initialize = function(api, options, next){
     connection.rawConnection.write(message);
   }
 
-  server.sendFile = function(connection, error, fileStream, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
     var content = '';
     var response = {
-      error      : error,
-      content    : null,
-      mime       : mime,
-      length     : length
+      error        : error,
+      content      : null,
+      mime         : mime,
+      length       : length,
+      lastModified : lastModified,
     };
 
     try{
