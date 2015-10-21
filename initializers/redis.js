@@ -17,21 +17,21 @@ module.exports = {
       calledback: false,
     };
 
-    var redisPackage = require(api.config.redis.package);
-    if(api.config.redis.package === 'fakeredis'){
+    var redisPackage = require(api.config.redis.pkg);
+    if(api.config.redis.pkg === 'fakeredis'){
       api.log('running with fakeredis', 'warning');
       redisPackage.fast = true;
     }
-      
+
     api.redis.initialize = function(callback){
-      if(api.config.redis.package === 'fakeredis'){
+      if(api.config.redis.pkg === 'fakeredis'){
         api.redis.client     = redisPackage.createClient(String(api.config.redis.host));
         api.redis.subscriber = redisPackage.createClient(String(api.config.redis.host));
       }else{
         api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
         api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       }
-      
+
       api.redis.client.on('error', function(err){
         api.log('Redis Error (client): ' + err, 'emerg');
       });
@@ -55,9 +55,9 @@ module.exports = {
         if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
         api.log('connected to redis (client)', 'debug');
         api.redis.status.client = true;
-        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){ 
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
           api.redis.status.calledback = true;
-          callback(); 
+          callback();
         }
       });
 
@@ -71,7 +71,7 @@ module.exports = {
         }
       });
 
-      if(api.config.redis.package === 'fakeredis'){
+      if(api.config.redis.pkg === 'fakeredis'){
         api.redis.status.client = true;
         api.redis.status.subscriber = true;
         process.nextTick(function(){
@@ -200,7 +200,7 @@ module.exports = {
       delete api.redis.clusterCallbaks[i];
     }
     api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
-    
+
     process.nextTick(function(){
       api.redis.subscriber.unsubscribe();
       next();

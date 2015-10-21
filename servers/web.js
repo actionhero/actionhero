@@ -80,7 +80,7 @@ var initialize = function(api, options, next){
     if(connection.rawConnection.method !== 'HEAD'){
       stringResponse = String(message);
     }
-    
+
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
@@ -143,8 +143,8 @@ var initialize = function(api, options, next){
       }
     }
 
-    connection.rawConnection.res.on('end', function(){ 
-      connection.destroy(); 
+    connection.rawConnection.res.on('end', function(){
+      connection.destroy();
     });
 
     if(fileStream){
@@ -511,7 +511,7 @@ var initialize = function(api, options, next){
 
   var chmodSocket = function(bindIP, port){
     if(!options.bindIP && options.port.indexOf('/') >= 0){
-      fs.chmodSync(port, 0777);
+      fs.chmodSync(port, 0o777);
     }
   }
 
