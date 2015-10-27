@@ -103,7 +103,7 @@ var task = {
   frequency:     0,
   run: function(api, params, next){
     api.sendEmail(params.email, function(err){
-      if(err != null){ api.log(err, 'error'); }
+      if(err){ api.log(err, 'error'); }
       next();
     })
   }
