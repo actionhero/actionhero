@@ -536,3 +536,12 @@ body {
     width: 100px;
     height: 100px;
 }
+
+/*Gitter pop-over zindex*/
+
+.gitter-chat-embed {
+  z-index: 999999998;
+}
+.gitter-open-chat-button {
+  z-index: 999999999;
+}
