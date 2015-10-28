@@ -84,3 +84,4 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 - [ah-mongoose-plugin](https://github.com/lookaflyingdonkey/ah-mongoose-plugin) Mongoose Model Loader
 - [ah-xsignature-plugin](https://github.com/lookaflyingdonkey/ah-xsignature-plugin) Content Checksum for Actions
 - [ah-swagger-plugin](https://github.com/supamii/ah-swagger-plugin) Swagger UI Documentation
+- [ah-mongodb-plugin](https://github.com/eduardogch/ah-mongodb-plugin) MongoDB + Mongoose
