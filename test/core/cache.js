@@ -1,7 +1,8 @@
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
+var fs     = require('fs');
+var os     = require('os');
+var path   = require('path');
 var should = require('should');
+var async  = require('async');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -260,7 +261,7 @@ describe('Core: Cache', function(){
       });
     });
 
-    it('you can opt to retry to obtaina lock if a lock is held (READ)', function(done){
+    it('you can opt to retry to obtain a lock if a lock is held (READ)', function(done){
       api.cache.lock(key, 1, function(err, lockOk){ // will be rounded up to 1s
         lockOk.should.equal(true);
         api.cache.save(key, 'value', function(err, success){
@@ -281,6 +282,55 @@ describe('Core: Cache', function(){
           });
         });
       });
+    });
+
+    describe('locks are actually blocking', function(){
+      var originalLockName;
+
+      before(function(){
+        originalLockName = api.cache.lockName;
+      });
+
+      after(function(){
+        api.cache.lockName = originalLockName;
+      });
+
+      it('locks are actually blocking', function(done){
+        var key = 'test';
+        var locksRetrieved = 0;
+        var locksRejected  = 0;
+        var concurentLocksCount = 100;
+        var jobs = [];
+
+        var go = function(next){
+          // proxy for another actionhero instance accessing the same locked object
+          api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected);
+
+          api.cache.checkLock(key, null, function(error, lockOk) {
+            if(error){ return next(error); }
+
+            if (lockOk) {
+              locksRetrieved++;
+              api.cache.lock(key, (1000 * 60), next);
+            } else {
+              locksRejected++;
+              next();
+            }
+          });
+        };
+
+        for(var i = 0; i < concurentLocksCount; i++){
+          jobs.push(go);
+        }
+
+        async.series(jobs, function(error){
+          should.not.exist(error);
+          locksRetrieved.should.be.equal(1); // Only first atempt
+          locksRejected.should.be.equal(concurentLocksCount - 1); // Everything else
+          done();
+        });
+      });
+
     });
 
   });
