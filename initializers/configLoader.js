@@ -151,6 +151,11 @@ module.exports = {
     //load the project specific config
     configPaths.map(api.loadConfigDirectory);
 
+    // apply any configChanges
+    if(api._startingParams.configChanges){
+      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
+    }
+
     var pluginActions      = [];
     var pluginTasks        = [];
     var pluginServers      = [];
@@ -195,7 +200,7 @@ module.exports = {
     // the first plugin path shoud alawys be the local project
     api.config.general.paths.public.reverse();
 
-    //finally merge starting params into the config
+    //finally re-merge starting params into the config
     if(api._startingParams.configChanges){
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
     }
