@@ -14,6 +14,7 @@ var ActionheroClient = function(options, client){
   }
 
   if(client){
+    self.externalClient = true;
     self.client = client;
   }
 }
@@ -37,12 +38,19 @@ ActionheroClient.prototype.defaults = function(){
 ActionheroClient.prototype.connect = function(callback){
   var self = this;
   self.messageCount = 0;
-  
-  if(!self.client){
+
+
+  if(self.client && self.externalClient !== true){
+    self.client.end();
+    self.client.removeAllListeners();
+    delete self.client;
     self.client = Primus.connect(self.options.url, self.options);
-  }else{
+  }
+  if(self.client && self.externalClient === true){
     self.client.end();
     self.client.open();
+  }else{
+    self.client = Primus.connect(self.options.url, self.options);
   }
 
   self.client.on('open', function(){
