@@ -32,12 +32,19 @@ On .nix operating system's symlinks for both files and folders will be followed.
 You can send files from within actions using `connection.sendFile()`.  Here's an example:
 
 {% highlight javascript %}
-connection.rawConnection.responseHttpCode = 404; 
-connection.sendFile('404.html');
-next(connection, false);
+// success case
+data.connection.sendFile('/path/to/file.mp3');
+data.toRender = false;
+next();
+
+// failure case
+data.connection.rawConnection.responseHttpCode = 404; 
+data.connection.sendFile('404.html');
+data.toRender = false;
+next();
 {% endhighlight %}
 
-Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set `toRender = false` in the callback, as you have already sent data to the client, and probably don't want to do so again on a file request.
+Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set `toRender = false` in the callback, as you have already sent data to the client, and probably don't want to do so again on a file request.  If you try to `sendFile` on a path that doesn't exist (within your public directory), the 404 header will be handled automatically for you.  
 
 ## Customizing the File Server
 

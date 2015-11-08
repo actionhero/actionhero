@@ -179,9 +179,9 @@ actionhero can also serve up flat files.  actionhero will not cache these files 
 There are helpers you can use in your actions to send files:
 
 {% highlight javascript %}
-connection.rawConnection.responseHttpCode = 404; 
-connection.sendFile('404.html');
-next(connection, false);
+data.connection.sendFile('/path/to/file.mp3');
+data.toRender = false;
+next();
 {% endhighlight %}
 
 See the [file server](/docs/core/file-server.html) page for more documentation
@@ -360,7 +360,7 @@ exports.action = {
     console.log("\r\n\r\n")
     console.log(data.params);
     console.log("\r\n\r\n")
-    next(connection, true);
+    next();
   }
 };
 {% endhighlight %}
