@@ -1,5 +1,7 @@
 # Actionhero Docs / www.actionherojs.com
 
+## Do not publish to the `gh-pages` branch directly.  Make any changes in a PR to master.
+
 This folder contains the build files for www.actionherojs.com (which are served by github-pages)
 
 We use [Jekyll](http://jekyllrb.com/) to build and compile this site, and host it for free on [Github Pages](http://pages.github.com/).  Pages can be written in markdown or HTML, and Jekyll will build the site. 
