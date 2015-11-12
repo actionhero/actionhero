@@ -187,4 +187,44 @@ http {
 
 ## Security
 
-Be sure to change `api.config.general.serverToken` to something unique for your application
+As ActionHero is a framework, much of the work for keeping your application secure is dependent on the types of actions and tasks you create.  That said, here is a list of general best-practices for ensuring your deployment is as robust as it can be:
+
+### General Configuration
+
+- Be sure to change `api.config.general.serverToken` to something unique for your application
+- Turn off [developer mode](/docs/core/development-mode.html) in production. 
+- Turn off `actionDomains` in production.  While domains can *sometimes* save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.
+
+### Topology
+
+- Run a cluster via `startCluster`.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.  This will also allow you to turn of `actionDomains` and allow one node to crash while the others continue to server traffic
+    - You can run 1 actionhero instance per core (assuming the server is dedicated to actionhero), and that is the default behavior of `startCluster`.
+    - You don't need a tool like PM2 to manage actionhero cluster process, but you can.
+    - You can use an init script to `startCluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
+- Never run tasks on the same actionhero instances you run your servers on; never run your servers on the same actionhero instances you run your tasks on
+    - Yes, under most situations running servers + tasks on the same instance will work OK, but the load profiles (and often the types of packages required) vary in each deployment.  Actions are designed to respond quickly and offload hard computations to tasks.  Tasks are designed to work slower computations.
+    - Do any CPU-intensive work in a task.  If a client needs to see the result of a CPU-intensive operation, poll for it (or use web-sockets)
+- Use a centralized logging tool like Splunk, ELK, SumoLogic, etc.  ActionHero is *built for the cloud*, which means that it expects pids, application names, etc to change, and as such, will create many log files.  Use a centralized tool to inspect the state of your application.
+    - Log everything.  You never know what you might want to check up on.  Actionhero's logger has various levels you can use for this.
+- Split out the redis instance you use for cache from the one you use for tasks.  If your cache fills up, do you want task processing to fail?
+- Your web request stack should look like: [Load Balancer] -> [App Server] -> [Nginx] -> [ActionHero]
+    - This layout allows you to have control, back-pressure and throttling at many layers.
+    - Configure Nginx to serve static files whenever possible to remove load from actionhero, and leave it just to process actions
+- Use a CDN. Actionhero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.
+- Use redis-cluster or redis-sentinel.  The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default.  This allows you to have a High Availability redis configuration. 
+
+### Actions
+
+- Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/core/actions.html#inputs) step. 
+- Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is "never pass a query to your database which can be directly modified via user input"!
+- Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.
+- Crafting [authentication middleware is not that hard](https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf)
+
+### Tasks
+
+- Tasks can be created from any part of actionhero: Actions, Servers, Middleware, even other Tasks.
+- You can chain tasks together to create workflows.  
+- Actionhero uses the [`multiWorker`](https://github.com/taskrabbit/node-resque#multi-worker) from node-resque.  When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can.  This will also fluctuate depending on the CPU difficulty of the job.  Plan accordingly.
+- Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  [The methods for doing so](http://localhost:4000/docs/core/tasks.html#queue-inspection) are available.
+- Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain 'claimed' in redis, and never make it to the failed queue.
+
