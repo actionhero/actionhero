@@ -64,6 +64,7 @@
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
     "build-gh-pages": "git subtree push --prefix docs origin gh-pages",
+    "docs": "cd docs && EXECJS_RUNTIME=Node bundle exec middleman",
     "postpublish": "npm run-script build-gh-pages"
   }
 }
