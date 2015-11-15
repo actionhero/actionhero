@@ -1,0 +1,108 @@
+<h1 id="getting-started">Getting Started</h1>
+
+<h2 id="requirements">Requirements</h2>
+<pre class="highlight shell"><code><span class="c"># On OSX With Homebrew:</span>
+
+brew install node
+brew install redis
+
+<span class="c"># On Ubuntu:</span>
+
+<span class="o">(</span>sudo<span class="o">)</span> apt-get install node
+<span class="o">(</span>sudo<span class="o">)</span> apt-get install redis-server
+
+<span class="c"># On Windows:</span>
+
+<span class="o">[</span>download nodeJS]<span class="o">(</span>https://nodejs.org/en/download<span class="o">)</span>
+<span class="o">[</span>download redis]<span class="o">(</span>https://github.com/MSOpenTech/redis<span class="o">)</span>
+</code></pre>
+
+<ul>
+<li>node.js ( &gt;= v0.10.0)
+
+<ul>
+<li>io.js works as well!</li>
+</ul></li>
+<li>npm</li>
+<li>redis (for cluster support, cache, stats, and tasks)</li>
+</ul>
+
+<h2 id="install-amp-quickstart">Install &amp; Quickstart</h2>
+
+<p><strong>Get Started Now:</strong></p>
+<pre class="highlight shell"><code>mkdir ~/project <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/project
+npm install actionhero
+./node_modules/.bin/actionhero generate
+npm start
+</code></pre>
+
+<ul>
+<li>Create a new directory <code class="prettyprint">mkdir ~/project &amp;&amp; cd ~/project</code></li>
+<li>Checkout the actionhero source <code class="prettyprint">npm install actionhero</code></li>
+<li>Use the generator to create a template project <code class="prettyprint">./node_modules/.bin/actionhero generate</code></li>
+<li>You can now start up the server: <code class="prettyprint">npm start</code></li>
+</ul>
+
+<p>Visit <code class="prettyprint">http://127.0.0.1:8080</code> in your browser to see the actionhero in action!</p>
+
+<p>You can also opt to install actionhero globally <code class="prettyprint">npm install actionhero -g</code> and then you can just call <code class="prettyprint">actionhero start</code>.</p>
+
+<h2 id="application-structure">Application Structure</h2>
+<pre class="highlight shell"><code><span class="c"># Actionhero Project Layout</span>
+
+|- config
+| -- api.js
+| -- logger.js
+| -- redis.js
+| -- stats.js
+| -- tasks.js
+| -- servers
+| ---- web.js
+| ---- websocket.js
+| ---- socket.js
+|-- <span class="o">(</span>project settings<span class="o">)</span>
+|
+|- actions
+|-- <span class="o">(</span>your actions<span class="o">)</span>
+|
+|- initializers
+|-- <span class="o">(</span>any additional initializers you want<span class="o">)</span>
+|
+|- log
+|-- <span class="o">(</span>default location <span class="k">for </span>logs<span class="o">)</span>
+|
+|- node_modules
+|-- <span class="o">(</span>your modules, actionhero should be npm installed <span class="k">in </span>here<span class="o">)</span>
+|
+|- pids
+|-- <span class="o">(</span>pidfiles <span class="k">for </span>your running servers<span class="o">)</span>
+|
+|- public
+|-- <span class="o">(</span>your static assets to be served by /file<span class="o">)</span>
+|
+|- servers
+|-- <span class="o">(</span>custom servers you may make<span class="o">)</span>
+|
+|- tasks
+|-- <span class="o">(</span>your tasks<span class="o">)</span>
+|
+|- tests
+|-- <span class="o">(</span>tests <span class="k">for </span>your API<span class="o">)</span>
+|
+readme.md
+routes.js
+gruntfile.js
+package.json <span class="o">(</span>be sure to include <span class="s1">'actionhero'</span>:<span class="s1">'x'</span><span class="o">)</span>
+</code></pre>
+
+<p>The map to the left describes actionhero&rsquo;s default project layout. </p>
+
+<p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>. </p>
+
+<p><code class="prettyprint">/public</code> will become your application&rsquo;s default static asset location.   </p>
+
+<p>If you wish to customize your project&rsquo;s paths, you can do so within <code class="prettyprint">config/api.js</code> in the <code class="prettyprint">api.config.general.paths</code> section</p>
+
+<h2 id="tutorial">Tutorial</h2>
+
+<p>Want to see an example application using actionhero?  You can check out the code and follow the detailed guide <a href="https://github.com/evantahler/actionhero-tutorial">here (https://github.com/evantahler/actionhero-tutorial)</a>.  This project demonstrates many of the core features of actionhero in a simple project.</p>

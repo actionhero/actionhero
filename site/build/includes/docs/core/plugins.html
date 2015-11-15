@@ -1,0 +1,75 @@
+<h1 id="plugins">Plugins</h1>
+
+<p>As of actionhero version <code class="prettyprint">v8.0.0</code>, you can create and include plugins for you actionhero project.  Plugins are collections of <code class="prettyprint">tasks</code>, <code class="prettyprint">actions</code>, <code class="prettyprint">servers</code>, and <code class="prettyprint">initializers</code> that are collected as a module.  You can install plugins via NPM or keep them in a local path.</p>
+
+<p>Plugins are loaded after all local actionhero project files, but initializers follow the same priority scheme as all other initializers.</p>
+
+<h2 id="including-plugins">Including Plugins</h2>
+
+<p><code class="prettyprint">api.config.general.paths.plugin</code> (loaded from <code class="prettyprint">/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code class="prettyprint">./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code class="prettyprint">api.config.general.plugins</code> (loaded from <code class="prettyprint">/config/plugins.js</code>) to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.</p>
+
+<h2 id="creating-plugins">Creating Plugins</h2>
+<pre class="highlight shell"><code>/
+| - actions
+| - tasks
+| - servers
+| - initializers
+| - scripts
+| - config
+|
+| - package.json
+</code></pre>
+
+<p>To create a plugin, create a project with the following structure:</p>
+
+<p>This structure will allow elements to be loaded into actionhero (we search <code class="prettyprint">/actions</code> for actions, etc)</p>
+
+<p>When developing your plugin locally, you can load it into an existing actionhero project to test it out.</p>
+
+<p>First, add the path your plugin is in to <code class="prettyprint">api.config.general.paths.plugin</code>.  If your actionhero app is in <code class="prettyprint">/var/ah/actionhero</code> and your plugin is in <code class="prettyprint">/var/ah/my_plugin</code>, add <code class="prettyprint">/var/ah</code> to <code class="prettyprint">api.config.general.paths.plugin</code></p>
+
+<p>Then, in <code class="prettyprint">api.config.general.plugins</code>, add the name of your plugin, in this case <code class="prettyprint">my_plugin</code>.  Note that the directory name and the package name in the plugin&rsquo;s <code class="prettyprint">package.json</code> should match.</p>
+
+<p><strong>Please use the npm naming convention <code class="prettyprint">ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+
+<h2 id="plugin-scripts">Plugin Scripts</h2>
+<pre class="highlight javascript"><code><span class="cp">#!/usr/bin/env node
+</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">localFile</span>   <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'/../config/ah-sample-plugin.js'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">projectFile</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/../../config/plugins/ah-sample-plugin.js'</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">)){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"copying "</span> <span class="o">+</span> <span class="nx">localFile</span> <span class="o">+</span> <span class="s2">" to "</span> <span class="o">+</span> <span class="nx">projectFile</span><span class="p">);</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="nx">localFile</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The <code class="prettyprint">scripts</code> directory is used to contain any install scripts.  For example, imagine your plugin relies on configuration settings which are expected to be in a <code class="prettyprint">api.config.myPlugin</code> hash.  Write an example config file in <code class="prettyprint">/config</code>, and then use a post-install script to copy that into the containing project&rsquo;s <code class="prettyprint">/config</code> directory.  For example:</p>
+
+<p>And you would add the following to your <code class="prettyprint">package.json</code>: <code class="prettyprint">&quot;postinstall&quot;: &quot;scripts/postinstall.js&quot;</code></p>
+
+<h2 id="example-plugin">Example Plugin</h2>
+
+<p><a href="https://github.com/evantahler/ah-sample-plugin">You can view a sample plugin here</a></p>
+
+<h2 id="published-plugins">Published Plugins</h2>
+
+<ul>
+<li><a href="https://github.com/evantahler/ah-stats-plugin">ah-stats-plugin</a> Stats Integration (redis backed)</li>
+<li><a href="https://github.com/evantahler/ah-airbrake-plugin">ah-airbrake-plugin</a> Airbrake Integration</li>
+<li><a href="https://github.com/evantahler/ah-newrelic-plugin">ah-newrelic-plugin</a> NewRelic Integration</li>
+<li><a href="https://github.com/evantahler/ah-sequelize-plugin">ah-sequelize-plugin</a> Sequelize Integration for mySQL or Postgres</li>
+<li><a href="https://github.com/panjiesw/ah-nodemailer-plugin">ah-nodemailer-plugin</a> Nodemailer Integration</li>
+<li><a href="https://github.com/innerdvations/ah-ratelimit-plugin">ah-ratelimit-plugin</a> Rate Limits</li>
+<li><a href="https://github.com/innerdvations/ah-autosession-plugin">ah-autosession-plugin</a> Sessions (based off of redis-sessions)</li>
+<li><a href="https://github.com/S3bb1/ah-dashboard-plugin">ah-dashboard-plugin</a> Dashboard for ActionHero</li>
+<li><a href="https://github.com/lookaflyingdonkey/ah-jwtauth-plugin">ah-jwtauth-plugin</a> JSON Web Token Authentication</li>
+<li><a href="https://github.com/lookaflyingdonkey/ah-mongoose-plugin">ah-mongoose-plugin</a> Mongoose Model Loader</li>
+<li><a href="https://github.com/lookaflyingdonkey/ah-xsignature-plugin">ah-xsignature-plugin</a> Content Checksum for Actions</li>
+<li><a href="https://github.com/supamii/ah-swagger-plugin">ah-swagger-plugin</a> Swagger UI Documentation</li>
+<li><a href="https://github.com/eduardogch/ah-mongodb-plugin">ah-mongodb-plugin</a> MongoDB + Mongoose</li>
+<li><a href="https://github.com/eduardogch/ah-rethinkdb-plugin">ah-rethinkdb-plugin</a> RethinkDB + Mongoose</li>
+</ul>

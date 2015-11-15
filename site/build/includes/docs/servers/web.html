@@ -1,0 +1,446 @@
+<h1 id="web-server">Web Server</h1>
+
+<h2 id="general">General</h2>
+<pre class="highlight javascript"><code>
+<span class="p">{</span>
+  <span class="nl">hello</span><span class="p">:</span> <span class="s2">"world"</span>
+  <span class="nl">serverInformation</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">serverName</span><span class="p">:</span> <span class="s2">"actionhero API"</span><span class="p">,</span>
+    <span class="nx">apiVersion</span><span class="err">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nx">requestDuration</span><span class="err">:</span> <span class="mi">14</span>
+  <span class="p">},</span>
+  <span class="nx">requestorInformation</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nl">remoteAddress</span><span class="p">:</span> <span class="s2">"127.0.0.1"</span><span class="p">,</span>
+    <span class="nx">RequestsRemaining</span><span class="err">:</span> <span class="mi">989</span><span class="p">,</span>
+    <span class="nx">recievedParams</span><span class="err">:</span> <span class="p">{</span>
+      <span class="nl">action</span><span class="p">:</span> <span class="s2">""</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. <code class="prettyprint">{url}?action=actioName</code> or <code class="prettyprint">{url}/api/{actioName}</code> is how you would access an action.  For example, using the default ports in <code class="prettyprint">/config/servers/web.js</code> you could reach the status action with both <code class="prettyprint">http://127.0.0.1:8080/status</code> or <code class="prettyprint">http://127.0.0.1:8080/?action=status</code>  </p>
+
+<p>HTTP responses are always JSON and follow the format =&gt; </p>
+
+<h2 id="http-example">HTTP Example:</h2>
+<pre class="highlight shell"><code>
+<span class="gp">&gt; </span>curl <span class="s1">'localhost:8080/api/status'</span> -v | python -mjson.tool
+<span class="k">*</span> About to connect<span class="o">()</span> to localhost port 8080 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span>   Trying 127.0.0.1...
+<span class="k">*</span> connected
+<span class="k">*</span> Connected to localhost <span class="o">(</span>127.0.0.1<span class="o">)</span> port 8080 <span class="o">(</span><span class="c">#0)</span>
+<span class="gp">&gt; </span>GET /api/status HTTP/1.1
+<span class="gp">&gt; </span>User-Agent: curl/7.24.0 <span class="o">(</span>x86_64-apple-darwin12.0<span class="o">)</span> libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5
+<span class="gp">&gt; </span>Host: localhost:8080
+<span class="gp">&gt; </span>Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="gp">&gt; </span>
+&lt; HTTP/1.1 200 OK
+&lt; Content-Type: application/json
+&lt; X-Powered-By: actionhero API
+&lt; Date: Sun, 29 Jul 2012 23:25:53 GMT
+&lt; Connection: keep-alive
+&lt; Transfer-Encoding: chunked
+&lt; 
+<span class="o">{</span> <span class="o">[</span>data not shown]
+100   741    0   741    0     0   177k      0 --:--:-- --:--:-- --:--:--  361k
+<span class="k">*</span> Connection <span class="c">#0 to host localhost left intact</span>
+<span class="k">*</span> Closing connection <span class="c">#0</span>
+<span class="o">{</span>
+    <span class="s2">"requestorInformation"</span>: <span class="o">{</span>
+        <span class="s2">"recievedParams"</span>: <span class="o">{</span>
+            <span class="s2">"action"</span>: <span class="s2">"status"</span>, 
+        <span class="o">}</span>, 
+        <span class="s2">"remoteAddress"</span>: <span class="s2">"127.0.0.1"</span>
+    <span class="o">}</span>, 
+    <span class="s2">"serverInformation"</span>: <span class="o">{</span>
+        <span class="s2">"apiVersion"</span>: <span class="s2">"3.0.0"</span>, 
+        <span class="s2">"currentTime"</span>: 1343604353551, 
+        <span class="s2">"requestDuration"</span>: 1, 
+        <span class="s2">"serverName"</span>: <span class="s2">"actionhero API"</span>
+    <span class="o">}</span>, 
+    <span class="s2">"stats"</span>: <span class="o">{</span>
+        <span class="s2">"cache"</span>: <span class="o">{</span>
+            <span class="s2">"numberOfObjects"</span>: 0
+        <span class="o">}</span>, 
+        <span class="s2">"id"</span>: <span class="s2">"10.0.1.12:8080:4443:5000"</span>, 
+        <span class="s2">"memoryConsumption"</span>: 8421200, 
+        <span class="s2">"peers"</span>: <span class="o">[</span>
+            <span class="s2">"10.0.1.12:8080:4443:5000"</span>
+        <span class="o">]</span>, 
+        <span class="s2">"queue"</span>: <span class="o">{</span>
+            <span class="s2">"queueLength"</span>: 0, 
+            <span class="s2">"sleepingTasks"</span>: <span class="o">[]</span>
+        <span class="o">}</span>, 
+        <span class="s2">"socketServer"</span>: <span class="o">{</span>
+            <span class="s2">"numberOfGlobalSocketRequests"</span>: 0, 
+            <span class="s2">"numberOfLocalActiveSocketClients"</span>: 0, 
+            <span class="s2">"numberOfLocalSocketRequests"</span>: 0
+        <span class="o">}</span>, 
+        <span class="s2">"uptimeSeconds"</span>: 34.163, 
+        <span class="s2">"webServer"</span>: <span class="o">{</span>
+            <span class="s2">"numberOfGlobalWebRequests"</span>: 5, 
+            <span class="s2">"numberOfLocalWebRequests"</span>: 3
+        <span class="o">}</span>, 
+        <span class="s2">"webSocketServer"</span>: <span class="o">{</span>
+            <span class="s2">"numberOfGlobalWebSocketRequests"</span>: 0, 
+            <span class="s2">"numberOfLocalActiveWebSocketClients"</span>: 0
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+
+<ul>
+<li>you can provide the <code class="prettyprint">?callback=myFunc</code> param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. </li>
+<li>If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action</li>
+<li>to build the response for &ldquo;hello&rdquo; above, the action would have set <code class="prettyprint">connection.response.hello = &quot;world&quot;;</code></li>
+</ul>
+
+<h2 id="config-settings">Config Settings</h2>
+
+<p><code class="prettyprint">/config/servers/web.js</code> contains the settings for the web server.  The relevant options are:</p>
+<pre class="highlight javascript"><code><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">"web"</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nl">secure</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>                       <span class="c1">// HTTP or HTTPS?</span>
+    <span class="na">serverOptions</span><span class="p">:</span> <span class="p">{},</span>                   <span class="c1">// Passed to https.createServer if secure=ture. Should contain SSL certificates</span>
+    <span class="na">port</span><span class="p">:</span> <span class="mi">8080</span><span class="p">,</span>                          <span class="c1">// Port or Socket</span>
+    <span class="na">bindIP</span><span class="p">:</span> <span class="s2">"0.0.0.0"</span><span class="p">,</span>                   <span class="c1">// Which IP to listen on (use 0.0.0.0 for all)</span>
+    <span class="na">httpHeaders</span> <span class="p">:</span> <span class="p">{</span>                      <span class="c1">// Any additional headers you want actionhero to respond with</span>
+      <span class="s1">'Access-Control-Allow-Origin'</span> <span class="p">:</span> <span class="s1">'*'</span><span class="p">,</span>
+      <span class="s1">'Access-Control-Allow-Methods'</span><span class="p">:</span> <span class="s1">'PUT, GET, POST, DELETE, OPTIONS'</span><span class="p">,</span>
+      <span class="s1">'Access-Control-Allow-Headers'</span><span class="p">:</span> <span class="s1">'Content-Type'</span>
+    <span class="p">},</span>    
+    <span class="na">urlPathForActions</span> <span class="p">:</span> <span class="s2">"api"</span><span class="p">,</span>           <span class="c1">// Route that actions will be served from; secondary route against this route will be treated as actions, IE: /api/?action=test == /api/test/</span>
+    <span class="na">urlPathForFiles</span> <span class="p">:</span> <span class="s2">"public"</span><span class="p">,</span>          <span class="c1">// Route that static files will be served from; path (relitive to your project root) to server static content from</span>
+    <span class="na">rootEndpointType</span> <span class="p">:</span> <span class="s2">"api"</span><span class="p">,</span>            <span class="c1">// When visiting the root URL, should visitors see "api" or "file"? Visitors can always visit /api and /public as normal</span>
+    <span class="na">directoryFileType</span> <span class="p">:</span> <span class="s2">"index.html"</span><span class="p">,</span>    <span class="c1">// The default filetype to server when a user requests a directory</span>
+    <span class="na">flatFileCacheDuration</span> <span class="p">:</span> <span class="mi">60</span><span class="p">,</span>          <span class="c1">// The header which will be returned for all flat file served from /public; defined in seconds</span>
+    <span class="na">fingerprintOptions</span> <span class="p">:</span> <span class="p">{</span>               <span class="c1">// Settings for determining the id of an http(s) requset (browser-fingerprint)</span>
+      <span class="na">cookieKey</span><span class="p">:</span> <span class="s2">"sessionID"</span><span class="p">,</span>
+      <span class="na">toSetCookie</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">onlyStaticElements</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">},</span>
+    <span class="na">formOptions</span><span class="p">:</span> <span class="p">{</span>                       <span class="c1">// Options to be applied to incomming file uplaods. More options and details at https://github.com/felixge/node-formidable</span>
+      <span class="na">uploadDir</span><span class="p">:</span> <span class="s2">"/tmp"</span><span class="p">,</span>
+      <span class="na">keepExtensions</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="na">maxFieldsSize</span><span class="p">:</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="p">},</span>
+    <span class="na">metadataOptions</span><span class="p">:</span> <span class="p">{</span>                   <span class="c1">// Options to configure metadata in responses</span>
+      <span class="na">serverInformation</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">requestorInformation</span><span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="na">returnErrorCodes</span><span class="p">:</span> <span class="kc">false</span>              <span class="c1">// When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null. You can also set connection.rawConnection.responseHttpCode to specify a code per request.</span>
+  <span class="p">}</span>
+<span class="p">}</span>  
+</code></pre>
+
+<p>Note that if you wish to create a secure (https) server, you will be required to complete the serverOptions hash with at least a cert and a keyfile:</p>
+<pre class="highlight javascript"><code><span class="nx">config</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">serverOptions</span><span class="err">:</span> <span class="p">{</span>
+  <span class="nl">key</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-key.pem'</span><span class="p">),</span>
+  <span class="nx">cert</span><span class="err">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-cert.pem'</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<h2 id="the-connection-object">The <code class="prettyprint">connection</code> object</h2>
+<pre class="highlight javascript"><code><span class="p">{</span> <span class="nl">id</span><span class="p">:</span> <span class="s1">'3e55b464fd34708eba26f609f44481a120e094a8-a6dfb60b-9562-4cc0-9d92-bc6cc1b622ba'</span><span class="p">,</span>
+  <span class="nx">connectedAt</span><span class="err">:</span> <span class="mi">1447554153233</span><span class="p">,</span>
+  <span class="nx">type</span><span class="err">:</span> <span class="s1">'web'</span><span class="p">,</span>
+  <span class="nx">rawConnection</span><span class="err">:</span>
+   <span class="p">{</span> 
+     <span class="nl">req</span><span class="p">:</span> <span class="p">{},</span>
+     <span class="nx">res</span><span class="err">:</span> <span class="p">{},</span>
+     <span class="nx">params</span><span class="err">:</span> <span class="p">{</span> <span class="nl">query</span><span class="p">:</span> <span class="p">{}</span> <span class="p">},</span>
+     <span class="nx">method</span><span class="err">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+     <span class="nx">cookies</span><span class="err">:</span> <span class="p">{},</span>
+     <span class="nx">responseHeaders</span><span class="err">:</span> <span class="p">[</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">],</span>
+     <span class="nx">responseHttpCode</span><span class="err">:</span> <span class="mi">200</span><span class="p">,</span>
+     <span class="nx">parsedURL</span><span class="err">:</span>
+      <span class="nx">Url</span> <span class="p">{},</span>
+  <span class="nx">remotePort</span><span class="err">:</span> <span class="mi">57259</span><span class="p">,</span>
+  <span class="nx">remoteIP</span><span class="err">:</span> <span class="s1">'127.0.0.1'</span><span class="p">,</span>
+  <span class="nx">error</span><span class="err">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">fingerprint</span><span class="err">:</span> <span class="s1">'3e55b464fd34708eba26f609f44481a120e094a8'</span><span class="p">,</span>
+  <span class="nx">rooms</span><span class="err">:</span> <span class="p">[],</span>
+  <span class="nx">params</span><span class="err">:</span> <span class="p">{</span> <span class="nl">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span> <span class="nx">apiVersion</span><span class="err">:</span> <span class="mi">1</span> <span class="p">},</span>
+  <span class="nx">pendingActions</span><span class="err">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">totalActions</span><span class="err">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">messageCount</span><span class="err">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nx">canChat</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nx">sendMessage</span><span class="err">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+  <span class="nx">sendFile</span><span class="err">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">}</span>
+</code></pre>
+
+<p>when inspecting <code class="prettyprint">connection</code> in actions from web client, a few additional elements are added for convenience:</p>
+
+<ul>
+<li><code class="prettyprint">connection.rawConnection.responseHeaders</code>: array of headers which can be built up in the action.  Headers will be made unique, and latest header will be used (except setting cookies)</li>
+<li><code class="prettyprint">connection.rawConnection.method</code>: A string, GET, POST, etc</li>
+<li><code class="prettyprint">connection.rawConnection.cookies</code>: Hash representation of the connection&rsquo;s cookies</li>
+<li><code class="prettyprint">connection.rawConnection.responseHttpCode</code>: the status code to be rendered to the user.  Defaults to 200</li>
+<li><code class="prettyprint">connection.type</code> for a HTTP client is &ldquo;web&rdquo;</li>
+<li><code class="prettyprint">connection.rawConnection.params.body</code> will contain un-filtered form data</li>
+<li><code class="prettyprint">connection.rawConnection.params.files</code> will contain un-filtered form data</li>
+<li><code class="prettyprint">connection.extension</code>.  If are using a route to access an action, and the request path ends in a file extension (IE: <code class="prettyprint">server.com/action/option.jpg</code>), the extension will be available.  Depending on the server&rsquo;s options, this extension may also be used to modify the response mime-type by configuring <code class="prettyprint">matchExtensionMimeType</code> within each action.</li>
+</ul>
+
+<p>Of course, the generic connection attributes (<code class="prettyprint">connection.error</code>, <code class="prettyprint">connection.params</code>, etc) will be present.</p>
+
+<h2 id="sending-files">Sending Files</h2>
+<pre class="highlight javascript"><code><span class="nx">data</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">sendFile</span><span class="p">(</span><span class="s1">'/path/to/file.mp3'</span><span class="p">);</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">toRender</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">next</span><span class="p">();</span>
+</code></pre>
+
+<p>actionhero can also serve up flat files.  actionhero will not cache these files and each request to <code class="prettyprint">file</code> will re-read the file from disk (like the nginx web server).</p>
+
+<ul>
+<li>/public and /api are  routes which expose the &lsquo;directories&rsquo; of those types.  These top level path can be configured in <code class="prettyprint">/config/servers/web.js</code> with <code class="prettyprint">api.config.servers.web.urlPathForActions</code> and <code class="prettyprint">api.config.servers.web.urlPathForFiles</code>.</li>
+<li>the root of the web server &ldquo;/&rdquo; can be toggled to serve the content between /file or /api actions per your needs <code class="prettyprint">api.config.servers.web.rootEndpointType</code>. The default is <code class="prettyprint">api</code>.</li>
+<li>actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the &#39;file&rsquo; route as described above. <code class="prettyprint">http://{baseUrl}/public/{pathToFile}</code> is equivalent to <code class="prettyprint">http://{baseUrl}?action=file&amp;fileName={pathToFile}</code> and <code class="prettyprint">http://{baseUrl}/file/{pathToFile}</code>. </li>
+<li>Errors will result in a 404 (file not found) with a message you can customize.</li>
+<li>Proper mime-type headers will be set when possible via the <code class="prettyprint">mime</code> package.</li>
+</ul>
+
+<p>There are helpers you can use in your actions to send files:</p>
+
+<p>See the <a href="/docs#file-server">file server</a> page for more documentation</p>
+
+<h2 id="routes">Routes</h2>
+
+<p>For web clients (http and https), you can define an optional RESTful mapping to help route requests to actions.  If the client doesn&rsquo;t specify an action via a param, and the base route isn&rsquo;t a named action, the action will attempt to be discerned from this <code class="prettyprint">config/routes.js</code> file.</p>
+
+<h4 id="example">Example</h4>
+
+<p>This variables in play here are:</p>
+
+<ul>
+<li><code class="prettyprint">api.config.servers.web.urlPathForActions</code></li>
+<li><code class="prettyprint">api.config.servers.web.rootEndpointType</code></li>
+<li>and of course the content of <code class="prettyprint">config/routes.js</code></li>
+</ul>
+
+<p>Say you have an action called &#39;status&rsquo; (like in a freshly generated actionhero project). 
+Lets start with actionhero&rsquo;s default config:</p>
+<pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">urlPathForActions</span> <span class="o">=</span> <span class="s1">'api'</span><span class="p">;</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">urlPathForFiles</span> <span class="o">=</span> <span class="s1">'public'</span><span class="p">;</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">rootEndpointType</span> <span class="o">=</span> <span class="s1">'file'</span><span class="p">;</span>
+</code></pre>
+
+<p>There are 3 ways a client can access actions via the web server.</p>
+
+<ul>
+<li>no routing at all and use GET params: <code class="prettyprint">server.com/api?action=status</code></li>
+<li>with &#39;basic&rsquo; routing, where the action&rsquo;s name will respond after the /api path: <code class="prettyprint">server.com/api/status</code></li>
+<li>or you can modify this with routes. Say you want <code class="prettyprint">server.com/api/stuff/statusPage</code></li>
+</ul>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/stuff/statusPage'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'status'</span> <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>If the <code class="prettyprint">api.config.servers.web.rootEndpointType</code> is <code class="prettyprint">&quot;file&quot;</code> which means that the routes you are making are active only under the <code class="prettyprint">/api</code> path.  If you wanted the route example to become  <code class="prettyprint">server.com/stuff/statusPage</code>, you would need to change <code class="prettyprint">api.config.servers.web.rootEndpointType</code> to be &#39;api&rsquo;.  Note that making this change doesn&rsquo;t stop <code class="prettyprint">server.com/api/stuff/statusPage</code> from working as well, as you still have <code class="prettyprint">api.config.servers.web.urlPathForActions</code> set to be &#39;api&rsquo;, so both will continue to work.</p>
+
+<p>For a route to match, all params must be satisfied.  So, if you expect a route to provide <code class="prettyprint">api/:a/:b/:c</code> and the request is only for <code class="prettyprint">api/:a/:c</code>, the route won&rsquo;t match. This holds for any variable, including <code class="prettyprint">:apiVersion</code>.  If you want to match both with and without apiVersion, just define the rote 2x, IE:</p>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">all</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/cache/:key/:value"</span><span class="p">,</span>             <span class="na">action</span><span class="p">:</span>  <span class="s2">"cacheTest"</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/:apiVersion/cache/:key/:value"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span>  <span class="s2">"cacheTest"</span> <span class="p">},</span>
+    <span class="p">]</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>If you want to shut off access to your action at <code class="prettyprint">server.com/api/stuff/statusPage</code> and only allow access via <code class="prettyprint">server.com/stuff/statusPage</code>, you can disable <code class="prettyprint">api.config.servers.web.urlPathForActions</code> by setting it equal to <code class="prettyprint">null</code> (but keeping the <code class="prettyprint">api.config.servers.web.rootEndpointType</code> equal to &#39;api&rsquo;). </p>
+
+<p>Routes will match the newest version of <code class="prettyprint">apiVersion</code>.  If you want to have a specific route match a specific version of an action, you can provide the <code class="prettyprint">apiVersion</code> param in your route definitions:</p>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/myAction/old"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span>  <span class="s2">"myAction"</span><span class="p">,</span> <span class="na">apiVersion</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/myAction/new"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span>  <span class="s2">"myAction"</span><span class="p">,</span> <span class="na">apiVersion</span><span class="p">:</span> <span class="mi">2</span> <span class="p">},</span>
+    <span class="p">]</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>This would create both <code class="prettyprint">/api/myAction/old</code> and <code class="prettyprint">/api/myAction/new</code>, mapping to apiVersion 1 and 2 respectively. </p>
+
+<h4 id="notes">Notes</h4>
+
+<ul>
+<li>actions defined in params directly <code class="prettyprint">action=theAction</code> or hitting the named URL for an action <code class="prettyprint">/api/theAction</code> will never override RESTful routing </li>
+<li>you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
+
+<ul>
+<li>IE: /api/user/123?userId=456 =&gt; <code class="prettyprint">connection.userId = 123</code></li>
+</ul></li>
+<li>routes defined with the &ldquo;all&rdquo; method will be duplicated to &ldquo;get&rdquo;, &ldquo;put&rdquo;, &ldquo;post&rdquo;, and &ldquo;delete&rdquo;</li>
+<li>use &ldquo;:variable&rdquo; to define &ldquo;variable&rdquo;</li>
+<li>an undefined &ldquo;:variable&rdquo; will not match
+
+<ul>
+<li>IE: &ldquo;/api/user/&rdquo; will not match &ldquo;/api/user/:userId&rdquo;</li>
+<li>You would need a second route in this case to match &ldquo;/api/user&rdquo;</li>
+</ul></li>
+<li>routes are matched as defined top-down in <code class="prettyprint">routes.js</code></li>
+<li>you can optionally define a regex match along with your route variable
+
+<ul>
+<li>IE: <code class="prettyprint">{ path:&quot;/game/:id(^[a-z]{0,10}$)&quot;, action: &quot;gamehandler&quot; }</code></li>
+<li>be sure to double-escape when needed: <code class="prettyprint">{ path: &quot;/login/:userID(^\\d{3}$)&quot;, action: &quot;login&quot; }</code></li>
+</ul></li>
+</ul>
+
+<p><strong>example</strong>:</p>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/users"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"usersList"</span> <span class="p">},</span> <span class="c1">// (GET) /api/users</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/search/:term/limit/:limit/offset/:offset"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"search"</span> <span class="p">},</span> <span class="c1">// (GET) /api/search/car/limit/10/offset/100</span>
+    <span class="p">],</span>
+
+    <span class="na">post</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/login/:userID(^\\d{3}$)"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"login"</span> <span class="p">}</span> <span class="c1">// (POST) /api/login/123</span>
+    <span class="p">],</span>
+
+    <span class="na">all</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/user/:userID"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"user"</span> <span class="p">}</span> <span class="c1">// (*) / /api/user/123</span>
+    <span class="p">]</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre>
+
+<h2 id="params">Params</h2>
+
+<p>Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in <code class="prettyprint">/config/servers/web.js</code>).  Variables defined in your actions by <code class="prettyprint">action.inputs</code> will be added to your whitelist.  Special params which the api will always accept are: </p>
+<pre class="highlight javascript"><code>  <span class="p">[</span> <span class="s1">'file'</span><span class="p">,</span>
+    <span class="s1">'apiVersion'</span><span class="p">,</span>
+    <span class="s1">'callback'</span><span class="p">,</span>
+    <span class="s1">'action'</span><span class="p">,</span> <span class="p">]</span>
+</code></pre>
+
+<p>Params are loaded in this order GET -&gt; POST (normal) -&gt; POST (multipart).  This means that if you have <code class="prettyprint">{url}?key=getValue</code> and you post a variable <code class="prettyprint">key=postValue</code> as well, the <code class="prettyprint">postValue</code> will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the <code class="prettyprint">api.postVariables</code> array in your initializers. </p>
+
+<p>File uploads from forms will also appear in <code class="prettyprint">connection.params</code>, but will be an object with more information.  That is, if you uploaded a file called &ldquo;image&rdquo;, you would have <code class="prettyprint">connection.params.image.path</code>, <code class="prettyprint">connection.params.image.name</code> (original file name), and <code class="prettyprint">connection.params.image.type</code> available to you. </p>
+
+<p>A note on JSON payloads:</p>
+
+<p>You can post BODY json paylaods to actionHero in the form of a hash or array. </p>
+
+<p>Hash: <code class="prettyprint">curl -X POST -d &#39;{&quot;key&quot;:&quot;something&quot;, &quot;value&quot;:{&quot;a&quot;:1, &quot;b&quot;:2}}&#39; http://localhost:8080/api/cacheTest</code>.  This will result in:</p>
+<pre class="highlight javascript"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">key</span><span class="p">:</span> <span class="s1">'something'</span>
+  <span class="na">value</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="na">b</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Array: <code class="prettyprint">curl -X POST -d &#39;[{&quot;key&quot;:&quot;something&quot;, &quot;value&quot;:{&quot;a&quot;:1, &quot;b&quot;:2}}]&#39; http://localhost:8080/api/cacheTest</code>.
+In this case, we set the array to the param key <code class="prettyprint">payload</code>:</p>
+<pre class="highlight javascript"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">payload</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span> 
+      <span class="na">key</span><span class="p">:</span> <span class="s1">'something'</span>
+      <span class="na">value</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="na">b</span><span class="p">:</span> <span class="mi">2</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+
+<h2 id="uploading-files">Uploading Files</h2>
+
+<p>actionhero uses the <a href="https://github.com/felixge/node-formidable">formidable</a> form parsing library.  You can set options for it via <code class="prettyprint">api.config.commonWeb.formOptions</code>.  You can upload multiple files to an action and they will be available within <code class="prettyprint">connection.params</code> as formidable response objects containing references to the original file name, where the uploaded file was stored temporarily, etc.   Here&rsquo;s an example:</p>
+<pre class="highlight javascript"><code><span class="c1">// actions/uploader.js </span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'uploader'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'uploader'</span><span class="p">,</span>
+  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">file1</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
+    <span class="na">file2</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
+    <span class="na">key1</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
+    <span class="na">key2</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
+  <span class="p">},</span> 
+  <span class="na">outputExample</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"\r\n\r\n"</span><span class="p">)</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"\r\n\r\n"</span><span class="p">)</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
+<pre class="highlight html"><code><span class="c">&lt;!-- public/uploader.html --&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">enctype=</span><span class="s">"multipart/form-data"</span> <span class="na">action=</span><span class="s">"http://localhost:8080/api/uploader"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"file"</span> <span class="na">name=</span><span class="s">"file1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"file"</span> <span class="na">name=</span><span class="s">"file2"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;br&gt;&lt;br&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">'text'</span> <span class="na">name=</span><span class="s">"key1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">'text'</span> <span class="na">name=</span><span class="s">"key2"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;br&gt;&lt;br&gt;</span>
+            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"send"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/form&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre>
+<pre class="highlight javascript"><code><span class="c1">// what the params look like to an action</span>
+<span class="p">{</span> <span class="nl">action</span><span class="p">:</span> <span class="s1">'uploader'</span><span class="p">,</span>
+  <span class="nx">file1</span><span class="err">:</span> 
+   <span class="p">{</span> <span class="nl">domain</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nx">_events</span><span class="err">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nx">_maxListeners</span><span class="err">:</span> <span class="mi">10</span><span class="p">,</span>
+     <span class="nx">size</span><span class="err">:</span> <span class="mi">5477608</span><span class="p">,</span>
+     <span class="nx">path</span><span class="err">:</span> <span class="s1">'/Users/evantahler/PROJECTS/actionhero/tmp/86b2aa018a9785e20b3f6cea95babcca'</span><span class="p">,</span>
+     <span class="nx">name</span><span class="err">:</span> <span class="s1">'1-02 Concentration Enhancing Menu Initialiser.mp3'</span><span class="p">,</span>
+     <span class="nx">type</span><span class="err">:</span> <span class="s1">'audio/mp3'</span><span class="p">,</span>
+     <span class="nx">hash</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
+     <span class="nx">lastModifiedDate</span><span class="err">:</span> <span class="nx">Wed</span> <span class="nx">Feb</span> <span class="mi">13</span> <span class="mi">2013</span> <span class="mi">20</span><span class="err">:</span><span class="mi">32</span><span class="err">:</span><span class="mi">49</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">PST</span><span class="p">),</span>
+     <span class="nx">_writeStream</span><span class="err">:</span> 
+      <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+     <span class="nx">length</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">],</span>
+     <span class="nx">filename</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">],</span>
+     <span class="nx">mime</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">]</span> <span class="p">},</span>
+  <span class="nx">file2</span><span class="err">:</span> 
+   <span class="p">{</span> <span class="nl">domain</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nx">_events</span><span class="err">:</span> <span class="kc">null</span><span class="p">,</span>
+     <span class="nx">_maxListeners</span><span class="err">:</span> <span class="mi">10</span><span class="p">,</span>
+     <span class="nx">size</span><span class="err">:</span> <span class="mi">10439802</span><span class="p">,</span>
+     <span class="nx">path</span><span class="err">:</span> <span class="s1">'/Users/evantahler/PROJECTS/actionhero/tmp/6052010f1d75ceaeb9197a9a759124dc'</span><span class="p">,</span>
+     <span class="nx">name</span><span class="err">:</span> <span class="s1">'1-10 There She Is.mp3'</span><span class="p">,</span>
+     <span class="nx">type</span><span class="err">:</span> <span class="s1">'audio/mp3'</span><span class="p">,</span>
+     <span class="nx">hash</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
+     <span class="nx">lastModifiedDate</span><span class="err">:</span> <span class="nx">Wed</span> <span class="nx">Feb</span> <span class="mi">13</span> <span class="mi">2013</span> <span class="mi">20</span><span class="err">:</span><span class="mi">32</span><span class="err">:</span><span class="mi">49</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">PST</span><span class="p">),</span>
+     <span class="nx">_writeStream</span><span class="err">:</span> 
+      <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="nx">key1</span><span class="err">:</span> <span class="s1">'123'</span><span class="p">,</span>
+  <span class="nx">key2</span><span class="err">:</span> <span class="s1">'456'</span><span class="p">,</span>
+ <span class="p">}</span>
+</code></pre>
+
+<h2 id="client-library">Client Library</h2>
+
+<p>Although the <code class="prettyprint">actionheroClient</code> client-side library is mostly for websockets, it can now be used to make http actions when not connected (and websocket clients will fall back to http actions when disconnected)</p>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">();</span>
+<span class="nx">client</span><span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="s1">'cacheTest'</span><span class="p">,</span> <span class="p">{</span><span class="na">key</span><span class="p">:</span> <span class="s1">'k'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s1">'v'</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+   <span class="c1">// do stuff</span>
+<span class="p">});</span> 
+<span class="nt">&lt;/script&gt;</span>
+</code></pre>
+
+<p>Note that we never called <code class="prettyprint">client.connect</code>.  More information can be found on the <a href="/docsdocs#websocket-server">websocket server docs page</a>.</p>

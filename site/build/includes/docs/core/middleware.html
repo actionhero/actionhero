@@ -1,0 +1,152 @@
+<h1 id="middleware">Middleware</h1>
+
+<p>There are 3 types of middleware in actionhero:</p>
+
+<ul>
+<li>Action</li>
+<li>Connection</li>
+<li>Chat</li>
+</ul>
+
+<h2 id="action-request-flow">Action Request Flow</h2>
+
+<p><img src="/images/connection_flow.png" /></p>
+
+<h2 id="action-middleware">Action Middleware</h2>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">middleware</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'userId checker'</span><span class="p">,</span>
+  <span class="na">global</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="na">priority</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">preProcessor</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">userId</span><span class="p">){</span>
+      <span class="nx">next</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'All actions require a userId'</span><span class="p">)</span> <span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">postProcessor</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">thing</span><span class="p">.</span><span class="nx">stuff</span> <span class="o">==</span> <span class="kc">false</span><span class="p">){</span>
+      <span class="nx">data</span><span class="p">.</span><span class="nx">toRender</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">actions</span><span class="p">.</span><span class="nx">addMiddleware</span><span class="p">(</span><span class="nx">middleware</span><span class="p">);</span>
+</code></pre>
+
+<p>actionhero provides hooks for you to execute custom code both before and after the execution of all or some actions.  This is a great place to write authentication logic or custom loggers.  </p>
+
+<p>Action middleware requires a <code class="prettyprint">name</code> and at least one of <code class="prettyprint">preProcessor</code> or <code class="prettyprint">postProcessor</code>.  Middleware can be <code class="prettyprint">global</code>, or you can choose to apply each middleware to an action specifically via <code class="prettyprint">action.middleware = []</code> in the action&rsquo;s definiton.  You supply a list of middleware names, like <code class="prettyprint">action.middleware = [&#39;userId checker&#39;]</code> in the example above.</p>
+
+<p>Each processor is passed <code class="prettyprint">data</code> and the callback <code class="prettyprint">next</code>.  Just like within actions, you can modify the <code class="prettyprint">data</code> object to add to <code class="prettyprint">data.resposne</code> to create a response to the client.  If you pass <code class="prettyprint">error</code> to the callback <code class="prettyprint">next</code>, that error will be returned to the client.  If a <code class="prettyprint">preProcessor</code> has an error, the action will never be called.</p>
+
+<p>The priority of a middleware orders it with all other middleware which might fire for an action.  Lower numbers happen first.  If you do not provide a priority, the default from <code class="prettyprint">api.config.general.defaultProcessorPriority</code> will be used</p>
+
+<h2 id="the-data-object">The Data Object</h2>
+
+<p><code class="prettyprint">data</code> contains:</p>
+<pre class="highlight javascript"><code><span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">connection</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="na">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
+  <span class="na">toProcess</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">toRender</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">messageCount</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">params</span><span class="p">:</span> <span class="p">{</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span> <span class="na">apiVersion</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+  <span class="na">missingParams</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="na">validatorErrors</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="na">actionStartTime</span><span class="p">:</span> <span class="mi">1429531553417</span><span class="p">,</span>
+  <span class="na">actionTemplate</span><span class="p">:</span> <span class="p">{},</span> <span class="c1">// the actual object action definition</span>
+  <span class="na">working</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">response</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="na">duration</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="na">actionStatus</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre>
+
+<h2 id="connection-middleware">Connection Middleware</h2>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">connectionMiddleware</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'connection middleware'</span><span class="p">,</span>
+  <span class="na">priority</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">create</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){</span>
+    <span class="c1">// do stuff</span>
+  <span class="p">},</span>
+  <span class="na">destroy</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){</span>
+    <span class="c1">// do stuff</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">connections</span><span class="p">.</span><span class="nx">addMiddleware</span><span class="p">(</span><span class="nx">connectionMiddleware</span><span class="p">);</span>
+</code></pre>
+
+<p>Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware. </p>
+
+<p>Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web).  You will likely want to inspect <code class="prettyprint">connection.type</code> in this middleware.  Again, if you do not provide a priority, the default from <code class="prettyprint">api.config.general.defaultProcessorPriority</code> will be used.</p>
+
+<p>Any modification made to the connection at this stage may happen either before or after an action, and may or may not persist to the connection depending on how the server is implemented.</p>
+
+<h2 id="chat-middleware">Chat Middleware</h2>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">chatMiddleware</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'chat middleware'</span><span class="p">,</span>
+  <span class="na">priority</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">join</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="c1">// announce all connections entering a room</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">chatRoom</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">({},</span> <span class="nx">room</span><span class="p">,</span> <span class="s1">'I have joined the room: '</span> <span class="o">+</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="na">leave</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="c1">// announce all connections leaving a room</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">chatRoom</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">({},</span> <span class="nx">room</span><span class="p">,</span> <span class="s1">'I have left the room: '</span> <span class="o">+</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="cm">/**
+   * Will be executed once per client connection before delivering the message.
+   */</span>
+  <span class="na">say</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">messagePayload</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="c1">// do stuff</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">messagePayload</span><span class="p">);</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">messagePayload</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="cm">/**
+   * Will be executed only once, when the message is sent to the server.
+   */</span>
+  <span class="na">onSayReceive</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">messagePayload</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="c1">// do stuff</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">messagePayload</span><span class="p">);</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">messagePayload</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">chatRoom</span><span class="p">.</span><span class="nx">addMiddleware</span><span class="p">(</span><span class="nx">chatMiddleware</span><span class="p">);</span>
+</code></pre>
+
+<p>The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 4 types of middleware for each step: <code class="prettyprint">say</code>, <code class="prettyprint">onSayReceive</code>, <code class="prettyprint">join</code>, and <code class="prettyprint">leave</code>.</p>
+
+<p>Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb/message will not be sent.</p>
+
+<p>More detail and nuance on chat middleware can be found in the <a href="/docs#chat">chat section</a></p>
+
+<h3 id="chat-midleware-notes">Chat Midleware Notes</h3>
+
+<ul>
+<li>In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty <code class="prettyprint">{}</code> connection is used to proxy the message coming from the &lsquo;system&rsquo;</li>
+<li>Only the <code class="prettyprint">sayCallbacks</code> have a second return value on the callback, <code class="prettyprint">messagePayload</code>.  This allows you to modify the message being sent to your clients. </li>
+<li><code class="prettyprint">messagePayload</code> will be modified and and passed on to all <code class="prettyprint">addSayCallback</code> middlewares inline, so you can append and modify it as you go</li>
+<li>If you have a number of callbacks (<code class="prettyprint">say</code>, <code class="prettyprint">onSayReceive</code>, <code class="prettyprint">join</code> or  <code class="prettyprint">leave</code>), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.</li>
+<li><code class="prettyprint">sayCallbacks</code> are executed once per client connection. This makes it suitable for customizing the message based on the individual client.</li>
+<li><code class="prettyprint">onSayReceiveCallbacks</code> are executed only once, when the message is sent to the server.</li>
+</ul>
+<pre class="highlight javascript"><code><span class="c1">// in this example no one will be able to join any room, and the `say` callback will never be invoked.</span>
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">chatRoom</span><span class="p">.</span><span class="nx">addMiddleware</span><span class="p">({</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'blocking chat middleware'</span><span class="p">,</span>
+  <span class="na">join</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'blocked from joining the room'</span><span class="p">));</span>
+  <span class="p">}),</span>
+  <span class="na">say</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">room</span><span class="p">,</span> <span class="nx">messagePayload</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">chatRoom</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">({},</span> <span class="nx">room</span><span class="p">,</span> <span class="s1">'I have entered the room: '</span> <span class="o">+</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+      <span class="nx">callback</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+<span class="p">});</span>
+</code></pre>
+
+<p>If a <code class="prettyprint">say</code> is blocked/errored, the message will simply not be delivered to the client.  If a  <code class="prettyprint">join</code> or  <code class="prettyprint">leave</code> is blocked/errored, the verb or method used to invoke the call will be returned that error.</p>

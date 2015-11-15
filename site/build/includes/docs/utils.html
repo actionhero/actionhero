@@ -1,0 +1,94 @@
+<h1 id="utils">Utils</h1>
+
+<p>ActionHero ships with a few utility methods exposed for your convince: </p>
+
+<h3 id="api-utils-sqldatetime-time">api.utils.sqlDateTime(time)</h3>
+
+<ul>
+<li>returns a mySQL-style formatted time string <code class="prettyprint">2012-01-01 00:00:00</code></li>
+<li>if no time is provided, <code class="prettyprint">new Date()</code> (now) will be used</li>
+</ul>
+
+<h3 id="api-utils-sqldate-time">api.utils.sqlDate(time)</h3>
+
+<ul>
+<li>returns a mySQL-style formatted date string <code class="prettyprint">2012-01-01</code></li>
+<li>if no time is provided, <code class="prettyprint">new Date()</code> (now) will be used</li>
+</ul>
+
+<h3 id="api-utils-randomstring-chars">api.utils.randomString(chars)</h3>
+
+<ul>
+<li>returns a random string of <code class="prettyprint">chars</code> length</li>
+<li>the chars used are all HTML safe</li>
+</ul>
+
+<h3 id="api-utils-hashlength-obj">api.utils.hashLength(obj)</h3>
+
+<ul>
+<li>calculates the &lsquo;size&rsquo; of primary, top level keys in the hash</li>
+<li><code class="prettyprint">api.utils.hashLength({a: 1, b: 2})</code> would be 2</li>
+</ul>
+
+<h3 id="api-utils-hashmerge-a-b">api.utils.hashMerge(a, b)</h3>
+
+<ul>
+<li>create a new hash which looks like b merged into a</li>
+<li><code class="prettyprint">{a:1, b:2}</code> merged with <code class="prettyprint">{b:3, c:4}</code> looks like <code class="prettyprint">{a: 1, b:3, c:4}</code></li>
+</ul>
+
+<h3 id="api-utils-isplainobject-object">api.utils.isPlainObject(object)</h3>
+
+<ul>
+<li>determines if <code class="prettyprint">object</code> is a plain js &#39;Object&rsquo; or somethign more complex, like a stream</li>
+</ul>
+
+<h3 id="api-utils-arrayuniqueify-arr">api.utils.arrayUniqueify(arr)</h3>
+
+<ul>
+<li>removes duplicate entries from an array</li>
+</ul>
+
+<h3 id="api-utils-sleepsync-seconds">api.utils.sleepSync(seconds)</h3>
+
+<ul>
+<li>a terrible and inneffiencet way to force a blocking sleep in the main thread</li>
+<li>never ever use this… ever</li>
+</ul>
+
+<h3 id="api-utils-randomarraysort-arr">api.utils.randomArraySort(arr)</h3>
+
+<ul>
+<li>return a randomly sorted array</li>
+</ul>
+
+<h3 id="api-utils-inarray-haystack-needle">api.utils.inArray(haystack, needle)</h3>
+
+<ul>
+<li>checks if needle is contained within the haystack array</li>
+<li>returns true/false</li>
+</ul>
+
+<h3 id="api-utils-objclone-obj">api.utils.objClone(obj)</h3>
+
+<ul>
+<li>creates a new object with the same keys and values of the original object</li>
+</ul>
+
+<h3 id="api-utils-getexternalipaddress">api.utils.getExternalIPAddress()</h3>
+
+<ul>
+<li>attempts to determine this server&rsquo;s external IP address out of all plausible addressees this host is listening on</li>
+</ul>
+
+<h3 id="api-utils-parsecookies-req">api.utils.parseCookies(req)</h3>
+
+<ul>
+<li>a helper to parse the request object&rsquo;s headers and returns a hash of the client&rsquo;s cookies</li>
+</ul>
+
+<h3 id="api-utils-parseipv6uri-address">api.utils.parseIPv6URI(address)</h3>
+
+<ul>
+<li>will return <code class="prettyprint">{host: host, port: port}</code> for an IPv6 address</li>
+</ul>

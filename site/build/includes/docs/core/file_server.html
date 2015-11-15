@@ -1,0 +1,87 @@
+<h1 id="file-server">File Server</h1>
+
+<h2 id="general">General</h2>
+<pre class="highlight shell"><code><span class="gp">&gt; </span>curl localhost:8080/simple.html -v
+<span class="k">*</span>   Trying ::1...
+<span class="k">*</span> connect to ::1 port 8080 failed: Connection refused
+<span class="k">*</span>   Trying 127.0.0.1...
+<span class="k">*</span> Connected to localhost <span class="o">(</span>127.0.0.1<span class="o">)</span> port 8080 <span class="o">(</span><span class="c">#0)</span>
+<span class="gp">&gt; </span>GET /simple.html HTTP/1.1
+<span class="gp">&gt; </span>Host: localhost:8080
+<span class="gp">&gt; </span>User-Agent: curl/7.43.0
+<span class="gp">&gt; </span>Accept: <span class="k">*</span>/<span class="k">*</span>
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; Last-Modified: Fri Jun 12 2015 02:51:29 GMT-0700 <span class="o">(</span>PDT<span class="o">)</span>
+&lt; Cache-Control: max-age<span class="o">=</span>60, must-revalidate, public
+&lt; Expires: Sun, 15 Nov 2015 02:07:46 GMT
+&lt; Content-Type: text/html
+&lt; Access-Control-Allow-Headers: Content-Type
+&lt; Access-Control-Allow-Methods: HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE
+&lt; Access-Control-Allow-Origin: <span class="k">*</span>
+&lt; X-Powered-By: actionhero API
+&lt; Set-Cookie: <span class="nv">sessionID</span><span class="o">=</span>d4453f54ff066a2ef078e5c80f18dc78a81f44ff;path<span class="o">=</span>/;expires<span class="o">=</span>Sun, 15 Nov 2015 03:06:46 GMT;
+&lt; Content-Length: 101
+&lt; Date: Sun, 15 Nov 2015 02:06:46 GMT
+&lt; Connection: keep-alive
+&lt;
+<span class="k">*</span> Connection <span class="c">#0 to host localhost left intact</span>
+&lt;h1&gt;ActionHero&lt;/h1&gt;<span class="se">\n</span>I am a flat file being served to you via the API from ./public/simple.html&lt;br /&gt;
+</code></pre>
+
+<p>actionhero comes with a file server which clients can make use of to request files on the actionhero server.  actionhero is not meant to be a &lsquo;rendering&rsquo; server (like express or rails), but can serve static files.</p>
+
+<p>If a directory is requested rather than a file, actionhero will look for the file in that directory defined by <code class="prettyprint">api.config.commonWeb.directoryFileType</code> (which defaults to <code class="prettyprint">index.html</code>).  Failing to find this file, an error will be returned defined in <code class="prettyprint">api.config.general.flatFileIndexPageNotFoundMessage</code></p>
+
+<p>You can use the <code class="prettyprint">api.staticFile.get(connection, next)</code> in your actions (where <code class="prettyprint">next(connection, error, fileStream, mime, length)</code>).  Note that fileStream is a stream which can be pipe&rsquo;d to a client.  You can use this in actions if you wish, </p>
+
+<p>On .nix operating system&rsquo;s symlinks for both files and folders will be followed. </p>
+
+<h2 id="web-clients">Web Clients</h2>
+
+<ul>
+<li><code class="prettyprint">Cache-Control</code> and <code class="prettyprint">Expires</code> headers will be sent, as defined by <code class="prettyprint">api.config.commonWeb.flatFileCacheDuration</code></li>
+<li>Content-Types for files will attempt to be determined using the <a href="https://npmjs.org/package/mime">mime package</a></li>
+<li>web clients may request <code class="prettyprint">connection.params.file</code> directly within an action which makes use of  <code class="prettyprint">api.sendFile</code>, or if they are  under the <code class="prettyprint">api.config.servers.web.urlPathForFiles</code> route, the file will be looked up as if the route matches the directory structure under <code class="prettyprint">flatFileDirectory</code>.</li>
+<li>if your action wants to send content down to a client directly, you will do so like this <code class="prettyprint">server.sendFile(connection, null, stream, &#39;text/html&#39;, length);</code></li>
+</ul>
+
+<h2 id="non-web-clients">Non-web Clients</h2>
+
+<ul>
+<li>the param <code class="prettyprint">file</code> should be used to request a path</li>
+<li>file data is sent <code class="prettyprint">raw</code>, and is likely to contain binary content and line breaks.  Parse your responses accordingly! </li>
+</ul>
+
+<h2 id="sending-files-from-actions">Sending files from Actions</h2>
+<pre class="highlight javascript"><code><span class="c1">// success case</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">sendFile</span><span class="p">(</span><span class="s1">'/path/to/file.mp3'</span><span class="p">);</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">toRender</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">next</span><span class="p">();</span>
+
+<span class="c1">// failure case</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">responseHttpCode</span> <span class="o">=</span> <span class="mi">404</span><span class="p">;</span> 
+<span class="nx">data</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">sendFile</span><span class="p">(</span><span class="s1">'404.html'</span><span class="p">);</span>
+<span class="nx">data</span><span class="p">.</span><span class="nx">toRender</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="nx">next</span><span class="p">();</span>
+</code></pre>
+
+<p>You can send files from within actions using <code class="prettyprint">connection.sendFile()</code>.  Here&rsquo;s an example:</p>
+
+<p>Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set <code class="prettyprint">toRender = false</code> in the callback, as you have already sent data to the client, and probably don&rsquo;t want to do so again on a file request.  If you try to <code class="prettyprint">sendFile</code> on a path that doesn&rsquo;t exist (within your public directory), the 404 header will be handled automatically for you.  </p>
+
+<h2 id="customizing-the-file-server">Customizing the File Server</h2>
+<pre class="highlight javascript"><code><span class="c1">// in an initializer, override api.staticFile.path</span>
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">staticFile</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">action</span> <span class="o">==</span> <span class="s1">'sendFile'</span><span class="p">){</span>
+    <span class="k">return</span> <span class="s1">'/tmp/uploads'</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="k">return</span> <span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">general</span><span class="p">.</span><span class="nx">paths</span><span class="p">.</span><span class="kr">public</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>By default, we want actionhero&rsquo;s file server to be very locked-down, and only serve files from directories defined in <code class="prettyprint">api.config.general.paths.public</code>.  This is the safest default for beginners. However, you can customize things by changing the behavior of <code class="prettyprint">api.staticFile.path()</code>.</p>
+
+<p>This would serve files from <code class="prettyprint">/public</code> for all requests except the <code class="prettyprint">sendFile</code> action, which will serve files from <code class="prettyprint">/tmp</code></p>
