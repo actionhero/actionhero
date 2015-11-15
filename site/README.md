@@ -20,7 +20,8 @@ You will need ruby installed locally and the `github-pages` gem
 ## Deploy the code
 
 Open a pull requset to the `master` branch with your changes in the `site` folder.  
-From there, we'll build the `gh-pages` branch out of master (`git subtree push --prefix site origin gh-pages`), and deploy the site.  GitHub pages will automatically build the site for us uppon push.
+
+From there, we'll build the `gh-pages` branch out of master (`cd site && bundle exec middleman build --clean && cd .. && git subtree push --prefix site/build origin gh-pages`), and deploy the site.  GitHub pages will automatically build the site for us uppon push.
 
 ## Thanks
 
