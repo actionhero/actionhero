@@ -19,6 +19,9 @@ npm-debug.log
 dump.rdb
 cache.dump
 
+# Site
+site/build
+
 # Editor-specific
 /nbproject/*
 /.idea/*
