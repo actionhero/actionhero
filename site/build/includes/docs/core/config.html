@@ -1,0 +1,73 @@
+<h1 id="config">Config</h1>
+
+<h2 id="overview">Overview</h2>
+
+<p>There are 2 ways to manage actionHero configuration: config files and overrides.  In both cases, actionhero starts by reading the config in <code class="prettyprint">./config/</code>.  <a href="https://github.com/evantahler/actionhero/blob/master/config/">Here is a documented example</a>.</p>
+
+<p>The normal way to deal with configuration changes is to use the files in <code class="prettyprint">/config/</code> and to have special options for each environment.  First we load in all settings from the <code class="prettyprint">default</code> config block, and then we replace those with anything defined in the relevant <code class="prettyprint">environment</code> section.  actionhero uses the standard node environment variable <code class="prettyprint">NODE_ENV</code> to determine environment, and defaults to &lsquo;development&rsquo; when one isn&rsquo;t found.  This pattern is very similar the Rails and Sails frameworks.  A good way to visualize this is to note that, by default, the web server will return metadata in response JSON, but we change that in the production NODE_ENV and disable it.</p>
+<pre class="highlight javascript"><code>
+<span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">general</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+    <span class="k">return</span> <span class="p">{</span>  
+      <span class="c1">//...</span>
+      <span class="na">developmentMode</span><span class="p">:</span> <span class="kc">true</span>
+      <span class="c1">//...</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">general</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+    <span class="k">return</span> <span class="p">{</span>  
+      <span class="na">developmentMode</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre>
+
+<p>The other way to modify the config is to pass a &ldquo;changes&rdquo; hash to the server directly at boot.  You can do things like: <code class="prettyprint">actionhero.start({configChanges: configChanges}, callback)</code>.</p>
+
+<p>The priority order of configs is:</p>
+
+<ol>
+<li>options passed in to boot with <code class="prettyprint">actionhero.start({configChanges: configChanges}, callback)</code></li>
+<li>environment-specific values in <code class="prettyprint">/config</code></li>
+<li>default values in <code class="prettyprint">/config</code></li>
+<li>default values of undifined settings from a plugin</li>
+<li>default values of undifined settings from actionhero&rsquo;s core</li>
+</ol>
+
+<p>When building config files of your own, note that an <code class="prettyprint">exports.default</code> is always required, and any environment overrides are optional.  What is exported is a hash which eventually resolves a synchronous function which accepts the <code class="prettyprint">api</code> variable.</p>
+
+<h2 id="config-changes">config Changes</h2>
+
+<p>A configChanges example:   </p>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">actionhero</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"actionhero"</span><span class="p">).</span><span class="nx">actionhero</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="nx">params</span><span class="p">.</span><span class="nx">configChanges</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">general</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">developmentMode</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// start the server!</span>
+<span class="nx">actionhero</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
+  <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Boot Successful!"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+
+<h2 id="boot-options">Boot Options</h2>
+
+<p>When launching actionhero you can specify which config directory to use with <code class="prettyprint">--config=/path/to/dir</code> or the environment variable <code class="prettyprint">ACTIONHERO_CONFIG</code>, otherwise <code class="prettyprint">/config/</code> will be used from your working directory. </p>
+
+<p>The priority of arguments is:</p>
+
+<ol>
+<li>Use the project &#39;config&rsquo; folder, if it exists.</li>
+<li>&ldquo;actionhero &ndash;config=PATH1 &ndash;config=PATH2 &ndash;config=PATH3,PATH4&rdquo;</li>
+<li>&ldquo;ACTIONHERO_CONFIG=PATH1,PATH2 npm start&rdquo;</li>
+</ol>
+
+<p>Note that if <code class="prettyprint">--config</code> or <code class="prettyprint">ACTIONHERO_CONFIG</code> are used, they <em>overwrite</em> the use of the default <code class="prettyprint">/config</code> folder. If you wish to use both, you need to re-specify &ldquo;config&rdquo;, e.g. <code class="prettyprint">--config=config,local-config</code>. Also, note that specifying multiple <code class="prettyprint">--config</code> options on the command line does exactly the same thing as using one parameter with comma separators, however the environment variable method only supports the comma-delimited syntax.</p>

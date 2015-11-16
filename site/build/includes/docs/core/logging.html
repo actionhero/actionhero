@@ -1,0 +1,71 @@
+<h1 id="logging">Logging</h1>
+
+<h2 id="winston">Winston</h2>
+
+<p>ActionHero uses the <a href="https://github.com/flatiron/winston">Winston logger</a>.  This allows for better, more customizable logging.  </p>
+
+<h2 id="defaults">Defaults</h2>
+<pre class="highlight javascript"><code><span class="nx">config</span><span class="p">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">transports</span><span class="p">:</span> <span class="p">[</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+      <span class="k">return</span> <span class="k">new</span> <span class="p">(</span><span class="nx">winston</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span><span class="p">)({</span>
+        <span class="na">colorize</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> 
+        <span class="na">level</span><span class="p">:</span> <span class="s2">"debug"</span><span class="p">,</span> 
+        <span class="na">timestamp</span><span class="p">:</span> <span class="nx">api</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">sqlDateTime</span><span class="p">,</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+      <span class="k">return</span> <span class="k">new</span> <span class="p">(</span><span class="nx">winston</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">File</span><span class="p">)({</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="s1">'./log/'</span> <span class="o">+</span> <span class="nx">api</span><span class="p">.</span><span class="nx">pids</span><span class="p">.</span><span class="nx">title</span> <span class="o">+</span> <span class="s1">'.log'</span><span class="p">,</span>
+        <span class="na">level</span><span class="p">:</span> <span class="s2">"info"</span><span class="p">,</span>
+        <span class="na">timestamp</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">};</span>
+</code></pre>
+
+<p>In your <code class="prettyprint">config/logger.js</code>, you can customize which <code class="prettyprint">transports</code> you would like the logger to use. If none are provided, a default logger which only will print to stdout will be used.  See winston&rsquo;s documentation for all the logger types, but know that they include console, file, s3, riak, and more.</p>
+
+<p>The default loggers are =&gt; </p>
+
+<p>You can set a transport directly, IE <code class="prettyprint">new (winston.transports.Console)()</code> or in a function which will be passed the <code class="prettyprint">api</code> object like the examples above.  The benefit of using the function invocation is you will have access to other methods and configuration options (like the title of the process).</p>
+
+<h2 id="levels">Levels</h2>
+<pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">);</span> <span class="c1">// will use the default, 'info' level</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'debug message'</span><span class="p">,</span> <span class="s1">'debug'</span><span class="p">)</span> <span class="c1">// will not show up unless you have configured your logger in this NODE_ENV to be debug</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">lot</span><span class="p">(</span><span class="s1">'OH NO'</span><span class="p">,</span> <span class="s1">'emerg'</span><span class="p">)</span> <span class="c1">// will show up in all loger levels</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">lot</span><span class="p">(</span><span class="s1">'the params were'</span><span class="p">,</span> <span class="s1">'info'</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">params</span><span class="p">)</span> <span class="c1">// you can log objects too</span>
+</code></pre>
+
+<p>Note that you can set a <code class="prettyprint">level</code> which indicates which level (and those above it) you wish to log per transport.  The log levels are:</p>
+
+<ul>
+<li>0=debug</li>
+<li>1=info</li>
+<li>2=notice</li>
+<li>3=warning</li>
+<li>4=error</li>
+<li>5=crit</li>
+<li>6=alert</li>
+<li>7=emerg</li>
+</ul>
+
+<p>For example, if you set the logger&rsquo;s level to &ldquo;notice&rdquo;, you would also see &ldquo;crit&rdquo; messages, but not &ldquo;debug&rdquo; messages.</p>
+
+<p>To invoke the logger from your code, use:</p>
+
+<h3 id="api-log-message-severity-metadata">api.log(message, severity, metadata)</h3>
+
+<ul>
+<li>message is a string</li>
+<li>severity is a string, and should match the log-level (IE: &lsquo;info&rsquo; or &#39;warning&rsquo;)</li>
+<li>the default severity level is &#39;info&rsquo;</li>
+<li>(optional) metadata is anything that can be stringified with <code class="prettyprint">JSON.stringify</code></li>
+</ul>
+
+<h2 id="methods">Methods</h2>
+
+<p><code class="prettyprint">api.logger.log</code> and <code class="prettyprint">api.logger[severity]</code> also exist which allow you to call and modify the Winston instance directly.</p>
+
+<p><code class="prettyprint">api.log</code> will pass your message to all transports.</p>

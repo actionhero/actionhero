@@ -19,10 +19,6 @@ npm-debug.log
 dump.rdb
 cache.dump
 
-# Jekyll Site
-_site/*
-docs/_site/*
-
 # Editor-specific
 /nbproject/*
 /.idea/*

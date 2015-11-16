@@ -1,0 +1,256 @@
+<h1 id="websocket-server">WebSocket Server</h1>
+
+<h2 id="general">General</h2>
+
+<p>actionhero uses <a href="https://github.com/primus/primus">Primus</a> for web sockets.  The Primus project allows you to choose from many websocket backends, including <code class="prettyprint">ws</code>, <code class="prettyprint">engine.io</code>, <code class="prettyprint">socket.io</code>, and more. Within actionhero, web sockets are bound to the web server (either http or https).</p>
+
+<p>Actionhero will generate the client-side javascript needed for you (based on the actionheroClient library, primus, and the underlying ws transport). This file is regenerated each time you boot the application.</p>
+
+<p><strong>Warning</strong></p>
+
+<p>In <code class="prettyprint">v9.0.0</code> and later, actionhero will no longer attempt to manage non-sticky client connections. This means if you have a multi-server actionhero deployment and you use long-polling in your websocket transport, you will need to ensure that your load balancer can enforce sticky connections, meaning every request from the client will hit the same actionhero node.</p>
+
+<h2 id="connection-details">Connection Details</h2>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+
+  <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">;</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'connected'</span><span class="p">,</span>    <span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'connected!'</span><span class="p">)</span> <span class="p">})</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'disconnected'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'disconnected :('</span><span class="p">)</span> <span class="p">})</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span>        <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="p">)</span> <span class="p">})</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'reconnect'</span><span class="p">,</span>    <span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'reconnect'</span><span class="p">)</span> <span class="p">})</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'reconnecting'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'reconnecting'</span><span class="p">)</span> <span class="p">})</span>
+
+  <span class="c1">// this will log all messages send the client</span>
+  <span class="c1">// client.on('message',      function(message){ console.log(message) })</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'alert'</span><span class="p">,</span>        <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">})</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'api'</span><span class="p">,</span>          <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span> <span class="nx">alert</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">})</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'welcome'</span><span class="p">,</span>      <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span> <span class="nx">appendMessage</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span> <span class="p">})</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'say'</span><span class="p">,</span>          <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span> <span class="nx">appendMessage</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span> <span class="p">})</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">details</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">err</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">){</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="nx">client</span><span class="p">.</span><span class="nx">roomAdd</span><span class="p">(</span><span class="s2">"defaultRoom"</span><span class="p">);</span>
+      <span class="nx">client</span><span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="s1">'someAction'</span><span class="p">,</span> <span class="p">{</span><span class="na">key</span><span class="p">:</span> <span class="s1">'k'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s1">'v'</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+        <span class="c1">// do stuff</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+<span class="nt">&lt;/script&gt;</span>
+</code></pre>
+
+<p><code class="prettyprint">connection.type</code> for a webSocket client is &ldquo;webSocket&rdquo;.  This type will not change regardless of if the client has fallen back to another protocol. </p>
+
+<p>Data is always returned as JSON objects to the webSocket client.  </p>
+
+<p>An example web socket session might be the following:</p>
+
+<p>You can also inspect <code class="prettyprint">client.state</code> (&lsquo;connected&rsquo;, &#39;disconnected&rsquo;, etc).  The websocket client will attempt to re-connect automatically.</p>
+
+<p>If you want to communicate with a websocket client outside of an action, you can call <code class="prettyprint">connection.send(message)</code> on the server. In the client lib, the event message will be fired. So, <code class="prettyprint">client.on(&#39;message, function(m){ ... })</code>.  Be sure to add some descriptive content to the message you send from the sever (like perhaps <code class="prettyprint">{&quot;type&quot;: &#39;message type&#39;}</code>) so you can route message types on the client.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>Methods which the provided actionheroWebSocket object expose are:</p>
+
+<h3 id="client-connect-callback">client.connect(callback)</h3>
+
+<ul>
+<li><code class="prettyprint">callback</code> will contain (error, detauils)</li>
+<li>details here is the same as the <code class="prettyprint">detailsView</code> method</li>
+</ul>
+
+<h3 id="client-action-action-params-callback">client.action(action, params, callback)</h3>
+
+<ul>
+<li><code class="prettyprint">action</code> is a string, like &ldquo;login&rdquo;</li>
+<li><code class="prettyprint">params</code> is an object</li>
+<li><code class="prettyprint">callback</code> will be passed <code class="prettyprint">response</code> (and you can inspect <code class="prettyprint">response.error</code>)</li>
+</ul>
+
+<h3 id="client-say-room-message-callback">client.say(room, message, callback)</h3>
+
+<ul>
+<li><code class="prettyprint">message</code> is a string</li>
+<li>may contain an <code class="prettyprint">error</code></li>
+<li>note that you have to first join a room with <code class="prettyprint">roomAdd</code> to chat within it of recieve events</li>
+</ul>
+
+<h3 id="client-detailsview-callback">client.detailsView(callback)</h3>
+
+<ul>
+<li><code class="prettyprint">callback</code> will be passed <code class="prettyprint">error</code>, <code class="prettyprint">response</code> </li>
+<li>the first response from detailsView will also always be saved to <code class="prettyprint">client.details</code> for later inspection</li>
+<li>may contain an <code class="prettyprint">error</code></li>
+</ul>
+
+<h3 id="client-roomview-room-callback">client.roomView(room, callback)</h3>
+
+<ul>
+<li>will return metadata about the room </li>
+<li>may contain an <code class="prettyprint">error</code></li>
+</ul>
+
+<h3 id="client-roomadd-room-callback">client.roomAdd(room, callback)</h3>
+
+<ul>
+<li><code class="prettyprint">room</code> is a string</li>
+<li>may contain an <code class="prettyprint">error</code></li>
+</ul>
+
+<h3 id="client-roomleave-room-callback">client.roomLeave(room, callback)</h3>
+
+<ul>
+<li><code class="prettyprint">room</code> is a string</li>
+<li>may contain an <code class="prettyprint">error</code></li>
+</ul>
+
+<h3 id="client-file-callback">client.file(callback)</h3>
+
+<ul>
+<li>see below for details</li>
+</ul>
+
+<h3 id="client-disconnect">client.disconnect()</h3>
+
+<ul>
+<li>instantly sever the connection to the server</li>
+</ul>
+
+<p>The contents of the <code class="prettyprint">file</code> callback look like:
+<code class="prettyprint">javascript
+{
+  content: &quot;&lt;h1&gt;ActionHero&lt;/h1&gt;\nI am a flat file being served to you via the API from ./public/simple.html&lt;br /&gt;&quot;,
+  context: &quot;response&quot;,
+  error: null,
+  length: 101,
+  messageCount: 3,
+  mime: &quot;text/html&quot;
+}
+</code></p>
+
+<h2 id="events">Events</h2>
+
+<h3 id="client-on-39-connected-39-function-console-log-39-connected-39">client.on(&#39;connected&rsquo;,    function(){ console.log(&#39;connected!&rsquo;) })</h3>
+
+<ul>
+<li>no event data</li>
+</ul>
+
+<h3 id="client-on-39-disconnected-39-function-console-log-39-disconnected-39">client.on(&#39;disconnected&rsquo;, function(){ console.log(&#39;disconnected :(&rsquo;) })</h3>
+
+<ul>
+<li>no event data</li>
+</ul>
+
+<h3 id="client-on-39-error-39-function-error-console-log-39-error-39-error-stack">client.on(&#39;error&rsquo;,        function(error){ console.log(&#39;error&rsquo;, error.stack) })</h3>
+
+<ul>
+<li>this is fired when a general error is encountered (outside of an action or verb)</li>
+<li>this may fire when a general server error occurs</li>
+</ul>
+
+<h3 id="client-on-39-reconnect-39-function-console-log-39-reconnect-39">client.on(&#39;reconnect&rsquo;,    function(){ console.log(&#39;reconnect&rsquo;) })</h3>
+
+<ul>
+<li>fired when client has reconnected</li>
+<li>this will indicate that details, connection.id and other server-generated settings may have changed</li>
+</ul>
+
+<h3 id="client-on-39-reconnecting-39-function-console-log-39-reconnecting-39">client.on(&#39;reconnecting&rsquo;, function(){ console.log(&#39;reconnecting&rsquo;) })</h3>
+
+<ul>
+<li>client is attempting to reconnect to server</li>
+</ul>
+
+<h3 id="client-on-39-message-39-function-message-console-log-message">client.on(&#39;message&rsquo;,      function(message){ console.log(message) })</h3>
+
+<ul>
+<li>this is VERY noisy, and is fired on all messages from the server, regardless of context or callback</li>
+</ul>
+
+<h3 id="client-on-39-alert-39-function-message-alert-message">client.on(&#39;alert&rsquo;,        function(message){ alert(message) })</h3>
+
+<ul>
+<li>fired when message recieved from the server&rsquo;s context is specifically &#39;alert&rsquo;</li>
+</ul>
+
+<h3 id="client-on-39-api-39-function-message-alert-message">client.on(&#39;api&rsquo;,          function(message){ alert(message) })</h3>
+
+<ul>
+<li>fired when message recieved from the server&rsquo;s context is unknown</li>
+</ul>
+
+<h3 id="client-on-39-welcome-39-function-message-appendmessage-message">client.on(&#39;welcome&rsquo;,      function(message){ appendMessage(message); })</h3>
+
+<ul>
+<li>server&rsquo;s welcome message</li>
+</ul>
+
+<h3 id="client-on-39-say-39-function-message-appendmessage-message">client.on(&#39;say&rsquo;,          function(message){ appendMessage(message); })</h3>
+
+<ul>
+<li>fired on all say messages from other clients in all rooms</li>
+<li>message.room can be inspected</li>
+</ul>
+
+<h2 id="linking-websockets-to-web-auth">Linking websockets to web auth</h2>
+
+<p>actionhero provides <code class="prettyprint">connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code class="prettyprint">connection.id</code>, we attempt to build <code class="prettyprint">connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code class="prettyprint">api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.  </p>
+
+<p>You can read more about using a value like <code class="prettyprint">connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/examples/initializers/session.html">session information</a>.</p>
+
+<h2 id="options">Options</h2>
+<pre class="highlight javascript"><code><span class="nx">enabled</span><span class="err">:</span>          <span class="kc">true</span><span class="p">,</span>
+<span class="c1">// you can pass a FQDN here, or function to be called / window object to be inspected</span>
+<span class="nx">clientUrl</span><span class="err">:</span>        <span class="s1">'window.location.origin'</span><span class="p">,</span>
+<span class="c1">// Directory to render client-side JS.  </span>
+<span class="c1">// Path should start with "/" and will be built starting from api.config..general.paths.public</span>
+<span class="nx">clientJsPath</span><span class="err">:</span>     <span class="s1">'javascript/'</span><span class="p">,</span>
+<span class="c1">// the name of the client-side JS file to render.  Both `.js` and `.min.js` versions will be created</span>
+<span class="c1">// do not include the file exension</span>
+<span class="c1">// set to `null` to not render the client-side JS on boot</span>
+<span class="nx">clientJsName</span><span class="err">:</span>     <span class="s1">'actionheroClient'</span><span class="p">,</span>
+<span class="c1">// should the server signal clients to not reconnect when the server is shutdown/reboot</span>
+<span class="nx">destroyClientsOnShutdown</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
+
+<span class="c1">// Primus Server Options: </span>
+<span class="nx">server</span><span class="err">:</span> <span class="p">{</span>
+  <span class="c1">// authorization: null,</span>
+  <span class="c1">// pathname:      '/primus',</span>
+  <span class="c1">// parser:        'JSON',</span>
+  <span class="c1">// transformer:   'ws',</span>
+  <span class="c1">// plugin:        {},</span>
+  <span class="c1">// timeout:       35000,</span>
+  <span class="c1">// origins:       '*',</span>
+  <span class="c1">// methods:       ['GET','HEAD','PUT','POST','DELETE','OPTIONS'],</span>
+  <span class="c1">// credentials:   true,</span>
+  <span class="c1">// maxAge:        '30 days',</span>
+  <span class="c1">// headers:       false,</span>
+  <span class="c1">// exposed:       false,</span>
+<span class="p">},</span>
+
+<span class="c1">// Priumus Client Options: </span>
+<span class="nx">client</span><span class="err">:</span> <span class="p">{</span>
+  <span class="c1">// reconnect:        {},</span>
+  <span class="c1">// timeout:          10000,</span>
+  <span class="c1">// ping:             25000,</span>
+  <span class="c1">// pong:             10000,</span>
+  <span class="c1">// strategy:         "online",</span>
+  <span class="c1">// manual:           false,</span>
+  <span class="c1">// websockets:       true,</span>
+  <span class="c1">// network:          true,</span>
+  <span class="c1">// transport:        {},</span>
+  <span class="c1">// queueSize:        Infinity,</span>
+<span class="p">},</span>
+</code></pre>
+
+<p>You can create your client with options.  Options for both the server and client are stored in <code class="prettyprint">/config/servers/websocket.js</code>.  Note there are 3 sections: &#39;server&rsquo;, &#39;client&rsquo;, and &#39;generation&rsquo;:</p>

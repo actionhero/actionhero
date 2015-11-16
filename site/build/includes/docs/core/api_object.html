@@ -1,0 +1,363 @@
+<h1 id="the-api-object">The API Object</h1>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="c1">// STATE VARIABLES //</span>
+  <span class="na">running</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">initialized</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">shuttingDown</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+
+  <span class="c1">// METADATA //</span>
+  <span class="na">bootTime</span><span class="p">:</span> <span class="mi">1421016104943</span><span class="p">,</span>
+  <span class="na">env</span><span class="p">:</span> <span class="s1">'development'</span><span class="p">,</span>
+  <span class="na">id</span><span class="p">:</span> <span class="s1">'10.0.1.5'</span><span class="p">,</span>
+  <span class="na">actionheroVersion</span><span class="p">:</span> <span class="s1">'10.0.0'</span><span class="p">,</span>
+  <span class="na">projectRoot</span><span class="p">:</span> <span class="s1">'/Users/evantahler/Dropbox/Projects/actionhero'</span><span class="p">,</span>
+  <span class="na">_startingParams</span><span class="p">:</span> <span class="p">{</span> <span class="na">configChanges</span><span class="p">:</span> <span class="p">{</span> <span class="na">general</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span> <span class="p">},</span>
+
+  <span class="c1">// DEVELOPER MODE //</span>
+  <span class="na">watchedFiles</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="na">watchFileAndAct</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+  <span class="na">unWatchAllFiles</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+  <span class="na">loadConfigDirectory</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+
+  <span class="c1">// SERVER COMMAND AND CONTROL // </span>
+  <span class="na">commands</span><span class="p">:{</span> 
+    <span class="na">initialize</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">start</span><span class="p">:</span>      <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">stop</span><span class="p">:</span>       <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">restart</span><span class="p">:</span>    <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+
+  <span class="c1">// COMAND AND CONTROL //</span>
+  <span class="na">_self</span><span class="p">:{</span> 
+    <span class="na">initializers</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">startingParams</span><span class="p">:</span> <span class="p">{</span> <span class="na">configChanges</span><span class="p">:</span> <span class="p">[]</span> <span class="p">},</span>
+
+     <span class="c1">// arrays containing init/stop/start methods </span>
+     <span class="na">configInitializers</span><span class="p">:</span> <span class="p">[],</span>
+     <span class="na">loadInitializers</span><span class="p">:</span>   <span class="p">[],</span>
+     <span class="na">startInitializers</span><span class="p">:</span>  <span class="p">[],</span>
+     <span class="na">stopInitializers</span><span class="p">:</span>   <span class="p">[]</span> 
+   <span class="p">},</span>
+
+  <span class="c1">// INITIALZER DEFAULTS //</span>
+  <span class="na">initializerDefaults</span><span class="p">:{</span> 
+    <span class="na">load</span><span class="p">:</span>  <span class="mi">1000</span><span class="p">,</span>
+    <span class="na">start</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="na">stop</span><span class="p">:</span>  <span class="mi">1000</span>
+  <span class="p">},</span>
+
+  <span class="c1">// UTILS //</span>
+  <span class="na">utils</span><span class="p">:{</span> 
+    <span class="na">sqlDateTime</span><span class="p">:</span>            <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">sqlDate</span><span class="p">:</span>                <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">padDateDoubleStr</span><span class="p">:</span>       <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">randomString</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">hashLength</span><span class="p">:</span>             <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">hashMerge</span><span class="p">:</span>              <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">isPlainObject</span><span class="p">:</span>          <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">arrayUniqueify</span><span class="p">:</span>         <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">sleepSync</span><span class="p">:</span>              <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">randomArraySort</span><span class="p">:</span>        <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">inArray</span><span class="p">:</span>                <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">recursiveDirectoryGlob</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">objClone</span><span class="p">:</span>               <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">collapseObjectToArray</span><span class="p">:</span>  <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">getExternalIPAddress</span><span class="p">:</span>   <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">parseCookies</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">parseIPv6URI</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+
+  <span class="c1">// CONFIG //</span>
+  <span class="na">config</span><span class="p">:</span>
+   <span class="p">{</span> <span class="na">general</span><span class="p">:</span>
+      <span class="p">{</span> <span class="na">apiVersion</span><span class="p">:</span> <span class="s1">'0.0.1'</span><span class="p">,</span>
+        <span class="na">serverName</span><span class="p">:</span> <span class="s1">'actionhero API'</span><span class="p">,</span>
+        <span class="na">serverToken</span><span class="p">:</span> <span class="s1">'change-me'</span><span class="p">,</span>
+        <span class="na">welcomeMessage</span><span class="p">:</span> <span class="s1">'Hello! Welcome to the actionhero api'</span><span class="p">,</span>
+        <span class="na">cachePrefix</span><span class="p">:</span> <span class="s1">'actionhero:cache:'</span><span class="p">,</span>
+        <span class="na">lockPrefix</span><span class="p">:</span> <span class="s1">'actionhero:lock:'</span><span class="p">,</span>
+        <span class="na">lockDuration</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="na">developmentMode</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">actionDomains</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">simultaneousActions</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="na">disableParamScrubbing</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">filteredParams</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="na">missingParamChecks</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+        <span class="na">directoryFileType</span><span class="p">:</span> <span class="s1">'index.html'</span><span class="p">,</span>
+        <span class="na">defaultMiddlewarePriority</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="na">paths</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+        <span class="na">startingChatRooms</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+        <span class="na">plugins</span><span class="p">:</span> <span class="p">[]</span> <span class="p">},</span>
+     <span class="na">errors</span><span class="p">:</span>
+      <span class="p">{</span> <span class="na">_toExpand</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">serverErrorMessage</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">missingParams</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">unknownAction</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">unsupportedServerType</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">serverShuttingDown</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">tooManyPendingActions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">doubleCallbackError</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">fileNotFound</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">fileNotProvided</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">fileInvalidPath</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">fileReadError</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">verbNotFound</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">verbNotAllowed</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionRoomAndMessage</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionNotInRoom</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionAlreadyInRoom</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionRoomHasBeenDeleted</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionRoomNotExist</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionRoomExists</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+        <span class="na">connectionRoomRequired</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">logger</span><span class="p">:</span> <span class="p">{</span> <span class="na">transports</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">redis</span><span class="p">:</span>
+      <span class="p">{</span> <span class="na">channel</span><span class="p">:</span> <span class="s1">'actionhero'</span><span class="p">,</span>
+        <span class="na">rpcTimeout</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="na">package</span><span class="p">:</span> <span class="s1">'fakeredis'</span> <span class="p">},</span>
+     <span class="na">routes</span><span class="p">:</span> <span class="p">{},</span>
+     <span class="na">servers</span><span class="p">:</span>
+      <span class="p">{</span> <span class="na">socket</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+        <span class="na">web</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+        <span class="na">websocket</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">stats</span><span class="p">:</span> <span class="p">{</span> <span class="na">writeFrequency</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="na">keys</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">tasks</span><span class="p">:</span>
+      <span class="p">{</span> <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">queues</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="na">timeout</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="na">minTaskProcessors</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="na">maxTaskProcessors</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="na">checkTimeout</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="na">maxEventLoopDelay</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="na">toDisconnectProcessors</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">redis</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span> <span class="p">},</span>
+
+  <span class="c1">// PIDS //</span>
+  <span class="na">pids</span><span class="p">:</span>
+   <span class="p">{</span> <span class="na">pid</span><span class="p">:</span> <span class="mi">26168</span><span class="p">,</span>
+     <span class="na">path</span><span class="p">:</span> <span class="s1">'/Users/evantahler/Dropbox/Projects/actionhero/pids'</span><span class="p">,</span>
+     <span class="na">sanitizeId</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+     <span class="na">title</span><span class="p">:</span> <span class="s1">'actionhero-10.0.1.5'</span><span class="p">,</span>
+     <span class="na">writePidFile</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+     <span class="na">clearPidFile</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">},</span>
+
+  <span class="c1">// LOGGER //</span>
+  <span class="na">logger</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="na">log</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+
+  <span class="c1">// EXCEPTION HANDLERS //</span>
+  <span class="na">exceptionHandlers</span><span class="p">:{</span> 
+    <span class="na">reporters</span><span class="p">:</span> <span class="p">[</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">],</span>
+    <span class="na">report</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">loader</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">action</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">task</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+
+  <span class="c1">// REDIS //</span>
+  <span class="na">redis</span><span class="p">:{</span> 
+    <span class="na">clusterCallbaks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">clusterCallbakTimeouts</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">subsciptionHandlers</span><span class="p">:{</span> 
+      <span class="na">do</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+      <span class="na">doResponse</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+      <span class="na">chat</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="p">},</span>
+    <span class="na">status</span><span class="p">:{</span> 
+      <span class="na">client</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">subscriber</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">subscribed</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="na">calledback</span><span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="na">initialize</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">subscribe</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">publish</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">doCluster</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">respondCluster</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">client</span><span class="p">:</span> <span class="p">{</span> <span class="p">},</span>
+    <span class="na">subscriber</span><span class="p">:</span> <span class="p">{</span> <span class="p">},</span>
+
+  <span class="c1">// CACHE //</span>
+  <span class="na">cache</span><span class="p">:{</span> 
+    <span class="na">redisPrefix</span><span class="p">:</span> <span class="s1">'actionhero:cache:'</span><span class="p">,</span>
+    <span class="na">lockPrefix</span><span class="p">:</span> <span class="s1">'actionhero:lock:'</span><span class="p">,</span>
+    <span class="na">lockDuration</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+    <span class="na">lockName</span><span class="p">:</span> <span class="s1">'10.0.1.5'</span><span class="p">,</span>
+    <span class="na">lockRetry</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="na">keys</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">locks</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">size</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">clear</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">dumpWrite</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">dumpRead</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">saveDumpedElement</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">load</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">destroy</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">save</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">lock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">unlock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">checkLock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+
+  <span class="c1">// STATS //</span>
+  <span class="na">stats</span><span class="p">:{</span> 
+    <span class="c1">// timer: null,</span>
+    <span class="c1">// pendingIncrements: {},</span>
+    <span class="na">increment</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="c1">// writeIncrements: [Function],</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">getAll</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+
+  <span class="c1">// CONNECTIONS //</span>
+  <span class="na">connections</span><span class="p">:{</span> 
+    <span class="na">createCallbacks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">destroyCallbacks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">allowedVerbs</span><span class="p">:[</span> 
+      <span class="s1">'quit'</span><span class="p">,</span>
+      <span class="s1">'exit'</span><span class="p">,</span>
+      <span class="s1">'documentation'</span><span class="p">,</span>
+      <span class="s1">'paramAdd'</span><span class="p">,</span>
+      <span class="s1">'paramDelete'</span><span class="p">,</span>
+      <span class="s1">'paramView'</span><span class="p">,</span>
+      <span class="s1">'paramsView'</span><span class="p">,</span>
+      <span class="s1">'paramsDelete'</span><span class="p">,</span>
+      <span class="s1">'roomAdd'</span><span class="p">,</span>
+      <span class="s1">'roomLeave'</span><span class="p">,</span>
+      <span class="s1">'roomView'</span><span class="p">,</span>
+      <span class="s1">'detailsView'</span><span class="p">,</span>
+      <span class="s1">'say'</span> 
+      <span class="p">],</span>
+     <span class="na">connections</span><span class="p">:</span> <span class="p">{},</span>
+     <span class="c1">// apply: [Function],</span>
+     <span class="c1">// applyCatch: [Function],</span>
+     <span class="na">addCreateCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+     <span class="na">addDestroyCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+  <span class="p">},</span>
+  <span class="na">connection</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span> <span class="c1">// prototype</span>
+
+  <span class="c1">// ACTIONS //</span>
+  <span class="na">actions</span><span class="p">:{</span> 
+    <span class="na">actions</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">preProcessors</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">postProcessors</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">addPreProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">addPostProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="c1">// validateAction: [Function],</span>
+    <span class="c1">// loadFile: [Function] </span>
+  <span class="p">},</span>
+  <span class="na">actionProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span> <span class="c1">// prototype</span>
+
+  <span class="c1">// PARAMS //</span>
+  <span class="na">params</span><span class="p">:{</span> 
+    <span class="na">globalSafeParams</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s1">'file'</span><span class="p">,</span>
+      <span class="s1">'apiVersion'</span><span class="p">,</span>
+      <span class="s1">'callback'</span><span class="p">,</span>
+      <span class="s1">'action'</span> 
+    <span class="p">],</span>
+    <span class="c1">// buildPostVariables: [Function],</span>
+    <span class="na">postVariables</span><span class="p">:</span> <span class="p">[]</span> 
+   <span class="p">},</span>
+
+  <span class="c1">// SERVERS //</span>
+  <span class="na">genericServer</span><span class="p">:</span> <span class="p">{},</span> <span class="c1">// prototype</span>
+  <span class="na">servers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">servers</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+
+  <span class="c1">// ROUTES //</span>
+  <span class="na">routes</span><span class="p">:</span> <span class="p">{</span> 
+    <span class="na">routes</span><span class="p">:</span> <span class="p">{</span> 
+      <span class="na">get</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+      <span class="na">post</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+      <span class="na">put</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+      <span class="na">patch</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+      <span class="na">delete</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> 
+    <span class="p">},</span>
+     <span class="c1">// verbs: [],</span>
+     <span class="c1">// processRoute: [Function],</span>
+     <span class="c1">// matchURL: [Function],</span>
+     <span class="c1">// loadRoutes: [Function],</span>
+   <span class="p">},</span>
+
+  <span class="c1">// STATIC FILES //</span>
+  <span class="na">staticFile</span><span class="p">:{</span> 
+    <span class="c1">// path: [Function],</span>
+    <span class="c1">// get: [Function],</span>
+    <span class="na">sendFile</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="c1">// sendFileNotFound: [Function],</span>
+    <span class="c1">// checkExistence: [Function],</span>
+    <span class="c1">// logRequest: [Function] </span>
+  <span class="p">},</span>
+
+  <span class="c1">// CHAT //</span>
+  <span class="na">chatRoom</span><span class="p">:{</span> 
+    <span class="na">keys</span><span class="p">:</span> <span class="p">{</span> 
+      <span class="na">rooms</span><span class="p">:</span> <span class="s1">'actionhero:chatRoom:rooms'</span><span class="p">,</span>
+      <span class="na">members</span><span class="p">:</span> <span class="s1">'actionhero:chatRoom:members:'</span> 
+    <span class="p">},</span>
+    <span class="na">messageChannel</span><span class="p">:</span> <span class="s1">'/actionhero/chat/chat'</span><span class="p">,</span>
+    <span class="na">joinCallbacks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">leaveCallbacks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">sayCallbacks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">addJoinCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">addLeaveCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">addSayCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">broadcast</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">generateMessagePayload</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">incomingMessage</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">add</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">destroy</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">exists</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">sanitizeMemberDetails</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">roomStatus</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">generateMemberDetails</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">addMember</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">removeMember</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="c1">// handleCallbacks: [Function],</span>
+  <span class="p">},</span>
+
+  <span class="c1">// RESQUE //</span>
+  <span class="na">resque</span><span class="p">:</span> <span class="p">{</span> 
+    <span class="na">queue</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">multiWorker</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">scheduler</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="c1">// connectionDetails: {},</span>
+    <span class="c1">// startQueue: [Function],</span>
+    <span class="c1">// startScheduler: [Function],</span>
+    <span class="c1">// stopScheduler: [Function],</span>
+    <span class="c1">// startMultiWorker: [Function],</span>
+    <span class="c1">// stopMultiWorker: [Function],</span>
+  <span class="p">},</span>
+
+  <span class="c1">// TASKS //</span>
+  <span class="na">tasks</span><span class="p">:{</span> 
+    <span class="na">tasks</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">jobs</span><span class="p">:</span>  <span class="p">{},</span>
+    <span class="c1">// loadFile: [Function],</span>
+    <span class="c1">// jobWrapper: [Function],</span>
+    <span class="c1">// validateTask: [Function],</span>
+    <span class="na">enqueue</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">enqueueAt</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">enqueueIn</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">del</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">delDelayed</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">scheduledAt</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">timestamps</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">delayedAt</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">allDelayed</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="c1">// enqueueRecurrentJob: [Function],</span>
+    <span class="c1">// enqueueAllRecurrentJobs: [Function],</span>
+    <span class="na">stopRecurrentJob</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
+    <span class="na">details</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">},</span>
+
+  <span class="c1">// DOCUMENATION // </span>
+  <span class="na">doumentation</span><span class="p">:</span> <span class="p">{}</span>
+
+<span class="p">};</span>
+</code></pre>
+
+<p>By now you will have noticed that most sections of actionhero are initilized with access to the <code class="prettyprint">api</code> object.  The <code class="prettyprint">api</code> object is the top-level container/namespace for all of actionhero&rsquo;s data and methods.  We use the <code class="prettyprint">api</code> object to avoide polluting any global namespaces.  The api object is availalbe to all parts of actionhero to share data and state.  Feel free to modify or add too the api object as you see fit, but be mindful of the data it already contains.  </p>
+
+<p>Collections that you are reccomended not leave unmodifeid are un-expanded <code class="prettyprint">[Object]</code>s and/or commented out.</p>

@@ -1,0 +1,171 @@
+<h1 id="socket-server">Socket Server</h1>
+
+<h2 id="general">General</h2>
+<pre class="highlight shell"><code><span class="gp">&gt; </span>telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is <span class="s1">'^]'</span>.
+<span class="o">{</span><span class="s2">"welcome"</span>:<span class="s2">"Hello! Welcome to the actionhero api"</span>,<span class="s2">"room"</span>:<span class="s2">"defaultRoom"</span>,<span class="s2">"context"</span>:<span class="s2">"api"</span><span class="o">}</span>
+<span class="gp">$ </span>detailsView
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"data"</span>:<span class="o">{</span><span class="s2">"id"</span>:<span class="s2">"2d68c389-521d-4dc6-b4f1-8292cd6cbde6"</span>,<span class="s2">"remoteIP"</span>:<span class="s2">"127.0.0.1"</span>,<span class="s2">"remotePort"</span>:57393,<span class="s2">"params"</span>:<span class="o">{}</span>,<span class="s2">"connectedAt"</span>:1368918901456,<span class="s2">"room"</span>:<span class="s2">"defaultRoom"</span>,<span class="s2">"totalActions"</span>:0,<span class="s2">"pendingActions"</span>:0<span class="o">}</span>,<span class="s2">"messageCount"</span>:1<span class="o">}</span>
+randomNumber
+<span class="o">{</span><span class="s2">"randomNumber"</span>:0.4977603426668793,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"messageCount"</span>:2<span class="o">}</span>
+<span class="gp">$ </span>cacheTest
+<span class="o">{</span><span class="s2">"error"</span>:<span class="s2">"Error: key is a required parameter for this action"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"messageCount"</span>:3<span class="o">}</span>
+<span class="gp">$ </span>paramAdd <span class="nv">key</span><span class="o">=</span>myKey
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"data"</span>:null,<span class="s2">"messageCount"</span>:4<span class="o">}</span>
+<span class="gp">$ </span>paramAdd <span class="nv">value</span><span class="o">=</span>myValue
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"data"</span>:null,<span class="s2">"messageCount"</span>:5<span class="o">}</span>
+<span class="gp">$ </span>paramsView
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"data"</span>:<span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"cacheTest"</span>,<span class="s2">"key"</span>:<span class="s2">"myKey"</span>,<span class="s2">"value"</span>:<span class="s2">"myValue"</span><span class="o">}</span>,<span class="s2">"messageCount"</span>:6<span class="o">}</span>
+<span class="gp">$ </span>cacheTest
+<span class="o">{</span><span class="s2">"cacheTestResults"</span>:<span class="o">{</span><span class="s2">"saveResp"</span>:true,<span class="s2">"sizeResp"</span>:1,<span class="s2">"loadResp"</span>:<span class="o">{</span><span class="s2">"key"</span>:<span class="s2">"cacheTest_myKey"</span>,<span class="s2">"value"</span>:<span class="s2">"myValue"</span>,<span class="s2">"expireTimestamp"</span>:1368918936984,<span class="s2">"createdAt"</span>:1368918931984,<span class="s2">"readAt"</span>:1368918931995<span class="o">}</span>,<span class="s2">"deleteResp"</span>:true<span class="o">}</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"messageCount"</span>:7<span class="o">}</span>
+<span class="gp">$ </span>roomAdd default Room
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span><span class="o">}</span>
+<span class="gp">$ </span>say defaultRoom hooray!
+<span class="o">{</span><span class="s2">"status"</span>:<span class="s2">"OK"</span>,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"data"</span>:null,<span class="s2">"messageCount"</span>:8<span class="o">}</span>
+</code></pre>
+
+<p>You can access actionhero&rsquo;s methods via a persistent socket connection.  The default port for this type of communication is 5000.  As this is a persistent connection, socket connections have actionhero&rsquo;s verbs available to them.  These verbs are:</p>
+
+<ul>
+<li><code class="prettyprint">quit</code> disconnect from the session</li>
+<li><code class="prettyprint">paramAdd</code> - save a singe variable to your connection.  IE: &lsquo;addParam screenName=evan&rsquo;</li>
+<li><code class="prettyprint">paramView</code> - returns the details of a single param. IE: &#39;viewParam screenName&rsquo;</li>
+<li><code class="prettyprint">paramDelete</code> - deletes a single param.  IE: &#39;deleteParam screenName&rsquo;</li>
+<li><code class="prettyprint">paramsView</code> - returns a JSON object of all the params set to this connection</li>
+<li><code class="prettyprint">paramsDelete</code> - deletes all params set to this session</li>
+<li><code class="prettyprint">roomAdd</code> - connect to a room.</li>
+<li><code class="prettyprint">roomLeave</code> - (room) leave the <code class="prettyprint">room</code> you are connected to.</li>
+<li><code class="prettyprint">roomView</code> - (room) show you the room you are connected to, and information about the members currently in that room.</li>
+<li><code class="prettyprint">detailsView</code> - show you details about your connection, including your public ID.</li>
+<li><code class="prettyprint">say</code> (room,) message</li>
+</ul>
+
+<p>Please note that any verbs set using the above method will be &#39;sticky&rsquo; to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.</p>
+
+<p>To help sort out the potential stream of messages a socket user may receive, it is best to understand the &ldquo;context&rdquo; of the response.  For example, by default all actions set a context of &ldquo;response&rdquo; indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like <code class="prettyprint">say</code>).  Messages sent by a user via the &#39;say&rsquo; command have the context of <code class="prettyprint">user</code> indicating they came form a user.  Messages resulting from data sent to the api (like an action) will have the <code class="prettyprint">response</code> context.</p>
+
+<p><code class="prettyprint">connection.type</code> for a TCP/Socket client is &ldquo;socket&rdquo;</p>
+
+<h2 id="tls">TLS</h2>
+<pre class="highlight javascript"><code><span class="c1">// TLS Config Options</span>
+
+<span class="nx">config</span><span class="p">.</span><span class="nx">severs</span><span class="p">.</span><span class="nx">socket</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">secure</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>                        <span class="c1">// TCP or TLS?</span>
+  <span class="na">serverOptions</span><span class="p">:</span> <span class="p">{},</span>                    <span class="c1">// passed to tls.createServer if secure=ture. Should contain SSL certificates</span>
+  <span class="na">port</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>                           <span class="c1">// Port or Socket</span>
+  <span class="na">bindIP</span><span class="p">:</span> <span class="s2">"0.0.0.0"</span><span class="p">,</span>                    <span class="c1">// which IP to listen on (use 0.0.0.0 for all)</span>
+<span class="p">};</span>
+</code></pre>
+<pre class="highlight javascript"><code><span class="nx">config</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">socket</span><span class="p">.</span><span class="nx">serverOptions</span><span class="err">:</span> <span class="p">{</span>
+  <span class="nl">key</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-key.pem'</span><span class="p">),</span>
+  <span class="nx">cert</span><span class="err">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-cert.pem'</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>You can switch your TCP server to use TLS encryption if you desire.  Just toggle the settings in <code class="prettyprint">/config/servers/socket.js</code> and provide valid certificates.  You can test this with the openSSL client rather than telnet <code class="prettyprint">openssl s_client -connect 127.0.0.1:5000</code></p>
+
+<p>Note that if you wish to create a secure (tls) server, you will be required to complete the serverOptions hash with at least a cert and a keyfile:</p>
+
+<p>You can connect like: <code class="prettyprint">openssl s_client -connect 127.0.0.1:5000</code></p>
+
+<p>or from node:</p>
+<pre class="highlight javascript"><code><span class="c1">// Connecting over TLS from another node process</span>
+
+<span class="kd">var</span> <span class="nx">tls</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'tls'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">key</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-key.pem'</span><span class="p">),</span>
+  <span class="na">cert</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">'certs/server-cert.pem'</span><span class="p">)</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">cleartextStream</span> <span class="o">=</span> <span class="nx">tls</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'client connected'</span><span class="p">,</span> <span class="nx">cleartextStream</span><span class="p">.</span><span class="nx">authorized</span> <span class="p">?</span> <span class="s1">'authorized'</span> <span class="p">:</span> <span class="s1">'unauthorized'</span><span class="p">);</span>
+  <span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">cleartextStream</span><span class="p">);</span>
+  <span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">.</span><span class="nx">resume</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">cleartextStream</span><span class="p">.</span><span class="nx">setEncoding</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">);</span>
+<span class="nx">cleartextStream</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+
+<h2 id="files-and-routes">Files and Routes</h2>
+
+<p>Connections over socket can also use the file action.  There is no &#39;route&rsquo; for files.</p>
+
+<ul>
+<li>errors are returned in the normal way <code class="prettyprint">{error: someError}</code> when they exist.</li>
+<li>a successful file transfer will return the raw file data in a single send().  There will be no headers set, not will the content be JSON.</li>
+</ul>
+
+<h2 id="json-params">JSON Params</h2>
+
+<p>The default method of using actions for TCP clients is to use the methods above to set params to their session and then call actions inline.  However, you can also communication via JSON, passing along params specific to each request.</p>
+
+<ul>
+<li><code class="prettyprint">{&quot;action&quot;: &quot;myAction&quot;, &quot;params&quot;: {&quot;key&quot;: &quot;value&quot;}}</code> is also a valid request over TCP</li>
+</ul>
+
+<h2 id="client-suggestions">Client Suggestions</h2>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">actionheroClient</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"actionhero-client"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">actionheroClient</span><span class="p">();</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"say"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msgBlock</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt; SAY: "</span> <span class="o">+</span> <span class="nx">msgBlock</span><span class="p">.</span><span class="nx">message</span> <span class="o">+</span> <span class="s2">" | from: "</span> <span class="o">+</span> <span class="nx">msgBlock</span><span class="p">.</span><span class="nx">from</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"welcome"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"WELCOME: "</span> <span class="o">+</span> <span class="nx">msg</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"error"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"ERROR: "</span> <span class="o">+</span> <span class="nx">err</span><span class="p">);</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"end"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Connection Ended"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"timeout"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">caller</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">request</span> <span class="o">+</span> <span class="s2">" timed out"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">client</span><span class="p">.</span><span class="nx">connect</span><span class="p">({</span>
+  <span class="na">host</span><span class="p">:</span> <span class="s2">"127.0.0.1"</span><span class="p">,</span>
+  <span class="na">port</span><span class="p">:</span> <span class="s2">"5000"</span><span class="p">,</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="c1">// get details about myself</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">client</span><span class="p">.</span><span class="nx">details</span><span class="p">);</span>
+
+  <span class="c1">// try an action</span>
+  <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s2">"mykey"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s2">"myValue"</span> <span class="p">};</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">actionWithParams</span><span class="p">(</span><span class="s2">"cacheTest"</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">apiResposne</span><span class="p">,</span> <span class="nx">delta</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"cacheTest action response: "</span> <span class="o">+</span> <span class="nx">apiResposne</span><span class="p">.</span><span class="nx">cacheTestResults</span><span class="p">.</span><span class="nx">saveResp</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" ~ request duration: "</span> <span class="o">+</span> <span class="nx">delta</span> <span class="o">+</span> <span class="s2">"ms"</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="c1">// join a chat room and talk</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">roomAdd</span><span class="p">(</span><span class="s2">"defaultRoom"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="s2">"defaultRoom"</span><span class="p">,</span> <span class="s2">"Hello from the actionheroClient"</span><span class="p">);</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">roomLeave</span><span class="p">(</span><span class="s2">"defaultRoom"</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="c1">// leave</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"all done!"</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+
+<span class="p">});</span>
+</code></pre>
+
+<p>The main <code class="prettyprint">trick</code> to working with TCP/wire connections directly is to remember that you can have many &#39;pending&rsquo; requests at the same time.  Also, the order in which you receive responses back can be variable.  if you request <code class="prettyprint">slowAction</code> and then <code class="prettyprint">fastAction</code>, it&rsquo;s fairly likely that you will get a response to <code class="prettyprint">fastAction</code> first.</p>
+
+<p>Note that only requests the client makes increment the <code class="prettyprint">messageCount</code>, but broadcasts do not (the <code class="prettyprint">say</code> command, etc)</p>
+
+<p><a href="https://github.com/evantahler/actionhero-client">The actionhero client library</a> uses TCP/TLS connections, and makes use of actionhero&rsquo;s <code class="prettyprint">messageCount</code> parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:</p>

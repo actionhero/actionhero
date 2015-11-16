@@ -162,6 +162,10 @@ module.exports = {
         api.resque.queue.retryAndRemoveFailed(failedJob, callback);
       },
 
+      cleanOldWorkers: function(age, callback){
+        api.resque.queue.cleanOldWorkers(age, callback);
+      },
+
       enqueueRecurrentJob: function(taskName, callback){
         var self = this;
         var task = self.tasks[taskName];

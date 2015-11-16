@@ -1,0 +1,160 @@
+<h1 id="servers">Servers</h1>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">initialize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+
+  <span class="c1">//////////</span>
+  <span class="c1">// INIT //</span>
+  <span class="c1">//////////</span>
+
+  <span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="s2">"test"</span>
+  <span class="kd">var</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">canChat</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">logConnections</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">logExits</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">sendWelcomeMessage</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">verbs</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="p">}</span>
+
+  <span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">api</span><span class="p">.</span><span class="nx">genericServer</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">attributes</span><span class="p">);</span>
+
+  <span class="c1">//////////////////////</span>
+  <span class="c1">// REQUIRED METHODS //</span>
+  <span class="c1">//////////////////////</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">next</span><span class="p">){}</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">next</span><span class="p">){}</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">sendMessage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">messageCount</span><span class="p">){}</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">sendFile</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">fileStream</span><span class="p">,</span> <span class="nx">mime</span><span class="p">,</span> <span class="nx">length</span><span class="p">){};</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">goodbye</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">reason</span><span class="p">){};</span>
+
+  <span class="c1">////////////</span>
+  <span class="c1">// EVENTS //</span>
+  <span class="c1">////////////</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"connection"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){});</span>
+
+  <span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'actionComplete'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+    <span class="nx">completeResponse</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="c1">/////////////</span>
+  <span class="c1">// HELPERS //</span>
+  <span class="c1">/////////////</span>
+
+  <span class="nx">next</span><span class="p">(</span><span class="nx">server</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">/////////////////////////////////////////////////////////////////////</span>
+<span class="c1">// exports</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">initialize</span> <span class="o">=</span> <span class="nx">initialize</span><span class="p">;</span>
+
+</code></pre>
+
+<p>In actionhero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In actionhero, the goal of each server is to ingest a specific type of connection and transform each client into a generic <code class="prettyprint">connection</code> object which can be operated on by the rest of actionhero.  To help with this, all servers extend <code class="prettyprint">api.genericServer</code> and fill in the required methods.</p>
+
+<p>To get started, you can use the <code class="prettyprint">generateServer action</code> (name is required).  This will generate a template server which looks like this =&gt; </p>
+
+<p>Like initializers, the <code class="prettyprint">start()</code> and <code class="prettyprint">stop()</code> methods will be called when the server is to boot up in actionhero&rsquo;s lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: <code class="prettyprint">https.createServer.listen</code>, etc).</p>
+
+<h2 id="designing-servers">Designing Servers</h2>
+<pre class="highlight javascript"><code>
+<span class="nx">server</span><span class="p">.</span><span class="nx">buildConnection</span><span class="p">({</span>
+  <span class="na">rawConnection</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">req</span><span class="p">:</span> <span class="nx">req</span><span class="p">,</span> 
+    <span class="na">res</span><span class="p">:</span> <span class="nx">res</span><span class="p">,</span> 
+    <span class="na">method</span><span class="p">:</span> <span class="nx">method</span><span class="p">,</span> 
+    <span class="na">cookies</span><span class="p">:</span> <span class="nx">cookies</span><span class="p">,</span> 
+    <span class="na">responseHeaders</span><span class="p">:</span> <span class="nx">responseHeaders</span><span class="p">,</span> 
+    <span class="na">responseHttpCode</span><span class="p">:</span> <span class="nx">responseHttpCode</span><span class="p">,</span>
+    <span class="na">parsedURL</span><span class="p">:</span> <span class="nx">parsedURL</span>
+  <span class="p">},</span> 
+  <span class="na">id</span><span class="p">:</span> <span class="nx">randomNumber</span><span class="p">(),</span> 
+  <span class="na">remoteAddress</span><span class="p">:</span> <span class="nx">remoteIP</span><span class="p">,</span> 
+  <span class="na">remotePort</span><span class="p">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">connection</span><span class="p">.</span><span class="nx">remotePort</span><span class="p">}</span>
+<span class="p">);</span> <span class="c1">// will emit "connection"</span>
+
+<span class="c1">// Note that connections will have a `rawConnection` property.  This is where you should store the actual object(s) returned by your server so that you can use them to communicate back with the client.  Again, an example from the `web` server:</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">sendMessage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">message</span><span class="p">){</span>
+   <span class="nx">cleanHeaders</span><span class="p">(</span><span class="nx">connection</span><span class="p">);</span>
+   <span class="kd">var</span> <span class="nx">headers</span> <span class="o">=</span> <span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">responseHeaders</span><span class="p">;</span>
+   <span class="kd">var</span> <span class="nx">responseHttpCode</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">responseHttpCode</span><span class="p">);</span>
+   <span class="kd">var</span> <span class="nx">stringResponse</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span>
+   <span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="nx">responseHttpCode</span><span class="p">,</span> <span class="nx">headers</span><span class="p">);</span>
+   <span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">stringResponse</span><span class="p">);</span>
+   <span class="nx">server</span><span class="p">.</span><span class="nx">destroyConnection</span><span class="p">(</span><span class="nx">connection</span><span class="p">);</span>
+ <span class="p">}</span>
+
+</code></pre>
+
+<p>Your job, as a server designer, is to coerce every client&rsquo;s connection into a connection object.  This is done with the <code class="prettyprint">sever.buildConnection</code> helper.  Here is an example from the <code class="prettyprint">web</code> server:</p>
+
+<h2 id="options-and-attributes">Options and Attributes</h2>
+
+<p>A server defines <code class="prettyprint">attributes</code> which define it&rsquo;s behavior.  Variables like <code class="prettyprint">canChat</code> are defined here.  <code class="prettyprint">options</code> are passed in, and come from <code class="prettyprint">api.config.servers[serverName]</code>.  These can be new variables (like https?) or they can also overwrite the set <code class="prettyprint">attributes</code>.</p>
+
+<p>The required attributes are provided in a generated server.</p>
+
+<h2 id="verbs">Verbs</h2>
+<pre class="highlight javascript"><code><span class="nx">allowedVerbs</span><span class="err">:</span> <span class="p">[</span>
+      <span class="s2">"quit"</span><span class="p">,</span> 
+      <span class="s2">"exit"</span><span class="p">,</span>
+      <span class="s2">"paramAdd"</span><span class="p">,</span>
+      <span class="s2">"paramDelete"</span><span class="p">,</span>
+      <span class="s2">"paramView"</span><span class="p">,</span>
+      <span class="s2">"paramsView"</span><span class="p">,</span>
+      <span class="s2">"paramsDelete"</span><span class="p">,</span>
+      <span class="s2">"roomChange"</span><span class="p">,</span>
+      <span class="s2">"roomView"</span><span class="p">,</span>
+      <span class="s2">"listenToRoom"</span><span class="p">,</span>
+      <span class="s2">"silenceRoom"</span><span class="p">,</span>
+      <span class="s2">"detailsView"</span><span class="p">,</span>
+      <span class="s2">"say"</span>
+    <span class="p">]</span>
+</code></pre>
+
+<p>When an incoming message is detected, it is the server&rsquo;s job to build <code class="prettyprint">connection.params</code>.  In the <code class="prettyprint">web</code> server, this is accomplished by reading GET, POST, and form data.  For <code class="prettyprint">websocket</code> clients, that information is expected to be emitted as part of the action&rsquo;s request.  For other clients, like <code class="prettyprint">socket</code>, actionhero provides helpers for long-lasting clients to operate on themselves.  These are called connection <code class="prettyprint">verbs</code>.</p>
+
+<p>Clients use verbs to add params to themselves, update the chat room they are in, and more.   The list of verbs currently supported is =&gt; </p>
+
+<p>Your server should be smart enough to tell when a client is trying to run an action, request a file, or use a verb.  One of the attributes of each server is <code class="prettyprint">allowedVerbs</code>, which defines what verbs a client is allowed to preform.  A simplified example of how the <code class="prettyprint">socket</code> server does this:</p>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">parseRequest</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">line</span><span class="p">){</span>
+   <span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="nx">line</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">" "</span><span class="p">);</span>
+   <span class="kd">var</span> <span class="nx">verb</span> <span class="o">=</span> <span class="nx">words</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+   <span class="k">if</span><span class="p">(</span><span class="nx">verb</span> <span class="o">==</span> <span class="s2">"file"</span><span class="p">){</span>
+     <span class="k">if</span> <span class="p">(</span><span class="nx">words</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+       <span class="nx">connection</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">file</span> <span class="o">=</span> <span class="nx">words</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+     <span class="p">}</span>
+     <span class="nx">server</span><span class="p">.</span><span class="nx">processFile</span><span class="p">(</span><span class="nx">connection</span><span class="p">);</span>
+   <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+     <span class="nx">connection</span><span class="p">.</span><span class="nx">verbs</span><span class="p">(</span><span class="nx">verb</span><span class="p">,</span> <span class="nx">words</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+       <span class="k">if</span><span class="p">(</span><span class="nx">error</span> <span class="o">==</span> <span class="kc">null</span><span class="p">){</span>
+         <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">{</span><span class="na">status</span><span class="p">:</span> <span class="s2">"OK"</span><span class="p">,</span> <span class="na">context</span><span class="p">:</span> <span class="s2">"response"</span><span class="p">,</span> <span class="na">data</span><span class="p">:</span> <span class="nx">data</span><span class="p">}</span>
+         <span class="nx">server</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span>
+       <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">error</span> <span class="o">===</span> <span class="s2">"verb not found or not allowed"</span><span class="p">){</span>
+         <span class="nx">connection</span><span class="p">.</span><span class="nx">error</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+         <span class="nx">connection</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="p">{};</span>
+         <span class="nx">server</span><span class="p">.</span><span class="nx">processAction</span><span class="p">(</span><span class="nx">connection</span><span class="p">);</span>
+       <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+         <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">{</span><span class="na">status</span><span class="p">:</span> <span class="nx">error</span><span class="p">,</span> <span class="na">context</span><span class="p">:</span> <span class="s2">"response"</span><span class="p">,</span> <span class="na">data</span><span class="p">:</span> <span class="nx">data</span><span class="p">}</span>
+         <span class="nx">server</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">connection</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span>
+       <span class="p">}</span>
+     <span class="p">});</span>
+   <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre>
+
+<h2 id="chat">Chat</h2>
+
+<p>The <code class="prettyprint">attribute</code> &ldquo;canChat&rdquo; defines if clients of this server can chat.  If clients can chat, they should be allowed to use vebs like &ldquo;roomChange&rdquo; and &ldquo;say&rdquo;.  They will also be sent messages in their room (and rooms they are listening too) automatically.</p>
+
+<h2 id="sending-responses">Sending Responses</h2>
+
+<p>All servers need to implement the <code class="prettyprint">server.sendMessage = function(connection, message, messageCount)</code> method so actionhero knows how to talk to each client.  This is likely to make use of <code class="prettyprint">connection.rawConnection</code>.  If you are writing a server for a persistent connection, it is likely you will need to respond with <code class="prettyprint">messageCount</code> so that the client knows which request your response is about (as they are not always going to get the responses in order).  </p>
+
+<h2 id="sending-files">Sending Files</h2>
+
+<p>Servers can optionally implement the <code class="prettyprint">server.sendFile = function(connection, error, fileStream, mime, length)</code> method.  This method is responsible for any connection-specific file transport (headers, chinking, encoding, etc). Note that fileStream is a <code class="prettyprint">stream</code> which should be <code class="prettyprint">pipe</code>d to the client.</p>

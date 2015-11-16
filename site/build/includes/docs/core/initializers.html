@@ -1,0 +1,40 @@
+<h1 id="initializers">Initializers</h1>
+
+<p>Initializers are the main way you expand your actionhero server.  This is where you connect to databases, modify the global <code class="prettyprint">api</code> object with new classes and helper methods, and set up your <a href="docs#middleware">middleware</a>.</p>
+
+<p>Initializers run in 3 phases coinciding with the lifecycles of the application: <code class="prettyprint">init</code>, <code class="prettyprint">start</code>, and <code class="prettyprint">stop</code>.  All <code class="prettyprint">init</code> steps happen before all <code class="prettyprint">start</code> steps.  Initializers can define both methods and priorities which will happen at each phase of the server&rsquo;s lifecycle.</p>
+
+<p>System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priroity level split is purely convention.</p>
+
+<p>In general, <code class="prettyprint">initialize()</code> methods should create prototypes and new objects, and <code class="prettyprint">start()</code> should boot things or connect to external resources.</p>
+
+<h2 id="format">Format</h2>
+<pre class="highlight javascript"><code><span class="c1">// initializers/stuffInit.js</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">loadPriority</span><span class="p">:</span>  <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">startPriority</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">stopPriority</span><span class="p">:</span>  <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">initialize</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">},</span>
+  <span class="na">start</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="c1">// connect to server</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">},</span>
+  <span class="na">stop</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="c1">// disconnect from server</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>To use a custom initializer, create a <code class="prettyprint">initializers</code> directory in your project. Export an object with at least one of <code class="prettyprint">start</code>, <code class="prettyprint">stop</code> or <code class="prettyprint">initialize</code> and specify your priorities.</p>
+
+<p>You can generate a file of this type with <code class="prettyprint">actionhero generateInitializer --name=stuffInit</code></p>
+
+<h2 id="errors">Errors</h2>
+
+<p>You can pass an error to the callback of any step in the initializer.  Doing so will cause actionhero to log the error and stop the server.  For example, you might throw an error if you cannot connect to an external service at boot, <a href="https://github.com/evantahler/ah-sequelize-plugin/blob/master/initializers/sequelize.js">like a database</a>. </p>

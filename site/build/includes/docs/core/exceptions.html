@@ -1,0 +1,81 @@
+<h1 id="actiondomains">actionDomains</h1>
+
+<p>actionhero will catch any uncaught exceptions which take place within actions or tasks if you enable <code class="prettyprint">api.config.general.actionDomains</code>.  These exceptions will be logged along with any relevant details which can be captured about the connection making the request.</p>
+
+<p>When this happens:</p>
+
+<ul>
+<li>clients will be sent <code class="prettyprint">connection.error</code> as defined in <code class="prettyprint">api.config.general.serverErrorMessage</code>
+
+<ul>
+<li>Web clients will also be sent the 500 (server error) header </li>
+</ul></li>
+<li>Exceptions created in tasks will also be logged, and the task will return its callback
+
+<ul>
+<li>If the Exception occurred within a periodic task, the task will not be re-enqueued.</li>
+</ul></li>
+</ul>
+
+<p>Keep in mind that any application-wide settings which may have been modified in this erroneous action/task will <strong>not</strong> be rolled-back.</p>
+
+<p>Other exceptions, perhaps occurring in an initializer, will not be caught.  These are probably serious and should be investigated, and are allowed to crash the server.</p>
+
+<p><strong>This feature relies on domains, and you shold not enable this in production</strong>.</p>
+
+<h2 id="custom-error-reporters">Custom Error Reporters</h2>
+
+<p><code class="prettyprint">api.exceptionHandlers.reporters</code> is an array that contains all the error reporters.  Upon an uncaught exception from an error or task, all the reporters in the array will be invoked with <code class="prettyprint">(err, type, name, objects, severity)</code>.  You can remove the default <code class="prettyprint">stdout</code> reporter by setting <code class="prettyprint">api.exceptionHandlers.reporters = [];</code></p>
+
+<p>So, say you wanted to send yourself an email when an error occured:</p>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">nodemailer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'nodemailer'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">transporter</span> <span class="o">=</span> <span class="nx">nodemailer</span><span class="p">.</span><span class="nx">createTransport</span><span class="p">({</span>
+    <span class="na">service</span><span class="p">:</span> <span class="s1">'Gmail'</span><span class="p">,</span>
+    <span class="na">auth</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">user</span><span class="p">:</span> <span class="s1">'gmail.user@gmail.com'</span><span class="p">,</span>
+        <span class="na">pass</span><span class="p">:</span> <span class="s1">'userpass'</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">emailErrorReporter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">objects</span><span class="p">,</span> <span class="nx">severity</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">lines</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'! Error: '</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span> <span class="o">+</span> <span class="s1">' @ '</span> <span class="o">+</span> <span class="nx">severity</span><span class="p">);</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     When: '</span> <span class="o">+</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">());</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Env: '</span>  <span class="o">+</span> <span class="nx">api</span><span class="p">.</span><span class="nx">env</span><span class="p">);</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Type: '</span> <span class="o">+</span> <span class="nx">type</span><span class="p">);</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Name: '</span> <span class="o">+</span> <span class="nx">name</span><span class="p">);</span>
+  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Data: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">objects</span><span class="p">));</span>
+
+  <span class="kd">var</span> <span class="nx">mailOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">from</span><span class="p">:</span> <span class="s1">'actionhero@actionhero.com'</span><span class="p">,</span>
+    <span class="na">to</span><span class="p">:</span> <span class="s1">'you@site.com'</span><span class="p">,</span>
+    <span class="na">subject</span><span class="p">:</span> <span class="s1">'actionhero error!'</span><span class="p">,</span>
+    <span class="na">text</span><span class="p">:</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">"\r\n"</span><span class="p">)</span>
+  <span class="p">};</span>
+
+  <span class="nx">transporter</span><span class="p">.</span><span class="nx">sendMail</span><span class="p">(</span><span class="nx">mailOptions</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="nx">api</span><span class="p">.</span><span class="nx">exceptionHandlers</span><span class="p">.</span><span class="nx">reporters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">emailErrorReporter</span><span class="p">);</span>
+</code></pre>
+
+<h2 id="example-exception-output">Example Exception Output</h2>
+<pre class="highlight shell"><code>2012-09-30 22:02:03 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: <span class="o">{</span>no action<span class="o">}</span> | request: localhost:8080/ | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">""</span><span class="o">}</span> | duration: 1
+2012-09-30 22:02:07 | ! uncaught error from action: randomNumber
+2012-09-30 22:02:07 | ! connection details:
+2012-09-30 22:02:07 | !     action: <span class="s2">"randomNumber"</span>
+2012-09-30 22:02:07 | !     remoteIP: <span class="s2">"127.0.0.1"</span>
+2012-09-30 22:02:07 | !     <span class="nb">type</span>: <span class="s2">"web"</span>
+2012-09-30 22:02:07 | !     params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"randomNumber"</span><span class="o">}</span>
+2012-09-30 22:02:07 | ! ReferenceError: anUnsetVariable is not defined
+2012-09-30 22:02:07 | !     at Object.action.run <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/actions/randomNumber.js:18:14<span class="o">)</span>
+2012-09-30 22:02:07 | !     at api.processAction.process.nextTick.api.actions.<span class="o">(</span>anonymous <span class="k">function</span><span class="o">)</span>.run.connection.respondingTo <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/initializers/initActions.js:118:40<span class="o">)</span>
+2012-09-30 22:02:07 | !     at Domain.bind.b <span class="o">(</span>domain.js:201:18<span class="o">)</span>
+2012-09-30 22:02:07 | !     at Domain.run <span class="o">(</span>domain.js:141:23<span class="o">)</span>
+2012-09-30 22:02:07 | !     at api.processAction.process.nextTick.connection.respondingTo <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/initializers/initActions.js:117:21<span class="o">)</span>
+2012-09-30 22:02:07 | !     at process.startup.processNextTick.process._tickCallback <span class="o">(</span>node.js:244:9<span class="o">)</span>
+2012-09-30 22:02:07 | <span class="k">*</span>
+2012-09-30 22:02:07 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: randomNumber | request: localhost:8080/randomNumber | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"randomNumber"</span><span class="o">}</span> | duration: 4
+2012-09-30 22:02:23 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: status | request: localhost:8080/status | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"status"</span><span class="o">}</span> | duration: 1
+</code></pre>

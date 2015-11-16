@@ -1,0 +1,224 @@
+<h1 id="running-actionhero">Running actionhero</h1>
+
+<h2 id="the-actionhero-binary">The actionhero Binary</h2>
+<pre class="highlight shell"><code>Binary options:
+<span class="k">*</span> <span class="nb">help</span> <span class="o">(</span>default<span class="o">)</span>
+<span class="k">*</span> start
+<span class="k">*</span> startCluster
+<span class="k">*</span> generate
+<span class="k">*</span> generateAction
+<span class="k">*</span> generateTask
+<span class="k">*</span> generateInitializer
+<span class="k">*</span> generateServer
+
+Descriptions:
+
+<span class="k">*</span> actionhero <span class="nb">help
+  </span>will display this document
+
+<span class="k">*</span> actionhero generate
+  will prepare an empty directory with a template actionhero project
+
+<span class="k">*</span> actionhero generateAction --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --inputsRequired<span class="o">=[</span>inputsRequired] --inputsOptional<span class="o">=[</span>inputsOptional]
+  will generate a new action <span class="k">in</span> <span class="sb">`</span>actions<span class="sb">`</span>
+  <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
+  <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
+
+<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency] 
+  will generate a new task <span class="k">in</span> <span class="sb">`</span>tasks<span class="sb">`</span>
+  <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
+  <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
+  <span class="o">[</span>scope] <span class="o">(</span>optional<span class="o">)</span> can be <span class="s2">"any"</span> or <span class="s2">"all"</span>
+  <span class="o">[</span>frequency] <span class="o">(</span>optional<span class="o">)</span>
+
+<span class="k">*</span> actionhero generateInitializer --name<span class="o">=[</span>name]
+  will generate a new initializer <span class="k">in</span> <span class="sb">`</span>initializers<span class="sb">`</span>
+  <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
+
+<span class="k">*</span> actionhero generateServer --name<span class="o">=[</span>name]
+  will generate a new server <span class="k">in</span> <span class="sb">`</span>servers<span class="sb">`</span>
+  <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
+
+<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config/] --title<span class="o">=[</span>processTitle]  --daemon
+  will start a template actionhero server
+  this is the respondant to <span class="sb">`</span>npm start<span class="sb">`</span>
+  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG].
+  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false</span>
+
+<span class="k">*</span> actionhero startCluster --exec<span class="o">=[</span><span class="nb">command</span><span class="o">]</span> --workers<span class="o">=[</span>numWorkers] --pidfile<span class="o">=[</span>path] --log<span class="o">=[</span>path] --title<span class="o">=[</span>clusterTitle] --workerTitlePrefix<span class="o">=[</span>prefix] --config<span class="o">=[</span>/path/to/config]  --daemon
+  will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
+  <span class="o">[</span><span class="nb">exec</span><span class="o">]</span> <span class="o">(</span>optional<span class="o">)</span> <span class="nb">command </span><span class="k">for </span>the cluster-master to run to stat the workers
+  <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
+  <span class="o">[</span>pidfile] <span class="o">(</span>optional<span class="o">)</span> pidfile localtion <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /pids<span class="o">)</span>
+  <span class="o">[</span>log] <span class="o">(</span>optional<span class="o">)</span> logfile <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /log/cluster.log<span class="o">)</span>
+  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> default actionhero-master  Does not work on OSX/Windows
+  <span class="o">[</span>workerTitlePrefix] <span class="o">(</span>optional<span class="o">)</span> default actionhero-worker
+  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config <span class="k">for </span>workers, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG]
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false
+
+</span>More Help &amp; the actionhero documentation can be found @ http://actionherojs.com
+</code></pre>
+
+<p>The suggested method to run your actionhero server is to use the included <code class="prettyprint">./node_modules/.bin/actionhero</code> binary.  Note that there is no <code class="prettyprint">main.js</code> or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.</p>
+
+<p>At the time of this writing the actionhero binary&rsquo;s help contains:</p>
+
+<h2 id="linking-the-actionhero-binary">Linking the actionhero binary</h2>
+
+<ul>
+<li>If you installed actionhero globally (<code class="prettyprint">npm install actionhero -g</code>) you should have the <code class="prettyprint">actionhero</code> binary available to you within your shell at all times.</li>
+<li>Otherwise, you can reference the binary from either <code class="prettyprint">./node_modules/.bin/actionhero</code> or <code class="prettyprint">./node_modules/actionhero/bin/actionhero</code>.</li>
+<li>If you installed actionhero locally, you can add a reference to your path (OSX and Linux): <code class="prettyprint">export PATH=$PATH:node_modules/.bin</code> to be able to use simpler commands, IE <code class="prettyprint">actionhero start</code>. On windows this can be done by running <code class="prettyprint">set PATH=%PATH%;%cd%\node_modules\.bin</code> at command prompt (not powershell).</li>
+</ul>
+
+<h2 id="environments-and-config">Environments and Config</h2>
+
+<p>By default, actionhero will use the settings found in the <code class="prettyprint">exports.default</code> blocks in <code class="prettyprint">/config/</code>.  However, you can set environment-specfic overrides or changes.  actionhero inspects <code class="prettyprint">process.env.NODE_ENV</code> to load up runtime configuration overrides from <code class="prettyprint">exports.#{env}</code> blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.</p>
+
+<p>The load order of configs is:
+- default values in <code class="prettyprint">/config</code>
+- environment-specific values in <code class="prettyprint">/config</code>
+- options passed in to boot with <code class="prettyprint">actionhero.start({configChanges: configChanges}, callback)</code></p>
+
+<h2 id="programatic-use-of-actionhero">Programatic Use of actionhero</h2>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">actionheroPrototype</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"actionhero"</span><span class="p">).</span><span class="nx">actionheroPrototype</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">actionhero</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">actionheroPrototype</span><span class="p">();</span>
+
+<span class="kd">var</span> <span class="nx">timer</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">;</span>
+<span class="nx">actionhero</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
+
+  <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt;&gt; Boot Successful!"</span><span class="p">);</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt;&gt; restarting server..."</span><span class="p">);</span>
+    <span class="nx">actionhero</span><span class="p">.</span><span class="nx">restart</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
+
+      <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt;&gt; Restarted!"</span><span class="p">);</span>
+      <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+        <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt;&gt; stopping server..."</span><span class="p">);</span>
+        <span class="nx">actionhero</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">api</span><span class="p">){</span>
+
+          <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" &gt;&gt; Stopped!"</span><span class="p">);</span>
+          <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
+
+        <span class="p">});</span>
+      <span class="p">},</span> <span class="nx">timer</span><span class="p">);</span>
+    <span class="p">})</span>
+  <span class="p">},</span> <span class="nx">timer</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+
+<p>While <strong>NOT</strong> encouraged, you can always instantiate an actionhero server yourself.  Perhaps you wish to combine actionhero with an existing project.  Here&rsquo;s how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.  </p>
+
+<p>Feel free to look at the source of <code class="prettyprint">./node_modules/actionhero/bin/include/start</code> to see how the main actionhero server is implemented for more information.</p>
+
+<p>You can programmatically control an actionhero server with <code class="prettyprint">actionhero.start(params, callback)</code>, <code class="prettyprint">actionhero.stop(callback)</code> and <code class="prettyprint">actionhero.restart(callback)</code></p>
+
+<p>From within actionhero itself (actions, initilizers, etc), you can use <code class="prettyprint">api.commands.start</code>, <code class="prettyprint">api.commands.stop</code>, and <code class="prettyprint">api.commands.restart</code> to control the server. </p>
+
+<h2 id="grunt">Grunt</h2>
+<pre class="highlight javascript"><code><span class="c1">// A custom GRUNT actionhero task</span>
+<span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">'myTask'</span><span class="p">,</span><span class="s1">'description of task'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">async</span><span class="p">()</span>
+  <span class="nx">grunt</span><span class="p">.</span><span class="nx">startActionhero</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+    <span class="c1">// your logic here</span>
+
+    <span class="nx">done</span><span class="p">()</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+
+<p>actionhero integrates with <a href="http://gruntjs.com/">grunt</a> to allow you to tun manual tasks within actionhero&rsquo;s environment.  Those of you coming from Ruby, grunt is very similar to <code class="prettyprint">rake</code> or <code class="prettyprint">make</code>.</p>
+
+<p>To use grunt, you should install grunt globally <code class="prettyprint">npm install -g grunt-cli</code></p>
+
+<p>actionhero will generate a few example tasks in <code class="prettyprint">./gruntfile.js</code> to help you save and restore the cache and manage tasks.  Most importantly, an <code class="prettyprint">init</code> wrapper is defined for you.  Require this in all of you tasks so you can have access to the <code class="prettyprint">api</code> object. Note that all your grunt tasks should be async (<code class="prettyprint">var done = this.async()</code>), and you will need to call <code class="prettyprint">done()</code> at the conclustion of the task. </p>
+
+<p>You will have access to all of your initializers, actions, and tasks within the api object.  <code class="prettyprint">api</code> will represent an initialized sever, but not a started one.  Your initializer&rsquo;s &ldquo;_start&rdquo; methods will not be run, nor will the servers be started.  For example:</p>
+
+<p>As always, you can list your project&rsquo;s grunt tasks with <code class="prettyprint">grunt -help</code></p>
+<pre class="highlight shell"><code><span class="c"># Checking the existing actionhero grunt commands</span>
+<span class="gp">&gt; </span>grunt --help
+
+                   list  List your actions and metadata
+enqueueAllPeriodicTasks  This will enqueue all periodic tasks <span class="o">(</span>could lead to
+                         duplicates<span class="o">)</span>
+    enqueuePeriodicTask  Enqueue a periodic task <span class="o">(</span>:taskName<span class="o">)</span>
+       stopPeriodicTask  Remove an enqueued periodic task <span class="o">(</span>:taskName<span class="o">)</span>
+             flushRedis  Clear the entire actionhero redis database
+             clearCache  Clear the actionhero cache
+              dumpCache  Save the current cache as a JSON object <span class="o">(</span>:file<span class="o">)</span>
+              loadCache  Set the cache from a file <span class="o">(</span>overwrites existing cache<span class="o">)</span>
+                         <span class="o">(</span>:file<span class="o">)</span>
+</code></pre>
+
+<p>You can <a href="http://gruntjs.com/">learn more about grunt here</a>.</p>
+
+<h2 id="signals">Signals</h2>
+<pre class="highlight shell"><code><span class="gp">&gt; </span>./node_modules/.bin/actionhero startCluster --workers<span class="o">=</span>2
+info: actionhero &gt;&gt; startCluster
+notice:  - STARTING CLUSTER -
+notice: pid: 41382
+info: starting worker <span class="c">#1</span>
+info: worker 41383 <span class="o">(</span><span class="c">#1) has spawned</span>
+info: Worker <span class="c">#1 [41383]: starting</span>
+info: Worker <span class="c">#1 [41383]: started</span>
+info: starting worker <span class="c">#2</span>
+info: worker 41384 <span class="o">(</span><span class="c">#2) has spawned</span>
+info: Worker <span class="c">#2 [41384]: starting</span>
+info: Worker <span class="c">#2 [41384]: started</span>
+
+<span class="c"># A new terminal</span>
+<span class="nb">kill</span> -s TTIN <span class="sb">`</span>cat pids/cluster_pidfile<span class="sb">`</span>
+
+info: worker 41632 <span class="o">(</span><span class="c">#3) has spawned</span>
+info: Worker <span class="c">#3 [41632]: starting</span>
+info: Worker <span class="c">#3 [41632]: started</span>
+
+<span class="c"># A new terminal</span>
+<span class="nb">kill</span> -s KILL <span class="sb">`</span>cat pids/cluster_pidfile<span class="sb">`</span>
+
+warning: Cluster manager quitting
+info: Stopping each worker...
+info: Worker <span class="c">#1 [41901]: stopping</span>
+info: Worker <span class="c">#2 [41904]: stopping</span>
+info: Worker <span class="c">#3 [41906]: stopping</span>
+info: Worker <span class="c">#3 [41906]: stopped</span>
+info: Worker <span class="c">#2 [41904]: stopped</span>
+info: Worker <span class="c">#1 [41901]: stopped</span>
+alert: worker 41901 <span class="o">(</span><span class="c">#1) has exited</span>
+alert: worker 41904 <span class="o">(</span><span class="c">#2) has exited</span>
+alert: worker 41906 <span class="o">(</span><span class="c">#3) has exited</span>
+info: all workers gone
+notice: cluster <span class="nb">complete</span>, Bye!
+</code></pre>
+
+<p>actionhero is intended to be run on <code class="prettyprint">*nix</code> operating systems.  The <code class="prettyprint">start</code> and <code class="prettyprint">startCluster</code> commands provide support for signaling. (There is limited support for some of these commands in windows).</p>
+
+<p><strong>actionhero start</strong></p>
+
+<ul>
+<li><code class="prettyprint">kill</code> / <code class="prettyprint">term</code> / <code class="prettyprint">int</code> : Process will attempt to &ldquo;gracefully&rdquo; shut down.  That is, the worker will close all server connections (possibly sending a shutdown message to clients, depending on server type), stop all task workers, and eventually shut down.  This action may take some time to fully complete.</li>
+<li><code class="prettyprint">USR2</code>: Process will restart itself.  The process will preform the &ldquo;graceful shutdown&rdquo; above, and they restart.</li>
+</ul>
+
+<p><strong>actionhero startCluster</strong></p>
+
+<p>All signals should be sent to the cluster master process.  You can still signal the termination of a worker, but the cluster manager will start a new one in its place.</p>
+
+<ul>
+<li><code class="prettyprint">kill</code> / <code class="prettyprint">term</code> / <code class="prettyprint">int</code>:  Will signal the master to &ldquo;gracefully terminate&rdquo; all workers.  Master will terminate once all workers have completed</li>
+<li><code class="prettyprint">USR2</code> / <code class="prettyprint">HUP</code> : &ldquo;Hot reload&rdquo;.  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.</li>
+<li><code class="prettyprint">WINCH</code>: &ldquo;Gracefully terminate&rdquo; all workers.  Only the master will remain running</li>
+<li><code class="prettyprint">TTOU</code>: remove one worker</li>
+<li><code class="prettyprint">TTIN</code>: add one worker</li>
+</ul>
+
+<h2 id="windows-specific-notes">Windows-Specific Notes</h2>
+
+<ul>
+<li>Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell. </li>
+<li>Sometimes, npm will not install the actionhero binary @ <code class="prettyprint">/node_modules/.bin/actionhero</code>, but rather it will attempt to create a windows executable and wrapper.  You can launch actionhero directly with <code class="prettyprint">./node_modules/actionhero/bin/actionhero</code></li>
+</ul>
