@@ -55,6 +55,31 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('will properly destroy connections', function(){
+
+    it('works for the API', function(done){
+      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      request.get(url + '/api/sleepTest', function(){
+        api.utils.hashLength( api.connections.connections ).should.equal(0);
+        setTimeout(done, 100);
+      });
+
+      setTimeout(function(){
+        api.utils.hashLength( api.connections.connections ).should.equal(1);
+      }, 100);
+    });
+
+    it('works for files', function(done){
+      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      request.get(url + '/simple.html', function(){
+        setTimeout(function(){
+          api.utils.hashLength( api.connections.connections ).should.equal(0);
+          done();
+        }, 100);
+      });
+    });
+  });
+
   describe('errors', function(){
 
     before(function(done){
