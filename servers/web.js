@@ -143,7 +143,8 @@ var initialize = function(api, options, next){
       }
     }
 
-    connection.rawConnection.res.on('end', function(){ 
+    // note: the 'end' event may not fire on some OSes; finish will
+    connection.rawConnection.res.on('finish', function(){ 
       connection.destroy(); 
     });
 
