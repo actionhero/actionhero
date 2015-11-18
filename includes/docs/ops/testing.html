@@ -1,0 +1,119 @@
+<h1 id="testing">Testing</h1>
+
+<p>actionhero provides test helpers so that you may try your actions and tasks within a headless environment. We do this by including a <code class="prettyprint">specHelper</code> initializer which creates a server, <code class="prettyprint">testServer</code> when running within the test environment.  Via the <code class="prettyprint">testServer</code>, you can easily call actions or tasks without making a real request.</p>
+
+<p>We have chosen <a href="http://mochajs.org/">mocha</a> as our test framework and <a href="https://github.com/visionmedia/should.js/">should</a> as our assertion tool which are included as dependancies within all new projects.  You do not need to use these testing tools, but an example will be provided which makes use of them.</p>
+
+<p>You also don&rsquo;t need to use these test helpers, and you may want to make a &lsquo;real&rsquo; http or websocket request to test something specific.  If this is the case, you can <a href="https://github.com/evantahler/actionhero/tree/master/test/servers">check out how actionhero tests its own servers</a> for examples.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>To run a mocha test suite, you invoke the mocha binary, <code class="prettyprint">./node_modules/.bin/mocha</code>.  This will tell mocha to look in your <code class="prettyprint">./test</code> folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on <a href="http://mochajs.org/">Mocha&rsquo;s website</a></p>
+
+<p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L62"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
+
+<p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/core/servers.html">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
+
+<h2 id="example-test">Example Test</h2>
+<pre class="highlight javascript"><code><span class="c1">// ./test/integartion/actions/randomNumber.js</span>
+
+<span class="kd">var</span> <span class="nx">should</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'should'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">actionheroPrototype</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'actionhero'</span><span class="p">).</span><span class="nx">actionheroPrototype</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">actionhero</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">actionheroPrototype</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">api</span><span class="p">,</span> <span class="nx">firstNumber</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'Action: RandomNumber'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+
+  <span class="nx">before</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">){</span>
+    <span class="nx">actionhero</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">a</span><span class="p">){</span>
+      <span class="nx">api</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">})</span>
+  <span class="p">});</span>
+
+  <span class="nx">after</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">){</span>
+    <span class="nx">actionhero</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">'generates random numbers'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">specHelper</span><span class="p">.</span><span class="nx">runAction</span><span class="p">(</span><span class="s1">'randomNumber'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nb">Number</span><span class="p">;</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">within</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+      <span class="nx">firstNumber</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span><span class="p">;</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">it</span><span class="p">(</span><span class="s1">'is unique / random'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">specHelper</span><span class="p">.</span><span class="nx">runAction</span><span class="p">(</span><span class="s1">'randomNumber'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nb">Number</span><span class="p">;</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">not</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">firstNumber</span><span class="p">);</span>
+      <span class="nx">done</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+<span class="p">});</span>
+</code></pre>
+
+<p>Say you had an action that was supposed to respond with a <code class="prettyprint">randomNumber</code>, and you wanted to write a test for it.  </p>
+
+<p>More details on the specHelper methods are below.</p>
+
+<p>If you want to see fuller example of how to create an integration test within actionhero, please <a href="https://github.com/evantahler/actionhero-tutorial#testing">check out the tutorial</a></p>
+
+<h2 id="test-methods">Test Methods</h2>
+
+<h3 id="new-api-spechelper-connection">new api.specHelper.connection()</h3>
+
+<ul>
+<li>generate a new connection object for the <code class="prettyprint">testServer</code></li>
+<li>this connection can run actions, chat, etc.</li>
+<li><code class="prettyprint">connection.messages</code> will contain all messages the connection has been sent (welcome messages, action responses, say messages, etc)</li>
+</ul>
+
+<h3 id="api-spechelper-runaction-actionname-input-callback">api.specHelper.runAction(actionName, input, callback)</h3>
+
+<ul>
+<li>use this method to run an action</li>
+<li><code class="prettyprint">input</code> can be either a <code class="prettyprint">api.specHelper.connection</code> object, or simply a hash of params, IE: <code class="prettyprint">{key: &#39;value&#39;}</code></li>
+<li>the callback returns <code class="prettyprint">message</code> and <code class="prettyprint">connection</code>.</li>
+<li>example use:</li>
+</ul>
+<pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">specHelper</span><span class="p">.</span><span class="nx">runAction</span><span class="p">(</span><span class="s1">'cacheTest'</span><span class="p">,</span> <span class="p">{</span><span class="na">key</span><span class="p">:</span> <span class="s1">'key'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s1">'value'</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">connection</span><span class="p">){</span>
+  <span class="c1">// message is the normal API response;</span>
+  <span class="c1">// connection is a new connection object</span>
+<span class="p">})</span>
+</code></pre>
+
+<h3 id="api-spechelper-getstaticfile-file-callback">api.specHelper.getStaticFile(file, callback)</h3>
+
+<ul>
+<li>request a file in <code class="prettyprint">/public</code> from the server</li>
+<li>the callback returns <code class="prettyprint">message</code> and <code class="prettyprint">connection</code> where <code class="prettyprint">message</code> is a hash:</li>
+</ul>
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">error</span>    <span class="p">:</span> <span class="nx">error</span><span class="p">,</span>  <span class="c1">// null if everything is OK</span>
+  <span class="na">content</span>  <span class="p">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>  <span class="c1">// string representation of the file's body</span>
+  <span class="na">mime</span>     <span class="p">:</span> <span class="nx">mime</span><span class="p">,</span>  <span class="c1">// file mime</span>
+  <span class="na">length</span>   <span class="p">:</span> <span class="nx">length</span>  <span class="c1">// bytes</span>
+<span class="p">}</span>
+</code></pre>
+
+<h3 id="api-spechelper-runtask-taskname-params-callback">api.specHelper.runTask(taskName, params, callback)</h3>
+
+<ul>
+<li>callback may or may not return anything depending on your task&rsquo;s makeup</li>
+</ul>
+<pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">specHelper</span><span class="p">.</span><span class="nx">runTask</span><span class="p">(</span><span class="s1">'sendEmailTask'</span><span class="p">,</span> <span class="p">{</span><span class="na">message</span><span class="p">:</span> <span class="s1">'hello'</span> <span class="na">to</span><span class="p">:</span> <span class="s1">'evan@test.com'</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+  <span class="c1">// test it!</span>
+  <span class="c1">// remember that the task really will be run, so be sure that the test environment is set properly</span>
+<span class="p">})</span>
+</code></pre>
+
+<h2 id="notes">Notes</h2>
+
+<ul>
+<li>be sure to run your tests in the <code class="prettyprint">test</code> environment, setting the shell&rsquo;s env with <code class="prettyprint">NODE_ENV=test</code>.  You can alternatively set this explicitly in your tests with <code class="prettyprint">process.env.NODE_ENV = &#39;test&#39;</code></li>
+</ul>

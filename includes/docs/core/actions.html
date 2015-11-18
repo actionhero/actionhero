@@ -1,0 +1,257 @@
+<h1 id="actions">Actions</h1>
+
+<h2 id="general">General</h2>
+<pre class="highlight javascript"><code><span class="c1">/////////////////////</span>
+<span class="c1">// A Simple Action //</span>
+<span class="c1">/////////////////////</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'I am an API method which will generate a random number'</span><span class="p">,</span>
+  <span class="na">outputExample</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">randomNumber</span><span class="p">:</span> <span class="mf">0.123</span>
+  <span class="p">},</span>
+
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">data</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+
+<span class="p">};</span>
+</code></pre>
+
+<p>The core of actionhero is the Action framework, and <strong>actions</strong> are the basic units of work.  All connection types from all servers can use actions.  This means that you only need to write an action once, and both HTTP clients and websocket clients can consume it.</p>
+
+<p>The goal of an action is to read <code class="prettyprint">data.params</code> (which are the arguments a connection provides), do work, and set the <code class="prettyprint">data.response</code> (and <code class="prettyprint">error</code> when needed) values to build the response to the client.</p>
+
+<p>You can create you own actions by placing them in a <code class="prettyprint">./actions/</code> folder at the root of your application.  You can use the generator with <code class="prettyprint">actionhero generateAction --name=myAction</code></p>
+
+<p>Here&rsquo;s an example of a simple action which will return a random number to the client:</p>
+
+<p>You can also define more than one action per file if you would like, to share common methods and componants (like input parsers):</p>
+<pre class="highlight javascript"><code>
+<span class="c1">/////////////////////////////////////////</span>
+<span class="c1">// A Combound Action with Shared Inputs//</span>
+<span class="c1">/////////////////////////////////////////</span>
+
+<span class="kd">var</span> <span class="nx">commonInputs</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">email</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">){</span>
+      <span class="kd">var</span> <span class="nx">re</span> <span class="o">=</span> <span class="sr">/^</span><span class="se">(([^</span><span class="sr">&lt;&gt;()[</span><span class="se">\]\\</span><span class="sr">.,;:</span><span class="se">\s</span><span class="sr">@</span><span class="se">\"]</span><span class="sr">+</span><span class="se">(\.[^</span><span class="sr">&lt;&gt;()[</span><span class="se">\]\\</span><span class="sr">.,;:</span><span class="se">\s</span><span class="sr">@</span><span class="se">\"]</span><span class="sr">+</span><span class="se">)</span><span class="sr">*</span><span class="se">)</span><span class="sr">|</span><span class="se">(\"</span><span class="sr">.+</span><span class="se">\"))</span><span class="sr">@</span><span class="se">((\[[</span><span class="sr">0-9</span><span class="se">]{1,3}\.[</span><span class="sr">0-9</span><span class="se">]{1,3}\.[</span><span class="sr">0-9</span><span class="se">]{1,3}\.[</span><span class="sr">0-9</span><span class="se">]{1,3}\])</span><span class="sr">|</span><span class="se">(([</span><span class="sr">a-zA-Z</span><span class="se">\-</span><span class="sr">0-9</span><span class="se">]</span><span class="sr">+</span><span class="se">\.)</span><span class="sr">+</span><span class="se">[</span><span class="sr">a-zA-Z</span><span class="se">]{2,}))</span><span class="sr">$/</span><span class="p">;</span>
+      <span class="k">if</span><span class="p">(</span> <span class="nx">re</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span> <span class="p">){</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'that is not a valid email address'</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">},</span>  
+  <span class="p">},</span> 
+  <span class="na">password</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">param</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'password should be at least 3 letters long'</span><span class="p">);</span>
+      <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">){</span>
+      <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
+    <span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// the actions</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">userAdd</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'userAdd'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'I add a user'</span><span class="p">,</span>
+  <span class="na">inputs</span><span class="p">:</span> <span class="nx">commonInputs</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="c1">// your code here</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">userDelete</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'userDelete'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'I delete a user'</span><span class="p">,</span>
+  <span class="na">inputs</span><span class="p">:</span> <span class="nx">commonInputs</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="c1">// your code here</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<h2 id="versions">Versions</h2>
+
+<p>ActionHero supports multiple versions of the same action.  This will allow you to support actions/routes of the same name with upgraded functionality.</p>
+
+<ul>
+<li>actions optionally have the <code class="prettyprint">action.version</code> attribute.</li>
+<li>a reserved param, <code class="prettyprint">apiVersion</code> is used to directly specify the version of an action a client may request.</li>
+<li>if a client doesn&rsquo;t specify an <code class="prettyprint">apiVersion</code>, they will be directed to the highest numerical version of that action.</li>
+</ul>
+
+<p>You can optionally create routes to handle your API versioning:</p>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="nx">routes</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">all</span><span class="p">:</span> <span class="p">[</span>
+    <span class="c1">// creates routes like `/api/myAction/1/` and `/api/myAction/2/`</span>
+    <span class="c1">// will also default `/api/myAction` to the latest version</span>
+    <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/myAction/:apiVersion"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"myAction"</span> <span class="p">},</span>
+
+    <span class="c1">// creates routes like `/api/1/myAction/` and `/api/2/myAction/`</span>
+    <span class="c1">// will also default `/api/myAction` to the latest version</span>
+    <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"/:apiVersion/myAction"</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s2">"myAction"</span> <span class="p">},</span>
+  <span class="p">]</span>
+<span class="p">};</span>
+</code></pre>
+
+<p><em>As a note, if a client accessing actionhero via routes does not provide an apiVersion and it is explicitly defined in the route, the highest number will not be assigned automatically, and will be seen as a routing error.</em></p>
+
+<h2 id="options">Options</h2>
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">// the action's name (the `exports` key doesn't matter)</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s2">"randomNumber"</span><span class="p">,</span>
+  <span class="c1">// the description</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"I am an API method which will generate a random number"</span><span class="p">,</span>
+  <span class="c1">// a hash of all the inputs this action will accept</span>
+  <span class="c1">// any inputs provided to the action not in this hash will be stripped</span>
+  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span> 
+    <span class="na">multiplier</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">required</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
+        <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+      <span class="p">},</span>
+      <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
+        <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+      <span class="p">},</span>
+      <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+      <span class="p">},</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="c1">// any middlewares to apply before/after this action</span>
+  <span class="c1">// global middleware will be applied automatically</span>
+  <span class="na">middleware</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="c1">// an example response</span>
+  <span class="na">outputExample</span><span class="p">:</span> <span class="p">{</span> <span class="na">randomNumber</span><span class="p">:</span> <span class="mi">123</span> <span class="p">},</span>
+  <span class="c1">// you can choose to block certain servers from using this action</span>
+  <span class="na">blockedConnectionTypes</span><span class="p">:</span> <span class="p">[</span><span class="s2">"webSocket"</span><span class="p">],</span>
+  <span class="c1">// how should this action be logged?</span>
+  <span class="na">logLevel</span><span class="p">:</span> <span class="s2">"warning"</span><span class="p">,</span>
+  <span class="c1">// (HTTP only) if the route for this action includes an extension (like .jpg), should the response MIME be adjusted to match?</span>
+  <span class="na">matchExtensionMimeType</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="c1">// should this action appear wthin `api.documentation.documentation`</span>
+  <span class="na">toDocument</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+    <span class="nx">data</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">data</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">multiplier</span><span class="p">;</span>
+    <span class="nx">next</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The complete set of options an action can have are:</p>
+
+<h2 id="inputs">Inputs</h2>
+<pre class="highlight javascript"><code><span class="nx">action</span><span class="p">.</span><span class="nx">inputs</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">// a simple input</span>
+  <span class="c1">// defaults assume required = false</span>
+  <span class="na">minimalInput</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="c1">// a complex input</span>
+  <span class="nl">multiplier</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
+      <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="p">},</span>
+    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
+      <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+    <span class="p">},</span>
+    <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+    <span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
+
+<p>The properties of an input are:</p>
+
+<ul>
+<li><code class="prettyprint">required</code> (boolean) 
+
+<ul>
+<li>Default: <code class="prettyprint">false</code></li>
+</ul></li>
+<li><code class="prettyprint">formatter = function(param, connection, actionTemplate)</code>
+
+<ul>
+<li>will return the new value of the param</li>
+<li>Default: The parameter is not reformatted</li>
+</ul></li>
+<li><code class="prettyprint">default = function(param, connection, actionTemplate)</code>
+
+<ul>
+<li>will return the default value of the param</li>
+<li>you can also have a static assignment for <code class="prettyprint">default</code> father than a function, ie: <code class="prettyprint">default: 123</code></li>
+<li>Default: Parameter has no default value</li>
+</ul></li>
+<li><code class="prettyprint">validator = function(param, connection, actionTemplate)</code>
+
+<ul>
+<li>should return <code class="prettyprint">true</code> if validation passed</li>
+<li>should return an error message if validation fails which will be returned to the client</li>
+<li>Default: Parameter is always valid</li>
+</ul></li>
+</ul>
+
+<p>You can define <code class="prettyprint">api.config.general.missingParamChecks = [null, &#39;&#39;, undefined]</code> to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit <code class="prettyprint">null</code> values in a JSON payload but not <code class="prettyprint">undefined</code>, you can now opt-in to that behavior.  This is what <code class="prettyprint">action.inputs.x.required = true</code> will check against.</p>
+
+<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not).</p>
+
+<h2 id="the-data-object">The Data Object</h2>
+<pre class="highlight javascript"><code><span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">connection</span><span class="p">:</span> <span class="nx">connection</span><span class="p">,</span>
+  <span class="na">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
+  <span class="na">toProcess</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">toRender</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">messageCount</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+  <span class="na">params</span><span class="p">:</span> <span class="p">{</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span> <span class="na">apiVersion</span><span class="p">:</span> <span class="mi">1</span> <span class="p">},</span>
+  <span class="na">actionStartTime</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+  <span class="na">response</span><span class="p">:</span> <span class="p">{},</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The <code class="prettyprint">data</code> object passed into your action captures the state of of the connection at the time the action was started.  Midleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the <code class="prettyprint">data</code> object:</p>
+
+<p>The goal of most actions is to do work and then modify the value of <code class="prettyprint">data.response</code>, which will eventually be sent down to the client.  </p>
+
+<p>You can also modify properties of the connection by accessing <code class="prettyprint">data.connection</code>, IE changing the response header for a HTTP request.  </p>
+
+<p>If you don&rsquo;t want your action to respond to the client, of you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set <code class="prettyprint">data.toRender = false;</code></p>
+
+<h2 id="using-middleware-in-actions">Using Middleware in Actions</h2>
+
+<p>You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, speficied in each action via <code class="prettyprint">action.middleware = []</code>.  Supply the <code class="prettyprint">names</code> of any middleware you want to use.</p>
+
+<p>You can <a href="/docs#middleware">learn more about middleware here</a>.</p>
+
+<h2 id="notes">Notes</h2>
+
+<ul>
+<li>Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code class="prettyprint">next(error)</code>.  If you have an erro, be sure that it is an <code class="prettyprint">new Error()</code> object, and not a string.</li>
+<li>The metadata <code class="prettyprint">outputExample</code> is used in reflexive and self-documenting actions in the API, available via the <code class="prettyprint">documentation</code> verb (and /api/ showDocumenation action).<br></li>
+<li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code class="prettyprint">api.config.general.simultaniousActions</code></li>
+<li><code class="prettyprint">actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code class="prettyprint">api.config.general.disableParamScrubbing</code>. Note that <a href="/docs#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
+<li><code class="prettyprint">matchExtensionMimeType</code> is curently only used by the <code class="prettyprint">web</code> server, and it indicates that if this action is successfully called by a client with <code class="prettyprint">connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
+<li>actionhero strives to keep the <code class="prettyprint">connection</code> object uniform among various client types, and more importantly, present <code class="prettyprint">data.params</code> in a homogenous way.  You can inspect <code class="prettyprint">connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code class="prettyprint">connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code class="prettyprint">connection.rawConnection = {req: req, res: res}</code> for example.<br>
+
+<ul>
+<li>You can learn more about some of the <code class="prettyprint">rawConnection</code> options by learning how to <a href="/docs#sending-files-from-actions">send files from actions</a>.</li>
+</ul></li>
+</ul>
+
+<p><a href="/docs#uploading-files">You can learn more about handling HTTP verbs and file uploads here</a> and <a href="/docs#files-and-routes">TCP Clients</a> and <a href="/docs#websocket-server">Web-Socket Clients</a></p>

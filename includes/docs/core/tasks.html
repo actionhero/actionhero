@@ -1,0 +1,374 @@
+<h1 id="tasks">Tasks</h1>
+
+<h2 id="general">General</h2>
+
+<p>Tasks are background jobs meant to be run separately from a client&rsquo;s request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the <a href="https://github.com/taskrabbit/node-resque">node-resque</a> package to store and process tasks in a way compatible with the <a href="https://github.com/resque/resque">resque</a> ecosystem.</p>
+
+<p>There are 3 types of tasks actionhero can process: <code class="prettyprint">normal</code>, <code class="prettyprint">delayed</code>, and <code class="prettyprint">periodic</code>.</p>
+
+<ul>
+<li><code class="prettyprint">normal</code> tasks are enqueued and processed one-by-one by the task TaskProcessors</li>
+<li><code class="prettyprint">delayed</code> tasks are enqueued in a special &lsquo;delayed&rsquo; queue to only be processed at some time in the future (defined either by a timestamp in ms or miliseconds-from-now)</li>
+<li><code class="prettyprint">periodic</code> tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).<br>
+
+<ul>
+<li>Periodic tasks can take no input parameters.</li>
+</ul></li>
+</ul>
+
+<h2 id="enqueuing-a-task">Enqueuing a Task</h2>
+<pre class="highlight javascript"><code><span class="c1">// Enqueue the task now, and process it ASAP</span>
+<span class="c1">// api.tasks.enqueue(nameOfTask, args, queue, callback)</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span><span class="s2">"sendWelcomeEmail"</span><span class="p">,</span> <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="s1">'evan@evantahler.com'</span><span class="p">},</span> <span class="s1">'default'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">toRun</span><span class="p">){</span>
+  <span class="c1">// enqueued!</span>
+<span class="p">});</span>
+
+<span class="c1">// Enqueue the task now, and process it once `timestamp` has arrived</span>
+<span class="c1">// api.tasks.enqueueAt(timestamp, nameOfTask, args, queue, callback)</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueueAt</span><span class="p">(</span><span class="mi">1234556</span><span class="p">,</span> <span class="s2">"sendWelcomeEmail"</span><span class="p">,</span> <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="s1">'evan@evantahler.com'</span><span class="p">},</span> <span class="s1">'default'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">toRun</span><span class="p">){</span>
+  <span class="c1">// enqueued!</span>
+<span class="p">});</span>
+
+<span class="c1">// Enqueue the task now, and process it once `delay` (ms) has passed</span>
+<span class="c1">// api.tasks.enqueueIn(delay, nameOfTask, args, queue, callback)</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueueIn</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="s2">"sendWelcomeEmail"</span><span class="p">,</span> <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="s1">'evan@evantahler.com'</span><span class="p">},</span> <span class="s1">'default'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">toRun</span><span class="p">){</span>
+  <span class="c1">// enqueued!</span>
+<span class="p">});</span>
+</code></pre>
+
+<p>Here are examples of the 3 ways to programatically enqueue a task.</p>
+
+<p>&ldquo;sendWelcomeEmail&rdquo; should be a task defined in the project, and <code class="prettyprint">{to: &#39;evan@evantahler.com&#39;}</code> are arguments to that task.  This task will be processed by TaskProcessors assigned to the &#39;default queue&rsquo;.</p>
+
+<p>You can also enqueue tasks to be run at some time in the future (timestamp is in ms):</p>
+
+<p><code class="prettyprint">enqueueAt</code> asks for a timestamp (in ms) to run at, and <code class="prettyprint">enqueueIn</code> asks for the number of ms from now to run.</p>
+
+<p>The final type of task, periodic tasks, are defined with a <code class="prettyprint">task.frequency</code> of greater than 0, and are loaded in by actionhero when it boots.  You cannot modify these tasks once the server is running.</p>
+
+<h2 id="processing-tasks">Processing Tasks</h2>
+<pre class="highlight javascript"><code><span class="c1">// From /config/tasks.js:</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="p">{</span> 
+  <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="c1">// Should this node run a scheduler to promote delayed tasks?</span>
+      <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="c1">// what queues should the TaskProcessors work?</span>
+      <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+      <span class="c1">// how long to sleep between jobs / scheduler checks</span>
+      <span class="na">timeout</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+      <span class="c1">// at minimum, how many parallel taskProcessors should this node spawn?</span>
+      <span class="c1">// (have number &gt; 0 to enable, and &lt; 1 to disable)</span>
+      <span class="na">minTaskProcessors</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="c1">// at maximum, how many parallel taskProcessors should this node spawn?</span>
+      <span class="na">maxTaskProcessors</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="c1">// how often should we check the event loop to spawn more TaskProcessors?</span>
+      <span class="na">checkTimeout</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+      <span class="c1">// how many ms would constitue an event loop delay to halt TaskProcessors spawning?</span>
+      <span class="na">maxEventLoopDelay</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="c1">// When we kill off a taskProcessor, should we disonnect that local redis connection?</span>
+      <span class="na">toDisconnectProcessors</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="c1">// What redis server should we connect to for tasks / delayed jobs?</span>
+      <span class="na">redis</span><span class="p">:</span> <span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">redis</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>To work these tasks, you need to run actionhero with at least one <code class="prettyprint">taskProcessor</code>.  <code class="prettyprint">TaskProcessor</code>s run in-line with the rest of your server and process jobs.  This is controlled by settings in <a href="https://github.com/evantahler/actionhero/blob/master/config/tasks.js">/config/tasks.js</a>.</p>
+
+<p>If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of actionhero that will periodically check the delayed queues for jobs that are ready to work now, and move them to the normal queues when the time comes.</p>
+
+<p>Because node and actionhero are asynchronous, we can process more than one job at a time.  However, if the jobs we are processing are CPU-intensive, we want to limit how many we are working on at one time.  To do this, we tell actionhero to run somewhere between <code class="prettyprint">minTaskProcessors</code> and <code class="prettyprint">maxTaskProcessors</code> and check every so often if the server could be working more or less jobs at a time.  Depending on the response characteristics you want for your server, you can modify these values.  </p>
+
+<p>In production, it is best to set up some actionhero servers that only handle requests from clients (that is, servers with no TaskProcessors) and others that handle no requests, and only process jobs (that is, no servers, many <code class="prettyprint">TaskProcessor</code>s).</p>
+
+<p>As you noticed above, when you enqueue a task, you tell it which queue to be enqueued within.  This is so you can separate load or priority.  For example, you might have a <code class="prettyprint">high</code> priority queue which does jobs like &ldquo;sendPushMessage&rdquo; and a <code class="prettyprint">low</code> priority queue which does a task like &ldquo;cleanupCache&rdquo;.  You tell the <code class="prettyprint">taskProcessor</code>s which jobs to work, and in which priority. For the example above, you would ensure that all <code class="prettyprint">high</code> jobs happen before all <code class="prettyprint">low</code> jobs by setting: <code class="prettyprint">api.config.tasks.queues = [&#39;high&#39;, &#39;low&#39;]</code>.
+You could also configure more nodes to work on the <code class="prettyprint">high</code> queue than the <code class="prettyprint">low</code> queue, thus further ensuring that <code class="prettyprint">high</code> priority jobs are processed faster and sooner than <code class="prettyprint">low</code> priority jobs.</p>
+
+<h2 id="creating-a-task">Creating a Task</h2>
+<pre class="highlight javascript"><code><span class="c1">// define a single task in a file</span>
+
+<span class="kd">var</span> <span class="nx">task</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span>          <span class="s2">"sendWelcomeEmail"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span>   <span class="s2">"I will send a new user a welcome email"</span><span class="p">,</span>
+  <span class="na">queue</span><span class="p">:</span>         <span class="s2">"default"</span><span class="p">,</span>
+  <span class="na">plugins</span><span class="p">:</span>       <span class="p">[],</span> 
+  <span class="na">pluginOptions</span><span class="p">:</span> <span class="p">[],</span> 
+  <span class="na">frequency</span><span class="p">:</span>     <span class="mi">0</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">sendEmail</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+      <span class="nx">next</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span> <span class="c1">//task will fail if sendEmail does</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">task</span> <span class="o">=</span> <span class="nx">task</span><span class="p">;</span>
+
+<span class="c1">// define multiple tasks (so you can share methods)</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">sayHello</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span>          <span class="s1">'sayHello'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span>   <span class="s1">'I say hello'</span><span class="p">,</span>
+  <span class="na">queue</span><span class="p">:</span>         <span class="s2">"default"</span><span class="p">,</span>
+  <span class="na">plugins</span><span class="p">:</span>       <span class="p">[],</span> 
+  <span class="na">pluginOptions</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="na">frequency</span><span class="p">:</span>     <span class="mi">1000</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"hello"</span><span class="p">)</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">sayGoodbye</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span>          <span class="s1">'sayGoodbye'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span>   <span class="s1">'I say goodbye'</span><span class="p">,</span>
+  <span class="na">queue</span><span class="p">:</span>         <span class="s2">"default"</span><span class="p">,</span>
+  <span class="na">plugins</span><span class="p">:</span>       <span class="p">[],</span> 
+  <span class="na">pluginOptions</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="na">frequency</span><span class="p">:</span>     <span class="mi">2000</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"goodbye"</span><span class="p">)</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># The output of running the last 2 tasks would be:</span>
+
+2013-11-28 15:21:56 - debug: resque scheduler working timestamp 1385680913
+2013-11-28 15:21:56 - debug: resque scheduler enquing job 1385680913 <span class="nv">class</span><span class="o">=</span>sayHello, <span class="nv">queue</span><span class="o">=</span>default,
+2013-11-28 15:21:56 - debug: resque scheduler working timestamp 1385680914
+2013-11-28 15:21:56 - debug: resque scheduler enquing job 1385680914 <span class="nv">class</span><span class="o">=</span>sayGoodbye, <span class="nv">queue</span><span class="o">=</span>default,
+2013-11-28 15:21:56 - debug: resque worker <span class="c">#1 working job default class=sayHello, queue=default,</span>
+2013-11-28 15:21:56 - info: hello
+2013-11-28 15:21:56 - debug: re-enqueued reccurent job sayHello
+2013-11-28 15:21:56 - debug: resque worker <span class="c">#1 working job default class=sayGoodbye, queue=default,</span>
+2013-11-28 15:21:56 - info: goodbye
+2013-11-28 15:21:56 - debug: re-enqueued reccurent job sayGoodbye
+</code></pre>
+
+<p>You can create you own tasks by placing them in a <code class="prettyprint">./tasks/</code> directory at the root of your application.  You can use the generator <code class="prettyprint">actionhero generateTask --name=myTask</code>. Like actions, all tasks have some required metadata:</p>
+
+<ul>
+<li><code class="prettyprint">task.name</code>: The unique name of your task</li>
+<li><code class="prettyprint">task.description</code>: a description</li>
+<li><code class="prettyprint">task.queue</code>: the default queue to run this task within (can be overwritten when enqueued)</li>
+<li><code class="prettyprint">task.frequency</code>: In milliseconds, how often should I run?.  A frequency of &gt;0 denotes this task as periodic and actionhero will automatically enqueued when the server boots.  Only one instance of a periodic task will be enqueued within the cluster at a time, regardless of how many actionhero nodes are connected.</li>
+<li><code class="prettyprint">task.plugins</code>: You can use resque plugins in your task from the node-resque project.  Plugins modify how your tasks are enqueued.  For example, if you use the <code class="prettyprint">queue-lock</code> plugin, only one instance of any job (with similar arguments) can be enqueued at a time.  You can learn more about plugins from the <a href="https://github.com/taskrabbit/node-resque#plugins">node-resque project</a>.</li>
+<li><code class="prettyprint">task.pluginOptions</code>: a hash of options for the plugins</li>
+</ul>
+
+<p><code class="prettyprint">task.run</code> contains the actual work that the task does. It takes the following arguments:</p>
+
+<ul>
+<li><code class="prettyprint">api</code>: The actionhero api object</li>
+<li><code class="prettyprint">params</code>: An array of parameters that the task was enqueued with. This is whatever was passed as the second argument to <code class="prettyprint">api.tasks.enqueue</code></li>
+<li><code class="prettyprint">next</code>: A callback to call when the task is done. This callback is of the type <code class="prettyprint">function(error, result)</code>. 
+
+<ul>
+<li>Passing an <code class="prettyprint">error</code> object will cause the job to be marked as a failure. </li>
+<li>The result is currently not captured anywhere.</li>
+</ul></li>
+</ul>
+
+<h2 id="queue-inspection">Queue Inspection</h2>
+
+<p>actionhero provides some methods to help inspect the state of your queue.  You can use these methods to check if your jobs are processing in a timely manner, if there are errors in task processing, etc.</p>
+
+<h3 id="api-tasks-scheduledat-queue-taskname-args-next">api.tasks.scheduledAt(queue, taskName, args, next)</h3>
+
+<ul>
+<li>next(err, timestamps)</li>
+<li>finds all matching instances of queue + taskName + args from the delayed queues</li>
+<li>timestamps will be an array of the delayed timestamps</li>
+</ul>
+
+<h3 id="api-tasks-del-queue-taskname-args-count-next">api.tasks.del(queue, taskName, args, count, next)</h3>
+
+<ul>
+<li>next(err, count)</li>
+<li>removes all matching instances of queue + taskName + args from the normal queues</li>
+<li>count is how many instances of this task were removed</li>
+</ul>
+
+<h3 id="api-tasks-deldelayed-queue-taskname-args-next">api.tasks.delDelayed(queue, taskName, args, next)</h3>
+
+<ul>
+<li>next(err, timestamps)</li>
+<li>removes all matching instances of queue + taskName + args from the delayed queues</li>
+<li>timestamps will be an array of the delayed timestamps which the task was removed from</li>
+</ul>
+
+<h3 id="api-tasks-enqueuerecurrentjob-taskname-next">api.tasks.enqueueRecurrentJob(taskName, next)</h3>
+
+<ul>
+<li>next()</li>
+<li>will enqueue are recurring job</li>
+<li>might not actually enqueue the job if it is already enqueued due to resque plugins</li>
+</ul>
+
+<h3 id="api-tasks-stoprecurrentjob-taskname-next">api.tasks.stopRecurrentJob(taskName, next)</h3>
+
+<ul>
+<li>next(err, removedCount)</li>
+<li>will remove all instances of <code class="prettyprint">taskName</code> from the delayed queues and normal queues</li>
+<li>removedCount will inform you of how many instances of this job were removed</li>
+</ul>
+
+<h3 id="api-tasks-timestamps-next">api.tasks.timestamps(next)</h3>
+
+<ul>
+<li>next(err, timestamps)</li>
+<li>will return an array of all timesamps which have at least one job scheduled to be run </li>
+<li>for use with <code class="prettyprint">api.tasks.delayedAt</code></li>
+</ul>
+
+<h3 id="api-tasks-delayedat-timestamp-next">api.tasks.delayedAt(timestamp, next)</h3>
+
+<ul>
+<li>next(err, jobs)</li>
+<li>will return the list of jobs enqueued to run after this timestamp</li>
+</ul>
+
+<h3 id="api-tasks-alldelayed-next">api.tasks.allDelayed(next)</h3>
+
+<ul>
+<li>next(err, jobs)</li>
+<li>will return the list of all jobs enqueued by the timestamp they are enqueued to run at</li>
+</ul>
+
+<h3 id="api-tasks-workers-next">api.tasks.workers(next)</h3>
+
+<ul>
+<li>next(err, workers)</li>
+<li>list all taskProcessors</li>
+</ul>
+
+<h3 id="api-tasks-workingon-workername-queues-next">api.tasks.workingOn(workerName, queues, next)</h3>
+
+<ul>
+<li>next(err, status)</li>
+<li>list what a specific taskProcessors (defined by the name of the server + queues) is working on (or sleeping)</li>
+</ul>
+
+<h3 id="api-tasks-allworkingon-next">api.tasks.allWorkingOn(next)</h3>
+
+<ul>
+<li>next(err, workers)</li>
+<li>list what all taskProcessors are working on (or sleeping)</li>
+</ul>
+
+<h3 id="api-tasks-details-next">api.tasks.details(next)</h3>
+
+<ul>
+<li>next(err, details)</li>
+<li>details is a hash of all the queues in the system and how long they are</li>
+<li>this method also returns metadata about the taskProcessors and what they are currently working on</li>
+</ul>
+
+<h3 id="api-tasks-failedcount-next">api.tasks.failedCount(next)</h3>
+
+<ul>
+<li>next(err, failedCount)</li>
+<li><code class="prettyprint">failedCount</code> is how many resque jobs are in the failed queue.</li>
+</ul>
+
+<h3 id="api-tasks-failed-start-stop-next">api.tasks.failed(start, stop, next)</h3>
+
+<ul>
+<li>next(err, failedJobs)</li>
+<li><code class="prettyprint">failedJobs</code> is an array listing the data of the failed jobs.  You can see an example at https://github.com/taskrabbit/node-resque#failed-job-managment</li>
+</ul>
+
+<h3 id="api-tasks-removefailed-failedjob-next">api.tasks.removeFailed(failedJob, next)</h3>
+
+<ul>
+<li>next(err, removedCount)</li>
+<li>the input <code class="prettyprint">failedJob</code> is an expanded node object representing the failed job, retrieved via <code class="prettyprint">api.tasks.failed</code></li>
+</ul>
+
+<h3 id="api-tasks-retryandremovefailed-failedjob-next">api.tasks.retryAndRemoveFailed(failedJob, next)</h3>
+
+<ul>
+<li>next(err, failedJob)</li>
+<li>the input <code class="prettyprint">failedJob</code> is an expanded node object representing the failed job, retrieved via <code class="prettyprint">api.tasks.failed</code></li>
+</ul>
+
+<h2 id="job-schedules">Job Schedules</h2>
+<pre class="highlight javascript"><code><span class="c1">// file: initializers/node_schedule.js</span>
+
+<span class="kd">var</span> <span class="nx">schedule</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-schedule'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">initialize</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">scheduledJobs</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">},</span>
+
+  <span class="na">start</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+
+    <span class="c1">// do this job every 10 seconds, cron style</span>
+    <span class="kd">var</span> <span class="nx">job</span> <span class="o">=</span> <span class="nx">schedule</span><span class="p">.</span><span class="nx">scheduleJob</span><span class="p">(</span><span class="s1">'0,10,20,30,40,50 * * * * *'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> 
+      <span class="c1">// we want to ensure that only one instance of this job is scheduled in our environment at once, </span>
+      <span class="c1">// no matter how many schedulers we have running</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">api</span><span class="p">.</span><span class="nx">resque</span><span class="p">.</span><span class="nx">scheduler</span> <span class="o">&amp;&amp;</span> <span class="nx">api</span><span class="p">.</span><span class="nx">resque</span><span class="p">.</span><span class="nx">scheduler</span><span class="p">.</span><span class="nx">master</span><span class="p">){</span> 
+        <span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span><span class="s1">'sayHello'</span><span class="p">,</span> <span class="p">{</span><span class="na">time</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toString</span><span class="p">()},</span> <span class="s1">'default'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span> <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="s1">'error'</span><span class="p">);</span> <span class="p">}</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="nx">api</span><span class="p">.</span><span class="nx">scheduledJobs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">job</span><span class="p">);</span>
+
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">},</span>
+
+  <span class="na">stop</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">scheduledJobs</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">job</span><span class="p">){</span>
+      <span class="nx">job</span><span class="p">.</span><span class="nx">canel</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
+
+<p>You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like <a href="https://github.com/tejasmanohar/node-schedule">node-schedule</a> and <a href="https://github.com/ncb000gt/node-cron">node-cron</a>.  Actionhero exposes <a href="https://github.com/taskrabbit/node-resque">node-resque&rsquo;s</a> scheduler to you so you can use the scheduler package of your choice.  </p>
+
+<p>Assuming you are running actionhero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An <a href="/docs#initializers">initializer for this</a> would look like:</p>
+
+<p>Be sure to have the scheduler enabled on at least one of your actionhero servers! </p>
+
+<h2 id="failed-job-management">Failed Job Management</h2>
+<pre class="highlight javascript"><code>
+<span class="kd">var</span> <span class="nx">removeStuckWorkersOlderThan</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">;</span> <span class="c1">// 10000ms</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'removing stuck workers solder than '</span> <span class="o">+</span> <span class="nx">removeStuckWorkersOlderThan</span> <span class="o">+</span> <span class="s1">'ms'</span><span class="p">,</span> <span class="s1">'info'</span><span class="p">);</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">cleanOldWorkers</span><span class="p">(</span><span class="nx">removeStuckWorkersOlderThan</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s1">'error'</span><span class="p">);</span> 
+  <span class="p">}</span>
+  <span class="k">if</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'removed stuck workers with errors: '</span><span class="p">,</span> <span class="s1">'info'</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">callback</span><span class="p">();</span>
+<span class="p">});</span>
+
+</code></pre>
+
+<p>Sometimes a worker crashes is a severe way, and it doesn&rsquo;t get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker&rsquo;s &ldquo;working on&rdquo; status, but also remove the stuck worker. To aid you in these edge cases, <code class="prettyprint">api.tasks.cleanOldWorkers(age, callback)</code> is available.</p>
+
+<p>Because there are no &#39;heartbeats&rsquo; in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an &ldquo;age&rdquo; for how long a worker has been &ldquo;working&rdquo;, and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use <code class="prettyprint">api.tasks.retryAndRemoveFailed</code>) to re-enqueue the job.</p>
+
+<p>You can handle this with an own initializer and the following logic =&gt; </p>
+
+<h2 id="notes">Notes</h2>
+
+<p>Note that the <code class="prettyprint">frequency</code>, <code class="prettyprint">enqueueIn</code> and <code class="prettyprint">enqueueAt</code> times are when a task is <strong>allowed</strong> to run, not when it <strong>will</strong> run.  TaskProcessors will work tasks in a first-in-first-out manner.  TaskProcessors also <code class="prettyprint">sleep</code> when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.</p>
+
+<p>Remember that each actionhero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this <strong>will</strong> block tasks, actions, and clients from working.  However, if your tasks are meant to communicate with external services (reading from a database, sending an email, etc), then these are perfect candidates to be run simultaneously as the single thread can work on other things while waiting for these operations to complete.  </p>
+
+<p>Tasks are stored in redis.  Be sure to enable non-fake redis if you want your tasks to persist and be shared across more than one actionhero server.</p>
+
+<p>If you are running a single actionhero server, all tasks will be run locally.  As you add more servers, the work will be split evenly across all nodes.  It is very likely that your job will be run on different nodes each time.</p>

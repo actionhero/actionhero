@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="actionhero.js is a multi-transport framework Node.JS API Server with integrated cluster capabilities and delayed tasks">
+<meta name="keywords" content="actionhero, actionherojs, node, nodejs, node.js, framework, server, api, cluster, redis, task, job, background, middleware">
+<meta name="author" content="Evan Tahler">
+<meta property="twitter:account_id" content="997582154" />
+
+<link rel="icon" href="/images/favicon.ico" type="image/x-icon" /> 
+
+<title>actionhero.js - Home</title>
+
+<!-- Bootstrap Core CSS -->
+<link href="/stylesheets/main/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/stylesheets/main/syntax.css" rel="stylesheet" type="text/css">
+
+<!-- Fonts -->
+<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+
+<!-- Custom Theme CSS -->
+<link href="/stylesheets/main/syntax.css" rel="stylesheet">
+<link href="/stylesheets/main/grayscale.css" rel="stylesheet">
+
+<!-- Core JavaScript Files -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<script src="/javascripts/main/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/javascripts/main/grayscale.js"></script>
+    </head>
+
+    <body id="page-top" data-spy="scroll" data-target=".navbar-custom">    
+
+        <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                <i class="fa fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="/">
+                <i class="fa fa-play-circle"></i>  <span class="light">actionhero</span>.js
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+            <ul class="nav navbar-nav">
+                <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                <li class="hidden">
+                    <a href="#page-top"></a>
+                </li>
+
+                <li class="page-scroll">
+                    <a href="/learn-more">Learn More</a>
+                </li>
+                <li class="page-scroll">
+                    <a href="/docs">Documentation</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+        <section class="intro">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="brand-heading">actionhero</h1>
+                    <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server.</p>
+                    <a href="http://github.com/evantahler/actionhero">
+                        <img src="/images/logo/actionhero_400.png" width="300" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h2>What is actionhero?</h2>
+        <h4>actionhero.js is a multi-transport Node.JS API Server with integrated cluster capabilities and delayed tasks.</h4>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h2>What does that mean?</h2>
+        <h4>In actionhero, you make actions which respond to client requests.</h4>
+
+
+<pre class="highlight javascript"><code><span class="c1">// actionhero generateAction --name=randomNumber</span>
+<span class="c1">// File: actions/randomNumber.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">randomNumber</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'I am an API method which will generate a random number'</span><span class="p">,</span>
+  <span class="na">outputExample</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">randomNumber</span><span class="p">:</span> <span class="mf">0.123</span>
+  <span class="p">},</span>
+  
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">data</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+
+<span class="p">};</span>
+</code></pre>
+
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>These actions don't just work for the web, they work for all sorts of clients.</h4>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Web</h3>
+
+<pre class="highlight shell"><code><span class="gp">&gt; </span>curl localhost:8080/api/randomNumber
+
+<span class="o">{</span>
+  <span class="s2">"randomNumber"</span>: 0.8158452461939305
+<span class="o">}</span>
+</code></pre>
+
+        </div>
+        <div class="col-md-4">
+            <h3>Socket</h3> 
+
+<pre class="highlight shell"><code><span class="gp">&gt; </span>telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is <span class="s1">'^]'</span>.
+<span class="o">{</span><span class="s2">"welcome"</span>:<span class="s2">"Hello! Welcome to the actionhero api"</span>,<span class="s2">"context"</span>:<span class="s2">"api"</span><span class="o">}</span>
+randomNumber
+<span class="o">{</span><span class="s2">"randomNumber"</span>:0.7903316407464445,<span class="s2">"context"</span>:<span class="s2">"response"</span>,<span class="s2">"messageCount"</span>:1<span class="o">}</span>
+</code></pre>
+
+        </div>
+        <div class="col-md-4">
+            <h3>WebSocket</h3> 
+
+<pre class="highlight shell"><code>var client <span class="o">=</span> new ActionheroClient;
+client.connect<span class="o">(</span><span class="k">function</span><span class="o">(</span>error, details<span class="o">){</span>
+    client.action<span class="o">(</span><span class="s2">"randomNumber"</span>, <span class="k">function</span><span class="o">(</span>data<span class="o">){</span>
+        alert<span class="o">(</span>data.randomNumber<span class="o">)</span>;
+    <span class="o">})</span>;
+<span class="o">})</span>;
+</code></pre>
+
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero also lets you perform tasks in the background...</h4>
+
+<pre class="highlight javascript"><code><span class="c1">// actionhero generateTask --name=sendEmail</span>
+<span class="c1">// File: tasks/sendEmail.js</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">task</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span>        <span class="s1">'sendEmail'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">'send an email to users after they sign up'</span>
+    <span class="na">queue</span><span class="p">:</span>       <span class="s1">'default'</span><span class="p">,</span>
+    <span class="na">frequency</span><span class="p">:</span>    <span class="mi">0</span><span class="p">,</span>
+    <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+        <span class="c1">// email sending stub</span>
+        <span class="nx">api</span><span class="p">.</span><span class="nx">users</span><span class="p">.</span><span class="nx">sendEmail</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">userId</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">done</span><span class="p">){</span>
+            <span class="nx">next</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+</code></pre>
+
+        <h4>... and you can invoke the task from anywhere in the framework, including actions.</h4>
+
+<pre class="highlight javascript"><code><span class="c1">// api.tasks.enqueue(nameOfTask, args, queue, callback)</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span><span class="s2">"sendEmail"</span><span class="p">,</span> <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="s1">'evan@evantahler.com'</span><span class="p">},</span> <span class="s1">'default'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">toRun</span><span class="p">){</span>
+  <span class="c1">// enqueued!</span>
+<span class="p">});</span>
+</code></pre>
+
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero enables clients to talk to each other.</h4>
+    </div>
+
+<pre class="highlight javascript"><code><span class="c1">// client 1</span>
+<span class="kd">var</span> <span class="nx">client1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">;</span>
+<span class="nx">client1</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">details</span><span class="p">){</span>
+    <span class="nx">client1</span><span class="p">.</span><span class="nx">roomAdd</span><span class="p">(</span><span class="s2">"myChatRoom"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+        <span class="nx">client1</span><span class="p">.</span><span class="nx">say</span><span class="p">(</span><span class="s1">'myChatRoom'</span><span class="p">,</span> <span class="s1">'hello from client 1'</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// client 2</span>
+<span class="kd">var</span> <span class="nx">client2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">;</span>
+<span class="nx">client2</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">details</span><span class="p">){</span>
+    <span class="nx">client2</span><span class="p">.</span><span class="nx">roomAdd</span><span class="p">(</span><span class="s2">"myChatRoom"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+        <span class="nx">client2</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'say'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre>
+
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero can do all of this, and it can work on one server or hundreds (actionhero is cluster-ready from the get-go).</h4>
+    </div>
+
+<pre class="highlight shell"><code><span class="c"># start 1 instance</span>
+./node_modules/.bin/actionhero start
+<span class="c"># start a cluster</span>
+./node_modules/.bin/actionhero startCluster
+</code></pre>
+
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h1><a href="/learn-more">Click here to learn more</a></h1>
+        <h3><a href="/docs">Or jump in to the documention</a></h3>
+        <h3>or</h3>
+    </div>
+</section>
+
+        <section id="try" class="thin-content-section text-center">
+    <div class="download-section">
+        <div class="container">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Try actionhero Now</h2>
+                <pre>
+npm install actionhero
+
+./node_modules/.bin/actionhero generate
+
+npm start
+                </pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <br />
+
+        <a href="https://github.com/evantahler/actionhero" class="hidden-xs hidden-sm"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1040;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+        <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29132597-1']);
+    _gaq.push(['_setDomainName', 'actionherojs.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+
+
+    </body>
+
+</html>

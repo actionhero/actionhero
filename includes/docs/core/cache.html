@@ -1,0 +1,124 @@
+<h1 id="cache">Cache</h1>
+
+<h2 id="general-cache-notes">General Cache Notes</h2>
+
+<p>actionhero ships with the functions needed for a distributed key-value cache.  You can cache strings, numbers, arrays and objects (anything that responds to <code class="prettyprint">JSON.stringify</code>).  </p>
+
+<p>The cache&rsquo;s redis server is defined by <code class="prettyprint">api.config.redis</code>.  Note that if <code class="prettyprint">api.config.redis.fake = true</code>, you will be using an in-memory redis server rather than a real redis process.</p>
+
+<h2 id="cache-methods">Cache Methods</h2>
+
+<h3 id="api-cache-save">api.cache.save</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.save(key, value, expireTimeMS, next)</code>
+
+<ul>
+<li><code class="prettyprint">expireTimeMS</code> can be null if you never want the object to expire </li>
+</ul></li>
+<li>Callback: <code class="prettyprint">next(error, new)</code>
+
+<ul>
+<li><code class="prettyprint">error</code> will be null unless the object can&rsquo;t be saved (perhaps out of ram or a bad object type).</li>
+<li>overwriting an existing object will return <code class="prettyprint">new = true</code></li>
+</ul></li>
+</ul>
+
+<p><code class="prettyprint">api.cache.save</code> is used to both create new entires or update existing cache entires.  If you don&rsquo;t define an expireTimeMS, <code class="prettyprint">null</code> will be assumed, and using <code class="prettyprint">null</code> will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)</p>
+
+<h3 id="api-cache-load">api.cache.load</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.load(key, next)</code> or <code class="prettyprint">api.cache.load(key, options, next)</code>
+
+<ul>
+<li><code class="prettyprint">options</code> can be <code class="prettyprint">{expireTimeMS: 1234}</code> where the act of reading the key will reset the key&rsquo;s expire time</li>
+<li>If the requested <code class="prettyprint">key</code> is not found (or is expired), all values returned will be null.</li>
+</ul></li>
+<li>Callback: <code class="prettyprint">next(error, value, expireTimestamp, createdAt, readAt)</code>
+
+<ul>
+<li><code class="prettyprint">value</code> will be the object which was saved and <code class="prettyprint">null</code> if the object cannot be found or is expired</li>
+<li><code class="prettyprint">expireTimestamp</code> (ms) is when the object is set to expire in system time</li>
+<li><code class="prettyprint">createdAt</code> (ms) is when the object was created</li>
+<li><code class="prettyprint">readAt</code> (ms) is the timestamp at which the object was last read with <code class="prettyprint">api.cache.load</code>.  Useful for telling if another worker has consumed the object recently</li>
+</ul></li>
+</ul>
+
+<h3 id="api-cache-destroy">api.cache.destroy</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.destroy(key)</code></li>
+<li>Callback: <code class="prettyprint">next(error, destroyed)</code>
+
+<ul>
+<li>will be false if the object cannot be found, and true if destroyed</li>
+</ul></li>
+</ul>
+
+<h2 id="lock-methods">Lock Methods</h2>
+
+<p>You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first <code class="prettyprint">api.cache.lock</code> a key, and then save it to prevent other nodes from modifying the object. </p>
+
+<h3 id="api-cache-lock">api.cache.lock</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.lock(key, expireTimeMS, next)</code>
+
+<ul>
+<li><code class="prettyprint">expireTimeMS</code> is optional, and will be <code class="prettyprint">expireTimeMS = api.cache.lockDuration = api.config.general.lockDuration</code></li>
+</ul></li>
+<li>Callback: <code class="prettyprint">next(error, lockOk)</code>
+
+<ul>
+<li><code class="prettyprint">error</code> will be null unless there was something wrong with the connection (perhaps a redis error)</li>
+<li><code class="prettyprint">lockOk</code> will be <code class="prettyprint">true</code> or <code class="prettyprint">false</code> depending on if the lock was obtained.</li>
+</ul></li>
+</ul>
+
+<h3 id="api-cache-unlock">api.cache.unlock</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.unlock(key, next)</code></li>
+<li>Callback: <code class="prettyprint">next(error, lockOk)</code>
+
+<ul>
+<li><code class="prettyprint">error</code> will be null unless there was something wrong with the connection (perhaps a redis error)</li>
+<li><code class="prettyprint">lockOk</code> will be <code class="prettyprint">true</code> or <code class="prettyprint">false</code> depending on if the lock was removed.</li>
+</ul></li>
+</ul>
+
+<h3 id="api-cache-checklock">api.cache.checkLock</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.checkLock(key,retry,  next)</code>
+
+<ul>
+<li><code class="prettyprint">retry</code> is either <code class="prettyprint">null</code> or an integer (ms) that we should keep retrying until the lock is free to be re-obtained</li>
+</ul></li>
+<li>Callback: <code class="prettyprint">next(error, lockOk)</code>
+
+<ul>
+<li><code class="prettyprint">error</code> will be null unless there was something wrong with the connection (perhaps a redis error)</li>
+<li><code class="prettyprint">lockOk</code> will be <code class="prettyprint">true</code> or <code class="prettyprint">false</code> depending on if the lock is currently obtainable.</li>
+</ul></li>
+</ul>
+
+<h3 id="api-cache-locks">api.cache.locks</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.locks(next)</code></li>
+<li>Callback: <code class="prettyprint">next(error, locks)</code>
+
+<ul>
+<li><code class="prettyprint">locks</code> is an array of all currently active locks</li>
+</ul></li>
+</ul>
+
+<p>You can see an example of using the cache within an action in <a href="https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js">actions/cacheTest.js</a></p>
+
+<h2 id="redis">Redis</h2>
+
+<p>The timestamps regarding <code class="prettyprint">api.cache.load</code> are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).</p>
+
+<p>Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state, or use the locking methods.</p>
