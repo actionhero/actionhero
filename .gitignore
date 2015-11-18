@@ -15,6 +15,9 @@ npm-debug.log
 # OS-specific wierdness
 .DS_Store
 
+# Site
+site/build/*
+
 # Redis
 dump.rdb
 cache.dump
