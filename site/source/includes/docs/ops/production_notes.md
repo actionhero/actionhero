@@ -184,7 +184,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 ### General Configuration
 
 - Be sure to change `api.config.general.serverToken` to something unique for your application
-- Turn off [developer mode](/docs/core/development-mode.html) in production. 
+- Turn off [developer mode](/docs/#development-mode) in production. 
 - Turn off `actionDomains` in production.  While domains can *sometimes* save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.
 
 ### Topology
@@ -207,7 +207,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 ### Actions
 
-- Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/core/actions.html#inputs) step. 
+- Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/#inputs) step. 
 - Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is "never pass a query to your database which can be directly modified via user input"!
 - Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.
 - Crafting [authentication middleware is not that hard](https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf)
@@ -217,6 +217,6 @@ As ActionHero is a framework, much of the work for keeping your application secu
 - Tasks can be created from any part of actionhero: Actions, Servers, Middleware, even other Tasks.
 - You can chain tasks together to create workflows.  
 - Actionhero uses the [`multiWorker`](https://github.com/taskrabbit/node-resque#multi-worker) from node-resque.  When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can.  This will also fluctuate depending on the CPU difficulty of the job.  Plan accordingly.
-- Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  [The methods for doing so](http://localhost:4000/docs/core/tasks.html#queue-inspection) are available.
+- Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  [The methods for doing so](/docs/#queue-inspection) are available.
 - Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain 'claimed' in redis, and never make it to the failed queue.
 
