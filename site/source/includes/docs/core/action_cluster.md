@@ -48,7 +48,7 @@ actionhero has exposed `api.connections.apply` which can be used to retrive data
 
 ```javascript
 // To subscirbe to messages, add a callback for your `messageType`, IE:
-api.redis.subsciptionHandlers['myMessageType'] = function(message){
+api.redis.subscriptionHandlers['myMessageType'] = function(message){
   // do stuff
 }
 
