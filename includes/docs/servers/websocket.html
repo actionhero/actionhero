@@ -206,7 +206,7 @@
 
 <p>actionhero provides <code class="prettyprint">connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code class="prettyprint">connection.id</code>, we attempt to build <code class="prettyprint">connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code class="prettyprint">api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.  </p>
 
-<p>You can read more about using a value like <code class="prettyprint">connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/examples/initializers/session.html">session information</a>.</p>
+<p>You can read more about using a value like <code class="prettyprint">connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/#example-initializers">session information</a>.</p>
 
 <h2 id="options">Options</h2>
 <pre class="highlight javascript"><code><span class="nx">enabled</span><span class="err">:</span>          <span class="kc">true</span><span class="p">,</span>

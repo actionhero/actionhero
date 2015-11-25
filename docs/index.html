@@ -2966,7 +2966,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 
 <p>actionhero provides <code class="prettyprint">connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code class="prettyprint">connection.id</code>, we attempt to build <code class="prettyprint">connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code class="prettyprint">api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.  </p>
 
-<p>You can read more about using a value like <code class="prettyprint">connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/examples/initializers/session.html">session information</a>.</p>
+<p>You can read more about using a value like <code class="prettyprint">connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/#example-initializers">session information</a>.</p>
 
 <h2 id="options">Options</h2>
 <pre class="highlight javascript"><code><span class="nx">enabled</span><span class="err">:</span>          <span class="kc">true</span><span class="p">,</span>
@@ -3378,7 +3378,7 @@ http <span class="o">{</span>
 
 <ul>
 <li>Be sure to change <code class="prettyprint">api.config.general.serverToken</code> to something unique for your application</li>
-<li>Turn off <a href="/docs/core/development-mode.html">developer mode</a> in production. </li>
+<li>Turn off <a href="/docs/#development-mode">developer mode</a> in production. </li>
 <li>Turn off <code class="prettyprint">actionDomains</code> in production.  While domains can <em>sometimes</em> save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.</li>
 </ul>
 
@@ -3417,7 +3417,7 @@ http <span class="o">{</span>
 <h3 id="actions">Actions</h3>
 
 <ul>
-<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/core/actions.html#inputs"><code class="prettyprint">params.formatter</code></a> step. </li>
+<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/#inputs"><code class="prettyprint">params.formatter</code></a> step. </li>
 <li>Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is &ldquo;never pass a query to your database which can be directly modified via user input&rdquo;!</li>
 <li>Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.</li>
 <li>Crafting <a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>
@@ -3429,7 +3429,7 @@ http <span class="o">{</span>
 <li>Tasks can be created from any part of actionhero: Actions, Servers, Middleware, even other Tasks.</li>
 <li>You can chain tasks together to create workflows.<br></li>
 <li>Actionhero uses the <a href="https://github.com/taskrabbit/node-resque#multi-worker"><code class="prettyprint">multiWorker</code></a> from node-resque.  When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can.  This will also fluctuate depending on the CPU difficulty of the job.  Plan accordingly.</li>
-<li>Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  <a href="http://localhost:4000/docs/core/tasks.html#queue-inspection">The methods for doing so</a> are available.</li>
+<li>Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  <a href="/docs/#queue-inspection">The methods for doing so</a> are available.</li>
 <li>Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain &#39;claimed&rsquo; in redis, and never make it to the failed queue.</li>
 </ul>
 
@@ -3672,7 +3672,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L62"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
 
-<p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/core/servers.html">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
+<p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
 
 <h2 id="example-test">Example Test</h2>
 <pre class="highlight javascript"><code><span class="c1">// ./test/integartion/actions/randomNumber.js</span>
