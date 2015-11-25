@@ -160,7 +160,7 @@ var api = {
   redis:{ 
     clusterCallbaks: {},
     clusterCallbakTimeouts: {},
-    subsciptionHandlers:{ 
+    subscriptionHandlers:{ 
       do: [Function],
       doResponse: [Function],
       chat: [Function] 

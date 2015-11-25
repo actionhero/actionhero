@@ -9,7 +9,7 @@ module.exports = {
     api.redis = {};
     api.redis.clusterCallbaks = {};
     api.redis.clusterCallbakTimeouts = {};
-    api.redis.subsciptionHandlers = {};
+    api.redis.subscriptionHandlers = {};
     api.redis.status = {
       client: false,
       subscriber: false,
@@ -93,8 +93,8 @@ module.exports = {
       api.redis.subscriber.on('message', function(messageChannel, message){
         try{ message = JSON.parse(message) }catch(e){ message = {}; }
         if(messageChannel === channel && message.serverToken === api.config.general.serverToken){
-          if(api.redis.subsciptionHandlers[message.messageType]){
-            api.redis.subsciptionHandlers[message.messageType](message);
+          if(api.redis.subscriptionHandlers[message.messageType]){
+            api.redis.subscriptionHandlers[message.messageType](message);
           }
         }
       });
@@ -112,7 +112,7 @@ module.exports = {
 
     // Subsciption Handlers
 
-    api.redis.subsciptionHandlers.do = function(message){
+    api.redis.subscriptionHandlers.do = function(message){
       if(!message.connectionId || ( api.connections && api.connections.connections[message.connectionId]) ){
         var method = eval(message.method); //TODO: Eval makes me sad
         var callback = function(){
@@ -129,7 +129,7 @@ module.exports = {
       }
     };
 
-    api.redis.subsciptionHandlers.doResponse = function(message){
+    api.redis.subscriptionHandlers.doResponse = function(message){
       if(api.redis.clusterCallbaks[message.requestId]){
         clearTimeout(api.redis.clusterCallbakTimeouts[message.requestId]);
         api.redis.clusterCallbaks[message.requestId].apply(null, message.response);

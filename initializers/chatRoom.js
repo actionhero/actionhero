@@ -278,7 +278,7 @@ module.exports = {
   },
 
   start: function(api, next){
-    api.redis.subsciptionHandlers.chat = function(message){
+    api.redis.subscriptionHandlers.chat = function(message){
       if(api.chatRoom){
         api.chatRoom.incomingMessage(message);
       }
