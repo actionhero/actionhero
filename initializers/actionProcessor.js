@@ -175,14 +175,14 @@ module.exports = {
 
     api.actionProcessor.prototype.reduceParams = function(){
       var self = this;
+      var inputNames = [];
+      if(self.actionTemplate.inputs){
+        inputNames = Object.keys(self.actionTemplate.inputs);
+      }
 
       if(api.config.general.disableParamScrubbing !== true){
         for(var p in self.params){
-          if(
-              api.params.globalSafeParams.indexOf(p) < 0 &&
-              self.actionTemplate.inputs &&
-              Object.keys(self.actionTemplate.inputs).indexOf(p) < 0
-          ){
+          if( api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0 ){
             delete self.params[p];
           }
         }
