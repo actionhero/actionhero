@@ -14,36 +14,16 @@ module.exports = {
       }
     }
 
-    api.logger = new (winston.Logger)({
-      // TODO We need to manually make these levels until winston switches the order back
-      levels: {
-        emerg: 8,
-        alert: 7,
-        crit: 6,
-        error: 5,
-        warning: 4,
-        notice: 3,
-        info: 2,
-        debug: 1,
-        trace: 0
-      },
-      colors: {
-        trace: 'magenta',
-        input: 'grey',
-        verbose: 'cyan',
-        prompt: 'grey',
-        debug: 'blue',
-        info: 'green',
-        data: 'grey',
-        help: 'cyan',
-        warn: 'yellow',
-        error: 'red'
-      },
-      transports: transports
-    });
+    api.logger = new (winston.Logger)({ transports: transports });
 
     if(api.config.logger.levels){
+      api.logger.setLevels(api.config.logger.levels);
+    }else{
       api.logger.setLevels(winston.config.syslog.levels);
+    }
+
+    if(api.config.logger.colors){
+      winston.addColors(api.config.logger.colors);
     }
 
     api.log = function(message, severity){
@@ -58,7 +38,7 @@ module.exports = {
     for(i in api.logger.levels){ logLevels.push(i) }
 
     api.log('*** starting actionhero ***', 'notice')
-    api.log('Logger loaded.  Possible levels include: ', 'trace', logLevels);
+    api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
 
     next();
 

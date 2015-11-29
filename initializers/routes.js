@@ -112,7 +112,7 @@ module.exports = {
       }
 
       api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
-      api.log(counter + ' routes loaded from ' + api.routes.routesFile, 'trace');
+      api.log(counter + ' routes loaded from ' + api.routes.routesFile, 'debug');
 
       if(api.config.servers.web && api.config.servers.web.simpleRouting === true){
         var simplePaths = [];
@@ -124,7 +124,7 @@ module.exports = {
             api.routes.registerRoute(verb, '/' + action, action);
           }
         }
-        api.log(simplePaths.length + ' simple routes loaded from action names', 'trace');
+        api.log(simplePaths.length + ' simple routes loaded from action names', 'debug');
 
         api.log('routes:', 'debug', api.routes.routes);
       }

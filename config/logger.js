@@ -35,6 +35,12 @@ exports.default = {
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100;
 
+    // you can optionally set custom log levels 
+    // logger.levels = {good: 0, bad: 1};
+
+    // you can optionally set custom log colors 
+    // logger.colors = {good: 'blue', bad: 'red'};
+    
     return logger;
   }
 }

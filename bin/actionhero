@@ -12,18 +12,6 @@ var binary = {};
 // logger //
 ////////////
 
-// TODO We need to manually make these levels until winston switches the order back
-binary.logLevels = {
-  emerg: 7,
-  alert: 6,
-  crit: 5,
-  error: 4,
-  warning: 3,
-  notice: 2,
-  info: 1,
-  debug: 0
-}
-
 var transports = []
 if(cluster.isMaster){
   transports.push(
@@ -35,7 +23,7 @@ if(cluster.isMaster){
 }
 
 binary.logger = new (winston.Logger)({
-  levels: binary.logLevels,
+  levels: winston.config.syslog.levels,
   transports: transports
 });
 
