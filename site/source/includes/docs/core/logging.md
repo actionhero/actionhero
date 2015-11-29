@@ -54,6 +54,8 @@ Note that you can set a `level` which indicates which level (and those above it)
 - 6=alert
 - 7=emerg
 
+You can customize these via `api.config.logger.levels` and `api.config.logger.colors`.  See [Winston's documenation for more information](https://github.com/winstonjs/winston#using-custom-logging-levels)
+
 For example, if you set the logger's level to "notice", you would also see "crit" messages, but not "debug" messages.
 
 To invoke the logger from your code, use:
