@@ -43,7 +43,7 @@
     "primus": "^4.0.1",
     "qs": "^5.2.0",
     "uglify-js": "^2.6.0",
-    "winston": "^1.1.1",
+    "winston": "^2.0.0",
     "ws": "^0.8.0"
   },
   "devDependencies": {
