@@ -69,6 +69,9 @@ exports.default = {
         // should this node server attempt to gzip responses if the client can accept them?
         // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
         compress: false,
+        // options to pass to the query parser
+        // learn more about the options @ https://github.com/hapijs/qs
+        queryParseOptions: {},
       }
     }
   }

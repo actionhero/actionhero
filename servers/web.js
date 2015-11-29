@@ -1,4 +1,5 @@
 var url                 = require('url');
+var qs                  = require('qs');
 var fs                  = require('fs');
 var path                = require('path');
 var zlib                = require('zlib');
@@ -400,8 +401,8 @@ var initialize = function(api, options, next){
     // API
     else if(requestMode === 'api'){
       if(connection.rawConnection.method === 'TRACE'){ requestMode = 'trace'; }
-
-      fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query);
+      var search = connection.rawConnection.parsedURL.search.slice(1);
+      fillParamsFromWebRequest(connection, qs.parse(search, api.config.servers.web.queryParseOptions));
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;
       if(
           connection.rawConnection.method !== 'GET' &&
