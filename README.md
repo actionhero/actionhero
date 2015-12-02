@@ -38,6 +38,8 @@ Or spawn a web API server now:
 - [Getting Started](http://www.actionherojs.com/docs/#getting-started)
 - [Running actionhero](http://www.actionherojs.com/docs/#running-actionhero)
 - [Read the documentation](http://www.actionherojs.com/docs)
+- [See a Sample Project (simple)](https://github.com/evantahler/actionhero-tutorial)
+- [See a Sample Project (elaborate)](https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf)
 - [View the release history](https://github.com/evantahler/actionhero/releases/)
 
 ## Who?
