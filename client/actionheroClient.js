@@ -45,8 +45,7 @@ ActionheroClient.prototype.connect = function(callback){
     self.client.removeAllListeners();
     delete self.client;
     self.client = Primus.connect(self.options.url, self.options);
-  }
-  if(self.client && self.externalClient === true){
+  } else if(self.client && self.externalClient === true){
     self.client.end();
     self.client.open();
   }else{
