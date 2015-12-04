@@ -2,15 +2,44 @@
 
 actionhero provides test helpers so that you may try your actions and tasks within a headless environment. We do this by including a `specHelper` initializer which creates a server, `testServer` when running within the test environment.  Via the `testServer`, you can easily call actions or tasks without making a real request.
 
-We have chosen [mocha](http://mochajs.org/) as our test framework and [should](https://github.com/visionmedia/should.js/) as our assertion tool which are included as dependancies within all new projects.  You do not need to use these testing tools, but an example will be provided which makes use of them.
+We have chosen [mocha](http://mochajs.org/) as our test framework and [should](https://github.com/visionmedia/should.js/) as our assertion tool which are included as dependancies within all new projects ([generated](/docs#install-amp-quickstart) with `./node_modules/.bin/actionhero generate`).  You do not need to use these testing tools, but an example will be provided which makes use of them.
 
 You also don't need to use these test helpers, and you may want to make a 'real' http or websocket request to test something specific.  If this is the case, you can [check out how actionhero tests its own servers](https://github.com/evantahler/actionhero/tree/master/test/servers) for examples.
 
 ## Getting Started
 
-To run a mocha test suite, you invoke the mocha binary, `./node_modules/.bin/mocha`.  This will tell mocha to look in your `./test` folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on [Mocha's website](http://mochajs.org/)
+```javascript
+// package.json from a new actionhero project with `mocha` and `should` included
+{
+  "author"      : "YOU <YOU@example.com>",
+  "name"        : "my_actionhero_project",
+  "description" : "my actionhero project",
+  "version"     : "0.0.1",
+  "engines"     : {
+    "node": ">=0.10.0"
+  },
+  "dependencies" : {
+    "actionhero" : "12.3.0",
+    "ws"         : "latest",
+    "grunt"      : "latest"
+  },
+  "devDependencies" : {
+    "mocha"  : "latest",
+    "should" : "latest"
+  },
+  "scripts" : {
+    "help"         : "actionhero help",
+    "start"        : "actionhero start",
+    "actionhero"   : "actionhero",
+    "startCluster" : "actionhero startCluster",
+    "test"         : "mocha"
+  }
+}
+```
 
-The majority of the time, you'll be testing actions and other methods you have written, so you'll need to "run" an actionhero server as part of your test suite.  Many times you'll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don't log, etc).  To do this, you can change the behavior of the config files for the `test` environment.  Here's how we tell actionhero [not to write any logs when testing](https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48). Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the `test` environment loaded, the test command you run should explicitly do this, AKA: `NODE_ENV=test ./node_modules/.bin/mocha`.  You can log this in as the [`test` script in your `package.json`](https://github.com/evantahler/actionhero/blob/master/package.json#L62) so you can simplify the running of tests with just `npm test`.
+To run a mocha test suite, you invoke the mocha binary, `./node_modules/.bin/mocha`.  This will tell mocha to look in your `./test` folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on [Mocha's website](http://mochajs.org/).  We asume that you have `mocha` (and `should`) installed to your project by listing it in your `package.json`.  If you used `actionhero generate` to create your project, this should already be configured for your.
+
+The majority of the time, you'll be testing actions and other methods you have written, so you'll need to "run" an actionhero server as part of your test suite.  Many times you'll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don't log, etc).  To do this, you can change the behavior of the config files for the `test` environment.  Here's how we tell actionhero [not to write any logs when testing](https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48). Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the `test` environment loaded, the test command you run should explicitly do this, AKA: `NODE_ENV=test ./node_modules/.bin/mocha`.  You can log this in as the [`test` script in your `package.json`](https://github.com/evantahler/actionhero/blob/master/package.json#L63) so you can simplify the running of tests with just `npm test`.
 
 Actionhero comes with a `specHelper` to make it easier to test tasks and actions.  This specHelper is a special [server](/docs/#servers) which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the [request](https://github.com/request/request) library ([example](https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184)). 
 

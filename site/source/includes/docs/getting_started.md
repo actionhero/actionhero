@@ -32,12 +32,14 @@ brew install redis
 mkdir ~/project && cd ~/project
 npm install actionhero
 ./node_modules/.bin/actionhero generate
+npm install
 npm start
 ```
 
 * Create a new directory `mkdir ~/project && cd ~/project`
 * Checkout the actionhero source `npm install actionhero`
 * Use the generator to create a template project `./node_modules/.bin/actionhero generate`
+* `npm install` to install dependencies
 * You can now start up the server: `npm start`
 
 Visit `http://127.0.0.1:8080` in your browser to see the actionhero in action!
