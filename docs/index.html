@@ -124,6 +124,7 @@ brew install redis
 <pre class="highlight shell"><code>mkdir ~/project <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ~/project
 npm install actionhero
 ./node_modules/.bin/actionhero generate
+npm install
 npm start
 </code></pre>
 
@@ -131,6 +132,7 @@ npm start
 <li>Create a new directory <code class="prettyprint">mkdir ~/project &amp;&amp; cd ~/project</code></li>
 <li>Checkout the actionhero source <code class="prettyprint">npm install actionhero</code></li>
 <li>Use the generator to create a template project <code class="prettyprint">./node_modules/.bin/actionhero generate</code></li>
+<li><code class="prettyprint">npm install</code> to install dependencies</li>
 <li>You can now start up the server: <code class="prettyprint">npm start</code></li>
 </ul>
 
@@ -3664,15 +3666,42 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <p>actionhero provides test helpers so that you may try your actions and tasks within a headless environment. We do this by including a <code class="prettyprint">specHelper</code> initializer which creates a server, <code class="prettyprint">testServer</code> when running within the test environment.  Via the <code class="prettyprint">testServer</code>, you can easily call actions or tasks without making a real request.</p>
 
-<p>We have chosen <a href="http://mochajs.org/">mocha</a> as our test framework and <a href="https://github.com/visionmedia/should.js/">should</a> as our assertion tool which are included as dependancies within all new projects.  You do not need to use these testing tools, but an example will be provided which makes use of them.</p>
+<p>We have chosen <a href="http://mochajs.org/">mocha</a> as our test framework and <a href="https://github.com/visionmedia/should.js/">should</a> as our assertion tool which are included as dependancies within all new projects (<a href="/docs#install-amp-quickstart">generated</a> with <code class="prettyprint">./node_modules/.bin/actionhero generate</code>).  You do not need to use these testing tools, but an example will be provided which makes use of them.</p>
 
 <p>You also don&rsquo;t need to use these test helpers, and you may want to make a &lsquo;real&rsquo; http or websocket request to test something specific.  If this is the case, you can <a href="https://github.com/evantahler/actionhero/tree/master/test/servers">check out how actionhero tests its own servers</a> for examples.</p>
 
 <h2 id="getting-started">Getting Started</h2>
+<pre class="highlight javascript"><code><span class="c1">// package.json from a new actionhero project with `mocha` and `should` included</span>
+<span class="p">{</span>
+  <span class="s2">"author"</span>      <span class="err">:</span> <span class="s2">"YOU &lt;YOU@example.com&gt;"</span><span class="p">,</span>
+  <span class="s2">"name"</span>        <span class="err">:</span> <span class="s2">"my_actionhero_project"</span><span class="p">,</span>
+  <span class="s2">"description"</span> <span class="err">:</span> <span class="s2">"my actionhero project"</span><span class="p">,</span>
+  <span class="s2">"version"</span>     <span class="err">:</span> <span class="s2">"0.0.1"</span><span class="p">,</span>
+  <span class="s2">"engines"</span>     <span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"node"</span><span class="err">:</span> <span class="s2">"&gt;=0.10.0"</span>
+  <span class="p">},</span>
+  <span class="s2">"dependencies"</span> <span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"actionhero"</span> <span class="err">:</span> <span class="s2">"12.3.0"</span><span class="p">,</span>
+    <span class="s2">"ws"</span>         <span class="err">:</span> <span class="s2">"latest"</span><span class="p">,</span>
+    <span class="s2">"grunt"</span>      <span class="err">:</span> <span class="s2">"latest"</span>
+  <span class="p">},</span>
+  <span class="s2">"devDependencies"</span> <span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"mocha"</span>  <span class="err">:</span> <span class="s2">"latest"</span><span class="p">,</span>
+    <span class="s2">"should"</span> <span class="err">:</span> <span class="s2">"latest"</span>
+  <span class="p">},</span>
+  <span class="s2">"scripts"</span> <span class="err">:</span> <span class="p">{</span>
+    <span class="s2">"help"</span>         <span class="err">:</span> <span class="s2">"actionhero help"</span><span class="p">,</span>
+    <span class="s2">"start"</span>        <span class="err">:</span> <span class="s2">"actionhero start"</span><span class="p">,</span>
+    <span class="s2">"actionhero"</span>   <span class="err">:</span> <span class="s2">"actionhero"</span><span class="p">,</span>
+    <span class="s2">"startCluster"</span> <span class="err">:</span> <span class="s2">"actionhero startCluster"</span><span class="p">,</span>
+    <span class="s2">"test"</span>         <span class="err">:</span> <span class="s2">"mocha"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
 
-<p>To run a mocha test suite, you invoke the mocha binary, <code class="prettyprint">./node_modules/.bin/mocha</code>.  This will tell mocha to look in your <code class="prettyprint">./test</code> folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on <a href="http://mochajs.org/">Mocha&rsquo;s website</a></p>
+<p>To run a mocha test suite, you invoke the mocha binary, <code class="prettyprint">./node_modules/.bin/mocha</code>.  This will tell mocha to look in your <code class="prettyprint">./test</code> folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on <a href="http://mochajs.org/">Mocha&rsquo;s website</a>.  We asume that you have <code class="prettyprint">mocha</code> (and <code class="prettyprint">should</code>) installed to your project by listing it in your <code class="prettyprint">package.json</code>.  If you used <code class="prettyprint">actionhero generate</code> to create your project, this should already be configured for your.</p>
 
-<p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L62"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
+<p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L63"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
 
 <p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
 
