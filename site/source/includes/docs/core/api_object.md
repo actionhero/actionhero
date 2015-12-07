@@ -50,17 +50,10 @@ var api = {
 
   // UTILS //
   utils:{ 
-    sqlDateTime:            [Function],
-    sqlDate:                [Function],
-    padDateDoubleStr:       [Function],
-    randomString:           [Function],
     hashLength:             [Function],
     hashMerge:              [Function],
     isPlainObject:          [Function],
     arrayUniqueify:         [Function],
-    sleepSync:              [Function],
-    randomArraySort:        [Function],
-    inArray:                [Function],
     recursiveDirectoryGlob: [Function],
     objClone:               [Function],
     collapseObjectToArray:  [Function],
