@@ -8,33 +8,6 @@ module.exports = {
     api.utils = {};
 
     ////////////////////////////////////////////////////////////////////////////
-    // sqlDateTime
-    api.utils.sqlDateTime = function(time){
-      if(!time){ time = new Date() }
-      var dateStr =
-        api.utils.padDateDoubleStr(time.getFullYear()) +
-        '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
-        '-' + api.utils.padDateDoubleStr(time.getDate()) +
-        ' ' + api.utils.padDateDoubleStr(time.getHours()) +
-        ':' + api.utils.padDateDoubleStr(time.getMinutes()) +
-        ':' + api.utils.padDateDoubleStr(time.getSeconds());
-      return dateStr;
-    }
-
-    api.utils.sqlDate = function(time){
-      if(!time){ time = new Date() }
-      var dateStr =
-        api.utils.padDateDoubleStr(time.getFullYear()) +
-        '-' + api.utils.padDateDoubleStr(1 + time.getMonth()) +
-        '-' + api.utils.padDateDoubleStr(time.getDate());
-      return dateStr;
-    };
-
-    api.utils.padDateDoubleStr = function(i){
-      return (i < 10) ? '0' + i : '' + i;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     // generate a random string
     api.utils.randomString = function(length, chars){
       var result = '';

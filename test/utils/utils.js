@@ -18,25 +18,6 @@ describe('Utils', function(){
     });
   });
 
-  it('utils.sqlDateTime default', function(done){
-    api.utils.sqlDateTime().should.be.a.String;
-    done();
-  });
-
-  it('utils.sqlDateTime specific time', function(done){
-    var now = new Date(0);
-    var nowUtc = new Date(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      now.getUTCHours(),
-      now.getUTCMinutes(),
-      now.getUTCSeconds()
-    );
-    api.utils.sqlDateTime(nowUtc).should.equal('1970-01-01 00:00:00');
-    done();
-  });
-
   it('utils.randomString', function(done){
     var randomString = api.utils.randomString(100);
     randomString.should.be.a.String;

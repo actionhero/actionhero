@@ -2,14 +2,6 @@
 
 ActionHero ships with a few utility methods exposed for your convince: 
 
-### api.utils.sqlDateTime(time)
-- returns a mySQL-style formatted time string `2012-01-01 00:00:00`
-- if no time is provided, `new Date()` (now) will be used
-
-### api.utils.sqlDate(time)
-- returns a mySQL-style formatted date string `2012-01-01`
-- if no time is provided, `new Date()` (now) will be used
-
 ### api.utils.randomString(chars)
 - returns a random string of `chars` length
 - the chars used are all HTML safe

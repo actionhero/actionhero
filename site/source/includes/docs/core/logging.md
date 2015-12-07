@@ -13,7 +13,6 @@ config.logger = {
       return new (winston.transports.Console)({
         colorize: true, 
         level: "debug", 
-        timestamp: api.utils.sqlDateTime,
       });
     },
     function(api){

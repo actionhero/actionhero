@@ -50,8 +50,6 @@ var api = {
 
   // UTILS //
   utils:{ 
-    sqlDateTime:            [Function],
-    sqlDate:                [Function],
     padDateDoubleStr:       [Function],
     randomString:           [Function],
     hashLength:             [Function],
