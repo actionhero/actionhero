@@ -1,4 +1,5 @@
 var should = require('should');
+var uuid   = require('node-uuid');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -96,8 +97,8 @@ describe('Server: Socket', function(){
     var msg = {
       action: 'cacheTest',
       params: {
-        key: api.utils.randomString(100),
-        value: api.utils.randomString(500)
+        key: uuid.v4(),
+        value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
       }
     }
     makeSocketRequest(client, JSON.stringify(msg), function(response){

@@ -1,5 +1,6 @@
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
+var uuid = require('node-uuid')
 var api;
 var messages = [];
 
@@ -65,8 +66,8 @@ describe('Benchmarks', function(){
   it('cacheTest', function(done){
     this.timeout(10 * 1000)
     multiAction('cacheTest', 1000, {
-      key:   function(){ return api.utils.randomString(32) }, 
-      value: function(){ return api.utils.randomString(32) }
+      key:   function(){ return uuid.v4() }, 
+      value: function(){ return uuid.v4() }
     }, function(){
       done();
     });

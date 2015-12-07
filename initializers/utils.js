@@ -8,17 +8,6 @@ module.exports = {
     api.utils = {};
 
     ////////////////////////////////////////////////////////////////////////////
-    // generate a random string
-    api.utils.randomString = function(length, chars){
-      var result = '';
-      if(!chars){
-        chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      }
-      for(var i = length; i > 0; --i){ result += chars[Math.round(Math.random() * (chars.length - 1))] }
-      return result;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
     // count the number of elements in a hash
     api.utils.hashLength = function(obj) {
       var size = 0, key;
@@ -98,40 +87,6 @@ module.exports = {
         a.push(arr[i]);
       }
       return a;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // blocking sleep
-    api.utils.sleepSync = function(naptime){
-      naptime = naptime * 1000;
-      var sleeping = true;
-      var now = new Date();
-      var alarm;
-      var startingMSeconds = now.getTime();
-      while(sleeping){
-        alarm = new Date();
-        var alarmMSeconds = alarm.getTime();
-        if(alarmMSeconds - startingMSeconds > naptime){ sleeping = false }
-      }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // randomly sort an array
-    api.utils.randomArraySort = function(){
-      return(parseInt( Math.random()*10 ) %2);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // in the array?
-    api.utils.inArray = function(haystack, needle){
-      var found = false;
-      for(var i in haystack){
-        if(haystack[i] === needle){
-          found = true;
-          break;
-        }
-      }
-      return found;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -247,31 +202,6 @@ module.exports = {
       }
       return {host: host, port: parseInt(port,10)}
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // create an array of sorted objects, based on a key-value
-    // api.utils.orderObjectKeys = function(obj, keyName){
-    //   obj = api.utils.objClone(obj);
-    //   var keys = [];
-    //   var orderedObjs = [];
-
-    //   for (var key in obj){
-    //     keys.push(obj[key][keyName]);
-    //   }
-
-    //   keys = api.utils.arrayUniqueify(keys).sort();
-
-    //   keys.forEach(function(k){
-    //     for (var key in obj){
-    //       if(obj[key][keyName] === k){
-    //         orderedObjs.push( obj[key] );
-    //         delete obj.key
-    //       }
-    //     };
-    //   });
-
-    //   return orderedObjs;
-    // }
 
     next();
   }

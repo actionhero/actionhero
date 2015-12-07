@@ -18,29 +18,10 @@ describe('Utils', function(){
     });
   });
 
-  it('utils.randomString', function(done){
-    var randomString = api.utils.randomString(100);
-    randomString.should.be.a.String;
-    var i = 0;
-    while(i < 1000){
-      randomString.should.not.equal(api.utils.randomString(100));
-      i++;
-    }
-    done();
-  });
-
   it('utils.hashLength', function(done){
     var testHash = { a: 1, b: 2, c: {aa: 1, bb: 2}};
     api.utils.hashLength(testHash).should.equal(3)
     api.utils.hashLength({}).should.equal(0)
-    done();
-  });
-
-  it('utils.sleepSync', function(done){
-    var start = new Date();
-    api.utils.sleepSync(0.1)
-    var end = new Date();
-    (end - start).should.be.within(100, 200);
     done();
   });
 
@@ -80,13 +61,6 @@ describe('Utils', function(){
       Z.b.o.should.equal(22);
       done();
     });
-  });
-
-  it('utils.inArray', function(done){
-    api.utils.inArray([1,2,3], 1).should.eql(true);
-    api.utils.inArray([1,2,3], 4).should.eql(false);
-    api.utils.inArray([1,2,3], null).should.eql(false);
-    done();
   });
 
   it('utils.objClone', function(done){

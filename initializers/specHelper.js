@@ -1,3 +1,5 @@
+var uuid = require('node-uuid');
+
 module.exports = {
   startPriority: 901,
   loadPriority:  900,
@@ -102,7 +104,7 @@ module.exports = {
       }
 
       api.specHelper.connection = function(){
-        var id = api.utils.randomString(32);
+        var id = uuid.v4();
         api.servers.servers.testServer.buildConnection({
           id             : id,
           rawConnection  : {},
