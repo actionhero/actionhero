@@ -65,7 +65,7 @@ Notes:
 
 - It's best to seperate the "workers" from the web "servers"
    - be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)
-- To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be runnign the same same actionhero project codebase.  See the example: 
+- To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example: 
 - Always have a replica of redis!
 
 ## Paths and Environments
