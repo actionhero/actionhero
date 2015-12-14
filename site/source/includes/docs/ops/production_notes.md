@@ -2,14 +2,70 @@
 
 ## Topology Example
 
+```javascript
+
+// Assume we use the flag `process.env.ACTIONHERO_ROLE` to denote the type of server
+// You can set this variable in the ENV of your server or launch each process with the flag:
+// Worker => `ACTIONHERO_ROLE='worker' npm start`
+// Server => `ACTIONHERO_ROLE='server' npm start`
+
+// config/tasks.js
+
+exports.production = { 
+    tasks: function(api){
+
+        // defualt to config for 'server'
+        var config = {
+          scheduler: false,
+          queues: ['*'],
+          verbose: true,
+          // ...
+          redis: api.config.redis
+        };
+
+        if(process.env.ACTIONHERO_ROLE === 'worker'){
+            config.scheduler = true;
+            config.minTaskProcessors = 1;
+            config.maxTaskProcessors = 10;
+        }
+
+        return config;
+    }
+};
+
+// config/servers/web.js
+
+exports.default = {
+    servers: {
+        web: function(api){
+            config = {
+                enabled: true,
+                secure: false,
+                serverOptions: {},
+                port: process.env.PORT || 8080
+                // ...
+            };
+
+            if(process.env.ACTIONHERO_ROLE === 'worker'){
+                config.enabled = false;
+            }
+
+            return config;
+        }
+    }
+};
+
+```
+
 Here is a common actionhero production topology:
 
 ![cluster](/images/cluster.png)
 
 Notes:
 
-- It's best to seperate the "worekrs" from the web "servers"
+- It's best to seperate the "workers" from the web "servers"
    - be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)
+- To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be runnign the same same actionhero project codebase.  See the example: 
 - Always have a replica of redis!
 
 ## Paths and Environments
