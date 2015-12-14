@@ -1653,7 +1653,6 @@ Running <span class="s2">"console"</span> task
       <span class="k">return</span> <span class="k">new</span> <span class="p">(</span><span class="nx">winston</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span><span class="p">)({</span>
         <span class="na">colorize</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> 
         <span class="na">level</span><span class="p">:</span> <span class="s2">"debug"</span><span class="p">,</span> 
-        <span class="na">timestamp</span><span class="p">:</span> <span class="nx">api</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">sqlDateTime</span><span class="p">,</span>
       <span class="p">});</span>
     <span class="p">},</span>
     <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
@@ -2001,17 +2000,10 @@ Running <span class="s2">"console"</span> task
 
   <span class="c1">// UTILS //</span>
   <span class="na">utils</span><span class="p">:{</span> 
-    <span class="na">sqlDateTime</span><span class="p">:</span>            <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">sqlDate</span><span class="p">:</span>                <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">padDateDoubleStr</span><span class="p">:</span>       <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">randomString</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">hashLength</span><span class="p">:</span>             <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">hashMerge</span><span class="p">:</span>              <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">isPlainObject</span><span class="p">:</span>          <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">arrayUniqueify</span><span class="p">:</span>         <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">sleepSync</span><span class="p">:</span>              <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">randomArraySort</span><span class="p">:</span>        <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">inArray</span><span class="p">:</span>                <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">recursiveDirectoryGlob</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">objClone</span><span class="p">:</span>               <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">collapseObjectToArray</span><span class="p">:</span>  <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
@@ -3194,6 +3186,59 @@ randomNumber
           <h1 id="production-notes">Production Notes</h1>
 
 <h2 id="topology-example">Topology Example</h2>
+<pre class="highlight javascript"><code>
+<span class="c1">// Assume we use the flag `process.env.ACTIONHERO_ROLE` to denote the type of server</span>
+<span class="c1">// You can set this variable in the ENV of your server or launch each process with the flag:</span>
+<span class="c1">// Worker =&gt; `ACTIONHERO_ROLE='worker' npm start`</span>
+<span class="c1">// Server =&gt; `ACTIONHERO_ROLE='server' npm start`</span>
+
+<span class="c1">// config/tasks.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+
+        <span class="c1">// defualt to config for 'server'</span>
+        <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+          <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+          <span class="na">verbose</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="c1">// ...</span>
+          <span class="na">redis</span><span class="p">:</span> <span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">redis</span>
+        <span class="p">};</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ACTIONHERO_ROLE</span> <span class="o">===</span> <span class="s1">'worker'</span><span class="p">){</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">scheduler</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">minTaskProcessors</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">maxTaskProcessors</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// config/servers/web.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">servers</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">web</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+            <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="na">enabled</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">secure</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="na">serverOptions</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+                <span class="c1">// ...</span>
+            <span class="p">};</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ACTIONHERO_ROLE</span> <span class="o">===</span> <span class="s1">'worker'</span><span class="p">){</span>
+                <span class="nx">config</span><span class="p">.</span><span class="nx">enabled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+</code></pre>
 
 <p>Here is a common actionhero production topology:</p>
 
@@ -3202,11 +3247,12 @@ randomNumber
 <p>Notes:</p>
 
 <ul>
-<li>It&rsquo;s best to seperate the &ldquo;worekrs&rdquo; from the web &ldquo;servers&rdquo;
+<li>It&rsquo;s best to seperate the &ldquo;workers&rdquo; from the web &ldquo;servers&rdquo;
 
 <ul>
 <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
 </ul></li>
+<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be runnign the same same actionhero project codebase.  See the example: </li>
 <li>Always have a replica of redis!</li>
 </ul>
 
@@ -3868,27 +3914,6 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <p>ActionHero ships with a few utility methods exposed for your convince: </p>
 
-<h3 id="api-utils-sqldatetime-time">api.utils.sqlDateTime(time)</h3>
-
-<ul>
-<li>returns a mySQL-style formatted time string <code class="prettyprint">2012-01-01 00:00:00</code></li>
-<li>if no time is provided, <code class="prettyprint">new Date()</code> (now) will be used</li>
-</ul>
-
-<h3 id="api-utils-sqldate-time">api.utils.sqlDate(time)</h3>
-
-<ul>
-<li>returns a mySQL-style formatted date string <code class="prettyprint">2012-01-01</code></li>
-<li>if no time is provided, <code class="prettyprint">new Date()</code> (now) will be used</li>
-</ul>
-
-<h3 id="api-utils-randomstring-chars">api.utils.randomString(chars)</h3>
-
-<ul>
-<li>returns a random string of <code class="prettyprint">chars</code> length</li>
-<li>the chars used are all HTML safe</li>
-</ul>
-
 <h3 id="api-utils-hashlength-obj">api.utils.hashLength(obj)</h3>
 
 <ul>
@@ -3913,26 +3938,6 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <ul>
 <li>removes duplicate entries from an array</li>
-</ul>
-
-<h3 id="api-utils-sleepsync-seconds">api.utils.sleepSync(seconds)</h3>
-
-<ul>
-<li>a terrible and inneffiencet way to force a blocking sleep in the main thread</li>
-<li>never ever use this… ever</li>
-</ul>
-
-<h3 id="api-utils-randomarraysort-arr">api.utils.randomArraySort(arr)</h3>
-
-<ul>
-<li>return a randomly sorted array</li>
-</ul>
-
-<h3 id="api-utils-inarray-haystack-needle">api.utils.inArray(haystack, needle)</h3>
-
-<ul>
-<li>checks if needle is contained within the haystack array</li>
-<li>returns true/false</li>
 </ul>
 
 <h3 id="api-utils-objclone-obj">api.utils.objClone(obj)</h3>

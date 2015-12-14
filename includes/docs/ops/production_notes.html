@@ -1,6 +1,59 @@
 <h1 id="production-notes">Production Notes</h1>
 
 <h2 id="topology-example">Topology Example</h2>
+<pre class="highlight javascript"><code>
+<span class="c1">// Assume we use the flag `process.env.ACTIONHERO_ROLE` to denote the type of server</span>
+<span class="c1">// You can set this variable in the ENV of your server or launch each process with the flag:</span>
+<span class="c1">// Worker =&gt; `ACTIONHERO_ROLE='worker' npm start`</span>
+<span class="c1">// Server =&gt; `ACTIONHERO_ROLE='server' npm start`</span>
+
+<span class="c1">// config/tasks.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+
+        <span class="c1">// defualt to config for 'server'</span>
+        <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+          <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+          <span class="na">verbose</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="c1">// ...</span>
+          <span class="na">redis</span><span class="p">:</span> <span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">redis</span>
+        <span class="p">};</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ACTIONHERO_ROLE</span> <span class="o">===</span> <span class="s1">'worker'</span><span class="p">){</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">scheduler</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">minTaskProcessors</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="nx">config</span><span class="p">.</span><span class="nx">maxTaskProcessors</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// config/servers/web.js</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">servers</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">web</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
+            <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="na">enabled</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">secure</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="na">serverOptions</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="na">port</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span>
+                <span class="c1">// ...</span>
+            <span class="p">};</span>
+
+            <span class="k">if</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ACTIONHERO_ROLE</span> <span class="o">===</span> <span class="s1">'worker'</span><span class="p">){</span>
+                <span class="nx">config</span><span class="p">.</span><span class="nx">enabled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+</code></pre>
 
 <p>Here is a common actionhero production topology:</p>
 
@@ -9,11 +62,12 @@
 <p>Notes:</p>
 
 <ul>
-<li>It&rsquo;s best to seperate the &ldquo;worekrs&rdquo; from the web &ldquo;servers&rdquo;
+<li>It&rsquo;s best to seperate the &ldquo;workers&rdquo; from the web &ldquo;servers&rdquo;
 
 <ul>
 <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
 </ul></li>
+<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be runnign the same same actionhero project codebase.  See the example: </li>
 <li>Always have a replica of redis!</li>
 </ul>
 
