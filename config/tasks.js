@@ -5,8 +5,14 @@ exports.default = {
       scheduler: false,
       // what queues should the taskProcessors work?
       queues: ['*'],
-      // Verbosity of task logging
+      // Verbosity of task scheduler
       verbose: true,
+      // Logging levels of tasks
+      taskLogging : {
+        start : 'info',
+        success: 'info',
+        failure: 'error',
+      },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
       // at minimum, how many parallel taskProcessors should this node spawn?
@@ -21,7 +27,7 @@ exports.default = {
       // When we kill off a taskProcessor, should we disconnect that local redis connection?
       toDisconnectProcessors: true,
       // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis
+      redis: api.config.redis,
     }
   }
 }

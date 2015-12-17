@@ -58,7 +58,8 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
-    		self.verbose = api.config.tasks.verbose;
+        self.verbose = api.config.tasks.verbose;
+        self.taskLogging = api.config.tasks.taskLogging;
         
         self.multiWorker = new NR.multiWorker({
           connection:             api.resque.connectionDetails,
@@ -78,7 +79,7 @@ module.exports = {
         self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'debug',       {workerId: workerId}                                                            ); })
         self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
         self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
-        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, 'info',    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
+        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, self.verbose ? 'info' : self.taskLogging.success,    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
         self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', 'debug', {workerId: workerId}                                                                            ); })
 
         self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); })

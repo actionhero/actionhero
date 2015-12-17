@@ -175,7 +175,7 @@ module.exports = {
           self.del(task.queue, taskName, {}, function(){
             self.delDelayed(task.queue, taskName, {}, function(){
               self.enqueueIn(task.frequency, taskName, function(){
-                api.log('re-enqueued recurrent job ' + taskName, 'debug');
+                api.log('re-enqueued recurrent job ' + taskName, api.tasks.verbose ? 'info' : api.config.tasks.taskLogging.enqueue);
                 callback();
               });
             });
@@ -194,7 +194,7 @@ module.exports = {
             (function(taskName){
               self.enqueue(taskName, function(err, toRun){
                 if(toRun === true){ 
-                  api.log('enqueuing periodic task: ' + taskName, 'info');
+                  api.log('enqueuing periodic task: ' + taskName, api.tasks.verbose ? 'info' : api.config.tasks.taskLogging.enqueue);
                   loadedTasks.push(taskName);
                 }
                 started--;

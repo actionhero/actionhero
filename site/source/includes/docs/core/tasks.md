@@ -55,6 +55,14 @@ exports.default = {
       scheduler: false,
       // what queues should the TaskProcessors work?
       queues: ['*'],
+      // Verbosity of task scheduler
+      verbose: true,
+      // Logging levels of tasks
+      taskLogging : {
+        start : 'info',
+        success: 'info',
+        failure: 'error',
+      },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
       // at minimum, how many parallel taskProcessors should this node spawn?
