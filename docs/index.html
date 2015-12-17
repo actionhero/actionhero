@@ -426,7 +426,40 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 
 <p>You can define <code class="prettyprint">api.config.general.missingParamChecks = [null, &#39;&#39;, undefined]</code> to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit <code class="prettyprint">null</code> values in a JSON payload but not <code class="prettyprint">undefined</code>, you can now opt-in to that behavior.  This is what <code class="prettyprint">action.inputs.x.required = true</code> will check against.</p>
 
-<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not).</p>
+<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not), ie: <code class="prettyprint">name: {required: false}</code>.</p>
+
+<p>The methods are applied in this order:</p>
+
+<ul>
+<li><code class="prettyprint">defualt()</code></li>
+<li><code class="prettyprint">formatter()</code></li>
+<li><code class="prettyprint">validator()</code></li>
+<li><code class="prettyprint">required()</code></li>
+</ul>
+
+<p>Here&rsquo;s an example&hellip;</p>
+<pre class="highlight javascript"><code><span class="nx">moneyInCents</span><span class="err">:</span> <span class="p">{</span>
+  <span class="nl">required</span><span class="p">:</span>  <span class="kc">true</span><span class="p">,</span>
+  <span class="nx">defualt</span><span class="err">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">},</span>
+  <span class="nx">formatter</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span> <span class="k">return</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span> <span class="p">},</span>
+  <span class="nx">validator</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">p</span><span class="p">)){</span> <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'not a number'</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">p</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'money cannot be negative'</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>&hellip;and the results would be:</p>
+
+<ul>
+<li>If moneyInCents = <code class="prettyprint">4</code>       =&gt; (4 =&gt; 4 =&gt; 400 =&gt; ok)</li>
+<li>If moneyInCents = <code class="prettyprint">&quot;4&quot;</code>     =&gt; (&ldquo;4&rdquo; =&gt; 4 =&gt; 400 =&gt; ok)</li>
+<li>If moneyInCents = <code class="prettyprint">&quot;-4&quot;</code>    =&gt; (&ldquo;-4&rdquo; =&gt; -4 =&gt; -400 =&gt; Error(&lsquo;money cannot be negative&rsquo;))</li>
+<li>If moneyInCents = <code class="prettyprint">&quot;&quot;</code>      =&gt; 0 (defualt value)</li>
+<li>If moneyInCents = <code class="prettyprint">null</code>    =&gt; 0 (defualt value)</li>
+<li>If moneyInCents = <code class="prettyprint">&quot;hello&quot;</code> =&gt; Error(&#39;not a number&rsquo;)</li>
+</ul>
 
 <h2 id="the-data-object">The Data Object</h2>
 <pre class="highlight javascript"><code><span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -3252,7 +3285,7 @@ randomNumber
 <ul>
 <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
 </ul></li>
-<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be runnign the same same actionhero project codebase.  See the example: </li>
+<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example: </li>
 <li>Always have a replica of redis!</li>
 </ul>
 
