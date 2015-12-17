@@ -58,7 +58,6 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
-        self.verbose = api.config.tasks.verbose;
         self.taskLogging = api.config.tasks.taskLogging;
         
         self.multiWorker = new NR.multiWorker({
@@ -73,14 +72,14 @@ module.exports = {
         }, api.tasks.jobs);
 
         // normal worker emitters
-        self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', (self.verbose) ? 'info':'debug', {workerId: workerId}                                                   ); })
-        self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', (self.verbose) ? 'info':'debug',   {workerId: workerId}                                                   ); })
-        self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', (self.verbose) ? 'info':'debug'                                 ); })
-        self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'debug',       {workerId: workerId}                                                            ); })
-        self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
-        self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
-        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, self.verbose ? 'info' : self.taskLogging.success,    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
-        self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', 'debug', {workerId: workerId}                                                                            ); })
+        self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', self.taskLogging.start, {workerId: workerId}                                                   ); })
+        self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', self.taskLogging.end,   {workerId: workerId}                                                   ); })
+        self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', self.taskLogging.cleaning_worker                                 ); })
+        self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, self.taskLogging.poll,       {workerId: workerId}                                                            ); })
+        self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, self.taskLogging.job,   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
+        self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', self.taskLogging.reEnqueue,          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
+        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, self.taskLogging.success,    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
+        self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', self.taskLogging.pause, {workerId: workerId}                                                                            ); })
 
         self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); })
         self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   })

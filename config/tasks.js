@@ -5,13 +5,18 @@ exports.default = {
       scheduler: false,
       // what queues should the taskProcessors work?
       queues: ['*'],
-      // Verbosity of task scheduler
-      verbose: true,
       // Logging levels of tasks
       taskLogging : {
         start : 'info',
+        end : 'info',
         success: 'info',
         failure: 'error',
+        cleaning_worker : 'info',
+        poll : 'debug',
+        job : 'debug',
+        enqueue: 'debug',
+        reEnqueue: 'debug',
+        pause: 'debug',
       },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
