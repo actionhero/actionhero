@@ -55,7 +55,7 @@ exports.default = {
       scheduler: false,
       // what queues should the TaskProcessors work?
       queues: ['*'],
-      // Verbosity of task scheduler
+      // Verbosity of task scheduler (overrides the below task logging levels when set to true)
       verbose: true,
       // Logging levels of tasks
       taskLogging : {
