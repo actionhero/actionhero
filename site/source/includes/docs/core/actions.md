@@ -204,7 +204,39 @@ The properties of an input are:
 
 You can define `api.config.general.missingParamChecks = [null, '', undefined]` to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit `null` values in a JSON payload but not `undefined`, you can now opt-in to that behavior.  This is what `action.inputs.x.required = true` will check against.
 
-Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not).
+Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not), ie: `name: {required: false}`.
+
+The methods are applied in this order:
+
+  - `defualt()`
+  - `formatter()`
+  - `validator()`
+  - `required()`
+
+Here's an example...
+
+```javascript
+moneyInCents: {
+  required:  true,
+  defualt:   function(p){ return 0; },
+  formatter: function(p){ return parseFloat(p); },
+  validator: function(p){
+    if(isNaN(parseFloat(p)){ return new Error('not a number'); }
+    if(p < 0){ return new Error('money cannot be negative'); }
+    else{ return true; }
+  },
+}
+```
+
+...and the results would be:
+
+- If moneyInCents = `4`       => (4 => 4 => 400 => ok)
+- If moneyInCents = `"4"`     => ("4" => 4 => 400 => ok)
+- If moneyInCents = `"-4"`    => ("-4" => -4 => -400 => Error('money cannot be negative'))
+- If moneyInCents = `""`      => 0 (defualt value)
+- If moneyInCents = `null`    => 0 (defualt value)
+- If moneyInCents = `"hello"` => Error('not a number')
+
 
 ## The Data Object
 
