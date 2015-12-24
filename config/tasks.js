@@ -5,8 +5,29 @@ exports.default = {
       scheduler: false,
       // what queues should the taskProcessors work?
       queues: ['*'],
-      // Verbosity of task logging
-      verbose: true,
+      // Logging levels of task workers
+      workerLogging : {
+        failure   : 'error', // task failure
+        success   : 'info',  // task success 
+        start     : 'info',
+        end       : 'info',
+        cleaning_worker : 'info',
+        poll      : 'debug',
+        job       : 'debug',
+        pause     : 'debug',
+        internalError : 'error',
+        multiWorkerAction : 'debug'
+      },
+      // Logging levels of the task scheduler
+      schedulerLogging : {
+        start     : 'info',
+        end       : 'info',
+        poll      : 'debug',
+        enqueue   : 'debug',
+        reEnqueue : 'debug',
+        working_timestamp : 'debug',
+        transferred_job   : 'debug'
+      },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
       // at minimum, how many parallel taskProcessors should this node spawn?
@@ -21,7 +42,7 @@ exports.default = {
       // When we kill off a taskProcessor, should we disconnect that local redis connection?
       toDisconnectProcessors: true,
       // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis
+      redis: api.config.redis,
     }
   }
 }

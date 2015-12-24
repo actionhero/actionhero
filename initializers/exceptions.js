@@ -98,7 +98,7 @@ module.exports = {
         simpleName = err.message;
       }
       var name = 'task:' + simpleName;
-      api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, 'error');
+      api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
     };
     
     next();
