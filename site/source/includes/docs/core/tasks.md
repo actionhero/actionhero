@@ -55,18 +55,28 @@ exports.default = {
       scheduler: false,
       // what queues should the TaskProcessors work?
       queues: ['*'],
-      // Logging levels of tasks
-      taskLogging : {
-        start : 'info',
-        end : 'info',
-        success: 'info',
-        failure: 'error',
+      // Logging levels of task workers
+      workerLogging : {
+        failure   : 'error', // task failure
+        success   : 'info',  // task success 
+        start     : 'info',
+        end       : 'info',
         cleaning_worker : 'info',
-        poll : 'debug',
-        job : 'debug',
-        enqueue: 'debug',
-        reEnqueue: 'debug',
-        pause: 'debug',
+        poll      : 'debug',
+        job       : 'debug',
+        pause     : 'debug',
+        internalError : 'error',
+        multiWorkerAction : 'debug'
+      },
+      // Logging levels of the task scheduler
+      schedulerLogging : {
+        start     : 'info',
+        end       : 'info',
+        poll      : 'debug',
+        enqueue   : 'debug',
+        reEnqueue : 'debug',
+        working_timestamp : 'debug',
+        transferred_job   : 'debug'
       },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
