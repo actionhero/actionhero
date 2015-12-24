@@ -56,6 +56,29 @@
       <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
       <span class="c1">// what queues should the TaskProcessors work?</span>
       <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
+      <span class="c1">// Logging levels of task workers</span>
+      <span class="na">workerLogging</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="na">failure</span>   <span class="p">:</span> <span class="s1">'error'</span><span class="p">,</span> <span class="c1">// task failure</span>
+        <span class="na">success</span>   <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>  <span class="c1">// task success </span>
+        <span class="na">start</span>     <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>
+        <span class="na">end</span>       <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>
+        <span class="na">cleaning_worker</span> <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>
+        <span class="na">poll</span>      <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">job</span>       <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">pause</span>     <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">internalError</span> <span class="p">:</span> <span class="s1">'error'</span><span class="p">,</span>
+        <span class="na">multiWorkerAction</span> <span class="p">:</span> <span class="s1">'debug'</span>
+      <span class="p">},</span>
+      <span class="c1">// Logging levels of the task scheduler</span>
+      <span class="na">schedulerLogging</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="na">start</span>     <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>
+        <span class="na">end</span>       <span class="p">:</span> <span class="s1">'info'</span><span class="p">,</span>
+        <span class="na">poll</span>      <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">enqueue</span>   <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">reEnqueue</span> <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">working_timestamp</span> <span class="p">:</span> <span class="s1">'debug'</span><span class="p">,</span>
+        <span class="na">transferred_job</span>   <span class="p">:</span> <span class="s1">'debug'</span>
+      <span class="p">},</span>
       <span class="c1">// how long to sleep between jobs / scheduler checks</span>
       <span class="na">timeout</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
       <span class="c1">// at minimum, how many parallel taskProcessors should this node spawn?</span>
