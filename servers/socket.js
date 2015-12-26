@@ -2,7 +2,7 @@ var net = require('net');
 var tls = require('tls');
 
 var initialize = function(api, options, next){
-  
+
   //////////
   // INIT //
   //////////
@@ -51,7 +51,7 @@ var initialize = function(api, options, next){
     server.server.on('error', function(e){
       return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
     });
-    
+
     server.server.listen(options.port, options.bindIP, function(){
       process.nextTick(function(){
         next();
@@ -106,6 +106,15 @@ var initialize = function(api, options, next){
   server.on('connection', function(connection){
     connection.params = {};
 
+    var parseLine = function(line){
+      if(line.length > 0){
+        // increment at the start of the request so that responses can be caught in order on the client
+        // this is not handled by the genericServer
+        connection.messageCount++;
+        parseRequest(connection, line);
+      }
+    };
+
     connection.rawConnection.on('data', function(chunk){
       if(checkBreakChars(chunk)){
         connection.destroy();
@@ -115,14 +124,7 @@ var initialize = function(api, options, next){
         while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1) {
           var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          data.split('\n').forEach(function(line){
-            if(line.length > 0){
-              // increment at the start of the request so that responses can be caught in order on the client
-              // this is not handled by the genericServer
-              connection.messageCount++;
-              parseRequest(connection, line);
-            }
-          });
+          data.split('\n').forEach(parseLine);
         }
       }
     });
