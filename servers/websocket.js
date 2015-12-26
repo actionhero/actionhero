@@ -71,7 +71,7 @@ var initialize = function(api, options, next){
     if(message.error){
       message.error = api.config.errors.serializers.servers.websocket(message.error);
     }
-    
+
     if(!message.context){ message.context = 'response'; }
     if(!messageCount){ messageCount = connection.messageCount; }
     if(message.context === 'response' && !message.messageCount){ message.messageCount = messageCount; }

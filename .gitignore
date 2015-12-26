@@ -9,7 +9,7 @@ node_modules/*
 public/javascript/actionheroClient.js
 public/javascript/actionheroClient.min.js
 
-# Node / NPM 
+# Node / NPM
 npm-debug.log
 
 # OS-specific wierdness

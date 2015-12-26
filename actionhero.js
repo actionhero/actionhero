@@ -3,9 +3,43 @@
 // http://www.actionherojs.com
 // https://github.com/evantahler/actionhero
 
-var fs = require('fs');
 var path = require('path');
 var async = require('async');
+
+// HELPERS ///
+
+var fatalError = function(api, errors, type){
+  if(errors && !(errors instanceof Array)){ errors = [errors]; }
+  if(errors){
+    api.log('Error with initializer step: ' + type, 'emerg');
+    errors.forEach(function(err){
+      api.log(err.stack, 'emerg');
+    });
+    process.exit(1);
+  }
+}
+
+var sortNumber = function(a,b) {
+    return a - b;
+}
+
+var flattenOrderedInitialzer = function(collection){
+  var output = [];
+  var keys = [];
+  for(var key in collection){
+    keys.push(parseInt(key));
+  }
+  keys.sort(sortNumber);
+  keys.forEach(function(key){
+    collection[key].forEach(function(d){
+      output.push(d);
+    })
+  });
+
+  return output;
+}
+
+// ACTIONHERO //
 
 var actionhero = function(){
   var self = this;
@@ -138,13 +172,13 @@ actionhero.prototype.initialize = function(params, callback){
           }
         };
 
-        if(self.initializers[initializer].loadPriority === undefined){ 
+        if(self.initializers[initializer].loadPriority === undefined){
           self.initializers[initializer].loadPriority = self.api.initializerDefaults.load;
         }
-        if(self.initializers[initializer].startPriority === undefined){ 
+        if(self.initializers[initializer].startPriority === undefined){
           self.initializers[initializer].startPriority = self.api.initializerDefaults.start;
         }
-        if(self.initializers[initializer].stopPriority === undefined){ 
+        if(self.initializers[initializer].stopPriority === undefined){
           self.initializers[initializer].stopPriority = self.api.initializerDefaults.stop;
         }
 
@@ -280,38 +314,5 @@ actionhero.prototype.restart = function(callback){
     });
   }
 };
-
-//
-
-var fatalError = function(api, errors, type){
-  if(errors && !(errors instanceof Array)){ errors = [errors]; }
-  if(errors){ 
-    api.log('Error with initializer step: ' + type, 'emerg');
-    errors.forEach(function(err){
-      api.log(err.stack, 'emerg');
-    });
-    process.exit(1); 
-  }
-}
-
-var sortNumber = function(a,b) {
-    return a - b;
-}
-
-var flattenOrderedInitialzer = function(collection){
-  var output = [];
-  var keys = [];
-  for(var key in collection){
-    keys.push(parseInt(key));
-  }
-  keys.sort(sortNumber);
-  keys.forEach(function(key){
-    collection[key].forEach(function(d){
-      output.push(d);
-    })
-  });
-
-  return output;
-}
 
 exports.actionheroPrototype = actionhero;

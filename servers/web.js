@@ -81,7 +81,7 @@ var initialize = function(api, options, next){
     if(connection.rawConnection.method !== 'HEAD'){
       stringResponse = String(message);
     }
-    
+
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
@@ -145,8 +145,8 @@ var initialize = function(api, options, next){
     }
 
     // note: the 'end' event may not fire on some OSes; finish will
-    connection.rawConnection.res.on('finish', function(){ 
-      connection.destroy(); 
+    connection.rawConnection.res.on('finish', function(){
+      connection.destroy();
     });
 
     if(fileStream){
@@ -174,7 +174,7 @@ var initialize = function(api, options, next){
     }
   };
 
-  server.goodbye = function(connection){
+  server.goodbye = function(){
     // disconnect handlers
   };
 
