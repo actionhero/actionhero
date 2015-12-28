@@ -1803,6 +1803,20 @@ Running <span class="s2">"console"</span> task
 
 <p><strong>Please use the npm naming convention <code class="prettyprint">ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
 
+<h2 id="plugin-methods">Plugin methods</h2>
+
+<p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &ldquo;top level&rdquo; actionhero project, but might be difficult from within the <code class="prettyprint">node_modules</code> folder.</p>
+
+<h3 id="routes">Routes:</h3>
+
+<ul>
+<li><code class="prettyprint">api.routes.registerRoute(method, path, action, apiVersion)</code>
+
+<ul>
+<li>Add a route to the system.<br></li>
+</ul></li>
+</ul>
+
 <h2 id="plugin-scripts">Plugin Scripts</h2>
 <pre class="highlight javascript"><code><span class="cp">#!/usr/bin/env node
 </span>
