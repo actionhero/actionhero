@@ -34,6 +34,15 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 
 **Please use the npm naming convention `ah-(name)-plugin` when uploading your plugin to npm**
 
+## Plugin methods
+
+When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" actionhero project, but might be difficult from within the `node_modules` folder.
+
+### Routes:
+
+- `api.routes.registerRoute(method, path, action, apiVersion)`
+  - Add a route to the system.  
+
 ## Plugin Scripts
 
 ```javascript
