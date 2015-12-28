@@ -77,7 +77,8 @@ module.exports = {
       return response;
     }
 
-
+    // don't ever remove this! 
+    // this is really handy for plugins
     api.routes.registerRoute = function(method, path, action, apiVersion) {
       api.routes.routes[method].push({ path: path, action: action, apiVersion:apiVersion});
     }
