@@ -147,7 +147,7 @@ describe('Server: Web', function(){
         body.error.should.equal('broken')
         done();
       });
-    }); 
+    });
 
     it('errors can be complex JSON payloads', function(done){
       request.get(url + '/api/complexErrorTestAction/', function(err, response, body){
@@ -686,7 +686,8 @@ describe('Server: Web', function(){
           description: 'I am a test',
           matchExtensionMimeType: true,
           inputs: {
-            key: {required:true}
+            key: { required:true },
+            path: { required:false },
           },
           outputExample: {},
           run:function(api, data, next){
@@ -710,7 +711,7 @@ describe('Server: Web', function(){
             next();
           }
         },
-        
+
         '2': {
           name: 'login',
           description: 'login',
@@ -738,7 +739,8 @@ describe('Server: Web', function(){
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
           { path: '/thing', action: 'thing' },
           { path: '/thing/stuff', action: 'thingStuff' },
-          { path: '/old_login', action: 'login', apiVersion: '1' }
+          { path: '/old_login', action: 'login', apiVersion: '1' },
+          { path: '/a/wild/:key/:path(^.*$)', action: 'mimeTestAction', apiVersion: '1', matchTrailingPathParts: true }
         ],
         post: [
           { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
@@ -793,7 +795,7 @@ describe('Server: Web', function(){
         done();
       });
     });
-    
+
     it('Routes should recognize apiVersion as default param', function(done){
       request.get(url + '/api/old_login?user_id=7', function(err, response, body){
         body = JSON.parse(body);
@@ -919,6 +921,16 @@ describe('Server: Web', function(){
           body = JSON.parse(body);
           response.headers['content-type'].should.equal('application/json; charset=utf-8');
           body.error.should.equal('key is a required parameter for this action');
+          done();
+        });
+      });
+
+      it('works with with matchTrailingPathParts', function(done){
+        request.get(url + '/api/a/wild/theKey/and/some/more/path', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('mimeTestAction');
+          body.requesterInformation.receivedParams.path.should.equal('and/some/more/path');
+          body.requesterInformation.receivedParams.key.should.equal('theKey');
           done();
         });
       });
