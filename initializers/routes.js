@@ -53,7 +53,7 @@ module.exports = {
         var matchPart = matchParts[i];
         var pathPart  = pathParts[i];
 
-        if(matchTrailingPathParts === true && matchPart.indexOf('(') >= 0){
+        if(matchTrailingPathParts === true && parseInt(i) === (matchParts.length - 1)){
           for(var j in pathParts){
             if(j > i){ pathPart = pathPart + '/' + pathParts[j]; }
           }
