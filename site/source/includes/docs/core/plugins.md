@@ -40,7 +40,7 @@ When creating plugins, you may find yourself wanting to do things which could no
 
 ### Routes:
 
-- `api.routes.registerRoute(method, path, action, apiVersion)`
+- `api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)`
   - Add a route to the system.  
 
 ## Plugin Scripts

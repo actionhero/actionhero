@@ -23,9 +23,9 @@
 
 The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. `{url}?action=actioName` or `{url}/api/{actioName}` is how you would access an action.  For example, using the default ports in `/config/servers/web.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`  
 
-HTTP responses are always JSON and follow the format => 
+HTTP responses are always JSON and follow the format =>
 
-## HTTP Example: 
+## HTTP Example:
 
 ```bash
 
@@ -38,14 +38,14 @@ HTTP responses are always JSON and follow the format =>
 > User-Agent: curl/7.24.0 (x86_64-apple-darwin12.0) libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5
 > Host: localhost:8080
 > Accept: */*
-> 
+>
 < HTTP/1.1 200 OK
 < Content-Type: application/json
 < X-Powered-By: actionhero API
 < Date: Sun, 29 Jul 2012 23:25:53 GMT
 < Connection: keep-alive
 < Transfer-Encoding: chunked
-< 
+<
 { [data not shown]
 100   741    0   741    0     0   177k      0 --:--:-- --:--:-- --:--:--  361k
 * Connection #0 to host localhost left intact
@@ -53,48 +53,48 @@ HTTP responses are always JSON and follow the format =>
 {
     "requestorInformation": {
         "recievedParams": {
-            "action": "status", 
-        }, 
+            "action": "status",
+        },
         "remoteAddress": "127.0.0.1"
-    }, 
+    },
     "serverInformation": {
-        "apiVersion": "3.0.0", 
-        "currentTime": 1343604353551, 
-        "requestDuration": 1, 
+        "apiVersion": "3.0.0",
+        "currentTime": 1343604353551,
+        "requestDuration": 1,
         "serverName": "actionhero API"
-    }, 
+    },
     "stats": {
         "cache": {
             "numberOfObjects": 0
-        }, 
-        "id": "10.0.1.12:8080:4443:5000", 
-        "memoryConsumption": 8421200, 
+        },
+        "id": "10.0.1.12:8080:4443:5000",
+        "memoryConsumption": 8421200,
         "peers": [
             "10.0.1.12:8080:4443:5000"
-        ], 
+        ],
         "queue": {
-            "queueLength": 0, 
+            "queueLength": 0,
             "sleepingTasks": []
-        }, 
+        },
         "socketServer": {
-            "numberOfGlobalSocketRequests": 0, 
-            "numberOfLocalActiveSocketClients": 0, 
+            "numberOfGlobalSocketRequests": 0,
+            "numberOfLocalActiveSocketClients": 0,
             "numberOfLocalSocketRequests": 0
-        }, 
-        "uptimeSeconds": 34.163, 
+        },
+        "uptimeSeconds": 34.163,
         "webServer": {
-            "numberOfGlobalWebRequests": 5, 
+            "numberOfGlobalWebRequests": 5,
             "numberOfLocalWebRequests": 3
-        }, 
+        },
         "webSocketServer": {
-            "numberOfGlobalWebSocketRequests": 0, 
+            "numberOfGlobalWebSocketRequests": 0,
             "numberOfLocalActiveWebSocketClients": 0
         }
     }
 }
 ```
 
-* you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. 
+* you can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript.
 * If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
 * to build the response for "hello" above, the action would have set `connection.response.hello = "world";`
 
@@ -146,7 +146,7 @@ config.server.web.serverOptions: {
   cert: fs.readFileSync('certs/server-cert.pem')
 }
 ```
-	
+
 ## The `connection` object
 
 ```javascript
@@ -154,7 +154,7 @@ config.server.web.serverOptions: {
   connectedAt: 1447554153233,
   type: 'web',
   rawConnection:
-   { 
+   {
      req: {},
      res: {},
      params: { query: {} },
@@ -204,7 +204,7 @@ actionhero can also serve up flat files.  actionhero will not cache these files 
 
 * /public and /api are  routes which expose the 'directories' of those types.  These top level path can be configured in `/config/servers/web.js` with `api.config.servers.web.urlPathForActions` and `api.config.servers.web.urlPathForFiles`.
 * the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.config.servers.web.rootEndpointType`. The default is `api`.
-* actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the 'file' route as described above. `http://{baseUrl}/public/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}` and `http://{baseUrl}/file/{pathToFile}`. 
+* actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the 'file' route as described above. `http://{baseUrl}/public/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}` and `http://{baseUrl}/file/{pathToFile}`.
 * Errors will result in a 404 (file not found) with a message you can customize.
 * Proper mime-type headers will be set when possible via the `mime` package.
 
@@ -224,7 +224,7 @@ This variables in play here are:
 - `api.config.servers.web.rootEndpointType`
 - and of course the content of `config/routes.js`
 
-Say you have an action called 'status' (like in a freshly generated actionhero project). 
+Say you have an action called 'status' (like in a freshly generated actionhero project).
 Lets start with actionhero's default config:
 
 ```javascript
@@ -264,7 +264,7 @@ exports.default = function(api) {
 }
 ```
 
-If you want to shut off access to your action at `server.com/api/stuff/statusPage` and only allow access via `server.com/stuff/statusPage`, you can disable `api.config.servers.web.urlPathForActions` by setting it equal to `null` (but keeping the `api.config.servers.web.rootEndpointType` equal to 'api'). 
+If you want to shut off access to your action at `server.com/api/stuff/statusPage` and only allow access via `server.com/stuff/statusPage`, you can disable `api.config.servers.web.urlPathForActions` by setting it equal to `null` (but keeping the `api.config.servers.web.rootEndpointType` equal to 'api').
 
 Routes will match the newest version of `apiVersion`.  If you want to have a specific route match a specific version of an action, you can provide the `apiVersion` param in your route definitions:
 
@@ -279,11 +279,45 @@ exports.default = function(api) {
 }
 ```
 
-This would create both `/api/myAction/old` and `/api/myAction/new`, mapping to apiVersion 1 and 2 respectively. 
+This would create both `/api/myAction/old` and `/api/myAction/new`, mapping to apiVersion 1 and 2 respectively.
+
+Finally, you can toggle an option, `matchTrailingPathParts`, which allows the final segment of your route to absorb all trailing path parts in a matched variable.   
+
+
+```javascript
+post: [
+  // yes match: site.com/api/123
+  // no match: site.com/api/123/admin
+  { path: '/login/:userId(/.*/)', action: 'login' }
+],
+
+post: [
+  // yes match: site.com/api/123
+  // yes match: site.com/api/123/admin
+  { path: '/login/:userId(/.*/)', action: 'login', matchTrailingPathParts: true }
+],
+```
+
+This also enables "catch all" routes, like:
+
+```javascript
+get: [
+  { path: ':path(/.*/)', action: 'catchAll', matchTrailingPathParts: true }
+],
+```
+
+If you have a route with multiple variables defined and `matchTrailingPathParts` is true, only the final segment will match the trailing sections:
+
+```javascript
+get: [
+  // the route site.com/users/123/should/do/a/thing would become {userId: 123, path: '/should/do/a/thing'}
+  { path: '/users/:userId/:path(/.*/)', action: 'catchAll', matchTrailingPathParts: true }
+],
+```
 
 #### Notes
 
-- actions defined in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will never override RESTful routing 
+- actions defined in params directly `action=theAction` or hitting the named URL for an action `/api/theAction` will never override RESTful routing
 - you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
   - IE: /api/user/123?userId=456 => `connection.userId = 123`
 - routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"
@@ -319,7 +353,7 @@ exports.default = function(api) {
 
 ## Params
 
-Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `/config/servers/web.js`).  Variables defined in your actions by `action.inputs` will be added to your whitelist.  Special params which the api will always accept are: 
+Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in `/config/servers/web.js`).  Variables defined in your actions by `action.inputs` will be added to your whitelist.  Special params which the api will always accept are:
 
 ```javascript
   [ 'file',
@@ -327,14 +361,14 @@ Params provided by the user (GET, POST, etc for http and https servers, setParam
     'callback',
     'action', ]
 ```
-	
-Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have `{url}?key=getValue` and you post a variable `key=postValue` as well, the `postValue` will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in your initializers. 
 
-File uploads from forms will also appear in `connection.params`, but will be an object with more information.  That is, if you uploaded a file called "image", you would have `connection.params.image.path`, `connection.params.image.name` (original file name), and `connection.params.image.type` available to you. 
+Params are loaded in this order GET -> POST (normal) -> POST (multipart).  This means that if you have `{url}?key=getValue` and you post a variable `key=postValue` as well, the `postValue` will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in your initializers.
+
+File uploads from forms will also appear in `connection.params`, but will be an object with more information.  That is, if you uploaded a file called "image", you would have `connection.params.image.path`, `connection.params.image.name` (original file name), and `connection.params.image.type` available to you.
 
 A note on JSON payloads:
 
-You can post BODY json paylaods to actionHero in the form of a hash or array. 
+You can post BODY json paylaods to actionHero in the form of a hash or array.
 
 Hash: `curl -X POST -d '{"key":"something", "value":{"a":1, "b":2}}' http://localhost:8080/api/cacheTest`.  This will result in:
 
@@ -354,7 +388,7 @@ In this case, we set the array to the param key `payload`:
 ```javascript
 connection.params = {
   payload: [
-    { 
+    {
       key: 'something'
       value: {
         a: 1,
@@ -370,7 +404,7 @@ connection.params = {
 actionhero uses the [formidable](https://github.com/felixge/node-formidable) form parsing library.  You can set options for it via `api.config.commonWeb.formOptions`.  You can upload multiple files to an action and they will be available within `connection.params` as formidable response objects containing references to the original file name, where the uploaded file was stored temporarily, etc.   Here's an example:
 
 ```javascript
-// actions/uploader.js 
+// actions/uploader.js
 
 exports.action = {
   name: 'uploader',
@@ -380,7 +414,7 @@ exports.action = {
     file2: {optional: true},
     key1: {optional: true},
     key2: {optional: true},
-  }, 
+  },
   outputExample: null,
   run: function(api, data, next){
     console.log("\r\n\r\n")
@@ -412,7 +446,7 @@ exports.action = {
 ```javascript
 // what the params look like to an action
 { action: 'uploader',
-  file1: 
+  file1:
    { domain: null,
      _events: null,
      _maxListeners: 10,
@@ -422,12 +456,12 @@ exports.action = {
      type: 'audio/mp3',
      hash: false,
      lastModifiedDate: Wed Feb 13 2013 20:32:49 GMT-0800 (PST),
-     _writeStream: 
+     _writeStream:
       { ... },
      length: [Getter],
      filename: [Getter],
      mime: [Getter] },
-  file2: 
+  file2:
    { domain: null,
      _events: null,
      _maxListeners: 10,
@@ -437,7 +471,7 @@ exports.action = {
      type: 'audio/mp3',
      hash: false,
      lastModifiedDate: Wed Feb 13 2013 20:32:49 GMT-0800 (PST),
-     _writeStream: 
+     _writeStream:
       { ... },
   key1: '123',
   key2: '456',
@@ -455,7 +489,7 @@ Although the `actionheroClient` client-side library is mostly for websockets, it
 var client = new ActionheroClient();
 client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
    // do stuff
-}); 
+});
 </script>
 ```
 
