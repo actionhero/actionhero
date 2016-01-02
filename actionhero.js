@@ -82,7 +82,7 @@ actionhero.prototype.initialize = function(params, callback){
   self.api.initializerDefaults = {
     load:  1000,
     start: 1000,
-    stop:  1000,
+    stop:  1000
   }
 
   var loadInitializerRankings  = {};
@@ -103,9 +103,9 @@ actionhero.prototype.initialize = function(params, callback){
     var initializer = filename.split('.')[0];
     delete require.cache[require.resolve(file)];
     self.initializers[initializer] = require(file);
-    self.configInitializers.push( function(next){
+    self.configInitializers.push(function(next){
       self.initializers[initializer].initialize(self.api, next);
-    } );
+    });
   });
 
   self.configInitializers.push( function(){
