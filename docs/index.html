@@ -1810,7 +1810,7 @@ Running <span class="s2">"console"</span> task
 <h3 id="routes">Routes:</h3>
 
 <ul>
-<li><code class="prettyprint">api.routes.registerRoute(method, path, action, apiVersion)</code>
+<li><code class="prettyprint">api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)</code>
 
 <ul>
 <li>Add a route to the system.<br></li>
@@ -2400,7 +2400,7 @@ Running <span class="s2">"console"</span> task
 
 <p>The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. <code class="prettyprint">{url}?action=actioName</code> or <code class="prettyprint">{url}/api/{actioName}</code> is how you would access an action.  For example, using the default ports in <code class="prettyprint">/config/servers/web.js</code> you could reach the status action with both <code class="prettyprint">http://127.0.0.1:8080/status</code> or <code class="prettyprint">http://127.0.0.1:8080/?action=status</code>  </p>
 
-<p>HTTP responses are always JSON and follow the format =&gt; </p>
+<p>HTTP responses are always JSON and follow the format =&gt;</p>
 
 <h2 id="http-example">HTTP Example:</h2>
 <pre class="highlight shell"><code>
@@ -2413,14 +2413,14 @@ Running <span class="s2">"console"</span> task
 <span class="gp">&gt; </span>User-Agent: curl/7.24.0 <span class="o">(</span>x86_64-apple-darwin12.0<span class="o">)</span> libcurl/7.24.0 OpenSSL/0.9.8r zlib/1.2.5
 <span class="gp">&gt; </span>Host: localhost:8080
 <span class="gp">&gt; </span>Accept: <span class="k">*</span>/<span class="k">*</span>
-<span class="gp">&gt; </span>
+&gt;
 &lt; HTTP/1.1 200 OK
 &lt; Content-Type: application/json
 &lt; X-Powered-By: actionhero API
 &lt; Date: Sun, 29 Jul 2012 23:25:53 GMT
 &lt; Connection: keep-alive
 &lt; Transfer-Encoding: chunked
-&lt; 
+&lt;
 <span class="o">{</span> <span class="o">[</span>data not shown]
 100   741    0   741    0     0   177k      0 --:--:-- --:--:-- --:--:--  361k
 <span class="k">*</span> Connection <span class="c">#0 to host localhost left intact</span>
@@ -2428,41 +2428,41 @@ Running <span class="s2">"console"</span> task
 <span class="o">{</span>
     <span class="s2">"requestorInformation"</span>: <span class="o">{</span>
         <span class="s2">"recievedParams"</span>: <span class="o">{</span>
-            <span class="s2">"action"</span>: <span class="s2">"status"</span>, 
-        <span class="o">}</span>, 
+            <span class="s2">"action"</span>: <span class="s2">"status"</span>,
+        <span class="o">}</span>,
         <span class="s2">"remoteAddress"</span>: <span class="s2">"127.0.0.1"</span>
-    <span class="o">}</span>, 
+    <span class="o">}</span>,
     <span class="s2">"serverInformation"</span>: <span class="o">{</span>
-        <span class="s2">"apiVersion"</span>: <span class="s2">"3.0.0"</span>, 
-        <span class="s2">"currentTime"</span>: 1343604353551, 
-        <span class="s2">"requestDuration"</span>: 1, 
+        <span class="s2">"apiVersion"</span>: <span class="s2">"3.0.0"</span>,
+        <span class="s2">"currentTime"</span>: 1343604353551,
+        <span class="s2">"requestDuration"</span>: 1,
         <span class="s2">"serverName"</span>: <span class="s2">"actionhero API"</span>
-    <span class="o">}</span>, 
+    <span class="o">}</span>,
     <span class="s2">"stats"</span>: <span class="o">{</span>
         <span class="s2">"cache"</span>: <span class="o">{</span>
             <span class="s2">"numberOfObjects"</span>: 0
-        <span class="o">}</span>, 
-        <span class="s2">"id"</span>: <span class="s2">"10.0.1.12:8080:4443:5000"</span>, 
-        <span class="s2">"memoryConsumption"</span>: 8421200, 
+        <span class="o">}</span>,
+        <span class="s2">"id"</span>: <span class="s2">"10.0.1.12:8080:4443:5000"</span>,
+        <span class="s2">"memoryConsumption"</span>: 8421200,
         <span class="s2">"peers"</span>: <span class="o">[</span>
             <span class="s2">"10.0.1.12:8080:4443:5000"</span>
-        <span class="o">]</span>, 
+        <span class="o">]</span>,
         <span class="s2">"queue"</span>: <span class="o">{</span>
-            <span class="s2">"queueLength"</span>: 0, 
+            <span class="s2">"queueLength"</span>: 0,
             <span class="s2">"sleepingTasks"</span>: <span class="o">[]</span>
-        <span class="o">}</span>, 
+        <span class="o">}</span>,
         <span class="s2">"socketServer"</span>: <span class="o">{</span>
-            <span class="s2">"numberOfGlobalSocketRequests"</span>: 0, 
-            <span class="s2">"numberOfLocalActiveSocketClients"</span>: 0, 
+            <span class="s2">"numberOfGlobalSocketRequests"</span>: 0,
+            <span class="s2">"numberOfLocalActiveSocketClients"</span>: 0,
             <span class="s2">"numberOfLocalSocketRequests"</span>: 0
-        <span class="o">}</span>, 
-        <span class="s2">"uptimeSeconds"</span>: 34.163, 
+        <span class="o">}</span>,
+        <span class="s2">"uptimeSeconds"</span>: 34.163,
         <span class="s2">"webServer"</span>: <span class="o">{</span>
-            <span class="s2">"numberOfGlobalWebRequests"</span>: 5, 
+            <span class="s2">"numberOfGlobalWebRequests"</span>: 5,
             <span class="s2">"numberOfLocalWebRequests"</span>: 3
-        <span class="o">}</span>, 
+        <span class="o">}</span>,
         <span class="s2">"webSocketServer"</span>: <span class="o">{</span>
-            <span class="s2">"numberOfGlobalWebSocketRequests"</span>: 0, 
+            <span class="s2">"numberOfGlobalWebSocketRequests"</span>: 0,
             <span class="s2">"numberOfLocalActiveWebSocketClients"</span>: 0
         <span class="o">}</span>
     <span class="o">}</span>
@@ -2470,7 +2470,7 @@ Running <span class="s2">"console"</span> task
 </code></pre>
 
 <ul>
-<li>you can provide the <code class="prettyprint">?callback=myFunc</code> param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript. </li>
+<li>you can provide the <code class="prettyprint">?callback=myFunc</code> param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript.</li>
 <li>If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action</li>
 <li>to build the response for &ldquo;hello&rdquo; above, the action would have set <code class="prettyprint">connection.response.hello = &quot;world&quot;;</code></li>
 </ul>
@@ -2525,7 +2525,7 @@ Running <span class="s2">"console"</span> task
   <span class="nx">connectedAt</span><span class="err">:</span> <span class="mi">1447554153233</span><span class="p">,</span>
   <span class="nx">type</span><span class="err">:</span> <span class="s1">'web'</span><span class="p">,</span>
   <span class="nx">rawConnection</span><span class="err">:</span>
-   <span class="p">{</span> 
+   <span class="p">{</span>
      <span class="nl">req</span><span class="p">:</span> <span class="p">{},</span>
      <span class="nx">res</span><span class="err">:</span> <span class="p">{},</span>
      <span class="nx">params</span><span class="err">:</span> <span class="p">{</span> <span class="nl">query</span><span class="p">:</span> <span class="p">{}</span> <span class="p">},</span>
@@ -2575,7 +2575,7 @@ Running <span class="s2">"console"</span> task
 <ul>
 <li>/public and /api are  routes which expose the &lsquo;directories&rsquo; of those types.  These top level path can be configured in <code class="prettyprint">/config/servers/web.js</code> with <code class="prettyprint">api.config.servers.web.urlPathForActions</code> and <code class="prettyprint">api.config.servers.web.urlPathForFiles</code>.</li>
 <li>the root of the web server &ldquo;/&rdquo; can be toggled to serve the content between /file or /api actions per your needs <code class="prettyprint">api.config.servers.web.rootEndpointType</code>. The default is <code class="prettyprint">api</code>.</li>
-<li>actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the &#39;file&rsquo; route as described above. <code class="prettyprint">http://{baseUrl}/public/{pathToFile}</code> is equivalent to <code class="prettyprint">http://{baseUrl}?action=file&amp;fileName={pathToFile}</code> and <code class="prettyprint">http://{baseUrl}/file/{pathToFile}</code>. </li>
+<li>actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the &#39;file&rsquo; route as described above. <code class="prettyprint">http://{baseUrl}/public/{pathToFile}</code> is equivalent to <code class="prettyprint">http://{baseUrl}?action=file&amp;fileName={pathToFile}</code> and <code class="prettyprint">http://{baseUrl}/file/{pathToFile}</code>.</li>
 <li>Errors will result in a 404 (file not found) with a message you can customize.</li>
 <li>Proper mime-type headers will be set when possible via the <code class="prettyprint">mime</code> package.</li>
 </ul>
@@ -2598,7 +2598,7 @@ Running <span class="s2">"console"</span> task
 <li>and of course the content of <code class="prettyprint">config/routes.js</code></li>
 </ul>
 
-<p>Say you have an action called &#39;status&rsquo; (like in a freshly generated actionhero project). 
+<p>Say you have an action called &#39;status&rsquo; (like in a freshly generated actionhero project).
 Lets start with actionhero&rsquo;s default config:</p>
 <pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">urlPathForActions</span> <span class="o">=</span> <span class="s1">'api'</span><span class="p">;</span>
 <span class="nx">api</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">servers</span><span class="p">.</span><span class="nx">web</span><span class="p">.</span><span class="nx">urlPathForFiles</span> <span class="o">=</span> <span class="s1">'public'</span><span class="p">;</span>
@@ -2634,7 +2634,7 @@ Lets start with actionhero&rsquo;s default config:</p>
 <span class="p">}</span>
 </code></pre>
 
-<p>If you want to shut off access to your action at <code class="prettyprint">server.com/api/stuff/statusPage</code> and only allow access via <code class="prettyprint">server.com/stuff/statusPage</code>, you can disable <code class="prettyprint">api.config.servers.web.urlPathForActions</code> by setting it equal to <code class="prettyprint">null</code> (but keeping the <code class="prettyprint">api.config.servers.web.rootEndpointType</code> equal to &#39;api&rsquo;). </p>
+<p>If you want to shut off access to your action at <code class="prettyprint">server.com/api/stuff/statusPage</code> and only allow access via <code class="prettyprint">server.com/stuff/statusPage</code>, you can disable <code class="prettyprint">api.config.servers.web.urlPathForActions</code> by setting it equal to <code class="prettyprint">null</code> (but keeping the <code class="prettyprint">api.config.servers.web.rootEndpointType</code> equal to &#39;api&rsquo;).</p>
 
 <p>Routes will match the newest version of <code class="prettyprint">apiVersion</code>.  If you want to have a specific route match a specific version of an action, you can provide the <code class="prettyprint">apiVersion</code> param in your route definitions:</p>
 <pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="k">default</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
@@ -2647,12 +2647,39 @@ Lets start with actionhero&rsquo;s default config:</p>
 <span class="p">}</span>
 </code></pre>
 
-<p>This would create both <code class="prettyprint">/api/myAction/old</code> and <code class="prettyprint">/api/myAction/new</code>, mapping to apiVersion 1 and 2 respectively. </p>
+<p>This would create both <code class="prettyprint">/api/myAction/old</code> and <code class="prettyprint">/api/myAction/new</code>, mapping to apiVersion 1 and 2 respectively.</p>
+
+<p>Finally, you can toggle an option, <code class="prettyprint">matchTrailingPathParts</code>, which allows the final segment of your route to absorb all trailing path parts in a matched variable.   </p>
+<pre class="highlight javascript"><code><span class="nx">post</span><span class="err">:</span> <span class="p">[</span>
+  <span class="c1">// yes match: site.com/api/123</span>
+  <span class="c1">// no match: site.com/api/123/admin</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span> <span class="p">}</span>
+<span class="p">],</span>
+
+<span class="nx">post</span><span class="err">:</span> <span class="p">[</span>
+  <span class="c1">// yes match: site.com/api/123</span>
+  <span class="c1">// yes match: site.com/api/123/admin</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">],</span>
+</code></pre>
+
+<p>This also enables &ldquo;catch all&rdquo; routes, like:</p>
+<pre class="highlight javascript"><code><span class="nx">get</span><span class="err">:</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">':path(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">],</span>
+</code></pre>
+
+<p>If you have a route with multiple variables defined and <code class="prettyprint">matchTrailingPathParts</code> is true, only the final segment will match the trailing sections:</p>
+<pre class="highlight javascript"><code><span class="nx">get</span><span class="err">:</span> <span class="p">[</span>
+  <span class="c1">// the route site.com/users/123/should/do/a/thing would become {userId: 123, path: '/should/do/a/thing'}</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/users/:userId/:path(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">],</span>
+</code></pre>
 
 <h4 id="notes">Notes</h4>
 
 <ul>
-<li>actions defined in params directly <code class="prettyprint">action=theAction</code> or hitting the named URL for an action <code class="prettyprint">/api/theAction</code> will never override RESTful routing </li>
+<li>actions defined in params directly <code class="prettyprint">action=theAction</code> or hitting the named URL for an action <code class="prettyprint">/api/theAction</code> will never override RESTful routing</li>
 <li>you can mix explicitly defined params with route-defined params.  If there is an overlap, the route-defined params win
 
 <ul>
@@ -2696,20 +2723,20 @@ Lets start with actionhero&rsquo;s default config:</p>
 
 <h2 id="params">Params</h2>
 
-<p>Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in <code class="prettyprint">/config/servers/web.js</code>).  Variables defined in your actions by <code class="prettyprint">action.inputs</code> will be added to your whitelist.  Special params which the api will always accept are: </p>
+<p>Params provided by the user (GET, POST, etc for http and https servers, setParam for TCP clients, and passed to action calls from a web socket client) will be checked against a whitelist defined by your action (can be disabled in <code class="prettyprint">/config/servers/web.js</code>).  Variables defined in your actions by <code class="prettyprint">action.inputs</code> will be added to your whitelist.  Special params which the api will always accept are:</p>
 <pre class="highlight javascript"><code>  <span class="p">[</span> <span class="s1">'file'</span><span class="p">,</span>
     <span class="s1">'apiVersion'</span><span class="p">,</span>
     <span class="s1">'callback'</span><span class="p">,</span>
     <span class="s1">'action'</span><span class="p">,</span> <span class="p">]</span>
 </code></pre>
 
-<p>Params are loaded in this order GET -&gt; POST (normal) -&gt; POST (multipart).  This means that if you have <code class="prettyprint">{url}?key=getValue</code> and you post a variable <code class="prettyprint">key=postValue</code> as well, the <code class="prettyprint">postValue</code> will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the <code class="prettyprint">api.postVariables</code> array in your initializers. </p>
+<p>Params are loaded in this order GET -&gt; POST (normal) -&gt; POST (multipart).  This means that if you have <code class="prettyprint">{url}?key=getValue</code> and you post a variable <code class="prettyprint">key=postValue</code> as well, the <code class="prettyprint">postValue</code> will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the <code class="prettyprint">api.postVariables</code> array in your initializers.</p>
 
-<p>File uploads from forms will also appear in <code class="prettyprint">connection.params</code>, but will be an object with more information.  That is, if you uploaded a file called &ldquo;image&rdquo;, you would have <code class="prettyprint">connection.params.image.path</code>, <code class="prettyprint">connection.params.image.name</code> (original file name), and <code class="prettyprint">connection.params.image.type</code> available to you. </p>
+<p>File uploads from forms will also appear in <code class="prettyprint">connection.params</code>, but will be an object with more information.  That is, if you uploaded a file called &ldquo;image&rdquo;, you would have <code class="prettyprint">connection.params.image.path</code>, <code class="prettyprint">connection.params.image.name</code> (original file name), and <code class="prettyprint">connection.params.image.type</code> available to you.</p>
 
 <p>A note on JSON payloads:</p>
 
-<p>You can post BODY json paylaods to actionHero in the form of a hash or array. </p>
+<p>You can post BODY json paylaods to actionHero in the form of a hash or array.</p>
 
 <p>Hash: <code class="prettyprint">curl -X POST -d &#39;{&quot;key&quot;:&quot;something&quot;, &quot;value&quot;:{&quot;a&quot;:1, &quot;b&quot;:2}}&#39; http://localhost:8080/api/cacheTest</code>.  This will result in:</p>
 <pre class="highlight javascript"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
@@ -2725,7 +2752,7 @@ Lets start with actionhero&rsquo;s default config:</p>
 In this case, we set the array to the param key <code class="prettyprint">payload</code>:</p>
 <pre class="highlight javascript"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
   <span class="na">payload</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span> 
+    <span class="p">{</span>
       <span class="na">key</span><span class="p">:</span> <span class="s1">'something'</span>
       <span class="na">value</span><span class="p">:</span> <span class="p">{</span>
         <span class="na">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -2739,7 +2766,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 <h2 id="uploading-files">Uploading Files</h2>
 
 <p>actionhero uses the <a href="https://github.com/felixge/node-formidable">formidable</a> form parsing library.  You can set options for it via <code class="prettyprint">api.config.commonWeb.formOptions</code>.  You can upload multiple files to an action and they will be available within <code class="prettyprint">connection.params</code> as formidable response objects containing references to the original file name, where the uploaded file was stored temporarily, etc.   Here&rsquo;s an example:</p>
-<pre class="highlight javascript"><code><span class="c1">// actions/uploader.js </span>
+<pre class="highlight javascript"><code><span class="c1">// actions/uploader.js</span>
 
 <span class="nx">exports</span><span class="p">.</span><span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
   <span class="na">name</span><span class="p">:</span> <span class="s1">'uploader'</span><span class="p">,</span>
@@ -2749,7 +2776,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
     <span class="na">file2</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
     <span class="na">key1</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
     <span class="na">key2</span><span class="p">:</span> <span class="p">{</span><span class="na">optional</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span>
-  <span class="p">},</span> 
+  <span class="p">},</span>
   <span class="na">outputExample</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
   <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"\r\n\r\n"</span><span class="p">)</span>
@@ -2777,7 +2804,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 </code></pre>
 <pre class="highlight javascript"><code><span class="c1">// what the params look like to an action</span>
 <span class="p">{</span> <span class="nl">action</span><span class="p">:</span> <span class="s1">'uploader'</span><span class="p">,</span>
-  <span class="nx">file1</span><span class="err">:</span> 
+  <span class="nx">file1</span><span class="err">:</span>
    <span class="p">{</span> <span class="nl">domain</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
      <span class="nx">_events</span><span class="err">:</span> <span class="kc">null</span><span class="p">,</span>
      <span class="nx">_maxListeners</span><span class="err">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -2787,12 +2814,12 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
      <span class="nx">type</span><span class="err">:</span> <span class="s1">'audio/mp3'</span><span class="p">,</span>
      <span class="nx">hash</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
      <span class="nx">lastModifiedDate</span><span class="err">:</span> <span class="nx">Wed</span> <span class="nx">Feb</span> <span class="mi">13</span> <span class="mi">2013</span> <span class="mi">20</span><span class="err">:</span><span class="mi">32</span><span class="err">:</span><span class="mi">49</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">PST</span><span class="p">),</span>
-     <span class="nx">_writeStream</span><span class="err">:</span> 
+     <span class="nx">_writeStream</span><span class="err">:</span>
       <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
      <span class="nx">length</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">],</span>
      <span class="nx">filename</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">],</span>
      <span class="nx">mime</span><span class="err">:</span> <span class="p">[</span><span class="nx">Getter</span><span class="p">]</span> <span class="p">},</span>
-  <span class="nx">file2</span><span class="err">:</span> 
+  <span class="nx">file2</span><span class="err">:</span>
    <span class="p">{</span> <span class="nl">domain</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
      <span class="nx">_events</span><span class="err">:</span> <span class="kc">null</span><span class="p">,</span>
      <span class="nx">_maxListeners</span><span class="err">:</span> <span class="mi">10</span><span class="p">,</span>
@@ -2802,7 +2829,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
      <span class="nx">type</span><span class="err">:</span> <span class="s1">'audio/mp3'</span><span class="p">,</span>
      <span class="nx">hash</span><span class="err">:</span> <span class="kc">false</span><span class="p">,</span>
      <span class="nx">lastModifiedDate</span><span class="err">:</span> <span class="nx">Wed</span> <span class="nx">Feb</span> <span class="mi">13</span> <span class="mi">2013</span> <span class="mi">20</span><span class="err">:</span><span class="mi">32</span><span class="err">:</span><span class="mi">49</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">PST</span><span class="p">),</span>
-     <span class="nx">_writeStream</span><span class="err">:</span> 
+     <span class="nx">_writeStream</span><span class="err">:</span>
       <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
   <span class="nx">key1</span><span class="err">:</span> <span class="s1">'123'</span><span class="p">,</span>
   <span class="nx">key2</span><span class="err">:</span> <span class="s1">'456'</span><span class="p">,</span>
@@ -2818,7 +2845,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 <span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">();</span>
 <span class="nx">client</span><span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="s1">'cacheTest'</span><span class="p">,</span> <span class="p">{</span><span class="na">key</span><span class="p">:</span> <span class="s1">'k'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s1">'v'</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
    <span class="c1">// do stuff</span>
-<span class="p">});</span> 
+<span class="p">});</span>
 <span class="nt">&lt;/script&gt;</span>
 </code></pre>
 
@@ -3817,7 +3844,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <p>To run a mocha test suite, you invoke the mocha binary, <code class="prettyprint">./node_modules/.bin/mocha</code>.  This will tell mocha to look in your <code class="prettyprint">./test</code> folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on <a href="http://mochajs.org/">Mocha&rsquo;s website</a>.  We asume that you have <code class="prettyprint">mocha</code> (and <code class="prettyprint">should</code>) installed to your project by listing it in your <code class="prettyprint">package.json</code>.  If you used <code class="prettyprint">actionhero generate</code> to create your project, this should already be configured for your.</p>
 
-<p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L42-L48">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L63"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
+<p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L48-L54">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L63"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
 
 <p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
 
