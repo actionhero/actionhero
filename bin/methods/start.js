@@ -1,5 +1,6 @@
 var cluster = require('cluster');
 var readline = require('readline');
+var os = require('os');
 
 exports.start = function(binary, next){
 
@@ -17,14 +18,14 @@ exports.start = function(binary, next){
 
   var startServer = function(next){
     state = 'starting';
-    if(cluster.isWorker){ process.send(state); }
+    if(cluster.isWorker){ process.send({state: state}); }
     actionhero.start(function(err, apiFromCallback){
       if(err){
         binary.log(err);
         process.exit(1);
       } else {
         state = 'started';
-        if(cluster.isWorker){ process.send(state); }
+        if(cluster.isWorker){ process.send({state: state}); }
         api = apiFromCallback;
         checkForInernalStop();
         if(typeof next === 'function'){
@@ -36,10 +37,10 @@ exports.start = function(binary, next){
 
   var stopServer = function(next){
     state = 'stopping';
-    if(cluster.isWorker){ process.send(state); }
+    if(cluster.isWorker){ process.send({state: state}); }
     actionhero.stop(function(){
       state = 'stopped';
-      if(cluster.isWorker){ process.send(state); }
+      if(cluster.isWorker){ process.send({state: state}); }
       api = null;
       if(typeof next === 'function'){ next(api); }
     });
@@ -47,10 +48,10 @@ exports.start = function(binary, next){
 
   var restartServer = function(next){
     state = 'restarting';
-    if(cluster.isWorker){ process.send(state); }
+    if(cluster.isWorker){ process.send({state: state}); }
     actionhero.restart(function(err, apiFromCallback){
       state = 'restarted';
-      if(cluster.isWorker){ process.send(state); }
+      if(cluster.isWorker){ process.send({state: state}); }
       api = apiFromCallback;
       if(typeof next === 'function'){ next(api); }
     });
@@ -84,7 +85,21 @@ exports.start = function(binary, next){
       else if(msg === 'stopProcess'){ stopProcess() }
       else if(msg === 'restart'){ restartServer() }
     });
+
+    process.on('uncaughtException', function(error){
+      process.send({uncaughtException: {
+        message: error.message,
+        stack: error.stack.split(os.EOL)
+      }});
+      process.nextTick(process.exit);
+    });
+
+    process.on('unhandledRejection', function(reason, p){
+      process.send({unhandledRejection: {reason:reason, p:p}});
+      process.nextTick(process.exit);
+    });
   }
+
   process.on('SIGINT', function(){ stopProcess() });
   process.on('SIGTERM', function(){ stopProcess() });
   process.on('SIGUSR2', function(){ restartServer() });
