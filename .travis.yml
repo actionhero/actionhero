@@ -7,10 +7,8 @@ node_js:
   - "5.0"
 
 env:
-  - "FAKEREDIS=true  ACTIONDOMAINS=true"
-  - "FAKEREDIS=true  ACTIONDOMAINS=false"
-  - "FAKEREDIS=false ACTIONDOMAINS=true"
-  - "FAKEREDIS=false ACTIONDOMAINS=false"
+  - "FAKEREDIS=true"
+  - "FAKEREDIS=false"
 
 os:
   - linux

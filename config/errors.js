@@ -14,42 +14,33 @@ exports.default = {
         servers: {
           web: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           websocket: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           socket: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           specHelper: function(error){
             if(util.isError(error)){
-              return 'Error: ' + String( error.message ); 
+              return 'Error: ' + String( error.message );
             }else{
               return error;
             }
           },
         }
-      },
-
-      ////////////////////
-      // GENERAL ERRORS //
-      ////////////////////
-
-      // The message to accompany general 500 errors (internal server errors)
-      serverErrorMessage: function(){
-        return 'The server experienced an internal error';
       },
 
       /////////////

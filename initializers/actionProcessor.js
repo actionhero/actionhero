@@ -1,4 +1,3 @@
-var domain = require('domain');
 var async = require('async');
 
 module.exports = {
@@ -6,7 +5,7 @@ module.exports = {
   initialize: function(api, next){
 
     api.actionProcessor = function(connection, callback){
-      if(!connection){ 
+      if(!connection){
         throw new Error('data.connection is required');
       }
 
@@ -49,12 +48,8 @@ module.exports = {
       var error = null;
       self.actionStatus = String(status);
 
-      if(self.actionDomain){ self.actionDomain.exit(); }  
-
-      if(status instanceof Error){    
+      if(status instanceof Error){
         error = status;
-      }else if(status === 'server_error'){
-        error = api.config.errors.serverErrorMessage();
       }else if(status === 'server_shutting_down'){
         error = api.config.errors.serverShuttingDown();
       }else if(status === 'too_many_requests'){
@@ -98,8 +93,8 @@ module.exports = {
       var logLevel = 'info';
       if(self.actionTemplate && self.actionTemplate.logLevel){
         logLevel = self.actionTemplate.logLevel;
-      }      
-      
+      }
+
       var filteredParams = {}
       for(var i in self.params){
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
@@ -250,21 +245,7 @@ module.exports = {
       } else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
         self.completeAction('unsupported_server_type');
       } else {
-
-        if(api.config.general.actionDomains === true){
-          self.actionDomain = domain.create();
-          self.actionDomain.on('error', function(err){
-            api.exceptionHandlers.action(self.actionDomain, err, self, function(){
-              self.completeAction('server_error');
-            });
-          });
-          self.actionDomain.run(function(){
-            self.runAction();
-          });
-        }else{
-          self.runAction();
-        }
-
+        self.runAction();
       }
     }
 

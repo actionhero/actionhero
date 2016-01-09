@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
+//
 // TO START IN CONSOLE: "./bin/actionhero startCluster"
-// 
+//
 // ** Production-ready actionhero cluster **
 // - be sure to enable redis so that workers can share state
 // - workers which die will be restarted
@@ -18,9 +18,9 @@
 //   -- you may want to explore "forever" as a daemonizing option
 //
 // * Setting process titles does not work on windows or OSX
-// 
+//
 // This example was heavily inspired by Ruby Unicorns [[ http://unicorn.bogomips.org/ ]]
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var fs = require('fs');
@@ -144,8 +144,19 @@ exports.startCluster = function(binary){
         worker.workerID = workerID
         binary.log('starting worker #' + worker.workerID, 'info');
         worker.on('message', function(message){
-          if(worker.state !== 'none'){
-            binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: ' + message, 'info');
+          if(message.state && worker.state !== 'none'){
+            binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: ' + message.state, 'info');
+          }
+
+          if(message.uncaughtException){
+            binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: uncaught exception => ' + message.uncaughtException.message, 'alert');
+            message.uncaughtException.stack.forEach(function(line){
+              binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']:   ' + line, 'alert');
+            });
+          }
+
+          if(message.unhandledRejection){
+            binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: unhandled rejection => ' + message.unhandledRejection, 'alert');
           }
         });
       }
@@ -202,7 +213,7 @@ exports.startCluster = function(binary){
       }
 
       binary.cleanup = function(){
-        
+
       }
 
       next();
@@ -289,7 +300,7 @@ exports.startCluster = function(binary){
           process.emit('SIGINT');
         });
       }
-      
+
       next();
     },
 

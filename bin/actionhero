@@ -17,7 +17,7 @@ if(cluster.isMaster){
   transports.push(
     new (winston.transports.Console)({
       colorize: true,
-      timestamp: false
+      timestamp: true
     })
   )
 }
