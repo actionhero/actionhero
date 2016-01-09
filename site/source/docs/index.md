@@ -29,7 +29,6 @@ includes:
   - docs/core/cache
   - docs/core/chat
   - docs/core/development_mode
-  - docs/core/exceptions
   - docs/core/file_server
   - docs/core/logging
   - docs/core/plugins
