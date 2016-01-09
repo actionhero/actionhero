@@ -20,9 +20,6 @@ script: npm run-script test-travis
 services:
   - redis-server
 
-before_script:
-  - npm install -g grunt-cli
-
 after_script:
   - npm run-script coverage
 

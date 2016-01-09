@@ -38,5 +38,4 @@
 |-- (tests for your API)
 |
 readme.md
-gruntfile.js
 package.json

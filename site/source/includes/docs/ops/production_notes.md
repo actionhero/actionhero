@@ -113,7 +113,7 @@ DEPLOY_PATH=/path/to/your/application
 
 cd $DEPLOY_PATH && git pull
 cd $DEPLOY_PATH && npm install
-# run any grunt tasks here, like perhaps an asset compile step or a database migration
+# run any build tasks here, like perhaps an asset compile step or a database migration
 cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
 ```
 
