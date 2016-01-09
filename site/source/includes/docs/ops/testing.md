@@ -20,8 +20,7 @@ You also don't need to use these test helpers, and you may want to make a 'real'
   },
   "dependencies" : {
     "actionhero" : "12.3.0",
-    "ws"         : "latest",
-    "grunt"      : "latest"
+    "ws"         : "latest"
   },
   "devDependencies" : {
     "mocha"  : "latest",
@@ -32,7 +31,7 @@ You also don't need to use these test helpers, and you may want to make a 'real'
     "start"        : "actionhero start",
     "actionhero"   : "actionhero",
     "startCluster" : "actionhero startCluster",
-    "test"         : "mocha"
+    "test"         : "NODE_ENV=test mocha"
   }
 }
 ```
@@ -41,7 +40,7 @@ To run a mocha test suite, you invoke the mocha binary, `./node_modules/.bin/moc
 
 The majority of the time, you'll be testing actions and other methods you have written, so you'll need to "run" an actionhero server as part of your test suite.  Many times you'll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don't log, etc).  To do this, you can change the behavior of the config files for the `test` environment.  Here's how we tell actionhero [not to write any logs when testing](https://github.com/evantahler/actionhero/blob/master/config/logger.js#L48-L54). Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the `test` environment loaded, the test command you run should explicitly do this, AKA: `NODE_ENV=test ./node_modules/.bin/mocha`.  You can log this in as the [`test` script in your `package.json`](https://github.com/evantahler/actionhero/blob/master/package.json#L63) so you can simplify the running of tests with just `npm test`.
 
-Actionhero comes with a `specHelper` to make it easier to test tasks and actions.  This specHelper is a special [server](/docs/#servers) which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the [request](https://github.com/request/request) library ([example](https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184)). 
+Actionhero comes with a `specHelper` to make it easier to test tasks and actions.  This specHelper is a special [server](/docs/#servers) which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the [request](https://github.com/request/request) library ([example](https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184)).
 
 ## Example Test
 

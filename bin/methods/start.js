@@ -3,10 +3,9 @@ var readline = require('readline');
 var os = require('os');
 
 exports.start = function(binary, next){
-
   var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
-  // var actionheroPrototype = require('./../../actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
+
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
   var shutdownTimeout = 1000 * 30;
   if(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT){
@@ -16,7 +15,7 @@ exports.start = function(binary, next){
   var api = {};
   var state;
 
-  var startServer = function(next){
+  var startServer = function(callback){
     state = 'starting';
     if(cluster.isWorker){ process.send({state: state}); }
     actionhero.start(function(err, apiFromCallback){
@@ -28,32 +27,30 @@ exports.start = function(binary, next){
         if(cluster.isWorker){ process.send({state: state}); }
         api = apiFromCallback;
         checkForInernalStop();
-        if(typeof next === 'function'){
-          next(api);
-        }
+        if(typeof callback === 'function'){ callback(null, api); }
       }
     });
   }
 
-  var stopServer = function(next){
+  var stopServer = function(callback){
     state = 'stopping';
     if(cluster.isWorker){ process.send({state: state}); }
     actionhero.stop(function(){
       state = 'stopped';
       if(cluster.isWorker){ process.send({state: state}); }
       api = null;
-      if(typeof next === 'function'){ next(api); }
+      if(typeof callback === 'function'){ callback(null, api); }
     });
   }
 
-  var restartServer = function(next){
+  var restartServer = function(callback){
     state = 'restarting';
     if(cluster.isWorker){ process.send({state: state}); }
     actionhero.restart(function(err, apiFromCallback){
       state = 'restarted';
       if(cluster.isWorker){ process.send({state: state}); }
       api = apiFromCallback;
-      if(typeof next === 'function'){ next(api); }
+      if(typeof callback === 'function'){ callback(null, api); }
     });
   }
 

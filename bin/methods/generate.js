@@ -22,7 +22,6 @@ exports.generate = function(binary, next){
     packageJson          : '/package.json',
     actionStatus         : '/actions/status.js',
     actionDocumentation  : '/actions/showDocumentation.js',
-    gruntfile            : '/bin/templates/gruntfile.js',
     publicIndex          : '/public/index.html',
     publicChat           : '/public/chat.html',
     publicLogo           : '/public/logo/actionhero.png',
@@ -105,7 +104,6 @@ exports.generate = function(binary, next){
     '/public/logo/actionhero.png'                   : 'publicLogo',
     '/public/logo/sky.jpg'                          : 'publicSky',
     '/README.md'                                    : 'readmeMd',
-    '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'exampleTest'
   }
   for(var file in newFileMap){

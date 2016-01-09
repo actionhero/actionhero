@@ -134,14 +134,17 @@ exports.startCluster = function(binary){
 
       binary.startAWorker = function(){
         var workerID = binary.claimWorkerId();
+
         if(binary.workerRestartArray.length > 0){
           workerID = workerID - binary.workerRestartArray.length;
         }
+
         var worker = cluster.fork({
           title: binary.clusterConfig.workerTitlePrefix + workerID,
           ACTIONHERO_TITLE: binary.clusterConfig.workerTitlePrefix + workerID
         });
-        worker.workerID = workerID
+
+        worker.workerID = workerID;
         binary.log('starting worker #' + worker.workerID, 'info');
         worker.on('message', function(message){
           if(message.state && worker.state !== 'none'){

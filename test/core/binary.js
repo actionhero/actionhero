@@ -46,11 +46,11 @@ describe('Core: Binary', function(){
 
   it('can generate a new project', function(done){
     doBash([
-        'cd ' + testDir, 
+        'cd ' + testDir,
         binary + ' generate'
       ], function(err){
       should.not.exist(err);
-      
+
       [
         'actions',
         'actions/showDocumentation.js',
@@ -68,7 +68,6 @@ describe('Core: Binary', function(){
         'config/servers/web.js',
         'config/servers/websocket.js',
         'config/servers/socket.js',
-        'gruntfile.js',
         'pids',
         'log',
         'public',
@@ -93,7 +92,7 @@ describe('Core: Binary', function(){
 
   it('can call the help command', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' help'
     ], function(err, data){
       should.not.exist(err);
@@ -106,7 +105,7 @@ describe('Core: Binary', function(){
 
   it('will show a warning with bogus input', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' win'
     ], function(err, data){
       should.exist(err);
@@ -118,7 +117,7 @@ describe('Core: Binary', function(){
 
   it('can generate an action', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateAction --name=myAction --description=my_description'
     ], function(err){
       should.not.exist(err);
@@ -132,7 +131,7 @@ describe('Core: Binary', function(){
 
   it('can generate a task', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateTask --name=myTask --description=my_description --queue=my_queue --frequency=12345'
     ], function(err){
       should.not.exist(err);
@@ -148,7 +147,7 @@ describe('Core: Binary', function(){
 
   it('can generate a server', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateServer --name=myServer'
     ], function(err){
       should.not.exist(err);
@@ -163,7 +162,7 @@ describe('Core: Binary', function(){
 
   it('can generate a initializer', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateInitializer --name=myInitializer'
     ], function(err){
       should.not.exist(err);
