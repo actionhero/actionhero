@@ -44,11 +44,11 @@
     "qs": "^5.2.0",
     "uglify-js": "^2.6.0",
     "winston": "^2.0.0",
-    "ws": "^0.8.0"
+    "ws": "^1.0.1"
   },
   "devDependencies": {
     "mocha": "^2.3.3",
-    "should": "^7.1.1",
+    "should": "^8.0.2",
     "request": "^2.65.0",
     "coveralls": "^2.11.4",
     "istanbul": "^0.4.0"
