@@ -8,7 +8,7 @@ describe('Core: Errors', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -23,7 +23,7 @@ describe('Core: Errors', function(){
       done();
     });
   });
-  
+
   it('returns Error object properly', function(done){
     api.config.errors.unknownAction = function(){
       return new Error('error test');
@@ -33,7 +33,7 @@ describe('Core: Errors', function(){
       done();
     });
   });
-  
+
   it('returns generic object properly', function(done){
     api.config.errors.unknownAction = function(){
       return {code:'error111'};
@@ -43,6 +43,6 @@ describe('Core: Errors', function(){
       done();
     });
   });
-  
+
 
 });

@@ -2,7 +2,7 @@ var fs = require('fs');
 
 exports.generateServer = function(binary, next){
 
-  if(!binary.argv.name){ binary.utils.hardError('name is a required input') }
+  if(!binary.argv.name){ binary.utils.hardError('name is a required input'); }
 
   var data = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/server.js');
   data = String(data);
@@ -18,4 +18,4 @@ exports.generateServer = function(binary, next){
 
   next();
 
-}
+};

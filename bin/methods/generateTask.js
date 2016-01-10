@@ -4,8 +4,8 @@ exports.generateTask = function(binary, next){
 
   if(!binary.argv.name){ binary.utils.hardError('name is a required input'); }
   if(!binary.argv.description){ binary.argv.description = binary.argv.name; }
-  if(!binary.argv.queue){ binary.argv.queue = 'default' }
-  if(!binary.argv.frequency){ binary.argv.frequency = 0 }
+  if(!binary.argv.queue){ binary.argv.queue = 'default'; }
+  if(!binary.argv.frequency){ binary.argv.frequency = 0; }
 
   var data = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/task.js');
   data = String(data);
@@ -24,4 +24,4 @@ exports.generateTask = function(binary, next){
 
   next();
 
-}
+};

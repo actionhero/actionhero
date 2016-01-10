@@ -13,7 +13,7 @@ module.exports = {
     } else if(!api.config.general.id){
       var externalIP = api.utils.getExternalIPAddress();
       if(externalIP === false){
-        var message = ' * Error fetching this hosts external IP address; setting id base to \'actionhero\''
+        var message = ' * Error fetching this hosts external IP address; setting id base to \'actionhero\'';
         try {
           api.log(message, 'crit');
         } catch(e){
@@ -23,13 +23,13 @@ module.exports = {
       }
 
       api.id = externalIP;
-      if(cluster.isWorker){ api.id += ':' + process.pid }
+      if(cluster.isWorker){ api.id += ':' + process.pid; }
     } else {
       api.id = api.config.general.id;
     }
 
     api.actionheroVersion = require('..' + path.sep + 'package.json').version;
-    
+
     next();
   },
 
@@ -37,4 +37,4 @@ module.exports = {
     api.log('server ID: ' + api.id, 'notice');
     next();
   }
-}
+};

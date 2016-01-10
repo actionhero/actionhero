@@ -1,7 +1,7 @@
 module.exports = {
   loadPriority:  410,
   initialize: function(api, next){
-    
+
     api.actions = {};
     api.actions.actions = {};
     api.actions.versions = {};
@@ -14,7 +14,7 @@ module.exports = {
       if(!data.priority){ data.priority = api.config.general.defaultMiddlewarePriority; }
       data.priority = Number(data.priority);
       api.actions.middleware[data.name] = data;
-      if(data.global === true){ 
+      if(data.global === true){
         api.actions.globalMiddleware.push(data.name);
         api.actions.globalMiddleware.sort(function(a,b){
           if(api.actions.middleware[a].priority > api.actions.middleware[b].priority){
@@ -24,12 +24,12 @@ module.exports = {
           }
         });
       }
-    }
-    
+    };
+
     api.actions.validateAction = function(action){
       var fail = function(msg){
-        return next( new Error(msg) )
-      }
+        return next( new Error(msg) );
+      };
 
       if(action.inputs === undefined){
         action.inputs = {};
@@ -50,7 +50,7 @@ module.exports = {
       } else {
         return true;
       }
-    }
+    };
 
     api.actions.loadFile = function(fullFilePath, reload){
       if(reload === null){ reload = false; }
@@ -63,21 +63,21 @@ module.exports = {
           msgString = 'action loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
         }
         api.log(msgString, 'debug');
-      }
+      };
 
       api.watchFileAndAct(fullFilePath, function(){
         api.actions.loadFile(fullFilePath, true);
         api.params.buildPostVariables();
         api.routes.loadRoutes();
-      })
+      });
 
       try {
         var collection = require(fullFilePath);
         for(var i in collection){
           var action = collection[i];
-          if(action.version === null || action.version === undefined){ action.version = 1.0 }
-          if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){ 
-            api.actions.actions[action.name] = {} 
+          if(action.version === null || action.version === undefined){ action.version = 1.0; }
+          if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){
+            api.actions.actions[action.name] = {};
           }
           api.actions.actions[action.name][action.version] = action;
           if(api.actions.versions[action.name] === null || api.actions.versions[action.name] === undefined){
@@ -91,20 +91,20 @@ module.exports = {
       } catch(err){
         try {
           api.exceptionHandlers.loader(fullFilePath, err);
-          delete api.actions.actions[action.name][action.version];  
+          delete api.actions.actions[action.name][action.version];
         } catch(err2) {
           throw err;
         }
-        
+
       }
-    }
+    };
 
     api.config.general.paths.action.forEach(function(p){
       api.utils.recursiveDirectoryGlob(p).forEach(function(f){
         api.actions.loadFile(f);
       });
-    })
+    });
 
     next();
   }
-}
+};

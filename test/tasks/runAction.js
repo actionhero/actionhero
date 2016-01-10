@@ -9,7 +9,7 @@ describe('Test: RunAction', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -21,8 +21,8 @@ describe('Test: RunAction', function(){
   it('can run the task manually', function(done){
     api.specHelper.runTask('runAction', {action: 'randomNumber'}, function(err, response){
       should.not.exist(err);
-      response.randomNumber.should.be.greaterThan(0)
-      response.randomNumber.should.be.lessThan(1)
+      response.randomNumber.should.be.greaterThan(0);
+      response.randomNumber.should.be.lessThan(1);
       done();
     });
   });
