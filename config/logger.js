@@ -18,10 +18,11 @@ exports.default = {
 
     // file logger
     try{
-      fs.mkdirSync('./log');
+      fs.mkdirSync(api.config.general.paths.log[0]);
     } catch(e) {
       if(e.code !== 'EEXIST'){
-        return next([new Error('Cannot create ./log directory'), e])
+        var message = 'Cannot create the log directory ' + api.config.general.paths.log[0] + ' specified in api.config.general.paths.log'
+        throw new Error(message)
       }
     }
     logger.transports.push(function(api, winston) {
