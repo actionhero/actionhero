@@ -22,14 +22,13 @@ exports.generate = function(binary, next){
     packageJson          : '/package.json',
     actionStatus         : '/actions/status.js',
     actionDocumentation  : '/actions/showDocumentation.js',
-    gruntfile            : '/bin/templates/gruntfile.js',
     publicIndex          : '/public/index.html',
     publicChat           : '/public/chat.html',
     publicLogo           : '/public/logo/actionhero.png',
     publicSky            : '/public/logo/sky.jpg',
     publicCss            : '/public/css/actionhero.css',
     exampleTest          : '/test/template.js.example'
-  }
+  };
   for(var name in oldFileMap){
     documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
   }
@@ -105,9 +104,8 @@ exports.generate = function(binary, next){
     '/public/logo/actionhero.png'                   : 'publicLogo',
     '/public/logo/sky.jpg'                          : 'publicSky',
     '/README.md'                                    : 'readmeMd',
-    '/gruntfile.js'                                 : 'gruntfile',
     '/test/example.js'                              : 'exampleTest'
-  }
+  };
   for(var file in newFileMap){
     binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
   }
@@ -120,4 +118,4 @@ exports.generate = function(binary, next){
 
   next();
 
-}
+};

@@ -9,9 +9,9 @@ module.exports = {
 
     var consoleReporter = function(err, type, name, objects, severity){
       var extraMessages = [];
-      
+
       if(type === 'loader'){
-        extraMessages.push('! Failed to load ' + objects.fullFilePath)
+        extraMessages.push('! Failed to load ' + objects.fullFilePath);
       }
 
       else if(type === 'action'){
@@ -20,7 +20,7 @@ module.exports = {
         var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
         for(var i in relevantDetails){
           if(
-            objects.connection[relevantDetails[i]] !== null && 
+            objects.connection[relevantDetails[i]] !== null &&
             objects.connection[relevantDetails[i]] !== undefined &&
             typeof objects.connection[relevantDetails[i]] !== 'function'
           ){
@@ -57,7 +57,7 @@ module.exports = {
         api.log('! ' + line, severity);
       }
       api.log('*', severity);
-    }
+    };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
 
@@ -66,7 +66,7 @@ module.exports = {
       for(var i in api.exceptionHandlers.reporters){
         api.exceptionHandlers.reporters[i](err, type, name, objects, severity);
       }
-    }
+    };
 
     ///////////
     // TYPES //
@@ -77,21 +77,21 @@ module.exports = {
       api.exceptionHandlers.report(err, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
     };
 
-    api.exceptionHandlers.action = function(domain, err, data, next){
+    api.exceptionHandlers.action = function(err, data, next){
       var simpleName;
       try{
         simpleName = data.action;
       }catch(e){
         simpleName = err.message;
       }
-      var name = 'action:' + simpleName;    
+      var name = 'action:' + simpleName;
       api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
       if(typeof next === 'function'){ next(); }
     };
 
     api.exceptionHandlers.task = function(err, queue, task, workerId){
-      var simpleName
+      var simpleName;
       try{
         simpleName = task.class;
       }catch(e){
@@ -100,8 +100,8 @@ module.exports = {
       var name = 'task:' + simpleName;
       api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
     };
-    
+
     next();
 
   }
-}
+};

@@ -8,8 +8,7 @@
   },
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
-    "ws"         : "latest",
-    "grunt"      : "latest"
+    "ws"         : "latest"
   },
   "devDependencies" : {
     "mocha"  : "latest",
@@ -20,6 +19,6 @@
     "start"        : "actionhero start",
     "actionhero"   : "actionhero",
     "startCluster" : "actionhero startCluster",
-    "test"         : "mocha"
+    "test"         : "NODE_ENV=test mocha"
   }
 }

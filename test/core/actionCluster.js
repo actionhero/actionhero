@@ -22,7 +22,7 @@ var configChanges = {
     general: {id: 'test-server-3'},
     servers: {}
   }
-}
+};
 
 var startAllServers = function(next){
   actionhero1.start({configChanges: configChanges[1]}, function(err, a1){
@@ -35,7 +35,7 @@ var startAllServers = function(next){
       });
     });
   });
-}
+};
 
 var stopAllServers = function(next){
   actionhero1.stop(function(){
@@ -45,7 +45,7 @@ var stopAllServers = function(next){
       });
     });
   });
-}
+};
 
 describe('Core: Action Cluster', function(){
 
@@ -55,7 +55,7 @@ describe('Core: Action Cluster', function(){
       startAllServers(function(){
         done();
       });
-    })
+    });
 
     after(function(done){
       stopAllServers(function(){
@@ -137,7 +137,7 @@ describe('Core: Action Cluster', function(){
           apiB.cache.load('test_key', function(err, value){
             value.should.equal('yay');
             done();
-          })
+          });
         });
       });
 
@@ -146,7 +146,7 @@ describe('Core: Action Cluster', function(){
           apiA.cache.load('test_key', function(err, value){
             should.not.exist(value);
             done();
-          })
+          });
         });
       });
 
@@ -159,20 +159,20 @@ describe('Core: Action Cluster', function(){
         delete apiB.rpcTestMethod;
         delete apiC.rpcTestMethod;
         done();
-      })
+      });
 
       it('can call remote methods on all other servers in the cluster', function(done){
         var data = {};
 
         apiA.rpcTestMethod = function(arg1, arg2, next){
           data[1] = [arg1, arg2]; next();
-        }
+        };
         apiB.rpcTestMethod = function(arg1, arg2, next){
           data[2] = [arg1, arg2]; next();
-        }
+        };
         apiC.rpcTestMethod = function(arg1, arg2, next){
           data[3] = [arg1, arg2]; next();
-        }
+        };
 
         apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(err){
           should.not.exist(err);
@@ -193,13 +193,13 @@ describe('Core: Action Cluster', function(){
         var data = {};
         apiA.rpcTestMethod = function(arg1, arg2, next){
           data[1] = [arg1, arg2]; next();
-        }
+        };
         apiB.rpcTestMethod = function(arg1, arg2, next){
           throw new Error('should not be here');
-        }
+        };
         apiC.rpcTestMethod = function(arg1, arg2, next){
           throw new Error('should not be here');
-        }
+        };
 
         apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, function(err){
           should.not.exist(err);
@@ -266,14 +266,14 @@ describe('Core: Action Cluster', function(){
       it('can check if rooms exist', function(done){
         apiA.chatRoom.exists('defaultRoom', function(err, found){
           found.should.equal(true);
-          done()
+          done();
         });
       });
 
       it('can check if a room does not exist', function(done){
         apiA.chatRoom.exists('missingRoom', function(err, found){
           found.should.equal(false);
-          done()
+          done();
         });
       });
 
@@ -377,7 +377,7 @@ describe('Core: Action Cluster', function(){
           });
         });
       });
-      
+
       it('server can destroy a room and connections will be removed', function(done){
         var client = new apiA.specHelper.connection();
         apiA.chatRoom.add('newRoom', function(err){
@@ -405,9 +405,9 @@ describe('Core: Action Cluster', function(){
             data.membersCount.should.equal(1);
             client.destroy();
             done();
-          });            
+          });
         });
-      })
+      });
 
       describe('chat middleware', function(){
 
@@ -419,7 +419,7 @@ describe('Core: Action Cluster', function(){
           clientA = new apiA.specHelper.connection();
           clientB = new apiA.specHelper.connection();
 
-          done()
+          done();
         });
 
         afterEach(function(done){
@@ -437,7 +437,7 @@ describe('Core: Action Cluster', function(){
 
         it('generateMessagePayload can be overloaded', function(done){
           apiA.chatRoom.generateMessagePayload = function(message){
-            return { 
+            return {
               thing: 'stuff',
               room: message.connection.room,
               from: message.connection.id,
@@ -487,8 +487,8 @@ describe('Core: Action Cluster', function(){
                 should.not.exist(err);
 
                 setTimeout(function(){
-                  clientA.messages.pop().message.should.equal('I have left the room: ' + clientB.id)
-                  clientA.messages.pop().message.should.equal('I have entered the room: ' + clientB.id)
+                  clientA.messages.pop().message.should.equal('I have left the room: ' + clientB.id);
+                  clientA.messages.pop().message.should.equal('I have entered the room: ' + clientB.id);
 
                   done();
                 }, 100);
@@ -517,7 +517,7 @@ describe('Core: Action Cluster', function(){
             should.not.exist(err);
 
             setTimeout(function(){
-              var lastMessage = clientA.messages[(clientA.messages.length - 1)]
+              var lastMessage = clientA.messages[(clientA.messages.length - 1)];
               lastMessage.message.should.equal('something else');
 
               done();
@@ -552,7 +552,7 @@ describe('Core: Action Cluster', function(){
           clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
 
             setTimeout(function(){
-              var lastMessage = clientA.messages[(clientA.messages.length - 1)]
+              var lastMessage = clientA.messages[(clientA.messages.length - 1)];
               lastMessage.message.should.equal('MIDDLEWARE 1 MIDDLEWARE 2');
 
               done();

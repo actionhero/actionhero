@@ -20,7 +20,7 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 - this uses `fs.watchFile()` and may not work on all OSs / file systems.
 - new files won't be loaded in, only existing files when the app was booted will be monitored
 - as deleting a file might crash your application, we will not attempt to re-load deleted files
-- if you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change 
+- if you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change
 - changing `api.config`, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
 
 ## Watching custom files
@@ -55,7 +55,7 @@ That's it! Now you can visit `http://0.0.0.0:1234/debug?port=5858` and start deb
 ## REPL
 
 ```bash
-> grunt console
+> actionhero console
 Running "console" task
 2015-11-14 17:48:01 - notice: *** starting actionhero ***
 2015-11-14 17:48:01 - warning: running with fakeredis
@@ -76,7 +76,7 @@ Running "console" task
   'status' ]
 ```
 
-actionhero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running instance of actionhero and manually call all the methods on the `api` namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running `grunt console` will load up a version of action hero in your terminal where you have access to the `api` object.  This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  
+actionhero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running instance of actionhero and manually call all the methods on the `api` namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running `actionhero console` will load up a version of action hero in your terminal where you have access to the `api` object.  This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  
 
 The REPL will:
 

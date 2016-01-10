@@ -13,9 +13,9 @@ exports.generateInitializer = function(binary, next){
     var regex = new RegExp('%%' + v + '%%', 'g');
     data = data.replace(regex, binary.argv[v]);
   });
-  
+
   binary.utils.createFileSafely(binary.paths.config.initializer + '/' + binary.argv.name + '.js', data);
 
   next();
 
-}
+};

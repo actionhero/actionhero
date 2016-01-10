@@ -17,7 +17,7 @@ var ActionheroClient = function(options, client){
     self.externalClient = true;
     self.client = client;
   }
-}
+};
 
 if(typeof Primus === 'undefined'){
   var util = require('util');
@@ -117,7 +117,7 @@ ActionheroClient.prototype.configure = function(callback){
     self.fingerprint = details.data.fingerprint;
     self.rooms       = details.data.rooms;
     callback(details);
-  }); 
+  });
 }
 
 ///////////////
@@ -165,7 +165,7 @@ ActionheroClient.prototype.action = function(action, params, callback){
   }
   if(!params){ params = {}; }
   params.action = action;
-  
+
   if(this.state !== 'connected'){
     this.actionWeb(params, callback);
   }else{
@@ -190,12 +190,12 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
       callback(response);
     }
   };
-  
+
   var method = params.httpMethod || 'POST';
   var url = this.options.url + this.options.apiPath + '?action=' + params.action;
   xmlhttp.open(method, url, true);
   xmlhttp.setRequestHeader('Content-Type', 'application/json');
-  xmlhttp.send(JSON.stringify(params)); 
+  xmlhttp.send(JSON.stringify(params));
 }
 
 

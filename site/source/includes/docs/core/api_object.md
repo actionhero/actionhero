@@ -1,7 +1,7 @@
 # The API Object
 
 ```javascript
-var api = { 
+var api = {
   // STATE VARIABLES //
   running: true,
   initialized: true,
@@ -21,35 +21,35 @@ var api = {
   unWatchAllFiles: [Function],
   loadConfigDirectory: [Function],
 
-  // SERVER COMMAND AND CONTROL // 
-  commands:{ 
+  // SERVER COMMAND AND CONTROL //
+  commands:{
     initialize: [Function],
     start:      [Function],
     stop:       [Function],
-    restart:    [Function] 
+    restart:    [Function]
   },
 
   // COMAND AND CONTROL //
-  _self:{ 
+  _self:{
     initializers: {},
     startingParams: { configChanges: [] },
 
-     // arrays containing init/stop/start methods 
+     // arrays containing init/stop/start methods
      configInitializers: [],
      loadInitializers:   [],
      startInitializers:  [],
-     stopInitializers:   [] 
+     stopInitializers:   []
    },
-  
+
   // INITIALZER DEFAULTS //
-  initializerDefaults:{ 
+  initializerDefaults:{
     load:  1000,
     start: 1000,
     stop:  1000
   },
 
   // UTILS //
-  utils:{ 
+  utils:{
     hashLength:             [Function],
     hashMerge:              [Function],
     isPlainObject:          [Function],
@@ -59,7 +59,7 @@ var api = {
     collapseObjectToArray:  [Function],
     getExternalIPAddress:   [Function],
     parseCookies:           [Function],
-    parseIPv6URI:           [Function] 
+    parseIPv6URI:           [Function]
   },
 
   // CONFIG //
@@ -73,7 +73,6 @@ var api = {
         lockPrefix: 'actionhero:lock:',
         lockDuration: 10000,
         developmentMode: false,
-        actionDomains: true,
         simultaneousActions: 5,
         disableParamScrubbing: false,
         filteredParams: [],
@@ -85,7 +84,6 @@ var api = {
         plugins: [] },
      errors:
       { _toExpand: false,
-        serverErrorMessage: [Function],
         missingParams: [Function],
         unknownAction: [Function],
         unsupportedServerType: [Function],
@@ -141,24 +139,24 @@ var api = {
   log: [Function],
 
   // EXCEPTION HANDLERS //
-  exceptionHandlers:{ 
+  exceptionHandlers:{
     reporters: [ [Function] ],
     report: [Function],
     loader: [Function],
     action: [Function],
-    task: [Function] 
+    task: [Function]
   },
 
   // REDIS //
-  redis:{ 
+  redis:{
     clusterCallbaks: {},
     clusterCallbakTimeouts: {},
-    subscriptionHandlers:{ 
+    subscriptionHandlers:{
       do: [Function],
       doResponse: [Function],
-      chat: [Function] 
+      chat: [Function]
     },
-    status:{ 
+    status:{
       client: true,
       subscriber: true,
       subscribed: true,
@@ -173,7 +171,7 @@ var api = {
     subscriber: { },
 
   // CACHE //
-  cache:{ 
+  cache:{
     redisPrefix: 'actionhero:cache:',
     lockPrefix: 'actionhero:lock:',
     lockDuration: 10000,
@@ -191,24 +189,24 @@ var api = {
     save: [Function],
     lock: [Function],
     unlock: [Function],
-    checkLock: [Function] 
+    checkLock: [Function]
   },
 
   // STATS //
-  stats:{ 
+  stats:{
     // timer: null,
     // pendingIncrements: {},
     increment: [Function],
     // writeIncrements: [Function],
     get: [Function],
-    getAll: [Function] 
+    getAll: [Function]
   },
 
   // CONNECTIONS //
-  connections:{ 
+  connections:{
     createCallbacks: {},
     destroyCallbacks: {},
-    allowedVerbs:[ 
+    allowedVerbs:[
       'quit',
       'exit',
       'documentation',
@@ -221,40 +219,40 @@ var api = {
       'roomLeave',
       'roomView',
       'detailsView',
-      'say' 
+      'say'
       ],
      connections: {},
      // apply: [Function],
      // applyCatch: [Function],
      addCreateCallback: [Function],
-     addDestroyCallback: [Function] 
+     addDestroyCallback: [Function]
   },
   connection: [Function], // prototype
 
   // ACTIONS //
-  actions:{ 
+  actions:{
     actions: {},
     preProcessors: {},
     postProcessors: {},
     addPreProcessor: [Function],
     addPostProcessor: [Function],
     // validateAction: [Function],
-    // loadFile: [Function] 
+    // loadFile: [Function]
   },
   actionProcessor: [Function], // prototype
-  
+
   // PARAMS //
-  params:{ 
+  params:{
     globalSafeParams: [
       'file',
       'apiVersion',
       'callback',
-      'action' 
+      'action'
     ],
     // buildPostVariables: [Function],
-    postVariables: [] 
+    postVariables: []
    },
-  
+
   // SERVERS //
   genericServer: {}, // prototype
   servers: {
@@ -262,13 +260,13 @@ var api = {
   },
 
   // ROUTES //
-  routes: { 
-    routes: { 
+  routes: {
+    routes: {
       get: [Object],
       post: [Object],
       put: [Object],
       patch: [Object],
-      delete: [Object] 
+      delete: [Object]
     },
      // verbs: [],
      // processRoute: [Function],
@@ -277,20 +275,20 @@ var api = {
    },
 
   // STATIC FILES //
-  staticFile:{ 
+  staticFile:{
     // path: [Function],
     // get: [Function],
     sendFile: [Function],
     // sendFileNotFound: [Function],
     // checkExistence: [Function],
-    // logRequest: [Function] 
+    // logRequest: [Function]
   },
 
   // CHAT //
-  chatRoom:{ 
-    keys: { 
+  chatRoom:{
+    keys: {
       rooms: 'actionhero:chatRoom:rooms',
-      members: 'actionhero:chatRoom:members:' 
+      members: 'actionhero:chatRoom:members:'
     },
     messageChannel: '/actionhero/chat/chat',
     joinCallbacks: {},
@@ -314,7 +312,7 @@ var api = {
   },
 
   // RESQUE //
-  resque: { 
+  resque: {
     queue: {},
     multiWorker: {},
     scheduler: null,
@@ -327,7 +325,7 @@ var api = {
   },
 
   // TASKS //
-  tasks:{ 
+  tasks:{
     tasks: {},
     jobs:  {},
     // loadFile: [Function],
@@ -347,7 +345,7 @@ var api = {
     stopRecurrentJob: [Function],
     details: [Function] },
 
-  // DOCUMENATION // 
+  // DOCUMENATION //
   doumentation: {}
 
 };
