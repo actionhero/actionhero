@@ -6,7 +6,7 @@ exports.default = {
       // How long to wait for an RPC call before considering it a failure
       rpcTimeout: 5000,
       // which redis package should you ise?
-      package: 'fakeredis',
+      pkg: 'fakeredis',
 
       // Basic configuration options
       host     : process.env.REDIS_HOST || '127.0.0.1',
@@ -15,7 +15,7 @@ exports.default = {
     };
 
     if( process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined ){
-      redisDetails.package  = 'ioredis';
+      redisDetails.pkg  = 'ioredis';
       // there are many more connection options, including support for cluster and sentinel
       // learn more @ https://github.com/luin/ioredis
       redisDetails.options  = {
@@ -29,13 +29,13 @@ exports.default = {
 
 exports.test = {
   redis: function(api){
-    var package = 'fakeredis';
+    var pkg = 'fakeredis';
     if(process.env.FAKEREDIS === 'false'){
-      package = 'ioredis';
+      pkg = 'ioredis';
     }
 
     return {
-      package: package,
+      pkg: pkg,
       host: '127.0.0.1',
       port: 6379,
       database: 2,

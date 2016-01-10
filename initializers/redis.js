@@ -17,14 +17,14 @@ module.exports = {
       calledback: false,
     };
 
-    var redisPackage = require(api.config.redis.package);
-    if(api.config.redis.package === 'fakeredis'){
+    var redisPackage = require(api.config.redis.pkg);
+    if(api.config.redis.pkg === 'fakeredis'){
       api.log('running with fakeredis', 'warning');
       redisPackage.fast = true;
     }
 
     api.redis.initialize = function(callback){
-      if(api.config.redis.package === 'fakeredis'){
+      if(api.config.redis.pkg === 'fakeredis'){
         api.redis.client     = redisPackage.createClient(String(api.config.redis.host));
         api.redis.subscriber = redisPackage.createClient(String(api.config.redis.host));
       }else{
@@ -71,7 +71,7 @@ module.exports = {
         }
       });
 
-      if(api.config.redis.package === 'fakeredis'){
+      if(api.config.redis.pkg === 'fakeredis'){
         api.redis.status.client = true;
         api.redis.status.subscriber = true;
         process.nextTick(function(){
