@@ -148,6 +148,6 @@ exports.default = {
         return 'a room is required';
       },
 
-    }
+    };
   }
-}
+};

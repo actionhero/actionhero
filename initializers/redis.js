@@ -22,7 +22,7 @@ module.exports = {
       api.log('running with fakeredis', 'warning');
       redisPackage.fast = true;
     }
-      
+
     api.redis.initialize = function(callback){
       if(api.config.redis.package === 'fakeredis'){
         api.redis.client     = redisPackage.createClient(String(api.config.redis.host));
@@ -31,7 +31,7 @@ module.exports = {
         api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
         api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       }
-      
+
       api.redis.client.on('error', function(err){
         api.log('Redis Error (client): ' + err, 'emerg');
       });
@@ -55,9 +55,9 @@ module.exports = {
         if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
         api.log('connected to redis (client)', 'debug');
         api.redis.status.client = true;
-        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){ 
+        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
           api.redis.status.calledback = true;
-          callback(); 
+          callback();
         }
       });
 
@@ -91,7 +91,7 @@ module.exports = {
       }
 
       api.redis.subscriber.on('message', function(messageChannel, message){
-        try{ message = JSON.parse(message) }catch(e){ message = {}; }
+        try{ message = JSON.parse(message); }catch(e){ message = {}; }
         if(messageChannel === channel && message.serverToken === api.config.general.serverToken){
           if(api.redis.subscriptionHandlers[message.messageType]){
             api.redis.subscriptionHandlers[message.messageType](message);
@@ -196,14 +196,14 @@ module.exports = {
   stop: function(api, next){
     for(var i in api.redis.clusterCallbakTimeouts){
       clearTimeout( api.redis.clusterCallbakTimeouts[i] );
-      delete api.redis.clusterCallbakTimeouts[i]
+      delete api.redis.clusterCallbakTimeouts[i];
       delete api.redis.clusterCallbaks[i];
     }
     api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
-    
+
     process.nextTick(function(){
       api.redis.subscriber.unsubscribe();
       next();
     });
   }
-}
+};

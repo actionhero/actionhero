@@ -61,8 +61,8 @@ describe('Plugin', function(){
     should.not.exist(api.config.test.task);
     api.specHelper.runTask('test_task', {}, function(){
       api.config.test.task.should.be.equal('OK');
-      done()
-    })
+      done();
+    });
   });
 
   it('default actionhero servers config should be loaded', function(){

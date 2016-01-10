@@ -28,7 +28,7 @@ exports.generate = function(binary, next){
     publicSky            : '/public/logo/sky.jpg',
     publicCss            : '/public/css/actionhero.css',
     exampleTest          : '/test/template.js.example'
-  }
+  };
   for(var name in oldFileMap){
     documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
   }
@@ -105,7 +105,7 @@ exports.generate = function(binary, next){
     '/public/logo/sky.jpg'                          : 'publicSky',
     '/README.md'                                    : 'readmeMd',
     '/test/example.js'                              : 'exampleTest'
-  }
+  };
   for(var file in newFileMap){
     binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
   }
@@ -118,4 +118,4 @@ exports.generate = function(binary, next){
 
   next();
 
-}
+};

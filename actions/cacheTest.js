@@ -26,7 +26,7 @@ exports.cacheTest = {
       required: true,
       formatter: function(s){ return String(s); },
       validator: function(s){
-        if(s.length < 3){ return '`value` should be at least 3 letters long' }
+        if(s.length < 3){ return '`value` should be at least 3 letters long'; }
         else{ return true; }
       }
     },

@@ -12,7 +12,7 @@ module.exports = {
     api.watchFileAndAct = function(file, callback){
       file = path.normalize(file);
       if(!fs.existsSync(file)){
-        throw new Error(file + ' does not exist, and cannot be watched')
+        throw new Error(file + ' does not exist, and cannot be watched');
       }
       if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
         api.watchedFiles.push(file);
@@ -42,7 +42,7 @@ module.exports = {
       api.utils.hashMerge(api, api._startingParams.api);
     }
 
-    api.env = 'development'
+    api.env = 'development';
 
     if(argv.NODE_ENV){
       api.env = argv.NODE_ENV;
@@ -94,7 +94,7 @@ module.exports = {
       api.log('\r\n\r\n*** rebooting due to config change (' + file + ') ***\r\n\r\n', 'info');
       delete require.cache[require.resolve(file)];
       api.commands.restart.call(api._self);
-    }
+    };
 
     api.loadConfigDirectory = function(configPath, watch){
       var configFiles = api.utils.recursiveDirectoryGlob(configPath);
@@ -141,7 +141,7 @@ module.exports = {
         if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
       });
 
-    }
+    };
 
     api.config = {};
 
@@ -223,4 +223,4 @@ module.exports = {
     callback();
   }
 
-}
+};

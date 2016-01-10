@@ -6,8 +6,8 @@ exports.actions = function(binary, next){
   actionhero.initialize({configChanges: configChanges}, function(err, api){
     for(var actionName in api.actions.actions){
 
-      binary.log(actionName)
-      var collection = api.actions.actions[actionName]
+      binary.log(actionName);
+      var collection = api.actions.actions[actionName];
 
       for(var version in collection){
         var action = collection[version];

@@ -17,11 +17,11 @@ var fatalError = function(api, errors, type){
     });
     process.exit(1);
   }
-}
+};
 
 var sortNumber = function(a,b) {
     return a - b;
-}
+};
 
 var flattenOrderedInitialzer = function(collection){
   var output = [];
@@ -33,11 +33,11 @@ var flattenOrderedInitialzer = function(collection){
   keys.forEach(function(key){
     collection[key].forEach(function(d){
       output.push(d);
-    })
+    });
   });
 
   return output;
-}
+};
 
 // ACTIONHERO //
 
@@ -75,7 +75,7 @@ actionhero.prototype.initialize = function(params, callback){
   if(!callback && typeof params === 'function'){
     callback = params; params = {};
   }
-  if(params === null){ params = {} }
+  if(params === null){ params = {}; }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
@@ -83,7 +83,7 @@ actionhero.prototype.initialize = function(params, callback){
     load:  1000,
     start: 1000,
     stop:  1000
-  }
+  };
 
   var loadInitializerRankings  = {};
   var startInitializerRankings = {};
@@ -246,16 +246,16 @@ actionhero.prototype.start = function(params, callback){
     });
 
     async.series(self.startInitializers, function(errors){ fatalError(self.api, errors, 'start'); });
-  }
+  };
 
   if(self.api.initialized === true){
-    _start()
+    _start();
   } else {
     self.initialize(params, function(){
       _start();
-    })
+    });
   }
-}
+};
 
 actionhero.prototype.stop = function(callback){
   var self = this;
@@ -289,7 +289,7 @@ actionhero.prototype.stop = function(callback){
     // double sigterm; ignore it
   } else {
     self.api.log('Cannot shut down actionhero, not running', 'error');
-    if(typeof callback === 'function'){ callback(null, self.api) }
+    if(typeof callback === 'function'){ callback(null, self.api); }
   }
 };
 
@@ -303,14 +303,14 @@ actionhero.prototype.restart = function(callback){
       self.start(self.startingParams, function(err){
         if(err){ self.api.log(err, 'error'); }
         self.api.log('*** actionhero restarted ***', 'info');
-        if(typeof callback === 'function'){ callback(null, self.api) }
+        if(typeof callback === 'function'){ callback(null, self.api); }
       });
     });
   } else {
     self.start(self.startingParams, function(err){
       if(err){ self.api.log(err, 'error'); }
       self.api.log('*** actionhero restarted ***', 'info');
-      if(typeof callback === 'function'){ callback(null, self.api) }
+      if(typeof callback === 'function'){ callback(null, self.api); }
     });
   }
 };

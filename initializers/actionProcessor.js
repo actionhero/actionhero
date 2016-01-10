@@ -24,24 +24,24 @@ module.exports = {
       this.response        = {};
       this.duration        = null;
       this.actionStatus    = null;
-    }
+    };
 
     api.actionProcessor.prototype.incrementTotalActions = function(count){
       var self = this;
-      if(!count){ count = 1 }
+      if(!count){ count = 1; }
       self.connection.totalActions = self.connection.totalActions + count;
-    }
+    };
 
     api.actionProcessor.prototype.incrementPendingActions = function(count){
       var self = this;
-      if(!count){ count = 1 }
+      if(!count){ count = 1; }
       self.connection.pendingActions = self.connection.pendingActions + count;
-    }
+    };
 
     api.actionProcessor.prototype.getPendingActionCount = function(){
       var self = this;
       return self.connection.pendingActions;
-    }
+    };
 
     api.actionProcessor.prototype.completeAction = function(status){
       var self = this;
@@ -84,7 +84,7 @@ module.exports = {
 
       self.working = false;
       self.logAction(error);
-    }
+    };
 
     api.actionProcessor.prototype.logAction = function(error){
       var self = this;
@@ -95,14 +95,14 @@ module.exports = {
         logLevel = self.actionTemplate.logLevel;
       }
 
-      var filteredParams = {}
+      var filteredParams = {};
       for(var i in self.params){
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
           filteredParams[i] = '[FILTERED]';
         }else if(typeof self.params[i] === 'string'){
           filteredParams[i] = self.params[i].substring(0,api.config.logger.maxLogStringLength);
         }else{
-          filteredParams[i] = self.params[i]
+          filteredParams[i] = self.params[i];
         }
       }
 
@@ -126,7 +126,7 @@ module.exports = {
       }
 
       api.log('[ action @ ' + self.connection.type + ' ]', logLevel, logLine);
-    }
+    };
 
     api.actionProcessor.prototype.preProcessAction = function(callback){
       var self = this;
@@ -146,7 +146,7 @@ module.exports = {
       async.series(processors, function(err){
         callback(err);
       });
-    }
+    };
 
     api.actionProcessor.prototype.postProcessAction = function(callback){
       var self = this;
@@ -166,7 +166,7 @@ module.exports = {
       async.series(processors, function(err){
         callback(err);
       });
-    }
+    };
 
     api.actionProcessor.prototype.reduceParams = function(){
       var self = this;
@@ -182,7 +182,7 @@ module.exports = {
           }
         }
       }
-    }
+    };
 
     api.actionProcessor.prototype.validateParams = function(){
       var self = this;
@@ -219,7 +219,7 @@ module.exports = {
           }
         }
       }
-    }
+    };
 
     api.actionProcessor.prototype.processAction = function(){
       var self = this;
@@ -247,7 +247,7 @@ module.exports = {
       } else {
         self.runAction();
       }
-    }
+    };
 
     api.actionProcessor.prototype.runAction = function(){
       var self = this;
@@ -276,8 +276,8 @@ module.exports = {
           self.completeAction();
         }
       });
-    }
+    };
 
     next();
   }
-}
+};

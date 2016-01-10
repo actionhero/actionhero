@@ -46,7 +46,7 @@ exports.default = {
           // transport:        {},
           // queueSize:        Infinity,
         },
-      }
+      };
     }
   }
-}
+};

@@ -11,7 +11,7 @@ var initialize = function(api, options, next){
   // INIT //
   //////////
 
-  var type = 'websocket'
+  var type = 'websocket';
   var attributes = {
     canChat:               true,
     logConnections:        true,
@@ -27,7 +27,7 @@ var initialize = function(api, options, next){
       'detailsView',
       'say'
     ]
-  }
+  };
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -53,7 +53,7 @@ var initialize = function(api, options, next){
     server.writeClientJS();
 
     next();
-  }
+  };
 
   server.stop = function(next){
     server.active = false;
@@ -65,7 +65,7 @@ var initialize = function(api, options, next){
     process.nextTick(function(){
       next();
     });
-  }
+  };
 
   server.sendMessage = function(connection, message, messageCount){
     if(message.error){
@@ -76,7 +76,7 @@ var initialize = function(api, options, next){
     if(!messageCount){ messageCount = connection.messageCount; }
     if(message.context === 'response' && !message.messageCount){ message.messageCount = messageCount; }
     connection.rawConnection.write(message);
-  }
+  };
 
   server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
     var content = '';
@@ -121,7 +121,7 @@ var initialize = function(api, options, next){
   server.on('actionComplete', function(data){
     if(data.toRender !== false){
       data.connection.response.messageCount = data.messageCount;
-      server.sendMessage(data.connection, data.response, data.messageCount)
+      server.sendMessage(data.connection, data.response, data.messageCount);
     }
   });
 
@@ -133,9 +133,9 @@ var initialize = function(api, options, next){
     var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
     var url = api.config.servers.websocket.clientUrl;
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
-    var defaults = {}
+    var defaults = {};
     for(var i in api.config.servers.websocket.client){
-      defaults[i] = api.config.servers.websocket.client[i]
+      defaults[i] = api.config.servers.websocket.client[i];
     }
     defaults.url = url;
     var defaultsString = util.inspect(defaults);
@@ -143,7 +143,7 @@ var initialize = function(api, options, next){
     ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + defaultsString);
 
     return ahClientSource;
-  }
+  };
 
   server.renderClientJS = function(minimize){
     if(!minimize){ minimize = false; }
@@ -162,7 +162,7 @@ var initialize = function(api, options, next){
     }else{
       return (libSource + '\r\n\r\n\r\n' + ahClientSource);
     }
-  }
+  };
 
   server.writeClientJS = function(){
     if(!api.config.general.paths.public || api.config.general.paths.public.length === 0){
@@ -187,7 +187,7 @@ var initialize = function(api, options, next){
         throw e;
       }
     }
-  }
+  };
 
   /////////////
   // HELPERS //
@@ -202,7 +202,7 @@ var initialize = function(api, options, next){
       remotePort     : rawConnection.address.port,
       fingerprint    : fingerprint,
     });
-  }
+  };
 
   var handleDisconnection = function(rawConnection){
     for(var i in server.connections()){
@@ -211,7 +211,7 @@ var initialize = function(api, options, next){
         break;
       }
     }
-  }
+  };
 
   var handleData = function(connection, data){
     var verb = data.event;
@@ -228,7 +228,7 @@ var initialize = function(api, options, next){
     } else if(verb === 'file'){
       connection.params = {
         file: data.file
-      }
+      };
       server.processFile(connection);
     } else {
       var words = [];
@@ -243,15 +243,15 @@ var initialize = function(api, options, next){
           message = {status: 'OK', context: 'response', data: data};
           server.sendMessage(connection, message);
         } else {
-          message = {status: error, context: 'response', data: data}
+          message = {status: error, context: 'response', data: data};
           server.sendMessage(connection, message);
         }
       });
     }
-  }
+  };
 
   next(server);
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 // exports

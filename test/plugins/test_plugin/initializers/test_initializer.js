@@ -3,6 +3,4 @@ module.exports = {
     api.test_initializer = 'OK';
     next();
   }
-}
-
-
+};

@@ -50,9 +50,9 @@ exports.default = {
         'defaultRoom': {},
         'anotherRoom': {},
       }
-    }
+    };
   }
-}
+};
 
 exports.test = {
   general: function(api){
@@ -63,14 +63,14 @@ exports.test = {
         'defaultRoom': {},
         'otherRoom': {},
       },
-    }
+    };
   }
-}
+};
 
 exports.production = {
   general: function(api){
     return {
       developmentMode: false
-    }
+    };
   }
-}
+};

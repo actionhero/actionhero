@@ -1,7 +1,7 @@
 var fs = require('fs');
 var cluster = require('cluster');
 
-exports.default = { 
+exports.default = {
   logger: function(api){
     var logger = { transports: [] };
 
@@ -21,7 +21,7 @@ exports.default = {
       fs.mkdirSync('./log');
     } catch(e) {
       if(e.code !== 'EEXIST'){
-        return next([new Error('Cannot create ./log directory'), e])
+        return next([new Error('Cannot create ./log directory'), e]);
       }
     }
     logger.transports.push(function(api, winston) {
@@ -35,20 +35,20 @@ exports.default = {
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100;
 
-    // you can optionally set custom log levels 
+    // you can optionally set custom log levels
     // logger.levels = {good: 0, bad: 1};
 
-    // you can optionally set custom log colors 
+    // you can optionally set custom log colors
     // logger.colors = {good: 'blue', bad: 'red'};
-    
+
     return logger;
   }
-}
+};
 
-exports.test = { 
+exports.test = {
   logger: function(api){
     return {
       transports: null
-    }
+    };
   }
-}
+};

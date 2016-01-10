@@ -18,7 +18,7 @@ module.exports = {
       pidfile = pidfile.replace(new RegExp('\n', 'g'), '');
 
       return pidfile;
-    }
+    };
 
     if(cluster.isMaster){
       api.pids.title = 'actionhero-' + api.pids.sanitizeId();
@@ -26,11 +26,11 @@ module.exports = {
       api.pids.title = api.pids.sanitizeId();
     }
 
-    try { fs.mkdirSync(api.pids.path) } catch(e) {}
+    try { fs.mkdirSync(api.pids.path); } catch(e) {}
 
     api.pids.writePidFile = function(){
       fs.writeFileSync(api.pids.path + '/' + api.pids.title, api.pids.pid.toString(), 'ascii');
-    }
+    };
 
     api.pids.clearPidFile = function(){
       try {
@@ -38,7 +38,7 @@ module.exports = {
       } catch(e){
         api.log('unable to remove pidfile', 'error', e);
       }
-    }
+    };
 
     next();
   },
@@ -48,4 +48,4 @@ module.exports = {
     api.log('pid: ' + process.pid, 'notice');
     next();
   }
-}
+};

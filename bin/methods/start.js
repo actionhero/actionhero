@@ -9,7 +9,7 @@ exports.start = function(binary, next){
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
   var shutdownTimeout = 1000 * 30;
   if(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT){
-    shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+    shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT);
   }
 
   var api = {};
@@ -30,7 +30,7 @@ exports.start = function(binary, next){
         if(typeof callback === 'function'){ callback(null, api); }
       }
     });
-  }
+  };
 
   var stopServer = function(callback){
     state = 'stopping';
@@ -41,7 +41,7 @@ exports.start = function(binary, next){
       api = null;
       if(typeof callback === 'function'){ callback(null, api); }
     });
-  }
+  };
 
   var restartServer = function(callback){
     state = 'restarting';
@@ -52,19 +52,19 @@ exports.start = function(binary, next){
       api = apiFromCallback;
       if(typeof callback === 'function'){ callback(null, api); }
     });
-  }
+  };
 
   var stopProcess = function(){
     setTimeout(function(){
       process.exit(1);
-    }, shutdownTimeout)
+    }, shutdownTimeout);
     // finalTimer.unref();
     stopServer(function(){
       process.nextTick(function(){
         process.exit();
       });
     });
-  }
+  };
 
   var checkForInernalStopTimer;
   var checkForInernalStop = function(){
@@ -73,14 +73,14 @@ exports.start = function(binary, next){
       process.exit(0);
     }
     checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout);
-  }
+  };
 
   if(cluster.isWorker){
     process.on('message', function(msg){
-      if(msg === 'start'){ startServer() }
-      else if(msg === 'stop'){ stopServer() }
-      else if(msg === 'stopProcess'){ stopProcess() }
-      else if(msg === 'restart'){ restartServer() }
+      if(msg === 'start'){ startServer(); }
+      else if(msg === 'stop'){ stopServer(); }
+      else if(msg === 'stopProcess'){ stopProcess(); }
+      else if(msg === 'restart'){ restartServer(); }
     });
 
     process.on('uncaughtException', function(error){
@@ -97,9 +97,9 @@ exports.start = function(binary, next){
     });
   }
 
-  process.on('SIGINT', function(){ stopProcess() });
-  process.on('SIGTERM', function(){ stopProcess() });
-  process.on('SIGUSR2', function(){ restartServer() });
+  process.on('SIGINT', function(){ stopProcess(); });
+  process.on('SIGTERM', function(){ stopProcess(); });
+  process.on('SIGUSR2', function(){ restartServer(); });
 
   if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
     var rl = readline.createInterface({
@@ -113,4 +113,4 @@ exports.start = function(binary, next){
 
   // start the server!
   startServer(next);
-}
+};
