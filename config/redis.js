@@ -42,8 +42,4 @@ exports.test = {
       options: {},
     };
   }
-<<<<<<< Updated upstream
 };
-=======
-}
->>>>>>> Stashed changes
