@@ -4,7 +4,7 @@ var path = require('path');
 module.exports = {
   loadPriority:  0,
   initialize: function(api, next){
-    
+
     api.utils = {};
 
     ////////////////////////////////////////////////////////////////////////////
@@ -12,13 +12,13 @@ module.exports = {
     api.utils.hashLength = function(obj) {
       var size = 0, key;
       for(key in obj){
-        if(obj.hasOwnProperty(key)){ size++ }
+        if(obj.hasOwnProperty(key)){ size++; }
       }
       return size;
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
-    // merge two hashes recursively 
+    // merge two hashes recursively
     api.utils.hashMerge = function(a, b, arg){
       var c = {};
       var i, response;
@@ -56,7 +56,7 @@ module.exports = {
         }
       }
       return c;
-    }
+    };
 
     api.utils.isPlainObject = function(o){
       var safeTypes     = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
@@ -64,17 +64,17 @@ module.exports = {
       var expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
       var i;
 
-      if(!o){ return false }
-      if((o instanceof Object) === false){ return false }
+      if(!o){ return false; }
+      if((o instanceof Object) === false){ return false; }
       for(i in safeTypes){
-        if(o instanceof safeTypes[i]){ return false }
+        if(o instanceof safeTypes[i]){ return false; }
       }
       for(i in safeInstances){
-        if(typeof o === safeInstances[i]){ return false }
+        if(typeof o === safeInstances[i]){ return false; }
       }
-      if(o[expandPreventMatchKey] === false){ return false }
+      if(o[expandPreventMatchKey] === false){ return false; }
       return (o.toString() === '[object Object]');
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // unique-ify an array
@@ -82,12 +82,12 @@ module.exports = {
       var a = [];
       for(var i=0; i<arr.length; i++) {
         for(var j=i+1; j<arr.length; j++) {
-          if (arr[i] === arr[j]){ j = ++i }
+          if (arr[i] === arr[j]){ j = ++i; }
         }
         a.push(arr[i]);
       }
       return a;
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // get all .js files in a directory
@@ -96,7 +96,7 @@ module.exports = {
 
       if(!extension){ extension = 'js'; }
       extension = extension.replace('.','');
-      if(dir[dir.length - 1] !== '/'){ dir += '/' }
+      if(dir[dir.length - 1] !== '/'){ dir += '/'; }
 
       if(fs.existsSync(dir)){
         fs.readdirSync(dir).forEach( function(file) {
@@ -106,11 +106,11 @@ module.exports = {
             var child;
             if(stats.isDirectory()){
               child = api.utils.recursiveDirectoryGlob(fullFilePath, extension);
-              child.forEach(function(c){ results.push(c); })
+              child.forEach(function(c){ results.push(c); });
             } else if(stats.isSymbolicLink()){
               var realPath = fs.readlinkSync(fullFilePath);
               child = api.utils.recursiveDirectoryGlob(realPath);
-              child.forEach(function(c){ results.push(c); })
+              child.forEach(function(c){ results.push(c); });
             } else if(stats.isFile()){
               var fileParts = file.split('.');
               var ext = fileParts[(fileParts.length - 1)];
@@ -119,9 +119,9 @@ module.exports = {
           }
         });
       }
-      
+
       return results.sort();
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // object Clone
@@ -129,34 +129,34 @@ module.exports = {
       return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
         return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
       }, {}));
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
     api.utils.collapseObjectToArray = function(obj){
       try{
-        var keys = Object.keys(obj)
-        if(keys.length < 1){ return false }
-        if(keys[0] !== '0'){ return false }
-        if(keys[(keys.length - 1)] !== String(keys.length - 1)){ return false }
-        
+        var keys = Object.keys(obj);
+        if(keys.length < 1){ return false; }
+        if(keys[0] !== '0'){ return false; }
+        if(keys[(keys.length - 1)] !== String(keys.length - 1)){ return false; }
+
         var arr = [];
         for(var i in keys){
           var key = keys[i];
-          if(String(parseInt(key)) !== key){ return false }
+          if(String(parseInt(key)) !== key){ return false; }
           else{ arr.push(obj[key]); }
         }
 
         return arr;
       }catch(e){
-        return false
+        return false;
       }
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // get this servers external interface
     api.utils.getExternalIPAddress = function(){
-      var os = require('os')
+      var os = require('os');
       var ifaces = os.networkInterfaces();
       var ip = false;
       for(var dev in ifaces){
@@ -167,7 +167,7 @@ module.exports = {
         });
       }
       return ip;
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
     // cookie parse from headers of http(s) requests
@@ -180,29 +180,29 @@ module.exports = {
         });
       }
       return cookies;
-    }
+    };
 
     ////////////////////////////////////////////////////////////////////////////
-    // parse an IPv6 address 
+    // parse an IPv6 address
     // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
     api.utils.parseIPv6URI = function(addr){
-      var host = '::1'
-        , port = '80'
-        , regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/)
+      var host = '::1',
+          port = '80',
+          regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
       //if we have brackets parse them and find a port
       if(-1 < addr.indexOf('[') && -1 < addr.indexOf(']')){
-        var res = regexp.exec(addr)
+        var res = regexp.exec(addr);
         if(null === res){
-          throw new Error('failed to parse address')
+          throw new Error('failed to parse address');
         }
-        host = res[1]
-        port = res[2]
+        host = res[1];
+        port = res[2];
       } else {
-        host = addr
+        host = addr;
       }
-      return {host: host, port: parseInt(port,10)}
-    }
+      return {host: host, port: parseInt(port,10)};
+    };
 
     next();
   }
-}
+};

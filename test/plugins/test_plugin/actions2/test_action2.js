@@ -11,7 +11,7 @@ action.inputs = {
 action.blockedConnectionTypes = [];
 action.outputExample = {
   test: 'OK'
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 // functional

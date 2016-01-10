@@ -1,6 +1,6 @@
 var should              = require('should');
 var request             = require('request');
-var EventEmitter        = require('events').EventEmitter
+var EventEmitter        = require('events').EventEmitter;
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero          = new actionheroPrototype();
 var api;
@@ -9,13 +9,13 @@ var clientA;
 var clientB;
 var clientC;
 
-var url
+var url;
 
 var connectClients = function(callback){
   // get actionheroClient in scope
   // TODO: Perhaps we read this from disk after server boot.
   eval( api.servers.servers.websocket.compileActionheroClientJS() );
-  
+
   var S = api.servers.servers.websocket.server.Socket;
   var url = 'http://localhost:' + api.config.servers.web.port;
   var clientAsocket = new S(url);
@@ -29,7 +29,7 @@ var connectClients = function(callback){
   setTimeout(function(){
     callback();
   }, 100);
-}
+};
 
 describe('Server: Web Socket', function(){
 
@@ -80,9 +80,9 @@ describe('Server: Web Socket', function(){
 
   it('I can get my connection details', function(done){
     clientA.detailsView(function(response){
-      response.data.connectedAt.should.be.within(0, new Date().getTime())
+      response.data.connectedAt.should.be.within(0, new Date().getTime());
       response.data.remoteIP.should.equal('127.0.0.1');
-      done()
+      done();
     });
   });
 
@@ -114,12 +114,12 @@ describe('Server: Web Socket', function(){
 
   it('will limit how many simultaneous connections I can have', function(done){
     var responses = [];
-    clientA.action('sleepTest', {sleepDuration: 100}, function(response){ responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 200}, function(response){ responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 300}, function(response){ responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 400}, function(response){ responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 100}, function(response){ responses.push(response); });
+    clientA.action('sleepTest', {sleepDuration: 200}, function(response){ responses.push(response); });
+    clientA.action('sleepTest', {sleepDuration: 300}, function(response){ responses.push(response); });
+    clientA.action('sleepTest', {sleepDuration: 400}, function(response){ responses.push(response); });
+    clientA.action('sleepTest', {sleepDuration: 500}, function(response){ responses.push(response); });
+    clientA.action('sleepTest', {sleepDuration: 600}, function(response){ responses.push(response); });
 
     setTimeout(function(){
       responses.length.should.equal(6);
@@ -128,7 +128,7 @@ describe('Server: Web Socket', function(){
         if(i === 0 || i === '0'){
           response.error.should.eql('you have too many pending requests');
         } else {
-          should.not.exist(response.error)
+          should.not.exist(response.error);
         }
       }
       done();
@@ -178,14 +178,14 @@ describe('Server: Web Socket', function(){
       });
 
       done();
-    })
+    });
 
     after(function(done){
       api.chatRoom.middleware = {};
       api.chatRoom.globalMiddleware = [];
 
       done();
-    })
+    });
 
     beforeEach(function(done){
       clientA.roomAdd('defaultRoom',function(){
@@ -238,7 +238,7 @@ describe('Server: Web Socket', function(){
           done();
         });
       });
-    })
+    });
 
     it('Clients can talk to each other', function(done){
       var listener = function(response){
@@ -262,7 +262,7 @@ describe('Server: Web Socket', function(){
 
       clientB.say = function(room, message, callback){
         this.send({message: message, room: room, event: 'say'}, callback);
-      }
+      };
 
       clientA.on('say', listener);
       clientB.say('defaultRoom', 'hello from client 2');
@@ -288,7 +288,7 @@ describe('Server: Web Socket', function(){
         response.context.should.equal('user');
         response.message.should.equal('I have left the room: ' + clientB.id);
         done();
-      }
+      };
 
       clientA.on('say', listener);
       clientB.roomLeave('defaultRoom');
@@ -310,7 +310,7 @@ describe('Server: Web Socket', function(){
         setTimeout(function(){
           clientC.removeListener('say', listener);
           done();
-        }, 1000)
+        }, 1000);
 
         clientB.say('otherRoom', 'you should not hear this');
       });
@@ -392,7 +392,7 @@ describe('Server: Web Socket', function(){
           clientB.removeListener('say', listenerB);
           clientC.removeListener('say', listenerC);
           done();
-        }, 1000)
+        }, 1000);
       });
 
       it('only one message should be received per connection', function(done){
@@ -435,7 +435,7 @@ describe('Server: Web Socket', function(){
           clientC.removeListener('say', listenerC);
           messagesReceived.should.equal(7);
           done();
-        }, 1000)
+        }, 1000);
       });
 
       it('each listener receive same custom message', function(done){
@@ -472,7 +472,7 @@ describe('Server: Web Socket', function(){
           clientB.removeListener('say', listenerB);
           clientC.removeListener('say', listenerC);
           done();
-        }, 1000)
+        }, 1000);
       });
     });
 
@@ -500,13 +500,13 @@ describe('Server: Web Socket', function(){
             return { id: data.id,
                  joinedAt: data.joinedAt,
                  type: data.type };
-            }
+            };
 
             api.chatRoom.generateMemberDetails = function(connection){
             return { id: connection.id,
                  joinedAt: new Date().getTime(),
                  type : connection.type };
-            }
+            };
 
             clientA.roomLeave('defaultRoom', function(){
               done();
@@ -548,7 +548,7 @@ describe('Server: Web Socket', function(){
             clientA.roomLeave('defaultRoom');
             done();
           });
-        })
+        });
       });
 
     });
@@ -556,7 +556,7 @@ describe('Server: Web Socket', function(){
   });
 
   describe('param collisions', function(){
-    var originalSimultaneousActions
+    var originalSimultaneousActions;
 
     before(function(){
       originalSimultaneousActions = api.config.general.simultaneousActions;
@@ -578,11 +578,11 @@ describe('Server: Web Socket', function(){
         if(completed === started){
           done();
         }
-      }
+      };
 
       sleeps.forEach(function(sleep){
         started++;
-        clientA.action('sleepTest', {sleepDuration: sleep}, function(response){ toComplete(sleep, response); })
+        clientA.action('sleepTest', {sleepDuration: sleep}, function(response){ toComplete(sleep, response); });
       });
     });
   });
@@ -619,7 +619,7 @@ describe('Server: Web Socket', function(){
       clientA.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
 
-        var count = 0
+        var count = 0;
         for(var id in api.connections.connections){
           count++;
           api.connections.connections[id].destroy();
@@ -627,10 +627,10 @@ describe('Server: Web Socket', function(){
         count.should.equal(3);
 
         clientA.detailsView(function(){
-          throw new Error("should not get responst")
+          throw new Error("should not get responst");
         });
 
-        setTimeout(done, 500)
+        setTimeout(done, 500);
       });
     });
 

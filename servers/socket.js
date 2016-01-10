@@ -7,7 +7,7 @@ var initialize = function(api, options, next){
   // INIT //
   //////////
 
-  var type = 'socket'
+  var type = 'socket';
   var attributes = {
     canChat: true,
     logConnections: true,
@@ -29,7 +29,7 @@ var initialize = function(api, options, next){
       'detailsView',
       'say'
     ]
-  }
+  };
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -57,11 +57,11 @@ var initialize = function(api, options, next){
         next();
       });
     });
-  }
+  };
 
   server.stop = function(next){
     gracefulShutdown(next);
-  }
+  };
 
   server.sendMessage = function(connection, message, messageCount){
     if(message.error){
@@ -83,13 +83,13 @@ var initialize = function(api, options, next){
     } catch(e){
       api.log('socket write error: ' + e, 'error');
     }
-  }
+  };
 
   server.goodbye = function(connection){
     try {
       connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api'}) + '\r\n');
     } catch(e){}
-  }
+  };
 
   server.sendFile = function(connection, error, fileStream){
     if(error){
@@ -131,7 +131,7 @@ var initialize = function(api, options, next){
 
     connection.rawConnection.on('end', function(){
       if(connection.destroyed !== true){
-        try { connection.rawConnection.end() } catch(e){}
+        try { connection.rawConnection.end(); } catch(e){}
         connection.destroy();
       }
     });
@@ -139,7 +139,7 @@ var initialize = function(api, options, next){
     connection.rawConnection.on('error', function(e){
       if(connection.destroyed !== true){
         server.log('socket error: ' + e, 'error');
-        try { connection.rawConnection.end() } catch(e){}
+        try { connection.rawConnection.end(); } catch(e){}
         connection.destroy();
       }
     });
@@ -192,7 +192,7 @@ var initialize = function(api, options, next){
         }
       });
     }
-  }
+  };
 
   var handleConnection = function(rawConnection){
     if(api.config.servers.socket.setKeepAlive === true){
@@ -204,19 +204,19 @@ var initialize = function(api, options, next){
       remoteAddress  : rawConnection.remoteAddress,
       remotePort     : rawConnection.remotePort
     }); // will emit 'connection'
-  }
+  };
 
   // I check for ctrl+c in the stream
   var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
     if(hexChunk === 'fff4fffd06'){
-      found = true // CTRL + C
+      found = true; // CTRL + C
     } else if(hexChunk === '04'){
-      found = true // CTRL + D
+      found = true; // CTRL + D
     }
-    return found
-  }
+    return found;
+  };
 
   var gracefulShutdown = function(next, alreadyShutdown){
     if(!alreadyShutdown || alreadyShutdown === false){
@@ -240,12 +240,12 @@ var initialize = function(api, options, next){
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    } else if(typeof next === 'function'){ next() }
-  }
+    } else if(typeof next === 'function'){ next(); }
+  };
 
   next(server);
 
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 // exports

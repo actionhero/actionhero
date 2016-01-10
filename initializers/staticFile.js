@@ -57,7 +57,7 @@ module.exports = {
               self.logRequest(file, connection, length, duration, true);
             });
             fileStream.on('error', function(err){
-              api.log(err)
+              api.log(err);
             });
             callback(connection, null, fileStream, mime, length, lastModified);
           }
@@ -107,8 +107,8 @@ module.exports = {
         });
       }
 
-    }
+    };
 
     next();
   }
-}
+};

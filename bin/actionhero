@@ -4,7 +4,7 @@ var cluster = require('cluster');
 var fs = require('fs');
 var winston = require('winston');
 var path = require('path');
-var spawn = require('child_process').spawn
+var spawn = require('child_process').spawn;
 
 var binary = {};
 
@@ -12,14 +12,14 @@ var binary = {};
 // logger //
 ////////////
 
-var transports = []
+var transports = [];
 if(cluster.isMaster){
   transports.push(
     new (winston.transports.Console)({
       colorize: true,
       timestamp: true
     })
-  )
+  );
 }
 
 binary.logger = new(winston.Logger)({
@@ -29,10 +29,10 @@ binary.logger = new(winston.Logger)({
 
 binary.log = function(message, severity){
   if(binary.argv.silent !== 'true'){
-    if(!severity){ severity = 'info' }
+    if(!severity){ severity = 'info'; }
     binary.logger.log(severity, message);
   }
-}
+};
 
 ///////////////
 // utilities //
@@ -45,11 +45,11 @@ binary.utils = {
   },
   stringifyInputList: function(list){
     var s = '';
-    if(!list){ return s }
+    if(!list){ return s; }
     var arr = list.split(',');
     var used = 0;
     for(var i in arr){
-      if(used > 0){ s += ', ' }
+      if(used > 0){ s += ', '; }
       if(arr[i].length > 0){
         s += '\'' + arr[i] + '\'';
         used++;
@@ -61,13 +61,13 @@ binary.utils = {
     try {
       var stats = fs.lstatSync(dir);
       return (stats.isDirectory() || stats.isSymbolicLink());
-    } catch(e){ return false }
+    } catch(e){ return false; }
   },
   fileExists: function(file){
     try {
       var stats = fs.lstatSync(file);
       return (stats.isFile() || stats.isSymbolicLink());
-    } catch(e){ return false }
+    } catch(e){ return false; }
   },
   createDirSafely: function(dir){
     if(binary.utils.dirExists(dir)){
@@ -88,7 +88,7 @@ binary.utils = {
   hashLength: function(obj){
     var size = 0, key;
     for(key in obj){
-      if(obj.hasOwnProperty(key)){ size++ }
+      if(obj.hasOwnProperty(key)){ size++; }
     }
     return size;
   }
@@ -101,7 +101,7 @@ binary.utils = {
 binary.paths = {
   projectRoot: null,
   actionheroRoot: null
-}
+};
 
 var pwd = path.normalize(process.cwd());
 if(process.env.PWD){
@@ -142,7 +142,7 @@ binary.paths.config = {
   'log':         binary.paths.projectRoot + '/log',
   'server':      binary.paths.projectRoot + '/servers',
   'initializer': binary.paths.projectRoot + '/initializers'
-}
+};
 
 binary.argv = require('optimist').argv;
 
@@ -156,7 +156,7 @@ fs.readdirSync(binary.paths.actionheroRoot + '/bin/methods/').sort().forEach(fun
 });
 
 binary.mainAction = binary.argv._[0];
-if(!binary.mainAction){ binary.mainAction = 'start' }
+if(!binary.mainAction){ binary.mainAction = 'start'; }
 
 binary.isDaemon = (binary.argv.isDaemon === 'true');
 
@@ -169,7 +169,7 @@ if(binary.actions[binary.mainAction]){
         break;
       }
     }
-    args.push('--isDaemon=true')
+    args.push('--isDaemon=true');
     var command = path.normalize(binary.paths.actionheroRoot + '/bin/actionhero');
     var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
     // child.unref();

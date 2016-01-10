@@ -9,7 +9,7 @@ describe('Utils', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -20,13 +20,13 @@ describe('Utils', function(){
 
   it('utils.hashLength', function(done){
     var testHash = { a: 1, b: 2, c: {aa: 1, bb: 2}};
-    api.utils.hashLength(testHash).should.equal(3)
-    api.utils.hashLength({}).should.equal(0)
+    api.utils.hashLength(testHash).should.equal(3);
+    api.utils.hashLength({}).should.equal(0);
     done();
   });
 
   it('utils.arrayUniqueify', function(done){
-    var a = [1,2,3,3,4,4,4,5,5,5]
+    var a = [1,2,3,3,4,4,4,5,5,5];
     api.utils.arrayUniqueify(a).should.eql([1,2,3,4,5]);
     done();
   });
@@ -71,10 +71,10 @@ describe('Utils', function(){
         first: 1,
         second: 2
       }
-    }
+    };
     var b = api.utils.objClone(a);
     a.should.eql(b);
-    delete a.a
+    delete a.a;
     a.should.not.eql(b);
     done();
   });
@@ -101,7 +101,7 @@ describe('Utils', function(){
       parts.host.should.equal('2604:4480::5');
       parts.port.should.equal(8080);
     });
-    
+
     it('failing address', function(){
       var uri = '[2604:4480:z:5]:80';
       try{

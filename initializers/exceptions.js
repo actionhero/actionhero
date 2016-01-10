@@ -11,7 +11,7 @@ module.exports = {
       var extraMessages = [];
 
       if(type === 'loader'){
-        extraMessages.push('! Failed to load ' + objects.fullFilePath)
+        extraMessages.push('! Failed to load ' + objects.fullFilePath);
       }
 
       else if(type === 'action'){
@@ -57,7 +57,7 @@ module.exports = {
         api.log('! ' + line, severity);
       }
       api.log('*', severity);
-    }
+    };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
 
@@ -66,7 +66,7 @@ module.exports = {
       for(var i in api.exceptionHandlers.reporters){
         api.exceptionHandlers.reporters[i](err, type, name, objects, severity);
       }
-    }
+    };
 
     ///////////
     // TYPES //
@@ -91,7 +91,7 @@ module.exports = {
     };
 
     api.exceptionHandlers.task = function(err, queue, task, workerId){
-      var simpleName
+      var simpleName;
       try{
         simpleName = task.class;
       }catch(e){
@@ -104,4 +104,4 @@ module.exports = {
     next();
 
   }
-}
+};

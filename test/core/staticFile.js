@@ -12,7 +12,7 @@ describe('Core: Static File', function(){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port+'/'+api.config.servers.web.urlPathForFiles;
       done();
-    })
+    });
   });
 
   after(function(done){
