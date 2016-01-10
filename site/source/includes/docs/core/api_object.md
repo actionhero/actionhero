@@ -107,7 +107,7 @@ var api = {
      redis:
       { channel: 'actionhero',
         rpcTimeout: 5000,
-        package: 'fakeredis' },
+        pkg: 'fakeredis' },
      routes: {},
      servers:
       { socket: [Object],
