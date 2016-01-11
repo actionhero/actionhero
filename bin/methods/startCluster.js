@@ -33,11 +33,12 @@ var isrunning = require('is-running');
 
 /////////////////////////////////////////
 
-var WorkerClass = function(id, actionHeroCluster){
+var WorkerClass = function(parent, id, env){
   var self = this;
-
+  self.state = null;
   self.id = id;
-  self.actionHeroCluster = actionHeroCluster;
+  self.env = env;
+  self.parent = parent;
 };
 
 WorkerClass.prototype.logPrefix = function(){
@@ -55,33 +56,39 @@ WorkerClass.prototype.logPrefix = function(){
 WorkerClass.prototype.start = function(){
   var self = this;
 
-  self.worker = cluster.fork({
-    title: self.actionHeroCluster.options.workerTitlePrefix + self.id,
-    ACTIONHERO_TITLE: self.actionHeroCluster.options.workerTitlePrefix + self.id
-  });
+  self.worker = cluster.fork(self.env);
 
   self.worker.on('exit', function(){
-    self.actionHeroCluster.log(self.logPrefix() + 'exited', 'info');
-    self.actionHeroCluster.work();
+    self.parent.log(self.logPrefix() + 'exited', 'info');
+
+    for(var i in self.parent.workers){
+      if(self.parent.workers[i].id === self.id){
+        self.parent.workers.splice(i, 1);
+        break;
+      }
+    }
+
+    self.parent.work();
   });
 
   self.worker.on('message', function(message){
-    self.actionHeroCluster.work();
-
     if(message.state){
-      self.actionHeroCluster.log(self.logPrefix() + message.state, 'info');
+      self.state = message.state;
+      self.parent.log(self.logPrefix() + message.state, 'info');
     }
 
     if(message.uncaughtException){
-      self.actionHeroCluster.log(self.logPrefix() + 'uncaught exception => ' + message.uncaughtException.message, 'alert');
+      self.parent.log(self.logPrefix() + 'uncaught exception => ' + message.uncaughtException.message, 'alert');
       message.uncaughtException.stack.forEach(function(line){
-        self.actionHeroCluster.log(self.logPrefix() + '   ' + line, 'alert');
+        self.parent.log(self.logPrefix() + '   ' + line, 'alert');
       });
     }
 
     if(message.unhandledRejection){
-      self.actionHeroCluster.log('worker #' + self.worker.id + ' [' + self.worker.process.pid + ']: unhandled rejection => ' + message.unhandledRejection, 'alert');
+      self.parent.log('worker #' + self.worker.id + ' [' + self.worker.process.pid + ']: unhandled rejection => ' + message.unhandledRejection, 'alert');
     }
+
+    self.parent.work();
   });
 };
 
@@ -89,11 +96,16 @@ WorkerClass.prototype.stop = function(){
   this.worker.send('stopProcess');
 };
 
+WorkerClass.prototype.restart = function(){
+  this.worker.send('restart');
+};
+
 /////////////////////////////////////////
 
 var ActionHeroCluster = function(args){
   var self = this;
   self.workers = [];
+  self.workersToRestart = [];
 
   self.options = self.defualts();
   for(var i in self.options){
@@ -121,10 +133,15 @@ var ActionHeroCluster = function(args){
     levels: winston.config.syslog.levels,
     transports: transports
   });
+
+  if(typeof self.options.buildEnv === 'function'){
+    self.buildEnv = self.options.buildEnv;
+  }
 };
 
 ActionHeroCluster.prototype.defualts = function(){
   return {
+    stopTimeout: 3000,
     expectedWorkers: os.cpus().length,
     flapCount: 0,
     execPath: __filename,
@@ -140,6 +157,13 @@ ActionHeroCluster.prototype.defualts = function(){
 ActionHeroCluster.prototype.log = function(message, severity){
   var self = this;
   self.logger.log(severity, message);
+}
+
+ActionHeroCluster.prototype.buildEnv = function(workerId){
+  var self = this;
+  return {
+    title: self.options.workerTitlePrefix + workerId,
+  }
 }
 
 ActionHeroCluster.prototype.configurePath = function(p, callback){
@@ -170,6 +194,8 @@ ActionHeroCluster.prototype.start = function(callback){
   var self = this;
   var jobs = [];
 
+  self.log(JSON.stringify(self.options), 'debug')
+
   cluster.setupMaster({
     exec: self.options.execPath,
     args: self.options.args.split(' '),
@@ -186,22 +212,20 @@ ActionHeroCluster.prototype.start = function(callback){
     self.stop(process.exit);
   });
 
-  // process.on('SIGUSR2', function(){
-  //   self.log('Signal: SIGUSR2', 'info');
-  //   self.log('swap out new workers one-by-one', 'info');
-  //   self.workerRestartArray = [];
-  //   for(var i in cluster.workers){
-  //     self.workerRestartArray.push(cluster.workers[i]);
-  //   }
-  //   self.workerRestartArray.reverse();
-  //   self.reloadAWorker();
-  // });
+  process.on('SIGUSR2', function(){
+    self.log('Signal: SIGUSR2', 'info');
+    self.log('swap out new workers one-by-one', 'info');
+    self.workers.forEach(function(worker){
+      self.workersToRestart.push(worker.id)
+    });
+    self.work();
+  });
 
   process.on('SIGHUP', function(){
     self.log('Signal: SIGHUP', 'info');
     self.log('reload all workers now', 'info');
     self.workers.forEach(function(worker){
-      worker.send('restart');
+      worker.restart();
     });
   });
 
@@ -254,17 +278,17 @@ ActionHeroCluster.prototype.start = function(callback){
 ActionHeroCluster.prototype.stop = function(callback){
   var self = this;
 
+  if(self.workers.length === 0){
+    self.log('all workers stopped', 'notice');
+    callback();
+  }else{
+    self.log(self.workers.length  + ' workers running, waiting on stop', 'info');
+    setTimeout(function(){ self.stop(callback); }, self.options.stopTimeout);
+  }
+
   if(self.options.expectedWorkers > 0){
     self.options.expectedWorkers = 0;
     self.work();
-  }
-
-  if(self.workers.length === 0){
-    self.log('All workers stopped');
-    callback();
-  }else{
-    self.log(self.workers.length  + ' workers running, waiting on stop');
-    setTimeout(function(){ self.stop(callback); }, 1000);
   }
 };
 
@@ -276,29 +300,60 @@ ActionHeroCluster.prototype.sortWorkers = function(){
 ActionHeroCluster.prototype.work = function(){
   var self = this;
   var worker;
+  var workerId;
   self.sortWorkers();
+  var stateCounts = {};
 
-  if(self.options.expectedWorkers < self.workers.length){
+  self.workers.forEach(function(w){
+    if(!stateCounts[w.state]){ stateCounts[w.state] = 0; }
+    stateCounts[w.state]++;
+  });
+
+  if(
+      self.options.expectedWorkers < self.workers.length &&
+      !stateCounts.stopping &&
+      !stateCounts.stopped &&
+      !stateCounts.restarting
+    ){
     worker = self.workers[ (self.workers.length - 1) ];
-    self.log('signaling worker #' + worker.id + ' to stop');
+    self.log('signaling worker #' + worker.id + ' to stop', 'info');
     worker.stop();
   }
 
-  else if(self.options.expectedWorkers > self.workers.length){
-    var workerId = 1;
+  else if(
+      self.options.expectedWorkers > self.workers.length &&
+      !stateCounts.starting &&
+      !stateCounts.restarting
+    ){
+    workerId = 1;
     self.workers.forEach(function(w){
       if(w.id === workerId){ workerId++; }
     });
 
-    self.log('starting worker #' + workerId);
-    worker = new WorkerClass(workerId, self);
+    self.log('starting worker #' + workerId, 'info');
+    var env = self.buildEnv(workerId);
+    worker = new WorkerClass(self, workerId, env);
     worker.start();
     self.workers.push(worker);
-    self.sortWorkers();
+  }
+
+  else if(
+    self.workersToRestart.length > 0 &&
+    !stateCounts.starting &&
+    !stateCounts.stopping &&
+    !stateCounts.stopped &&
+    !stateCounts.restarting
+  ){
+    workerId = self.workersToRestart.pop();
+    self.workers.forEach(function(w){
+      if(w.id === workerId){ w.stop(); }
+    });
   }
 
   else{
-    self.log('cluster exilibrium state reated @ ' + self.workers.length + ' workers');
+    if(stateCounts.started === self.workers.length || stateCounts.restarted === self.workers.length){
+      self.log('cluster exilibrium state reached with ' + self.workers.length + ' workers', 'notice');
+    }
   }
 };
 
@@ -306,278 +361,19 @@ ActionHeroCluster.prototype.work = function(){
 
 exports.startCluster = function(binary){
   var options = {
-    execCommand: path.normalize(binary.paths.actionheroRoot + '/bin/actionhero'),
+    execPath: path.normalize(binary.paths.actionheroRoot + '/bin/actionhero'),
     args: 'start',
     silent: (binary.argv.silent === 'true' || binary.argv.silent === true) ? true : false,
+    expectedWorkers: binary.argv.workers,
+    buildEnv: function(workerId){
+      var title = this.options.workerTitlePrefix + workerId;
+      return {
+        title: title,
+        ACTIONHERO_TITLE: title
+      }
+    }
   };
 
   var ahc = new ActionHeroCluster(options);
   ahc.start();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-// binary.clusterConfig = {
-//   exec: binary.execCMD,
-//   args: 'start',
-//   workers: binary.numWorkers,
-//   pidfile: binary.pidPath + '/cluster_pidfile',
-//   log: process.cwd() + '/log/cluster.log',
-//   title: 'actionhero-master',
-//   workerTitlePrefix: 'actionhero-worker-'
-// };
-
-
-//
-//
-//
-// exports.startCluster = function(binary){
-//   async.series({
-//
-//     workerMethods: function(next){
-//
-//       binary.claimWorkerId = function(){
-//         var expectedWorkerIds = []
-//         var i = 1;
-//         while(i <= binary.workersExpected){
-//           expectedWorkerIds.push(i);
-//           i++;
-//         }
-//         for(i in binary.claimedWorkerIds){
-//           var thisWorkerId = binary.claimedWorkerIds[i];
-//           expectedWorkerIds.splice(expectedWorkerIds.indexOf(thisWorkerId),1);
-//         }
-//         var workerId = expectedWorkerIds[0];
-//         binary.claimedWorkerIds.push(workerId);
-//         return workerId;
-//       }
-//
-//       binary.releaseWorkerId = function(thisWorkerId){
-//         binary.claimedWorkerIds.splice(binary.claimedWorkerIds.indexOf(thisWorkerId),1);
-//       }
-//
-//       binary.startAWorker = function(){
-//         var workerID = binary.claimWorkerId();
-//
-//         if(binary.workerRestartArray.length > 0){
-//           workerID = workerID - binary.workerRestartArray.length;
-//         }
-//
-//         var worker = cluster.fork({
-//           title: binary.clusterConfig.workerTitlePrefix + workerID,
-//           ACTIONHERO_TITLE: binary.clusterConfig.workerTitlePrefix + workerID
-//         });
-//
-//         worker.workerID = workerID;
-//         binary.log('starting worker #' + worker.workerID, 'info');
-//         worker.on('message', function(message){
-//           if(message.state && worker.state !== 'none'){
-//             binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: ' + message.state, 'info');
-//           }
-//
-//           if(message.uncaughtException){
-//             binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: uncaught exception => ' + message.uncaughtException.message, 'alert');
-//             message.uncaughtException.stack.forEach(function(line){
-//               binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']:   ' + line, 'alert');
-//             });
-//           }
-//
-//           if(message.unhandledRejection){
-//             binary.log('Worker #' + worker.workerID + ' [' + worker.process.pid + ']: unhandled rejection => ' + message.unhandledRejection, 'alert');
-//           }
-//         });
-//       }
-//
-//       binary.setupShutdown = function(){
-//         if(binary.workersExpected > 0){
-//           binary.workersExpected = 0;
-//           binary.log('Cluster manager quitting', 'warning');
-//           binary.log('Stopping each worker...', 'info');
-//           for(var i in cluster.workers){
-//             cluster.workers[i].send('stopProcess');
-//           }
-//           setTimeout(binary.loopUntilNoWorkers, loopSleep);
-//         }
-//       }
-//
-//       binary.loopUntilNoWorkers = function(){
-//         if(binary.utils.hashLength(cluster.workers) > 0){
-//           binary.log('there are still ' + binary.utils.hashLength(cluster.workers) + ' workers...', 'warning');
-//           setTimeout(binary.loopUntilNoWorkers, loopSleep);
-//         } else {
-//           binary.log('all workers gone', 'info');
-//           if(binary.clusterConfig.pidfile){
-//             try { fs.unlinkSync(binary.clusterConfig.pidfile); } catch(e){}
-//           }
-//           setTimeout(process.exit, 500);
-//         }
-//       }
-//
-//       binary.loopUntilAllWorkers = function(){
-//         if(binary.utils.hashLength(cluster.workers) < binary.workersExpected){
-//           binary.startAWorker();
-//           setTimeout(binary.loopUntilAllWorkers, loopSleep);
-//         }
-//       }
-//
-//       binary.reloadAWorker = function(){
-//         var count = binary.utils.hashLength(cluster.workers)
-//         if(binary.workersExpected > count){
-//           binary.startAWorker();
-//         }
-//         if(binary.workerRestartArray.length > 0){
-//           var worker = binary.workerRestartArray.pop();
-//           worker.send('stopProcess');
-//         }
-//       }
-//
-//       binary.detectFlapping = function(){
-//         flapCount++;
-//         if(binary.workersExpected > 0 && flapCount > (binary.workersExpected * 3)){
-//           binary.log('cluster is flapping, exiting now', 'warning');
-//           binary.setupShutdown();
-//         }
-//       }
-//
-//       binary.cleanup = function(){
-//
-//       }
-//
-//       next();
-//     },
-//
-//     process: function(next){
-//       process.stdin.resume();
-//       binary.workerRestartArray = []; // used to track rolling restarts of workers
-//       binary.workersExpected = 0;
-//
-//       // signals
-//       process.on('SIGINT', function(){
-//         binary.log('Signal: SIGINT', 'info');
-//         binary.setupShutdown();
-//       });
-//
-//       process.on('SIGTERM', function(){
-//         binary.log('Signal: SIGTERM', 'info');
-//         binary.setupShutdown();
-//       });
-//
-//       process.on('SIGUSR2', function(){
-//         binary.log('Signal: SIGUSR2', 'info');
-//         binary.log('swap out new workers one-by-one', 'info');
-//         binary.workerRestartArray = [];
-//         for(var i in cluster.workers){
-//           binary.workerRestartArray.push(cluster.workers[i]);
-//         }
-//         binary.workerRestartArray.reverse();
-//         binary.reloadAWorker();
-//       });
-//
-//       process.on('SIGHUP', function(){
-//         binary.log('Signal: SIGHUP', 'info');
-//         binary.log('reload all workers now', 'info');
-//         for (var i in cluster.workers){
-//           var worker = cluster.workers[i];
-//           worker.send('restart');
-//         }
-//       });
-//
-//       process.on('SIGWINCH', function(){
-//         if(binary.isDaemon){
-//           binary.log('Signal: SIGWINCH', 'info');
-//           binary.log('stop all workers', 'info');
-//           binary.workersExpected = 0;
-//           for (var i in cluster.workers){
-//             var worker = cluster.workers[i];
-//             worker.send('stopProcess');
-//           }
-//         }
-//       });
-//
-//       process.on('SIGTTIN', function(){
-//         binary.log('Signal: SIGTTIN', 'info');
-//         binary.log('add a worker', 'info');
-//         binary.workersExpected++;
-//         binary.startAWorker();
-//       });
-//
-//       process.on('SIGTTOU', function(){
-//         binary.log('Signal: SIGTTOU', 'info');
-//         binary.log('remove a worker', 'info');
-//         binary.workersExpected--;
-//         for(var i in cluster.workers){
-//           var worker = cluster.workers[i];
-//           worker.send('stopProcess');
-//           break;
-//         }
-//       });
-//
-//       process.on('exit', function(){
-//         binary.cleanup();
-//         binary.workersExpected = 0;
-//         binary.log('cluster complete, Bye!', 'notice')
-//       });
-//
-//       if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
-//         var rl = readline.createInterface({
-//           input: process.stdin,
-//           output: process.stdout
-//         });
-//         rl.on('SIGINT', function(){
-//           process.emit('SIGINT');
-//         });
-//       }
-//
-//       next();
-//     },
-//
-//     start: function(){
-//       // cluster.setupMaster({
-//       //   exec : binary.clusterConfig.exec,
-//       //   args: binary.clusterConfig.args.split(' '),
-//       //   silent: true
-//       // });
-//
-//       for (var i = 0; i < binary.clusterConfig.workers; i++) {
-//         binary.workersExpected++;
-//       }
-//
-//       setInterval(function(){
-//         flapCount = 0;
-//       }, binary.workersExpected * loopSleep * 4);
-//
-//       // cluster.on('fork', function(worker) {
-//       //   binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has spawned', 'info');
-//       // });
-//
-//       cluster.on('exit', function(worker) {
-//         binary.log('worker ' + worker.process.pid + ' (#' + worker.workerID + ') has exited', 'alert');
-//         binary.releaseWorkerId(worker.workerID);
-//         // to prevent CPU explosions if crashing too fast
-//         setTimeout(binary.reloadAWorker, loopSleep / 2);
-//         binary.detectFlapping();
-//       });
-//
-//       binary.loopUntilAllWorkers();
-//     }
-//   });
