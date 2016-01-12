@@ -4,7 +4,7 @@ module.exports = {
 
     api.routes = {};
     api.routes.routes = {};
-    api.routes.verbs = ['get', 'post', 'put', 'patch', 'delete'];
+    api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete'];
 
     ////////////////////////////////////////////////////////////////////////////
     // route processing for web clients
@@ -105,7 +105,7 @@ module.exports = {
     api.routes.loadRoutes = function(rawRoutes){
       var counter = 0;
 
-      api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
+      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
       if(!rawRoutes){
         if(api.config.routes){
