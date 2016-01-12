@@ -169,7 +169,7 @@ describe('Core: API', function(){
               default: function(){ return 'abc123'; },
               validator: function(s){
                 if(s === 'abc123'){ return true; }
-                else{ return 'fancyParam should be "abc123"'; }
+                else{ return 'fancyParam should be "abc123".  so says ' + api.id; }
               },
               formatter: function(s){
                 return String(s);
@@ -233,7 +233,14 @@ describe('Core: API', function(){
 
     it('will use validator if provided', function(done){
       api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
-        response.error.should.equal('Error: fancyParam should be "abc123"');
+        response.error.should.match(/Error: fancyParam should be "abc123"/);
+        done();
+      });
+    });
+
+    it('validator will have the API object in scope as this', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+        response.error.should.match(new RegExp(api.id));
         done();
       });
     });

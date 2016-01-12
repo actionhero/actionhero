@@ -13,7 +13,7 @@ exports.action = {
   outputExample: {
     randomNumber: 0.123
   },
-  
+
   run: function(api, data, next){
     data.response.randomNumber = Math.random();
     next();
@@ -49,7 +49,7 @@ var commonInputs = {
         return new Error('that is not a valid email address');
       }
     },  
-  }, 
+  },
   password: {
     required: true,
     validator: function(param){
@@ -124,17 +124,17 @@ exports.action = {
   description: "I am an API method which will generate a random number",
   // a hash of all the inputs this action will accept
   // any inputs provided to the action not in this hash will be stripped
-  inputs: { 
+  inputs: {
     multiplier: {
       required: false,
-      validator: function(param, connection, actionTemplate){ if(param < 0){ 
-        return 'must be > 0' }else{ return true; } 
+      validator: function(param, connection, actionTemplate){ if(param < 0){
+        return 'must be > 0' }else{ return true; }
       },
-      formatter: function(param, connection, actionTemplate){ 
-        return parseInt(param); 
+      formatter: function(param, connection, actionTemplate){
+        return parseInt(param);
       },
-      default:   function(param, connection, actionTemplate){ 
-        return 1; 
+      default:   function(param, connection, actionTemplate){
+        return 1;
       },
     }
   },
@@ -173,14 +173,14 @@ action.inputs = {
   // a complex input
   multiplier: {
     required: true,
-    validator: function(param, connection, actionTemplate){ if(param < 0){ 
-      return 'must be > 0' }else{ return true; } 
+    validator: function(param, connection, actionTemplate){
+      if(param < 0){ return 'must be > 0'; }else{ return true; }
     },
-    formatter: function(param, connection, actionTemplate){ 
-      return parseInt(param); 
+    formatter: function(param, connection, actionTemplate){
+      return parseInt(param);
     },
-    default:   function(param, connection, actionTemplate){ 
-      return 1; 
+    default:   function(param, connection, actionTemplate){
+      return 1;
     },
   }
 };
@@ -188,7 +188,7 @@ action.inputs = {
 
 The properties of an input are:
 
-- `required` (boolean) 
+- `required` (boolean)
   - Default: `false`
 - `formatter = function(param, connection, actionTemplate)`
   - will return the new value of the param
@@ -204,7 +204,9 @@ The properties of an input are:
 
 You can define `api.config.general.missingParamChecks = [null, '', undefined]` to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit `null` values in a JSON payload but not `undefined`, you can now opt-in to that behavior.  This is what `action.inputs.x.required = true` will check against.
 
-Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not), ie: `name: {required: false}`.
+Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not), ie: `name: {required: false}`.  
+
+The methods `default`, `formatter`, and `validator` have the api object set as `this` within their scopes.  This means that you can define common formatters within middleware and reference them in each action.
 
 The methods are applied in this order:
 

@@ -193,7 +193,7 @@ module.exports = {
         // default
         if(self.params[key] === undefined && props.default !== undefined){
           if(typeof props.default === 'function'){
-            self.params[key] = props.default(self.params[key], self);
+            self.params[key] = props.default.call(api, self.params[key], self);
           }else{
             self.params[key] = props.default;
           }
@@ -201,12 +201,12 @@ module.exports = {
 
         // formatter
         if(self.params[key] !== undefined && typeof props.formatter === 'function'){
-          self.params[key] = props.formatter(self.params[key], self);
+          self.params[key] = props.formatter.call(api, self.params[key], self);
         }
 
         // validator
         if(self.params[key] !== undefined && typeof props.validator === 'function'){
-          var validatorResponse = props.validator(self.params[key], self);
+          var validatorResponse = props.validator.call(api, self.params[key], self);
           if(validatorResponse !== true){
             self.validatorErrors.push(validatorResponse);
           }
