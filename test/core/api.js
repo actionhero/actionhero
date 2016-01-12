@@ -169,7 +169,7 @@ describe('Core: API', function(){
               default: function(){ return 'abc123'; },
               validator: function(s){
                 if(s === 'abc123'){ return true; }
-                else{ return 'fancyParam should be "abc123".  so says ' + api.id; }
+                else{ return 'fancyParam should be "abc123".  so says ' + this.id; }
               },
               formatter: function(s){
                 return String(s);
