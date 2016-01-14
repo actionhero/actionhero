@@ -188,8 +188,8 @@ actionhero is intended to be run on `*nix` operating systems.  The `start` and `
 All signals should be sent to the cluster master process.  You can still signal the termination of a worker, but the cluster manager will start a new one in its place.
 
 - `kill` / `term` / `int`:  Will signal the master to "gracefully terminate" all workers.  Master will terminate once all workers have completed
-- `USR2` / `HUP` : "Hot reload".  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.
-- `WINCH`: "Gracefully terminate" all workers.  Only the master will remain running
+- `HUP` : Restart all workers.
+- `USR2` : "Hot reload".  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.
 - `TTOU`: remove one worker
 - `TTIN`: add one worker
 

@@ -22,7 +22,7 @@ if(cluster.isMaster){
   );
 }
 
-binary.logger = new (winston.Logger)({
+binary.logger = new(winston.Logger)({
   levels: winston.config.syslog.levels,
   transports: transports
 });
@@ -175,7 +175,7 @@ if(binary.actions[binary.mainAction]){
     // child.unref();
     binary.log(command + ' ' + args.join(' '), 'info');
     binary.log('spawned child process with pid ' + child.pid, 'notice');
-    setTimeout(process.exit, 2000); // TODO: why is this sleep needed?
+    setTimeout(process.exit, 1000);
   } else if(binary.argv.isDaemon){
     binary.logger.remove(winston.transports.Console);
     binary.actions[binary.mainAction](binary, function(){});
