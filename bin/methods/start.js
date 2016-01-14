@@ -47,7 +47,7 @@ exports.start = function(binary, next){
     state = 'restarting';
     if(cluster.isWorker){ process.send({state: state}); }
     actionhero.restart(function(err, apiFromCallback){
-      state = 'restarted';
+      state = 'started';
       if(cluster.isWorker){ process.send({state: state}); }
       api = apiFromCallback;
       if(typeof callback === 'function'){ callback(null, api); }
@@ -80,7 +80,9 @@ exports.start = function(binary, next){
       if(msg === 'start'){ startServer(); }
       else if(msg === 'stop'){ stopServer(); }
       else if(msg === 'stopProcess'){ stopProcess(); }
-      else if(msg === 'restart'){ restartServer(); }
+      // in cluster, we cannot re-bind the port
+      // so kill this worker, and then let the cluster start a new worker
+      else if(msg === 'restart'){ stopProcess(); }
     });
 
     process.on('uncaughtException', function(error){

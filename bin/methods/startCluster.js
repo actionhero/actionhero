@@ -11,7 +11,6 @@
 //   -- Note, socket/websocket clients will be disconnected, but there will always be a worker to handle them
 //   -- HTTP/HTTPS/TCP clients will be allowed to finish the action they are working on before the server goes down
 // - TTOU and TTIN signals to subtract/add workers
-// - WINCH to stop all workers
 // - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
 //   -- Simple Daemon: "actionhero startCluster --daemon"
@@ -133,10 +132,6 @@ var ActionHeroCluster = function(args){
     levels: winston.config.syslog.levels,
     transports: transports
   });
-
-  if(typeof self.options.buildEnv === 'function'){
-    self.buildEnv = self.options.buildEnv;
-  }
 };
 
 ActionHeroCluster.prototype.defualts = function(){
@@ -151,6 +146,7 @@ ActionHeroCluster.prototype.defualts = function(){
     logFile: 'cluster.log',
     workerTitlePrefix: 'actionhero-worker-',
     args: '',
+    buildEnv: null,
   };
 };
 
@@ -161,8 +157,12 @@ ActionHeroCluster.prototype.log = function(message, severity){
 
 ActionHeroCluster.prototype.buildEnv = function(workerId){
   var self = this;
-  return {
-    title: self.options.workerTitlePrefix + workerId,
+  if(typeof self.options.buildEnv === 'function'){
+    return self.options.buildEnv.call(self, workerId);
+  }else{
+    return {
+      title: self.options.workerTitlePrefix + workerId,
+    };
   }
 }
 
@@ -351,7 +351,7 @@ ActionHeroCluster.prototype.work = function(){
   }
 
   else{
-    if(stateCounts.started === self.workers.length || stateCounts.restarted === self.workers.length){
+    if(stateCounts.started === self.workers.length){
       self.log('cluster exilibrium state reached with ' + self.workers.length + ' workers', 'notice');
     }
   }
@@ -366,7 +366,8 @@ exports.startCluster = function(binary){
     silent: (binary.argv.silent === 'true' || binary.argv.silent === true) ? true : false,
     expectedWorkers: binary.argv.workers,
     buildEnv: function(workerId){
-      var title = this.options.workerTitlePrefix + workerId;
+      var self = this;
+      var title = self.options.workerTitlePrefix + workerId;
       return {
         title: title,
         ACTIONHERO_TITLE: title
