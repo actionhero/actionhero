@@ -3,7 +3,7 @@ exports.default = {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options
       // locale path can be configired from within ./config/api.js
-      locales: ['en', 'es'],
+      locales: ['en'],
       fallbacks: {
         'en-US': 'en'
       },
