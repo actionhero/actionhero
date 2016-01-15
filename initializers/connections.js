@@ -139,7 +139,7 @@ module.exports = {
     api.connection.prototype.localize = function(message){
       // this.locale will be sourced automatically
       if(!Array.isArray(message)){ message = [message]; }
-      return api.i18n.i18n.__.apply(api.i18n.i18n, message);
+      return api.i18n.i18n.__.apply(this, message);
     };
 
     api.connection.prototype.generateID = function(){

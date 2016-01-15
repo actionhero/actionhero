@@ -3,15 +3,15 @@ exports.default = {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options
       // locale path can be configired from within ./config/api.js
-      locales: ['en'],
+      locales: ['en', 'es'],
       fallbacks: {
-        'en-US': 'en',
+        'en-US': 'en'
       },
 
       updateFiles: true,
 
       // this will configure logging and error messages in the log(s)
-      serverLocale: 'en',
+      defaultLocale: 'en',
 
       // the name of the method by which to determine the connection's locale
       // by default, every request will be in the 'en' locale

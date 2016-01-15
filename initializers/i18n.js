@@ -10,7 +10,7 @@ module.exports = {
       determineConnectionLocale: function(connection){
         // perhpas you want to look at the `accept-language` headers from a web requests
         // perhaps your API can use a certain cookie or URL to determine locale
-        return 'en';
+        return api.config.i18n.defaultLocale;
       },
 
       invokeConnectionLocale: function(connection){
