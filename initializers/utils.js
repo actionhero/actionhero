@@ -77,6 +77,15 @@ module.exports = {
     };
 
     ////////////////////////////////////////////////////////////////////////////
+    // string to hash
+    // http://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
+    api.utils.stringToHash = function(path, object){
+      if(!object){ object = api; }
+      function _index(obj, i){ return obj[i]; }
+      return path.split('.').reduce(_index, object)
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
     // unique-ify an array
     api.utils.arrayUniqueify = function(arr){
       var a = [];
