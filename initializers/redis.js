@@ -33,20 +33,20 @@ module.exports = {
       }
 
       api.redis.client.on('error', function(err){
-        api.log('Redis Error (client): ' + err, 'emerg');
+        api.log(['Redis Error (client): %s', err], 'emerg');
       });
 
       api.redis.subscriber.on('error', function(err){
-        api.log('Redis Error (subscriber): ' + err, 'emerg');
+        api.log(['Redis Error (subscriber): %s', err], 'emerg');
       });
 
       api.redis.client.on('end', function(){
-        api.log('Redis Connection Closed (client): ', 'debug');
+        api.log('Redis Connection Closed (client)', 'debug');
         api.redis.status.client = false;
       });
 
       api.redis.subscriber.on('end', function(){
-        api.log('Redis Connection Closed (subscriber): ', 'debug');
+        api.log('Redis Connection Closed (subscriber)', 'debug');
         api.redis.status.subscriber = false;
         api.redis.status.subscribed = false;
       });
@@ -186,7 +186,7 @@ module.exports = {
 
     api.redis.initialize(function(){
       api.redis.subscribe(function(){
-        api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+        api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
         process.nextTick(next);
       });
     });
@@ -203,7 +203,7 @@ module.exports = {
       delete api.redis.clusterCallbakTimeouts[i];
       delete api.redis.clusterCallbaks[i];
     }
-    api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
+    api.redis.doCluster('api.log', [['actionhero member %s has left the cluster', api.id]], null, null);
 
     process.nextTick(function(){
       api.redis.subscriber.unsubscribe();

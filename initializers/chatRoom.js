@@ -33,7 +33,7 @@ module.exports = {
 
     api.chatRoom.broadcast = function(connection, room, message, callback){
       if(!room || room.length === 0 || message === null || message.length === 0){
-        if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionRoomAndMessage() ); }); }
+        if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionRoomAndMessage(connection) ); }); }
       }else if(connection.rooms === undefined || connection.rooms.indexOf(room) > -1){
         if(connection.id === undefined){ connection.id = 0; }
         var payload = {
@@ -68,7 +68,7 @@ module.exports = {
           }
         });
       } else {
-        if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(room) ); }); }
+        if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(connection, room) ); }); }
       }
     };
 
@@ -208,7 +208,7 @@ module.exports = {
             }
           });
         }else{
-          if(typeof callback === 'function'){ callback( api.config.errors.connectionAlreadyInRoom(room), false); }
+          if(typeof callback === 'function'){ callback( api.config.errors.connectionAlreadyInRoom(connection, room), false); }
         }
       }else{
         api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, callback);
@@ -286,7 +286,7 @@ module.exports = {
 
     if(api.config.general.startingChatRooms){
       for(var room in api.config.general.startingChatRooms){
-        api.log('ensuring the existence of the chatRoom: ' + room);
+        api.log(['ensuring the existence of the chatRoom: %s', room]);
         api.chatRoom.add(room);
       }
     }

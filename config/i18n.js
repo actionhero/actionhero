@@ -6,19 +6,25 @@ exports.default = {
       locales: ['en'],
       fallbacks: {
         'en-US': 'en',
-        'en-CA': 'en',
-        'en-GB': 'en',
-        'en-AU': 'en',
       },
 
-      // the name of the method by which to determine the servers's locale
+      updateFiles: true,
+
       // this will configure logging and error messages in the log(s)
-      determineServerLocale: api.i18n.determineServerLocale,
+      serverLocale: 'en',
 
       // the name of the method by which to determine the connection's locale
       // by default, every request will be in the 'en' locale
       // this method will be called witin the localiazation middleware on all requests
-      determineConnectionLocale: api.i18n.determineConnectionLocale,
+      determineConnectionLocale: 'api.i18n.determineConnectionLocale',
     }
   }
 };
+
+exports.procution ={
+  i18n: function(api){
+    return {
+      updateFiles: false
+    }
+  }
+}

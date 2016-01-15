@@ -58,11 +58,10 @@ module.exports = {
       var loadMessage = function(action){
         var msgString = '';
         if(reload){
-          msgString = 'action (re)loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
-        } else {
-          msgString = 'action loaded: ' + action.name + ' @ v' + action.version + ', ' + fullFilePath;
+          api.log(['action reloaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug');
+        }else{
+          api.log(['action loaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug');
         }
-        api.log(msgString, 'debug');
       };
 
       api.watchFileAndAct(fullFilePath, function(){

@@ -81,7 +81,7 @@ var initialize = function(api, options, next){
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n');
     } catch(e){
-      api.log('socket write error: ' + e, 'error');
+      api.log(['socket write error: %s', e], 'error');
     }
   };
 

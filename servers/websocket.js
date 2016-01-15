@@ -47,7 +47,7 @@ var initialize = function(api, options, next){
       handleDisconnection(rawConnection);
     });
 
-    api.log('webSockets bound to ' + webserver.options.bindIP + ':' + webserver.options.port, 'debug');
+    api.log(['webSockets bound to %s: %s', webserver.options.bindIP, webserver.options.port], 'debug');
     server.active = true;
 
     server.writeClientJS();
@@ -178,9 +178,9 @@ var initialize = function(api, options, next){
       );
       try{
         fs.writeFileSync(base + '.js', server.renderClientJS(false));
-        api.log('wrote ' + base + '.js', 'debug');
+        api.log(['wrote %s.js', base], 'debug');
         fs.writeFileSync(base + '.min.js', server.renderClientJS(true));
-        api.log('wrote ' + base + '.min.js', 'debug');
+        api.log(['wrote %s.min.js', base], 'debug');
       }catch(e){
         api.log('Cannot write client-side JS for websocket server:', 'warning');
         api.log(e, 'warning');

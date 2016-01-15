@@ -51,17 +51,17 @@ module.exports = {
       if(status instanceof Error){
         error = status;
       }else if(status === 'server_shutting_down'){
-        error = api.config.errors.serverShuttingDown();
+        error = api.config.errors.serverShuttingDown(self);
       }else if(status === 'too_many_requests'){
-        error = api.config.errors.tooManyPendingActions();
+        error = api.config.errors.tooManyPendingActions(self);
       }else if(status === 'unknown_action'){
-        error = api.config.errors.unknownAction(self.connection.action);
+        error = api.config.errors.unknownAction(self);
       }else if(status === 'unsupported_server_type'){
-        error = api.config.errors.unsupportedServerType(self.connection.type);
+        error = api.config.errors.unsupportedServerType(self);
       }else if(status === 'missing_params'){
-        error = api.config.errors.missingParams(self.missingParams) ;
+        error = api.config.errors.missingParams(self, self.missingParams);
       }else if(status === 'validator_errors'){
-        error = api.config.errors.invalidParams(self.validatorErrors);
+        error = api.config.errors.invalidParams(self, self.validatorErrors);
       }else if(status){
         error = status;
       }
@@ -125,7 +125,7 @@ module.exports = {
         }
       }
 
-      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, logLine);
+      api.log(['[ action @ %s ]', self.connection.type], logLevel, logLine);
     };
 
     api.actionProcessor.prototype.preProcessAction = function(callback){

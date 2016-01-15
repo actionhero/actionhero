@@ -26,14 +26,12 @@ module.exports = {
       winston.addColors(api.config.logger.colors);
     }
 
-    api.log = function(message, severity){
-      api.i18n.i18n.setLocale( api.config.i18n.determineServerLocale() );
-      var localizedMessage = api.i18n.t(message);
-
+    api.log = function(message, severity, data){
+      if(!Array.isArray(message)){ message = [message]; }
+      var localizedMessage = api.i18n.i18n.__.apply(api.i18n.i18n, message);
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
-      // if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
       var args = [ severity, localizedMessage ];
-      args.push.apply(args, Array.prototype.slice.call(arguments, 2));
+      if(data !== null && data !== undefined){ args.push(data); }
       api.logger.log.apply(api.logger, args);
     };
 
@@ -41,7 +39,7 @@ module.exports = {
     for(i in api.logger.levels){ logLevels.push(i); }
 
     api.log('*** starting actionhero ***', 'notice');
-    api.log('Logger loaded.  Possible levels include: ', 'debug', logLevels);
+    api.log('Logger loaded.  Possible levels include:', 'debug', logLevels);
 
     next();
 

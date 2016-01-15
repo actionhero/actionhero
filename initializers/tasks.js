@@ -13,7 +13,7 @@ module.exports = {
         if(!reload){ reload = false; }
 
         var loadMessage = function(loadedTaskName){
-          api.log('task ' + (reload?'(re)':'') + 'loaded: ' + loadedTaskName + ', ' + fullFilePath, 'debug');
+          api.log(['task %sloaded: %s, %s', (reload?'(re)':''), loadedTaskName, fullFilePath], 'debug');
         };
 
         api.watchFileAndAct(fullFilePath, function(){
@@ -175,7 +175,7 @@ module.exports = {
           self.del(task.queue, taskName, {}, function(){
             self.delDelayed(task.queue, taskName, {}, function(){
               self.enqueueIn(task.frequency, taskName, function(){
-                api.log('re-enqueued recurrent job ' + taskName, api.config.tasks.schedulerLogging.reEnqueue);
+                api.log(['re-enqueued recurrent job %s', taskName], api.config.tasks.schedulerLogging.reEnqueue);
                 callback();
               });
             });
@@ -194,7 +194,7 @@ module.exports = {
             (function(taskName){
               self.enqueue(taskName, function(err, toRun){
                 if(toRun === true){
-                  api.log('enqueuing periodic task: ' + taskName, api.config.tasks.schedulerLogging.enqueue);
+                  api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue);
                   loadedTasks.push(taskName);
                 }
                 started--;

@@ -132,6 +132,14 @@ module.exports = {
         if(self[i] === undefined && data[i] !== undefined){ self[i] = data[i]; }
         if(self[i] === undefined){ self[i] = connectionDefaults[i]; }
       }
+
+      api.i18n.invokeConnectionLocale(self);
+    };
+
+    api.connection.prototype.localize = function(message){
+      // this.locale will be sourced automatically
+      if(!Array.isArray(message)){ message = [message]; }
+      return api.i18n.i18n.__.apply(api.i18n.i18n, message);
     };
 
     api.connection.prototype.generateID = function(){
@@ -269,10 +277,10 @@ module.exports = {
           });
 
         } else {
-          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(verb), null); }
+          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(self, verb), null); }
         }
       } else {
-        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(verb), null); }
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(self, verb), null); }
       }
     };
 
