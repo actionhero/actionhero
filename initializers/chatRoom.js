@@ -237,7 +237,7 @@ module.exports = {
             }
           });
         } else {
-          if(typeof callback === 'function'){ callback( api.config.errors.connectionNotInRoom(room), false); }
+          if(typeof callback === 'function'){ callback( api.config.errors.connectionNotInRoom(connection, room), false); }
         }
       }else{
         api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, callback);

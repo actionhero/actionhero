@@ -326,7 +326,7 @@ describe('Core: Action Cluster', function(){
         apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
           didAdd.should.equal(true);
           apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
-            err.should.equal('connection already in this room');
+            err.should.equal('connection already in this room (defaultRoom)');
             didAdd.should.equal(false);
             client.destroy();
             done();
