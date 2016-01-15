@@ -41,7 +41,8 @@ exports.default = {
         'log':         [ __dirname + '/../log'          ] ,
         'server':      [ __dirname + '/../servers'      ] ,
         'initializer': [ __dirname + '/../initializers' ] ,
-        'plugin':      [ __dirname + '/../node_modules' ]
+        'plugin':      [ __dirname + '/../node_modules' ] ,
+        'locale':      [ __dirname + '/../locales'      ]
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {

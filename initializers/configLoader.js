@@ -4,7 +4,7 @@ var util = require('util');
 var argv = require('optimist').argv;
 
 module.exports = {
-  loadPriority:  0,
+  loadPriority:  1,
   initialize: function(api, next){
 
     api.watchedFiles = [];
@@ -161,6 +161,7 @@ module.exports = {
     var pluginServers      = [];
     var pluginInitializers = [];
     var pluginPublics      = [];
+    var pluginLocales      = [];
 
     //loop over it's plugins
     api.config.general.paths.plugin.forEach(function(p){
@@ -176,6 +177,7 @@ module.exports = {
             pluginServers      = pluginServers.concat(api.config.general.paths.server);
             pluginInitializers = pluginInitializers.concat(api.config.general.paths.initializer);
             pluginPublics      = pluginPublics.concat(api.config.general.paths.public);
+            pluginLocales      = pluginLocales.concat(api.config.general.paths.locale);
           }
           //additionally add the following paths if they exists
           if(fs.existsSync(pluginPackageBase + '/actions')){      pluginActions.unshift(      pluginPackageBase + '/actions'      );}
@@ -183,6 +185,7 @@ module.exports = {
           if(fs.existsSync(pluginPackageBase + '/servers')){      pluginServers.unshift(      pluginPackageBase + '/servers'      );}
           if(fs.existsSync(pluginPackageBase + '/initializers')){ pluginInitializers.unshift( pluginPackageBase + '/initializers' );}
           if(fs.existsSync(pluginPackageBase + '/public')){       pluginPublics.unshift(      pluginPackageBase + '/public'       );}
+          if(fs.existsSync(pluginPackageBase + '/locale')){       pluginPublics.unshift(      pluginPackageBase + '/locale'       );}
         }
       });
     });
@@ -196,6 +199,7 @@ module.exports = {
     api.config.general.paths.server      = pluginServers.concat(api.config.general.paths.server);
     api.config.general.paths.initializer = pluginInitializers.concat(api.config.general.paths.initializer);
     api.config.general.paths.public      = pluginPublics.concat(api.config.general.paths.public);
+    api.config.general.paths.locale      = pluginLocales.concat(api.config.general.paths.locale);
 
     // the first plugin path shoud alawys be the local project
     api.config.general.paths.public.reverse();
@@ -214,6 +218,7 @@ module.exports = {
     api.config.general.paths.pid         = api.utils.arrayUniqueify( api.config.general.paths.pid.map(path.normalize) );
     api.config.general.paths.log         = api.utils.arrayUniqueify( api.config.general.paths.log.map(path.normalize) );
     api.config.general.paths.plugin      = api.utils.arrayUniqueify( api.config.general.paths.plugin.map(path.normalize) );
+    api.config.general.paths.locale      = api.utils.arrayUniqueify( api.config.general.paths.locale.map(path.normalize) );
 
     process.nextTick(next);
   },

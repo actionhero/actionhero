@@ -27,9 +27,12 @@ module.exports = {
     }
 
     api.log = function(message, severity){
+      api.i18n.i18n.setLocale( api.config.i18n.determineServerLocale() );
+      var localizedMessage = api.i18n.t(message);
+
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
       // if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
-      var args = [ severity, message ];
+      var args = [ severity, localizedMessage ];
       args.push.apply(args, Array.prototype.slice.call(arguments, 2));
       api.logger.log.apply(api.logger, args);
     };
