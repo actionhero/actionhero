@@ -114,7 +114,11 @@ module.exports = {
 
     api.redis.subscriptionHandlers.do = function(message){
       if(!message.connectionId || ( api.connections && api.connections.connections[message.connectionId]) ){
-        var method = eval(message.method); //TODO: Eval makes me sad
+        var cmdParts = message.method.split('.');
+        var cmd = cmdParts.shift();
+        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object') }
+        var method = api.utils.stringToHash(cmdParts.join('.'));
+
         var callback = function(){
           var responseArgs = Array.apply(null, arguments).sort();
           process.nextTick(function(){
