@@ -64,6 +64,9 @@ exports.test = {
         'defaultRoom': {},
         'otherRoom': {},
       },
+      paths: {
+        'locale': [ '/tmp/locale' ]
+      }
     };
   }
 };
