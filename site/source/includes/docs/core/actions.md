@@ -271,12 +271,12 @@ You can [learn more about middleware here](/docs#middleware).
 
 ## Notes
 
-* Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
+* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).  
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaniousActions`
 * `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](/docs#middleware) preProcessors will always have access to all params pre-scrubbing.
 * `matchExtensionMimeType` is curently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
-* actionhero strives to keep the `connection` object uniform among various client types, and more importantly, present `data.params` in a homogenous way.  You can inspect `connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `connection.rawConnection = {req: req, res: res}` for example.  
+* actionhero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogenous way.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `data.connection.rawConnection = {req: req, res: res}` for example.  
   * You can learn more about some of the `rawConnection` options by learning how to [send files from actions](/docs#sending-files-from-actions).
 
 [You can learn more about handling HTTP verbs and file uploads here](/docs#uploading-files) and [TCP Clients](/docs#files-and-routes) and [Web-Socket Clients](/docs#websocket-server)
