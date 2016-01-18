@@ -352,7 +352,7 @@ ActionHeroCluster.prototype.work = function(){
 
   else{
     if(stateCounts.started === self.workers.length){
-      self.log('cluster exilibrium state reached with ' + self.workers.length + ' workers', 'notice');
+      self.log('cluster equilibrium state reached with ' + self.workers.length + ' workers', 'notice');
     }
   }
 };
