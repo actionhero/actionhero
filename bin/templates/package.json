@@ -15,8 +15,8 @@
     "should" : "latest"
   },
   "scripts" : {
-    "help"         : "actionhero help",
     "start"        : "actionhero start",
+    "actionhero"   : "actionhero",
     "test"         : "NODE_ENV=test mocha"
   }
 }
