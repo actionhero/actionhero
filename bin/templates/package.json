@@ -17,8 +17,6 @@
   "scripts" : {
     "help"         : "actionhero help",
     "start"        : "actionhero start",
-    "actionhero"   : "actionhero",
-    "startCluster" : "actionhero startCluster",
     "test"         : "NODE_ENV=test mocha"
   }
 }
