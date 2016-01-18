@@ -10,7 +10,7 @@ exports.default = {
         // 'es': 'en'
       },
 
-      updateFiles: false,
+      updateFiles: true,
 
       // this will configure logging and error messages in the log(s)
       defaultLocale: 'en',
@@ -23,10 +23,18 @@ exports.default = {
   }
 };
 
-exports.procution ={
-  i18n: function(api){
+exports.staging ={
+  i18n: function(){
     return {
       updateFiles: false
     }
   }
-}
+};
+
+exports.procution ={
+  i18n: function(){
+    return {
+      updateFiles: false
+    }
+  }
+};
