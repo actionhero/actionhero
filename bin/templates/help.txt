@@ -25,15 +25,9 @@ Descriptions:
   [title] (optional) process title to use for actionhero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
   [daemon] (optional) to fork and run as a new background process defaults to false
 
-* actionhero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
+* actionhero startCluster --workers=[numWorkers]  --daemon
   will launch a actionhero cluster (using node-s cluster module)
-  [exec] (optional) command for the cluster-master to run to stat the workers
   [workers] (optional) number of workers (defaults to # CPUs - 2)
-  [pidfile] (optional) pidfile location (defaults to process.cwd() + '/pids')
-  [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
-  [title] (optional) default actionhero-master  Does not work on OSX/Windows
-  [workerTitlePrefix] (optional) default actionhero-worker
-  [config] (optional) path to config.js for workers, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG]
   [daemon] (optional) to fork and run as a new background process defaults to false
 
 * actionhero generate
