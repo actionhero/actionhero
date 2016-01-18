@@ -307,13 +307,13 @@ describe('Server: Socket', function(){
       });
       });
     });
-    
+
     describe('custom room member data', function(){
-    
+
     	var currentSanitize;
     	var currentGenerate;
-    	
-    	
+
+
     	before(function(done){
     	    //Ensure that default behavior works
 			makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
@@ -334,12 +334,12 @@ describe('Server: Socket', function(){
 							 joinedAt: data.joinedAt,
 							 type: data.type };
 				  }
-  
+
 				  api.chatRoom.generateMemberDetails = function(connection){
 					return { id: connection.id,
 							 joinedAt: new Date().getTime(),
 							 type : connection.type };
-				  }			  
+				  }
 				  done();
 			  });
 			});
@@ -348,10 +348,10 @@ describe('Server: Socket', function(){
 		after(function(done){
 		  api.chatRoom.joinCallbacks  = {};
 		  api.chatRoom.leaveCallbacks = {};
-		  
+
 		  api.chatRoom.sanitizeMemberDetails = currentSanitize;
 		  api.chatRoom.generateMemberDetails = currentGenerate;
-		          
+
 		  //Check that everything is back to normal
 		  makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
 			  makeSocketRequest(client2, 'roomView defaultRoom', function(response){
@@ -365,7 +365,7 @@ describe('Server: Socket', function(){
 			  });
 		  });
 		})
-		
+
 		it('should view non-default member data', function(done){
 			makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
 				makeSocketRequest(client2, 'roomView defaultRoom', function(response){
@@ -377,8 +377,8 @@ describe('Server: Socket', function(){
 				  done();
 				});
 			})
-		});	
-    
+		});
+
     } );
 
     it('folks in my room hear what I say (and say works)', function(done){
@@ -427,7 +427,7 @@ describe('Server: Socket', function(){
         done();
       });
     });
-  
+
   });
 
   describe('disconnect', function(){
@@ -440,7 +440,7 @@ describe('Server: Socket', function(){
         response.id.should.equal('test-server');
         client.readable.should.equal(true)
         client.writable.should.equal(true)
-        
+
         for(var id in api.connections.connections){
           api.connections.connections[id].destroy();
         }

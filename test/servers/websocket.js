@@ -148,7 +148,7 @@ describe('Server: Web Socket', function(){
 
     it('missing files', function(done){
       clientA.file('missing.html', function(data){
-        data.error.should.equal( api.config.errors.fileNotFound() );
+        data.error.should.equal( 'That file is not found (missing.html)' );
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();

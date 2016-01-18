@@ -112,7 +112,7 @@ module.exports = {
     };
 
     api.genericServer.prototype.log = function(message, severity, data){
-      api.log('[server: ' + this.type + '] ' + message, severity, data);
+      api.log(['[server: %s] %s', this.type, message], severity, data);
     };
 
     var methodNotDefined = function(){

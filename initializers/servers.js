@@ -32,7 +32,7 @@ module.exports = {
           inits[server] = require(f)['initialize'];
         }
         api.watchFileAndAct(f, function(){
-          api.log('\r\n\r\n*** rebooting due to server ('+server+') change ***\r\n\r\n', 'info');
+          api.log(['*** Rebooting due to server (%s) change ***', server], 'info');
           api.commands.restart.call(api._self);
         });
       });
@@ -45,7 +45,7 @@ module.exports = {
         var options = api.config.servers[server];
         inits[server](api, options, function(serverObject){
           api.servers.servers[server] = serverObject;
-          api.log('initialized server: ' + server, 'debug');
+          api.log(['Initialized server: %s', server], 'debug');
           process.nextTick(function(){
             started--;
             if(started === 0){ next(); }
@@ -62,7 +62,7 @@ module.exports = {
     for(var server in api.servers.servers){
       started++;
       if(api.config.servers[server] && api.config.servers[server].enabled === true){
-        api.log('starting server: ' + server, 'notice');
+        api.log(['Starting server: %s', server], 'notice');
         api.servers.servers[server].start(function(error){
           if(error){ return next(error); }
           process.nextTick(function(){
@@ -86,11 +86,11 @@ module.exports = {
       started++;
       (function(server){
         if((api.config.servers[server] && api.config.servers[server].enabled === true) || !api.config.servers[server]){
-          api.log('stopping server: ' + server, 'notice');
+          api.log(['Stopping server: %s', server], 'notice');
           api.servers.servers[server].stop(function(error){
             if(error){ return next(error); }
             process.nextTick(function(){
-              api.log('server stopped: ' + server, 'debug');
+              api.log(['Server stopped: %s', server], 'debug');
               started--;
               if(started === 0){ next(); }
             });

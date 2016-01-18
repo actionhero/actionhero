@@ -34,7 +34,7 @@ module.exports = {
   },
 
   start: function(api, next){
-    api.log('server ID: ' + api.id, 'notice');
+    api.log(['server ID: %s', api.id], 'notice');
     next();
   }
 };

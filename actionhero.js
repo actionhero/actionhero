@@ -11,7 +11,7 @@ var async = require('async');
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){
-    api.log('Error with initializer step: ' + type, 'emerg');
+    api.log(['Error with initializer step: %s', type], 'emerg');
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });
@@ -133,14 +133,14 @@ actionhero.prototype.initialize = function(params, callback){
 
         var loadFunction = function(next){
           self.api.watchFileAndAct(file, function(){
-            self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+            self.api.log(['*** Rebooting due to initializer change (%s) ***', file], 'info');
             self.api.commands.restart.call(self.api._self);
           });
 
           if(typeof self.initializers[initializer].initialize === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Loading initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].initialize(self.api, function(err){
-              try{ self.api.log('loaded initializer: ' + initializer, 'debug', file); }catch(e){ }
+              try{ self.api.log(['Loaded initializer: %s', initializer], 'debug', file); }catch(e){ }
               next(err);
             });
           }else{
@@ -150,9 +150,9 @@ actionhero.prototype.initialize = function(params, callback){
 
         var startFunction = function(next){
           if(typeof self.initializers[initializer].start === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Starting initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].start(self.api, function(err){
-              self.api.log('   started: ' + initializer, 'debug', file);
+              self.api.log(['Started initializer: %s', initializer], 'debug', file);
               next(err);
             });
           }else{
@@ -162,9 +162,9 @@ actionhero.prototype.initialize = function(params, callback){
 
         var stopFunction = function(next){
           if(typeof self.initializers[initializer].stop === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Stopping initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].stop(self.api, function(err){
-              self.api.log('   stoped: ' + initializer, 'debug', file);
+              self.api.log(['Stopped initializer: %s', initializer], 'debug', file);
               next(err);
             });
           }else{
@@ -241,7 +241,7 @@ actionhero.prototype.start = function(params, callback){
 
     self.startInitializers.push(function finalStartInitializer(){
       self.api.bootTime = new Date().getTime();
-      self.api.log('*** Server Started @ ' + new Date() + ' ***', 'notice');
+      self.api.log(['*** Server Started ***'], 'notice');
       callback(null, self.api);
     });
 
@@ -266,7 +266,7 @@ actionhero.prototype.stop = function(callback){
     self.api.running = false;
     self.api.initialized = false;
 
-    self.api.log('Shutting down open servers and stopping task processing', 'alert');
+    self.api.log('Shutting down open servers and stopping task processing...', 'alert');
 
     if(self.stopInitializers[(self.stopInitializers.length -1)].name === 'finalStopInitializer'){
       self.stopInitializers.pop();

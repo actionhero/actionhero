@@ -81,7 +81,7 @@ var initialize = function(api, options, next){
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n');
     } catch(e){
-      api.log('socket write error: ' + e, 'error');
+      api.log(['socket write error: %s', e], 'error');
     }
   };
 
@@ -168,7 +168,7 @@ var initialize = function(api, options, next){
       connection.verbs(verb, words, function(error, data){
         if(!error){
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
-        } else if(error === 'verb not found or not allowed'){
+        } else if(error.match('verb not found or not allowed')){
           // check for and attempt to check single-use params
           try {
             var requestHash = JSON.parse(line);

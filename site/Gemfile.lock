@@ -94,13 +94,13 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rake (10.4.2)
-    rb-fsevent (0.9.6)
+    rb-fsevent (0.9.7)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
-    redcarpet (3.3.3)
+    redcarpet (3.3.4)
     ref (2.0.0)
     rouge (1.9.1)
-    sass (3.4.19)
+    sass (3.4.21)
     sprockets (2.12.4)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -138,3 +138,6 @@ DEPENDENCIES
   redcarpet (~> 3.3.2)
   rouge (~> 1.9.0)
   therubyracer (~> 0.12.1)
+
+BUNDLED WITH
+   1.11.2
