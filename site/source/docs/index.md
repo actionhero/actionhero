@@ -33,6 +33,7 @@ includes:
   - docs/core/logging
   - docs/core/plugins
   - docs/core/servers
+  - docs/core/localization
   - docs/core/api_object
 
   - docs/servers/web
