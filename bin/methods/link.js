@@ -44,8 +44,10 @@ exports.link = function(binary, next){
     fs.readdirSync(pluginConfigDir).forEach(function(pluginConfigFile){
       var content = fs.readFileSync(pluginConfigDir + path.sep + pluginConfigFile);
       var fileParts = pluginConfigFile.split(path.sep)
-      // TODO: config folders can be set by ENV... should we account for this?
       var localConfigFile = binary.projectRoot + path.sep + 'config' + path.sep + fileParts[(fileParts.length - 1)];
+      if(process.env.ACTIONHERO_CONFIG){
+        localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + fileParts[(fileParts.length - 1)];
+      }
       binary.utils.createFileSafely(localConfigFile, content);
     });
   }
