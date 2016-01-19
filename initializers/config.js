@@ -38,7 +38,7 @@ module.exports = {
       api.watchedFiles = [];
     };
 
-    if(api._startingParams.api){
+    if(api._startingParams && api._startingParams.api){
       api.utils.hashMerge(api, api._startingParams.api);
     }
 
@@ -152,73 +152,9 @@ module.exports = {
     configPaths.map(api.loadConfigDirectory);
 
     // apply any configChanges
-    if(api._startingParams.configChanges){
+    if(api._startingParams && api._startingParams.configChanges){
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
     }
-
-    var pluginActions      = [];
-    var pluginTasks        = [];
-    var pluginServers      = [];
-    var pluginInitializers = [];
-    var pluginPublics      = [];
-    var pluginLocales      = [];
-
-    //loop over it's plugins
-    api.config.general.paths.plugin.forEach(function(p){
-      api.config.general.plugins.forEach(function(plugin){
-        var pluginPackageBase = path.normalize(p + '/' + plugin);
-        if(api.projectRoot !== pluginPackageBase){
-          if(fs.existsSync(pluginPackageBase + '/config')){
-            //and merge the plugin config
-            api.loadConfigDirectory( pluginPackageBase + '/config', false);
-            //collect all paths that could have multiple target folders
-            pluginActions      = pluginActions.concat(api.config.general.paths.action);
-            pluginTasks        = pluginTasks.concat(api.config.general.paths.task);
-            pluginServers      = pluginServers.concat(api.config.general.paths.server);
-            pluginInitializers = pluginInitializers.concat(api.config.general.paths.initializer);
-            pluginPublics      = pluginPublics.concat(api.config.general.paths.public);
-            pluginLocales      = pluginLocales.concat(api.config.general.paths.locale);
-          }
-          //additionally add the following paths if they exists
-          if(fs.existsSync(pluginPackageBase + '/actions')){      pluginActions.unshift(      pluginPackageBase + '/actions'      );}
-          if(fs.existsSync(pluginPackageBase + '/tasks')){        pluginTasks.unshift(        pluginPackageBase + '/tasks'        );}
-          if(fs.existsSync(pluginPackageBase + '/servers')){      pluginServers.unshift(      pluginPackageBase + '/servers'      );}
-          if(fs.existsSync(pluginPackageBase + '/initializers')){ pluginInitializers.unshift( pluginPackageBase + '/initializers' );}
-          if(fs.existsSync(pluginPackageBase + '/public')){       pluginPublics.unshift(      pluginPackageBase + '/public'       );}
-          if(fs.existsSync(pluginPackageBase + '/locale')){       pluginPublics.unshift(      pluginPackageBase + '/locale'       );}
-        }
-      });
-    });
-
-    //now load the project config again to overrule plugin configs
-    configPaths.map(api.loadConfigDirectory);
-
-    //apply plugin paths for actions, tasks, servers and initializers
-    api.config.general.paths.action      = pluginActions.concat(api.config.general.paths.action);
-    api.config.general.paths.task        = pluginTasks.concat(api.config.general.paths.task);
-    api.config.general.paths.server      = pluginServers.concat(api.config.general.paths.server);
-    api.config.general.paths.initializer = pluginInitializers.concat(api.config.general.paths.initializer);
-    api.config.general.paths.public      = pluginPublics.concat(api.config.general.paths.public);
-    api.config.general.paths.locale      = pluginLocales.concat(api.config.general.paths.locale);
-
-    // the first plugin path shoud alawys be the local project
-    api.config.general.paths.public.reverse();
-
-    //finally re-merge starting params into the config
-    if(api._startingParams.configChanges){
-      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
-    }
-
-    // cleanup
-    api.config.general.paths.action      = api.utils.arrayUniqueify( api.config.general.paths.action.map(path.normalize) );
-    api.config.general.paths.task        = api.utils.arrayUniqueify( api.config.general.paths.task.map(path.normalize) );
-    api.config.general.paths.server      = api.utils.arrayUniqueify( api.config.general.paths.server.map(path.normalize) );
-    api.config.general.paths.initializer = api.utils.arrayUniqueify( api.config.general.paths.initializer.map(path.normalize) );
-    api.config.general.paths.public      = api.utils.arrayUniqueify( api.config.general.paths.public.map(path.normalize) );
-    api.config.general.paths.pid         = api.utils.arrayUniqueify( api.config.general.paths.pid.map(path.normalize) );
-    api.config.general.paths.log         = api.utils.arrayUniqueify( api.config.general.paths.log.map(path.normalize) );
-    api.config.general.paths.plugin      = api.utils.arrayUniqueify( api.config.general.paths.plugin.map(path.normalize) );
-    api.config.general.paths.locale      = api.utils.arrayUniqueify( api.config.general.paths.locale.map(path.normalize) );
 
     process.nextTick(next);
   },

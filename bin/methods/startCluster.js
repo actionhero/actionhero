@@ -361,7 +361,7 @@ ActionHeroCluster.prototype.work = function(){
 
 exports.startCluster = function(binary){
   var options = {
-    execPath: path.normalize(binary.paths.actionheroRoot + '/bin/actionhero'),
+    execPath: path.normalize(binary.actionheroRoot + '/bin/actionhero'),
     args: 'start',
     silent: (binary.argv.silent === 'true' || binary.argv.silent === true) ? true : false,
     expectedWorkers: binary.argv.workers,

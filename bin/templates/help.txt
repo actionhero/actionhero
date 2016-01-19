@@ -63,4 +63,8 @@ Descriptions:
   will open an interactive CLI with the API object in scope.
   this is sometimes called a REPL
 
+* actionhero link --name=[pluginName]
+  will link the actions, tasks, initializers, etc from a plugin into your top-level project
+  normally, you will have first installed the plugin via `npm install myPlugin`
+
 More Help & the actionhero documentation can be found @ http://www.actionherojs.com

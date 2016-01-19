@@ -4,7 +4,7 @@ exports.generateInitializer = function(binary, next){
 
   if(!binary.argv.name){ binary.utils.hardError('name is a required input'); }
 
-  var data = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/initializer.js');
+  var data = fs.readFileSync(binary.actionheroRoot + '/bin/templates/initializer.js');
   data = String(data);
 
   [
@@ -14,8 +14,7 @@ exports.generateInitializer = function(binary, next){
     data = data.replace(regex, binary.argv[v]);
   });
 
-  binary.utils.createFileSafely(binary.paths.config.initializer + '/' + binary.argv.name + '.js', data);
+  binary.utils.createFileSafely(binary.config.general.paths.initializer[0] + '/' + binary.argv.name + '.js', data);
 
-  next();
-
+  next(true);
 };

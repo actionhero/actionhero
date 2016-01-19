@@ -6,7 +6,7 @@ exports.generate = function(binary, next){
 
   var documents = {};
 
-  documents.projectMap = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/projectMap.txt');
+  documents.projectMap = fs.readFileSync(binary.actionheroRoot + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
     configApiJs          : '/config/api.js',
@@ -31,14 +31,14 @@ exports.generate = function(binary, next){
     exampleTest          : '/test/template.js.example'
   };
   for(var name in oldFileMap){
-    documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
+    documents[name] = fs.readFileSync(binary.actionheroRoot + oldFileMap[name]);
   }
 
   var AHversionNumber = JSON.parse(documents.packageJson).version;
 
-  documents.packageJson = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/package.json'));
+  documents.packageJson = String(fs.readFileSync(binary.actionheroRoot + '/bin/templates/package.json'));
   documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
-  documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
+  documents.readmeMd    = String(fs.readFileSync(binary.actionheroRoot + '/bin/templates/README.md'));
 
   // Add plugins (from --plugins argument) to the dedicated plugins config file
   var pluginsArrayContents='';
@@ -81,7 +81,7 @@ exports.generate = function(binary, next){
     '/tasks',
     '/test'
   ].forEach(function(dir){
-    binary.utils.createDirSafely(binary.paths.projectRoot + dir);
+    binary.utils.createDirSafely(binary.projectRoot + dir);
   });
 
   // make files
@@ -109,7 +109,7 @@ exports.generate = function(binary, next){
     '/test/example.js'                              : 'exampleTest'
   };
   for(var file in newFileMap){
-    binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
+    binary.utils.createFileSafely(binary.projectRoot + file, documents[newFileMap[file]]);
   }
 
   binary.log('');
@@ -118,6 +118,5 @@ exports.generate = function(binary, next){
   binary.log('you may need to run `npm install` to install some dependancies');
   binary.log('run \'npm start\' to start your server');
 
-  next();
-
+  next(true);
 };

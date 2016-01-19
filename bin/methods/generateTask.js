@@ -7,7 +7,7 @@ exports.generateTask = function(binary, next){
   if(!binary.argv.queue){ binary.argv.queue = 'default'; }
   if(!binary.argv.frequency){ binary.argv.frequency = 0; }
 
-  var data = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/task.js');
+  var data = fs.readFileSync(binary.actionheroRoot + '/bin/templates/task.js');
   data = String(data);
 
   [
@@ -20,8 +20,7 @@ exports.generateTask = function(binary, next){
     data = data.replace(regex, binary.argv[v]);
   });
 
-  binary.utils.createFileSafely(binary.paths.config.task + '/' + binary.argv.name + '.js', data);
+  binary.utils.createFileSafely(binary.config.general.paths.task[0] + '/' + binary.argv.name + '.js', data);
 
-  next();
-
+  next(true);
 };

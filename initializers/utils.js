@@ -5,7 +5,7 @@ module.exports = {
   loadPriority:  0,
   initialize: function(api, next){
 
-    api.utils = {};
+    if(!api.utils){ api.utils = {}; }
 
     ////////////////////////////////////////////////////////////////////////////
     // count the number of elements in a hash

@@ -97,7 +97,7 @@ actionhero.prototype.initialize = function(params, callback){
   // we need to load the config first
   [
     path.resolve( __dirname + '/initializers/' + 'utils.js'        ),
-    path.resolve( __dirname + '/initializers/' + 'configLoader.js' ),
+    path.resolve( __dirname + '/initializers/' + 'config.js' ),
   ].forEach(function(file){
     var filename = file.replace(/^.*[\\\/]/, '');
     var initializer = filename.split('.')[0];
