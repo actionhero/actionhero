@@ -141,64 +141,74 @@ if(process.env.actionheroRoot){
   binary.actionheroRoot = path.normalize(__dirname + '/../');
 }
 
+binary.argv = require('optimist').argv;
+
+binary.actions = {};
+
+fs.readdirSync(binary.actionheroRoot + '/bin/methods/').sort().forEach(function(file){
+  if(file.indexOf('.js') > 0){
+    var action = file.split('.')[0];
+    binary.actions[action] = require(binary.actionheroRoot + '/bin/methods/' + file)[action];
+  }
+});
+
+binary.mainAction = binary.argv._[0];
+if(!binary.mainAction){ binary.mainAction = 'start'; }
+
+binary.isDaemon = (binary.argv.isDaemon === 'true');
+
+var run = function(){
+  if(binary.actions[binary.mainAction]){
+    if(binary.argv.daemon){
+      var args = process.argv.splice(2);
+      for(var i in args){
+        if(args[i].indexOf('--daemon') >= 0){
+          args.splice(i, 1);
+          break;
+        }
+      }
+      args.push('--isDaemon=true');
+      var command = path.normalize(binary.actionheroRoot + '/bin/actionhero');
+      var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
+      // child.unref();
+      binary.log(command + ' ' + args.join(' '), 'info');
+      binary.log('spawned child process with pid ' + child.pid, 'notice');
+      setTimeout(process.exit, 1000);
+    } else if(binary.argv.isDaemon){
+      binary.logger.remove(winston.transports.Console);
+      binary.actions[binary.mainAction](binary, function(){});
+    } else {
+      binary.log('actionhero >> ' + binary.mainAction);
+      binary.log('project_root >> ' + path.normalize(binary.projectRoot), 'debug');
+      binary.log('actionheroRoot >> ' + path.normalize(binary.actionheroRoot), 'debug');
+      binary.actions[binary.mainAction](binary, function(toStop){
+        if(toStop === true){ process.exit(); }
+      });
+    }
+  } else {
+    binary.actions.unknownInput(binary, function(){});
+    process.exit(1);
+  }
+};
+
 // source the config paths from the project's config
 var utilLoader   = require(binary.actionheroRoot + '/initializers/utils.js');
 var configLoader = require(binary.actionheroRoot + '/initializers/config.js');
+
 utilLoader.initialize(binary, function(){
-  configLoader.initialize(binary, function(error){
-    if(error){ throw error; }
-
-    for(var type in binary.config.general.paths){
-      binary.config.general.paths[type] = binary.config.general.paths[type].map(path.normalize);
-    }
-
-    binary.argv = require('optimist').argv;
-
-    binary.actions = {};
-
-    fs.readdirSync(binary.actionheroRoot + '/bin/methods/').sort().forEach(function(file){
-      if(file.indexOf('.js') > 0){
-        var action = file.split('.')[0];
-        binary.actions[action] = require(binary.actionheroRoot + '/bin/methods/' + file)[action];
+  try{
+    configLoader.initialize(binary, function(error){
+      if(error){ throw error; }
+      for(var type in binary.config.general.paths){
+        binary.config.general.paths[type] = binary.config.general.paths[type].map(path.normalize);
       }
+      run();
     });
-
-    binary.mainAction = binary.argv._[0];
-    if(!binary.mainAction){ binary.mainAction = 'start'; }
-
-    binary.isDaemon = (binary.argv.isDaemon === 'true');
-
-    if(binary.actions[binary.mainAction]){
-      if(binary.argv.daemon){
-        var args = process.argv.splice(2);
-        for(var i in args){
-          if(args[i].indexOf('--daemon') >= 0){
-            args.splice(i, 1);
-            break;
-          }
-        }
-        args.push('--isDaemon=true');
-        var command = path.normalize(binary.actionheroRoot + '/bin/actionhero');
-        var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
-        // child.unref();
-        binary.log(command + ' ' + args.join(' '), 'info');
-        binary.log('spawned child process with pid ' + child.pid, 'notice');
-        setTimeout(process.exit, 1000);
-      } else if(binary.argv.isDaemon){
-        binary.logger.remove(winston.transports.Console);
-        binary.actions[binary.mainAction](binary, function(){});
-      } else {
-        binary.log('actionhero >> ' + binary.mainAction);
-        binary.log('project_root >> ' + path.normalize(binary.projectRoot), 'debug');
-        binary.log('actionheroRoot >> ' + path.normalize(binary.actionheroRoot), 'debug');
-        binary.actions[binary.mainAction](binary, function(toStop){
-          if(toStop === true){ process.exit(); }
-        });
-      }
-    } else {
-      binary.actions.unknownInput(binary, function(){});
-      process.exit(1);
+  }catch(e){
+    if(e.message.match(/No config directory found in this project/)){
+      run();
+    }else{
+      throw e;
     }
-
-  });
+  }
 });

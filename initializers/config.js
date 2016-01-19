@@ -80,13 +80,13 @@ module.exports = {
       }
     }
 
-    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) {
-      addConfigPath(entry, false);
-    });
-    if (configPaths.length < 1) {
+    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) { addConfigPath(entry, false); });
+
+    if(configPaths.length < 1) {
       addConfigPath('config', false);
     }
-    if (configPaths.length < 1) {
+
+    if(configPaths.length < 1) {
       throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
     }
 
