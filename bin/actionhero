@@ -27,10 +27,14 @@ binary.logger = new(winston.Logger)({
   transports: transports
 });
 
-binary.log = function(message, severity){
+binary.log = function(message, severity, metadata){
   if(binary.argv.silent !== 'true'){
     if(!severity){ severity = 'info'; }
-    binary.logger.log(severity, message);
+    if(metadata){
+      binary.logger.log(severity, message, metadata);
+    }else{
+      binary.logger.log(severity, message);
+    }
   }
 };
 
@@ -85,6 +89,14 @@ binary.utils = {
       fs.writeFileSync(path.normalize(file), data);
     }
   },
+  createSymlinkSafely: function(destination, source){
+    if(binary.utils.dirExists(destination)){
+      binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
+    } else {
+      binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
+      fs.symlinkSync(source, destination);
+    }
+  },
   hashLength: function(obj){
     var size = 0, key;
     for(key in obj){
@@ -135,6 +147,10 @@ var configLoader = require(binary.actionheroRoot + '/initializers/config.js');
 utilLoader.initialize(binary, function(){
   configLoader.initialize(binary, function(error){
     if(error){ throw error; }
+
+    for(var type in binary.config.general.paths){
+      binary.config.general.paths[type] = binary.config.general.paths[type].map(path.normalize);
+    }
 
     binary.argv = require('optimist').argv;
 
