@@ -281,20 +281,20 @@ exports.default = function(api) {
 
 This would create both `/api/myAction/old` and `/api/myAction/new`, mapping to apiVersion 1 and 2 respectively.
 
-Finally, you can toggle an option, `matchTrailingPathParts`, which allows the final segment of your route to absorb all trailing path parts in a matched variable.   
+Finally, you can toggle an option, `matchTrailingPathParts`, which allows the final segment of your route to absorb all trailing path parts in a matched variable.
 
 
 ```javascript
 post: [
   // yes match: site.com/api/123
   // no match: site.com/api/123/admin
-  { path: '/login/:userId(/.*/)', action: 'login' }
+  { path: '/login/:userId(.*)', action: 'login' }
 ],
 
 post: [
   // yes match: site.com/api/123
   // yes match: site.com/api/123/admin
-  { path: '/login/:userId(/.*/)', action: 'login', matchTrailingPathParts: true }
+  { path: '/login/:userId(.*)', action: 'login', matchTrailingPathParts: true }
 ],
 ```
 
@@ -302,7 +302,7 @@ This also enables "catch all" routes, like:
 
 ```javascript
 get: [
-  { path: ':path(/.*/)', action: 'catchAll', matchTrailingPathParts: true }
+  { path: ':path(.*)', action: 'catchAll', matchTrailingPathParts: true }
 ],
 ```
 
@@ -311,9 +311,11 @@ If you have a route with multiple variables defined and `matchTrailingPathParts`
 ```javascript
 get: [
   // the route site.com/users/123/should/do/a/thing would become {userId: 123, path: '/should/do/a/thing'}
-  { path: '/users/:userId/:path(/.*/)', action: 'catchAll', matchTrailingPathParts: true }
+  { path: '/users/:userId/:path(.*)', action: 'catchAll', matchTrailingPathParts: true }
 ],
 ```
+
+**Note**: In regular expressions used for routing, you cannot use the "/" character.   
 
 #### Notes
 
