@@ -94,7 +94,7 @@ binary.utils = {
       binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
     } else {
       binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
-      fs.symlinkSync(source, destination);
+      fs.symlinkSync(source, destination, 'dir');
     }
   },
   hashLength: function(obj){
