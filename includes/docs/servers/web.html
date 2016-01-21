@@ -270,32 +270,34 @@ Lets start with actionhero&rsquo;s default config:</p>
 
 <p>This would create both <code class="prettyprint">/api/myAction/old</code> and <code class="prettyprint">/api/myAction/new</code>, mapping to apiVersion 1 and 2 respectively.</p>
 
-<p>Finally, you can toggle an option, <code class="prettyprint">matchTrailingPathParts</code>, which allows the final segment of your route to absorb all trailing path parts in a matched variable.   </p>
+<p>Finally, you can toggle an option, <code class="prettyprint">matchTrailingPathParts</code>, which allows the final segment of your route to absorb all trailing path parts in a matched variable.</p>
 <pre class="highlight javascript"><code><span class="nx">post</span><span class="err">:</span> <span class="p">[</span>
   <span class="c1">// yes match: site.com/api/123</span>
   <span class="c1">// no match: site.com/api/123/admin</span>
-  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(.*)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span> <span class="p">}</span>
 <span class="p">],</span>
 
 <span class="nx">post</span><span class="err">:</span> <span class="p">[</span>
   <span class="c1">// yes match: site.com/api/123</span>
   <span class="c1">// yes match: site.com/api/123/admin</span>
-  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/login/:userId(.*)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'login'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
 <span class="p">],</span>
 </code></pre>
 
 <p>This also enables &ldquo;catch all&rdquo; routes, like:</p>
 <pre class="highlight javascript"><code><span class="nx">get</span><span class="err">:</span> <span class="p">[</span>
-  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">':path(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">':path(.*)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
 <span class="p">],</span>
 </code></pre>
 
 <p>If you have a route with multiple variables defined and <code class="prettyprint">matchTrailingPathParts</code> is true, only the final segment will match the trailing sections:</p>
 <pre class="highlight javascript"><code><span class="nx">get</span><span class="err">:</span> <span class="p">[</span>
   <span class="c1">// the route site.com/users/123/should/do/a/thing would become {userId: 123, path: '/should/do/a/thing'}</span>
-  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/users/:userId/:path(/.*/)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="na">path</span><span class="p">:</span> <span class="s1">'/users/:userId/:path(.*)'</span><span class="p">,</span> <span class="na">action</span><span class="p">:</span> <span class="s1">'catchAll'</span><span class="p">,</span> <span class="na">matchTrailingPathParts</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
 <span class="p">],</span>
 </code></pre>
+
+<p><strong>Note</strong>: In regular expressions used for routing, you cannot use the &ldquo;/&rdquo; character.   </p>
 
 <h4 id="notes">Notes</h4>
 
