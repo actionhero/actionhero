@@ -290,6 +290,72 @@ a:focus {
     background-color: #176e61;
 }
 
+.ad-section {
+    width: 100%;
+    margin-top: -30px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: url(/img/ads-background.jpg) no-repeat center center scroll;
+    background-color: #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+
+.carbon-poweredby:after {
+    content: " ~ ads support actionhero development"
+}
+
+#carbonads {
+  margin: 0 auto;
+  padding: 1.5em 1em;
+  max-width: 29em;
+  background: hsla(0, 0%, 0%, .5);
+  font-size: .9em;
+  font-family: Verdana, sans-serif;
+  line-height: 1.5;
+}
+
+#carbonads span,
+#carbonads a {
+  display: block !important;
+  overflow: hidden;
+}
+
+#carbonads a { color: orange;}
+#carbonads a:hover { text-decoration: underline; }
+
+.carbon-text,
+.carbon-poweredby {
+  font-size: inherit !important;
+}
+
+.carbon-img {
+  margin-bottom: .5em;
+}
+
+.carbon-text {
+  margin-bottom: .2em;
+}
+
+.carbon-poweredby {
+  font-size: .9em !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .download-section {
     width: 100%;
     padding: 50px 0;

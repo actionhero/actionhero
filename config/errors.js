@@ -1,9 +1,47 @@
 // error messages can be strings of objects
+var util = require('util');
 
 exports.default = {
   errors: function(api){
     return {
       '_toExpand': false,
+
+      /////////////////
+      // SERIALIZERS //
+      /////////////////
+
+      serializers: {
+        servers: {
+          web: function(error){
+            if(util.isError(error)){
+              return String( error.message ); 
+            }else{
+              return error;
+            }
+          },
+          websocket: function(error){
+            if(util.isError(error)){
+              return String( error.message ); 
+            }else{
+              return error;
+            }
+          },
+          socket: function(error){
+            if(util.isError(error)){
+              return String( error.message ); 
+            }else{
+              return error;
+            }
+          },
+          specHelper: function(error){
+            if(util.isError(error)){
+              return 'Error: ' + String( error.message ); 
+            }else{
+              return error;
+            }
+          },
+        }
+      },
 
       ////////////////////
       // GENERAL ERRORS //

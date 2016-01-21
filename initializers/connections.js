@@ -78,10 +78,6 @@ module.exports = {
     api.connection = function(data){
       var self = this;
       self.setup(data)
-      api.stats.increment('connections:totalActiveConnections');
-      api.stats.increment('connections:activeConnections:' + self.type);
-      api.stats.increment('connections:totalConnections');
-      api.stats.increment('connections:connections:' + self.type);
       api.connections.connections[self.id] = self;
 
       api.connections.globalMiddleware.forEach(function(middlewareName){
@@ -99,8 +95,21 @@ module.exports = {
         self.id = self.generateID();
       }
       self.connectedAt = new Date().getTime();
-      ['type', 'remotePort', 'remoteIP', 'rawConnection'].forEach(function(req){
+      
+      ['type', 'rawConnection'].forEach(function(req){
         if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
+        self[req] = data[req];
+      });
+
+      
+      ['remotePort', 'remoteIP'].forEach(function(req){
+        if(data[req] === null || data[req] === undefined){ 
+          if(api.config.general.enforceConnectionProperties === true){
+            throw new Error(req + ' is required to create a new connection object') 
+          }else{
+            data[req] = 0; // could be a random uuid as well?
+          }
+        }
         self[req] = data[req];
       });
 
@@ -143,8 +152,6 @@ module.exports = {
         }
       });
 
-      api.stats.increment('connections:totalActiveConnections', -1);
-      api.stats.increment('connections:activeConnections:' + self.type, -1);
       if(self.canChat === true){ 
         self.rooms.forEach(function(room){
           api.chatRoom.removeMember(self.id, room); 

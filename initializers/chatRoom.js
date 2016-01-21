@@ -36,8 +36,6 @@ module.exports = {
         if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionRoomAndMessage() ); }) }
       }else if(connection.rooms === undefined || connection.rooms.indexOf(room) > -1){
         if(connection.id === undefined){ connection.id = 0 }
-        api.stats.increment('chatRoom:messagesSent');
-        api.stats.increment('chatRoom:messagesSent:' + room);
         var payload = {
           messageType: 'chat',
           serverToken: api.config.general.serverToken,
@@ -49,8 +47,26 @@ module.exports = {
             room: room
           }
         };
-        api.redis.publish(payload);
-        if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+        var messagePayload = api.chatRoom.generateMessagePayload(payload);
+        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, newPayload){
+          if(err){
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(err); }) }
+          } else {
+            var payloadToSend = {
+              messageType: 'chat',
+              serverToken: api.config.general.serverToken,
+              serverId: api.id,
+              message: newPayload.message,
+              sentAt: newPayload.sentAt,
+              connection: {
+                id: newPayload.from,
+                room: newPayload.room
+              }
+            };
+            api.redis.publish(payloadToSend);
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(null); }) }
+          }
+        });
       } else {
         if(typeof callback === 'function'){ process.nextTick(function(){ callback( api.config.errors.connectionNotInRoom(room) ); }) }
       }
@@ -67,16 +83,18 @@ module.exports = {
     }
 
     api.chatRoom.incomingMessage = function(message){
-      api.stats.increment('chatRoom:messagesReceived');
       var messagePayload = api.chatRoom.generateMessagePayload(message);
       for(var i in api.connections.connections){
-        var thisConnection = api.connections.connections[i];
-        if(thisConnection.canChat === true){
-          if(thisConnection.rooms.indexOf(messagePayload.room) > -1){
-            api.chatRoom.handleCallbacks(thisConnection, messagePayload.room, 'say', messagePayload, function(err, newMessagePaylaod){
-              if(!err){ thisConnection.sendMessage(newMessagePaylaod, 'say'); }
-            });
-          }
+        api.chatRoom.incomingMessagePerConnection(api.connections.connections[i], messagePayload);
+      }
+    }
+
+    api.chatRoom.incomingMessagePerConnection = function(connection, messagePayload){
+      if(connection.canChat === true){
+        if(connection.rooms.indexOf(messagePayload.room) > -1){
+          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(err, newMessagePayload){
+            if(!err){ connection.sendMessage(newMessagePayload, 'say'); }
+          });
         }
       }
     }
@@ -181,7 +199,6 @@ module.exports = {
                   var memberDetails = api.chatRoom.generateMemberDetails( connection );
                   api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
                     connection.rooms.push(room);
-                    api.stats.increment('chatRoom:roomMembers:' + room);
                     if(typeof callback === 'function'){ callback(null, true); }
                   });
                 }
@@ -208,7 +225,6 @@ module.exports = {
                 if(err){
                   callback(err, false);
                 }else{
-                  api.stats.increment('chatRoom:roomMembers:' + room, -1);
                   api.redis.client.hdel(api.chatRoom.keys.members + room, connection.id, function(){
                     var index = connection.rooms.indexOf(room);
                     if(index > -1){ connection.rooms.splice(index, 1); }
@@ -229,16 +245,17 @@ module.exports = {
     }
 
     api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, next){
-      var newMessagePaylaod = messagePayload;
       var jobs = [];
+      var newMessagePayload;
+      if(messagePayload){ newMessagePayload = api.utils.objClone( messagePayload ); }
 
       api.chatRoom.globalMiddleware.forEach(function(name){
         var m = api.chatRoom.middleware[name]
         if(typeof m[direction] === 'function' ){
           jobs.push( function(callback){
             if(messagePayload){
-              m[direction](connection, room, newMessagePaylaod, function(err, data){
-                if(data){ newMessagePaylaod = data; }
+              m[direction](connection, room, newMessagePayload, function(err, data){
+                if(data){ newMessagePayload = data; }
                 callback(err, data)
               });
             }else{
@@ -251,9 +268,9 @@ module.exports = {
       async.series(jobs, function(err, data){
         while(data.length > 0){
           var thisData = data.shift();
-          if(thisData){ newMessagePaylaod = thisData; }
+          if(thisData){ newMessagePayload = thisData; }
         }
-        next(err, newMessagePaylaod)
+        next(err, newMessagePayload)
       });
     }
 

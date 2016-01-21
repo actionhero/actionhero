@@ -258,8 +258,8 @@ var initialize = function(api, options, next){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
       }
 
-      if(data.response.error && util.isError(data.response.error)){
-        data.response.error = String( data.response.error.message ); 
+      if(data.response.error){
+        data.response.error = api.config.errors.serializers.servers.web(data.response.error);
       }
       
       var stringResponse = '';

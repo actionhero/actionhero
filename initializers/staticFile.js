@@ -51,7 +51,6 @@ module.exports = {
             var fileStream = fs.createReadStream(file);
             var start = new Date().getTime();
             fileStream.on('close', function(){
-              api.stats.increment('staticFiles:filesSent');
               var duration = new Date().getTime() - start;
               self.logRequest(file, connection, length, duration, true);
             });
@@ -65,7 +64,6 @@ module.exports = {
 
       sendFileNotFound: function(connection, errorMessage, callback){
         var self = this;
-        api.stats.increment('staticFiles:failedFileRequests');
         connection.error = new Error(errorMessage);
         self.logRequest('{404: not found}', connection, null, null, false);
         callback(connection, api.config.errors.fileNotFound(), null, 'text/html', api.config.errors.fileNotFound().length);

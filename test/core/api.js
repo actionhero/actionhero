@@ -45,7 +45,6 @@ describe('Core: API', function(){
     });
 
     api.config.should.be.an.instanceOf(Object);
-    api.stats.should.be.an.instanceOf(Object);
 
     done();
   });
@@ -198,7 +197,7 @@ describe('Core: API', function(){
       api.specHelper.runAction('testAction', {requiredParam: false }, function(response){
         response.params.requiredParam.should.equal(false);
         api.specHelper.runAction('testAction', {requiredParam: [] }, function(response){
-          response.params.requiredParam.should.be.Array.and.be.empty;
+          response.params.requiredParam.should.eql( [] );
           done();
         });
       });

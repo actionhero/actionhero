@@ -85,15 +85,22 @@ module.exports = {
     for(var server in api.servers.servers){
       started++;
       (function(server){
-        api.log('stopping server: ' + server, 'notice');
-        api.servers.servers[server].stop(function(error){
-          if(error){ return next(error); }
+        if((api.config.servers[server] && api.config.servers[server].enabled === true) || !api.config.servers[server]){
+          api.log('stopping server: ' + server, 'notice');
+          api.servers.servers[server].stop(function(error){
+            if(error){ return next(error); }
+            process.nextTick(function(){
+              api.log('server stopped: ' + server, 'debug');
+              started--;
+              if(started === 0){ next() }
+            });
+          });
+        }else{
           process.nextTick(function(){
-            api.log('server stopped: ' + server, 'debug');
             started--;
             if(started === 0){ next() }
           });
-        });
+        }
       })(server)
     }
   }

@@ -327,7 +327,155 @@ describe('Server: Web Socket', function(){
         });
       });
     });
-    
+
+    describe('middleware - say and onSayReceive', function() {
+      before(function(done){
+        clientA.roomAdd('defaultRoom',function(){
+          clientB.roomAdd('defaultRoom',function(){
+            clientC.roomAdd('defaultRoom',function(){
+              setTimeout(function(){ // timeout to skip welcome messages as clients join rooms
+                done();
+              }, 100);
+            });
+          });
+        });
+      });
+
+      after(function(done){
+        clientA.roomLeave('defaultRoom',function(){
+          clientB.roomLeave('defaultRoom',function(){
+            clientC.roomLeave('defaultRoom',function(){
+              done();
+            });
+          });
+        });
+      });
+
+      afterEach(function(done){
+        api.chatRoom.middleware = {};
+        api.chatRoom.globalMiddleware = [];
+
+        done();
+      });
+
+      it('each listener receive custom message', function(done){
+        api.chatRoom.addMiddleware({
+          name: 'say for each',
+          say: function(connection, room, messagePayload, callback){
+            messagePayload.message+= ' - To: ' + connection.id;
+            callback(null, messagePayload);
+          }
+        });
+
+        var listenerA = function(response){
+          clientA.removeListener('say', listenerA);
+          response.message.should.equal('Test Message - To: ' + clientA.id); // clientA.id (Receiever)
+        };
+
+        var listenerB = function(response){
+          clientB.removeListener('say', listenerB);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Receiever)
+        };
+
+        var listenerC = function(response){
+          clientC.removeListener('say', listenerC);
+          response.message.should.equal('Test Message - To: ' + clientC.id); // clientC.id (Receiever)
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
+        clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          done();
+        }, 1000)
+      });
+
+      it('only one message should be received per connection', function(done){
+        var firstSayCall = true;
+        api.chatRoom.addMiddleware({
+          name: 'first say middleware',
+          say: function(connection, room, messagePayload, callback){
+            if (firstSayCall) {
+              firstSayCall = false;
+              setTimeout(function() {
+                callback();
+              }, 200);
+            } else {
+              callback();
+            }
+          }
+        });
+
+        var messagesReceived = 0;
+        var listenerA = function(response){
+          messagesReceived+=1;
+        };
+
+        var listenerB = function(response){
+          messagesReceived+=2;
+        };
+
+        var listenerC = function(response){
+          messagesReceived+= 4;
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
+        clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          messagesReceived.should.equal(7);
+          done();
+        }, 1000)
+      });
+
+      it('each listener receive same custom message', function(done){
+        api.chatRoom.addMiddleware({
+          name: 'say for each',
+          onSayReceive: function(connection, room, messagePayload, callback){
+            messagePayload.message+= ' - To: ' + connection.id;
+            callback(null, messagePayload);
+          }
+        });
+
+        var listenerA = function(response){
+          clientA.removeListener('say', listenerA);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
+        };
+
+        var listenerB = function(response){
+          clientB.removeListener('say', listenerB);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
+        };
+
+        var listenerC = function(response){
+          clientC.removeListener('say', listenerC);
+          response.message.should.equal('Test Message - To: ' + clientB.id); // clientB.id (Sender)
+        };
+
+        clientA.on('say', listenerA);
+        clientB.on('say', listenerB);
+        clientC.on('say', listenerC);
+        clientB.say('defaultRoom', 'Test Message');
+
+        setTimeout(function(){
+          clientA.removeListener('say', listenerA);
+          clientB.removeListener('say', listenerB);
+          clientC.removeListener('say', listenerC);
+          done();
+        }, 1000)
+      });
+    });
+
     describe('custom room member data', function(){
 
       var currentSanitize;
@@ -338,7 +486,7 @@ describe('Server: Web Socket', function(){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            
+
             for( var key in response.data.members ){
               ( response.data.members[key].type === undefined ).should.eql(true);
             }
@@ -370,10 +518,10 @@ describe('Server: Web Socket', function(){
       after(function(done){
         api.chatRoom.joinCallbacks  = {};
         api.chatRoom.leaveCallbacks = {};
-        
+
         api.chatRoom.sanitizeMemberDetails = currentSanitize;
         api.chatRoom.generateMemberDetails = currentGenerate;
-                
+
         //Check that everything is back to normal
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -389,7 +537,7 @@ describe('Server: Web Socket', function(){
           });
         });
       });
-    
+
       it('should view non-default member data', function(done){
         clientA.roomAdd('defaultRoom',function(){
           clientA.roomView('defaultRoom', function(response){
@@ -401,17 +549,9 @@ describe('Server: Web Socket', function(){
             done();
           });
         })
-      }); 
-    
+      });
+
     });
-
-  });
-
-  describe('fingerprint', function(){
-    
-    // TODO: Cannot test socket within a browser context
-    // public/linkedSession.html has been provided as an example for now
-    it('will have the same fingerprint as the browser cookie which spawned the connection');
 
   });
 
@@ -454,7 +594,7 @@ describe('Server: Web Socket', function(){
         clientA.disconnect();
         clientB.disconnect();
         clientC.disconnect();
-      }catch(e){} 
+      }catch(e){}
 
       connectClients(function(){
         clientA.connect();
@@ -478,7 +618,7 @@ describe('Server: Web Socket', function(){
     it('can be sent disconnect events from the server', function(done){
       clientA.detailsView(function(response){
         response.data.remoteIP.should.equal('127.0.0.1');
-        
+
         var count = 0
         for(var id in api.connections.connections){
           count++;

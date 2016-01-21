@@ -6,6 +6,7 @@ node_js:
   - "0.10"
   - "0.12"
   - "iojs"
+  - "4.0"
 
 env:
   - "FAKEREDIS=true  ACTIONDOMAINS=true"
@@ -15,8 +16,8 @@ env:
 
 os:
   - linux
-  - osx
-  - windows
+  # - osx
+  # - windows
 
 script: npm run-script test-travis
 

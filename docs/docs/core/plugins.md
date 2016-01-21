@@ -72,6 +72,7 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 
 # Published Plugins
 
+- [ah-stats-plugin](https://github.com/evantahler/ah-stats-plugin) Stats Integration (redis backed)
 - [ah-airbrake-plugin](https://github.com/evantahler/ah-airbrake-plugin) Airbrake Integration
 - [ah-newrelic-plugin](https://github.com/evantahler/ah-newrelic-plugin) NewRelic Integration
 - [ah-sequelize-plugin](https://github.com/evantahler/ah-sequelize-plugin) Sequelize Integration for mySQL or Postgres
@@ -82,3 +83,4 @@ Then, in `api.config.general.plugins`, add the name of your plugin, in this case
 - [ah-jwtauth-plugin](https://github.com/lookaflyingdonkey/ah-jwtauth-plugin) JSON Web Token Authentication
 - [ah-mongoose-plugin](https://github.com/lookaflyingdonkey/ah-mongoose-plugin) Mongoose Model Loader
 - [ah-xsignature-plugin](https://github.com/lookaflyingdonkey/ah-xsignature-plugin) Content Checksum for Actions
+- [ah-swagger-plugin](https://github.com/supamii/ah-swagger-plugin) Swagger UI Documentation

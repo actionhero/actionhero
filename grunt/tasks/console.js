@@ -1,4 +1,4 @@
-var repl = require('repl');
+var REPL = require('repl');
 
 module.exports = function(grunt) {
   
@@ -6,34 +6,36 @@ module.exports = function(grunt) {
     var done = this.async();
     grunt.startActionhero(function(api, actionhero){
 
-      // note this REPL will not run start commands, only the intilizers     
-      var r = repl.start({
-        prompt: '',
-        useGlobal: false
-      });
-      
-      r.on('exit', function(){
-        done();
-      });
-      
-      r.outputStream.write('*** STARTING ACTIONHERO REPL ***\r\n\r\n');
-      
-      r.prompt = '[ AH::' + api.env + ' ] >> ';
-      
+      // note this REPL will not run start commands, only the intilizers
+      // nor will it run any servers    
+            
       for(var i in api.config.servers){
         api.config.servers[i].enabled = false;
       }
-
-      api.config.tasks.scheduler = false;
-      api.config.tasks.queues    = [];
-      
-      r.context.api = api;
-      
+      api.config.general.developmentMode = false;
+      api.config.tasks.scheduler         = false;
+      api.config.tasks.queues            = [];
+            
       actionhero.start(function(){
-        r.outputStream.write('\r\n\r\n');
-        r.outputStream.write('*** REPL READY ***\r\n\r\n');
-        r.outputStream.write(r.prompt);
-      });
+
+        setTimeout(function(){
+
+          var repl = REPL.start({
+            prompt:    '[ AH::' + api.env + ' ] >> ',
+            input:     process.stdin,
+            output:    process.stdout,
+            useGlobal: false
+          });
+
+          repl.context.api        = api;
+          repl.context.actionhero = actionhero;
+
+          repl.on('exit', function(){ 
+            done(); 
+          });
+
+        }, 1000); // to leave time for the "cluster member joined" messages
+      }); 
       
     }, true);
   });
