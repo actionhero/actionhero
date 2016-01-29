@@ -197,7 +197,7 @@ module.exports = {
         } else if(verb === 'paramAdd'){
           key = words[0];
           value = words[1];
-          if(words[0].indexOf('=') >= 0){
+          if((words[0]) && (words[0].indexOf('=') >= 0)){
             var parts = words[0].split('=');
             key = parts[0];
             value = parts[1];
