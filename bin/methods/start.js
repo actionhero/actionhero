@@ -3,7 +3,7 @@ var readline = require('readline');
 var os = require('os');
 
 exports.start = function(binary, next){
-  var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
 
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
@@ -114,5 +114,7 @@ exports.start = function(binary, next){
   }
 
   // start the server!
-  startServer(next);
+  startServer(function(){
+    next(false);
+  });
 };

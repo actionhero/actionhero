@@ -6,11 +6,10 @@ exports.generate = function(binary, next){
 
   var documents = {};
 
-  documents.projectMap = fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/projectMap.txt');
+  documents.projectMap = fs.readFileSync(binary.actionheroRoot + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
     configApiJs          : '/config/api.js',
-    configPluginsJs      : '/bin/templates/plugins.js',
     configLoggerJs       : '/config/logger.js',
     configRedisJs        : '/config/redis.js',
     configTasksJs        : '/config/tasks.js',
@@ -31,34 +30,14 @@ exports.generate = function(binary, next){
     exampleTest          : '/test/template.js.example'
   };
   for(var name in oldFileMap){
-    documents[name] = fs.readFileSync(binary.paths.actionheroRoot + oldFileMap[name]);
+    documents[name] = fs.readFileSync(binary.actionheroRoot + oldFileMap[name]);
   }
 
   var AHversionNumber = JSON.parse(documents.packageJson).version;
 
-  documents.packageJson = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/package.json'));
+  documents.packageJson = String(fs.readFileSync(binary.actionheroRoot + '/bin/templates/package.json'));
   documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
-  documents.readmeMd    = String(fs.readFileSync(binary.paths.actionheroRoot + '/bin/templates/README.md'));
-
-  // Add plugins (from --plugins argument) to the dedicated plugins config file
-  var pluginsArrayContents='';
-  if(binary.argv.plugins)
-  {
-    var pluginsArg=binary.argv.plugins.split(',');
-
-    pluginsArg.forEach(function(dep)
-    {
-      // if(dep.match(/^ah-.*-plugin$/g)!==null)
-      if(typeof(dep)==='string')
-      {
-        pluginsArrayContents+='"'+dep.trim()+'",\n';
-      }
-    });
-
-    pluginsArrayContents=pluginsArrayContents.trim();
-  }
-
-  documents.configPluginsJs = String(documents.configPluginsJs).replace('\'%%REPLACE%%\'', pluginsArrayContents);
+  documents.readmeMd    = String(fs.readFileSync(binary.actionheroRoot + '/bin/templates/README.md'));
 
   //////// LOGIC ////////
 
@@ -70,7 +49,6 @@ exports.generate = function(binary, next){
     '/pids',
     '/config',
     '/config/servers',
-    '/config/plugins',
     '/initializers',
     '/log',
     '/servers',
@@ -81,13 +59,12 @@ exports.generate = function(binary, next){
     '/tasks',
     '/test'
   ].forEach(function(dir){
-    binary.utils.createDirSafely(binary.paths.projectRoot + dir);
+    binary.utils.createDirSafely(binary.projectRoot + dir);
   });
 
   // make files
   var newFileMap = {
     '/config/api.js'                                : 'configApiJs',
-    '/config/plugins.js'                            : 'configPluginsJs',
     '/config/logger.js'                             : 'configLoggerJs',
     '/config/redis.js'                              : 'configRedisJs',
     '/config/tasks.js'                              : 'configTasksJs',
@@ -109,15 +86,14 @@ exports.generate = function(binary, next){
     '/test/example.js'                              : 'exampleTest'
   };
   for(var file in newFileMap){
-    binary.utils.createFileSafely(binary.paths.projectRoot + file, documents[newFileMap[file]]);
+    binary.utils.createFileSafely(binary.projectRoot + file, documents[newFileMap[file]]);
   }
 
   binary.log('');
   binary.log('Generation Complete.  Your project directory should look like this:\n' + documents.projectMap);
   binary.log('');
-  binary.log('you may need to run `npm install` to install some dependancies');
+  binary.log('you may need to run `npm install` to install some dependancies', 'alert');
   binary.log('run \'npm start\' to start your server');
 
-  next();
-
+  next(true);
 };

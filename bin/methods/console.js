@@ -1,7 +1,7 @@
 var REPL = require('repl');
 
 exports.console = function(binary, next){
-  var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
 
   var configChanges = {
@@ -29,7 +29,7 @@ exports.console = function(binary, next){
         repl.context.actionhero = actionhero;
 
         repl.on('exit', function(){
-          process.exit();
+          next(true);
         });
       }, 1000); // to leave time for the "cluster member joined" messages
     });

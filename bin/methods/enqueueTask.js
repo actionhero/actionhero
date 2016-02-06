@@ -1,5 +1,5 @@
 exports.enqueueTask = function(binary, next){
-  var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
   var configChanges = { logger: {transports: null} };
 
@@ -19,11 +19,10 @@ exports.enqueueTask = function(binary, next){
       api.tasks.enqueue(binary.argv.name, args, function(error, toRun){
         if(error){
           binary.log(error, 'alert');
-          process.exit(1);
         }else{
           binary.log(toRun);
-          process.exit();
         }
+        next(true);
       });
     });
   });

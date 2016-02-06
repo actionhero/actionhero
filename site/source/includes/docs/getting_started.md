@@ -53,9 +53,11 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 
 |- config
 | -- api.js
+| -- errors.js
+| -- i18n.js
 | -- logger.js
 | -- redis.js
-| -- stats.js
+| -- routes.js
 | -- tasks.js
 | -- servers
 | ---- web.js
@@ -87,11 +89,13 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 |- tasks
 |-- (your tasks)
 |
+|- locales
+|-- (translation files)
+|
 |- tests
 |-- (tests for your API)
 |
 readme.md
-routes.js
 package.json (be sure to include 'actionhero':'x')
 ```
 

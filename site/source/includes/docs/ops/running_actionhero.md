@@ -17,6 +17,7 @@ Binary options:
 * actions
 * enqueueTask
 * console
+* link
 
 Descriptions:
 

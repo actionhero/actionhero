@@ -1,5 +1,5 @@
 exports.actions = function(binary, next){
-  var ActionheroPrototype = require(binary.paths.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
   var actionhero = new ActionheroPrototype();
   var configChanges = { logger: {transports: null} };
 
@@ -20,6 +20,6 @@ exports.actions = function(binary, next){
       }
     }
 
-    process.exit();
+    next(true);
   });
 };

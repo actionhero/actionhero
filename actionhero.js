@@ -97,7 +97,7 @@ actionhero.prototype.initialize = function(params, callback){
   // we need to load the config first
   [
     path.resolve( __dirname + '/initializers/' + 'utils.js'        ),
-    path.resolve( __dirname + '/initializers/' + 'configLoader.js' ),
+    path.resolve( __dirname + '/initializers/' + 'config.js' ),
   ].forEach(function(file){
     var filename = file.replace(/^.*[\\\/]/, '');
     var initializer = filename.split('.')[0];
@@ -110,13 +110,12 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.configInitializers.push( function(){
     var customInitializers = [];
-    var recursiveGlob = self.api.utils.recursiveDirectoryGlob;
     self.api.config.general.paths.initializer.forEach(function(startPath) {
-      customInitializers = customInitializers.concat(recursiveGlob(startPath));
+      customInitializers = customInitializers.concat(self.api.utils.recursiveDirectoryGlob(startPath));
     });
     // load all other initializers
     self.api.utils.arrayUniqueify(
-      recursiveGlob(__dirname + path.sep + 'initializers')
+      self.api.utils.recursiveDirectoryGlob(__dirname + path.sep + 'initializers')
       .sort()
       .concat(
         customInitializers
