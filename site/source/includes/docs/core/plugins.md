@@ -6,7 +6,9 @@ Plugins are loaded after all local actionhero project files, but initializers fo
 
 ## Including Plugins
 
-`api.config.general.paths.plugin` (loaded from `/config/api.js`) is an array which contains the search path for your plugins.  This will default to `./node_modules`, but you can add a local path to your project.  Once you have the plugin search paths set up, you use `api.config.general.plugins` (loaded from `/config/plugins.js`) to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.
+`api.config.general.paths.plugin` (loaded from `/config/api.js`) is an array which contains the search path for your plugins.  This will default to `./node_modules`, but you can add a local path to your project.  Once you have the plugin search paths set up, you use `npm run actionhero link --name nameOfPlugin` to crete links in your top-level project to the plugin.  This will also copy over any config files from the plugin into your project so you can modify them.  The act of "linking" simply creates a `myPLugin.link` file in each component of your top-level project (actions, tasks, etc) which tells actionhero to load up files at boot from that plugin.  
+
+You can delete all (or some) links at any time.
 
 ## Creating Plugins
 
@@ -24,45 +26,30 @@ Plugins are loaded after all local actionhero project files, but initializers fo
 
 To create a plugin, create a project with the following structure:
 
-This structure will allow elements to be loaded into actionhero (we search `/actions` for actions, etc)
+This structure will allow elements to be loaded into actionhero (we search `/actions` for actions, `/tasks` for tasks, etc)
 
 When developing your plugin locally, you can load it into an existing actionhero project to test it out.
 
 First, add the path your plugin is in to `api.config.general.paths.plugin`.  If your actionhero app is in `/var/ah/actionhero` and your plugin is in `/var/ah/my_plugin`, add `/var/ah` to `api.config.general.paths.plugin`
 
-Then, in `api.config.general.plugins`, add the name of your plugin, in this case `my_plugin`.  Note that the directory name and the package name in the plugin's `package.json` should match.
-
 **Please use the npm naming convention `ah-(name)-plugin` when uploading your plugin to npm**
+
+## Changes in V13.0.0  
+
+The plugin system was significantly changes in Actionhero version `13.0.0`.  Older plugins will not work.  
+- `config/plugins.js` has been removed in favor of the linking system
+- Config files from within plugins are no longer sourced
+- There should be no more postinstall scripts needed, and as such, none are executed
+- Be sure that your plugin is OS-independant. Use path.sep for file path separators and things like that. Use relative paths for everything in your plugin.
 
 ## Plugin methods
 
-When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" actionhero project, but might be difficult from within the `node_modules` folder.
+When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" actionhero project, but might be difficult from within the `node_modules` folder.  Here are some helpers:
 
 ### Routes:
 
 - `api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)`
   - Add a route to the system.  
-
-## Plugin Scripts
-
-```javascript
-#!/usr/bin/env node
-
-var fs = require('fs');
-var path = require('path');
-
-var localFile   = path.normalize(__dirname + '/../config/ah-sample-plugin.js');
-var projectFile = path.normalize(process.cwd() + '/../../config/plugins/ah-sample-plugin.js');
-
-if(!fs.existsSync(projectFile)){
-  console.log("copying " + localFile + " to " + projectFile);
-  fs.createReadStream(localFile).pipe(fs.createWriteStream(projectFile));
-}
-```
-
-The `scripts` directory is used to contain any install scripts.  For example, imagine your plugin relies on configuration settings which are expected to be in a `api.config.myPlugin` hash.  Write an example config file in `/config`, and then use a post-install script to copy that into the containing project's `/config` directory.  For example:
-
-And you would add the following to your `package.json`: ` "postinstall": "scripts/postinstall.js"`
 
 ## Example Plugin
 
