@@ -25,8 +25,8 @@ describe('Core: Developer Mode', function(){
       api = a;
       setTimeout(function(){
         done();
-      }, 1001) // allow the file to get stat-ed once in the original state
-    })
+      }, 1001); // allow the file to get stat-ed once in the original state
+    });
   });
 
   after(function(done){

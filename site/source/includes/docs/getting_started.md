@@ -45,7 +45,7 @@ npm start
 Visit `http://127.0.0.1:8080` in your browser to see the actionhero in action!
 
 You can also opt to install actionhero globally `npm install actionhero -g` and then you can just call `actionhero start`.
-	
+
 ## Application Structure
 
 ```bash
@@ -53,9 +53,11 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 
 |- config
 | -- api.js
+| -- errors.js
+| -- i18n.js
 | -- logger.js
 | -- redis.js
-| -- stats.js
+| -- routes.js
 | -- tasks.js
 | -- servers
 | ---- web.js
@@ -87,18 +89,19 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 |- tasks
 |-- (your tasks)
 |
+|- locales
+|-- (translation files)
+|
 |- tests
 |-- (tests for your API)
 |
 readme.md
-routes.js
-gruntfile.js
 package.json (be sure to include 'actionhero':'x')
 ```
 
-The map to the left describes actionhero's default project layout. 
+The map to the left describes actionhero's default project layout.
 
-Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`. 
+Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`.
 
 `/public` will become your application's default static asset location.   
 

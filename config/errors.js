@@ -14,28 +14,28 @@ exports.default = {
         servers: {
           web: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           websocket: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           socket: function(error){
             if(util.isError(error)){
-              return String( error.message ); 
+              return String( error.message );
             }else{
               return error;
             }
           },
           specHelper: function(error){
             if(util.isError(error)){
-              return 'Error: ' + String( error.message ); 
+              return 'Error: ' + String( error.message );
             }else{
               return error;
             }
@@ -43,53 +43,39 @@ exports.default = {
         }
       },
 
-      ////////////////////
-      // GENERAL ERRORS //
-      ////////////////////
-
-      // The message to accompany general 500 errors (internal server errors)
-      serverErrorMessage: function(){
-        return 'The server experienced an internal error';
-      },
-
       /////////////
       // ACTIONS //
       /////////////
 
       // When a params for an action is invalid
-      invalidParams: function(params){
-        return params.join(", ");
+      invalidParams: function(data, validationErrors){
+        return validationErrors.join(', ');
       },
 
       // When a required param for an action is not provided
-      missingParams: function(params){
-        return params[0] + ' is a required parameter for this action';
+      missingParams: function(data, missingParams){
+        return data.connection.localize(['%s is a required parameter for this action', missingParams[0]]);
       },
 
       // user requested an unknown action
-      unknownAction: function(action){
-        return 'unknown action or invalid apiVersion';
+      unknownAction: function(data){
+        return data.connection.localize('unknown action or invalid apiVersion');
       },
 
       // action not useable by this client/server type
-      unsupportedServerType: function(type){
-        return 'this action does not support the ' + type + ' connection type';
+      unsupportedServerType: function(data){
+        return data.connection.localize(['this action does not support the %s connection type', data.connection.type]);
       },
 
       // action failed because server is mid-shutdown
-      serverShuttingDown: function(){
-        return 'the server is shutting down';
+      serverShuttingDown: function(data){
+        return data.connection.localize('the server is shutting down');
       },
 
       // action failed because this client already has too many pending acitons
       // limit defined in api.config.general.simultaneousActions
-      tooManyPendingActions: function(){
-        return 'you have too many pending requests';
-      },
-
-      // a poorly designed action could try to call next() more than once
-      doubleCallbackError: function(){
-        return 'Double callback prevented within action';
+      tooManyPendingActions: function(data){
+        return data.connection.localize('you have too many pending requests');
       },
 
       /////////////////
@@ -98,47 +84,42 @@ exports.default = {
 
       // The body message to accompany 404 (file not found) errors regarding flat files
       // You may want to load in the contnet of 404.html or similar
-      fileNotFound: function(){
-        return 'Sorry, that file is not found :(';
+      fileNotFound: function(connection){
+        return connection.localize(['That file is not found (%s)', connection.params.file]);
       },
 
       // user didn't request a file
-      fileNotProvided: function(){
-        return 'file is a required param to send a file';
-      },
-
-      // user requested a file not in api.config.paths.public
-      fileInvalidPath: function(){
-        return 'that is not a valid file path';
+      fileNotProvided: function(connection){
+        return connection.localize('file is a required param to send a file');
       },
 
       // something went wrong trying to read the file
-      fileReadError: function(err){
-        return 'error reading file: ' + String(err);
+      fileReadError: function(connection, error){
+        return connection.localize(['error reading file: %s', String(error)]);
       },
 
       /////////////////
       // CONNECTIONS //
       /////////////////
 
-      verbNotFound: function(verb){
-        return 'I do not know know to perform this verb';
+      verbNotFound: function(connection, verb){
+        return connection.localize(['I do not know know to perform this verb (%s)', verb]);
       },
 
-      verbNotAllowed: function(verb){
-        return 'verb not found or not allowed';
+      verbNotAllowed: function(connection, verb){
+        return connection.localize(['verb not found or not allowed (%s)', verb]);
       },
 
-      connectionRoomAndMessage: function(){
-        return 'both room and message are required';
+      connectionRoomAndMessage: function(connection){
+        return connection.localize('both room and message are required');
       },
 
-      connectionNotInRoom: function(room){
-        return 'connection not in this room';
+      connectionNotInRoom: function(connection, room){
+        return connection.localize(['connection not in this room (%s)', room]);
       },
 
-      connectionAlreadyInRoom: function(room){
-        return 'connection already in this room';
+      connectionAlreadyInRoom: function(connection, room){
+        return connection.localize(['connection already in this room (%s)', room]);
       },
 
       connectionRoomHasBeenDeleted: function(room){
@@ -157,6 +138,6 @@ exports.default = {
         return 'a room is required';
       },
 
-    }
+    };
   }
-}
+};

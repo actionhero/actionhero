@@ -11,17 +11,17 @@ var async = require('async');
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){
-    api.log('Error with initializer step: ' + type, 'emerg');
+    api.log(['Error with initializer step: %s', type], 'emerg');
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });
     process.exit(1);
   }
-}
+};
 
 var sortNumber = function(a,b) {
     return a - b;
-}
+};
 
 var flattenOrderedInitialzer = function(collection){
   var output = [];
@@ -33,11 +33,11 @@ var flattenOrderedInitialzer = function(collection){
   keys.forEach(function(key){
     collection[key].forEach(function(d){
       output.push(d);
-    })
+    });
   });
 
   return output;
-}
+};
 
 // ACTIONHERO //
 
@@ -75,7 +75,7 @@ actionhero.prototype.initialize = function(params, callback){
   if(!callback && typeof params === 'function'){
     callback = params; params = {};
   }
-  if(params === null){ params = {} }
+  if(params === null){ params = {}; }
   self.startingParams = params;
   self.api._startingParams = self.startingParams;
 
@@ -83,7 +83,7 @@ actionhero.prototype.initialize = function(params, callback){
     load:  1000,
     start: 1000,
     stop:  1000
-  }
+  };
 
   var loadInitializerRankings  = {};
   var startInitializerRankings = {};
@@ -97,7 +97,7 @@ actionhero.prototype.initialize = function(params, callback){
   // we need to load the config first
   [
     path.resolve( __dirname + '/initializers/' + 'utils.js'        ),
-    path.resolve( __dirname + '/initializers/' + 'configLoader.js' ),
+    path.resolve( __dirname + '/initializers/' + 'config.js' ),
   ].forEach(function(file){
     var filename = file.replace(/^.*[\\\/]/, '');
     var initializer = filename.split('.')[0];
@@ -110,13 +110,12 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.configInitializers.push( function(){
     var customInitializers = [];
-    var recursiveGlob = self.api.utils.recursiveDirectoryGlob;
     self.api.config.general.paths.initializer.forEach(function(startPath) {
-      customInitializers = customInitializers.concat(recursiveGlob(startPath));
+      customInitializers = customInitializers.concat(self.api.utils.recursiveDirectoryGlob(startPath));
     });
     // load all other initializers
     self.api.utils.arrayUniqueify(
-      recursiveGlob(__dirname + path.sep + 'initializers')
+      self.api.utils.recursiveDirectoryGlob(__dirname + path.sep + 'initializers')
       .sort()
       .concat(
         customInitializers
@@ -133,14 +132,14 @@ actionhero.prototype.initialize = function(params, callback){
 
         var loadFunction = function(next){
           self.api.watchFileAndAct(file, function(){
-            self.api.log('\r\n\r\n*** rebooting due to initializer change (' + file + ') ***\r\n\r\n', 'info');
+            self.api.log(['*** Rebooting due to initializer change (%s) ***', file], 'info');
             self.api.commands.restart.call(self.api._self);
           });
 
           if(typeof self.initializers[initializer].initialize === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log('loading initializer: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Loading initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].initialize(self.api, function(err){
-              try{ self.api.log('loaded initializer: ' + initializer, 'debug', file); }catch(e){ }
+              try{ self.api.log(['Loaded initializer: %s', initializer], 'debug', file); }catch(e){ }
               next(err);
             });
           }else{
@@ -150,9 +149,9 @@ actionhero.prototype.initialize = function(params, callback){
 
         var startFunction = function(next){
           if(typeof self.initializers[initializer].start === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log(' > start: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Starting initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].start(self.api, function(err){
-              self.api.log('   started: ' + initializer, 'debug', file);
+              self.api.log(['Started initializer: %s', initializer], 'debug', file);
               next(err);
             });
           }else{
@@ -162,9 +161,9 @@ actionhero.prototype.initialize = function(params, callback){
 
         var stopFunction = function(next){
           if(typeof self.initializers[initializer].stop === 'function'){
-            if(typeof self.api.log === 'function'){ self.api.log(' > stop: ' + initializer, 'debug', file); }
+            if(typeof self.api.log === 'function'){ self.api.log(['Stopping initializer: %s', initializer], 'debug', file); }
             self.initializers[initializer].stop(self.api, function(err){
-              self.api.log('   stoped: ' + initializer, 'debug', file);
+              self.api.log(['Stopped initializer: %s', initializer], 'debug', file);
               next(err);
             });
           }else{
@@ -241,21 +240,21 @@ actionhero.prototype.start = function(params, callback){
 
     self.startInitializers.push(function finalStartInitializer(){
       self.api.bootTime = new Date().getTime();
-      self.api.log('*** Server Started @ ' + new Date() + ' ***', 'notice');
+      self.api.log(['*** Server Started ***'], 'notice');
       callback(null, self.api);
     });
 
     async.series(self.startInitializers, function(errors){ fatalError(self.api, errors, 'start'); });
-  }
+  };
 
   if(self.api.initialized === true){
-    _start()
+    _start();
   } else {
     self.initialize(params, function(){
       _start();
-    })
+    });
   }
-}
+};
 
 actionhero.prototype.stop = function(callback){
   var self = this;
@@ -266,7 +265,7 @@ actionhero.prototype.stop = function(callback){
     self.api.running = false;
     self.api.initialized = false;
 
-    self.api.log('Shutting down open servers and stopping task processing', 'alert');
+    self.api.log('Shutting down open servers and stopping task processing...', 'alert');
 
     if(self.stopInitializers[(self.stopInitializers.length -1)].name === 'finalStopInitializer'){
       self.stopInitializers.pop();
@@ -289,7 +288,7 @@ actionhero.prototype.stop = function(callback){
     // double sigterm; ignore it
   } else {
     self.api.log('Cannot shut down actionhero, not running', 'error');
-    if(typeof callback === 'function'){ callback(null, self.api) }
+    if(typeof callback === 'function'){ callback(null, self.api); }
   }
 };
 
@@ -303,14 +302,14 @@ actionhero.prototype.restart = function(callback){
       self.start(self.startingParams, function(err){
         if(err){ self.api.log(err, 'error'); }
         self.api.log('*** actionhero restarted ***', 'info');
-        if(typeof callback === 'function'){ callback(null, self.api) }
+        if(typeof callback === 'function'){ callback(null, self.api); }
       });
     });
   } else {
     self.start(self.startingParams, function(err){
       if(err){ self.api.log(err, 'error'); }
       self.api.log('*** actionhero restarted ***', 'info');
-      if(typeof callback === 'function'){ callback(null, self.api) }
+      if(typeof callback === 'function'){ callback(null, self.api); }
     });
   }
 };

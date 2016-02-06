@@ -12,7 +12,7 @@ describe('Core: Static File', function(){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port+'/'+api.config.servers.web.urlPathForFiles;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -31,7 +31,7 @@ describe('Core: Static File', function(){
 
   it('file: 404 pages', function(done){
     api.specHelper.getStaticFile('someRandomFile', function(response){
-      response.error.should.equal( api.config.errors.fileNotFound() );
+      response.error.should.equal( 'That file is not found (someRandomFile)' );
       should.not.exist(response.content);
       done();
     });
@@ -39,7 +39,7 @@ describe('Core: Static File', function(){
 
   it('I should not see files outside of the public dir', function(done){
     api.specHelper.getStaticFile('../config/config.json', function(response){
-      response.error.should.equal( api.config.errors.fileNotFound() );
+      response.error.should.equal( 'That file is not found (../config/config.json)' );
       should.not.exist(response.content);
       done();
     });

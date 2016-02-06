@@ -12,7 +12,7 @@ exports.default = {
       host     : process.env.REDIS_HOST || '127.0.0.1',
       port     : process.env.REDIS_PORT || 6379,
       database : process.env.REDIS_DB   || 0,
-    }
+    };
 
     if( process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined ){
       redisDetails.pkg  = 'ioredis';
@@ -25,7 +25,7 @@ exports.default = {
 
     return redisDetails;
   }
-}
+};
 
 exports.test = {
   redis: function(api){
@@ -40,6 +40,6 @@ exports.test = {
       port: 6379,
       database: 2,
       options: {},
-    }
+    };
   }
-}
+};

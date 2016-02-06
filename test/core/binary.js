@@ -12,7 +12,7 @@ var doBash = function(commands, callback){
   exec(fullCommand ,function(error, data){
     callback(error, data);
   });
-}
+};
 
 describe('Core: Binary', function(){
 
@@ -35,8 +35,8 @@ describe('Core: Binary', function(){
   });
 
   afterEach(function(done){
-    setTimeout(done, 100) // needed to allow Travis' disks to settle...
-  })
+    setTimeout(done, 100); // needed to allow Travis' disks to settle...
+  });
 
   it('should have made the test dir', function(done){
     fs.existsSync(testDir).should.equal(true);
@@ -46,11 +46,11 @@ describe('Core: Binary', function(){
 
   it('can generate a new project', function(done){
     doBash([
-        'cd ' + testDir, 
+        'cd ' + testDir,
         binary + ' generate'
       ], function(err){
       should.not.exist(err);
-      
+
       [
         'actions',
         'actions/showDocumentation.js',
@@ -58,9 +58,8 @@ describe('Core: Binary', function(){
         'config',
         'config/api.js',
         'config/errors.js',
+        'config/i18n.js',
         'config/logger.js',
-        'config/plugins',
-        'config/plugins.js',
         'config/redis.js',
         'config/routes.js',
         'config/servers',
@@ -68,7 +67,6 @@ describe('Core: Binary', function(){
         'config/servers/web.js',
         'config/servers/websocket.js',
         'config/servers/socket.js',
-        'gruntfile.js',
         'pids',
         'log',
         'public',
@@ -93,7 +91,7 @@ describe('Core: Binary', function(){
 
   it('can call the help command', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' help'
     ], function(err, data){
       should.not.exist(err);
@@ -106,7 +104,7 @@ describe('Core: Binary', function(){
 
   it('will show a warning with bogus input', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' win'
     ], function(err, data){
       should.exist(err);
@@ -118,7 +116,7 @@ describe('Core: Binary', function(){
 
   it('can generate an action', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateAction --name=myAction --description=my_description'
     ], function(err){
       should.not.exist(err);
@@ -132,7 +130,7 @@ describe('Core: Binary', function(){
 
   it('can generate a task', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateTask --name=myTask --description=my_description --queue=my_queue --frequency=12345'
     ], function(err){
       should.not.exist(err);
@@ -148,7 +146,7 @@ describe('Core: Binary', function(){
 
   it('can generate a server', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateServer --name=myServer'
     ], function(err){
       should.not.exist(err);
@@ -163,7 +161,7 @@ describe('Core: Binary', function(){
 
   it('can generate a initializer', function(done){
     doBash([
-      'cd ' + testDir, 
+      'cd ' + testDir,
       binary + ' generateInitializer --name=myInitializer'
     ], function(err){
       should.not.exist(err);
@@ -179,20 +177,20 @@ describe('Core: Binary', function(){
   });
 
   describe('can run a single server', function(){
-    it('can boot a single server')
-    it('can handle signals to reboot')
-    it('can handle signals to stop')
-    it('will shutdown after the alloted time')
+    it('can boot a single server');
+    it('can handle signals to reboot');
+    it('can handle signals to stop');
+    it('will shutdown after the alloted time');
   });
 
   describe('can run a cluster', function(){
-    it('can handle signals to reboot (graceful)')
-    it('can handle signals to reboot (hup)')
-    it('can handle signals to stop')
-    it('can handle signals to add a worker')
-    it('can handle signals to remove a worker')
-    it('can detect flapping and exit')
-    it('can reboot and abosrb code changes without downtime')
+    it('can handle signals to reboot (graceful)');
+    it('can handle signals to reboot (hup)');
+    it('can handle signals to stop');
+    it('can handle signals to add a worker');
+    it('can handle signals to remove a worker');
+    it('can detect flapping and exit');
+    it('can reboot and abosrb code changes without downtime');
   });
 
 });

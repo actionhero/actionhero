@@ -11,7 +11,7 @@
 
 // config/tasks.js
 
-exports.production = { 
+exports.production = {
     tasks: function(api){
 
         // defualt to config for 'server'
@@ -65,7 +65,7 @@ Notes:
 
 - It's best to seperate the "workers" from the web "servers"
    - be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)
-- To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example: 
+- To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example:
 - Always have a replica of redis!
 
 ## Paths and Environments
@@ -93,7 +93,7 @@ When choosing the number of workers (`--workers=n`) for your actionhero cluster,
 
 You never want more workers than you can run at a time, or else you will actually be slowing down the execution of all processes.
 
-Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers! 
+Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers!
 
 ## Pidfiles
 
@@ -113,18 +113,18 @@ DEPLOY_PATH=/path/to/your/application
 
 cd $DEPLOY_PATH && git pull
 cd $DEPLOY_PATH && npm install
-# run any grunt tasks here, like perhaps an asset compile step or a database migration
+# run any build tasks here, like perhaps an asset compile step or a database migration
 cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
 ```
 
 To send a signal to the cluster master process to reboot all its workers (`USR2`), you can cat the pidfile (bash):
 ` kill -s USR2 "cat /path/to/pids/cluster_pidfile"`
 
-If you want to setup a git-based deployment, the simplest steps would be something like => 
+If you want to setup a git-based deployment, the simplest steps would be something like =>
 
 ## Global Packages
 
-It's probably best to avoid installing any global packages.  This way, you won't have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package's binaries are always copied into `./node_modules/.bin`. 
+It's probably best to avoid installing any global packages.  This way, you won't have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package's binaries are always copied into `./node_modules/.bin`.
 
 You can add local references to your $PATH like so to use these local binaries:
 
@@ -135,7 +135,7 @@ You can add local references to your $PATH like so to use these local binaries:
 ```javascript
 // From `config/servers/web.js`
 
-exports.production = { 
+exports.production = {
   servers: {
     web: function(api){
       return {
@@ -240,12 +240,11 @@ As ActionHero is a framework, much of the work for keeping your application secu
 ### General Configuration
 
 - Be sure to change `api.config.general.serverToken` to something unique for your application
-- Turn off [developer mode](/docs/#development-mode) in production. 
-- Turn off `actionDomains` in production.  While domains can *sometimes* save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.
+- Turn off [developer mode](/docs/#development-mode) in production.
 
 ### Topology
 
-- Run a cluster via `startCluster`.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.  This will also allow you to turn of `actionDomains` and allow one node to crash while the others continue to server traffic
+- Run a cluster via `startCluster`.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
     - You can run 1 actionhero instance per core (assuming the server is dedicated to actionhero), and that is the default behavior of `startCluster`.
     - You don't need a tool like PM2 to manage actionhero cluster process, but you can.
     - You can use an init script to `startCluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
@@ -259,11 +258,11 @@ As ActionHero is a framework, much of the work for keeping your application secu
     - This layout allows you to have control, back-pressure and throttling at many layers.
     - Configure Nginx to serve static files whenever possible to remove load from actionhero, and leave it just to process actions
 - Use a CDN. Actionhero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.
-- Use redis-cluster or redis-sentinel.  The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default.  This allows you to have a High Availability redis configuration. 
+- Use redis-cluster or redis-sentinel.  The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default.  This allows you to have a High Availability redis configuration.
 
 ### Actions
 
-- Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/#inputs) step. 
+- Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/#inputs) step.
 - Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is "never pass a query to your database which can be directly modified via user input"!
 - Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.
 - Crafting [authentication middleware is not that hard](https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf)
@@ -275,4 +274,3 @@ As ActionHero is a framework, much of the work for keeping your application secu
 - Actionhero uses the [`multiWorker`](https://github.com/taskrabbit/node-resque#multi-worker) from node-resque.  When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can.  This will also fluctuate depending on the CPU difficulty of the job.  Plan accordingly.
 - Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  [The methods for doing so](/docs/#queue-inspection) are available.
 - Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain 'claimed' in redis, and never make it to the failed queue.
-

@@ -33,19 +33,28 @@ title: actionhero.js - Learn More
         <div class="col-6 col-sm-6 col-lg-6">
             <h4><a href="/docs/#websocket-server">Web Sockets</a></h4>
             <p class="feature-description">actionhero uses Primus to provided a robust and reliable nodejs websocket implementation. actionhero web socket clients can fall back to long-polling and other transports to ensure they are connected. Primus allows you to choose the underlying websocket implementation of your choice.</p>
-            <pre>var A = new ActionheroClient;
+
+<% code("javascript", {'background-color' => 'white'}) do %>
+var A = new ActionheroClient;
 A.connect();
-A.action("actionsView", function(data){ console.log(data); })</pre>
+A.action("actionsView", function(data){ console.log(data); })
+<% end %>
+
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
             <h4><a href="/docs/#socket-server">Socket</a></h4>
             <p class="feature-description">actionhero ships with the ability to be a line TCP or TLS server. actionhero clients can speak a wire protocol that sends lines of JSON. Actions can be processed asynchronously and in parallel. The API server and the built-in chat system provide all you need for a communication or game application.</p>
-            <pre>> telnet localhost 5000
+
+<% code("bash", {'background-color' => 'white'}) do %>
+> telnet localhost 5000
 Trying 127.0.0.1...
 Connected to localhost.
-{"welcome":"Hello! Welcome to the actionhero api}
-> actionsView</pre>
+{"welcome":"Hello! Welcome to the actionhero api"}
+> say myChatRoom hello
+{"ok"}
+<% end %>
+
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
@@ -64,7 +73,8 @@ Connected to localhost.
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#actions">Easy-To-Use Actions</a></h4>
                     <p class="feature-description">With actionhero, you create 'actions' which can respond to any type of connection. They process incoming parameters and offer a response to the client. actionhero takes care of routing and responding to each connection type for you.</p>
-                    <pre>
+
+<% code("javascript", {'background-color' => 'white'}) do %>
 exports.action = {
   name: 'randomNumber',
   description: 'I generate a random number',
@@ -78,18 +88,19 @@ exports.action = {
     next();
   }
 }
-                    </pre>
+<% end %>
                 </div>
 
                  <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#tasks">Built-In Tasks</a></h4>
                     <p class="feature-description">Background tasks are first-class citizens in actionhero. You can enqueue a task from anywhere in the application. Tasks can be recurring or single-run. actionhero's task sytem is powerd by Resque, so it is compatible with a number of other applications and frameworks.</p>
                 </div>
-                <pre>
+
+<% code("javascript", {'background-color' => 'white'}) do %>
 api.tasks.enqueue(
-    "sendWelcomeEmail", 
-    {to: 'evan@evantahler.com'}, 
-    'default', 
+    "sendWelcomeEmail",
+    {to: 'evan@evantahler.com'},
+    'default',
 function(err, toRun){
   // done!
 });
@@ -106,7 +117,7 @@ var task = {
     })
   }
 };
-                </pre>
+<% end %>
 
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#actioncluster">Cluster-Ready</a></h4>
@@ -141,6 +152,11 @@ var task = {
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#file-server">File Server</a></h4>
                     <p class="feature-description">Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and actionhero is no exception. Configured to asynchronously stream file contents, actionhero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server. No nginx required!</p>
+                </div>
+
+                <div class="col-6 col-sm-6 col-lg-6">
+                    <h4><a href="/docs/#localization">Localization</a></h4>
+                    <p class="feature-description">Actionhero is integratied with `i18n` to allow you to cusomize every string in the server, from action responses to logging to fit your (and your user's) needs.</p>
                 </div>
             </div>
         </div>

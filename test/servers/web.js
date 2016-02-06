@@ -455,18 +455,6 @@ describe('Server: Web', function(){
         }
       }
 
-      api.actions.versions.brokenAction = [1]
-      api.actions.actions.brokenAction = {
-        '1': {
-          name: 'brokenAction',
-          description: 'I am broken',
-          run:function(api, data, next){
-            BREAK; // undefiend
-            next();
-          }
-        }
-      }
-
       api.routes.loadRoutes();
       done();
     });
@@ -475,8 +463,6 @@ describe('Server: Web', function(){
       api.config.servers.web.returnErrorCodes = false;
       delete api.actions.versions.statusTestAction;
       delete api.actions.actions.statusTestAction;
-      delete api.actions.versions.brokenAction;
-      delete api.actions.actions.brokenAction;
       done();
     });
 
@@ -494,20 +480,6 @@ describe('Server: Web', function(){
         response.statusCode.should.eql(422);
         done();
       });
-    });
-
-    it('server errors should return a 500', function(done){
-      if(api.config.general.actionDomains === true){
-        request.post(url + '/api/brokenAction', function(err, response, body){
-          body = JSON.parse(body);
-          body.error.should.eql( 'The server experienced an internal error' );
-          response.statusCode.should.eql(500);
-          done();
-        });
-      }else{
-        console.log("skipping broken action test; api.config.general.actionDomains != true")
-        done();
-      }
     });
 
     it('status codes can be set for errors', function(done){
@@ -577,7 +549,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal( api.config.errors.fileNotFound() );
+        response.body.should.equal( 'That file is not found (../config.json)' );
         done();
       });
     });

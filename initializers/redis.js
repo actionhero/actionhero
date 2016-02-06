@@ -33,20 +33,20 @@ module.exports = {
       }
 
       api.redis.client.on('error', function(err){
-        api.log('Redis Error (client): ' + err, 'emerg');
+        api.log(['Redis Error (client): %s', err], 'emerg');
       });
 
       api.redis.subscriber.on('error', function(err){
-        api.log('Redis Error (subscriber): ' + err, 'emerg');
+        api.log(['Redis Error (subscriber): %s', err], 'emerg');
       });
 
       api.redis.client.on('end', function(){
-        api.log('Redis Connection Closed (client): ', 'debug');
+        api.log('Redis Connection Closed (client)', 'debug');
         api.redis.status.client = false;
       });
 
       api.redis.subscriber.on('end', function(){
-        api.log('Redis Connection Closed (subscriber): ', 'debug');
+        api.log('Redis Connection Closed (subscriber)', 'debug');
         api.redis.status.subscriber = false;
         api.redis.status.subscribed = false;
       });
@@ -91,7 +91,7 @@ module.exports = {
       }
 
       api.redis.subscriber.on('message', function(messageChannel, message){
-        try{ message = JSON.parse(message) }catch(e){ message = {}; }
+        try{ message = JSON.parse(message); }catch(e){ message = {}; }
         if(messageChannel === channel && message.serverToken === api.config.general.serverToken){
           if(api.redis.subscriptionHandlers[message.messageType]){
             api.redis.subscriptionHandlers[message.messageType](message);
@@ -114,7 +114,11 @@ module.exports = {
 
     api.redis.subscriptionHandlers.do = function(message){
       if(!message.connectionId || ( api.connections && api.connections.connections[message.connectionId]) ){
-        var method = eval(message.method); //TODO: Eval makes me sad
+        var cmdParts = message.method.split('.');
+        var cmd = cmdParts.shift();
+        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object') }
+        var method = api.utils.stringToHash(cmdParts.join('.'));
+
         var callback = function(){
           var responseArgs = Array.apply(null, arguments).sort();
           process.nextTick(function(){
@@ -182,7 +186,7 @@ module.exports = {
 
     api.redis.initialize(function(){
       api.redis.subscribe(function(){
-        api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has joined the cluster'], null, null);
+        api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
         process.nextTick(next);
       });
     });
@@ -196,14 +200,14 @@ module.exports = {
   stop: function(api, next){
     for(var i in api.redis.clusterCallbakTimeouts){
       clearTimeout( api.redis.clusterCallbakTimeouts[i] );
-      delete api.redis.clusterCallbakTimeouts[i]
+      delete api.redis.clusterCallbakTimeouts[i];
       delete api.redis.clusterCallbaks[i];
     }
-    api.redis.doCluster('api.log', ['actionhero member ' + api.id + ' has left the cluster'], null, null);
+    api.redis.doCluster('api.log', [['actionhero member %s has left the cluster', api.id]], null, null);
 
     process.nextTick(function(){
       api.redis.subscriber.unsubscribe();
       next();
     });
   }
-}
+};

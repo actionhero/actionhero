@@ -10,11 +10,11 @@ module.exports = {
 
       loadFile: function(fullFilePath, reload){
         var self = this;
-        if(!reload){ reload = false }
+        if(!reload){ reload = false; }
 
         var loadMessage = function(loadedTaskName){
-          api.log('task ' + (reload?'(re)':'') + 'loaded: ' + loadedTaskName + ', ' + fullFilePath, 'debug');
-        }
+          api.log(['task %sloaded: %s, %s', (reload?'(re)':''), loadedTaskName, fullFilePath], 'debug');
+        };
 
         api.watchFileAndAct(fullFilePath, function(){
           self.loadFile(fullFilePath, true);
@@ -65,13 +65,13 @@ module.exports = {
             args.splice(0, 0, api);
             api.tasks.tasks[taskName].run.apply(this, args);
           }
-        }
+        };
       },
 
       validateTask: function(task){
         var fail = function(msg){
           api.log(msg + '; exiting.', 'emerg');
-        }
+        };
         if(typeof task.name !== 'string' || task.name.length < 1){
           fail('a task is missing \'task.name\'');
           return false;
@@ -175,7 +175,7 @@ module.exports = {
           self.del(task.queue, taskName, {}, function(){
             self.delDelayed(task.queue, taskName, {}, function(){
               self.enqueueIn(task.frequency, taskName, function(){
-                api.log('re-enqueued recurrent job ' + taskName, api.config.tasks.schedulerLogging.reEnqueue);
+                api.log(['re-enqueued recurrent job %s', taskName], api.config.tasks.schedulerLogging.reEnqueue);
                 callback();
               });
             });
@@ -186,24 +186,24 @@ module.exports = {
       enqueueAllRecurrentJobs: function(callback){
         var self = this;
         var started = 0;
-        var loadedTasks = []
+        var loadedTasks = [];
         for(var taskName in self.tasks){
           var task = self.tasks[taskName];
           if(task.frequency > 0){
             started++;
             (function(taskName){
               self.enqueue(taskName, function(err, toRun){
-                if(toRun === true){ 
-                  api.log('enqueuing periodic task: ' + taskName, api.config.tasks.schedulerLogging.enqueue);
+                if(toRun === true){
+                  api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue);
                   loadedTasks.push(taskName);
                 }
                 started--;
-                if(started === 0 && typeof callback === 'function'){ callback(loadedTasks) }
+                if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
               });
-            })(taskName)
+            })(taskName);
           }
         }
-        if(started === 0 && typeof callback === 'function'){ callback(loadedTasks) }
+        if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
       },
 
       stopRecurrentJob: function(taskName, callback){
@@ -235,7 +235,7 @@ module.exports = {
               if(err){
                 callback(err, details);
               }
-              else if(queues.length === 0){ callback(null, details) }
+              else if(queues.length === 0){ callback(null, details); }
               else {
                 var started = 0;
                 queues.forEach(function(queue){
@@ -243,9 +243,9 @@ module.exports = {
                   api.resque.queue.length(queue, function(err, length){
                     details.queues[queue] = {
                       length: length
-                    }
+                    };
                     started--;
-                    if(started === 0){ callback(err, details) }
+                    if(started === 0){ callback(err, details); }
                   });
                 });
               }
@@ -253,17 +253,17 @@ module.exports = {
           }
         });
       }
-    }
+    };
 
     api.config.general.paths.task.forEach(function(p){
       api.utils.recursiveDirectoryGlob(p).forEach(function(f){
         api.tasks.loadFile(f);
       });
-    })
+    });
 
     next();
-    
-  }, 
+
+  },
 
   start: function(api, next){
     if(api.config.tasks.scheduler === true){
@@ -274,4 +274,4 @@ module.exports = {
       next();
     }
   },
-}
+};

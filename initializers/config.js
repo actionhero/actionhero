@@ -12,7 +12,7 @@ module.exports = {
     api.watchFileAndAct = function(file, callback){
       file = path.normalize(file);
       if(!fs.existsSync(file)){
-        throw new Error(file + ' does not exist, and cannot be watched')
+        throw new Error(file + ' does not exist, and cannot be watched');
       }
       if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
         api.watchedFiles.push(file);
@@ -38,11 +38,11 @@ module.exports = {
       api.watchedFiles = [];
     };
 
-    if(api._startingParams.api){
+    if(api._startingParams && api._startingParams.api){
       api.utils.hashMerge(api, api._startingParams.api);
     }
 
-    api.env = 'development'
+    api.env = 'development';
 
     if(argv.NODE_ENV){
       api.env = argv.NODE_ENV;
@@ -80,21 +80,21 @@ module.exports = {
       }
     }
 
-    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) {
-      addConfigPath(entry, false);
-    });
-    if (configPaths.length < 1) {
+    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) { addConfigPath(entry, false); });
+
+    if(configPaths.length < 1) {
       addConfigPath('config', false);
     }
-    if (configPaths.length < 1) {
+
+    if(configPaths.length < 1) {
       throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
     }
 
     var rebootCallback = function(file){
-      api.log('\r\n\r\n*** rebooting due to config change (' + file + ') ***\r\n\r\n', 'info');
+      api.log(['*** rebooting due to config change (%s) ***', file], 'info');
       delete require.cache[require.resolve(file)];
       api.commands.restart.call(api._self);
-    }
+    };
 
     api.loadConfigDirectory = function(configPath, watch){
       var configFiles = api.utils.recursiveDirectoryGlob(configPath);
@@ -141,7 +141,7 @@ module.exports = {
         if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
       });
 
-    }
+    };
 
     api.config = {};
 
@@ -152,75 +152,16 @@ module.exports = {
     configPaths.map(api.loadConfigDirectory);
 
     // apply any configChanges
-    if(api._startingParams.configChanges){
+    if(api._startingParams && api._startingParams.configChanges){
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
     }
-
-    var pluginActions      = [];
-    var pluginTasks        = [];
-    var pluginServers      = [];
-    var pluginInitializers = [];
-    var pluginPublics      = [];
-
-    //loop over it's plugins
-    api.config.general.paths.plugin.forEach(function(p){
-      api.config.general.plugins.forEach(function(plugin){
-        var pluginPackageBase = path.normalize(p + '/' + plugin);
-        if(api.projectRoot !== pluginPackageBase){
-          if(fs.existsSync(pluginPackageBase + '/config')){
-            //and merge the plugin config
-            api.loadConfigDirectory( pluginPackageBase + '/config', false);
-            //collect all paths that could have multiple target folders
-            pluginActions      = pluginActions.concat(api.config.general.paths.action);
-            pluginTasks        = pluginTasks.concat(api.config.general.paths.task);
-            pluginServers      = pluginServers.concat(api.config.general.paths.server);
-            pluginInitializers = pluginInitializers.concat(api.config.general.paths.initializer);
-            pluginPublics      = pluginPublics.concat(api.config.general.paths.public);
-          }
-          //additionally add the following paths if they exists
-          if(fs.existsSync(pluginPackageBase + '/actions')){      pluginActions.unshift(      pluginPackageBase + '/actions'      );}
-          if(fs.existsSync(pluginPackageBase + '/tasks')){        pluginTasks.unshift(        pluginPackageBase + '/tasks'        );}
-          if(fs.existsSync(pluginPackageBase + '/servers')){      pluginServers.unshift(      pluginPackageBase + '/servers'      );}
-          if(fs.existsSync(pluginPackageBase + '/initializers')){ pluginInitializers.unshift( pluginPackageBase + '/initializers' );}
-          if(fs.existsSync(pluginPackageBase + '/public')){       pluginPublics.unshift(      pluginPackageBase + '/public'       );}
-        }
-      });
-    });
-
-    //now load the project config again to overrule plugin configs
-    configPaths.map(api.loadConfigDirectory);
-
-    //apply plugin paths for actions, tasks, servers and initializers
-    api.config.general.paths.action      = pluginActions.concat(api.config.general.paths.action);
-    api.config.general.paths.task        = pluginTasks.concat(api.config.general.paths.task);
-    api.config.general.paths.server      = pluginServers.concat(api.config.general.paths.server);
-    api.config.general.paths.initializer = pluginInitializers.concat(api.config.general.paths.initializer);
-    api.config.general.paths.public      = pluginPublics.concat(api.config.general.paths.public);
-
-    // the first plugin path shoud alawys be the local project
-    api.config.general.paths.public.reverse();
-
-    //finally re-merge starting params into the config
-    if(api._startingParams.configChanges){
-      api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges);
-    }
-
-    // cleanup
-    api.config.general.paths.action      = api.utils.arrayUniqueify( api.config.general.paths.action.map(path.normalize) );
-    api.config.general.paths.task        = api.utils.arrayUniqueify( api.config.general.paths.task.map(path.normalize) );
-    api.config.general.paths.server      = api.utils.arrayUniqueify( api.config.general.paths.server.map(path.normalize) );
-    api.config.general.paths.initializer = api.utils.arrayUniqueify( api.config.general.paths.initializer.map(path.normalize) );
-    api.config.general.paths.public      = api.utils.arrayUniqueify( api.config.general.paths.public.map(path.normalize) );
-    api.config.general.paths.pid         = api.utils.arrayUniqueify( api.config.general.paths.pid.map(path.normalize) );
-    api.config.general.paths.log         = api.utils.arrayUniqueify( api.config.general.paths.log.map(path.normalize) );
-    api.config.general.paths.plugin      = api.utils.arrayUniqueify( api.config.general.paths.plugin.map(path.normalize) );
 
     process.nextTick(next);
   },
 
   start: function(api, callback){
-    api.log('environment: ' + api.env, 'notice');
+    api.log(['environment: %s', api.env], 'notice');
     callback();
   }
 
-}
+};

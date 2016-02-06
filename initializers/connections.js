@@ -41,7 +41,7 @@ module.exports = {
             connection[method](args);
           }else{
             connection[method].apply(connection, args);
-          }          
+          }
         }
         if(typeof callback === 'function'){
           process.nextTick(function(){
@@ -75,13 +75,13 @@ module.exports = {
         }
       }
       return clean;
-    }
-    
+    };
+
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
     api.connection = function(data){
       var self = this;
-      self.setup(data)
+      self.setup(data);
       api.connections.connections[self.id] = self;
 
       api.connections.globalMiddleware.forEach(function(middlewareName){
@@ -89,7 +89,7 @@ module.exports = {
           api.connections.middleware[middlewareName].create(self);
         }
       });
-    }
+    };
 
     api.connection.prototype.setup = function(data){
       var self = this;
@@ -99,17 +99,17 @@ module.exports = {
         self.id = self.generateID();
       }
       self.connectedAt = new Date().getTime();
-      
+
       ['type', 'rawConnection'].forEach(function(req){
-        if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
+        if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object'); }
         self[req] = data[req];
       });
 
-      
+
       ['remotePort', 'remoteIP'].forEach(function(req){
-        if(data[req] === null || data[req] === undefined){ 
+        if(data[req] === null || data[req] === undefined){
           if(api.config.general.enforceConnectionProperties === true){
-            throw new Error(req + ' is required to create a new connection object') 
+            throw new Error(req + ' is required to create a new connection object');
           }else{
             data[req] = 0; // could be a random uuid as well?
           }
@@ -126,39 +126,47 @@ module.exports = {
         totalActions: 0,
         messageCount: 0,
         canChat: false
-      }
+      };
 
       for(var i in connectionDefaults){
         if(self[i] === undefined && data[i] !== undefined){ self[i] = data[i]; }
         if(self[i] === undefined){ self[i] = connectionDefaults[i]; }
       }
-    }
+
+      api.i18n.invokeConnectionLocale(self);
+    };
+
+    api.connection.prototype.localize = function(message){
+      // this.locale will be sourced automatically
+      if(!Array.isArray(message)){ message = [message]; }
+      return api.i18n.i18n.__.apply(this, message);
+    };
 
     api.connection.prototype.generateID = function(){
       return uuid.v4();
-    }
+    };
 
     api.connection.prototype.sendMessage = function(message){
       throw new Error('I should be replaced with a connection-specific method ['+message+']');
-    }
+    };
 
     api.connection.prototype.sendFile = function(path){
       throw new Error('I should be replaced with a connection-specific method ['+path+']');
-    }
+    };
 
     api.connection.prototype.destroy = function(callback){
       var self = this;
       self.destroyed = true;
-      
+
       api.connections.globalMiddleware.forEach(function(middlewareName){
         if(typeof api.connections.middleware[middlewareName].destroy === 'function'){
           api.connections.middleware[middlewareName].destroy(self);
         }
       });
 
-      if(self.canChat === true){ 
+      if(self.canChat === true){
         self.rooms.forEach(function(room){
-          api.chatRoom.removeMember(self.id, room); 
+          api.chatRoom.removeMember(self.id, room);
         });
       }
       delete api.connections.connections[self.id];
@@ -169,13 +177,13 @@ module.exports = {
         }
         if(typeof server.goodbye === 'function'){ server.goodbye(self); }
       }
-      if(typeof callback === 'function'){ callback() }
-    }
+      if(typeof callback === 'function'){ callback(); }
+    };
 
     api.connection.prototype.set = function(key, value){
       var self = this;
       self[key] = value;
-    }
+    };
 
     api.connection.prototype.verbs = function(verb, words, callback){
       var self = this;
@@ -269,13 +277,13 @@ module.exports = {
           });
 
         } else {
-          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(verb), null); }
+          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(self, verb), null); }
         }
       } else {
-        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(verb), null); }
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(self, verb), null); }
       }
-    }
+    };
 
     next();
   }
-}
+};

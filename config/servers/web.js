@@ -24,7 +24,7 @@ exports.default = {
         urlPathForActions : 'api',
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
-        //  set to `null` to disable the file server entirely 
+        //  set to `null` to disable the file server entirely
         urlPathForFiles : 'public',
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
@@ -72,12 +72,12 @@ exports.default = {
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
         queryParseOptions: {},
-      }
+      };
     }
   }
-}
+};
 
-exports.production = { 
+exports.production = {
   servers: {
     web: function(api){
       return {
@@ -86,13 +86,13 @@ exports.production = {
           serverInformation: false,
           requesterInformation: false
         }
-      }
+      };
     }
   }
-}
+};
 
 exports.test = {
-  servers: { 
+  servers: {
     web: function(api){
       return {
         secure: false,
@@ -102,7 +102,7 @@ exports.test = {
           serverInformation: true,
           requesterInformation: true
         }
-      }
+      };
     }
   }
-}
+};

@@ -23,7 +23,7 @@ module.exports = {
         var self = this;
         if(!counter){ counter = 0; }
         if(!connection.params.file || !api.staticFile.path(connection, counter) ){
-          self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
+          self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
         } else {
           var file = path.normalize(api.staticFile.path(connection, counter) + '/' + connection.params.file);
           if(file.indexOf(path.normalize(api.staticFile.path(connection, counter))) !== 0){
@@ -45,7 +45,7 @@ module.exports = {
         var lastModified;
         fs.stat(file, function(err, stats){
           if(err){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(String(err)) , callback);
+            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)) , callback);
           } else {
             var mime = Mime.lookup(file);
             var length = stats.size;
@@ -57,7 +57,7 @@ module.exports = {
               self.logRequest(file, connection, length, duration, true);
             });
             fileStream.on('error', function(err){
-              api.log(err)
+              api.log(err);
             });
             callback(connection, null, fileStream, mime, length, lastModified);
           }
@@ -68,7 +68,7 @@ module.exports = {
         var self = this;
         connection.error = new Error(errorMessage);
         self.logRequest('{404: not found}', connection, null, null, false);
-        callback(connection, api.config.errors.fileNotFound(), null, 'text/html', api.config.errors.fileNotFound().length);
+        callback(connection, api.config.errors.fileNotFound(connection), null, 'text/html', api.config.errors.fileNotFound(connection).length);
       },
 
       checkExistence: function(file, callback){
@@ -98,7 +98,7 @@ module.exports = {
       },
 
       logRequest: function(file, connection, length, duration, success){
-        api.log('[ file @ ' + connection.type + ' ]', 'debug', {
+        api.log(['[ file @ %s ]', connection.type], 'debug', {
           to: connection.remoteIP,
           file: file,
           size: length,
@@ -107,8 +107,8 @@ module.exports = {
         });
       }
 
-    }
+    };
 
     next();
   }
-}
+};

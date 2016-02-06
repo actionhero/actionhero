@@ -4,7 +4,7 @@ module.exports = {
 
     api.routes = {};
     api.routes.routes = {};
-    api.routes.verbs = ['get', 'post', 'put', 'patch', 'delete'];
+    api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete'];
 
     ////////////////////////////////////////////////////////////////////////////
     // route processing for web clients
@@ -34,7 +34,7 @@ module.exports = {
           }
         }
       }
-    }
+    };
 
     api.routes.matchURL = function(pathParts, match, matchTrailingPathParts){
       var response = { match: false, params: {} };
@@ -42,8 +42,8 @@ module.exports = {
       var regexp = '';
       var variable = '';
 
-      if(matchParts[0] === ''){ matchParts.splice(0, 1) }
-      if(matchParts[(matchParts.length - 1)] === ''){ matchParts.pop() }
+      if(matchParts[0] === ''){ matchParts.splice(0, 1); }
+      if(matchParts[(matchParts.length - 1)] === ''){ matchParts.pop(); }
 
       if(matchParts.length !== pathParts.length && matchTrailingPathParts !== true){
         return response;
@@ -63,7 +63,7 @@ module.exports = {
           return response;
         } else if(matchPart[0] === ':' && matchPart.indexOf('(') < 0){
           variable = matchPart.replace(':', '');
-          response.params[variable] = pathPart
+          response.params[variable] = pathPart;
         } else if(matchPart[0] === ':' && matchPart.indexOf('(') >= 0){
           variable = matchPart.replace(':', '').split('(')[0];
           regexp = matchPart.substring(matchPart.indexOf('(') + 1, matchPart.length - 1);
@@ -86,7 +86,7 @@ module.exports = {
 
       response.match = true;
       return response;
-    }
+    };
 
     // don't ever remove this!
     // this is really handy for plugins
@@ -99,13 +99,13 @@ module.exports = {
         action: action,
         apiVersion: apiVersion
       });
-    }
+    };
 
     // load in the routes file
     api.routes.loadRoutes = function(rawRoutes){
       var counter = 0;
 
-      api.routes.routes = { 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
+      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
 
       if(!rawRoutes){
         if(api.config.routes){
@@ -130,8 +130,8 @@ module.exports = {
         }
       }
 
-      api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
-      api.log(counter + ' routes loaded from ' + api.routes.routesFile, 'debug');
+      api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables);
+      api.log(['%s routes loaded from %s', counter, api.routes.routesFile], 'debug');
 
       if(api.config.servers.web && api.config.servers.web.simpleRouting === true){
         var simplePaths = [];
@@ -143,7 +143,7 @@ module.exports = {
             api.routes.registerRoute(verb, '/' + action, action);
           }
         }
-        api.log(simplePaths.length + ' simple routes loaded from action names', 'debug');
+        api.log(['%s simple routes loaded from action names', simplePaths.length], 'debug');
 
         api.log('routes:', 'debug', api.routes.routes);
       }
@@ -152,4 +152,4 @@ module.exports = {
     api.routes.loadRoutes();
     next();
   }
-}
+};

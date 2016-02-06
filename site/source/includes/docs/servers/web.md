@@ -331,6 +331,7 @@ get: [
 - you can optionally define a regex match along with your route variable
   - IE: `{ path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }`
   - be sure to double-escape when needed: `{ path: "/login/:userID(^\\d{3}$)", action: "login" }`
+- The HTTP verbs which you can route against are: `api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete']`
 
 **example**:
 

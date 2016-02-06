@@ -26,4 +26,12 @@ describe('actionhero Tests', function(){
     should.exist(api.id);
   });
 
+  it('can retrieve server uptime via the status action', function(){
+    api.specHelper.runAction('status', function(response){
+      should.not.exist(response.error);
+      response.uptime.should.be.above(0);
+      done();
+    });
+  });
+
 });

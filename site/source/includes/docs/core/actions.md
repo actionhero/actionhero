@@ -13,7 +13,7 @@ exports.action = {
   outputExample: {
     randomNumber: 0.123
   },
-  
+
   run: function(api, data, next){
     data.response.randomNumber = Math.random();
     next();
@@ -49,7 +49,7 @@ var commonInputs = {
         return new Error('that is not a valid email address');
       }
     },  
-  }, 
+  },
   password: {
     required: true,
     validator: function(param){
@@ -124,17 +124,17 @@ exports.action = {
   description: "I am an API method which will generate a random number",
   // a hash of all the inputs this action will accept
   // any inputs provided to the action not in this hash will be stripped
-  inputs: { 
+  inputs: {
     multiplier: {
       required: false,
-      validator: function(param, connection, actionTemplate){ if(param < 0){ 
-        return 'must be > 0' }else{ return true; } 
+      validator: function(param, connection, actionTemplate){ if(param < 0){
+        return 'must be > 0' }else{ return true; }
       },
-      formatter: function(param, connection, actionTemplate){ 
-        return parseInt(param); 
+      formatter: function(param, connection, actionTemplate){
+        return parseInt(param);
       },
-      default:   function(param, connection, actionTemplate){ 
-        return 1; 
+      default:   function(param, connection, actionTemplate){
+        return 1;
       },
     }
   },
@@ -173,14 +173,14 @@ action.inputs = {
   // a complex input
   multiplier: {
     required: true,
-    validator: function(param, connection, actionTemplate){ if(param < 0){ 
-      return 'must be > 0' }else{ return true; } 
+    validator: function(param, connection, actionTemplate){
+      if(param < 0){ return 'must be > 0'; }else{ return true; }
     },
-    formatter: function(param, connection, actionTemplate){ 
-      return parseInt(param); 
+    formatter: function(param, connection, actionTemplate){
+      return parseInt(param);
     },
-    default:   function(param, connection, actionTemplate){ 
-      return 1; 
+    default:   function(param, connection, actionTemplate){
+      return 1;
     },
   }
 };
@@ -188,7 +188,7 @@ action.inputs = {
 
 The properties of an input are:
 
-- `required` (boolean) 
+- `required` (boolean)
   - Default: `false`
 - `formatter = function(param, connection, actionTemplate)`
   - will return the new value of the param
@@ -204,7 +204,9 @@ The properties of an input are:
 
 You can define `api.config.general.missingParamChecks = [null, '', undefined]` to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit `null` values in a JSON payload but not `undefined`, you can now opt-in to that behavior.  This is what `action.inputs.x.required = true` will check against.
 
-Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not), ie: `name: {required: false}`.
+Since all properties of an input are optional, the smallest possible definition of an input is: `name : {}`.  However, you should usually specify that an input is required (or not), ie: `name: {required: false}`.  
+
+The methods `default`, `formatter`, and `validator` have the api object set as `this` within their scopes.  This means that you can define common formatters within middleware and reference them in each action.
 
 The methods are applied in this order:
 
@@ -269,12 +271,12 @@ You can [learn more about middleware here](/docs#middleware).
 
 ## Notes
 
-* Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
+* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).  
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaniousActions`
 * `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](/docs#middleware) preProcessors will always have access to all params pre-scrubbing.
 * `matchExtensionMimeType` is curently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
-* actionhero strives to keep the `connection` object uniform among various client types, and more importantly, present `data.params` in a homogenous way.  You can inspect `connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `connection.rawConnection = {req: req, res: res}` for example.  
+* actionhero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogenous way.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `data.connection.rawConnection = {req: req, res: res}` for example.  
   * You can learn more about some of the `rawConnection` options by learning how to [send files from actions](/docs#sending-files-from-actions).
 
 [You can learn more about handling HTTP verbs and file uploads here](/docs#uploading-files) and [TCP Clients](/docs#files-and-routes) and [Web-Socket Clients](/docs#websocket-server)

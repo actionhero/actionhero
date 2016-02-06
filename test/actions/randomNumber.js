@@ -9,7 +9,7 @@ describe('Action: RandomNumber', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
