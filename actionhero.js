@@ -110,13 +110,12 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.configInitializers.push( function(){
     var customInitializers = [];
-    var recursiveGlob = self.api.utils.recursiveDirectoryGlob;
     self.api.config.general.paths.initializer.forEach(function(startPath) {
-      customInitializers = customInitializers.concat(recursiveGlob(startPath));
+      customInitializers = customInitializers.concat(self.api.utils.recursiveDirectoryGlob(startPath));
     });
     // load all other initializers
     self.api.utils.arrayUniqueify(
-      recursiveGlob(__dirname + path.sep + 'initializers')
+      self.api.utils.recursiveDirectoryGlob(__dirname + path.sep + 'initializers')
       .sort()
       .concat(
         customInitializers

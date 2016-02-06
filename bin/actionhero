@@ -89,6 +89,14 @@ binary.utils = {
       fs.writeFileSync(path.normalize(file), data);
     }
   },
+  createLinkfileSafely: function(filePath, type, refrence){
+    if(binary.utils.fileExists(filePath)){
+      binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
+    } else {
+      binary.log(' - creating linkfile \'' + filePath + '\' => \'' + refrence + '\'');
+      fs.writeFileSync(filePath, type);
+    }
+  },
   createSymlinkSafely: function(destination, source){
     if(binary.utils.dirExists(destination)){
       binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');

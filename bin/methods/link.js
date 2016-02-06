@@ -4,11 +4,12 @@ var fs   = require('fs');
 
 exports.link = function(binary, next){
   if(!binary.argv.name){ binary.utils.hardError('name (of the plugin to link) is a required input'); }
+  if(!binary.argv.linkRelativeBase){ binary.argv.linkRelativeBase = binary.projectRoot + path.sep; }
 
   var pluginRoot;
   binary.config.general.paths.plugin.forEach(function(pluginPath){
-    var pluginPathAttempt = path.normalize(pluginPath + '/' + binary.argv.name);
-    if( !pluginRoot && binary.utils.dirExists(pluginPath + '/' + binary.argv.name) ){
+    var pluginPathAttempt = path.normalize(pluginPath + path.sep + binary.argv.name);
+    if( !pluginRoot && binary.utils.dirExists(pluginPath + path.sep + binary.argv.name) ){
       pluginRoot = pluginPathAttempt;
     }
   });
@@ -18,7 +19,7 @@ exports.link = function(binary, next){
     return next(true);
   }
 
-  var pluginRootRelative = pluginRoot.replace(binary.projectRoot + path.sep, '');
+  var pluginRootRelative = pluginRoot.replace(binary.argv.linkRelativeBase, '');
   binary.log('linking the plugin found at ' + pluginRootRelative);
 
   // link actionable files
@@ -29,12 +30,11 @@ exports.link = function(binary, next){
     [ 'server',      'servers'      ],
     [ 'initializer', 'initializers' ],
   ].forEach(function(c){
-    var localLinkLocation  = binary.config.general.paths[c[0]][0] + path.sep + binary.argv.name;
+    var localLinkLocation  = binary.config.general.paths[c[0]][0] + path.sep + binary.argv.name + '.link';
     var pluginSubSection   = pluginRootRelative + path.sep + c[1];
-    var link               = path.relative(binary.config.general.paths[c[0]][0], pluginSubSection);
 
     if( binary.utils.dirExists(pluginSubSection) ){
-      binary.utils.createSymlinkSafely(localLinkLocation, link);
+      binary.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection)
     }
   })
 
@@ -44,7 +44,7 @@ exports.link = function(binary, next){
     fs.readdirSync(pluginConfigDir).forEach(function(pluginConfigFile){
       var content = fs.readFileSync(pluginConfigDir + path.sep + pluginConfigFile);
       var fileParts = pluginConfigFile.split(path.sep)
-      var localConfigFile = binary.projectRoot + path.sep + 'config' + path.sep + fileParts[(fileParts.length - 1)];
+      var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + fileParts[(fileParts.length - 1)];
       if(process.env.ACTIONHERO_CONFIG){
         localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + fileParts[(fileParts.length - 1)];
       }
