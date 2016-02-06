@@ -146,12 +146,17 @@ module.exports = {
     };
 
     api.utils.sourceRelativeLinkPath = function(linkfile, pluginPaths){
+      console.log(linkfile)
       var type = fs.readFileSync(linkfile).toString();
       var pathParts = linkfile.split(path.sep)
       var name = pathParts[(pathParts.length - 1)].split('.')[0];
+      var pathsToTry = pluginPaths.slice(0);
       var pluginRoot;
 
-      pluginPaths.forEach(function(pluginPath){
+      // TODO: always also try the local destination's `node_modules` to allow for nested plugins
+      // This might be a security risk without requiring explicit sourcing
+
+      pathsToTry.forEach(function(pluginPath){
         var pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
         try{
           var stats = fs.lstatSync(pluginPathAttempt);
