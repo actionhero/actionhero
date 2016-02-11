@@ -105,7 +105,7 @@ Connections over socket can also use the file action.  There is no 'route' for f
 * errors are returned in the normal way `{error: someError}` when they exist.
 * a successful file transfer will return the raw file data in a single send().  There will be no headers set, not will the content be JSON.
 
-## JSON Params 
+## JSON Params
 
 The default method of using actions for TCP clients is to use the methods above to set params to their session and then call actions inline.  However, you can also communication via JSON, passing along params specific to each request.
 
@@ -147,8 +147,8 @@ client.connect({
 
   // try an action
   var params = { key: "mykey", value: "myValue" };
-  client.actionWithParams("cacheTest", params, function(err, apiResposne, delta){
-    console.log("cacheTest action response: " + apiResposne.cacheTestResults.saveResp);
+  client.actionWithParams("cacheTest", params, function(err, apiResponse, delta){
+    console.log("cacheTest action response: " + apiResponse.cacheTestResults.saveResp);
     console.log(" ~ request duration: " + delta + "ms");
   });
 
