@@ -19,10 +19,9 @@ brew install redis
 [download redis](https://github.com/MSOpenTech/redis)
 ```
 
-* node.js ( >= v0.10.0)
-  * io.js works as well!
+* node.js ( >= v4.0.0)
 * npm
-* redis (for cluster support, cache, stats, and tasks)
+* redis (for cluster support, cache, stats, and tasks); but not required.
 
 ## Install & Quickstart
 
