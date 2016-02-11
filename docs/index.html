@@ -949,14 +949,14 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <p>Action middleware requires a <code class="prettyprint">name</code> and at least one of <code class="prettyprint">preProcessor</code> or <code class="prettyprint">postProcessor</code>.  Middleware can be <code class="prettyprint">global</code>, or you can choose to apply each middleware to an action specifically via <code class="prettyprint">action.middleware = []</code> in the action&rsquo;s definiton.  You supply a list of middleware names, like <code class="prettyprint">action.middleware = [&#39;userId checker&#39;]</code> in the example above.</p>
 
-<p>Each processor is passed <code class="prettyprint">data</code> and the callback <code class="prettyprint">next</code>.  Just like within actions, you can modify the <code class="prettyprint">data</code> object to add to <code class="prettyprint">data.resposne</code> to create a response to the client.  If you pass <code class="prettyprint">error</code> to the callback <code class="prettyprint">next</code>, that error will be returned to the client.  If a <code class="prettyprint">preProcessor</code> has an error, the action will never be called.</p>
+<p>Each processor is passed <code class="prettyprint">data</code> and the callback <code class="prettyprint">next</code>.  Just like within actions, you can modify the <code class="prettyprint">data</code> object to add to <code class="prettyprint">data.response</code> to create a response to the client.  If you pass <code class="prettyprint">error</code> to the callback <code class="prettyprint">next</code>, that error will be returned to the client.  If a <code class="prettyprint">preProcessor</code> has an error, the action will never be called.</p>
 
 <p>The priority of a middleware orders it with all other middleware which might fire for an action.  Lower numbers happen first.  If you do not provide a priority, the default from <code class="prettyprint">api.config.general.defaultProcessorPriority</code> will be used</p>
 
 <h2 id="the-data-object">The Data Object</h2>
 
 <p><code class="prettyprint">data</code> contains:</p>
-<pre class="highlight javascript"><code><span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> 
+<pre class="highlight javascript"><code><span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
   <span class="na">connection</span><span class="p">:</span> <span class="p">{},</span>
   <span class="na">action</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
   <span class="na">toProcess</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -989,7 +989,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 <span class="nx">api</span><span class="p">.</span><span class="nx">connections</span><span class="p">.</span><span class="nx">addMiddleware</span><span class="p">(</span><span class="nx">connectionMiddleware</span><span class="p">);</span>
 </code></pre>
 
-<p>Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware. </p>
+<p>Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware.</p>
 
 <p>Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web).  You will likely want to inspect <code class="prettyprint">connection.type</code> in this middleware.  Again, if you do not provide a priority, the default from <code class="prettyprint">api.config.general.defaultProcessorPriority</code> will be used.</p>
 
@@ -1038,7 +1038,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <ul>
 <li>In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty <code class="prettyprint">{}</code> connection is used to proxy the message coming from the &lsquo;system&rsquo;</li>
-<li>Only the <code class="prettyprint">sayCallbacks</code> have a second return value on the callback, <code class="prettyprint">messagePayload</code>.  This allows you to modify the message being sent to your clients. </li>
+<li>Only the <code class="prettyprint">sayCallbacks</code> have a second return value on the callback, <code class="prettyprint">messagePayload</code>.  This allows you to modify the message being sent to your clients.</li>
 <li><code class="prettyprint">messagePayload</code> will be modified and and passed on to all <code class="prettyprint">addSayCallback</code> middlewares inline, so you can append and modify it as you go</li>
 <li>If you have a number of callbacks (<code class="prettyprint">say</code>, <code class="prettyprint">onSayReceive</code>, <code class="prettyprint">join</code> or  <code class="prettyprint">leave</code>), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.</li>
 <li><code class="prettyprint">sayCallbacks</code> are executed once per client connection. This makes it suitable for customizing the message based on the individual client.</li>
@@ -3249,8 +3249,8 @@ randomNumber
 
   <span class="c1">// try an action</span>
   <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s2">"mykey"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s2">"myValue"</span> <span class="p">};</span>
-  <span class="nx">client</span><span class="p">.</span><span class="nx">actionWithParams</span><span class="p">(</span><span class="s2">"cacheTest"</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">apiResposne</span><span class="p">,</span> <span class="nx">delta</span><span class="p">){</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"cacheTest action response: "</span> <span class="o">+</span> <span class="nx">apiResposne</span><span class="p">.</span><span class="nx">cacheTestResults</span><span class="p">.</span><span class="nx">saveResp</span><span class="p">);</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">actionWithParams</span><span class="p">(</span><span class="s2">"cacheTest"</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">apiResponse</span><span class="p">,</span> <span class="nx">delta</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"cacheTest action response: "</span> <span class="o">+</span> <span class="nx">apiResponse</span><span class="p">.</span><span class="nx">cacheTestResults</span><span class="p">.</span><span class="nx">saveResp</span><span class="p">);</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">" ~ request duration: "</span> <span class="o">+</span> <span class="nx">delta</span> <span class="o">+</span> <span class="s2">"ms"</span><span class="p">);</span>
   <span class="p">});</span>
 
