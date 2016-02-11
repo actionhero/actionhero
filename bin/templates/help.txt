@@ -1,4 +1,4 @@
-actionhero - a node.js API framework for both tcp sockets, web sockets, and http clients.
+actionhero - A multi-transport node.js API Server with integrated cluster capabilities and delayed tasks
 
 Binary options:
 * help (default)
@@ -68,4 +68,7 @@ Descriptions:
   will link the actions, tasks, initializers, etc from a plugin into your top-level project
   normally, you will have first installed the plugin via `npm install myPlugin`
 
-More Help & the actionhero documentation can be found @ http://www.actionherojs.com
+#############################################################
+## More Help & the actionhero documentation can be found @ ##
+##             http://www.actionherojs.com                 ##
+#############################################################
