@@ -9,7 +9,7 @@
 
 <span class="c1">// config/tasks.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
 
         <span class="c1">// defualt to config for 'server'</span>
@@ -67,7 +67,7 @@
 <ul>
 <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
 </ul></li>
-<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example: </li>
+<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example:</li>
 <li>Always have a replica of redis!</li>
 </ul>
 
@@ -100,7 +100,7 @@
 
 <p>You never want more workers than you can run at a time, or else you will actually be slowing down the execution of all processes.</p>
 
-<p>Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers! </p>
+<p>Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers!</p>
 
 <h2 id="pidfiles">Pidfiles</h2>
 
@@ -118,18 +118,18 @@
 
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> git pull
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> npm install
-<span class="c"># run any grunt tasks here, like perhaps an asset compile step or a database migration</span>
+<span class="c"># run any build tasks here, like perhaps an asset compile step or a database migration</span>
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> <span class="nb">kill</span> -s USR2 <span class="sb">`</span>cat pids/cluster_pidfile<span class="sb">`</span>
 </code></pre>
 
 <p>To send a signal to the cluster master process to reboot all its workers (<code class="prettyprint">USR2</code>), you can cat the pidfile (bash):
 <code class="prettyprint">kill -s USR2 &quot;cat /path/to/pids/cluster_pidfile&quot;</code></p>
 
-<p>If you want to setup a git-based deployment, the simplest steps would be something like =&gt; </p>
+<p>If you want to setup a git-based deployment, the simplest steps would be something like =&gt;</p>
 
 <h2 id="global-packages">Global Packages</h2>
 
-<p>It&rsquo;s probably best to avoid installing any global packages.  This way, you won&rsquo;t have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package&rsquo;s binaries are always copied into <code class="prettyprint">./node_modules/.bin</code>. </p>
+<p>It&rsquo;s probably best to avoid installing any global packages.  This way, you won&rsquo;t have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package&rsquo;s binaries are always copied into <code class="prettyprint">./node_modules/.bin</code>.</p>
 
 <p>You can add local references to your $PATH like so to use these local binaries:</p>
 
@@ -138,7 +138,7 @@
 <h2 id="nginx-example">Nginx Example</h2>
 <pre class="highlight javascript"><code><span class="c1">// From `config/servers/web.js`</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
   <span class="na">servers</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">web</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
       <span class="k">return</span> <span class="p">{</span>
@@ -243,14 +243,13 @@ http <span class="o">{</span>
 
 <ul>
 <li>Be sure to change <code class="prettyprint">api.config.general.serverToken</code> to something unique for your application</li>
-<li>Turn off <a href="/docs/#development-mode">developer mode</a> in production. </li>
-<li>Turn off <code class="prettyprint">actionDomains</code> in production.  While domains can <em>sometimes</em> save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.</li>
+<li>Turn off <a href="/docs/#development-mode">developer mode</a> in production.</li>
 </ul>
 
 <h3 id="topology">Topology</h3>
 
 <ul>
-<li>Run a cluster via <code class="prettyprint">startCluster</code>.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.  This will also allow you to turn of <code class="prettyprint">actionDomains</code> and allow one node to crash while the others continue to server traffic
+<li>Run a cluster via <code class="prettyprint">startCluster</code>.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
 
 <ul>
 <li>You can run 1 actionhero instance per core (assuming the server is dedicated to actionhero), and that is the default behavior of <code class="prettyprint">startCluster</code>.</li>
@@ -276,13 +275,13 @@ http <span class="o">{</span>
 <li>Configure Nginx to serve static files whenever possible to remove load from actionhero, and leave it just to process actions</li>
 </ul></li>
 <li>Use a CDN. Actionhero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.</li>
-<li>Use redis-cluster or redis-sentinel.  The <a href="https://github.com/luin/ioredis"><code class="prettyprint">ioredis</code></a> redis library has support for them by default.  This allows you to have a High Availability redis configuration. </li>
+<li>Use redis-cluster or redis-sentinel.  The <a href="https://github.com/luin/ioredis"><code class="prettyprint">ioredis</code></a> redis library has support for them by default.  This allows you to have a High Availability redis configuration.</li>
 </ul>
 
 <h3 id="actions">Actions</h3>
 
 <ul>
-<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/#inputs"><code class="prettyprint">params.formatter</code></a> step. </li>
+<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/#inputs"><code class="prettyprint">params.formatter</code></a> step.</li>
 <li>Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is &ldquo;never pass a query to your database which can be directly modified via user input&rdquo;!</li>
 <li>Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.</li>
 <li>Crafting <a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>

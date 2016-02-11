@@ -54,9 +54,11 @@ npm start
 
 |- config
 | -- api.js
+| -- errors.js
+| -- i18n.js
 | -- logger.js
 | -- redis.js
-| -- stats.js
+| -- routes.js
 | -- tasks.js
 | -- servers
 | ---- web.js
@@ -88,18 +90,19 @@ npm start
 |- tasks
 |-- <span class="o">(</span>your tasks<span class="o">)</span>
 |
+|- locales
+|-- <span class="o">(</span>translation files<span class="o">)</span>
+|
 |- tests
 |-- <span class="o">(</span>tests <span class="k">for </span>your API<span class="o">)</span>
 |
 readme.md
-routes.js
-gruntfile.js
 package.json <span class="o">(</span>be sure to include <span class="s1">'actionhero'</span>:<span class="s1">'x'</span><span class="o">)</span>
 </code></pre>
 
-<p>The map to the left describes actionhero&rsquo;s default project layout. </p>
+<p>The map to the left describes actionhero&rsquo;s default project layout.</p>
 
-<p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>. </p>
+<p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>.</p>
 
 <p><code class="prettyprint">/public</code> will become your application&rsquo;s default static asset location.   </p>
 

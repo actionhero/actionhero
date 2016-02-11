@@ -145,9 +145,11 @@ npm start
 
 |- config
 | -- api.js
+| -- errors.js
+| -- i18n.js
 | -- logger.js
 | -- redis.js
-| -- stats.js
+| -- routes.js
 | -- tasks.js
 | -- servers
 | ---- web.js
@@ -179,18 +181,19 @@ npm start
 |- tasks
 |-- <span class="o">(</span>your tasks<span class="o">)</span>
 |
+|- locales
+|-- <span class="o">(</span>translation files<span class="o">)</span>
+|
 |- tests
 |-- <span class="o">(</span>tests <span class="k">for </span>your API<span class="o">)</span>
 |
 readme.md
-routes.js
-gruntfile.js
 package.json <span class="o">(</span>be sure to include <span class="s1">'actionhero'</span>:<span class="s1">'x'</span><span class="o">)</span>
 </code></pre>
 
-<p>The map to the left describes actionhero&rsquo;s default project layout. </p>
+<p>The map to the left describes actionhero&rsquo;s default project layout.</p>
 
-<p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>. </p>
+<p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>.</p>
 
 <p><code class="prettyprint">/public</code> will become your application&rsquo;s default static asset location.   </p>
 
@@ -261,7 +264,7 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
         <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'that is not a valid email address'</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">},</span>  
-  <span class="p">},</span> 
+  <span class="p">},</span>
   <span class="na">password</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">){</span>
@@ -334,17 +337,17 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
   <span class="na">description</span><span class="p">:</span> <span class="s2">"I am an API method which will generate a random number"</span><span class="p">,</span>
   <span class="c1">// a hash of all the inputs this action will accept</span>
   <span class="c1">// any inputs provided to the action not in this hash will be stripped</span>
-  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span> 
+  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">multiplier</span><span class="p">:</span> <span class="p">{</span>
       <span class="na">required</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+      <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span>
       <span class="p">},</span>
-      <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+      <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+        <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
       <span class="p">},</span>
-      <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+      <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
       <span class="p">},</span>
     <span class="p">}</span>
   <span class="p">},</span>
@@ -381,14 +384,14 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
   <span class="c1">// a complex input</span>
   <span class="nl">multiplier</span><span class="p">:</span> <span class="p">{</span>
     <span class="nl">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> <span class="k">return</span> <span class="s1">'must be &gt; 0'</span><span class="p">;</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span>
     <span class="p">},</span>
-    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
     <span class="p">},</span>
-    <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+    <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">},</span>
   <span class="p">}</span>
 <span class="p">};</span>
@@ -397,7 +400,7 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 <p>The properties of an input are:</p>
 
 <ul>
-<li><code class="prettyprint">required</code> (boolean) 
+<li><code class="prettyprint">required</code> (boolean)
 
 <ul>
 <li>Default: <code class="prettyprint">false</code></li>
@@ -426,7 +429,9 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 
 <p>You can define <code class="prettyprint">api.config.general.missingParamChecks = [null, &#39;&#39;, undefined]</code> to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit <code class="prettyprint">null</code> values in a JSON payload but not <code class="prettyprint">undefined</code>, you can now opt-in to that behavior.  This is what <code class="prettyprint">action.inputs.x.required = true</code> will check against.</p>
 
-<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not), ie: <code class="prettyprint">name: {required: false}</code>.</p>
+<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not), ie: <code class="prettyprint">name: {required: false}</code>.  </p>
+
+<p>The methods <code class="prettyprint">default</code>, <code class="prettyprint">formatter</code>, and <code class="prettyprint">validator</code> have the api object set as <code class="prettyprint">this</code> within their scopes.  This means that you can define common formatters within middleware and reference them in each action.</p>
 
 <p>The methods are applied in this order:</p>
 
@@ -491,12 +496,12 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 <h2 id="notes">Notes</h2>
 
 <ul>
-<li>Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code class="prettyprint">next(error)</code>.  If you have an erro, be sure that it is an <code class="prettyprint">new Error()</code> object, and not a string.</li>
+<li>Actions are asynchronous, and require in the API object, the <code class="prettyprint">data</code> object, and the callback function.  Completing an action is as simple as calling <code class="prettyprint">next(error)</code>.  If you have an erro, be sure that it is an <code class="prettyprint">new Error()</code> object, and not a string.</li>
 <li>The metadata <code class="prettyprint">outputExample</code> is used in reflexive and self-documenting actions in the API, available via the <code class="prettyprint">documentation</code> verb (and /api/ showDocumenation action).<br></li>
 <li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code class="prettyprint">api.config.general.simultaniousActions</code></li>
 <li><code class="prettyprint">actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code class="prettyprint">api.config.general.disableParamScrubbing</code>. Note that <a href="/docs#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
 <li><code class="prettyprint">matchExtensionMimeType</code> is curently only used by the <code class="prettyprint">web</code> server, and it indicates that if this action is successfully called by a client with <code class="prettyprint">connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
-<li>actionhero strives to keep the <code class="prettyprint">connection</code> object uniform among various client types, and more importantly, present <code class="prettyprint">data.params</code> in a homogenous way.  You can inspect <code class="prettyprint">connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code class="prettyprint">connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code class="prettyprint">connection.rawConnection = {req: req, res: res}</code> for example.<br>
+<li>actionhero strives to keep the <code class="prettyprint">data.connection</code> object uniform among various client types, and more importantly, present <code class="prettyprint">data.params</code> in a homogenous way.  You can inspect <code class="prettyprint">data.connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code class="prettyprint">data.connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code class="prettyprint">data.connection.rawConnection = {req: req, res: res}</code> for example.<br>
 
 <ul>
 <li>You can learn more about some of the <code class="prettyprint">rawConnection</code> options by learning how to <a href="/docs#sending-files-from-actions">send files from actions</a>.</li>
@@ -1460,7 +1465,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 <li>this uses <code class="prettyprint">fs.watchFile()</code> and may not work on all OSs / file systems.</li>
 <li>new files won&rsquo;t be loaded in, only existing files when the app was booted will be monitored</li>
 <li>as deleting a file might crash your application, we will not attempt to re-load deleted files</li>
-<li>if you have changed the <code class="prettyprint">task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change </li>
+<li>if you have changed the <code class="prettyprint">task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change</li>
 <li>changing <code class="prettyprint">api.config</code>, initializers, or servers, will attempt to do a &ldquo;full&rdquo; reboot the server rather than just reload that component.</li>
 </ul>
 
@@ -1490,7 +1495,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 <p>That&rsquo;s it! Now you can visit <code class="prettyprint">http://0.0.0.0:1234/debug?port=5858</code> and start debugging.  Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects.  IE: I put a breakpoint in the default <code class="prettyprint">status</code> action in the <code class="prettyprint">run</code> method:</p>
 
 <h2 id="repl">REPL</h2>
-<pre class="highlight shell"><code><span class="gp">&gt; </span>grunt console
+<pre class="highlight shell"><code><span class="gp">&gt; </span>actionhero console
 Running <span class="s2">"console"</span> task
 2015-11-14 17:48:01 - notice: <span class="k">***</span> starting actionhero <span class="k">***</span>
 2015-11-14 17:48:01 - warning: running with fakeredis
@@ -1511,7 +1516,7 @@ Running <span class="s2">"console"</span> task
   <span class="s1">'status'</span> <span class="o">]</span>
 </code></pre>
 
-<p>actionhero now has a REPL (<code class="prettyprint">v9.0.0</code>)! This means you can &lsquo;connect&rsquo; to a running instance of actionhero and manually call all the methods on the <code class="prettyprint">api</code> namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running <code class="prettyprint">grunt console</code> will load up a version of action hero in your terminal where you have access to the <code class="prettyprint">api</code> object.  This version of the server will <code class="prettyprint">boot</code>, <code class="prettyprint">initialize</code>, and <code class="prettyprint">start</code>, but will skip booting any <code class="prettyprint">servers</code>.  </p>
+<p>actionhero now has a REPL (<code class="prettyprint">v9.0.0</code>)! This means you can &lsquo;connect&rsquo; to a running instance of actionhero and manually call all the methods on the <code class="prettyprint">api</code> namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running <code class="prettyprint">actionhero console</code> will load up a version of action hero in your terminal where you have access to the <code class="prettyprint">api</code> object.  This version of the server will <code class="prettyprint">boot</code>, <code class="prettyprint">initialize</code>, and <code class="prettyprint">start</code>, but will skip booting any <code class="prettyprint">servers</code>.  </p>
 
 <p>The REPL will:</p>
 
@@ -1525,88 +1530,6 @@ Running <span class="s2">"console"</span> task
 <p>If you are familiar with rails, this is very similar to <code class="prettyprint">rails console</code></p>
 
 <p><img src="https://cloud.githubusercontent.com/assets/303226/2953485/4db6cbe2-da5b-11e3-96de-26fe4931d9af.png"></p>
-
-          <h1 id="actiondomains">actionDomains</h1>
-
-<p>actionhero will catch any uncaught exceptions which take place within actions or tasks if you enable <code class="prettyprint">api.config.general.actionDomains</code>.  These exceptions will be logged along with any relevant details which can be captured about the connection making the request.</p>
-
-<p>When this happens:</p>
-
-<ul>
-<li>clients will be sent <code class="prettyprint">connection.error</code> as defined in <code class="prettyprint">api.config.general.serverErrorMessage</code>
-
-<ul>
-<li>Web clients will also be sent the 500 (server error) header </li>
-</ul></li>
-<li>Exceptions created in tasks will also be logged, and the task will return its callback
-
-<ul>
-<li>If the Exception occurred within a periodic task, the task will not be re-enqueued.</li>
-</ul></li>
-</ul>
-
-<p>Keep in mind that any application-wide settings which may have been modified in this erroneous action/task will <strong>not</strong> be rolled-back.</p>
-
-<p>Other exceptions, perhaps occurring in an initializer, will not be caught.  These are probably serious and should be investigated, and are allowed to crash the server.</p>
-
-<p><strong>This feature relies on domains, and you shold not enable this in production</strong>.</p>
-
-<h2 id="custom-error-reporters">Custom Error Reporters</h2>
-
-<p><code class="prettyprint">api.exceptionHandlers.reporters</code> is an array that contains all the error reporters.  Upon an uncaught exception from an error or task, all the reporters in the array will be invoked with <code class="prettyprint">(err, type, name, objects, severity)</code>.  You can remove the default <code class="prettyprint">stdout</code> reporter by setting <code class="prettyprint">api.exceptionHandlers.reporters = [];</code></p>
-
-<p>So, say you wanted to send yourself an email when an error occured:</p>
-<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">nodemailer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'nodemailer'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">transporter</span> <span class="o">=</span> <span class="nx">nodemailer</span><span class="p">.</span><span class="nx">createTransport</span><span class="p">({</span>
-    <span class="na">service</span><span class="p">:</span> <span class="s1">'Gmail'</span><span class="p">,</span>
-    <span class="na">auth</span><span class="p">:</span> <span class="p">{</span>
-        <span class="na">user</span><span class="p">:</span> <span class="s1">'gmail.user@gmail.com'</span><span class="p">,</span>
-        <span class="na">pass</span><span class="p">:</span> <span class="s1">'userpass'</span>
-    <span class="p">}</span>
-<span class="p">});</span>
-
-<span class="kd">var</span> <span class="nx">emailErrorReporter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">objects</span><span class="p">,</span> <span class="nx">severity</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">lines</span> <span class="o">=</span> <span class="p">[];</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'! Error: '</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span> <span class="o">+</span> <span class="s1">' @ '</span> <span class="o">+</span> <span class="nx">severity</span><span class="p">);</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     When: '</span> <span class="o">+</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">());</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Env: '</span>  <span class="o">+</span> <span class="nx">api</span><span class="p">.</span><span class="nx">env</span><span class="p">);</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Type: '</span> <span class="o">+</span> <span class="nx">type</span><span class="p">);</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Name: '</span> <span class="o">+</span> <span class="nx">name</span><span class="p">);</span>
-  <span class="nx">lines</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">'!     Data: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">objects</span><span class="p">));</span>
-
-  <span class="kd">var</span> <span class="nx">mailOptions</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="na">from</span><span class="p">:</span> <span class="s1">'actionhero@actionhero.com'</span><span class="p">,</span>
-    <span class="na">to</span><span class="p">:</span> <span class="s1">'you@site.com'</span><span class="p">,</span>
-    <span class="na">subject</span><span class="p">:</span> <span class="s1">'actionhero error!'</span><span class="p">,</span>
-    <span class="na">text</span><span class="p">:</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">"\r\n"</span><span class="p">)</span>
-  <span class="p">};</span>
-
-  <span class="nx">transporter</span><span class="p">.</span><span class="nx">sendMail</span><span class="p">(</span><span class="nx">mailOptions</span><span class="p">);</span>
-<span class="p">}</span>
-
-
-<span class="nx">api</span><span class="p">.</span><span class="nx">exceptionHandlers</span><span class="p">.</span><span class="nx">reporters</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">emailErrorReporter</span><span class="p">);</span>
-</code></pre>
-
-<h2 id="example-exception-output">Example Exception Output</h2>
-<pre class="highlight shell"><code>2012-09-30 22:02:03 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: <span class="o">{</span>no action<span class="o">}</span> | request: localhost:8080/ | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">""</span><span class="o">}</span> | duration: 1
-2012-09-30 22:02:07 | ! uncaught error from action: randomNumber
-2012-09-30 22:02:07 | ! connection details:
-2012-09-30 22:02:07 | !     action: <span class="s2">"randomNumber"</span>
-2012-09-30 22:02:07 | !     remoteIP: <span class="s2">"127.0.0.1"</span>
-2012-09-30 22:02:07 | !     <span class="nb">type</span>: <span class="s2">"web"</span>
-2012-09-30 22:02:07 | !     params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"randomNumber"</span><span class="o">}</span>
-2012-09-30 22:02:07 | ! ReferenceError: anUnsetVariable is not defined
-2012-09-30 22:02:07 | !     at Object.action.run <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/actions/randomNumber.js:18:14<span class="o">)</span>
-2012-09-30 22:02:07 | !     at api.processAction.process.nextTick.api.actions.<span class="o">(</span>anonymous <span class="k">function</span><span class="o">)</span>.run.connection.respondingTo <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/initializers/initActions.js:118:40<span class="o">)</span>
-2012-09-30 22:02:07 | !     at Domain.bind.b <span class="o">(</span>domain.js:201:18<span class="o">)</span>
-2012-09-30 22:02:07 | !     at Domain.run <span class="o">(</span>domain.js:141:23<span class="o">)</span>
-2012-09-30 22:02:07 | !     at api.processAction.process.nextTick.connection.respondingTo <span class="o">(</span>/Users/evantahler/PROJECTS/actionhero/initializers/initActions.js:117:21<span class="o">)</span>
-2012-09-30 22:02:07 | !     at process.startup.processNextTick.process._tickCallback <span class="o">(</span>node.js:244:9<span class="o">)</span>
-2012-09-30 22:02:07 | <span class="k">*</span>
-2012-09-30 22:02:07 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: randomNumber | request: localhost:8080/randomNumber | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"randomNumber"</span><span class="o">}</span> | duration: 4
-2012-09-30 22:02:23 | <span class="o">[</span>action @ web] to: 127.0.0.1 | action: status | request: localhost:8080/status | params: <span class="o">{</span><span class="s2">"action"</span>:<span class="s2">"status"</span><span class="o">}</span> | duration: 1
-</code></pre>
 
           <h1 id="file-server">File Server</h1>
 
@@ -1707,8 +1630,8 @@ Running <span class="s2">"console"</span> task
   <span class="na">transports</span><span class="p">:</span> <span class="p">[</span>
     <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
       <span class="k">return</span> <span class="k">new</span> <span class="p">(</span><span class="nx">winston</span><span class="p">.</span><span class="nx">transports</span><span class="p">.</span><span class="nx">Console</span><span class="p">)({</span>
-        <span class="na">colorize</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> 
-        <span class="na">level</span><span class="p">:</span> <span class="s2">"debug"</span><span class="p">,</span> 
+        <span class="na">colorize</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">level</span><span class="p">:</span> <span class="s2">"debug"</span><span class="p">,</span>
       <span class="p">});</span>
     <span class="p">},</span>
     <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
@@ -1724,7 +1647,7 @@ Running <span class="s2">"console"</span> task
 
 <p>In your <code class="prettyprint">config/logger.js</code>, you can customize which <code class="prettyprint">transports</code> you would like the logger to use. If none are provided, a default logger which only will print to stdout will be used.  See winston&rsquo;s documentation for all the logger types, but know that they include console, file, s3, riak, and more.</p>
 
-<p>The default loggers are =&gt; </p>
+<p>The default loggers are =&gt;</p>
 
 <p>You can set a transport directly, IE <code class="prettyprint">new (winston.transports.Console)()</code> or in a function which will be passed the <code class="prettyprint">api</code> object like the examples above.  The benefit of using the function invocation is you will have access to other methods and configuration options (like the title of the process).</p>
 
@@ -1752,22 +1675,40 @@ Running <span class="s2">"console"</span> task
 
 <p>For example, if you set the logger&rsquo;s level to &ldquo;notice&rdquo;, you would also see &ldquo;crit&rdquo; messages, but not &ldquo;debug&rdquo; messages.</p>
 
-<p>To invoke the logger from your code, use:</p>
-
-<h3 id="api-log-message-severity-metadata">api.log(message, severity, metadata)</h3>
-
-<ul>
-<li>message is a string</li>
-<li>severity is a string, and should match the log-level (IE: &lsquo;info&rsquo; or &#39;warning&rsquo;)</li>
-<li>the default severity level is &#39;info&rsquo;</li>
-<li>(optional) metadata is anything that can be stringified with <code class="prettyprint">JSON.stringify</code></li>
-</ul>
+<p>To invoke the logger from your code, use: <code class="prettyprint">api.log(message, severity, metadata)</code></p>
 
 <h2 id="methods">Methods</h2>
 
 <p><code class="prettyprint">api.logger.log</code> and <code class="prettyprint">api.logger[severity]</code> also exist which allow you to call and modify the Winston instance directly.</p>
 
 <p><code class="prettyprint">api.log</code> will pass your message to all transports.</p>
+
+<h3 id="api-log-message-severity-metadata">api.log(message, severity, metadata)</h3>
+<pre class="highlight javascript"><code><span class="c1">// the most basic use.  Will assume 'info' as the severity</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">);</span>
+
+<span class="c1">// custom severity</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'OH NO!'</span><span class="p">,</span> <span class="s1">'warning'</span><span class="p">);</span>
+
+<span class="c1">// custom severity with a metadata object</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'OH NO, something went wrong'</span><span class="p">,</span> <span class="s1">'warning'</span><span class="p">,</span> <span class="p">{</span> <span class="na">error</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'things are busted'</span><span class="p">)</span> <span class="p">});</span>
+
+<span class="c1">// using sprintf-style interpolations</span>
+<span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Hello there, the time is now %s'</span><span class="p">,</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">()];</span>
+<span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="s1">'debug'</span><span class="p">);</span>
+</code></pre>
+
+<ul>
+<li>message is a string or an array containing a <code class="prettyprint">sprintf</code> style string and replacements
+
+<ul>
+<li>an example of this would be: <code class="prettyprint">api.log([&#39;Hello %s&#39;, connection.params.firstName], &#39;info&#39;)</code></li>
+<li>the message you pass will be used with the localization engines (<code class="prettyprint">i18n</code>).  You can <a href="/docs/#localizing-the-logger">learn more here</a></li>
+</ul></li>
+<li>severity is a string, and should match the log-level (IE: &lsquo;info&rsquo; or &#39;warning&rsquo;)</li>
+<li>the default severity level is &#39;info&rsquo;</li>
+<li>(optional) metadata is anything that can be stringified with <code class="prettyprint">JSON.stringify</code></li>
+</ul>
 
           <h1 id="plugins">Plugins</h1>
 
@@ -1777,7 +1718,9 @@ Running <span class="s2">"console"</span> task
 
 <h2 id="including-plugins">Including Plugins</h2>
 
-<p><code class="prettyprint">api.config.general.paths.plugin</code> (loaded from <code class="prettyprint">/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code class="prettyprint">./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code class="prettyprint">api.config.general.plugins</code> (loaded from <code class="prettyprint">/config/plugins.js</code>) to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.</p>
+<p><code class="prettyprint">api.config.general.paths.plugin</code> (loaded from <code class="prettyprint">/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code class="prettyprint">./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code class="prettyprint">npm run actionhero link --name nameOfPlugin</code> to crete links in your top-level project to the plugin.  This will also copy over any config files from the plugin into your project so you can modify them.  The act of &ldquo;linking&rdquo; simply creates a <code class="prettyprint">myPLugin.link</code> file in each component of your top-level project (actions, tasks, etc) which tells actionhero to load up files at boot from that plugin.  </p>
+
+<p>You can delete all (or some) links at any time.</p>
 
 <h2 id="creating-plugins">Creating Plugins</h2>
 <pre class="highlight shell"><code>/
@@ -1793,19 +1736,25 @@ Running <span class="s2">"console"</span> task
 
 <p>To create a plugin, create a project with the following structure:</p>
 
-<p>This structure will allow elements to be loaded into actionhero (we search <code class="prettyprint">/actions</code> for actions, etc)</p>
+<p>This structure will allow elements to be loaded into actionhero (we search <code class="prettyprint">/actions</code> for actions, <code class="prettyprint">/tasks</code> for tasks, etc)</p>
 
 <p>When developing your plugin locally, you can load it into an existing actionhero project to test it out.</p>
 
 <p>First, add the path your plugin is in to <code class="prettyprint">api.config.general.paths.plugin</code>.  If your actionhero app is in <code class="prettyprint">/var/ah/actionhero</code> and your plugin is in <code class="prettyprint">/var/ah/my_plugin</code>, add <code class="prettyprint">/var/ah</code> to <code class="prettyprint">api.config.general.paths.plugin</code></p>
 
-<p>Then, in <code class="prettyprint">api.config.general.plugins</code>, add the name of your plugin, in this case <code class="prettyprint">my_plugin</code>.  Note that the directory name and the package name in the plugin&rsquo;s <code class="prettyprint">package.json</code> should match.</p>
-
 <p><strong>Please use the npm naming convention <code class="prettyprint">ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+
+<h2 id="changes-in-v13-0-0">Changes in V13.0.0</h2>
+
+<p>The plugin system was significantly changes in Actionhero version <code class="prettyprint">13.0.0</code>.  Older plugins will not work.<br>
+- <code class="prettyprint">config/plugins.js</code> has been removed in favor of the linking system
+- Config files from within plugins are no longer sourced
+- There should be no more postinstall scripts needed, and as such, none are executed
+- Be sure that your plugin is OS-independant. Use path.sep for file path separators and things like that. Use relative paths for everything in your plugin.</p>
 
 <h2 id="plugin-methods">Plugin methods</h2>
 
-<p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &ldquo;top level&rdquo; actionhero project, but might be difficult from within the <code class="prettyprint">node_modules</code> folder.</p>
+<p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &ldquo;top level&rdquo; actionhero project, but might be difficult from within the <code class="prettyprint">node_modules</code> folder.  Here are some helpers:</p>
 
 <h3 id="routes">Routes:</h3>
 
@@ -1816,25 +1765,6 @@ Running <span class="s2">"console"</span> task
 <li>Add a route to the system.<br></li>
 </ul></li>
 </ul>
-
-<h2 id="plugin-scripts">Plugin Scripts</h2>
-<pre class="highlight javascript"><code><span class="cp">#!/usr/bin/env node
-</span>
-<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
-
-<span class="kd">var</span> <span class="nx">localFile</span>   <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'/../config/ah-sample-plugin.js'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">projectFile</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/../../config/plugins/ah-sample-plugin.js'</span><span class="p">);</span>
-
-<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">)){</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"copying "</span> <span class="o">+</span> <span class="nx">localFile</span> <span class="o">+</span> <span class="s2">" to "</span> <span class="o">+</span> <span class="nx">projectFile</span><span class="p">);</span>
-  <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="nx">localFile</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre>
-
-<p>The <code class="prettyprint">scripts</code> directory is used to contain any install scripts.  For example, imagine your plugin relies on configuration settings which are expected to be in a <code class="prettyprint">api.config.myPlugin</code> hash.  Write an example config file in <code class="prettyprint">/config</code>, and then use a post-install script to copy that into the containing project&rsquo;s <code class="prettyprint">/config</code> directory.  For example:</p>
-
-<p>And you would add the following to your <code class="prettyprint">package.json</code>: <code class="prettyprint">&quot;postinstall&quot;: &quot;scripts/postinstall.js&quot;</code></p>
 
 <h2 id="example-plugin">Example Plugin</h2>
 
@@ -2020,8 +1950,75 @@ Running <span class="s2">"console"</span> task
 
 <p>Servers can optionally implement the <code class="prettyprint">server.sendFile = function(connection, error, fileStream, mime, length)</code> method.  This method is responsible for any connection-specific file transport (headers, chinking, encoding, etc). Note that fileStream is a <code class="prettyprint">stream</code> which should be <code class="prettyprint">pipe</code>d to the client.</p>
 
+          <h1 id="localization">Localization</h1>
+
+<p>Starting in Actionhero <code class="prettyprint">v13.0.0</code>, you can now use the <a href="https://github.com/mashpie/i18n-node">i18n</a> module to customize all aspects of actionhero.</p>
+
+<h2 id="locale-files">Locale files</h2>
+
+<ul>
+<li>When running actionhero with <code class="prettyprint">api.config.i18n.updateFiles = true</code>, you will see actionhero generate a &lsquo;locales&rsquo; folder at the top level of your project which will contain translations of all strings in your project with are passed though the new localization system.  This includes all uses of <code class="prettyprint">connection.localize</code> and <code class="prettyprint">api.log</code>.<br>
+
+<ul>
+<li>be sure to use sprintf-style string interpolation for variables!</li>
+</ul></li>
+<li>From here, it is an easy matter to change the strings, per locale, to how you would like them presented back in your application.  The next time you restart the server, the values you&rsquo;ve updated in your locale strings file will be used.</li>
+<li>disable <code class="prettyprint">api.config.i18n.updateFiles</code> if you do not want this behavior.</li>
+</ul>
+
+<h2 id="determining-connection-locales">Determining connection locales</h2>
+
+<p>Since every actionhero implementation is unique, we cannot ship with a &ldquo;guess&rdquo; about how to determine a given connection&rsquo;s locale. Perhaps you have an HTTP server and you can trust your client&rsquo;s <code class="prettyprint">accept-language</code> headers.  Or perhaps you run your API under a number of different host names and you can presume locale based on them.   Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.  </p>
+
+<p>For example, I may have an initializer in my project like this:</p>
+<pre class="highlight javascript"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">initialize</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">customLocalization</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">lookup</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en'</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">'web'</span><span class="p">){</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'usa.site.com'</span><span class="p">){</span> <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en-US'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'uk.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en-GB'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'es.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'es-ES'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'mx.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'es-MX'</span><span class="p">;</span> <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">locale</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>To tell the i18n to use this method with a new connection, set <code class="prettyprint">api.config.i18n.determineConnectionLocale = &#39;api.customLocalization.lookup&#39;</code></p>
+
+<h2 id="connection-methods">Connection Methods</h2>
+
+<ul>
+<li><code class="prettyprint">connection.localize(string)</code> or <code class="prettyprint">connection.localize([string-with-interpolation, value])</code>
+
+<ul>
+<li>Allows you to interpolate a string based on the connection&rsquo;s current locale.  For example, say in an action you wanted to respond with <code class="prettyprint">data.response.message = connection.localize(&#39;the count was %s&#39;, 4);</code> In your locale files, you would define <code class="prettyprint">the count was %s</code> in every language you cared about, and not need to modify the action itself at all.</li>
+</ul></li>
+</ul>
+
+<h2 id="localizing-the-logger">Localizing the Logger</h2>
+
+<ul>
+<li>Just like connections, the actionhero logger itself now has localization interpolation built in.  Note how in the new settings you set which locale you want the server&rsquo;s logs to be expressed in.  Using that, you can now use sprintf-style string interpolation as the first argument of <code class="prettyprint">api.log()</code>
+
+<ul>
+<li>You might want to log the message <code class="prettyprint">api.log([&#39;The time is %s&#39;, new Date()], &#39;alert&#39;)</code>.<br></li>
+<li>Changing the translation of the string <code class="prettyprint">The time is %s</code> in your locale files would apply to the logger as well!</li>
+<li>You can of course continue to log plain strings as we have been with the logger as well.</li>
+</ul></li>
+</ul>
+
           <h1 id="the-api-object">The API Object</h1>
-<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="p">{</span> 
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="p">{</span>
   <span class="c1">// STATE VARIABLES //</span>
   <span class="na">running</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
   <span class="na">initialized</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -2041,35 +2038,35 @@ Running <span class="s2">"console"</span> task
   <span class="na">unWatchAllFiles</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
   <span class="na">loadConfigDirectory</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
 
-  <span class="c1">// SERVER COMMAND AND CONTROL // </span>
-  <span class="na">commands</span><span class="p">:{</span> 
+  <span class="c1">// SERVER COMMAND AND CONTROL //</span>
+  <span class="na">commands</span><span class="p">:{</span>
     <span class="na">initialize</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">start</span><span class="p">:</span>      <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">stop</span><span class="p">:</span>       <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">restart</span><span class="p">:</span>    <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="na">restart</span><span class="p">:</span>    <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
 
   <span class="c1">// COMAND AND CONTROL //</span>
-  <span class="na">_self</span><span class="p">:{</span> 
+  <span class="na">_self</span><span class="p">:{</span>
     <span class="na">initializers</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">startingParams</span><span class="p">:</span> <span class="p">{</span> <span class="na">configChanges</span><span class="p">:</span> <span class="p">[]</span> <span class="p">},</span>
 
-     <span class="c1">// arrays containing init/stop/start methods </span>
+     <span class="c1">// arrays containing init/stop/start methods</span>
      <span class="na">configInitializers</span><span class="p">:</span> <span class="p">[],</span>
      <span class="na">loadInitializers</span><span class="p">:</span>   <span class="p">[],</span>
      <span class="na">startInitializers</span><span class="p">:</span>  <span class="p">[],</span>
-     <span class="na">stopInitializers</span><span class="p">:</span>   <span class="p">[]</span> 
+     <span class="na">stopInitializers</span><span class="p">:</span>   <span class="p">[]</span>
    <span class="p">},</span>
 
   <span class="c1">// INITIALZER DEFAULTS //</span>
-  <span class="na">initializerDefaults</span><span class="p">:{</span> 
+  <span class="na">initializerDefaults</span><span class="p">:{</span>
     <span class="na">load</span><span class="p">:</span>  <span class="mi">1000</span><span class="p">,</span>
     <span class="na">start</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
     <span class="na">stop</span><span class="p">:</span>  <span class="mi">1000</span>
   <span class="p">},</span>
 
   <span class="c1">// UTILS //</span>
-  <span class="na">utils</span><span class="p">:{</span> 
+  <span class="na">utils</span><span class="p">:{</span>
     <span class="na">hashLength</span><span class="p">:</span>             <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">hashMerge</span><span class="p">:</span>              <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">isPlainObject</span><span class="p">:</span>          <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
@@ -2079,7 +2076,7 @@ Running <span class="s2">"console"</span> task
     <span class="na">collapseObjectToArray</span><span class="p">:</span>  <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">getExternalIPAddress</span><span class="p">:</span>   <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">parseCookies</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">parseIPv6URI</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="na">parseIPv6URI</span><span class="p">:</span>           <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
 
   <span class="c1">// CONFIG //</span>
@@ -2093,7 +2090,6 @@ Running <span class="s2">"console"</span> task
         <span class="na">lockPrefix</span><span class="p">:</span> <span class="s1">'actionhero:lock:'</span><span class="p">,</span>
         <span class="na">lockDuration</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
         <span class="na">developmentMode</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="na">actionDomains</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
         <span class="na">simultaneousActions</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
         <span class="na">disableParamScrubbing</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
         <span class="na">filteredParams</span><span class="p">:</span> <span class="p">[],</span>
@@ -2105,16 +2101,13 @@ Running <span class="s2">"console"</span> task
         <span class="na">plugins</span><span class="p">:</span> <span class="p">[]</span> <span class="p">},</span>
      <span class="na">errors</span><span class="p">:</span>
       <span class="p">{</span> <span class="na">_toExpand</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="na">serverErrorMessage</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">missingParams</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">unknownAction</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">unsupportedServerType</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">serverShuttingDown</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">tooManyPendingActions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-        <span class="na">doubleCallbackError</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">fileNotFound</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">fileNotProvided</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-        <span class="na">fileInvalidPath</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">fileReadError</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">verbNotFound</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
         <span class="na">verbNotAllowed</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
@@ -2129,7 +2122,7 @@ Running <span class="s2">"console"</span> task
      <span class="na">redis</span><span class="p">:</span>
       <span class="p">{</span> <span class="na">channel</span><span class="p">:</span> <span class="s1">'actionhero'</span><span class="p">,</span>
         <span class="na">rpcTimeout</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
-        <span class="na">package</span><span class="p">:</span> <span class="s1">'fakeredis'</span> <span class="p">},</span>
+        <span class="na">pkg</span><span class="p">:</span> <span class="s1">'fakeredis'</span> <span class="p">},</span>
      <span class="na">routes</span><span class="p">:</span> <span class="p">{},</span>
      <span class="na">servers</span><span class="p">:</span>
       <span class="p">{</span> <span class="na">socket</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
@@ -2161,24 +2154,24 @@ Running <span class="s2">"console"</span> task
   <span class="na">log</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
 
   <span class="c1">// EXCEPTION HANDLERS //</span>
-  <span class="na">exceptionHandlers</span><span class="p">:{</span> 
+  <span class="na">exceptionHandlers</span><span class="p">:{</span>
     <span class="na">reporters</span><span class="p">:</span> <span class="p">[</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">],</span>
     <span class="na">report</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">loader</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">action</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">task</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="na">task</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
 
   <span class="c1">// REDIS //</span>
-  <span class="na">redis</span><span class="p">:{</span> 
+  <span class="na">redis</span><span class="p">:{</span>
     <span class="na">clusterCallbaks</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">clusterCallbakTimeouts</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="na">subscriptionHandlers</span><span class="p">:{</span> 
+    <span class="na">subscriptionHandlers</span><span class="p">:{</span>
       <span class="na">do</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
       <span class="na">doResponse</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-      <span class="na">chat</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+      <span class="na">chat</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
     <span class="p">},</span>
-    <span class="na">status</span><span class="p">:{</span> 
+    <span class="na">status</span><span class="p">:{</span>
       <span class="na">client</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
       <span class="na">subscriber</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
       <span class="na">subscribed</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -2193,7 +2186,7 @@ Running <span class="s2">"console"</span> task
     <span class="na">subscriber</span><span class="p">:</span> <span class="p">{</span> <span class="p">},</span>
 
   <span class="c1">// CACHE //</span>
-  <span class="na">cache</span><span class="p">:{</span> 
+  <span class="na">cache</span><span class="p">:{</span>
     <span class="na">redisPrefix</span><span class="p">:</span> <span class="s1">'actionhero:cache:'</span><span class="p">,</span>
     <span class="na">lockPrefix</span><span class="p">:</span> <span class="s1">'actionhero:lock:'</span><span class="p">,</span>
     <span class="na">lockDuration</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
@@ -2211,24 +2204,24 @@ Running <span class="s2">"console"</span> task
     <span class="na">save</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">lock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">unlock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">checkLock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="na">checkLock</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
 
   <span class="c1">// STATS //</span>
-  <span class="na">stats</span><span class="p">:{</span> 
+  <span class="na">stats</span><span class="p">:{</span>
     <span class="c1">// timer: null,</span>
     <span class="c1">// pendingIncrements: {},</span>
     <span class="na">increment</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="c1">// writeIncrements: [Function],</span>
     <span class="na">get</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-    <span class="na">getAll</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+    <span class="na">getAll</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
 
   <span class="c1">// CONNECTIONS //</span>
-  <span class="na">connections</span><span class="p">:{</span> 
+  <span class="na">connections</span><span class="p">:{</span>
     <span class="na">createCallbacks</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">destroyCallbacks</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="na">allowedVerbs</span><span class="p">:[</span> 
+    <span class="na">allowedVerbs</span><span class="p">:[</span>
       <span class="s1">'quit'</span><span class="p">,</span>
       <span class="s1">'exit'</span><span class="p">,</span>
       <span class="s1">'documentation'</span><span class="p">,</span>
@@ -2241,38 +2234,38 @@ Running <span class="s2">"console"</span> task
       <span class="s1">'roomLeave'</span><span class="p">,</span>
       <span class="s1">'roomView'</span><span class="p">,</span>
       <span class="s1">'detailsView'</span><span class="p">,</span>
-      <span class="s1">'say'</span> 
+      <span class="s1">'say'</span>
       <span class="p">],</span>
      <span class="na">connections</span><span class="p">:</span> <span class="p">{},</span>
      <span class="c1">// apply: [Function],</span>
      <span class="c1">// applyCatch: [Function],</span>
      <span class="na">addCreateCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
-     <span class="na">addDestroyCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> 
+     <span class="na">addDestroyCallback</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span>
   <span class="p">},</span>
   <span class="na">connection</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span> <span class="c1">// prototype</span>
 
   <span class="c1">// ACTIONS //</span>
-  <span class="na">actions</span><span class="p">:{</span> 
+  <span class="na">actions</span><span class="p">:{</span>
     <span class="na">actions</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">preProcessors</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">postProcessors</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">addPreProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">addPostProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="c1">// validateAction: [Function],</span>
-    <span class="c1">// loadFile: [Function] </span>
+    <span class="c1">// loadFile: [Function]</span>
   <span class="p">},</span>
   <span class="na">actionProcessor</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span> <span class="c1">// prototype</span>
 
   <span class="c1">// PARAMS //</span>
-  <span class="na">params</span><span class="p">:{</span> 
+  <span class="na">params</span><span class="p">:{</span>
     <span class="na">globalSafeParams</span><span class="p">:</span> <span class="p">[</span>
       <span class="s1">'file'</span><span class="p">,</span>
       <span class="s1">'apiVersion'</span><span class="p">,</span>
       <span class="s1">'callback'</span><span class="p">,</span>
-      <span class="s1">'action'</span> 
+      <span class="s1">'action'</span>
     <span class="p">],</span>
     <span class="c1">// buildPostVariables: [Function],</span>
-    <span class="na">postVariables</span><span class="p">:</span> <span class="p">[]</span> 
+    <span class="na">postVariables</span><span class="p">:</span> <span class="p">[]</span>
    <span class="p">},</span>
 
   <span class="c1">// SERVERS //</span>
@@ -2282,13 +2275,13 @@ Running <span class="s2">"console"</span> task
   <span class="p">},</span>
 
   <span class="c1">// ROUTES //</span>
-  <span class="na">routes</span><span class="p">:</span> <span class="p">{</span> 
-    <span class="na">routes</span><span class="p">:</span> <span class="p">{</span> 
+  <span class="na">routes</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">routes</span><span class="p">:</span> <span class="p">{</span>
       <span class="na">get</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
       <span class="na">post</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
       <span class="na">put</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
       <span class="na">patch</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
-      <span class="na">delete</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> 
+      <span class="na">delete</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
     <span class="p">},</span>
      <span class="c1">// verbs: [],</span>
      <span class="c1">// processRoute: [Function],</span>
@@ -2297,20 +2290,20 @@ Running <span class="s2">"console"</span> task
    <span class="p">},</span>
 
   <span class="c1">// STATIC FILES //</span>
-  <span class="na">staticFile</span><span class="p">:{</span> 
+  <span class="na">staticFile</span><span class="p">:{</span>
     <span class="c1">// path: [Function],</span>
     <span class="c1">// get: [Function],</span>
     <span class="na">sendFile</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="c1">// sendFileNotFound: [Function],</span>
     <span class="c1">// checkExistence: [Function],</span>
-    <span class="c1">// logRequest: [Function] </span>
+    <span class="c1">// logRequest: [Function]</span>
   <span class="p">},</span>
 
   <span class="c1">// CHAT //</span>
-  <span class="na">chatRoom</span><span class="p">:{</span> 
-    <span class="na">keys</span><span class="p">:</span> <span class="p">{</span> 
+  <span class="na">chatRoom</span><span class="p">:{</span>
+    <span class="na">keys</span><span class="p">:</span> <span class="p">{</span>
       <span class="na">rooms</span><span class="p">:</span> <span class="s1">'actionhero:chatRoom:rooms'</span><span class="p">,</span>
-      <span class="na">members</span><span class="p">:</span> <span class="s1">'actionhero:chatRoom:members:'</span> 
+      <span class="na">members</span><span class="p">:</span> <span class="s1">'actionhero:chatRoom:members:'</span>
     <span class="p">},</span>
     <span class="na">messageChannel</span><span class="p">:</span> <span class="s1">'/actionhero/chat/chat'</span><span class="p">,</span>
     <span class="na">joinCallbacks</span><span class="p">:</span> <span class="p">{},</span>
@@ -2334,7 +2327,7 @@ Running <span class="s2">"console"</span> task
   <span class="p">},</span>
 
   <span class="c1">// RESQUE //</span>
-  <span class="na">resque</span><span class="p">:</span> <span class="p">{</span> 
+  <span class="na">resque</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">queue</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">multiWorker</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">scheduler</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
@@ -2347,7 +2340,7 @@ Running <span class="s2">"console"</span> task
   <span class="p">},</span>
 
   <span class="c1">// TASKS //</span>
-  <span class="na">tasks</span><span class="p">:{</span> 
+  <span class="na">tasks</span><span class="p">:{</span>
     <span class="na">tasks</span><span class="p">:</span> <span class="p">{},</span>
     <span class="na">jobs</span><span class="p">:</span>  <span class="p">{},</span>
     <span class="c1">// loadFile: [Function],</span>
@@ -2367,7 +2360,7 @@ Running <span class="s2">"console"</span> task
     <span class="na">stopRecurrentJob</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">],</span>
     <span class="na">details</span><span class="p">:</span> <span class="p">[</span><span class="nb">Function</span><span class="p">]</span> <span class="p">},</span>
 
-  <span class="c1">// DOCUMENATION // </span>
+  <span class="c1">// DOCUMENATION //</span>
   <span class="na">doumentation</span><span class="p">:</span> <span class="p">{}</span>
 
 <span class="p">};</span>
@@ -2702,6 +2695,7 @@ Lets start with actionhero&rsquo;s default config:</p>
 <li>IE: <code class="prettyprint">{ path:&quot;/game/:id(^[a-z]{0,10}$)&quot;, action: &quot;gamehandler&quot; }</code></li>
 <li>be sure to double-escape when needed: <code class="prettyprint">{ path: &quot;/login/:userID(^\\d{3}$)&quot;, action: &quot;login&quot; }</code></li>
 </ul></li>
+<li>The HTTP verbs which you can route against are: <code class="prettyprint">api.routes.verbs = [&#39;head&#39;, &#39;get&#39;, &#39;post&#39;, &#39;put&#39;, &#39;patch&#39;, &#39;delete&#39;]</code></li>
 </ul>
 
 <p><strong>example</strong>:</p>
@@ -3293,7 +3287,7 @@ randomNumber
 
 <span class="c1">// config/tasks.js</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
 
         <span class="c1">// defualt to config for 'server'</span>
@@ -3351,7 +3345,7 @@ randomNumber
 <ul>
 <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
 </ul></li>
-<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example: </li>
+<li>To acomplish the above, you only need to make changes to your configuration files on each server.  You will still be running the same same actionhero project codebase.  See the example:</li>
 <li>Always have a replica of redis!</li>
 </ul>
 
@@ -3384,7 +3378,7 @@ randomNumber
 
 <p>You never want more workers than you can run at a time, or else you will actually be slowing down the execution of all processes.</p>
 
-<p>Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers! </p>
+<p>Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers!</p>
 
 <h2 id="pidfiles">Pidfiles</h2>
 
@@ -3402,18 +3396,18 @@ randomNumber
 
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> git pull
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> npm install
-<span class="c"># run any grunt tasks here, like perhaps an asset compile step or a database migration</span>
+<span class="c"># run any build tasks here, like perhaps an asset compile step or a database migration</span>
 <span class="nb">cd</span> <span class="nv">$DEPLOY_PATH</span> <span class="o">&amp;&amp;</span> <span class="nb">kill</span> -s USR2 <span class="sb">`</span>cat pids/cluster_pidfile<span class="sb">`</span>
 </code></pre>
 
 <p>To send a signal to the cluster master process to reboot all its workers (<code class="prettyprint">USR2</code>), you can cat the pidfile (bash):
 <code class="prettyprint">kill -s USR2 &quot;cat /path/to/pids/cluster_pidfile&quot;</code></p>
 
-<p>If you want to setup a git-based deployment, the simplest steps would be something like =&gt; </p>
+<p>If you want to setup a git-based deployment, the simplest steps would be something like =&gt;</p>
 
 <h2 id="global-packages">Global Packages</h2>
 
-<p>It&rsquo;s probably best to avoid installing any global packages.  This way, you won&rsquo;t have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package&rsquo;s binaries are always copied into <code class="prettyprint">./node_modules/.bin</code>. </p>
+<p>It&rsquo;s probably best to avoid installing any global packages.  This way, you won&rsquo;t have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package&rsquo;s binaries are always copied into <code class="prettyprint">./node_modules/.bin</code>.</p>
 
 <p>You can add local references to your $PATH like so to use these local binaries:</p>
 
@@ -3422,7 +3416,7 @@ randomNumber
 <h2 id="nginx-example">Nginx Example</h2>
 <pre class="highlight javascript"><code><span class="c1">// From `config/servers/web.js`</span>
 
-<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
   <span class="na">servers</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">web</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
       <span class="k">return</span> <span class="p">{</span>
@@ -3527,14 +3521,13 @@ http <span class="o">{</span>
 
 <ul>
 <li>Be sure to change <code class="prettyprint">api.config.general.serverToken</code> to something unique for your application</li>
-<li>Turn off <a href="/docs/#development-mode">developer mode</a> in production. </li>
-<li>Turn off <code class="prettyprint">actionDomains</code> in production.  While domains can <em>sometimes</em> save the context of an action, it is very possible to leave the node server in an unknown state when recovering (IE: what if an action modified something on the API object; what if the connection disconnected during domain recovery?).  Yes, an exception will crash the server, but rebooting fresh guarantees safety.</li>
+<li>Turn off <a href="/docs/#development-mode">developer mode</a> in production.</li>
 </ul>
 
 <h3 id="topology">Topology</h3>
 
 <ul>
-<li>Run a cluster via <code class="prettyprint">startCluster</code>.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.  This will also allow you to turn of <code class="prettyprint">actionDomains</code> and allow one node to crash while the others continue to server traffic
+<li>Run a cluster via <code class="prettyprint">startCluster</code>.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
 
 <ul>
 <li>You can run 1 actionhero instance per core (assuming the server is dedicated to actionhero), and that is the default behavior of <code class="prettyprint">startCluster</code>.</li>
@@ -3560,13 +3553,13 @@ http <span class="o">{</span>
 <li>Configure Nginx to serve static files whenever possible to remove load from actionhero, and leave it just to process actions</li>
 </ul></li>
 <li>Use a CDN. Actionhero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.</li>
-<li>Use redis-cluster or redis-sentinel.  The <a href="https://github.com/luin/ioredis"><code class="prettyprint">ioredis</code></a> redis library has support for them by default.  This allows you to have a High Availability redis configuration. </li>
+<li>Use redis-cluster or redis-sentinel.  The <a href="https://github.com/luin/ioredis"><code class="prettyprint">ioredis</code></a> redis library has support for them by default.  This allows you to have a High Availability redis configuration.</li>
 </ul>
 
 <h3 id="actions">Actions</h3>
 
 <ul>
-<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/#inputs"><code class="prettyprint">params.formatter</code></a> step. </li>
+<li>Remember that all params which come in via the <code class="prettyprint">web</code> and <code class="prettyprint">socket</code> servers are <code class="prettyprint">String</code>s.  If you want to typeCast them (perhaps you always know that the param <code class="prettyprint">user_id</code> will be an integer), you can do so in a middleware or within an action&rsquo;s <a href="/docs/#inputs"><code class="prettyprint">params.formatter</code></a> step.</li>
 <li>Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is &ldquo;never pass a query to your database which can be directly modified via user input&rdquo;!</li>
 <li>Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.</li>
 <li>Crafting <a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>
@@ -3585,7 +3578,9 @@ http <span class="o">{</span>
           <h1 id="running-actionhero">Running actionhero</h1>
 
 <h2 id="the-actionhero-binary">The actionhero Binary</h2>
-<pre class="highlight shell"><code>Binary options:
+<pre class="highlight shell"><code>actionhero - a node.js API framework <span class="k">for </span>both tcp sockets, web sockets, and http clients.
+
+Binary options:
 <span class="k">*</span> <span class="nb">help</span> <span class="o">(</span>default<span class="o">)</span>
 <span class="k">*</span> start
 <span class="k">*</span> startCluster
@@ -3594,54 +3589,62 @@ http <span class="o">{</span>
 <span class="k">*</span> generateTask
 <span class="k">*</span> generateInitializer
 <span class="k">*</span> generateServer
+<span class="k">*</span> actions
+<span class="k">*</span> enqueueTask
+<span class="k">*</span> console
+<span class="k">*</span> link
 
 Descriptions:
 
 <span class="k">*</span> actionhero <span class="nb">help
   </span>will display this document
 
+<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config.js] --title<span class="o">=[</span>processTitle]  --daemon
+  will start a template actionhero server
+  this is the respondent to <span class="s2">"npm start"</span>
+  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to config.js, defaults to <span class="s2">"process.cwd() + '/' + config.js"</span>. You can also use ENV[ACTIONHERO_CONFIG].
+  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+
+<span class="k">*</span> actionhero startCluster --workers<span class="o">=[</span>numWorkers]  --daemon
+  will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
+  <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+
 <span class="k">*</span> actionhero generate
   will prepare an empty directory with a template actionhero project
 
 <span class="k">*</span> actionhero generateAction --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --inputsRequired<span class="o">=[</span>inputsRequired] --inputsOptional<span class="o">=[</span>inputsOptional]
-  will generate a new action <span class="k">in</span> <span class="sb">`</span>actions<span class="sb">`</span>
+  will generate a new action <span class="k">in</span> <span class="s2">"actions"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
 
-<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency] 
-  will generate a new task <span class="k">in</span> <span class="sb">`</span>tasks<span class="sb">`</span>
+<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency]
+  will generate a new task <span class="k">in</span> <span class="s2">"tasks"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
   <span class="o">[</span>scope] <span class="o">(</span>optional<span class="o">)</span> can be <span class="s2">"any"</span> or <span class="s2">"all"</span>
   <span class="o">[</span>frequency] <span class="o">(</span>optional<span class="o">)</span>
 
 <span class="k">*</span> actionhero generateInitializer --name<span class="o">=[</span>name]
-  will generate a new initializer <span class="k">in</span> <span class="sb">`</span>initializers<span class="sb">`</span>
+  will generate a new initializer <span class="k">in</span> <span class="s2">"initializers"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
 
 <span class="k">*</span> actionhero generateServer --name<span class="o">=[</span>name]
-  will generate a new server <span class="k">in</span> <span class="sb">`</span>servers<span class="sb">`</span>
+  will generate a new server <span class="k">in</span> <span class="s2">"servers"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
 
-<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config/] --title<span class="o">=[</span>processTitle]  --daemon
-  will start a template actionhero server
-  this is the respondant to <span class="sb">`</span>npm start<span class="sb">`</span>
-  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG].
-  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false</span>
+<span class="k">*</span> actionhero actions
+  will list all actions <span class="k">in </span>this server to stdout
 
-<span class="k">*</span> actionhero startCluster --exec<span class="o">=[</span><span class="nb">command</span><span class="o">]</span> --workers<span class="o">=[</span>numWorkers] --pidfile<span class="o">=[</span>path] --log<span class="o">=[</span>path] --title<span class="o">=[</span>clusterTitle] --workerTitlePrefix<span class="o">=[</span>prefix] --config<span class="o">=[</span>/path/to/config]  --daemon
-  will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
-  <span class="o">[</span><span class="nb">exec</span><span class="o">]</span> <span class="o">(</span>optional<span class="o">)</span> <span class="nb">command </span><span class="k">for </span>the cluster-master to run to stat the workers
-  <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
-  <span class="o">[</span>pidfile] <span class="o">(</span>optional<span class="o">)</span> pidfile localtion <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /pids<span class="o">)</span>
-  <span class="o">[</span>log] <span class="o">(</span>optional<span class="o">)</span> logfile <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /log/cluster.log<span class="o">)</span>
-  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> default actionhero-master  Does not work on OSX/Windows
-  <span class="o">[</span>workerTitlePrefix] <span class="o">(</span>optional<span class="o">)</span> default actionhero-worker
-  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config <span class="k">for </span>workers, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG]
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false
+<span class="k">*</span> actionhero enqueueTask --name<span class="o">=[</span>taskName] --args<span class="o">=[</span>JSON-formatted args]
+  will enqueue a task into redis
 
-</span>More Help &amp; the actionhero documentation can be found @ http://actionherojs.com
+<span class="k">*</span> actionhero console
+  will open an interactive CLI with the API object <span class="k">in </span>scope.
+  this is sometimes called a REPL
+
+More Help &amp; the actionhero documentation can be found @ http://www.actionherojs.com
 </code></pre>
 
 <p>The suggested method to run your actionhero server is to use the included <code class="prettyprint">./node_modules/.bin/actionhero</code> binary.  Note that there is no <code class="prettyprint">main.js</code> or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.</p>
@@ -3700,45 +3703,7 @@ Descriptions:
 
 <p>You can programmatically control an actionhero server with <code class="prettyprint">actionhero.start(params, callback)</code>, <code class="prettyprint">actionhero.stop(callback)</code> and <code class="prettyprint">actionhero.restart(callback)</code></p>
 
-<p>From within actionhero itself (actions, initilizers, etc), you can use <code class="prettyprint">api.commands.start</code>, <code class="prettyprint">api.commands.stop</code>, and <code class="prettyprint">api.commands.restart</code> to control the server. </p>
-
-<h2 id="grunt">Grunt</h2>
-<pre class="highlight javascript"><code><span class="c1">// A custom GRUNT actionhero task</span>
-<span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">'myTask'</span><span class="p">,</span><span class="s1">'description of task'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">async</span><span class="p">()</span>
-  <span class="nx">grunt</span><span class="p">.</span><span class="nx">startActionhero</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
-    <span class="c1">// your logic here</span>
-
-    <span class="nx">done</span><span class="p">()</span>
-  <span class="p">})</span>
-<span class="p">})</span>
-</code></pre>
-
-<p>actionhero integrates with <a href="http://gruntjs.com/">grunt</a> to allow you to tun manual tasks within actionhero&rsquo;s environment.  Those of you coming from Ruby, grunt is very similar to <code class="prettyprint">rake</code> or <code class="prettyprint">make</code>.</p>
-
-<p>To use grunt, you should install grunt globally <code class="prettyprint">npm install -g grunt-cli</code></p>
-
-<p>actionhero will generate a few example tasks in <code class="prettyprint">./gruntfile.js</code> to help you save and restore the cache and manage tasks.  Most importantly, an <code class="prettyprint">init</code> wrapper is defined for you.  Require this in all of you tasks so you can have access to the <code class="prettyprint">api</code> object. Note that all your grunt tasks should be async (<code class="prettyprint">var done = this.async()</code>), and you will need to call <code class="prettyprint">done()</code> at the conclustion of the task. </p>
-
-<p>You will have access to all of your initializers, actions, and tasks within the api object.  <code class="prettyprint">api</code> will represent an initialized sever, but not a started one.  Your initializer&rsquo;s &ldquo;_start&rdquo; methods will not be run, nor will the servers be started.  For example:</p>
-
-<p>As always, you can list your project&rsquo;s grunt tasks with <code class="prettyprint">grunt -help</code></p>
-<pre class="highlight shell"><code><span class="c"># Checking the existing actionhero grunt commands</span>
-<span class="gp">&gt; </span>grunt --help
-
-                   list  List your actions and metadata
-enqueueAllPeriodicTasks  This will enqueue all periodic tasks <span class="o">(</span>could lead to
-                         duplicates<span class="o">)</span>
-    enqueuePeriodicTask  Enqueue a periodic task <span class="o">(</span>:taskName<span class="o">)</span>
-       stopPeriodicTask  Remove an enqueued periodic task <span class="o">(</span>:taskName<span class="o">)</span>
-             flushRedis  Clear the entire actionhero redis database
-             clearCache  Clear the actionhero cache
-              dumpCache  Save the current cache as a JSON object <span class="o">(</span>:file<span class="o">)</span>
-              loadCache  Set the cache from a file <span class="o">(</span>overwrites existing cache<span class="o">)</span>
-                         <span class="o">(</span>:file<span class="o">)</span>
-</code></pre>
-
-<p>You can <a href="http://gruntjs.com/">learn more about grunt here</a>.</p>
+<p>From within actionhero itself (actions, initilizers, etc), you can use <code class="prettyprint">api.commands.start</code>, <code class="prettyprint">api.commands.stop</code>, and <code class="prettyprint">api.commands.restart</code> to control the server.</p>
 
 <h2 id="signals">Signals</h2>
 <pre class="highlight shell"><code><span class="gp">&gt; </span>./node_modules/.bin/actionhero startCluster --workers<span class="o">=</span>2
@@ -3794,8 +3759,8 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <ul>
 <li><code class="prettyprint">kill</code> / <code class="prettyprint">term</code> / <code class="prettyprint">int</code>:  Will signal the master to &ldquo;gracefully terminate&rdquo; all workers.  Master will terminate once all workers have completed</li>
-<li><code class="prettyprint">USR2</code> / <code class="prettyprint">HUP</code> : &ldquo;Hot reload&rdquo;.  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.</li>
-<li><code class="prettyprint">WINCH</code>: &ldquo;Gracefully terminate&rdquo; all workers.  Only the master will remain running</li>
+<li><code class="prettyprint">HUP</code> : Restart all workers.</li>
+<li><code class="prettyprint">USR2</code> : &ldquo;Hot reload&rdquo;.  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.</li>
 <li><code class="prettyprint">TTOU</code>: remove one worker</li>
 <li><code class="prettyprint">TTIN</code>: add one worker</li>
 </ul>
@@ -3803,7 +3768,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
 <h2 id="windows-specific-notes">Windows-Specific Notes</h2>
 
 <ul>
-<li>Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell. </li>
+<li>Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell.</li>
 <li>Sometimes, npm will not install the actionhero binary @ <code class="prettyprint">/node_modules/.bin/actionhero</code>, but rather it will attempt to create a windows executable and wrapper.  You can launch actionhero directly with <code class="prettyprint">./node_modules/actionhero/bin/actionhero</code></li>
 </ul>
 
@@ -3827,8 +3792,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
   <span class="p">},</span>
   <span class="s2">"dependencies"</span> <span class="err">:</span> <span class="p">{</span>
     <span class="s2">"actionhero"</span> <span class="err">:</span> <span class="s2">"12.3.0"</span><span class="p">,</span>
-    <span class="s2">"ws"</span>         <span class="err">:</span> <span class="s2">"latest"</span><span class="p">,</span>
-    <span class="s2">"grunt"</span>      <span class="err">:</span> <span class="s2">"latest"</span>
+    <span class="s2">"ws"</span>         <span class="err">:</span> <span class="s2">"latest"</span>
   <span class="p">},</span>
   <span class="s2">"devDependencies"</span> <span class="err">:</span> <span class="p">{</span>
     <span class="s2">"mocha"</span>  <span class="err">:</span> <span class="s2">"latest"</span><span class="p">,</span>
@@ -3839,7 +3803,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
     <span class="s2">"start"</span>        <span class="err">:</span> <span class="s2">"actionhero start"</span><span class="p">,</span>
     <span class="s2">"actionhero"</span>   <span class="err">:</span> <span class="s2">"actionhero"</span><span class="p">,</span>
     <span class="s2">"startCluster"</span> <span class="err">:</span> <span class="s2">"actionhero startCluster"</span><span class="p">,</span>
-    <span class="s2">"test"</span>         <span class="err">:</span> <span class="s2">"mocha"</span>
+    <span class="s2">"test"</span>         <span class="err">:</span> <span class="s2">"NODE_ENV=test mocha"</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -3848,7 +3812,7 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <p>The majority of the time, you&rsquo;ll be testing actions and other methods you have written, so you&rsquo;ll need to &ldquo;run&rdquo; an actionhero server as part of your test suite.  Many times you&rsquo;ll want to have actionhero behave in a slightly unique way while testing (perhaps connect to a special database, don&rsquo;t log, etc).  To do this, you can change the behavior of the config files for the <code class="prettyprint">test</code> environment.  Here&rsquo;s how we tell actionhero <a href="https://github.com/evantahler/actionhero/blob/master/config/logger.js#L48-L54">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults.  To ensure that actionhero boots with the <code class="prettyprint">test</code> environment loaded, the test command you run should explicitly do this, AKA: <code class="prettyprint">NODE_ENV=test ./node_modules/.bin/mocha</code>.  You can log this in as the <a href="https://github.com/evantahler/actionhero/blob/master/package.json#L63"><code class="prettyprint">test</code> script in your <code class="prettyprint">package.json</code></a> so you can simplify the running of tests with just <code class="prettyprint">npm test</code>.</p>
 
-<p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>). </p>
+<p>Actionhero comes with a <code class="prettyprint">specHelper</code> to make it easier to test tasks and actions.  This specHelper is a special <a href="/docs/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request.  If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>).</p>
 
 <h2 id="example-test">Example Test</h2>
 <pre class="highlight javascript"><code><span class="c1">// ./test/integartion/actions/randomNumber.js</span>

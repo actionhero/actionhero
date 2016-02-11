@@ -323,6 +323,7 @@ Lets start with actionhero&rsquo;s default config:</p>
 <li>IE: <code class="prettyprint">{ path:&quot;/game/:id(^[a-z]{0,10}$)&quot;, action: &quot;gamehandler&quot; }</code></li>
 <li>be sure to double-escape when needed: <code class="prettyprint">{ path: &quot;/login/:userID(^\\d{3}$)&quot;, action: &quot;login&quot; }</code></li>
 </ul></li>
+<li>The HTTP verbs which you can route against are: <code class="prettyprint">api.routes.verbs = [&#39;head&#39;, &#39;get&#39;, &#39;post&#39;, &#39;put&#39;, &#39;patch&#39;, &#39;delete&#39;]</code></li>
 </ul>
 
 <p><strong>example</strong>:</p>

@@ -6,7 +6,9 @@
 
 <h2 id="including-plugins">Including Plugins</h2>
 
-<p><code class="prettyprint">api.config.general.paths.plugin</code> (loaded from <code class="prettyprint">/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code class="prettyprint">./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code class="prettyprint">api.config.general.plugins</code> (loaded from <code class="prettyprint">/config/plugins.js</code>) to create a list of the plugins to load.  The search paths will then be used to find the named plugins and load in their contents.</p>
+<p><code class="prettyprint">api.config.general.paths.plugin</code> (loaded from <code class="prettyprint">/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code class="prettyprint">./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code class="prettyprint">npm run actionhero link --name nameOfPlugin</code> to crete links in your top-level project to the plugin.  This will also copy over any config files from the plugin into your project so you can modify them.  The act of &ldquo;linking&rdquo; simply creates a <code class="prettyprint">myPLugin.link</code> file in each component of your top-level project (actions, tasks, etc) which tells actionhero to load up files at boot from that plugin.  </p>
+
+<p>You can delete all (or some) links at any time.</p>
 
 <h2 id="creating-plugins">Creating Plugins</h2>
 <pre class="highlight shell"><code>/
@@ -22,19 +24,25 @@
 
 <p>To create a plugin, create a project with the following structure:</p>
 
-<p>This structure will allow elements to be loaded into actionhero (we search <code class="prettyprint">/actions</code> for actions, etc)</p>
+<p>This structure will allow elements to be loaded into actionhero (we search <code class="prettyprint">/actions</code> for actions, <code class="prettyprint">/tasks</code> for tasks, etc)</p>
 
 <p>When developing your plugin locally, you can load it into an existing actionhero project to test it out.</p>
 
 <p>First, add the path your plugin is in to <code class="prettyprint">api.config.general.paths.plugin</code>.  If your actionhero app is in <code class="prettyprint">/var/ah/actionhero</code> and your plugin is in <code class="prettyprint">/var/ah/my_plugin</code>, add <code class="prettyprint">/var/ah</code> to <code class="prettyprint">api.config.general.paths.plugin</code></p>
 
-<p>Then, in <code class="prettyprint">api.config.general.plugins</code>, add the name of your plugin, in this case <code class="prettyprint">my_plugin</code>.  Note that the directory name and the package name in the plugin&rsquo;s <code class="prettyprint">package.json</code> should match.</p>
-
 <p><strong>Please use the npm naming convention <code class="prettyprint">ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+
+<h2 id="changes-in-v13-0-0">Changes in V13.0.0</h2>
+
+<p>The plugin system was significantly changes in Actionhero version <code class="prettyprint">13.0.0</code>.  Older plugins will not work.<br>
+- <code class="prettyprint">config/plugins.js</code> has been removed in favor of the linking system
+- Config files from within plugins are no longer sourced
+- There should be no more postinstall scripts needed, and as such, none are executed
+- Be sure that your plugin is OS-independant. Use path.sep for file path separators and things like that. Use relative paths for everything in your plugin.</p>
 
 <h2 id="plugin-methods">Plugin methods</h2>
 
-<p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &ldquo;top level&rdquo; actionhero project, but might be difficult from within the <code class="prettyprint">node_modules</code> folder.</p>
+<p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &ldquo;top level&rdquo; actionhero project, but might be difficult from within the <code class="prettyprint">node_modules</code> folder.  Here are some helpers:</p>
 
 <h3 id="routes">Routes:</h3>
 
@@ -45,25 +53,6 @@
 <li>Add a route to the system.<br></li>
 </ul></li>
 </ul>
-
-<h2 id="plugin-scripts">Plugin Scripts</h2>
-<pre class="highlight javascript"><code><span class="cp">#!/usr/bin/env node
-</span>
-<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
-
-<span class="kd">var</span> <span class="nx">localFile</span>   <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">'/../config/ah-sample-plugin.js'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">projectFile</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/../../config/plugins/ah-sample-plugin.js'</span><span class="p">);</span>
-
-<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">)){</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"copying "</span> <span class="o">+</span> <span class="nx">localFile</span> <span class="o">+</span> <span class="s2">" to "</span> <span class="o">+</span> <span class="nx">projectFile</span><span class="p">);</span>
-  <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="nx">localFile</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span><span class="p">(</span><span class="nx">projectFile</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre>
-
-<p>The <code class="prettyprint">scripts</code> directory is used to contain any install scripts.  For example, imagine your plugin relies on configuration settings which are expected to be in a <code class="prettyprint">api.config.myPlugin</code> hash.  Write an example config file in <code class="prettyprint">/config</code>, and then use a post-install script to copy that into the containing project&rsquo;s <code class="prettyprint">/config</code> directory.  For example:</p>
-
-<p>And you would add the following to your <code class="prettyprint">package.json</code>: <code class="prettyprint">&quot;postinstall&quot;: &quot;scripts/postinstall.js&quot;</code></p>
 
 <h2 id="example-plugin">Example Plugin</h2>
 

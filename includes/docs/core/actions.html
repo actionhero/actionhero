@@ -45,7 +45,7 @@
         <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'that is not a valid email address'</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">},</span>  
-  <span class="p">},</span> 
+  <span class="p">},</span>
   <span class="na">password</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
     <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">){</span>
@@ -118,17 +118,17 @@
   <span class="na">description</span><span class="p">:</span> <span class="s2">"I am an API method which will generate a random number"</span><span class="p">,</span>
   <span class="c1">// a hash of all the inputs this action will accept</span>
   <span class="c1">// any inputs provided to the action not in this hash will be stripped</span>
-  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span> 
+  <span class="na">inputs</span><span class="p">:</span> <span class="p">{</span>
     <span class="na">multiplier</span><span class="p">:</span> <span class="p">{</span>
       <span class="na">required</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+      <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span>
       <span class="p">},</span>
-      <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+      <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+        <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
       <span class="p">},</span>
-      <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+      <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
       <span class="p">},</span>
     <span class="p">}</span>
   <span class="p">},</span>
@@ -165,14 +165,14 @@
   <span class="c1">// a complex input</span>
   <span class="nl">multiplier</span><span class="p">:</span> <span class="p">{</span>
     <span class="nl">required</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="s1">'must be &gt; 0'</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="na">validator</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">param</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span> <span class="k">return</span> <span class="s1">'must be &gt; 0'</span><span class="p">;</span> <span class="p">}</span><span class="k">else</span><span class="p">{</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="p">}</span>
     <span class="p">},</span>
-    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span> 
+    <span class="na">formatter</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">param</span><span class="p">);</span>
     <span class="p">},</span>
-    <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span> 
-      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> 
+    <span class="na">default</span><span class="p">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="nx">connection</span><span class="p">,</span> <span class="nx">actionTemplate</span><span class="p">){</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">},</span>
   <span class="p">}</span>
 <span class="p">};</span>
@@ -181,7 +181,7 @@
 <p>The properties of an input are:</p>
 
 <ul>
-<li><code class="prettyprint">required</code> (boolean) 
+<li><code class="prettyprint">required</code> (boolean)
 
 <ul>
 <li>Default: <code class="prettyprint">false</code></li>
@@ -210,7 +210,9 @@
 
 <p>You can define <code class="prettyprint">api.config.general.missingParamChecks = [null, &#39;&#39;, undefined]</code> to choose explicitly how you want un-set params to be handled in your actions.  For example, if you want to allow explicit <code class="prettyprint">null</code> values in a JSON payload but not <code class="prettyprint">undefined</code>, you can now opt-in to that behavior.  This is what <code class="prettyprint">action.inputs.x.required = true</code> will check against.</p>
 
-<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not), ie: <code class="prettyprint">name: {required: false}</code>.</p>
+<p>Since all properties of an input are optional, the smallest possible definition of an input is: <code class="prettyprint">name : {}</code>.  However, you should usually specify that an input is required (or not), ie: <code class="prettyprint">name: {required: false}</code>.  </p>
+
+<p>The methods <code class="prettyprint">default</code>, <code class="prettyprint">formatter</code>, and <code class="prettyprint">validator</code> have the api object set as <code class="prettyprint">this</code> within their scopes.  This means that you can define common formatters within middleware and reference them in each action.</p>
 
 <p>The methods are applied in this order:</p>
 
@@ -275,12 +277,12 @@
 <h2 id="notes">Notes</h2>
 
 <ul>
-<li>Actions are asynchronous, and require in the API object, the connection object, and the callback function.  Completing an action is as simple as calling <code class="prettyprint">next(error)</code>.  If you have an erro, be sure that it is an <code class="prettyprint">new Error()</code> object, and not a string.</li>
+<li>Actions are asynchronous, and require in the API object, the <code class="prettyprint">data</code> object, and the callback function.  Completing an action is as simple as calling <code class="prettyprint">next(error)</code>.  If you have an erro, be sure that it is an <code class="prettyprint">new Error()</code> object, and not a string.</li>
 <li>The metadata <code class="prettyprint">outputExample</code> is used in reflexive and self-documenting actions in the API, available via the <code class="prettyprint">documentation</code> verb (and /api/ showDocumenation action).<br></li>
 <li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code class="prettyprint">api.config.general.simultaniousActions</code></li>
 <li><code class="prettyprint">actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code class="prettyprint">api.config.general.disableParamScrubbing</code>. Note that <a href="/docs#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
 <li><code class="prettyprint">matchExtensionMimeType</code> is curently only used by the <code class="prettyprint">web</code> server, and it indicates that if this action is successfully called by a client with <code class="prettyprint">connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
-<li>actionhero strives to keep the <code class="prettyprint">connection</code> object uniform among various client types, and more importantly, present <code class="prettyprint">data.params</code> in a homogenous way.  You can inspect <code class="prettyprint">connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code class="prettyprint">connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code class="prettyprint">connection.rawConnection = {req: req, res: res}</code> for example.<br>
+<li>actionhero strives to keep the <code class="prettyprint">data.connection</code> object uniform among various client types, and more importantly, present <code class="prettyprint">data.params</code> in a homogenous way.  You can inspect <code class="prettyprint">data.connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code class="prettyprint">data.connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code class="prettyprint">data.connection.rawConnection = {req: req, res: res}</code> for example.<br>
 
 <ul>
 <li>You can learn more about some of the <code class="prettyprint">rawConnection</code> options by learning how to <a href="/docs#sending-files-from-actions">send files from actions</a>.</li>

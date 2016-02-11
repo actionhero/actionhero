@@ -1,7 +1,9 @@
 <h1 id="running-actionhero">Running actionhero</h1>
 
 <h2 id="the-actionhero-binary">The actionhero Binary</h2>
-<pre class="highlight shell"><code>Binary options:
+<pre class="highlight shell"><code>actionhero - a node.js API framework <span class="k">for </span>both tcp sockets, web sockets, and http clients.
+
+Binary options:
 <span class="k">*</span> <span class="nb">help</span> <span class="o">(</span>default<span class="o">)</span>
 <span class="k">*</span> start
 <span class="k">*</span> startCluster
@@ -10,54 +12,62 @@
 <span class="k">*</span> generateTask
 <span class="k">*</span> generateInitializer
 <span class="k">*</span> generateServer
+<span class="k">*</span> actions
+<span class="k">*</span> enqueueTask
+<span class="k">*</span> console
+<span class="k">*</span> link
 
 Descriptions:
 
 <span class="k">*</span> actionhero <span class="nb">help
   </span>will display this document
 
+<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config.js] --title<span class="o">=[</span>processTitle]  --daemon
+  will start a template actionhero server
+  this is the respondent to <span class="s2">"npm start"</span>
+  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to config.js, defaults to <span class="s2">"process.cwd() + '/' + config.js"</span>. You can also use ENV[ACTIONHERO_CONFIG].
+  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+
+<span class="k">*</span> actionhero startCluster --workers<span class="o">=[</span>numWorkers]  --daemon
+  will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
+  <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+
 <span class="k">*</span> actionhero generate
   will prepare an empty directory with a template actionhero project
 
 <span class="k">*</span> actionhero generateAction --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --inputsRequired<span class="o">=[</span>inputsRequired] --inputsOptional<span class="o">=[</span>inputsOptional]
-  will generate a new action <span class="k">in</span> <span class="sb">`</span>actions<span class="sb">`</span>
+  will generate a new action <span class="k">in</span> <span class="s2">"actions"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
 
-<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency] 
-  will generate a new task <span class="k">in</span> <span class="sb">`</span>tasks<span class="sb">`</span>
+<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency]
+  will generate a new task <span class="k">in</span> <span class="s2">"tasks"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
   <span class="o">[</span>scope] <span class="o">(</span>optional<span class="o">)</span> can be <span class="s2">"any"</span> or <span class="s2">"all"</span>
   <span class="o">[</span>frequency] <span class="o">(</span>optional<span class="o">)</span>
 
 <span class="k">*</span> actionhero generateInitializer --name<span class="o">=[</span>name]
-  will generate a new initializer <span class="k">in</span> <span class="sb">`</span>initializers<span class="sb">`</span>
+  will generate a new initializer <span class="k">in</span> <span class="s2">"initializers"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
 
 <span class="k">*</span> actionhero generateServer --name<span class="o">=[</span>name]
-  will generate a new server <span class="k">in</span> <span class="sb">`</span>servers<span class="sb">`</span>
+  will generate a new server <span class="k">in</span> <span class="s2">"servers"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
 
-<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config/] --title<span class="o">=[</span>processTitle]  --daemon
-  will start a template actionhero server
-  this is the respondant to <span class="sb">`</span>npm start<span class="sb">`</span>
-  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG].
-  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false</span>
+<span class="k">*</span> actionhero actions
+  will list all actions <span class="k">in </span>this server to stdout
 
-<span class="k">*</span> actionhero startCluster --exec<span class="o">=[</span><span class="nb">command</span><span class="o">]</span> --workers<span class="o">=[</span>numWorkers] --pidfile<span class="o">=[</span>path] --log<span class="o">=[</span>path] --title<span class="o">=[</span>clusterTitle] --workerTitlePrefix<span class="o">=[</span>prefix] --config<span class="o">=[</span>/path/to/config]  --daemon
-  will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
-  <span class="o">[</span><span class="nb">exec</span><span class="o">]</span> <span class="o">(</span>optional<span class="o">)</span> <span class="nb">command </span><span class="k">for </span>the cluster-master to run to stat the workers
-  <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
-  <span class="o">[</span>pidfile] <span class="o">(</span>optional<span class="o">)</span> pidfile localtion <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /pids<span class="o">)</span>
-  <span class="o">[</span>log] <span class="o">(</span>optional<span class="o">)</span> logfile <span class="o">(</span>defaults to process.cwd<span class="o">()</span> + /log/cluster.log<span class="o">)</span>
-  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> default actionhero-master  Does not work on OSX/Windows
-  <span class="o">[</span>workerTitlePrefix] <span class="o">(</span>optional<span class="o">)</span> default actionhero-worker
-  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to /config <span class="k">for </span>workers, defaults to <span class="sb">`</span>process.cwd<span class="o">()</span> + <span class="s2">"/"</span> + config<span class="sb">`</span>. You can also use ENV[ACTIONHERO_CONFIG]
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defalts to <span class="nb">false
+<span class="k">*</span> actionhero enqueueTask --name<span class="o">=[</span>taskName] --args<span class="o">=[</span>JSON-formatted args]
+  will enqueue a task into redis
 
-</span>More Help &amp; the actionhero documentation can be found @ http://actionherojs.com
+<span class="k">*</span> actionhero console
+  will open an interactive CLI with the API object <span class="k">in </span>scope.
+  this is sometimes called a REPL
+
+More Help &amp; the actionhero documentation can be found @ http://www.actionherojs.com
 </code></pre>
 
 <p>The suggested method to run your actionhero server is to use the included <code class="prettyprint">./node_modules/.bin/actionhero</code> binary.  Note that there is no <code class="prettyprint">main.js</code> or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.</p>
@@ -116,45 +126,7 @@ Descriptions:
 
 <p>You can programmatically control an actionhero server with <code class="prettyprint">actionhero.start(params, callback)</code>, <code class="prettyprint">actionhero.stop(callback)</code> and <code class="prettyprint">actionhero.restart(callback)</code></p>
 
-<p>From within actionhero itself (actions, initilizers, etc), you can use <code class="prettyprint">api.commands.start</code>, <code class="prettyprint">api.commands.stop</code>, and <code class="prettyprint">api.commands.restart</code> to control the server. </p>
-
-<h2 id="grunt">Grunt</h2>
-<pre class="highlight javascript"><code><span class="c1">// A custom GRUNT actionhero task</span>
-<span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">'myTask'</span><span class="p">,</span><span class="s1">'description of task'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">done</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">async</span><span class="p">()</span>
-  <span class="nx">grunt</span><span class="p">.</span><span class="nx">startActionhero</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
-    <span class="c1">// your logic here</span>
-
-    <span class="nx">done</span><span class="p">()</span>
-  <span class="p">})</span>
-<span class="p">})</span>
-</code></pre>
-
-<p>actionhero integrates with <a href="http://gruntjs.com/">grunt</a> to allow you to tun manual tasks within actionhero&rsquo;s environment.  Those of you coming from Ruby, grunt is very similar to <code class="prettyprint">rake</code> or <code class="prettyprint">make</code>.</p>
-
-<p>To use grunt, you should install grunt globally <code class="prettyprint">npm install -g grunt-cli</code></p>
-
-<p>actionhero will generate a few example tasks in <code class="prettyprint">./gruntfile.js</code> to help you save and restore the cache and manage tasks.  Most importantly, an <code class="prettyprint">init</code> wrapper is defined for you.  Require this in all of you tasks so you can have access to the <code class="prettyprint">api</code> object. Note that all your grunt tasks should be async (<code class="prettyprint">var done = this.async()</code>), and you will need to call <code class="prettyprint">done()</code> at the conclustion of the task. </p>
-
-<p>You will have access to all of your initializers, actions, and tasks within the api object.  <code class="prettyprint">api</code> will represent an initialized sever, but not a started one.  Your initializer&rsquo;s &ldquo;_start&rdquo; methods will not be run, nor will the servers be started.  For example:</p>
-
-<p>As always, you can list your project&rsquo;s grunt tasks with <code class="prettyprint">grunt -help</code></p>
-<pre class="highlight shell"><code><span class="c"># Checking the existing actionhero grunt commands</span>
-<span class="gp">&gt; </span>grunt --help
-
-                   list  List your actions and metadata
-enqueueAllPeriodicTasks  This will enqueue all periodic tasks <span class="o">(</span>could lead to
-                         duplicates<span class="o">)</span>
-    enqueuePeriodicTask  Enqueue a periodic task <span class="o">(</span>:taskName<span class="o">)</span>
-       stopPeriodicTask  Remove an enqueued periodic task <span class="o">(</span>:taskName<span class="o">)</span>
-             flushRedis  Clear the entire actionhero redis database
-             clearCache  Clear the actionhero cache
-              dumpCache  Save the current cache as a JSON object <span class="o">(</span>:file<span class="o">)</span>
-              loadCache  Set the cache from a file <span class="o">(</span>overwrites existing cache<span class="o">)</span>
-                         <span class="o">(</span>:file<span class="o">)</span>
-</code></pre>
-
-<p>You can <a href="http://gruntjs.com/">learn more about grunt here</a>.</p>
+<p>From within actionhero itself (actions, initilizers, etc), you can use <code class="prettyprint">api.commands.start</code>, <code class="prettyprint">api.commands.stop</code>, and <code class="prettyprint">api.commands.restart</code> to control the server.</p>
 
 <h2 id="signals">Signals</h2>
 <pre class="highlight shell"><code><span class="gp">&gt; </span>./node_modules/.bin/actionhero startCluster --workers<span class="o">=</span>2
@@ -210,8 +182,8 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
 <ul>
 <li><code class="prettyprint">kill</code> / <code class="prettyprint">term</code> / <code class="prettyprint">int</code>:  Will signal the master to &ldquo;gracefully terminate&rdquo; all workers.  Master will terminate once all workers have completed</li>
-<li><code class="prettyprint">USR2</code> / <code class="prettyprint">HUP</code> : &ldquo;Hot reload&rdquo;.  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.</li>
-<li><code class="prettyprint">WINCH</code>: &ldquo;Gracefully terminate&rdquo; all workers.  Only the master will remain running</li>
+<li><code class="prettyprint">HUP</code> : Restart all workers.</li>
+<li><code class="prettyprint">USR2</code> : &ldquo;Hot reload&rdquo;.  Worker will kill off existing workers one-by-one, and start a new worker in their place.  This is used for 0-downtime restarts.  Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.</li>
 <li><code class="prettyprint">TTOU</code>: remove one worker</li>
 <li><code class="prettyprint">TTIN</code>: add one worker</li>
 </ul>
@@ -219,6 +191,6 @@ notice: cluster <span class="nb">complete</span>, Bye!
 <h2 id="windows-specific-notes">Windows-Specific Notes</h2>
 
 <ul>
-<li>Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell. </li>
+<li>Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell.</li>
 <li>Sometimes, npm will not install the actionhero binary @ <code class="prettyprint">/node_modules/.bin/actionhero</code>, but rather it will attempt to create a windows executable and wrapper.  You can launch actionhero directly with <code class="prettyprint">./node_modules/actionhero/bin/actionhero</code></li>
 </ul>

@@ -100,19 +100,26 @@
         <div class="col-6 col-sm-6 col-lg-6">
             <h4><a href="/docs/#websocket-server">Web Sockets</a></h4>
             <p class="feature-description">actionhero uses Primus to provided a robust and reliable nodejs websocket implementation. actionhero web socket clients can fall back to long-polling and other transports to ensure they are connected. Primus allows you to choose the underlying websocket implementation of your choice.</p>
-            <pre>var A = new ActionheroClient;
-A.connect();
-A.action("actionsView", function(data){ console.log(data); })</pre>
+
+<pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">A</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">;</span>
+<span class="nx">A</span><span class="p">.</span><span class="nx">connect</span><span class="p">();</span>
+<span class="nx">A</span><span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="s2">"actionsView"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="p">})</span>
+</code></pre>
+
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
             <h4><a href="/docs/#socket-server">Socket</a></h4>
             <p class="feature-description">actionhero ships with the ability to be a line TCP or TLS server. actionhero clients can speak a wire protocol that sends lines of JSON. Actions can be processed asynchronously and in parallel. The API server and the built-in chat system provide all you need for a communication or game application.</p>
-            <pre>> telnet localhost 5000
+
+<pre class="highlight shell"><code><span class="gp">&gt; </span>telnet localhost 5000
 Trying 127.0.0.1...
 Connected to localhost.
-{"welcome":"Hello! Welcome to the actionhero api}
-> actionsView</pre>
+<span class="o">{</span><span class="s2">"welcome"</span>:<span class="s2">"Hello! Welcome to the actionhero api"</span><span class="o">}</span>
+<span class="gp">&gt; </span>say myChatRoom hello
+<span class="o">{</span><span class="s2">"ok"</span><span class="o">}</span>
+</code></pre>
+
         </div>
 
         <div class="col-6 col-sm-6 col-lg-6">
@@ -131,49 +138,49 @@ Connected to localhost.
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#actions">Easy-To-Use Actions</a></h4>
                     <p class="feature-description">With actionhero, you create 'actions' which can respond to any type of connection. They process incoming parameters and offer a response to the client. actionhero takes care of routing and responding to each connection type for you.</p>
-                    <pre>
-exports.action = {
-  name: 'randomNumber',
-  description: 'I generate a random number',
-  action.inputs: {
-    'required' : [],
-    'optional' : []
-  },
-  outputExample: {randomNumber: 123}
-  run: function(api, data, next){
-    data.response.randomNumber = Math.random();
-    next();
-  }
-}
-                    </pre>
+
+<pre class="highlight javascript"><code><span class="nx">exports</span><span class="p">.</span><span class="nx">action</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="s1">'randomNumber'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s1">'I generate a random number'</span><span class="p">,</span>
+  <span class="nx">action</span><span class="p">.</span><span class="na">inputs</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">'required'</span> <span class="p">:</span> <span class="p">[],</span>
+    <span class="s1">'optional'</span> <span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="na">outputExample</span><span class="p">:</span> <span class="p">{</span><span class="na">randomNumber</span><span class="p">:</span> <span class="mi">123</span><span class="p">}</span>
+  <span class="nl">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">data</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">randomNumber</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span>
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
                 </div>
 
                  <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#tasks">Built-In Tasks</a></h4>
                     <p class="feature-description">Background tasks are first-class citizens in actionhero. You can enqueue a task from anywhere in the application. Tasks can be recurring or single-run. actionhero's task sytem is powerd by Resque, so it is compatible with a number of other applications and frameworks.</p>
                 </div>
-                <pre>
-api.tasks.enqueue(
-    "sendWelcomeEmail", 
-    {to: 'evan@evantahler.com'}, 
-    'default', 
-function(err, toRun){
-  // done!
-});
 
-var task = {
-  name:          "sendWelcomeEmail",
-  description:   "I will send a new user a welcome email",
-  queue:         "default",
-  frequency:     0,
-  run: function(api, params, next){
-    api.sendEmail(params.email, function(err){
-      if(err){ api.log(err, 'error'); }
-      next();
-    })
-  }
-};
-                </pre>
+<pre class="highlight javascript"><code><span class="nx">api</span><span class="p">.</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">enqueue</span><span class="p">(</span>
+    <span class="s2">"sendWelcomeEmail"</span><span class="p">,</span>
+    <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="s1">'evan@evantahler.com'</span><span class="p">},</span>
+    <span class="s1">'default'</span><span class="p">,</span>
+<span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">toRun</span><span class="p">){</span>
+  <span class="c1">// done!</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">task</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span>          <span class="s2">"sendWelcomeEmail"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span>   <span class="s2">"I will send a new user a welcome email"</span><span class="p">,</span>
+  <span class="na">queue</span><span class="p">:</span>         <span class="s2">"default"</span><span class="p">,</span>
+  <span class="na">frequency</span><span class="p">:</span>     <span class="mi">0</span><span class="p">,</span>
+  <span class="na">run</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">sendEmail</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span> <span class="nx">api</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s1">'error'</span><span class="p">);</span> <span class="p">}</span>
+      <span class="nx">next</span><span class="p">();</span>
+    <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre>
 
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#actioncluster">Cluster-Ready</a></h4>
@@ -208,6 +215,11 @@ var task = {
                 <div class="col-6 col-sm-6 col-lg-6">
                     <h4><a href="/docs/#file-server">File Server</a></h4>
                     <p class="feature-description">Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and actionhero is no exception. Configured to asynchronously stream file contents, actionhero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server. No nginx required!</p>
+                </div>
+
+                <div class="col-6 col-sm-6 col-lg-6">
+                    <h4><a href="/docs/#localization">Localization</a></h4>
+                    <p class="feature-description">Actionhero is integratied with `i18n` to allow you to cusomize every string in the server, from action responses to logging to fit your (and your user's) needs.</p>
                 </div>
             </div>
         </div>

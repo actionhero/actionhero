@@ -1,0 +1,66 @@
+<h1 id="localization">Localization</h1>
+
+<p>Starting in Actionhero <code class="prettyprint">v13.0.0</code>, you can now use the <a href="https://github.com/mashpie/i18n-node">i18n</a> module to customize all aspects of actionhero.</p>
+
+<h2 id="locale-files">Locale files</h2>
+
+<ul>
+<li>When running actionhero with <code class="prettyprint">api.config.i18n.updateFiles = true</code>, you will see actionhero generate a &lsquo;locales&rsquo; folder at the top level of your project which will contain translations of all strings in your project with are passed though the new localization system.  This includes all uses of <code class="prettyprint">connection.localize</code> and <code class="prettyprint">api.log</code>.<br>
+
+<ul>
+<li>be sure to use sprintf-style string interpolation for variables!</li>
+</ul></li>
+<li>From here, it is an easy matter to change the strings, per locale, to how you would like them presented back in your application.  The next time you restart the server, the values you&rsquo;ve updated in your locale strings file will be used.</li>
+<li>disable <code class="prettyprint">api.config.i18n.updateFiles</code> if you do not want this behavior.</li>
+</ul>
+
+<h2 id="determining-connection-locales">Determining connection locales</h2>
+
+<p>Since every actionhero implementation is unique, we cannot ship with a &ldquo;guess&rdquo; about how to determine a given connection&rsquo;s locale. Perhaps you have an HTTP server and you can trust your client&rsquo;s <code class="prettyprint">accept-language</code> headers.  Or perhaps you run your API under a number of different host names and you can presume locale based on them.   Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.  </p>
+
+<p>For example, I may have an initializer in my project like this:</p>
+<pre class="highlight javascript"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">initialize</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+    <span class="nx">api</span><span class="p">.</span><span class="nx">customLocalization</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">lookup</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en'</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">'web'</span><span class="p">){</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'usa.site.com'</span><span class="p">){</span> <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en-US'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'uk.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'en-GB'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'es.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'es-ES'</span><span class="p">;</span> <span class="p">}</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">connection</span><span class="p">.</span><span class="nx">rawConnection</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">host</span> <span class="o">===</span> <span class="s1">'mx.site.com'</span><span class="p">){</span>  <span class="nx">locale</span> <span class="o">=</span> <span class="s1">'es-MX'</span><span class="p">;</span> <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">locale</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">next</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>To tell the i18n to use this method with a new connection, set <code class="prettyprint">api.config.i18n.determineConnectionLocale = &#39;api.customLocalization.lookup&#39;</code></p>
+
+<h2 id="connection-methods">Connection Methods</h2>
+
+<ul>
+<li><code class="prettyprint">connection.localize(string)</code> or <code class="prettyprint">connection.localize([string-with-interpolation, value])</code>
+
+<ul>
+<li>Allows you to interpolate a string based on the connection&rsquo;s current locale.  For example, say in an action you wanted to respond with <code class="prettyprint">data.response.message = connection.localize(&#39;the count was %s&#39;, 4);</code> In your locale files, you would define <code class="prettyprint">the count was %s</code> in every language you cared about, and not need to modify the action itself at all.</li>
+</ul></li>
+</ul>
+
+<h2 id="localizing-the-logger">Localizing the Logger</h2>
+
+<ul>
+<li>Just like connections, the actionhero logger itself now has localization interpolation built in.  Note how in the new settings you set which locale you want the server&rsquo;s logs to be expressed in.  Using that, you can now use sprintf-style string interpolation as the first argument of <code class="prettyprint">api.log()</code>
+
+<ul>
+<li>You might want to log the message <code class="prettyprint">api.log([&#39;The time is %s&#39;, new Date()], &#39;alert&#39;)</code>.<br></li>
+<li>Changing the translation of the string <code class="prettyprint">The time is %s</code> in your locale files would apply to the logger as well!</li>
+<li>You can of course continue to log plain strings as we have been with the logger as well.</li>
+</ul></li>
+</ul>

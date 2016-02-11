@@ -20,7 +20,7 @@
 <li>this uses <code class="prettyprint">fs.watchFile()</code> and may not work on all OSs / file systems.</li>
 <li>new files won&rsquo;t be loaded in, only existing files when the app was booted will be monitored</li>
 <li>as deleting a file might crash your application, we will not attempt to re-load deleted files</li>
-<li>if you have changed the <code class="prettyprint">task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change </li>
+<li>if you have changed the <code class="prettyprint">task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change</li>
 <li>changing <code class="prettyprint">api.config</code>, initializers, or servers, will attempt to do a &ldquo;full&rdquo; reboot the server rather than just reload that component.</li>
 </ul>
 
@@ -50,7 +50,7 @@
 <p>That&rsquo;s it! Now you can visit <code class="prettyprint">http://0.0.0.0:1234/debug?port=5858</code> and start debugging.  Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects.  IE: I put a breakpoint in the default <code class="prettyprint">status</code> action in the <code class="prettyprint">run</code> method:</p>
 
 <h2 id="repl">REPL</h2>
-<pre class="highlight shell"><code><span class="gp">&gt; </span>grunt console
+<pre class="highlight shell"><code><span class="gp">&gt; </span>actionhero console
 Running <span class="s2">"console"</span> task
 2015-11-14 17:48:01 - notice: <span class="k">***</span> starting actionhero <span class="k">***</span>
 2015-11-14 17:48:01 - warning: running with fakeredis
@@ -71,7 +71,7 @@ Running <span class="s2">"console"</span> task
   <span class="s1">'status'</span> <span class="o">]</span>
 </code></pre>
 
-<p>actionhero now has a REPL (<code class="prettyprint">v9.0.0</code>)! This means you can &lsquo;connect&rsquo; to a running instance of actionhero and manually call all the methods on the <code class="prettyprint">api</code> namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running <code class="prettyprint">grunt console</code> will load up a version of action hero in your terminal where you have access to the <code class="prettyprint">api</code> object.  This version of the server will <code class="prettyprint">boot</code>, <code class="prettyprint">initialize</code>, and <code class="prettyprint">start</code>, but will skip booting any <code class="prettyprint">servers</code>.  </p>
+<p>actionhero now has a REPL (<code class="prettyprint">v9.0.0</code>)! This means you can &lsquo;connect&rsquo; to a running instance of actionhero and manually call all the methods on the <code class="prettyprint">api</code> namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running <code class="prettyprint">actionhero console</code> will load up a version of action hero in your terminal where you have access to the <code class="prettyprint">api</code> object.  This version of the server will <code class="prettyprint">boot</code>, <code class="prettyprint">initialize</code>, and <code class="prettyprint">start</code>, but will skip booting any <code class="prettyprint">servers</code>.  </p>
 
 <p>The REPL will:</p>
 
