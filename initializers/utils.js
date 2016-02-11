@@ -146,7 +146,6 @@ module.exports = {
     };
 
     api.utils.sourceRelativeLinkPath = function(linkfile, pluginPaths){
-      console.log(linkfile)
       var type = fs.readFileSync(linkfile).toString();
       var pathParts = linkfile.split(path.sep)
       var name = pathParts[(pathParts.length - 1)].split('.')[0];

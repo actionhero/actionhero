@@ -29,7 +29,6 @@ module.exports = {
     i18n.setLocale( api.config.i18n.serverLocale );
 
     api.i18n.i18n = i18n;
-    // console.log( api.i18n.i18n.getCatalog() );
 
     next();
   }

@@ -30,11 +30,13 @@ exports.link = function(binary, next){
     [ 'server',      'servers'      ],
     [ 'initializer', 'initializers' ],
   ].forEach(function(c){
-    var localLinkLocation  = binary.config.general.paths[c[0]][0] + path.sep + binary.argv.name + '.link';
+    var localLinkDirectory = binary.config.general.paths[c[0]][0] + path.sep + 'plugins';
+    var localLinkLocation  = localLinkDirectory + path.sep + binary.argv.name + '.link';
     var pluginSubSection   = pluginRootRelative + path.sep + c[1];
 
     if( binary.utils.dirExists(pluginSubSection) ){
-      binary.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection)
+      binary.utils.createDirSafely(localLinkDirectory);
+      binary.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection);
     }
   })
 

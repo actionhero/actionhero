@@ -93,7 +93,7 @@ binary.utils = {
     if(binary.utils.fileExists(filePath)){
       binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
     } else {
-      binary.log(' - creating linkfile \'' + filePath + '\' => \'' + refrence + '\'');
+      binary.log(' - creating linkfile \'' + filePath + '\'');
       fs.writeFileSync(filePath, type);
     }
   },
