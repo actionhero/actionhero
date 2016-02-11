@@ -39,7 +39,7 @@ actionhero provides hooks for you to execute custom code both before and after t
 
 Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
 
-Each processor is passed `data` and the callback `next`.  Just like within actions, you can modify the `data` object to add to `data.resposne` to create a response to the client.  If you pass `error` to the callback `next`, that error will be returned to the client.  If a `preProcessor` has an error, the action will never be called.
+Each processor is passed `data` and the callback `next`.  Just like within actions, you can modify the `data` object to add to `data.response` to create a response to the client.  If you pass `error` to the callback `next`, that error will be returned to the client.  If a `preProcessor` has an error, the action will never be called.
 
 The priority of a middleware orders it with all other middleware which might fire for an action.  Lower numbers happen first.  If you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used
 
@@ -48,7 +48,7 @@ The priority of a middleware orders it with all other middleware which might fir
 `data` contains:
 
 ```javascript
-data = { 
+data = {
   connection: {},
   action: 'randomNumber',
   toProcess: true,
@@ -83,7 +83,7 @@ var connectionMiddleware = {
 api.connections.addMiddleware(connectionMiddleware);
 ```
 
-Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware. 
+Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.  Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware.
 
 Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web).  You will likely want to inspect `connection.type` in this middleware.  Again, if you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used.
 
@@ -132,7 +132,7 @@ More detail and nuance on chat middleware can be found in the [chat section](/do
 
 ### Chat Midleware Notes
 - In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty `{}` connection is used to proxy the message coming from the 'system'
-- Only the `sayCallbacks` have a second return value on the callback, `messagePayload`.  This allows you to modify the message being sent to your clients. 
+- Only the `sayCallbacks` have a second return value on the callback, `messagePayload`.  This allows you to modify the message being sent to your clients.
 - `messagePayload` will be modified and and passed on to all `addSayCallback` middlewares inline, so you can append and modify it as you go
 - If you have a number of callbacks (`say`, `onSayReceive`, `join` or  `leave`), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.
 - `sayCallbacks` are executed once per client connection. This makes it suitable for customizing the message based on the individual client.
