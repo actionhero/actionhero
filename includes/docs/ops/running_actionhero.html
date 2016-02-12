@@ -1,7 +1,8 @@
 <h1 id="running-actionhero">Running actionhero</h1>
 
 <h2 id="the-actionhero-binary">The actionhero Binary</h2>
-<pre class="highlight shell"><code>actionhero - a node.js API framework <span class="k">for </span>both tcp sockets, web sockets, and http clients.
+<pre class="highlight shell"><code>actionhero - A multi-transport node.js API Server with integrated cluster
+  capabilities and delayed tasks
 
 Binary options:
 <span class="k">*</span> <span class="nb">help</span> <span class="o">(</span>default<span class="o">)</span>
@@ -22,27 +23,35 @@ Descriptions:
 <span class="k">*</span> actionhero <span class="nb">help
   </span>will display this document
 
-<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config.js] --title<span class="o">=[</span>processTitle]  --daemon
-  will start a template actionhero server
-  this is the respondent to <span class="s2">"npm start"</span>
-  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to config.js, defaults to <span class="s2">"process.cwd() + '/' + config.js"</span>. You can also use ENV[ACTIONHERO_CONFIG].
-  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+<span class="k">*</span> actionhero start --config<span class="o">=[</span>/path/to/config.js] --title<span class="o">=[</span>processTitle]  
+    --daemon will start a template actionhero server this is the respondent
+    to <span class="s2">"npm start"</span>
+  <span class="o">[</span>config] <span class="o">(</span>optional<span class="o">)</span> path to config.js, defaults to <span class="s2">"process.cwd() + '/'
+    + config.js"</span>. You can also use ENV[ACTIONHERO_CONFIG].
+  <span class="o">[</span>title] <span class="o">(</span>optional<span class="o">)</span> process title to use <span class="k">for </span>actionhero-s ID, ps, log, and
+    pidFile defaults. Must be unique <span class="k">for </span>each member of the cluster.  
+    You can also use ENV[ACTIONHERO_TITLE].
+    Process renaming does not work on OSX/Windows
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults
+    to <span class="nb">false</span>
 
 <span class="k">*</span> actionhero startCluster --workers<span class="o">=[</span>numWorkers]  --daemon
   will launch a actionhero cluster <span class="o">(</span>using node-s cluster module<span class="o">)</span>
   <span class="o">[</span>workers] <span class="o">(</span>optional<span class="o">)</span> number of workers <span class="o">(</span>defaults to <span class="c"># CPUs - 2)</span>
-  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults to <span class="nb">false</span>
+  <span class="o">[</span>daemon] <span class="o">(</span>optional<span class="o">)</span> to fork and run as a new background process defaults
+    to <span class="nb">false</span>
 
 <span class="k">*</span> actionhero generate
   will prepare an empty directory with a template actionhero project
 
-<span class="k">*</span> actionhero generateAction --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --inputsRequired<span class="o">=[</span>inputsRequired] --inputsOptional<span class="o">=[</span>inputsOptional]
+<span class="k">*</span> actionhero generateAction --name<span class="o">=[</span>name] --description<span class="o">=[</span>description]
+    --inputsRequired<span class="o">=[</span>inputsRequired] --inputsOptional<span class="o">=[</span>inputsOptional]
   will generate a new action <span class="k">in</span> <span class="s2">"actions"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
 
-<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description] --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency]
+<span class="k">*</span> actionhero generateTask --name<span class="o">=[</span>name] --description<span class="o">=[</span>description]
+    --scope<span class="o">=[</span>scope] --frequency<span class="o">=[</span>frequency]
   will generate a new task <span class="k">in</span> <span class="s2">"tasks"</span>
   <span class="o">[</span>name] <span class="o">(</span>required<span class="o">)</span>
   <span class="o">[</span>description] <span class="o">(</span>required<span class="o">)</span> should be wrapped <span class="k">in </span>quotes <span class="k">if </span>it contains spaces
@@ -67,7 +76,15 @@ Descriptions:
   will open an interactive CLI with the API object <span class="k">in </span>scope.
   this is sometimes called a REPL
 
-More Help &amp; the actionhero documentation can be found @ http://www.actionherojs.com
+<span class="k">*</span> actionhero link --name<span class="o">=[</span>pluginName]
+  will link the actions, tasks, initializers, etc from a plugin into your
+    top-level project normally, you will have first installed the plugin
+    via <span class="sb">`</span>npm install myPlugin<span class="sb">`</span>
+
+<span class="c">#############################################################</span>
+<span class="c">## More Help &amp; the actionhero documentation can be found @ ##</span>
+<span class="c">##             http://www.actionherojs.com                 ##</span>
+<span class="c">#############################################################</span>
 </code></pre>
 
 <p>The suggested method to run your actionhero server is to use the included <code class="prettyprint">./node_modules/.bin/actionhero</code> binary.  Note that there is no <code class="prettyprint">main.js</code> or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.</p>
