@@ -3,7 +3,8 @@
 ## The actionhero Binary
 
 ```bash
-actionhero - a node.js API framework for both tcp sockets, web sockets, and http clients.
+actionhero - A multi-transport node.js API Server with integrated cluster
+  capabilities and delayed tasks
 
 Binary options:
 * help (default)
@@ -24,27 +25,35 @@ Descriptions:
 * actionhero help
   will display this document
 
-* actionhero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
-  will start a template actionhero server
-  this is the respondent to "npm start"
-  [config] (optional) path to config.js, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG].
-  [title] (optional) process title to use for actionhero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
-  [daemon] (optional) to fork and run as a new background process defaults to false
+* actionhero start --config=[/path/to/config.js] --title=[processTitle]  
+    --daemon will start a template actionhero server this is the respondent
+    to "npm start"
+  [config] (optional) path to config.js, defaults to "process.cwd() + '/'
+    + config.js". You can also use ENV[ACTIONHERO_CONFIG].
+  [title] (optional) process title to use for actionhero-s ID, ps, log, and
+    pidFile defaults. Must be unique for each member of the cluster.  
+    You can also use ENV[ACTIONHERO_TITLE].
+    Process renaming does not work on OSX/Windows
+  [daemon] (optional) to fork and run as a new background process defaults
+    to false
 
 * actionhero startCluster --workers=[numWorkers]  --daemon
   will launch a actionhero cluster (using node-s cluster module)
   [workers] (optional) number of workers (defaults to # CPUs - 2)
-  [daemon] (optional) to fork and run as a new background process defaults to false
+  [daemon] (optional) to fork and run as a new background process defaults
+    to false
 
 * actionhero generate
   will prepare an empty directory with a template actionhero project
 
-* actionhero generateAction --name=[name] --description=[description] --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
+* actionhero generateAction --name=[name] --description=[description]
+    --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
   will generate a new action in "actions"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
 
-* actionhero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency]
+* actionhero generateTask --name=[name] --description=[description]
+    --scope=[scope] --frequency=[frequency]
   will generate a new task in "tasks"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
@@ -69,7 +78,15 @@ Descriptions:
   will open an interactive CLI with the API object in scope.
   this is sometimes called a REPL
 
-More Help & the actionhero documentation can be found @ http://www.actionherojs.com
+* actionhero link --name=[pluginName]
+  will link the actions, tasks, initializers, etc from a plugin into your
+    top-level project normally, you will have first installed the plugin
+    via `npm install myPlugin`
+
+#############################################################
+## More Help & the actionhero documentation can be found @ ##
+##             http://www.actionherojs.com                 ##
+#############################################################
 ```
 
 The suggested method to run your actionhero server is to use the included `./node_modules/.bin/actionhero` binary.  Note that there is no `main.js` or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.
