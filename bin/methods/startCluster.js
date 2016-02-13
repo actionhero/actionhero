@@ -168,10 +168,10 @@ ActionHeroCluster.prototype.buildEnv = function(workerId){
 
 ActionHeroCluster.prototype.configurePath = function(p, callback){
   var stats = fs.lstatSync(p);
-  if(!stats.isDirectory()){
-    fs.mkdir(p, callback);
-  }else{
+  if(stats.isDirectory() || stats.isSymbolicLink()){
     process.nextTick(callback);
+  }else{
+    fs.mkdir(p, callback);
   }
 };
 
