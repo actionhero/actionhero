@@ -65,7 +65,7 @@
     "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
-    "build-gh-pages": "./site/publish.sh",
+    "build-gh-pages": "cd site && ./deploy.sh",
     "site": "cd site && EXECJS_RUNTIME=Node bundle exec middleman",
     "postpublish": "npm run-script build-gh-pages"
   }
