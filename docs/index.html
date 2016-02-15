@@ -1,35 +1,112 @@
-
-
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
     <meta name="description" content="actionhero.js is a multi-transport framework Node.JS API Server with integrated cluster capabilities and delayed tasks">
     <meta name="keywords" content="actionhero, actionherojs, node, nodejs, node.js, framework, server, api, cluster, redis, task, job, background, middleware">
-
-    <link rel="icon" href="/images/favicon.ico" type="image/x-icon" /> 
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
 
     <title>ActionHero Documentation and API Reference</title>
 
-    <link href="../stylesheets/docs/screen.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="../stylesheets/docs/print.css" rel="stylesheet" type="text/css" media="print" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-      <script src="../javascripts/docs/all.js" type="text/javascript"></script>
-
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2;
+  background-color: #272822;
+}
+.highlight .err {
+  color: #151515;
+  background-color: #ac4142;
+}
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #505050;
+}
+.highlight .cp {
+  color: #f4bf75;
+}
+.highlight .nt {
+  color: #f4bf75;
+}
+.highlight .o, .highlight .ow {
+  color: #d0d0d0;
+}
+.highlight .p, .highlight .pi {
+  color: #d0d0d0;
+}
+.highlight .gi {
+  color: #90a959;
+}
+.highlight .gd {
+  color: #ac4142;
+}
+.highlight .gh {
+  color: #6a9fb5;
+  background-color: #151515;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #aa759f;
+}
+.highlight .kc {
+  color: #d28445;
+}
+.highlight .kt {
+  color: #d28445;
+}
+.highlight .kd {
+  color: #d28445;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #90a959;
+}
+.highlight .sr {
+  color: #75b5aa;
+}
+.highlight .si {
+  color: #8f5536;
+}
+.highlight .se {
+  color: #8f5536;
+}
+.highlight .nn {
+  color: #f4bf75;
+}
+.highlight .nc {
+  color: #f4bf75;
+}
+.highlight .no {
+  color: #f4bf75;
+}
+.highlight .na {
+  color: #6a9fb5;
+}
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mb, .highlight .mx {
+  color: #90a959;
+}
+.highlight .ss {
+  color: #90a959;
+}
+    </style>
+    <link href="../stylesheets/docs/screen.css" rel="stylesheet" media="screen" />
+    <link href="../stylesheets/docs/print.css" rel="stylesheet" media="print" />
+      <script src="../javascripts/docs/all.js"></script>
   </head>
 
-  <body class="docs docs_index">
+  <body class="docs docs_index" data-languages="[]">
     <a href="#" id="nav-button">
       <span>
         NAV
         <img src="../images/navbar.png" />
       </span>
     </a>
-
     <div class="tocify-wrapper">
-      <img width="220" src="../images/logo/actionhero_400.png" />
+      <img src="../images/logo.png" />
+        <div class="lang-selector">
+        </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
         </div>
@@ -47,7 +124,6 @@
             <li><a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
         </ul>
     </div>
-
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
@@ -203,15 +279,15 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 
 <h2 id="actionhero-sections">actionhero sections</h2>
 
-<p><img src="/images/actionheroGraphic.png" /></p>
+<p><img src="../images/actionheroGraphic.png" /></p>
 
 <h2 id="request-flow">request flow</h2>
 
-<p><img src="/images/connection_flow.png" /></p>
+<p><img src="../images/connection_flow.png" /></p>
 
 <h2 id="cluster-topology">cluster topology</h2>
 
-<p><img src="/images/cluster.png" /></p>
+<p><img src="../images/cluster.png" /></p>
 
           <h1 id="actions">Actions</h1>
 
@@ -916,7 +992,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <h2 id="action-request-flow">Action Request Flow</h2>
 
-<p><img src="/images/connection_flow.png" /></p>
+<p><img src="../images/connection_flow.png" /></p>
 
 <h2 id="action-middleware">Action Middleware</h2>
 <pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">middleware</span> <span class="o">=</span> <span class="p">{</span>
@@ -2831,7 +2907,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 <h2 id="client-library">Client Library</h2>
 
 <p>Although the <code class="prettyprint">actionheroClient</code> client-side library is mostly for websockets, it can now be used to make http actions when not connected (and websocket clients will fall back to http actions when disconnected)</p>
-<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"../public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 
 <span class="nt">&lt;script&gt;</span>
 <span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ActionheroClient</span><span class="p">();</span>
@@ -2856,7 +2932,7 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 <p>In <code class="prettyprint">v9.0.0</code> and later, actionhero will no longer attempt to manage non-sticky client connections. This means if you have a multi-server actionhero deployment and you use long-polling in your websocket transport, you will need to ensure that your load balancer can enforce sticky connections, meaning every request from the client will hit the same actionhero node.</p>
 
 <h2 id="connection-details">Connection Details</h2>
-<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"../public/javascript/actionheroClient.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 
 <span class="nt">&lt;script&gt;</span>
 
@@ -4042,6 +4118,8 @@ notice: cluster <span class="nb">complete</span>, Bye!
 
       </div>
       <div class="dark-box">
+          <div class="lang-selector">
+          </div>
       </div>
     </div>
 
