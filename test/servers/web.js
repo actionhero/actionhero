@@ -575,7 +575,7 @@ describe('Server: Web', function(){
 
       before(function(done){
         fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
-        api.config.general.paths.public.push('/tmp');
+        api.staticFile.searchLoactions.push('/tmp');
         process.nextTick(function(){
           done();
         });
@@ -583,7 +583,7 @@ describe('Server: Web', function(){
 
       after(function(done){
         fs.unlink('/tmp/testFile.html');
-        api.config.general.paths.public.pop();
+        api.staticFile.searchLoactions.pop();
         process.nextTick(function(){
           done();
         });

@@ -4,7 +4,7 @@
 
 This folder contains the build files for www.actionherojs.com (which are served by github-pages)
 
-We use [Middleman](https://middlemanapp.com/) to build and compile this site, and host it for free on [Github Pages](http://pages.github.com/). Pages can be written in markdown or HTML, and Jekyll will build the site. 
+We use [Middleman](https://middlemanapp.com/) to build and compile this site, and host it for free on [Github Pages](http://pages.github.com/). Pages can be written in markdown or HTML, and Middleman will build the site. 
 
 There are two main parts of the site (and consequently 2 main layouts): `home` and `docs`.
 
