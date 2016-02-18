@@ -32,7 +32,7 @@ var isrunning = require('is-running');
 
 /////////////////////////////////////////
 
-var WorkerClass = function(parent, id, env){
+var Worker = function(parent, id, env){
   var self = this;
   self.state = null;
   self.id = id;
@@ -40,7 +40,7 @@ var WorkerClass = function(parent, id, env){
   self.parent = parent;
 };
 
-WorkerClass.prototype.logPrefix = function(){
+Worker.prototype.logPrefix = function(){
   var self = this;
   var s = '';
   s += '[worker #' + self.id;
@@ -52,7 +52,7 @@ WorkerClass.prototype.logPrefix = function(){
   return s;
 }
 
-WorkerClass.prototype.start = function(){
+Worker.prototype.start = function(){
   var self = this;
 
   self.worker = cluster.fork(self.env);
@@ -81,21 +81,23 @@ WorkerClass.prototype.start = function(){
       message.uncaughtException.stack.forEach(function(line){
         self.parent.log(self.logPrefix() + '   ' + line, 'alert');
       });
+      self.parent.flapCount++;
     }
 
     if(message.unhandledRejection){
-      self.parent.log('worker #' + self.worker.id + ' [' + self.worker.process.pid + ']: unhandled rejection => ' + message.unhandledRejection, 'alert');
+      self.parent.log('worker #' + self.worker.id + ' [' + self.worker.process.pid + ']: unhandled rejection => ' + JSON.stringify(message.unhandledRejection), 'alert');
+      self.parent.flapCount++;
     }
 
     self.parent.work();
   });
 };
 
-WorkerClass.prototype.stop = function(){
+Worker.prototype.stop = function(){
   this.worker.send('stopProcess');
 };
 
-WorkerClass.prototype.restart = function(){
+Worker.prototype.restart = function(){
   this.worker.send('restart');
 };
 
@@ -105,6 +107,7 @@ var ActionHeroCluster = function(args){
   var self = this;
   self.workers = [];
   self.workersToRestart = [];
+  self.flapCount = 0;
 
   self.options = self.defualts();
   for(var i in self.options){
@@ -138,7 +141,7 @@ ActionHeroCluster.prototype.defualts = function(){
   return {
     stopTimeout: 3000,
     expectedWorkers: os.cpus().length,
-    flapCount: 0,
+    flapWindow: 1000 * 30,
     execPath: __filename,
     pidPath: process.cwd() + '/pids',
     pidfile: 'cluster_pidfile',
@@ -259,6 +262,20 @@ ActionHeroCluster.prototype.start = function(callback){
     process.nextTick(done);
   });
 
+  jobs.push(function(done){
+    if(self.flapTimer){ clearInterval(self.flapTimer); }
+    self.flapTimer = setInterval(function(){
+      if(self.flapCount > (self.options.expectedWorkers * 2)){
+        self.log('CLUSTER IS FLAPPING (' + self.flapCount + ' crashes in ' + self.options.flapWindow + 'ms). Stopping', 'emerg');
+        self.stop(process.exit);
+      }else{
+        self.flapCount = 0;
+      }
+    }, self.options.flapWindow);
+
+    done();
+  });
+
   jobs.push(function(done){ self.configurePath(self.options.logPath, done); });
   jobs.push(function(done){ self.configurePath(self.options.pidPath, done); });
   jobs.push(function(done){ self.writePidFile(done); });
@@ -332,7 +349,7 @@ ActionHeroCluster.prototype.work = function(){
 
     self.log('starting worker #' + workerId, 'info');
     var env = self.buildEnv(workerId);
-    worker = new WorkerClass(self, workerId, env);
+    worker = new Worker(self, workerId, env);
     worker.start();
     self.workers.push(worker);
   }
