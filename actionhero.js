@@ -15,7 +15,9 @@ var fatalError = function(api, errors, type){
     errors.forEach(function(err){
       api.log(err.stack, 'emerg');
     });
-    process.exit(1);
+    api.commands.stop.call(api, function(){
+      process.exit(1);
+    });
   }
 };
 
@@ -96,7 +98,7 @@ actionhero.prototype.initialize = function(params, callback){
 
   // we need to load the config first
   [
-    path.resolve( __dirname + '/initializers/' + 'utils.js'        ),
+    path.resolve( __dirname + '/initializers/' + 'utils.js'  ),
     path.resolve( __dirname + '/initializers/' + 'config.js' ),
   ].forEach(function(file){
     var filename = file.replace(/^.*[\\\/]/, '');
@@ -283,7 +285,6 @@ actionhero.prototype.stop = function(callback){
     });
 
     async.series(self.stopInitializers, function(errors){ fatalError(self.api, errors, 'stop'); });
-
   } else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   } else {

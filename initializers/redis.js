@@ -61,6 +61,20 @@ module.exports = {
         }
       });
 
+      if(!api.redis.status.subscribed){
+        api.redis.subscriber.subscribe(api.config.redis.channel);
+        api.redis.status.subscribed = true;
+      }
+
+      api.redis.subscriber.on('message', function(messageChannel, message){
+        try{ message = JSON.parse(message); }catch(e){ message = {}; }
+        if(messageChannel === api.config.redis.channel && message.serverToken === api.config.general.serverToken){
+          if(api.redis.subscriptionHandlers[message.messageType]){
+            api.redis.subscriptionHandlers[message.messageType](message);
+          }
+        }
+      });
+
       api.redis.subscriber.on('connect', function(){
         // if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
         api.log('connected to redis (subscriber)', 'debug');
@@ -79,30 +93,6 @@ module.exports = {
           callback();
         });
       }
-    };
-
-    // subscribe
-
-    api.redis.subscribe = function(callback){
-      var channel = api.config.redis.channel;
-
-      if(api.redis.status.subscribed){
-        return callback();
-      }
-
-      api.redis.subscriber.on('message', function(messageChannel, message){
-        try{ message = JSON.parse(message); }catch(e){ message = {}; }
-        if(messageChannel === channel && message.serverToken === api.config.general.serverToken){
-          if(api.redis.subscriptionHandlers[message.messageType]){
-            api.redis.subscriptionHandlers[message.messageType](message);
-          }
-        }
-      });
-
-      api.redis.subscriber.subscribe(channel, function(){
-        api.redis.status.subscribed = true;
-        callback();
-      });
     };
 
     api.redis.publish = function(payload){
@@ -185,10 +175,8 @@ module.exports = {
     // Boot
 
     api.redis.initialize(function(){
-      api.redis.subscribe(function(){
-        api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
-        process.nextTick(next);
-      });
+      api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
+      process.nextTick(next);
     });
 
   },
