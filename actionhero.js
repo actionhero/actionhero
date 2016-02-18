@@ -8,6 +8,8 @@ var async = require('async');
 
 // HELPERS ///
 
+setTimeout(function(){ BREAK }, 1000)
+
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){

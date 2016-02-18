@@ -19,7 +19,7 @@ exports.default = {
       // by default, every request will be in the 'en' locale
       // this method will be called witin the localiazation middleware on all requests
       determineConnectionLocale: 'api.i18n.determineConnectionLocale',
-    }
+    };
   }
 };
 
@@ -27,7 +27,7 @@ exports.staging ={
   i18n: function(){
     return {
       updateFiles: false
-    }
+    };
   }
 };
 
@@ -35,6 +35,6 @@ exports.procution ={
   i18n: function(){
     return {
       updateFiles: false
-    }
+    };
   }
 };
