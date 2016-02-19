@@ -17,6 +17,11 @@ module.exports = {
       calledback: false,
     };
 
+    if(api.config.redis.package && !api.config.redis.pkg) {
+      api.log(`Depreciation warning: New versions of actionhero utilize 'pkg' instead of 'package' for redis! Please update your configuration.`);
+      api.config.redis.pkg = api.config.redis.package;
+    }
+
     var redisPackage = require(api.config.redis.pkg);
     if(api.config.redis.pkg === 'fakeredis'){
       api.log('running with fakeredis', 'warning');
