@@ -191,8 +191,16 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
     }
   };
 
-  var method = params.httpMethod || 'POST';
+  var method = (params.httpMethod || 'POST').toUpperCase();
   var url = this.options.url + this.options.apiPath + '?action=' + params.action;
+
+  if (method === 'GET') {
+    for (var param in params) {
+      if (~['action', 'httpMethod'].indexOf(param)) continue;
+      url += '&' + param + '=' + params[param];
+    }
+  }
+
   xmlhttp.open(method, url, true);
   xmlhttp.setRequestHeader('Content-Type', 'application/json');
   xmlhttp.send(JSON.stringify(params));
