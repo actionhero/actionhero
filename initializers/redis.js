@@ -16,7 +16,7 @@ module.exports = {
       subscribed: false,
       calledback: false,
     };
-
+    api.config.redis.pkg = api.config.redis.pkg || api.config.redis.package;
     var redisPackage = require(api.config.redis.pkg);
     if(api.config.redis.pkg === 'fakeredis'){
       api.log('running with fakeredis', 'warning');
