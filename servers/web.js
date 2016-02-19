@@ -1,4 +1,5 @@
 var url                 = require('url');
+var qs                  = require('qs');
 var fs                  = require('fs');
 var path                = require('path');
 var zlib                = require('zlib');
@@ -80,7 +81,7 @@ var initialize = function(api, options, next){
     if(connection.rawConnection.method !== 'HEAD'){
       stringResponse = String(message);
     }
-    
+
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
@@ -143,8 +144,9 @@ var initialize = function(api, options, next){
       }
     }
 
-    connection.rawConnection.res.on('end', function(){ 
-      connection.destroy(); 
+    // note: the 'end' event may not fire on some OSes; finish will
+    connection.rawConnection.res.on('finish', function(){
+      connection.destroy();
     });
 
     if(fileStream){
@@ -172,7 +174,7 @@ var initialize = function(api, options, next){
     }
   };
 
-  server.goodbye = function(connection){
+  server.goodbye = function(){
     // disconnect handlers
   };
 
@@ -399,8 +401,8 @@ var initialize = function(api, options, next){
     // API
     else if(requestMode === 'api'){
       if(connection.rawConnection.method === 'TRACE'){ requestMode = 'trace'; }
-
-      fillParamsFromWebRequest(connection, connection.rawConnection.parsedURL.query);
+      var search = connection.rawConnection.parsedURL.search.slice(1);
+      fillParamsFromWebRequest(connection, qs.parse(search, api.config.servers.web.queryParseOptions));
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;
       if(
           connection.rawConnection.method !== 'GET' &&

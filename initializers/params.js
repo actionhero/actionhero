@@ -15,7 +15,7 @@ module.exports = {
     api.params.buildPostVariables = function(){
       var postVariables = [];
       var i, j;
-      
+
       api.params.globalSafeParams.forEach(function(p){
         postVariables.push(p);
       });
@@ -28,12 +28,12 @@ module.exports = {
           }
         }
       }
-      
+
       api.params.postVariables = api.utils.arrayUniqueify(postVariables);
       return api.params.postVariables;
-    }
+    };
 
     api.params.buildPostVariables();
     next();
   }
-}
+};

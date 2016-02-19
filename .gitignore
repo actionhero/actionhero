@@ -6,22 +6,22 @@ log/*
 cache/*
 coverage/*
 node_modules/*
+locales/*
 public/javascript/actionheroClient.js
 public/javascript/actionheroClient.min.js
 
-# Node / NPM 
+# Node / NPM
 npm-debug.log
 
 # OS-specific wierdness
 .DS_Store
 
+# Site
+site/build/*
+
 # Redis
 dump.rdb
 cache.dump
-
-# Jekyll Site
-_site/*
-docs/_site/*
 
 # Editor-specific
 /nbproject/*

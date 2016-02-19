@@ -1,8 +1,10 @@
 |- config
 | -- api.js
+| -- errors.js
+| -- i18n.js
 | -- logger.js
 | -- redis.js
-| -- stats.js
+| -- routes.js
 | -- tasks.js
 | -- servers
 | ---- web.js
@@ -34,9 +36,11 @@
 |- tasks
 |-- (your tasks)
 |
+|- locales
+|-- (translation files)
+|
 |- tests
 |-- (tests for your API)
 |
 readme.md
-gruntfile.js
 package.json

@@ -24,7 +24,7 @@ exports.default = {
         urlPathForActions : 'api',
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
-        //  set to `null` to disable the file server entirely 
+        //  set to `null` to disable the file server entirely
         urlPathForFiles : 'public',
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
@@ -64,17 +64,20 @@ exports.default = {
           requesterInformation: true
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
-        //  You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+        // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
         returnErrorCodes: true,
         // should this node server attempt to gzip responses if the client can accept them?
         // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
         compress: false,
-      }
+        // options to pass to the query parser
+        // learn more about the options @ https://github.com/hapijs/qs
+        queryParseOptions: {},
+      };
     }
   }
-}
+};
 
-exports.production = { 
+exports.production = {
   servers: {
     web: function(api){
       return {
@@ -83,13 +86,13 @@ exports.production = {
           serverInformation: false,
           requesterInformation: false
         }
-      }
+      };
     }
   }
-}
+};
 
 exports.test = {
-  servers: { 
+  servers: {
     web: function(api){
       return {
         secure: false,
@@ -99,7 +102,7 @@ exports.test = {
           serverInformation: true,
           requesterInformation: true
         }
-      }
+      };
     }
   }
-}
+};

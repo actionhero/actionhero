@@ -14,9 +14,10 @@ var ActionheroClient = function(options, client){
   }
 
   if(client){
+    self.externalClient = true;
     self.client = client;
   }
-}
+};
 
 if(typeof Primus === 'undefined'){
   var util = require('util');
@@ -37,12 +38,18 @@ ActionheroClient.prototype.defaults = function(){
 ActionheroClient.prototype.connect = function(callback){
   var self = this;
   self.messageCount = 0;
-  
-  if(!self.client){
+
+
+  if(self.client && self.externalClient !== true){
+    self.client.end();
+    self.client.removeAllListeners();
+    delete self.client;
     self.client = Primus.connect(self.options.url, self.options);
-  }else{
+  } else if(self.client && self.externalClient === true){
     self.client.end();
     self.client.open();
+  }else{
+    self.client = Primus.connect(self.options.url, self.options);
   }
 
   self.client.on('open', function(){
@@ -110,7 +117,7 @@ ActionheroClient.prototype.configure = function(callback){
     self.fingerprint = details.data.fingerprint;
     self.rooms       = details.data.rooms;
     callback(details);
-  }); 
+  });
 }
 
 ///////////////
@@ -158,7 +165,7 @@ ActionheroClient.prototype.action = function(action, params, callback){
   }
   if(!params){ params = {}; }
   params.action = action;
-  
+
   if(this.state !== 'connected'){
     this.actionWeb(params, callback);
   }else{
@@ -183,12 +190,12 @@ ActionheroClient.prototype.actionWeb = function(params, callback) {
       callback(response);
     }
   };
-  
+
   var method = params.httpMethod || 'POST';
   var url = this.options.url + this.options.apiPath + '?action=' + params.action;
   xmlhttp.open(method, url, true);
   xmlhttp.setRequestHeader('Content-Type', 'application/json');
-  xmlhttp.send(JSON.stringify(params)); 
+  xmlhttp.send(JSON.stringify(params));
 }
 
 

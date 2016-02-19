@@ -1,0 +1,192 @@
+---
+title: actionhero.js - Home 
+---
+
+<section class="intro">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="brand-heading">actionhero</h1>
+                    <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server!</p>
+                    <a href="http://github.com/evantahler/actionhero">
+                        <img src="/images/logo/actionhero_400.png" width="300" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">    
+        <h2>What is actionhero?</h2>
+        <h4>actionhero.js is a multi-transport Node.JS API Server with integrated cluster capabilities and delayed tasks.</h4>
+        <div align="center" >
+            <a href="https://www.npmjs.com/package/actionhero" ><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" /></a>
+            <a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square"></a>
+            <a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/npm/dm/actionhero.svg?style=flat-square"></a>
+            <a href="http://travis-ci.org/evantahler/actionhero"><img src="https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat-square"></a>
+            <a href="https://david-dm.org/evantahler/actionhero"><img src="https://david-dm.org/evantahler/actionhero.svg?style=flat-square"></a>
+            <a href="https://gitter.im/evantahler/actionhero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img src="http://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-2DCC76.svg?style=flat-square"></a>
+            <!-- <a href="https://coveralls.io/r/evantahler/actionhero?branch=master"><img src="https://coveralls.io/repos/evantahler/actionhero/badge.svg?branch=master"></a> -->
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h2>What does that mean?</h2>
+        <h4>In actionhero, you make actions which respond to client requests.</h4>
+
+
+<% code("javascript", {'background-color' => 'white'}) do %>
+// actionhero generateAction --name=randomNumber
+// File: actions/randomNumber.js
+
+exports.randomNumber = {
+  name: 'randomNumber',
+  description: 'I am an API method which will generate a random number',
+  outputExample: {
+    randomNumber: 0.123
+  },
+  
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next();
+  }
+
+};
+<% end %>
+
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>These actions don't just work for the web, they work for all sorts of clients.</h4>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Web</h3>
+
+<% code("bash") do %>
+> curl localhost:8080/api/randomNumber
+
+{
+  "randomNumber": 0.8158452461939305
+}
+<% end %>  
+
+        </div>
+        <div class="col-md-4">
+            <h3>Socket</h3> 
+
+<% code("bash") do %>
+> telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+{"welcome":"Hello! Welcome to the actionhero api","context":"api"}
+randomNumber
+{"randomNumber":0.7903316407464445,"context":"response","messageCount":1}
+<% end %>
+
+        </div>
+        <div class="col-md-4">
+            <h3>WebSocket</h3> 
+
+<% code("bash") do %>
+var client = new ActionheroClient;
+client.connect(function(error, details){
+    client.action("randomNumber", function(data){
+        alert(data.randomNumber);
+    });
+});
+<% end %> 
+
+        </div>
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero also lets you perform tasks in the background...</h4>
+
+<% code("javascript") do %>
+// actionhero generateTask --name=sendEmail
+// File: tasks/sendEmail.js
+exports.task = {
+    name:        'sendEmail',
+    description: 'send an email to users after they sign up'
+    queue:       'default',
+    frequency:    0,
+    run: function(api, params, next){
+        // email sending stub
+        api.users.sendEmail(params.userId, function(error, done){
+            next(error);
+        });
+    });
+};
+<% end %>
+
+        <h4>... and you can invoke the task from anywhere in the framework, including actions.</h4>
+
+<% code("javascript") do %>
+// api.tasks.enqueue(nameOfTask, args, queue, callback)
+api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
+  // enqueued!
+});
+<% end %>
+
+    </div>
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero enables clients to talk to each other.</h4>
+    </div>
+
+<% code("javascript") do %>
+// client 1
+var client1 = new ActionheroClient;
+client1.connect(function(error, details){
+    client1.roomAdd("myChatRoom", function(err){
+        client1.say('myChatRoom', 'hello from client 1');
+    });
+});
+
+// client 2
+var client2 = new ActionheroClient;
+client2.connect(function(error, details){
+    client2.roomAdd("myChatRoom", function(err){
+        client2.on('say', function(message){
+            console.log(message);
+        });
+    });
+});
+<% end %> 
+
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h4>actionhero can do all of this, and it can work on one server or hundreds (actionhero is cluster-ready from the get-go).</h4>
+    </div>
+
+<% code("bash") do %>
+# start 1 instance
+./node_modules/.bin/actionhero start
+# start a cluster
+./node_modules/.bin/actionhero startCluster
+<% end %> 
+
+</section>
+
+<section id="about" class="container content-section text-center">
+    <div class="row">
+        <h1><a href="/learn-more">Click here to learn more</a></h1>
+        <h3><a href="/docs">Or jump in to the documention</a></h3>
+        <h3>or</h3>
+    </div>
+</section>

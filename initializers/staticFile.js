@@ -8,12 +8,14 @@ module.exports = {
 
     api.staticFile = {
 
-      path: function(connection, counter){
+      searchLoactions: [],
+
+      searchPath: function(connection, counter){
         if(!counter){ counter = 0; }
-        if(api.config.general.paths === undefined || api.config.general.paths.public.length === 0 || counter >= api.config.general.paths.public.length){
+        if(api.staticFile.searchLoactions.length === 0 || counter >= api.staticFile.searchLoactions.length){
           return null;
         }else{
-          return api.config.general.paths.public[counter];
+          return api.staticFile.searchLoactions[counter];
         }
       },
 
@@ -22,11 +24,11 @@ module.exports = {
       get: function(connection, callback, counter){
         var self = this;
         if(!counter){ counter = 0; }
-        if(!connection.params.file || !api.staticFile.path(connection, counter) ){
-          self.sendFileNotFound(connection, api.config.errors.fileNotProvided(), callback);
+        if(!connection.params.file || !api.staticFile.searchPath(connection, counter) ){
+          self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
         } else {
-          var file = path.normalize(api.staticFile.path(connection, counter) + '/' + connection.params.file);
-          if(file.indexOf(path.normalize(api.staticFile.path(connection, counter))) !== 0){
+          var file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
+          if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
           } else {
             self.checkExistence(file, function(exists, truePath){
@@ -45,7 +47,7 @@ module.exports = {
         var lastModified;
         fs.stat(file, function(err, stats){
           if(err){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(String(err)) , callback);
+            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)) , callback);
           } else {
             var mime = Mime.lookup(file);
             var length = stats.size;
@@ -57,7 +59,7 @@ module.exports = {
               self.logRequest(file, connection, length, duration, true);
             });
             fileStream.on('error', function(err){
-              api.log(err)
+              api.log(err);
             });
             callback(connection, null, fileStream, mime, length, lastModified);
           }
@@ -68,7 +70,7 @@ module.exports = {
         var self = this;
         connection.error = new Error(errorMessage);
         self.logRequest('{404: not found}', connection, null, null, false);
-        callback(connection, api.config.errors.fileNotFound(), null, 'text/html', api.config.errors.fileNotFound().length);
+        callback(connection, api.config.errors.fileNotFound(connection), null, 'text/html', api.config.errors.fileNotFound(connection).length);
       },
 
       checkExistence: function(file, callback){
@@ -98,7 +100,7 @@ module.exports = {
       },
 
       logRequest: function(file, connection, length, duration, success){
-        api.log('[ file @ ' + connection.type + ' ]', 'debug', {
+        api.log(['[ file @ %s ]', connection.type], 'debug', {
           to: connection.remoteIP,
           file: file,
           size: length,
@@ -107,8 +109,37 @@ module.exports = {
         });
       }
 
+    };
+
+    // load in the explicit public paths first
+    if(api.config.general.paths !== undefined){
+      api.config.general.paths.public.forEach(function(p){
+        api.staticFile.searchLoactions.push( path.normalize(p) );
+      });
     }
 
+    // source the .linked paths from plugins
+    if(api.config.general.paths !== undefined){
+      api.config.general.paths.public.forEach(function(p){
+        var pluginPath = p + path.sep + 'plugins';
+        if( fs.existsSync(pluginPath) ){
+          fs.readdirSync(pluginPath).forEach(function(file){
+            var parts = file.split('.');
+            var name = parts[0];
+            if( parts[(parts.length - 1)] === 'link' && fs.readFileSync(pluginPath + path.sep + file).toString() === 'public' ){
+              api.config.general.paths.plugin.forEach(function(potentialPluginPath){
+                potentialPluginPath = path.normalize(potentialPluginPath + path.sep + name + path.sep + 'public');
+                if(fs.existsSync(potentialPluginPath) && api.staticFile.searchLoactions.indexOf(potentialPluginPath) < 0){
+                  api.staticFile.searchLoactions.push( potentialPluginPath );
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+
+    api.log('Static files will be served from these directories', 'debug', api.staticFile.searchLoactions);
     next();
   }
-}
+};

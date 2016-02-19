@@ -17,7 +17,7 @@ module.exports = {
         var self = this;
         self.queue = new NR.queue({connection: self.connectionDetails}, api.tasks.jobs);
         self.queue.on('error', function(error){
-          api.log(error, 'error', '[api.resque.queue]')
+          api.log(error, 'error', '[api.resque.queue]');
         });
         self.queue.connect(callback);
       },
@@ -25,16 +25,17 @@ module.exports = {
       startScheduler: function(callback){
         var self = this;
         if(api.config.tasks.scheduler === true){
+          self.schedulerLogging = api.config.tasks.schedulerLogging;
           self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
           self.scheduler.on('error', function(error){
-            api.log(error, 'error', '[api.resque.scheduler]')
+            api.log(error, 'error', '[api.resque.scheduler]');
           });
           self.scheduler.connect(function(){
-            self.scheduler.on('start',             function(){               api.log('resque scheduler started', 'info') })
-            self.scheduler.on('end',               function(){               api.log('resque scheduler ended', 'info') })
-            self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', 'trace') })
-            self.scheduler.on('working_timestamp', function(timestamp){      api.log('resque scheduler working timestamp ' + timestamp, 'debug') })
-            self.scheduler.on('transferred_job',   function(timestamp, job){ api.log('resque scheduler enqueuing job ' + timestamp, 'debug', job) })
+            self.scheduler.on('start',             function(){               api.log('resque scheduler started', self.schedulerLogging.start); });
+            self.scheduler.on('end',               function(){               api.log('resque scheduler ended', self.schedulerLogging.end); });
+            self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', self.schedulerLogging.poll); });
+            self.scheduler.on('working_timestamp', function(timestamp){      api.log(['resque scheduler working timestamp %s', timestamp], self.schedulerLogging.working_timestamp); });
+            self.scheduler.on('transferred_job',   function(timestamp, job){ api.log(['resque scheduler enqueuing job %s', timestamp], self.schedulerLogging.transferred_job, job); });
 
             self.scheduler.start();
             callback();
@@ -58,8 +59,9 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
-    		self.verbose = api.config.tasks.verbose;
-        
+        self.workerLogging = api.config.tasks.workerLogging;
+        self.schedulerLogging = api.config.tasks.schedulerLogging;
+
         self.multiWorker = new NR.multiWorker({
           connection:             api.resque.connectionDetails,
           queues:                 api.config.tasks.queues,
@@ -72,22 +74,22 @@ module.exports = {
         }, api.tasks.jobs);
 
         // normal worker emitters
-        self.multiWorker.on('start',             function(workerId){                      api.log('worker: started', (self.verbose) ? 'info':'trace', {workerId: workerId}                                                   ); })
-        self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended', (self.verbose) ? 'info':'trace',   {workerId: workerId}                                                   ); })
-        self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log('worker: cleaning old worker ' + worker + '(' + pid + ')', (self.verbose) ? 'info':'trace'                                 ); })
-        self.multiWorker.on('poll',              function(workerId, queue){               api.log('worker: polling ' + queue, 'trace',       {workerId: workerId}                                                            ); })
-        self.multiWorker.on('job',               function(workerId, queue, job){          api.log('worker: working job ' + queue, 'debug',   {workerId: workerId, job: {class: job.class, queue: job.queue}}                 ); })
-        self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job', 'debug',          {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}} ); })
-        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log('worker: job success ' + queue, 'info',    {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result} ); })
-        self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused', 'trace', {workerId: workerId}                                                                            ); })
+        self.multiWorker.on('start',             function(workerId){                      api.log('worker: started',                 self.workerLogging.start,         {workerId: workerId}); });
+        self.multiWorker.on('end',               function(workerId){                      api.log('worker: ended',                   self.workerLogging.end,           {workerId: workerId}); });
+        self.multiWorker.on('cleaning_worker',   function(workerId, worker, pid){         api.log(['worker: cleaning old worker %s, (%s)', worker, pid],  self.workerLogging.cleaning_worker); });
+        self.multiWorker.on('poll',              function(workerId, queue){               api.log(['worker: polling %s', queue],     self.workerLogging.poll,          {workerId: workerId}); });
+        self.multiWorker.on('job',               function(workerId, queue, job){          api.log(['worker: working job %s', queue], self.workerLogging.job,           {workerId: workerId, job: {class: job.class, queue: job.queue}}); });
+        self.multiWorker.on('reEnqueue',         function(workerId, queue, job, plugin){  api.log('worker: reEnqueue job',           self.workerLogging.reEnqueue,     {workerId: workerId, plugin: plugin, job: {class: job.class, queue: job.queue}}); });
+        self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log(['worker: job success %s', queue], self.workerLogging.success,       {workerId: workerId, job: {class: job.class, queue: job.queue}, result: result}); });
+        self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused',                  self.workerLogging.pause,         {workerId: workerId}); });
 
-        self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); })
-        self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   })
-        
+        self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); });
+        self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   });
+
         // multiWorker emitters
-        self.multiWorker.on('internalError',     function(error){                         api.log(error, 'error'); })
-        self.multiWorker.on('multiWorkerAction', function(verb, delay){                   api.log('*** checked for worker status: ' + verb + ' (event loop delay: ' + delay + 'ms)', 'trace'); })
-        
+        self.multiWorker.on('internalError',     function(error){                         api.log(error, self.workerLogging.internalError); });
+        self.multiWorker.on('multiWorkerAction', function(verb, delay){                   api.log(['*** checked for worker status: %s (event loop delay: %sms)', verb, delay], self.workerLogging.multiWorkerAction); });
+
         if(api.config.tasks.minTaskProcessors > 0){
           self.multiWorker.start(function(){
             if(typeof callback === 'function'){ callback(); }
@@ -108,7 +110,7 @@ module.exports = {
           callback();
         }
       }
-    }
+    };
 
     next();
   },
@@ -136,4 +138,4 @@ module.exports = {
       });
     });
   },
-}
+};

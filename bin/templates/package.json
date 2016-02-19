@@ -1,4 +1,4 @@
- {
+{
   "author"      : "YOU <YOU@example.com>",
   "name"        : "my_actionhero_project",
   "description" : "my actionhero project",
@@ -8,18 +8,15 @@
   },
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
-    "ws"         : "latest",
-    "grunt"      : "latest"
+    "ws"         : "latest"
   },
   "devDependencies" : {
     "mocha"  : "latest",
     "should" : "latest"
   },
   "scripts" : {
-    "help"         : "actionhero help",
     "start"        : "actionhero start",
     "actionhero"   : "actionhero",
-    "startCluster" : "actionhero startCluster",
-    "test"         : "mocha"
+    "test"         : "NODE_ENV=test mocha"
   }
 }

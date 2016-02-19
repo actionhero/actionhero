@@ -1,4 +1,3 @@
-var domain = require('domain');
 var async = require('async');
 
 module.exports = {
@@ -6,7 +5,7 @@ module.exports = {
   initialize: function(api, next){
 
     api.actionProcessor = function(connection, callback){
-      if(!connection){ 
+      if(!connection){
         throw new Error('data.connection is required');
       }
 
@@ -25,48 +24,44 @@ module.exports = {
       this.response        = {};
       this.duration        = null;
       this.actionStatus    = null;
-    }
+    };
 
     api.actionProcessor.prototype.incrementTotalActions = function(count){
       var self = this;
-      if(!count){ count = 1 }
+      if(!count){ count = 1; }
       self.connection.totalActions = self.connection.totalActions + count;
-    }
+    };
 
     api.actionProcessor.prototype.incrementPendingActions = function(count){
       var self = this;
-      if(!count){ count = 1 }
+      if(!count){ count = 1; }
       self.connection.pendingActions = self.connection.pendingActions + count;
-    }
+    };
 
     api.actionProcessor.prototype.getPendingActionCount = function(){
       var self = this;
       return self.connection.pendingActions;
-    }
+    };
 
     api.actionProcessor.prototype.completeAction = function(status){
       var self = this;
       var error = null;
       self.actionStatus = String(status);
 
-      if(self.actionDomain){ self.actionDomain.exit(); }  
-
-      if(status instanceof Error){    
+      if(status instanceof Error){
         error = status;
-      }else if(status === 'server_error'){
-        error = api.config.errors.serverErrorMessage();
       }else if(status === 'server_shutting_down'){
-        error = api.config.errors.serverShuttingDown();
+        error = api.config.errors.serverShuttingDown(self);
       }else if(status === 'too_many_requests'){
-        error = api.config.errors.tooManyPendingActions();
+        error = api.config.errors.tooManyPendingActions(self);
       }else if(status === 'unknown_action'){
-        error = api.config.errors.unknownAction(self.connection.action);
+        error = api.config.errors.unknownAction(self);
       }else if(status === 'unsupported_server_type'){
-        error = api.config.errors.unsupportedServerType(self.connection.type);
+        error = api.config.errors.unsupportedServerType(self);
       }else if(status === 'missing_params'){
-        error = api.config.errors.missingParams(self.missingParams) ;
+        error = api.config.errors.missingParams(self, self.missingParams);
       }else if(status === 'validator_errors'){
-        error = api.config.errors.invalidParams(self.validatorErrors);
+        error = api.config.errors.invalidParams(self, self.validatorErrors);
       }else if(status){
         error = status;
       }
@@ -89,7 +84,7 @@ module.exports = {
 
       self.working = false;
       self.logAction(error);
-    }
+    };
 
     api.actionProcessor.prototype.logAction = function(error){
       var self = this;
@@ -98,16 +93,16 @@ module.exports = {
       var logLevel = 'info';
       if(self.actionTemplate && self.actionTemplate.logLevel){
         logLevel = self.actionTemplate.logLevel;
-      }      
-      
-      var filteredParams = {}
+      }
+
+      var filteredParams = {};
       for(var i in self.params){
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
           filteredParams[i] = '[FILTERED]';
         }else if(typeof self.params[i] === 'string'){
           filteredParams[i] = self.params[i].substring(0,api.config.logger.maxLogStringLength);
         }else{
-          filteredParams[i] = self.params[i]
+          filteredParams[i] = self.params[i];
         }
       }
 
@@ -130,8 +125,8 @@ module.exports = {
         }
       }
 
-      api.log('[ action @ ' + self.connection.type + ' ]', logLevel, logLine);
-    }
+      api.log(['[ action @ %s ]', self.connection.type], logLevel, logLine);
+    };
 
     api.actionProcessor.prototype.preProcessAction = function(callback){
       var self = this;
@@ -151,7 +146,7 @@ module.exports = {
       async.series(processors, function(err){
         callback(err);
       });
-    }
+    };
 
     api.actionProcessor.prototype.postProcessAction = function(callback){
       var self = this;
@@ -171,23 +166,23 @@ module.exports = {
       async.series(processors, function(err){
         callback(err);
       });
-    }
+    };
 
     api.actionProcessor.prototype.reduceParams = function(){
       var self = this;
+      var inputNames = [];
+      if(self.actionTemplate.inputs){
+        inputNames = Object.keys(self.actionTemplate.inputs);
+      }
 
       if(api.config.general.disableParamScrubbing !== true){
         for(var p in self.params){
-          if(
-              api.params.globalSafeParams.indexOf(p) < 0 &&
-              self.actionTemplate.inputs &&
-              Object.keys(self.actionTemplate.inputs).indexOf(p) < 0
-          ){
+          if( api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0 ){
             delete self.params[p];
           }
         }
       }
-    }
+    };
 
     api.actionProcessor.prototype.validateParams = function(){
       var self = this;
@@ -198,7 +193,7 @@ module.exports = {
         // default
         if(self.params[key] === undefined && props.default !== undefined){
           if(typeof props.default === 'function'){
-            self.params[key] = props.default(self.params[key], self);
+            self.params[key] = props.default.call(api, self.params[key], self);
           }else{
             self.params[key] = props.default;
           }
@@ -206,12 +201,12 @@ module.exports = {
 
         // formatter
         if(self.params[key] !== undefined && typeof props.formatter === 'function'){
-          self.params[key] = props.formatter(self.params[key], self);
+          self.params[key] = props.formatter.call(api, self.params[key], self);
         }
 
         // validator
         if(self.params[key] !== undefined && typeof props.validator === 'function'){
-          var validatorResponse = props.validator(self.params[key], self);
+          var validatorResponse = props.validator.call(api, self.params[key], self);
           if(validatorResponse !== true){
             self.validatorErrors.push(validatorResponse);
           }
@@ -224,7 +219,7 @@ module.exports = {
           }
         }
       }
-    }
+    };
 
     api.actionProcessor.prototype.processAction = function(){
       var self = this;
@@ -250,23 +245,9 @@ module.exports = {
       } else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
         self.completeAction('unsupported_server_type');
       } else {
-
-        if(api.config.general.actionDomains === true){
-          self.actionDomain = domain.create();
-          self.actionDomain.on('error', function(err){
-            api.exceptionHandlers.action(self.actionDomain, err, self, function(){
-              self.completeAction('server_error');
-            });
-          });
-          self.actionDomain.run(function(){
-            self.runAction();
-          });
-        }else{
-          self.runAction();
-        }
-
+        self.runAction();
       }
-    }
+    };
 
     api.actionProcessor.prototype.runAction = function(){
       var self = this;
@@ -295,8 +276,8 @@ module.exports = {
           self.completeAction();
         }
       });
-    }
+    };
 
     next();
   }
-}
+};

@@ -55,6 +55,31 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('will properly destroy connections', function(){
+
+    it('works for the API', function(done){
+      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      request.get(url + '/api/sleepTest', function(){
+        api.utils.hashLength( api.connections.connections ).should.equal(0);
+        setTimeout(done, 100);
+      });
+
+      setTimeout(function(){
+        api.utils.hashLength( api.connections.connections ).should.equal(1);
+      }, 100);
+    });
+
+    it('works for files', function(done){
+      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      request.get(url + '/simple.html', function(){
+        setTimeout(function(){
+          api.utils.hashLength( api.connections.connections ).should.equal(0);
+          done();
+        }, 100);
+      });
+    });
+  });
+
   describe('errors', function(){
 
     before(function(done){
@@ -122,7 +147,7 @@ describe('Server: Web', function(){
         body.error.should.equal('broken')
         done();
       });
-    }); 
+    });
 
     it('errors can be complex JSON payloads', function(done){
       request.get(url + '/api/complexErrorTestAction/', function(err, response, body){
@@ -430,18 +455,6 @@ describe('Server: Web', function(){
         }
       }
 
-      api.actions.versions.brokenAction = [1]
-      api.actions.actions.brokenAction = {
-        '1': {
-          name: 'brokenAction',
-          description: 'I am broken',
-          run:function(api, data, next){
-            BREAK; // undefiend
-            next();
-          }
-        }
-      }
-
       api.routes.loadRoutes();
       done();
     });
@@ -450,8 +463,6 @@ describe('Server: Web', function(){
       api.config.servers.web.returnErrorCodes = false;
       delete api.actions.versions.statusTestAction;
       delete api.actions.actions.statusTestAction;
-      delete api.actions.versions.brokenAction;
-      delete api.actions.actions.brokenAction;
       done();
     });
 
@@ -469,20 +480,6 @@ describe('Server: Web', function(){
         response.statusCode.should.eql(422);
         done();
       });
-    });
-
-    it('server errors should return a 500', function(done){
-      if(api.config.general.actionDomains === true){
-        request.post(url + '/api/brokenAction', function(err, response, body){
-          body = JSON.parse(body);
-          body.error.should.eql( 'The server experienced an internal error' );
-          response.statusCode.should.eql(500);
-          done();
-        });
-      }else{
-        console.log("skipping broken action test; api.config.general.actionDomains != true")
-        done();
-      }
     });
 
     it('status codes can be set for errors', function(done){
@@ -552,7 +549,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal( api.config.errors.fileNotFound() );
+        response.body.should.equal( 'That file is not found (../config.json)' );
         done();
       });
     });
@@ -578,7 +575,7 @@ describe('Server: Web', function(){
 
       before(function(done){
         fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
-        api.config.general.paths.public.push('/tmp');
+        api.staticFile.searchLoactions.push('/tmp');
         process.nextTick(function(){
           done();
         });
@@ -586,7 +583,7 @@ describe('Server: Web', function(){
 
       after(function(done){
         fs.unlink('/tmp/testFile.html');
-        api.config.general.paths.public.pop();
+        api.staticFile.searchLoactions.pop();
         process.nextTick(function(){
           done();
         });
@@ -661,7 +658,8 @@ describe('Server: Web', function(){
           description: 'I am a test',
           matchExtensionMimeType: true,
           inputs: {
-            key: {required:true}
+            key: { required:true },
+            path: { required:false },
           },
           outputExample: {},
           run:function(api, data, next){
@@ -685,7 +683,7 @@ describe('Server: Web', function(){
             next();
           }
         },
-        
+
         '2': {
           name: 'login',
           description: 'login',
@@ -713,7 +711,8 @@ describe('Server: Web', function(){
           { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
           { path: '/thing', action: 'thing' },
           { path: '/thing/stuff', action: 'thingStuff' },
-          { path: '/old_login', action: 'login', apiVersion: '1' }
+          { path: '/old_login', action: 'login', apiVersion: '1' },
+          { path: '/a/wild/:key/:path(^.*$)', action: 'mimeTestAction', apiVersion: '1', matchTrailingPathParts: true }
         ],
         post: [
           { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
@@ -768,7 +767,7 @@ describe('Server: Web', function(){
         done();
       });
     });
-    
+
     it('Routes should recognize apiVersion as default param', function(done){
       request.get(url + '/api/old_login?user_id=7', function(err, response, body){
         body = JSON.parse(body);
@@ -894,6 +893,16 @@ describe('Server: Web', function(){
           body = JSON.parse(body);
           response.headers['content-type'].should.equal('application/json; charset=utf-8');
           body.error.should.equal('key is a required parameter for this action');
+          done();
+        });
+      });
+
+      it('works with with matchTrailingPathParts', function(done){
+        request.get(url + '/api/a/wild/theKey/and/some/more/path', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('mimeTestAction');
+          body.requesterInformation.receivedParams.path.should.equal('and/some/more/path');
+          body.requesterInformation.receivedParams.key.should.equal('theKey');
           done();
         });
       });

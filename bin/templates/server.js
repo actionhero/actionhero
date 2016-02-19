@@ -48,7 +48,7 @@ var initialize = function(api, options, next){
 
   });
 
-  server.on('actionComplete', function(connection, toRender, messageCount){
+  server.on('actionComplete', function(data){
 
   });
 

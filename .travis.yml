@@ -3,16 +3,12 @@ sudo: false
 language: node_js
 
 node_js:
-  - "0.10"
-  - "0.12"
-  - "iojs"
   - "4.0"
+  - "5.0"
 
 env:
-  - "FAKEREDIS=true  ACTIONDOMAINS=true"
-  - "FAKEREDIS=true  ACTIONDOMAINS=false"
-  - "FAKEREDIS=false ACTIONDOMAINS=true"
-  - "FAKEREDIS=false ACTIONDOMAINS=false"
+  - "FAKEREDIS=true"
+  - "FAKEREDIS=false"
 
 os:
   - linux
@@ -23,9 +19,6 @@ script: npm run-script test-travis
 
 services:
   - redis-server
-
-before_script:
-  - npm install -g grunt-cli
 
 after_script:
   - npm run-script coverage

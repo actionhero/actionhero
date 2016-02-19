@@ -9,7 +9,7 @@ describe('Core: specHelper', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -50,7 +50,7 @@ describe('Core: specHelper', function(){
     it('will not report a broken test as a broken action (sync)', function(done){
       api.specHelper.runAction('randomNumber', function(response){
         try{
-          response.not.a.real.thing
+          response.not.a.real.thing;
         }catch(e){
           String(e).should.equal('TypeError: Cannot read property \'a\' of undefined');
           done();
@@ -61,7 +61,7 @@ describe('Core: specHelper', function(){
     it('will not report a broken test as a broken action (async)', function(done){
       api.specHelper.runAction('sleepTest', function(response){
         try{
-          response.thing.should.equal('this will break')
+          response.thing.should.equal('this will break');
         }catch(e){
           String(e).should.equal('TypeError: Cannot read property \'should\' of undefined');
           done();
@@ -84,7 +84,7 @@ describe('Core: specHelper', function(){
 
     it('missing files', function(done){
       api.specHelper.getStaticFile('missing.html', function(data){
-        data.error.should.equal( api.config.errors.fileNotFound() );
+        data.error.should.equal( 'That file is not found (missing.html)' );
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();
@@ -102,7 +102,7 @@ describe('Core: specHelper', function(){
       conn.params = {
         key: 'someKey',
         value: 'someValue',
-      }
+      };
       connId = conn.id;
       api.specHelper.runAction('cacheTest', conn, function(response, connection){
         response.messageCount.should.equal(1);
@@ -136,14 +136,14 @@ describe('Core: specHelper', function(){
           api.testOutput = 'OK'; // test modifying the api pbject
           next('OK');
         }
-      }
+      };
 
       api.tasks.jobs.testTask  = api.tasks.jobWrapper('testTask');
       done();
     });
 
     after(function(done){
-      delete api.testOutput
+      delete api.testOutput;
       delete api.tasks.tasks.testTask;
       done();
     });
@@ -153,7 +153,7 @@ describe('Core: specHelper', function(){
         response.should.equal('OK');
         api.testOutput.should.equal('OK');
         done();
-      })
+      });
     });
 
   });

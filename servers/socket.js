@@ -2,12 +2,12 @@ var net = require('net');
 var tls = require('tls');
 
 var initialize = function(api, options, next){
-  
+
   //////////
   // INIT //
   //////////
 
-  var type = 'socket'
+  var type = 'socket';
   var attributes = {
     canChat: true,
     logConnections: true,
@@ -29,7 +29,7 @@ var initialize = function(api, options, next){
       'detailsView',
       'say'
     ]
-  }
+  };
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -51,17 +51,17 @@ var initialize = function(api, options, next){
     server.server.on('error', function(e){
       return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
     });
-    
+
     server.server.listen(options.port, options.bindIP, function(){
       process.nextTick(function(){
         next();
       });
     });
-  }
+  };
 
   server.stop = function(next){
     gracefulShutdown(next);
-  }
+  };
 
   server.sendMessage = function(connection, message, messageCount){
     if(message.error){
@@ -81,15 +81,15 @@ var initialize = function(api, options, next){
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n');
     } catch(e){
-      api.log('socket write error: ' + e, 'error');
+      api.log(['socket write error: %s', e], 'error');
     }
-  }
+  };
 
   server.goodbye = function(connection){
     try {
       connection.rawConnection.end(JSON.stringify({status: 'Bye!', context: 'api'}) + '\r\n');
     } catch(e){}
-  }
+  };
 
   server.sendFile = function(connection, error, fileStream){
     if(error){
@@ -106,6 +106,15 @@ var initialize = function(api, options, next){
   server.on('connection', function(connection){
     connection.params = {};
 
+    var parseLine = function(line){
+      if(line.length > 0){
+        // increment at the start of the request so that responses can be caught in order on the client
+        // this is not handled by the genericServer
+        connection.messageCount++;
+        parseRequest(connection, line);
+      }
+    };
+
     connection.rawConnection.on('data', function(chunk){
       if(checkBreakChars(chunk)){
         connection.destroy();
@@ -115,21 +124,14 @@ var initialize = function(api, options, next){
         while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1) {
           var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          data.split('\n').forEach(function(line){
-            if(line.length > 0){
-              // increment at the start of the request so that responses can be caught in order on the client
-              // this is not handled by the genericServer
-              connection.messageCount++;
-              parseRequest(connection, line);
-            }
-          });
+          data.split('\n').forEach(parseLine);
         }
       }
     });
 
     connection.rawConnection.on('end', function(){
       if(connection.destroyed !== true){
-        try { connection.rawConnection.end() } catch(e){}
+        try { connection.rawConnection.end(); } catch(e){}
         connection.destroy();
       }
     });
@@ -137,7 +139,7 @@ var initialize = function(api, options, next){
     connection.rawConnection.on('error', function(e){
       if(connection.destroyed !== true){
         server.log('socket error: ' + e, 'error');
-        try { connection.rawConnection.end() } catch(e){}
+        try { connection.rawConnection.end(); } catch(e){}
         connection.destroy();
       }
     });
@@ -166,7 +168,7 @@ var initialize = function(api, options, next){
       connection.verbs(verb, words, function(error, data){
         if(!error){
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
-        } else if(error === 'verb not found or not allowed'){
+        } else if(error.match('verb not found or not allowed')){
           // check for and attempt to check single-use params
           try {
             var requestHash = JSON.parse(line);
@@ -190,7 +192,7 @@ var initialize = function(api, options, next){
         }
       });
     }
-  }
+  };
 
   var handleConnection = function(rawConnection){
     if(api.config.servers.socket.setKeepAlive === true){
@@ -202,19 +204,19 @@ var initialize = function(api, options, next){
       remoteAddress  : rawConnection.remoteAddress,
       remotePort     : rawConnection.remotePort
     }); // will emit 'connection'
-  }
+  };
 
   // I check for ctrl+c in the stream
   var checkBreakChars = function(chunk){
     var found = false;
     var hexChunk = chunk.toString('hex',0,chunk.length);
     if(hexChunk === 'fff4fffd06'){
-      found = true // CTRL + C
+      found = true; // CTRL + C
     } else if(hexChunk === '04'){
-      found = true // CTRL + D
+      found = true; // CTRL + D
     }
-    return found
-  }
+    return found;
+  };
 
   var gracefulShutdown = function(next, alreadyShutdown){
     if(!alreadyShutdown || alreadyShutdown === false){
@@ -238,12 +240,12 @@ var initialize = function(api, options, next){
       setTimeout(function(){
         gracefulShutdown(next, true);
       }, 1000);
-    } else if(typeof next === 'function'){ next() }
-  }
+    } else if(typeof next === 'function'){ next(); }
+  };
 
   next(server);
 
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 // exports
