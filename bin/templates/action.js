@@ -12,9 +12,7 @@ exports.action = {
 
   run: function(api, data, next){
     var error = null;
-
     // your logic here
-    
     next(error);
   }
 };

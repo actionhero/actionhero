@@ -50,7 +50,7 @@ Worker.prototype.logPrefix = function(){
     s += ']: ';
   }
   return s;
-}
+};
 
 Worker.prototype.start = function(){
   var self = this;
@@ -116,7 +116,7 @@ var ActionHeroCluster = function(args){
     }
   }
 
-  var transports = []
+  var transports = [];
   transports.push(
     new(winston.transports.File)({
       filename: self.options.logPath + '/' + self.options.logFile
@@ -128,7 +128,7 @@ var ActionHeroCluster = function(args){
         colorize: true,
         timestamp: true
       })
-    )
+    );
   }
 
   self.logger = new(winston.Logger)({
@@ -156,7 +156,7 @@ ActionHeroCluster.prototype.defualts = function(){
 ActionHeroCluster.prototype.log = function(message, severity){
   var self = this;
   self.logger.log(severity, message);
-}
+};
 
 ActionHeroCluster.prototype.buildEnv = function(workerId){
   var self = this;
@@ -167,7 +167,7 @@ ActionHeroCluster.prototype.buildEnv = function(workerId){
       title: self.options.workerTitlePrefix + workerId,
     };
   }
-}
+};
 
 ActionHeroCluster.prototype.configurePath = function(p, callback){
   var stats = fs.lstatSync(p);
@@ -191,13 +191,13 @@ ActionHeroCluster.prototype.writePidFile = function(callback){
 
   fs.writeFileSync(file, process.pid);
   process.nextTick(callback);
-}
+};
 
 ActionHeroCluster.prototype.start = function(callback){
   var self = this;
   var jobs = [];
 
-  self.log(JSON.stringify(self.options), 'debug')
+  self.log(JSON.stringify(self.options), 'debug');
 
   cluster.setupMaster({
     exec: self.options.execPath,
@@ -219,7 +219,7 @@ ActionHeroCluster.prototype.start = function(callback){
     self.log('Signal: SIGUSR2', 'info');
     self.log('swap out new workers one-by-one', 'info');
     self.workers.forEach(function(worker){
-      self.workersToRestart.push(worker.id)
+      self.workersToRestart.push(worker.id);
     });
     self.work();
   });
@@ -311,7 +311,7 @@ ActionHeroCluster.prototype.stop = function(callback){
 
 ActionHeroCluster.prototype.sortWorkers = function(){
   var self = this;
-  self.workers.sort(function(a,b){ return (a.id > b.id); });
+  self.workers.sort(function(a, b){ return (a.id > b.id); });
 };
 
 ActionHeroCluster.prototype.work = function(){
@@ -332,7 +332,7 @@ ActionHeroCluster.prototype.work = function(){
       !stateCounts.stopped &&
       !stateCounts.restarting
     ){
-    worker = self.workers[ (self.workers.length - 1) ];
+    worker = self.workers[(self.workers.length - 1)];
     self.log('signaling worker #' + worker.id + ' to stop', 'info');
     worker.stop();
   }
@@ -388,7 +388,7 @@ exports.startCluster = function(binary){
       return {
         title: title,
         ACTIONHERO_TITLE: title
-      }
+      };
     }
   };
 

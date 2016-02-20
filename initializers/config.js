@@ -68,7 +68,9 @@ module.exports = {
           addConfigPath(pathToCheck.split(','), true);
         }
         else {
-          if (pathToCheck.charAt(0) !== '/') pathToCheck = path.resolve(api.projectRoot, pathToCheck);
+          if (pathToCheck.charAt(0) !== '/') {
+            pathToCheck = path.resolve(api.projectRoot, pathToCheck);
+          }
           if (fs.existsSync(pathToCheck)) {
             configPaths.push(pathToCheck);
           }
@@ -117,8 +119,8 @@ module.exports = {
           // configuration files have been tried and failed
           // indicating inability to progress
           loadErrors[f] = error.toString();
-          if(++loadRetries === limit-i){
-              throw new Error('Unable to load configurations, errors: '+JSON.stringify(loadErrors));
+          if(++loadRetries === limit - i){
+            throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors));
           }
           // adjust configuration files list: remove and push
           // failed configuration to the end of the list and

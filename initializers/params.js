@@ -14,7 +14,8 @@ module.exports = {
 
     api.params.buildPostVariables = function(){
       var postVariables = [];
-      var i, j;
+      var i;
+      var j;
 
       api.params.globalSafeParams.forEach(function(p){
         postVariables.push(p);

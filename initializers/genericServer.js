@@ -4,27 +4,27 @@ var util = require('util');
 module.exports = {
   loadPriority:  450,
   initialize: function(api, next){
-  // I am the prototypical generic server that all other types of servers inherit from.
-  // I shouldn't actually be used by a client
-  // Note the methods in this template server, as they are all required for 'real' servers
+    // I am the prototypical generic server that all other types of servers inherit from.
+    // I shouldn't actually be used by a client
+    // Note the methods in this template server, as they are all required for 'real' servers
 
-  ////////////////////
-  // COMMON METHODS //
-  ////////////////////
+    ////////////////////
+    // COMMON METHODS //
+    ////////////////////
 
-  // options are meant to be configurable in 'config.js'
-  // attributes are descriptions of the server:
-  /*
+    // options are meant to be configurable in 'config.js'
+    // attributes are descriptions of the server:
+    /*
 
-    attributes = {
-      canChat: true,
-      logConnections: true,
-      logExits: true,
-      sendWelcomeMessage: true,
-      verbs: ['say', 'detailsView']
-    }
+      attributes = {
+        canChat: true,
+        logConnections: true,
+        logExits: true,
+        sendWelcomeMessage: true,
+        verbs: ['say', 'detailsView']
+      }
 
-  */
+    */
 
     api.genericServer = function(name, options, attributes){
       this.type = name;

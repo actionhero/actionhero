@@ -1,11 +1,11 @@
 var REPL = require('repl');
 
 exports.console = function(binary, next){
-  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
-  var actionhero = new ActionheroPrototype();
+  var actionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var actionhero = new actionheroPrototype();
 
   var configChanges = {
-    general: { developmentMode: false }
+    general: {developmentMode: false}
   };
 
   actionhero.initialize({configChanges: configChanges}, function(err, api){

@@ -180,7 +180,7 @@ module.exports = {
       }
       var expireTimeSeconds = null;
       var expireTimestamp = null;
-      if(null !== expireTimeMS){
+      if(expireTimeMS !== null){
         expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
         expireTimestamp   = new Date().getTime() + expireTimeMS;
       }
@@ -222,7 +222,7 @@ module.exports = {
             if(err){
               next(err);
             }else{
-              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS/1000), function(err){
+              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(err){
                 lockOk = true;
                 if(err){ lockOk = false; }
                 next(err, lockOk);

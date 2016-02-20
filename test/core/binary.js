@@ -9,7 +9,7 @@ var binary  = path.normalize(__dirname + '/../../bin/actionhero' );
 
 var doBash = function(commands, callback){
   var fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\'';
-  exec(fullCommand ,function(error, data){
+  exec(fullCommand, function(error, data){
     callback(error, data);
   });
 };
@@ -28,7 +28,7 @@ describe('Core: Binary', function(){
       fs.readFile(testDir + '/package.json', 'utf8', function(err, data) {
         var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath);
         fs.writeFile(testDir + '/package.json', result, 'utf8', function() {
-           done();
+          done();
         });
       });
     });

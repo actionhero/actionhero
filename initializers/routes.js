@@ -37,7 +37,7 @@ module.exports = {
     };
 
     api.routes.matchURL = function(pathParts, match, matchTrailingPathParts){
-      var response = { match: false, params: {} };
+      var response = {match: false, params: {}};
       var matchParts = match.split('/');
       var regexp = '';
       var variable = '';
@@ -105,7 +105,7 @@ module.exports = {
     api.routes.loadRoutes = function(rawRoutes){
       var counter = 0;
 
-      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
+      api.routes.routes = {'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': []};
 
       if(!rawRoutes){
         if(api.config.routes){
@@ -113,7 +113,8 @@ module.exports = {
         }
       }
 
-      var v, verb;
+      var v;
+      var verb;
       for(var i in rawRoutes){
         var method = i.toLowerCase();
         for(var j in rawRoutes[i]){

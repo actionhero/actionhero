@@ -45,15 +45,15 @@ module.exports = {
         server.sendFile = function(connection, error, fileStream, mime, length){
           var content = '';
           var response = {
-            error      : error,
-            content    : null,
-            mime       : mime,
-            length     : length
+            error   : error,
+            content : null,
+            mime    : mime,
+            length  : length
           };
 
           try{
             if(!error){
-              fileStream.on('data', function(d){ content+= d; });
+              fileStream.on('data', function(d){ content += d; });
               fileStream.on('end', function(){
                 response.content = content;
                 server.sendMessage(connection, response, connection.messageCount);

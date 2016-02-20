@@ -47,13 +47,13 @@ module.exports = {
         var lastModified;
         fs.stat(file, function(err, stats){
           if(err){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)) , callback);
+            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)), callback);
           } else {
             var mime = Mime.lookup(file);
             var length = stats.size;
             var fileStream = fs.createReadStream(file);
             var start = new Date().getTime();
-            lastModified=stats.mtime;
+            lastModified = stats.mtime;
             fileStream.on('close', function(){
               var duration = new Date().getTime() - start;
               self.logRequest(file, connection, length, duration, true);

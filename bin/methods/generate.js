@@ -9,25 +9,25 @@ exports.generate = function(binary, next){
   documents.projectMap = fs.readFileSync(binary.actionheroRoot + '/bin/templates/projectMap.txt');
 
   var oldFileMap = {
-    configApiJs          : '/config/api.js',
-    configLoggerJs       : '/config/logger.js',
-    configRedisJs        : '/config/redis.js',
-    configTasksJs        : '/config/tasks.js',
-    configErrorsJs       : '/config/errors.js',
-    configI18nJs         : '/config/i18n.js',
-    configRoutesJs       : '/config/routes.js',
-    configSocketJs       : '/config/servers/socket.js',
-    configWebJs          : '/config/servers/web.js',
-    configWebsocketJs    : '/config/servers/websocket.js',
-    packageJson          : '/package.json',
-    actionStatus         : '/actions/status.js',
-    actionDocumentation  : '/actions/showDocumentation.js',
-    publicIndex          : '/public/index.html',
-    publicChat           : '/public/chat.html',
-    publicLogo           : '/public/logo/actionhero.png',
-    publicSky            : '/public/logo/sky.jpg',
-    publicCss            : '/public/css/actionhero.css',
-    exampleTest          : '/test/template.js.example'
+    configApiJs         : '/config/api.js',
+    configLoggerJs      : '/config/logger.js',
+    configRedisJs       : '/config/redis.js',
+    configTasksJs       : '/config/tasks.js',
+    configErrorsJs      : '/config/errors.js',
+    configI18nJs        : '/config/i18n.js',
+    configRoutesJs      : '/config/routes.js',
+    configSocketJs      : '/config/servers/socket.js',
+    configWebJs         : '/config/servers/web.js',
+    configWebsocketJs   : '/config/servers/websocket.js',
+    packageJson         : '/package.json',
+    actionStatus        : '/actions/status.js',
+    actionDocumentation : '/actions/showDocumentation.js',
+    publicIndex         : '/public/index.html',
+    publicChat          : '/public/chat.html',
+    publicLogo          : '/public/logo/actionhero.png',
+    publicSky           : '/public/logo/sky.jpg',
+    publicCss           : '/public/css/actionhero.css',
+    exampleTest         : '/test/template.js.example'
   };
   for(var name in oldFileMap){
     documents[name] = fs.readFileSync(binary.actionheroRoot + oldFileMap[name]);
