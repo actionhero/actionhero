@@ -4,7 +4,8 @@ module.exports = {
   loadPriority:  120,
   initialize: function(api, next){
 
-    var transports = [], i;
+    var transports = [];
+    var i;
     for(i in api.config.logger.transports){
       var t = api.config.logger.transports[i];
       if(typeof t === 'function'){
@@ -14,7 +15,7 @@ module.exports = {
       }
     }
 
-    api.logger = new (winston.Logger)({ transports: transports });
+    api.logger = new (winston.Logger)({transports: transports});
 
     if(api.config.logger.levels){
       api.logger.setLevels(api.config.logger.levels);
@@ -30,7 +31,7 @@ module.exports = {
       if(!Array.isArray(message)){ message = [message]; }
       var localizedMessage = api.i18n.i18n.__.apply(api.i18n.i18n, message);
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
-      var args = [ severity, localizedMessage ];
+      var args = [severity, localizedMessage];
       if(data !== null && data !== undefined){ args.push(data); }
       api.logger.log.apply(api.logger, args);
     };

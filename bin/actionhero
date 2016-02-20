@@ -106,7 +106,8 @@ binary.utils = {
     }
   },
   hashLength: function(obj){
-    var size = 0, key;
+    var size = 0;
+    var key;
     for(key in obj){
       if(obj.hasOwnProperty(key)){ size++; }
     }
@@ -177,7 +178,7 @@ var run = function(){
       }
       args.push('--isDaemon=true');
       var command = path.normalize(binary.actionheroRoot + '/bin/actionhero');
-      var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' });
+      var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
       // child.unref();
       binary.log(command + ' ' + args.join(' '), 'info');
       binary.log('spawned child process with pid ' + child.pid, 'notice');

@@ -77,7 +77,7 @@ describe('Core: Tasks', function(){
     });
   });
 
-  it('a bad task definition causes an exception' , function(done){
+  it('a bad task definition causes an exception', function(done){
     var badTask = {
       name: 'badTask',
       description: 'task',
@@ -176,26 +176,26 @@ describe('Core: Tasks', function(){
 
   it('can see enqueued timestmps & see jobs within those timestamps (single + batch)', function(done){
     var time = new Date().getTime() + 1000;
-    var roundedTime = Math.round(time/1000) * 1000;
+    var roundedTime = Math.round(time / 1000) * 1000;
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, function(err){
       api.tasks.timestamps(function(err, timestamps){
         should.not.exist(err);
         timestamps.length.should.equal(1);
         timestamps[0].should.equal(roundedTime);
 
-      api.tasks.delayedAt(roundedTime, function(err, tasks){
-        should.not.exist(err);
-        tasks.length.should.equal(1);
-        tasks[0].class.should.equal('regularTask');
-      });
+        api.tasks.delayedAt(roundedTime, function(err, tasks){
+          should.not.exist(err);
+          tasks.length.should.equal(1);
+          tasks[0].class.should.equal('regularTask');
+        });
 
-      api.tasks.allDelayed(function(err, allTasks){
-        should.not.exist(err);
-        Object.keys(allTasks).length.should.equal(1);
-        Object.keys(allTasks)[0].should.equal(String(roundedTime));
-        allTasks[roundedTime][0].class.should.equal('regularTask');
-        done();
-      });
+        api.tasks.allDelayed(function(err, allTasks){
+          should.not.exist(err);
+          Object.keys(allTasks).length.should.equal(1);
+          Object.keys(allTasks)[0].should.equal(String(roundedTime));
+          allTasks[roundedTime][0].class.should.equal('regularTask');
+          done();
+        });
 
       });
     });

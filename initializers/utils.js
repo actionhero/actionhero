@@ -10,7 +10,8 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // count the number of elements in a hash
     api.utils.hashLength = function(obj) {
-      var size = 0, key;
+      var size = 0;
+      var key;
       for(key in obj){
         if(obj.hasOwnProperty(key)){ size++; }
       }
@@ -21,7 +22,8 @@ module.exports = {
     // merge two hashes recursively
     api.utils.hashMerge = function(a, b, arg){
       var c = {};
-      var i, response;
+      var i;
+      var response;
 
       for(i in a){
         if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0 ){
@@ -59,8 +61,8 @@ module.exports = {
     };
 
     api.utils.isPlainObject = function(o){
-      var safeTypes     = [ Boolean, Number, String, Function, Array, Date, RegExp, Buffer ];
-      var safeInstances = [ 'boolean', 'number', 'string', 'function' ];
+      var safeTypes     = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer];
+      var safeInstances = ['boolean', 'number', 'string', 'function'];
       var expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
       var i;
 
@@ -82,15 +84,15 @@ module.exports = {
     api.utils.stringToHash = function(path, object){
       if(!object){ object = api; }
       function _index(obj, i){ return obj[i]; }
-      return path.split('.').reduce(_index, object)
+      return path.split('.').reduce(_index, object);
     };
 
     ////////////////////////////////////////////////////////////////////////////
     // unique-ify an array
     api.utils.arrayUniqueify = function(arr){
       var a = [];
-      for(var i=0; i<arr.length; i++) {
-        for(var j=i+1; j<arr.length; j++) {
+      for(var i = 0; i < arr.length; i++) {
+        for(var j = i + 1; j < arr.length; j++) {
           if (arr[i] === arr[j]){ j = ++i; }
         }
         a.push(arr[i]);
@@ -106,7 +108,7 @@ module.exports = {
       if(!extension){ extension = '.js'; }
       if(!followLinkFiles){ followLinkFiles = true; }
 
-      extension = extension.replace('.','');
+      extension = extension.replace('.', '');
       if(dir[dir.length - 1] !== path.sep){ dir += path.sep; }
 
       if(fs.existsSync(dir)){
@@ -147,7 +149,7 @@ module.exports = {
 
     api.utils.sourceRelativeLinkPath = function(linkfile, pluginPaths){
       var type = fs.readFileSync(linkfile).toString();
-      var pathParts = linkfile.split(path.sep)
+      var pathParts = linkfile.split(path.sep);
       var name = pathParts[(pathParts.length - 1)].split('.')[0];
       var pathsToTry = pluginPaths.slice(0);
       var pluginRoot;
@@ -221,7 +223,7 @@ module.exports = {
       if(req.headers.cookie){
         req.headers.cookie.split(';').forEach(function(cookie){
           var parts = cookie.split('=');
-          cookies[ parts[ 0 ].trim() ] = ( parts[ 1 ] || '' ).trim();
+          cookies[parts[0].trim()] = (parts[1] || '').trim();
         });
       }
       return cookies;
@@ -231,13 +233,13 @@ module.exports = {
     // parse an IPv6 address
     // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
     api.utils.parseIPv6URI = function(addr){
-      var host = '::1',
-          port = '80',
-          regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
+      var host = '::1';
+      var port = '80';
+      var regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
       //if we have brackets parse them and find a port
       if(-1 < addr.indexOf('[') && -1 < addr.indexOf(']')){
         var res = regexp.exec(addr);
-        if(null === res){
+        if(res === null){
           throw new Error('failed to parse address');
         }
         host = res[1];
@@ -245,7 +247,7 @@ module.exports = {
       } else {
         host = addr;
       }
-      return {host: host, port: parseInt(port,10)};
+      return {host: host, port: parseInt(port, 10)};
     };
 
     next();

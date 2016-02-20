@@ -21,8 +21,8 @@ var fatalError = function(api, errors, type){
   }
 };
 
-var sortNumber = function(a,b) {
-    return a - b;
+var sortNumber = function(a, b) {
+  return a - b;
 };
 
 var flattenOrderedInitialzer = function(collection){
@@ -183,26 +183,26 @@ actionhero.prototype.initialize = function(params, callback){
           self.initializers[initializer].stopPriority = self.api.initializerDefaults.stop;
         }
 
-        if( loadInitializerRankings[ self.initializers[initializer].loadPriority ] === undefined ){
-          loadInitializerRankings[ self.initializers[initializer].loadPriority ] = [];
+        if(loadInitializerRankings[self.initializers[initializer].loadPriority] === undefined ){
+          loadInitializerRankings[self.initializers[initializer].loadPriority] = [];
         }
-        if( startInitializerRankings[ self.initializers[initializer].startPriority ] === undefined ){
-          startInitializerRankings[ self.initializers[initializer].startPriority ] = [];
+        if(startInitializerRankings[self.initializers[initializer].startPriority] === undefined ){
+          startInitializerRankings[self.initializers[initializer].startPriority] = [];
         }
-        if( stopInitializerRankings[ self.initializers[initializer].stopPriority ] === undefined ){
-          stopInitializerRankings[ self.initializers[initializer].stopPriority ] = [];
+        if(stopInitializerRankings[self.initializers[initializer].stopPriority] === undefined ){
+          stopInitializerRankings[self.initializers[initializer].stopPriority] = [];
         }
 
         if(self.initializers[initializer].loadPriority > 0){
-          loadInitializerRankings[  self.initializers[initializer].loadPriority  ].push( loadFunction );
+          loadInitializerRankings[self.initializers[initializer].loadPriority].push(loadFunction);
         }
 
         if(self.initializers[initializer].startPriority > 0){
-          startInitializerRankings[ self.initializers[initializer].startPriority ].push( startFunction );
+          startInitializerRankings[self.initializers[initializer].startPriority].push(startFunction);
         }
 
         if(self.initializers[initializer].stopPriority > 0){
-          stopInitializerRankings[  self.initializers[initializer].stopPriority  ].push( stopFunction );
+          stopInitializerRankings[self.initializers[initializer].stopPriority].push(stopFunction);
         }
       }
     });
@@ -236,7 +236,7 @@ actionhero.prototype.start = function(params, callback){
   var _start = function(){
     self.api.running = true;
 
-    if(self.startInitializers[(self.startInitializers.length -1)].name === 'finalStartInitializer'){
+    if(self.startInitializers[(self.startInitializers.length - 1)].name === 'finalStartInitializer'){
       self.startInitializers.pop();
     }
 
@@ -269,7 +269,7 @@ actionhero.prototype.stop = function(callback){
 
     self.api.log('Shutting down open servers and stopping task processing...', 'alert');
 
-    if(self.stopInitializers[(self.stopInitializers.length -1)].name === 'finalStopInitializer'){
+    if(self.stopInitializers[(self.stopInitializers.length - 1)].name === 'finalStopInitializer'){
       self.stopInitializers.pop();
     }
 

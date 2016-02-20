@@ -74,9 +74,9 @@ describe('Core: Action Cluster', function(){
         client2 = new apiB.specHelper.connection();
         client3 = new apiC.specHelper.connection();
 
-        client1.verbs('roomAdd','defaultRoom');
-        client2.verbs('roomAdd','defaultRoom');
-        client3.verbs('roomAdd','defaultRoom');
+        client1.verbs('roomAdd', 'defaultRoom');
+        client2.verbs('roomAdd', 'defaultRoom');
+        client3.verbs('roomAdd', 'defaultRoom');
 
         setTimeout(function(){
           done();
@@ -411,7 +411,8 @@ describe('Core: Action Cluster', function(){
 
       describe('chat middleware', function(){
 
-        var clientA, clientB;
+        var clientA;
+        var clientB;
         var originalGenerateMessagePayload;
 
         beforeEach(function(done){
@@ -444,19 +445,19 @@ describe('Core: Action Cluster', function(){
             };
           };
 
-          clientA.verbs('roomAdd','defaultRoom', function(err, data){
+          clientA.verbs('roomAdd', 'defaultRoom', function(err, data){
             should.not.exist(err);
-          clientB.verbs('roomAdd','defaultRoom', function(err, data){
-            should.not.exist(err);
-          clientA.verbs('say', ['defaultRoom', 'hi there'], function(err, data){
-            setTimeout(function(){
-              var message = clientB.messages[(clientB.messages.length - 1)];
-              message.thing.should.equal('stuff');
-              should.not.exist(message.message);
-              done();
-            }, 100);
-          });
-          });
+            clientB.verbs('roomAdd', 'defaultRoom', function(err, data){
+              should.not.exist(err);
+              clientA.verbs('say', ['defaultRoom', 'hi there'], function(err, data){
+                setTimeout(function(){
+                  var message = clientB.messages[(clientB.messages.length - 1)];
+                  message.thing.should.equal('stuff');
+                  should.not.exist(message.message);
+                  done();
+                }, 100);
+              });
+            });
           });
         });
 
@@ -479,11 +480,11 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err){
+          clientA.verbs('roomAdd', 'defaultRoom', function(err){
             should.not.exist(err);
-            clientB.verbs('roomAdd','defaultRoom', function(err){
+            clientB.verbs('roomAdd', 'defaultRoom', function(err){
               should.not.exist(err);
-              clientB.verbs('roomLeave','defaultRoom', function(err){
+              clientB.verbs('roomLeave', 'defaultRoom', function(err){
                 should.not.exist(err);
 
                 setTimeout(function(){
@@ -509,22 +510,22 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err){
+          clientA.verbs('roomAdd', 'defaultRoom', function(err){
             should.not.exist(err);
-          clientB.verbs('roomAdd','defaultRoom', function(err){
-            should.not.exist(err);
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
-            should.not.exist(err);
+            clientB.verbs('roomAdd', 'defaultRoom', function(err){
+              should.not.exist(err);
+              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
+                should.not.exist(err);
 
-            setTimeout(function(){
-              var lastMessage = clientA.messages[(clientA.messages.length - 1)];
-              lastMessage.message.should.equal('something else');
+                setTimeout(function(){
+                  var lastMessage = clientA.messages[(clientA.messages.length - 1)];
+                  lastMessage.message.should.equal('something else');
 
-              done();
-            }, 100);
+                  done();
+                }, 100);
 
-          });
-          });
+              });
+            });
           });
         });
 
@@ -547,19 +548,19 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(err){
-          clientB.verbs('roomAdd','defaultRoom', function(err){
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
+          clientA.verbs('roomAdd', 'defaultRoom', function(err){
+            clientB.verbs('roomAdd', 'defaultRoom', function(err){
+              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
 
-            setTimeout(function(){
-              var lastMessage = clientA.messages[(clientA.messages.length - 1)];
-              lastMessage.message.should.equal('MIDDLEWARE 1 MIDDLEWARE 2');
+                setTimeout(function(){
+                  var lastMessage = clientA.messages[(clientA.messages.length - 1)];
+                  lastMessage.message.should.equal('MIDDLEWARE 1 MIDDLEWARE 2');
 
-              done();
-            }, 100);
+                  done();
+                }, 100);
 
-          });
-          });
+              });
+            });
           });
         });
 
@@ -571,19 +572,19 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(){
-          clientB.verbs('roomAdd','defaultRoom', function(){
-          clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(){
+          clientA.verbs('roomAdd', 'defaultRoom', function(){
+            clientB.verbs('roomAdd', 'defaultRoom', function(){
+              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(){
 
-            setTimeout(function(){
-              // welcome message is passed, no join/leave/or say messages
-              clientA.messages.length.should.equal(1);
+                setTimeout(function(){
+                  // welcome message is passed, no join/leave/or say messages
+                  clientA.messages.length.should.equal(1);
 
-              done();
-            }, 100);
+                  done();
+                }, 100);
 
-          });
-          });
+              });
+            });
           });
         });
 
@@ -595,7 +596,7 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(error, didJoin){
+          clientA.verbs('roomAdd', 'defaultRoom', function(error, didJoin){
             String(error).should.equal('Error: joining rooms blocked');
             didJoin.should.equal(false);
             clientA.rooms.length.should.equal(0);
@@ -612,13 +613,13 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd','defaultRoom', function(error, didJoin){
+          clientA.verbs('roomAdd', 'defaultRoom', function(error, didJoin){
             should.not.exist(error);
             didJoin.should.equal(true);
             clientA.rooms.length.should.equal(1);
             clientA.rooms[0].should.equal('defaultRoom');
 
-            clientA.verbs('roomLeave','defaultRoom', function(error, didLeave){
+            clientA.verbs('roomLeave', 'defaultRoom', function(error, didLeave){
               String(error).should.equal('Error: Hotel California');
               didLeave.should.equal(false);
               clientA.rooms.length.should.equal(1);

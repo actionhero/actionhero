@@ -16,7 +16,7 @@ module.exports = {
       api.actions.middleware[data.name] = data;
       if(data.global === true){
         api.actions.globalMiddleware.push(data.name);
-        api.actions.globalMiddleware.sort(function(a,b){
+        api.actions.globalMiddleware.sort(function(a, b){
           if(api.actions.middleware[a].priority > api.actions.middleware[b].priority){
             return 1;
           }else{

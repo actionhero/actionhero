@@ -24,11 +24,11 @@ exports.link = function(binary, next){
 
   // link actionable files
   [
-    [ 'action',      'actions'      ],
-    [ 'task',        'tasks'        ],
-    [ 'public',      'public'       ],
-    [ 'server',      'servers'      ],
-    [ 'initializer', 'initializers' ],
+    ['action', 'actions'],
+    ['task', 'tasks'],
+    ['public', 'public'],
+    ['server', 'servers'],
+    ['initializer', 'initializers'],
   ].forEach(function(c){
     var localLinkDirectory = binary.config.general.paths[c[0]][0] + path.sep + 'plugins';
     var localLinkLocation  = localLinkDirectory + path.sep + binary.argv.name + '.link';
@@ -38,14 +38,14 @@ exports.link = function(binary, next){
       binary.utils.createDirSafely(localLinkDirectory);
       binary.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection);
     }
-  })
+  });
 
   // copy config files
   var pluginConfigDir = pluginRoot + path.sep + 'config';
   if( binary.utils.dirExists(pluginConfigDir) ){
     fs.readdirSync(pluginConfigDir).forEach(function(pluginConfigFile){
       var content = fs.readFileSync(pluginConfigDir + path.sep + pluginConfigFile);
-      var fileParts = pluginConfigFile.split(path.sep)
+      var fileParts = pluginConfigFile.split(path.sep);
       var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + fileParts[(fileParts.length - 1)];
       if(process.env.ACTIONHERO_CONFIG){
         localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + fileParts[(fileParts.length - 1)];

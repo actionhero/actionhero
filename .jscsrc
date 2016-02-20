@@ -1,0 +1,54 @@
+{
+  "esnext": true,
+  "disallowSpacesInsideObjectBrackets": "all",
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInFunctionDeclaration": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInsideBrackets": true,
+  "disallowSpacesInCallExpression": true,
+  "disallowSpacesInsideArrayBrackets": true,
+  "disallowSpaceAfterObjectKeys": {
+    allExcept: ['multiline']
+  },
+  "disallowSpaceAfterPrefixUnaryOperators": true,
+  "disallowSpaceBeforePostfixUnaryOperators": true,
+  "disallowSpaceBeforeBinaryOperators": [
+    ","
+  ],
+  "disallowMixedSpacesAndTabs": true,
+  "disallowTrailingWhitespace": true,
+  "requireSpaceAfterComma": true,
+  "disallowYodaConditions": true,
+  "disallowKeywords": [ "with" ],
+  "disallowMultipleLineBreaks": true,
+  "disallowMultipleLineStrings": true,
+  "disallowMultipleVarDecl": true,
+  "disallowSpaceBeforeComma": true,
+  "disallowSpaceBeforeSemicolon": true,
+  "requireParenthesesAroundIIFE": true,
+  "requireSpacesInConditionalExpression": true,
+  "requireCommaBeforeLineBreak": true,
+  "requireSpaceBeforeBinaryOperators": true,
+  "requireSpaceAfterBinaryOperators": true,
+  "requireDollarBeforejQueryAssignment": true,
+  "requireCapitalizedConstructors": {
+  	 "allExcept": ["actionheroPrototype"]
+  },
+  "requireDotNotation": true,
+  "requireSpacesInForStatement": true,
+  "requireSpaceBetweenArguments": true,
+  "requireSpaceAfterKeywords": [
+    "switch",
+    "case",
+    "return",
+    "typeof"
+  ],
+  "requireSemicolons": true,
+  "validateLineBreaks": "LF",
+  "validateQuoteMarks": { "mark": "'", "escape": true, "ignoreJSX": true },
+  "validateIndentation": 2
+}
+

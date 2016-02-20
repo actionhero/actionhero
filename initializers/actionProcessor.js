@@ -100,7 +100,7 @@ module.exports = {
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
           filteredParams[i] = '[FILTERED]';
         }else if(typeof self.params[i] === 'string'){
-          filteredParams[i] = self.params[i].substring(0,api.config.logger.maxLogStringLength);
+          filteredParams[i] = self.params[i].substring(0, api.config.logger.maxLogStringLength);
         }else{
           filteredParams[i] = self.params[i];
         }

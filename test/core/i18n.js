@@ -1,5 +1,5 @@
 var should = require('should');
-var fs     = require('fs');
+var fs = require('fs');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -12,7 +12,7 @@ var readLocaleFile = function(locale){
   var contents = String( fs.readFileSync(file) );
   var json = JSON.parse(contents);
   return json;
-}
+};
 
 describe('Core: i18n', function(){
   before(function(done){
@@ -43,7 +43,7 @@ describe('Core: i18n', function(){
 
   it('should create localization files by default, and strings from actions and the server should be included automatically', function(done){
     api.specHelper.runAction('randomNumber', function(response){
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       var content = readLocaleFile();
       [
         '*** starting actionhero ***',
@@ -54,20 +54,20 @@ describe('Core: i18n', function(){
       ].forEach(function(s){
         should.exist( content[s] );
         content[s].should.equal(s);
-      })
+      });
       done();
     });
   });
 
   // to test this we would need to temporarliy enable logging for the test ENV...
-  it('should should respect the content of the localization files for the server logs')
+  it('should should respect the content of the localization files for the server logs');
 
   it('should should respect the content of the localization files for generic messages to connections', function(done){
-    api.i18n.determineConnectionLocale = function(){ return 'en'; }
+    api.i18n.determineConnectionLocale = function(){ return 'en'; };
     api.specHelper.runAction('randomNumber', function(response){
       response.stringRandomNumber.should.match(/Your random number is/);
 
-      api.i18n.determineConnectionLocale = function(){ return 'es'; }
+      api.i18n.determineConnectionLocale = function(){ return 'es'; };
       api.specHelper.runAction('randomNumber', function(response){
         response.stringRandomNumber.should.match(/Su número aleatorio es/);
         done();
@@ -76,11 +76,11 @@ describe('Core: i18n', function(){
   });
 
   it('should should respect the content of the localization files for api errors to connections', function(done){
-    api.i18n.determineConnectionLocale = function(){ return 'en'; }
+    api.i18n.determineConnectionLocale = function(){ return 'en'; };
     api.specHelper.runAction('cacheTest', function(response){
       response.error.should.match(/key is a required parameter for this action/);
 
-      api.i18n.determineConnectionLocale = function(){ return 'es'; }
+      api.i18n.determineConnectionLocale = function(){ return 'es'; };
       api.specHelper.runAction('cacheTest', function(response){
         response.error.should.match(/key es un parámetro requerido para esta acción/);
         done();
@@ -89,16 +89,16 @@ describe('Core: i18n', function(){
   });
 
   it('should should respect the content of the localization files for http errors to connections', function(done){
-    api.i18n.determineConnectionLocale = function(){ return 'en'; }
+    api.i18n.determineConnectionLocale = function(){ return 'en'; };
     api.specHelper.getStaticFile('missing-file.html', function(data){
       data.error.should.match(/That file is not found/);
 
-      api.i18n.determineConnectionLocale = function(){ return 'es'; }
+      api.i18n.determineConnectionLocale = function(){ return 'es'; };
       api.specHelper.getStaticFile('missing-file.html', function(data){
         data.error.should.match(/Ese archivo no se encuentra/);
         done();
       });
     });
-  })
+  });
 
 });

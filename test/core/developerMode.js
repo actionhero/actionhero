@@ -42,7 +42,7 @@ describe('Core: Developer Mode', function(){
   it('random numbers work initially', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       should.not.exist(response.error);
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       done();
     });
   });

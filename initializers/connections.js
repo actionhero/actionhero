@@ -57,7 +57,7 @@ module.exports = {
         api.connections.middleware[data.name] = data;
 
         this.globalMiddleware.push(data.name);
-        this.globalMiddleware.sort(function(a,b){
+        this.globalMiddleware.sort(function(a, b){
           if(api.connections.middleware[a].priority > api.connections.middleware[b].priority){
             return 1;
           }else{
@@ -105,7 +105,6 @@ module.exports = {
         self[req] = data[req];
       });
 
-
       ['remotePort', 'remoteIP'].forEach(function(req){
         if(data[req] === null || data[req] === undefined){
           if(api.config.general.enforceConnectionProperties === true){
@@ -147,11 +146,11 @@ module.exports = {
     };
 
     api.connection.prototype.sendMessage = function(message){
-      throw new Error('I should be replaced with a connection-specific method ['+message+']');
+      throw new Error('I should be replaced with a connection-specific method [' + message + ']');
     };
 
     api.connection.prototype.sendFile = function(path){
-      throw new Error('I should be replaced with a connection-specific method ['+path+']');
+      throw new Error('I should be replaced with a connection-specific method [' + path + ']');
     };
 
     api.connection.prototype.destroy = function(callback){
@@ -187,7 +186,9 @@ module.exports = {
 
     api.connection.prototype.verbs = function(verb, words, callback){
       var self = this;
-      var key, value, room;
+      var key;
+      var value;
+      var room;
       var server = api.servers.servers[self.type];
       var allowedVerbs = server.attributes.verbs;
       if(typeof words === 'function' && !callback){

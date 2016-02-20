@@ -1,4 +1,4 @@
-var primus              = require('primus');
+var Primus              = require('primus');
 var UglifyJS            = require('uglify-js');
 var fs                  = require('fs');
 var path                = require('path');
@@ -37,7 +37,7 @@ var initialize = function(api, options, next){
 
   server.start = function(next){
     var webserver = api.servers.servers.web;
-    server.server = new primus(webserver.server, api.config.servers.websocket.server);
+    server.server = new Primus(webserver.server, api.config.servers.websocket.server);
 
     server.server.on('connection', function(rawConnection){
       handleConnection(rawConnection);
@@ -90,7 +90,7 @@ var initialize = function(api, options, next){
 
     try{
       if(!error){
-        fileStream.on('data', function(d){ content+= d; });
+        fileStream.on('data', function(d){ content += d; });
         fileStream.on('end', function(){
           response.content = content;
           server.sendMessage(connection, response, connection.messageCount);
@@ -156,7 +156,7 @@ var initialize = function(api, options, next){
       '\r\n' +
       'exports.ActionheroClient = ActionheroClient; \r\n' +
       'exports.actionheroClient = actionheroClient; \r\n' +
-      '})(typeof exports === \'undefined\' ? window : exports);' ;
+      '})(typeof exports === \'undefined\' ? window : exports);';
     if(minimize){
       return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
     }else{

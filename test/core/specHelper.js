@@ -21,7 +21,7 @@ describe('Core: specHelper', function(){
   it('can make a requset with just params', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.a.Number;
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       done();
     });
   });

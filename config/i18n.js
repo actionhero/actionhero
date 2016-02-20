@@ -23,7 +23,7 @@ exports.default = {
   }
 };
 
-exports.staging ={
+exports.staging = {
   i18n: function(){
     return {
       updateFiles: false
@@ -31,7 +31,7 @@ exports.staging ={
   }
 };
 
-exports.procution ={
+exports.procution = {
   i18n: function(){
     return {
       updateFiles: false

@@ -34,15 +34,15 @@ exports.default = {
       defaultMiddlewarePriority : 100,
       // configuration for your actionhero project structure
       paths: {
-        'action':      [ __dirname + '/../actions'      ] ,
-        'task':        [ __dirname + '/../tasks'        ] ,
-        'public':      [ __dirname + '/../public'       ] ,
-        'pid':         [ __dirname + '/../pids'         ] ,
-        'log':         [ __dirname + '/../log'          ] ,
-        'server':      [ __dirname + '/../servers'      ] ,
-        'initializer': [ __dirname + '/../initializers' ] ,
-        'plugin':      [ __dirname + '/../node_modules' ] ,
-        'locale':      [ __dirname + '/../locales'      ]
+        'action':      [__dirname + '/../actions'],
+        'task':        [__dirname + '/../tasks'],
+        'public':      [__dirname + '/../public'],
+        'pid':         [__dirname + '/../pids'],
+        'log':         [__dirname + '/../log'],
+        'server':      [__dirname + '/../servers'],
+        'initializer': [__dirname + '/../initializers'],
+        'plugin':      [__dirname + '/../node_modules'],
+        'locale':      [__dirname + '/../locales']
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {

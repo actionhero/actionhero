@@ -68,7 +68,7 @@ exports.showDocumentation = {
           }
         }
       },
-      'status':{  
+      'status':{
         '1':{
           'name':'status',
           'version':1,

@@ -44,5 +44,4 @@ describe('Core: Errors', function(){
     });
   });
 
-
 });

@@ -1,7 +1,7 @@
 exports.enqueueTask = function(binary, next){
-  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
-  var actionhero = new ActionheroPrototype();
-  var configChanges = { logger: {transports: null} };
+  var actionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
+  var actionhero = new actionheroPrototype();
+  var configChanges = {logger: {transports: null}};
 
   actionhero.initialize({configChanges: configChanges}, function(err, api){
     try{

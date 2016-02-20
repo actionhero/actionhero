@@ -22,7 +22,7 @@ module.exports = {
       api.chatRoom.middleware[data.name] = data;
 
       api.chatRoom.globalMiddleware.push(data.name);
-      api.chatRoom.globalMiddleware.sort(function(a,b){
+      api.chatRoom.globalMiddleware.sort(function(a, b){
         if(api.chatRoom.middleware[a].priority > api.chatRoom.middleware[b].priority){
           return 1;
         }else{
@@ -146,8 +146,10 @@ module.exports = {
     };
 
     api.chatRoom.sanitizeMemberDetails = function(memberData){
-    	return { id: memberData.id,
-    	         joinedAt: memberData.joinedAt };
+      return {
+        id: memberData.id,
+        joinedAt: memberData.joinedAt
+      };
     };
 
     api.chatRoom.roomStatus = function(room, callback){
@@ -174,16 +176,16 @@ module.exports = {
           }
         });
       } else {
-        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomRequired() , null); }
+        if(typeof callback === 'function'){ callback( api.config.errors.connectionRoomRequired(), null); }
       }
     };
 
     api.chatRoom.generateMemberDetails = function(connection){
-    	return {
+      return {
         id: connection.id,
         joinedAt: new Date().getTime(),
         host: api.id
-       };
+      };
     };
 
     api.chatRoom.addMember = function(connectionId, room, callback){

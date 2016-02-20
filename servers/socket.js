@@ -209,7 +209,7 @@ var initialize = function(api, options, next){
   // I check for ctrl+c in the stream
   var checkBreakChars = function(chunk){
     var found = false;
-    var hexChunk = chunk.toString('hex',0,chunk.length);
+    var hexChunk = chunk.toString('hex', 0, chunk.length);
     if(hexChunk === 'fff4fffd06'){
       found = true; // CTRL + C
     } else if(hexChunk === '04'){

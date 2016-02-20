@@ -13,7 +13,7 @@ module.exports = {
         if(!reload){ reload = false; }
 
         var loadMessage = function(loadedTaskName){
-          api.log(['task %sloaded: %s, %s', (reload?'(re)':''), loadedTaskName, fullFilePath], 'debug');
+          api.log(['task %sloaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
         };
 
         api.watchFileAndAct(fullFilePath, function(){
@@ -225,7 +225,7 @@ module.exports = {
       },
 
       details: function(callback){
-        var details = {'queues': {}, 'workers': {} };
+        var details = {'queues': {}, 'workers': {}};
         api.tasks.allWorkingOn(function(err, workers){
           if(err){
             callback(err, details);
