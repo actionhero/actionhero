@@ -70,10 +70,11 @@ module.exports = {
         api.routes.loadRoutes();
       });
 
+      var action;
       try {
         var collection = require(fullFilePath);
         for(var i in collection){
-          var action = collection[i];
+          action = collection[i];
           if(action.version === null || action.version === undefined){ action.version = 1.0; }
           if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){
             api.actions.actions[action.name] = {};

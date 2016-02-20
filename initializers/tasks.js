@@ -20,10 +20,11 @@ module.exports = {
           self.loadFile(fullFilePath, true);
         });
 
+        var task;
         try {
           var collection = require(fullFilePath);
           for(var i in collection){
-            var task = collection[i];
+            task = collection[i];
             api.tasks.tasks[task.name] = task;
             self.validateTask(api.tasks.tasks[task.name]);
             api.tasks.jobs[task.name] = self.jobWrapper(task.name);
