@@ -18,7 +18,7 @@ module.exports = {
     };
 
     if(api.config.redis['package'] && !api.config.redis.pkg) {
-      api.log('Depreciation warning: New versions of actionhero utilize "pkg" instead of "package" for redis! Please update your configuration.');
+      api.log('Depreciation warning: Actionhero now uses "pkg" instead of "package" for redis! Please update your configuration.');
       api.config.redis.pkg = api.config.redis['package'];
     }
 
