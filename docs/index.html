@@ -1269,7 +1269,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 <li>Invoke: <code class="prettyprint">api.cache.save(key, value, expireTimeMS, next)</code>
 
 <ul>
-<li><code class="prettyprint">expireTimeMS</code> can be null if you never want the object to expire </li>
+<li><code class="prettyprint">expireTimeMS</code> can be null if you never want the object to expire</li>
 </ul></li>
 <li>Callback: <code class="prettyprint">next(error, new)</code>
 
@@ -1311,9 +1311,47 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 </ul></li>
 </ul>
 
+<h2 id="list-methods">List methods</h2>
+
+<p><code class="prettyprint">api.cache</code> implements a distributed shared list.  3 simple functions are provided to interact with this list, <code class="prettyprint">push</code>, <code class="prettyprint">pop</code>, and <code class="prettyprint">listLength</code>.  These lists are stored in Redis, and cannot be locked.  That said, a <code class="prettyprint">push</code> and <code class="prettyprint">pop</code> operation will guarantee that one-and-only-one copy of your data is returned to whichever application acted first (when popping) or an error will be returned (when pushing).</p>
+
+<h3 id="api-cache-push">api.cache.push</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.push(key, data, next)</code>
+
+<ul>
+<li>data must be serializable via JSON.stringify</li>
+</ul></li>
+<li>Callback: <code class="prettyprint">next(error)</code></li>
+</ul>
+
+<h3 id="api-cache-pop">api.cache.pop</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.pop(key, next)</code></li>
+<li>Callback: <code class="prettyprint">next(error, data)</code>
+
+<ul>
+<li>data will be returned in the object form it was saved (array, object, string)</li>
+</ul></li>
+</ul>
+
+<h3 id="api-cache-listlength">api.cache.listLength</h3>
+
+<ul>
+<li>Invoke: <code class="prettyprint">api.cache.listLength(key, next)</code></li>
+<li>Callback: <code class="prettyprint">next(error, length)</code>
+
+<ul>
+<li>length will be an integer.</li>
+<li>if the list does not exist, <code class="prettyprint">0</code> will be returned</li>
+</ul></li>
+</ul>
+
 <h2 id="lock-methods">Lock Methods</h2>
 
-<p>You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first <code class="prettyprint">api.cache.lock</code> a key, and then save it to prevent other nodes from modifying the object. </p>
+<p>You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first <code class="prettyprint">api.cache.lock</code> a key, and then save it to prevent other nodes from modifying the object.</p>
 
 <h3 id="api-cache-lock">api.cache.lock</h3>
 
