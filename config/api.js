@@ -63,7 +63,7 @@ exports.test = {
         'otherRoom': {},
       },
       paths: {
-        'locale': [ require('os').tmpdir() ]
+        'locale': [ require('os').tmpdir()  + path.sep + 'locale' ]
       }
     };
   }
