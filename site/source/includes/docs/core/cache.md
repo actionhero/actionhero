@@ -11,11 +11,11 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 ### api.cache.save
 
 * Invoke: `api.cache.save(key, value, expireTimeMS, next)`
-	* `expireTimeMS` can be null if you never want the object to expire 
+	* `expireTimeMS` can be null if you never want the object to expire
 * Callback: `next(error, new)`
 	* `error` will be null unless the object can't be saved (perhaps out of ram or a bad object type).
 	* overwriting an existing object will return `new = true`
-	
+
 `api.cache.save` is used to both create new entires or update existing cache entires.  If you don't define an expireTimeMS, `null` will be assumed, and using `null` will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)
 
 ### api.cache.load
@@ -34,9 +34,29 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 * Callback: `next(error, destroyed)`
   * will be false if the object cannot be found, and true if destroyed
 
+## List methods
+
+`api.cache` implements a distributed shared list.  3 simple functions are provided to interact with this list, `push`, `pop`, and `listLength`.  These lists are stored in Redis, and cannot be locked.  That said, a `push` and `pop` operation will guarantee that one-and-only-one copy of your data is returned to whichever application acted first (when popping) or an error will be returned (when pushing).
+
+### api.cache.push
+* Invoke: `api.cache.push(key, data, next)`
+  * data must be serializable via JSON.stringify
+* Callback: `next(error)`
+
+### api.cache.pop
+* Invoke: `api.cache.pop(key, next)`
+* Callback: `next(error, data)`
+  * data will be returned in the object form it was saved (array, object, string)
+
+### api.cache.listLength
+* Invoke: `api.cache.listLength(key, next)`
+* Callback: `next(error, length)`
+  * length will be an integer.
+	* if the list does not exist, `0` will be returned
+
 ## Lock Methods
 
-You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first `api.cache.lock` a key, and then save it to prevent other nodes from modifying the object. 
+You may optionally implement locking methods along with your cache objects.  This will allow one actionhero server to obtain a lock on an object and prevent modification of it by another member of the cluster.  For example you may want to first `api.cache.lock` a key, and then save it to prevent other nodes from modifying the object.
 
 ### api.cache.lock
 
@@ -66,7 +86,7 @@ You may optionally implement locking methods along with your cache objects.  Thi
 * Callback: `next(error, locks)`
 	* `locks` is an array of all currently active locks
 
-	
+
 You can see an example of using the cache within an action in [actions/cacheTest.js](https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js)
 
 ## Redis

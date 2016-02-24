@@ -205,6 +205,25 @@ module.exports = {
       });
     };
 
+    api.cache.push = function(key, item, next){
+      var object = JSON.stringify({data: item});
+      api.redis.client.rpush(api.cache.redisPrefix + key, object, function(err){
+        if(typeof next === 'function'){ process.nextTick(function(){ next(err); }); }
+      });
+    };
+
+    api.cache.pop = function(key, next){
+      api.redis.client.lpop(api.cache.redisPrefix + key, function(err, object){
+        if(err){ return next(err); }
+        var item = JSON.parse(object);
+        return next(null, item.data);
+      });
+    };
+
+    api.cache.listLength = function(key, next){
+      api.redis.client.llen(api.cache.redisPrefix + key, next);
+    };
+
     api.cache.lock = function(key, expireTimeMS, next){
       if(typeof expireTimeMS === 'function' && next === null){
         expireTimeMS = expireTimeMS;

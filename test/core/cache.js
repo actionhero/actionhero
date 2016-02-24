@@ -195,6 +195,62 @@ describe('Core: Cache', function(){
     });
   });
 
+  describe('lists', function(){
+    it('can push and pop from an array', function(done){
+      var jobs = [];
+
+      jobs.push(function(next){ api.cache.push('testListKey', 'a string', next); });
+      jobs.push(function(next){ api.cache.push('testListKey', ['an array'], next); });
+      jobs.push(function(next){ api.cache.push('testListKey', {what: 'an aobject'}, next); });
+      async.parallel(jobs, function(error){
+        should.not.exist(error);
+        jobs = [];
+
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.equal('a string');
+            next();
+          });
+        });
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.deepEqual(['an array']);
+            next();
+          });
+        });
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.deepEqual({what: 'an aobject'});
+            next();
+          });
+        });
+
+        async.series(jobs, function(error){
+          should.not.exist(error);
+          done();
+        });
+      });
+    });
+
+    it('can get the length of an array when full', function(done){
+      api.cache.push('testListKey2', 'a string', function(){
+        api.cache.listLength('testListKey2', function(error, l){
+          should.not.exist(error);
+          l.should.equal(1);
+          done();
+        });
+      });
+    });
+
+    it('will return 0 length when the key does not exist', function(done){
+      api.cache.listLength('testListKey3', function(error, l){
+        should.not.exist(error);
+        l.should.equal(0);
+        done();
+      });
+    });
+  });
+
   describe('locks', function(){
 
     var key = 'testKey';
