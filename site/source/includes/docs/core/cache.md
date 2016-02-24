@@ -36,7 +36,7 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 
 ## List methods
 
-api.cache implements a distributed shared list.  3 simple functions are provided to interact with this list, `push`, `pop`, and `listLength`.  These lists are stored in Redis, and cannot be locked.  That said, a `push` and `pop` operation will guarantee that one-and-only-one copy of your data is returned to whichever application acted first (when popping) or an error will be returned (when pushing).
+`api.cache` implements a distributed shared list.  3 simple functions are provided to interact with this list, `push`, `pop`, and `listLength`.  These lists are stored in Redis, and cannot be locked.  That said, a `push` and `pop` operation will guarantee that one-and-only-one copy of your data is returned to whichever application acted first (when popping) or an error will be returned (when pushing).
 
 ### api.cache.push
 * Invoke: `api.cache.push(key, data, next)`
