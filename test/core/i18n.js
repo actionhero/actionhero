@@ -4,6 +4,8 @@ var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionhero
 var actionhero = new actionheroPrototype();
 var api;
 
+var tmpPath = require('os').tmpdir() + require('path').sep + 'locale' + require('path').sep;
+
 var readLocaleFile = function(locale){
   if(!locale){ locale = api.config.i18n.defaultLocale; }
   var file = api.config.general.paths.locale[0] + '/' + locale + '.json';
@@ -20,7 +22,7 @@ describe('Core: i18n', function(){
       'That file is not found (%s)': 'Ese archivo no se encuentra (%s)',
       '%s is a required parameter for this action': '%s es un parámetro requerido para esta acción',
     };
-    fs.writeFileSync('/tmp/locale/es.json', JSON.stringify(spanish));
+    fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish));
 
     actionhero.start(function(err, a){
       api = a;
