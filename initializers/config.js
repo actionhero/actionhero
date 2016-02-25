@@ -7,22 +7,42 @@ module.exports = {
   loadPriority:  0,
   initialize: function(api, next){
 
+    // api.env
+
+    if(api._startingParams && api._startingParams.api){
+      api.utils.hashMerge(api, api._startingParams.api);
+    }
+
+    api.env = 'development';
+
+    if(argv.NODE_ENV){
+      api.env = argv.NODE_ENV;
+    } else if(process.env.NODE_ENV){
+      api.env = process.env.NODE_ENV;
+    }
+
+    // reloading in development mode
+
     api.watchedFiles = [];
 
     api.watchFileAndAct = function(file, callback){
       file = path.normalize(file);
+      
       if(!fs.existsSync(file)){
         throw new Error(file + ' does not exist, and cannot be watched');
       }
+
       if(api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0){
         api.watchedFiles.push(file);
         fs.watchFile(file, {interval: 1000}, function(curr, prev){
-          if(curr.mtime > prev.mtime && api.config.general.developmentMode === true){
+          if(
+            api.running === true &&
+            api.config.general.developmentMode === true &&
+            curr.mtime > prev.mtime
+          ){
             process.nextTick(function(){
               var cleanPath = file;
-              if(process.platform === 'win32'){
-                cleanPath = file.replace(/\//g, '\\');
-              }
+              if(process.platform === 'win32'){ cleanPath = file.replace(/\//g, '\\'); }
               delete require.cache[require.resolve(cleanPath)];
               callback(file);
             });
@@ -37,18 +57,6 @@ module.exports = {
       }
       api.watchedFiles = [];
     };
-
-    if(api._startingParams && api._startingParams.api){
-      api.utils.hashMerge(api, api._startingParams.api);
-    }
-
-    api.env = 'development';
-
-    if(argv.NODE_ENV){
-      api.env = argv.NODE_ENV;
-    } else if(process.env.NODE_ENV){
-      api.env = process.env.NODE_ENV;
-    }
 
     // We support multiple configuration paths as follows:
     //
