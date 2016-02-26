@@ -263,7 +263,10 @@ var initialize = function(api, options, next){
           cookies: cookies,
           responseHeaders: responseHeaders,
           responseHttpCode: responseHttpCode,
-          parsedURL: parsedURL
+          parsedURL: parsedURL,
+          serializer: function(response) {
+            return JSON.stringify(response, null, api.config.servers.web.padding);
+          }
         },
         id: fingerprint + '-' + uuid.v4(),
         fingerprint: fingerprint,
@@ -320,7 +323,7 @@ var initialize = function(api, options, next){
       var stringResponse = '';
 
       if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
-        stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
+        stringResponse = data.connection.rawConnection.serializer(data.response);
         if(data.params.callback){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
           stringResponse = data.connection.params.callback + '(' + stringResponse + ');';

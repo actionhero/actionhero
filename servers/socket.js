@@ -79,7 +79,7 @@ var initialize = function(api, options, next){
       }
     }
     try {
-      connection.rawConnection.write(JSON.stringify(message) + '\r\n');
+      connection.rawConnection.write(connection.rawConnection.serializer(message) + '\r\n');
     } catch(e){
       api.log(['socket write error: %s', e], 'error');
     }
@@ -198,6 +198,7 @@ var initialize = function(api, options, next){
     if(api.config.servers.socket.setKeepAlive === true){
       rawConnection.setKeepAlive(true);
     }
+    rawConnection.serializer = JSON.stringify;
     rawConnection.socketDataString = '';
     server.buildConnection({
       rawConnection  : rawConnection,
