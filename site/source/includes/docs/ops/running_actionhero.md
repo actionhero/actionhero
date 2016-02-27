@@ -205,6 +205,11 @@ All signals should be sent to the cluster master process.  You can still signal 
 - `TTOU`: remove one worker
 - `TTIN`: add one worker
 
+## Shutting Down
+When using `actionhero start` or `actionhero startCluster`, when you signal actionhero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
+
+Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit. 
+
 ## Windows-Specific Notes
 
 - Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell.

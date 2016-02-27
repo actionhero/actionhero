@@ -56,7 +56,7 @@ exports.start = function(binary, next){
 
   var stopProcess = function(){
     setTimeout(function(){
-      process.exit(1);
+      throw new Error('process stop timeout reached.  terminating now.')
     }, shutdownTimeout);
     // finalTimer.unref();
     stopServer(function(){
@@ -69,7 +69,7 @@ exports.start = function(binary, next){
   var checkForInernalStopTimer;
   var checkForInernalStop = function(){
     clearTimeout(checkForInernalStopTimer);
-    if(actionhero.api.running !== true){
+    if(actionhero.api.running !== true && state === 'started'){
       process.exit(0);
     }
     checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout);
