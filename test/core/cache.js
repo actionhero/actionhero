@@ -232,6 +232,14 @@ describe('Core: Cache', function(){
       });
     });
 
+    it('will return null if the list is empty', function(done){
+      api.cache.pop('emptyListKey', function(error, data){
+        should.not.exist(error);
+        should.not.exist(data);
+        done();
+      });
+    });
+
     it('can get the length of an array when full', function(done){
       api.cache.push('testListKey2', 'a string', function(){
         api.cache.listLength('testListKey2', function(error, l){

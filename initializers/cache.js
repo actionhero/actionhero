@@ -215,6 +215,7 @@ module.exports = {
     api.cache.pop = function(key, next){
       api.redis.client.lpop(api.cache.redisPrefix + key, function(err, object){
         if(err){ return next(err); }
+        if(!object){ return next(); }
         var item = JSON.parse(object);
         return next(null, item.data);
       });
