@@ -384,11 +384,17 @@ exports.startCluster = function(binary){
     expectedWorkers: binary.argv.workers,
     buildEnv: function(workerId){
       var self = this;
-      var title = self.options.workerTitlePrefix + workerId;
-      return {
-        title: title,
-        ACTIONHERO_TITLE: title
+      var env  = {};
+
+      for(var k in process.env){
+        env[k] = process.env[k];
       }
+
+      var title = self.options.workerTitlePrefix + workerId;
+      env.title = title;
+      env.ACTIONHERO_TITLE = title;
+
+      return env;
     }
   };
 
