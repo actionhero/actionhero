@@ -86,10 +86,12 @@ exports.start = function(binary, next){
     });
 
     process.on('uncaughtException', function(error){
-      var stack = error;
+      var stack;
       try{
         stack = error.stack.split(os.EOL);
-      }catch(e){}
+      }catch(e){
+        stack = [error];
+      }
       process.send({uncaughtException: {
         message: error.message,
         stack: stack
