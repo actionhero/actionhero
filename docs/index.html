@@ -1567,6 +1567,8 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <p>To enable development mode simply set <code class="prettyprint">developmentMode: true</code> in your <code class="prettyprint">config/api.js</code>.</p>
 
+<p>Note that <code class="prettyprint">api.config.general.developmentMode</code> is different from <code class="prettyprint">NODE_ENV</code>, which by default is &ldquo;development&rdquo; (and is logged out when actionhero boots).  <code class="prettyprint">NODE_ENV</code> is used to determine which config settings to use, and has no effect on developmentMode.</p>
+
 <h2 id="effects-of-development-mode">Effects of Development Mode</h2>
 
 <p>Development mode, when enabled, will poll for changes in your actions, tasks and initializers, and reload them on the fly.</p>
