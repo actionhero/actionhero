@@ -13,6 +13,8 @@ actionhero's development mode is a little different than tools like [nodemon](ht
 
 To enable development mode simply set `developmentMode: true` in your `config/api.js`.
 
+Note that `api.config.general.developmentMode` is different from `NODE_ENV`, which by default is "development" (and is logged out when actionhero boots).  `NODE_ENV` is used to determine which config settings to use, and has no effect on developmentMode.
+
 ## Effects of Development Mode
 
 Development mode, when enabled, will poll for changes in your actions, tasks and initializers, and reload them on the fly.
