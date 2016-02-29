@@ -86,9 +86,13 @@ exports.start = function(binary, next){
     });
 
     process.on('uncaughtException', function(error){
+      var stack = error;
+      try{
+        stack = error.stack.split(os.EOL);
+      }catch(e){}
       process.send({uncaughtException: {
         message: error.message,
-        stack: error.stack.split(os.EOL)
+        stack: stack
       }});
       process.nextTick(process.exit);
     });
