@@ -446,6 +446,12 @@ var initialize = function(api, options, next){
       if(connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/'){
         connection.params.file = connection.params.file + api.config.general.directoryFileType;
       }
+      try {
+        connection.params.file = decodeURIComponent(connection.params.file);
+      }
+      catch(e) {
+        connection.error = new Error('There was an error decoding URI: ' + e);
+      }
       callback(requestMode);
     }
 
