@@ -447,10 +447,10 @@ var initialize = function(api, options, next){
         connection.params.file = connection.params.file + api.config.general.directoryFileType;
       }
       try {
-        connection.params.file = decodeURIComponent(connection.params.file).replace(/\++/g, ' ');
+        connection.params.file = decodeURIComponent(connection.params.file);
       }
       catch(e) {
-        connection.error = new Error('There was an error decode URI.');
+        connection.error = new Error('There was an error decoding URI: ' + e);
       }
       callback(requestMode);
     }

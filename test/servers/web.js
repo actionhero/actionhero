@@ -930,7 +930,7 @@ describe('Server: Web', function(){
       });
 
       it('will decode %20 or plus sign to a space so that file system can read', function (done) {
-        request.get(url + '/sky%20with+space.jpg', function (err, response) {
+        request.get(url + '/sky%20with%20space.jpg', function (err, response) {
           response.statusCode.should.equal(200)
           response.body.should.be.an.instanceOf(Object);
           response.headers['content-type'].should.equal('image/jpeg');
@@ -939,7 +939,7 @@ describe('Server: Web', function(){
       });
 
       it('will capture bad encoding in URL and return NOT FOUND', function (done) {
-        request.get(url + '/sky%20%with+space.jpg', function (err, response) {
+        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function (err, response) {
           response.statusCode.should.equal(404)
           response.body.should.be.an.instanceOf(String);
           response.body.should.startWith('That file is not found');
