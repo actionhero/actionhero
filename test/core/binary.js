@@ -5,7 +5,7 @@ var fs      = require('fs');
 var os      = require('os');
 var path    = require('path');
 var exec    = require('child_process').exec;
-var testDir = os.tmpdir() + path.sep + 'acationheroTestProject';
+var testDir = os.tmpdir() + path.sep + 'actionheroTestProject';
 var binary  = path.normalize(__dirname + '/../../bin/actionhero' );
 
 var doBash = function(commands, callback){
