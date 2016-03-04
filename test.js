@@ -11,13 +11,11 @@ testEnv.NODE_ENV = 'test';
 console.log('starting actionhero test suite with NODE_ENV=test');
 
 var path = require('path');
-var spawn = require('child_process').spawn;
+var fork = require('child_process').fork;
 var mocha = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + 'mocha';
-var child = spawn('node', [mocha], {
+var child = fork(mocha, ['test'], {
   cwd: __dirname,
   env: testEnv
 });
 
-child.stdout.on('data', function(s){ process.stdout.write( s.toString() ); });
-child.stderr.on('data', function(s){ process.stderr.write( s.toString() ); });
 child.on('close', process.exit);
