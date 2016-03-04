@@ -15,7 +15,7 @@ console.log('starting actionhero test suite with NODE_ENV=test');
 
 var execeutable;
 if(process.platform === 'win32'){
-  execeutable = 'mocha.bash';
+  execeutable = 'mocha.cmd';
 }else{
   execeutable = 'mocha';
 }
