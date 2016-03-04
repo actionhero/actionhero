@@ -12,8 +12,8 @@ console.log('starting actionhero test suite with NODE_ENV=test');
 
 var path = require('path');
 var spawn = require('child_process').spawn;
-var command = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + 'mocha';
-var child = spawn(command, [], {
+var mocha = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + 'mocha';
+var child = spawn('node', [mocha], {
   cwd: __dirname,
   env: testEnv
 });
