@@ -61,8 +61,8 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "NODE_ENV=test mocha",
-    "test-travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
+    "test": "SET NODE_ENV=test & mocha",
+    "test-travis": "SET NODE_ENV=test & ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
     "build-gh-pages": "cd site && ./deploy.sh",
