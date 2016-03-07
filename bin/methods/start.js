@@ -56,7 +56,7 @@ exports.start = function(binary, next){
 
   var stopProcess = function(){
     setTimeout(function(){
-      throw new Error('process stop timeout reached.  terminating now.')
+      throw new Error('process stop timeout reached.  terminating now.');
     }, shutdownTimeout);
     // finalTimer.unref();
     stopServer(function(){

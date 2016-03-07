@@ -27,7 +27,7 @@ module.exports = {
 
     api.watchFileAndAct = function(file, callback){
       file = path.normalize(file);
-      
+
       if(!fs.existsSync(file)){
         throw new Error(file + ' does not exist, and cannot be watched');
       }
