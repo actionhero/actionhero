@@ -12,10 +12,9 @@ var client3 = {};
 var clientDetails = {};
 var client2Details = {};
 
-function makeSocketRequest(thisClient, message, cb, toWait){
+function makeSocketRequest(thisClient, message, cb){
   var lines = [];
   var counter = 0;
-  if(toWait === null){ toWait = false; }
 
   var rsp = function(d){
     d.split('\n').forEach(function(l){
