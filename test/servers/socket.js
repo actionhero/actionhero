@@ -12,8 +12,10 @@ var client3 = {};
 var clientDetails = {};
 var client2Details = {};
 
-function makeSocketRequest(thisClient, message, cb){
+function makeSocketRequest(thisClient, message, cb, toWait){
   var lines = [];
+  var counter = 0;
+  if(toWait === null){ toWait = false; }
 
   var rsp = function(d){
     d.split('\n').forEach(function(l){
@@ -22,14 +24,21 @@ function makeSocketRequest(thisClient, message, cb){
     lines.push()
   };
 
-  setTimeout(function(){
+  var respoder = function(){
+    if(lines.length === 0 && counter < 100){
+      counter++;
+      return setTimeout(respoder, 10);
+    }
+
     var lastLine = lines[(lines.length - 1)];
     if(lastLine === ''){ lastLine = lines[(lines.length - 2)] }
     var parsed = null;
     try { parsed = JSON.parse(lastLine) } catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb === 'function'){ cb(parsed) }
-  }, 100);
+  }
+
+  setTimeout(respoder, 10);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');
