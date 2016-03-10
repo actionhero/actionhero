@@ -24,7 +24,7 @@ function makeSocketRequest(thisClient, message, cb){
   };
 
   var respoder = function(){
-    if(lines.length === 0 && counter < 100){
+    if(lines.length === 0 && counter < 20){
       counter++;
       return setTimeout(respoder, 10);
     }
@@ -37,7 +37,7 @@ function makeSocketRequest(thisClient, message, cb){
     if(typeof cb === 'function'){ cb(parsed) }
   }
 
-  setTimeout(respoder, 10);
+  setTimeout(respoder, 50);
 
   thisClient.on('data', rsp);
   thisClient.write(message + '\r\n');
