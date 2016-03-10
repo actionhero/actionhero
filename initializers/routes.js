@@ -61,19 +61,19 @@ module.exports = {
 
         if(!pathPart){
           return response;
-        } else if(matchPart[0] === ':' && matchPart.indexOf('(') < 0){
+        }else if(matchPart[0] === ':' && matchPart.indexOf('(') < 0){
           variable = matchPart.replace(':', '');
           response.params[variable] = pathPart;
-        } else if(matchPart[0] === ':' && matchPart.indexOf('(') >= 0){
+        }else if(matchPart[0] === ':' && matchPart.indexOf('(') >= 0){
           variable = matchPart.replace(':', '').split('(')[0];
           regexp = matchPart.substring(matchPart.indexOf('(') + 1, matchPart.length - 1);
           var matches = pathPart.match(new RegExp(regexp, 'g'));
           if(matches){
             response.params[variable] = pathPart;
-          } else {
+          }else{
             return response;
           }
-        } else {
+        }else{
           if(
             pathPart === null ||
             pathPart === undefined ||

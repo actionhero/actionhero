@@ -95,7 +95,7 @@ module.exports = {
       var self = this;
       if(data.id){
         self.id = data.id;
-      } else {
+      }else{
         self.id = self.generateID();
       }
       self.connectedAt = new Date().getTime();
@@ -203,7 +203,7 @@ module.exports = {
         if(verb === 'quit' || verb === 'exit'){
           server.goodbye(self);
 
-        } else if(verb === 'paramAdd'){
+        }else if(verb === 'paramAdd'){
           key = words[0];
           value = words[1];
           if((words[0]) && (words[0].indexOf('=') >= 0)){
@@ -215,37 +215,37 @@ module.exports = {
             self.params[key] = value;
           }
           if(typeof callback === 'function'){ callback(null, null); }
-        } else if(verb === 'paramDelete'){
+        }else if(verb === 'paramDelete'){
           key = words[0];
           delete self.params[key];
           if(typeof callback === 'function'){ callback(null, null); }
 
-        } else if(verb === 'paramView'){
+        }else if(verb === 'paramView'){
           key = words[0];
           if(typeof callback === 'function'){ callback(null, self.params[key]); }
 
-        } else if(verb === 'paramsView'){
+        }else if(verb === 'paramsView'){
           if(typeof callback === 'function'){ callback(null, self.params); }
 
-        } else if(verb === 'paramsDelete'){
+        }else if(verb === 'paramsDelete'){
           for(var i in self.params){
             delete self.params[i];
           }
           if(typeof callback === 'function'){ callback(null, null); }
 
-        } else if(verb === 'roomAdd'){
+        }else if(verb === 'roomAdd'){
           room = words[0];
           api.chatRoom.addMember(self.id, room, function(err, didHappen){
             if(typeof callback === 'function'){ callback(err, didHappen); }
           });
 
-        } else if(verb === 'roomLeave'){
+        }else if(verb === 'roomLeave'){
           room = words[0];
           api.chatRoom.removeMember(self.id, room, function(err, didHappen){
             if(typeof callback === 'function'){ callback(err, didHappen); }
           });
 
-        } else if(verb === 'roomView'){
+        }else if(verb === 'roomView'){
           room = words[0];
           if(self.rooms.indexOf(room) > -1){
             api.chatRoom.roomStatus(room, function(err, roomStatus){
@@ -255,7 +255,7 @@ module.exports = {
             if(typeof callback === 'function'){ callback('not member of room ' + room); }
           }
 
-        } else if(verb === 'detailsView'){
+        }else if(verb === 'detailsView'){
           var details            = {};
           details.id             = self.id;
           details.fingerprint    = self.fingerprint;
@@ -268,19 +268,19 @@ module.exports = {
           details.pendingActions = self.pendingActions;
           if(typeof callback === 'function'){ callback(null, details); }
 
-        } else if(verb === 'documentation'){
+        }else if(verb === 'documentation'){
           if(typeof callback === 'function'){ callback(null, api.documentation.documentation); }
 
-        } else if(verb === 'say'){
+        }else if(verb === 'say'){
           room = words.shift();
           api.chatRoom.broadcast(self, room, words.join(' '), function(err){
             if(typeof callback === 'function'){ callback(err); }
           });
 
-        } else {
+        }else{
           if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(self, verb), null); }
         }
-      } else {
+      }else{
         if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(self, verb), null); }
       }
     };

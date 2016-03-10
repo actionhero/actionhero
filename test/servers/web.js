@@ -58,22 +58,22 @@ describe('Server: Web', function(){
   describe('will properly destroy connections', function(){
 
     it('works for the API', function(done){
-      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      api.utils.hashLength(api.connections.connections).should.equal(0);
       request.get(url + '/api/sleepTest', function(){
-        api.utils.hashLength( api.connections.connections ).should.equal(0);
+        api.utils.hashLength(api.connections.connections).should.equal(0);
         setTimeout(done, 100);
       });
 
       setTimeout(function(){
-        api.utils.hashLength( api.connections.connections ).should.equal(1);
+        api.utils.hashLength(api.connections.connections).should.equal(1);
       }, 100);
     });
 
     it('works for files', function(done){
-      api.utils.hashLength( api.connections.connections ).should.equal(0);
+      api.utils.hashLength(api.connections.connections).should.equal(0);
       request.get(url + '/simple.html', function(){
         setTimeout(function(){
-          api.utils.hashLength( api.connections.connections ).should.equal(0);
+          api.utils.hashLength(api.connections.connections).should.equal(0);
           done();
         }, 100);
       });
@@ -160,16 +160,16 @@ describe('Server: Web', function(){
 
   });
 
-  describe('if disableParamScrubbing is set ', function () {
+  describe('if disableParamScrubbing is set ', function(){
     var orig;
 
-    before(function(done) {
+    before(function(done){
       orig = api.config.general.disableParamScrubbing;
       api.config.general.disableParamScrubbing = true;
       done();
     });
 
-    after(function (done) {
+    after(function(done){
       api.config.general.disableParamScrubbing = orig;
       done();
     });
@@ -249,7 +249,7 @@ describe('Server: Web', function(){
     });
   });
 
-  describe('connection.rawConnection.params', function () {
+  describe('connection.rawConnection.params', function(){
     before(function(done){
       api.actions.versions.paramTestAction = [1];
       api.actions.actions.paramTestAction = {
@@ -274,7 +274,7 @@ describe('Server: Web', function(){
       done();
     });
 
-    it('.query should contain unfiltered query params', function (done) {
+    it('.query should contain unfiltered query params', function(done){
       request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
         body = JSON.parse(body);
         body.query.crazyParam123.should.equal('something');
@@ -282,7 +282,7 @@ describe('Server: Web', function(){
       });
     });
 
-    it('.body should contain unfiltered request body params', function (done) {
+    it('.body should contain unfiltered request body params', function(done){
       var requestBody = JSON.stringify({key:'value'});
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
         body = JSON.parse(body);
@@ -446,7 +446,7 @@ describe('Server: Web', function(){
             if(data.params.key !== 'value'){
               error = 'key != value';
               data.connection.rawConnection.responseHttpCode = 402;
-            } else {
+            }else{
               data.response.good = true;
             }
             next(error);
@@ -548,7 +548,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal( 'That file is not found (../config.json)' );
+        response.body.should.equal('That file is not found (../config.json)');
         done();
       });
     });
@@ -908,9 +908,9 @@ describe('Server: Web', function(){
 
     });
 
-    describe('spaces in URL with public files', function() {
+    describe('spaces in URL with public files', function(){
 
-      var source = __dirname + '/../../public/logo/sky.jpg'
+      var source = __dirname + '/../../public/logo/sky.jpg';
 
       before(function(done){
         fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/sky with space.jpg'));
@@ -928,25 +928,25 @@ describe('Server: Web', function(){
         });
       });
 
-      it('will decode %20 or plus sign to a space so that file system can read', function (done) {
-        request.get(url + '/sky%20with%20space.jpg', function (err, response) {
-          response.statusCode.should.equal(200)
+      it('will decode %20 or plus sign to a space so that file system can read', function(done){
+        request.get(url + '/sky%20with%20space.jpg', function(err, response){
+          response.statusCode.should.equal(200);
           response.body.should.be.an.instanceOf(Object);
           response.headers['content-type'].should.equal('image/jpeg');
           done();
         });
       });
 
-      it('will capture bad encoding in URL and return NOT FOUND', function (done) {
-        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function (err, response) {
-          response.statusCode.should.equal(404)
+      it('will capture bad encoding in URL and return NOT FOUND', function(done){
+        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function(err, response){
+          response.statusCode.should.equal(404);
           response.body.should.be.an.instanceOf(String);
           response.body.should.startWith('That file is not found');
           done();
         });
       });
 
-    })
+    });
   });
 
 });

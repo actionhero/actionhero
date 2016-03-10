@@ -370,13 +370,13 @@ describe('Core: Cache', function(){
           // proxy for another actionhero instance accessing the same locked object
           api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected);
 
-          api.cache.checkLock(key, null, function(error, lockOk) {
+          api.cache.checkLock(key, null, function(error, lockOk){
             if(error){ return next(error); }
 
-            if (lockOk) {
+            if(lockOk){
               locksRetrieved++;
               api.cache.lock(key, (1000 * 60), next);
-            } else {
+            }else{
               locksRejected++;
               next();
             }
@@ -401,7 +401,7 @@ describe('Core: Cache', function(){
 
   describe('cache dump files', function(){
 
-    if (typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir; } // resolution for node v0.8.x
+    if(typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir; } // resolution for node v0.8.x
     var file = os.tmpdir() + path.sep + 'cacheDump';
 
     it('can read write the cache to a dump file', function(done){

@@ -17,7 +17,7 @@ module.exports = {
 
     if(argv.NODE_ENV){
       api.env = argv.NODE_ENV;
-    } else if(process.env.NODE_ENV){
+    }else if(process.env.NODE_ENV){
       api.env = process.env.NODE_ENV;
     }
 
@@ -70,33 +70,32 @@ module.exports = {
     // comma separators, however the environment variable method only supports the comma-delimited syntax.
     var configPaths = [];
 
-    function addConfigPath(pathToCheck, alreadySplit) {
-      if (typeof pathToCheck === 'string') {
-        if (!alreadySplit) {
+    function addConfigPath(pathToCheck, alreadySplit){
+      if(typeof pathToCheck === 'string'){
+        if(!alreadySplit){
           addConfigPath(pathToCheck.split(','), true);
-        }
-        else {
-          if (pathToCheck.charAt(0) !== '/') {
+        }else{
+          if(pathToCheck.charAt(0) !== '/'){
             pathToCheck = path.resolve(api.projectRoot, pathToCheck);
           }
-          if (fs.existsSync(pathToCheck)) {
+          if(fs.existsSync(pathToCheck)){
             configPaths.push(pathToCheck);
           }
         }
-      } else if (util.isArray(pathToCheck)) {
-        pathToCheck.map(function(entry) {
+      }else if(util.isArray(pathToCheck)){
+        pathToCheck.map(function(entry){
           addConfigPath(entry, alreadySplit);
         });
       }
     }
 
-    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry) { addConfigPath(entry, false); });
+    [argv.config, process.env.ACTIONHERO_CONFIG].map(function(entry){ addConfigPath(entry, false); });
 
-    if(configPaths.length < 1) {
+    if(configPaths.length < 1){
       addConfigPath('config', false);
     }
 
-    if(configPaths.length < 1) {
+    if(configPaths.length < 1){
       throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
     }
 
@@ -116,13 +115,13 @@ module.exports = {
         try{
           // attempt configuration file load
           var localConfig = require(f);
-          if(localConfig.default){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+          if(localConfig['default']){  api.config = api.utils.hashMerge(api.config, localConfig['default'], api); }
           if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
           // configuration file load success: clear retries and
           // errors since progress has been made
           loadRetries = 0;
           loadErrors = {};
-        } catch(error){
+        }catch(error){
           // error loading configuration, abort if all remaining
           // configuration files have been tried and failed
           // indicating inability to progress
@@ -147,7 +146,7 @@ module.exports = {
       // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
       configFiles.forEach(function(f){
         var localConfig = require(f);
-        if(localConfig.default){  api.config = api.utils.hashMerge(api.config, localConfig.default, api); }
+        if(localConfig['default']){  api.config = api.utils.hashMerge(api.config, localConfig['default'], api); }
         if(localConfig[api.env]){ api.config = api.utils.hashMerge(api.config, localConfig[api.env], api); }
       });
 

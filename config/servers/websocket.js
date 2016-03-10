@@ -1,6 +1,6 @@
 // Note that to use the websocket server, you also need the web server enabled
 
-exports.default = {
+exports['default'] = {
   servers: {
     websocket: function(api){
       return {

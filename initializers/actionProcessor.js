@@ -67,7 +67,7 @@ module.exports = {
       }
 
       if(error && typeof error === 'string'){
-        error = new Error( error );
+        error = new Error(error);
       }
       if(error && !self.response.error){
         self.response.error = error;
@@ -117,9 +117,9 @@ module.exports = {
         if(error instanceof Error){
           logLine.error = String(error);
         }else{
-          try {
+          try{
             logLine.error = JSON.stringify(error);
-          } catch(e){
+          }catch(e){
             logLine.error = String(error);
           }
         }
@@ -177,7 +177,7 @@ module.exports = {
 
       if(api.config.general.disableParamScrubbing !== true){
         for(var p in self.params){
-          if( api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0 ){
+          if(api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0){
             delete self.params[p];
           }
         }
@@ -191,11 +191,11 @@ module.exports = {
         var props = self.actionTemplate.inputs[key];
 
         // default
-        if(self.params[key] === undefined && props.default !== undefined){
-          if(typeof props.default === 'function'){
-            self.params[key] = props.default.call(api, self.params[key], self);
+        if(self.params[key] === undefined && props['default'] !== undefined){
+          if(typeof props['default'] === 'function'){
+            self.params[key] = props['default'].call(api, self.params[key], self);
           }else{
-            self.params[key] = props.default;
+            self.params[key] = props['default'];
           }
         }
 
@@ -214,7 +214,7 @@ module.exports = {
 
         // required
         if(props.required === true){
-          if( api.config.general.missingParamChecks.indexOf(self.params[key]) >= 0){
+          if(api.config.general.missingParamChecks.indexOf(self.params[key]) >= 0){
             self.missingParams.push(key);
           }
         }
@@ -238,13 +238,13 @@ module.exports = {
 
       if(api.running !== true){
         self.completeAction('server_shutting_down');
-      } else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
+      }else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
         self.completeAction('too_many_requests');
-      } else if(!self.action || !self.actionTemplate){
+      }else if(!self.action || !self.actionTemplate){
         self.completeAction('unknown_action');
-      } else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
+      }else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
         self.completeAction('unsupported_server_type');
-      } else {
+      }else{
         self.runAction();
       }
     };

@@ -26,7 +26,7 @@ function makeSocketRequest(thisClient, message, cb){
     var lastLine = lines[(lines.length - 1)];
     if(lastLine === ''){ lastLine = lines[(lines.length - 2)]; }
     var parsed = null;
-    try { parsed = JSON.parse(lastLine); } catch(e){}
+    try{ parsed = JSON.parse(lastLine); }catch(e){}
     thisClient.removeListener('data', rsp);
     if(typeof cb === 'function'){ cb(parsed); }
   }, 100);
@@ -207,7 +207,7 @@ describe('Server: Socket', function(){
           var response = responses[i];
           if(i === '0'){
             response.error.should.eql('you have too many pending requests');
-          } else {
+          }else{
             should.not.exist(response.error);
           }
         }
@@ -317,8 +317,8 @@ describe('Server: Socket', function(){
         makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
           makeSocketRequest(client2, 'roomView defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            for( var key in response.data.members ){
-              (response.data.members[key].type === undefined ).should.eql(true);
+            for(var key in response.data.members){
+              (response.data.members[key].type === undefined).should.eql(true);
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom');
 
@@ -358,8 +358,8 @@ describe('Server: Socket', function(){
         makeSocketRequest(client2, 'roomAdd defaultRoom', function(response){
           makeSocketRequest(client2, 'roomView defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            for( var key in response.data.members ){
-              (response.data.members[key].type === undefined ).should.eql(true);
+            for(var key in response.data.members){
+              (response.data.members[key].type === undefined).should.eql(true);
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom');
 

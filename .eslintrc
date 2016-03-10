@@ -21,19 +21,6 @@
     "no-extend-native": 2,
     "wrap-iife": 2,
     "no-use-before-define": 0,
-    "new-cap": [
-      2,
-      {
-        "newIsCapExceptions": [
-          "actionheroPrototype",
-          "connection"
-        ],
-        "capIsNewExceptions": [
-          "actionheroPrototype",
-          "connection"
-        ]
-      }
-    ],
     "no-caller": 2,
     "no-empty": 0,
     "no-irregular-whitespace": 2,
@@ -60,8 +47,8 @@
     "no-cond-assign": 0,
     "no-debugger": 0,
     "no-eq-null": 0,
-    "no-eval": 2,
-    "no-unused-expressions": 2,
+    "no-eval": 0,
+    "no-unused-expressions": 0,
     "block-scoped-var": 0,
     "no-iterator": 0,
     "linebreak-style": [
@@ -81,8 +68,7 @@
     "no-shadow": 0,
     "dot-notation": [
       2,
-      {"allowKeywords": false},
-      {"allowPattern": "package"}
+      {"allowKeywords": false}
 	],
     "no-new-func": 0,
     "no-new-wrappers": 0,
@@ -91,6 +77,24 @@
       2,
       "never"
     ],
+    "keyword-spacing": [
+		2,
+		{
+			"before": false,
+			"after": false,
+			"overrides": {
+				"return": {"before": true, "after": true}
+			}
+		}
+    ],
+    "space-before-blocks": [
+		2,
+		"never"
+	],
+	"space-in-parens": [
+		2,
+		"never"
+	],
     "space-before-function-paren": [
       2,
       "never"
@@ -105,6 +109,10 @@
     ],
     "no-mixed-spaces-and-tabs": 2,
     "no-trailing-spaces": 2,
+    "block-spacing":  [
+		2,
+		"always"
+	],
     "yoda": [
       2,
       "never"

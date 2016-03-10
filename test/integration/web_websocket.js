@@ -14,7 +14,7 @@ var url;
 var connectClients = function(callback){
   // get actionheroClient in scope
   // TODO: Perhaps we read this from disk after server boot.
-  eval( api.servers.servers.websocket.compileActionheroClientJS() );
+  eval(api.servers.servers.websocket.compileActionheroClientJS());
 
   var S = api.servers.servers.websocket.server.Socket;
   var url = 'http://localhost:' + api.config.servers.web.port;
@@ -31,63 +31,63 @@ var connectClients = function(callback){
   }, 100);
 };
 
-describe('Server: Web Socket', function() {
+describe('Server: Web Socket', function(){
 
-  before(function (done) {
-    actionhero.start(function (err, a) {
+  before(function(done){
+    actionhero.start(function(err, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port;
 
-      connectClients(function () {
+      connectClients(function(){
         done();
       });
     });
   });
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after(function(done){
+    actionhero.stop(function(){
       done();
     });
   });
 
-  describe('fingerprint', function () {
+  describe('fingerprint', function(){
     var cookieHeader;
     var oldRequest;
 
-    beforeEach(function (done) {
-      try {
+    beforeEach(function(done){
+      try{
         clientA.disconnect();
-      } catch (e) {
+      }catch(e){
       }
       cookieHeader = '';
       connectClients(done);
     });
 
-    before(function (done) {
+    before(function(done){
       // Override http.request to test fingerprint
       var module = require('http');
       oldRequest = module.request;
-      module.request = function (options, callback) {
+      module.request = function(options, callback){
         options.headers.Cookie = cookieHeader;
         return oldRequest.apply(module, arguments);
       };
       done();
     });
 
-    after(function (done) {
+    after(function(done){
       // Restore http.request
       var module = require('http');
       module.request = oldRequest;
       done();
     });
 
-    it('should exist when web server been called', function (done) {
-      request.get(url + '/api/', function (err, response, body) {
+    it('should exist when web server been called', function(done){
+      request.get(url + '/api/', function(err, response, body){
         body = JSON.parse(body);
         var fingerprint = body.requesterInformation.fingerprint;
         cookieHeader = response.headers['set-cookie'][0];
-        clientA.connect(function (err, response) {
+        clientA.connect(function(err, response){
           response.status.should.equal('OK');
           should(response.data).have.property('id');
           var id = response.data.id;
@@ -97,23 +97,23 @@ describe('Server: Web Socket', function() {
       });
     });
 
-    it('should not exist when web server has not been called', function (done) {
-      clientA.connect(function (err, response) {
+    it('should not exist when web server has not been called', function(done){
+      clientA.connect(function(err, response){
         response.status.should.equal('OK');
         should(response.data).have.property('id');
         var id = response.data.id;
-        api.connections.connections[id].should.have.property('fingerprint').which.is.null;
+        api.connections.connections[id].should.have.property('fingerprint').which.is['null'];
         done();
       });
     });
 
-    it('should exist as long as cookie is passed', function (done) {
+    it('should exist as long as cookie is passed', function(done){
       cookieHeader = api.config.servers.web.fingerprintOptions.cookieKey + '=dummyValue';
-      clientA.connect(function (err, response) {
+      clientA.connect(function(err, response){
         response.status.should.equal('OK');
         should(response.data).have.property('id');
         var id = response.data.id;
-        api.connections.connections[id].should.have.property('fingerprint').which.is.not.null;
+        api.connections.connections[id].should.have.property('fingerprint').which.is.not['null'];
         done();
       });
     });

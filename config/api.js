@@ -1,4 +1,4 @@
-exports.default = {
+exports['default'] = {
   general: function(api){
     return {
       apiVersion: '0.0.1',

@@ -12,9 +12,7 @@ module.exports = {
 
       if(type === 'loader'){
         extraMessages.push('! Failed to load ' + objects.fullFilePath);
-      }
-
-      else if(type === 'action'){
+      }else if(type === 'action'){
         extraMessages.push('! uncaught error from action: ' + name);
         extraMessages.push('! connection details:');
         var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
@@ -27,16 +25,12 @@ module.exports = {
             extraMessages.push('!     ' + relevantDetails[i] + ': ' + JSON.stringify(objects.connection[relevantDetails[i]]));
           }
         }
-      }
-
-      else if(type === 'task'){
+      }else if(type === 'task'){
         extraMessages.push('! uncaught error from task: ' + name + ' on queue ' + objects.queue + ' (worker #' + objects.workerId + ')');
         try{
           extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
         }catch(e){}
-      }
-
-      else {
+      }else{
         extraMessages.push('! Error: ' + err.message);
         extraMessages.push('!     Type: ' + type);
         extraMessages.push('!     Name: ' + name);
@@ -93,7 +87,7 @@ module.exports = {
     api.exceptionHandlers.task = function(err, queue, task, workerId){
       var simpleName;
       try{
-        simpleName = task.class;
+        simpleName = task['class'];
       }catch(e){
         simpleName = err.message;
       }

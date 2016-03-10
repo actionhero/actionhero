@@ -1,7 +1,7 @@
 var fs = require('fs');
 var cluster = require('cluster');
 
-exports.default = {
+exports['default'] = {
   logger: function(api){
     var logger = {transports: []};
 
@@ -28,7 +28,7 @@ exports.default = {
       }
     }
 
-    logger.transports.push(function(api, winston) {
+    logger.transports.push(function(api, winston){
       return new (winston.transports.File)({
         filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
         level: 'info',

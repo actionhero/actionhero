@@ -57,7 +57,7 @@ var initialize = function(api, options, next){
 
   server.stop = function(next){
     server.active = false;
-    if( api.config.servers.websocket.destroyClientsOnShutdown === true ){
+    if(api.config.servers.websocket.destroyClientsOnShutdown === true){
       server.connections().forEach(function(connection){
         connection.destroy();
       });
@@ -165,12 +165,12 @@ var initialize = function(api, options, next){
   };
 
   server.writeClientJS = function(){
-    if(!api.config.general.paths.public || api.config.general.paths.public.length === 0){
+    if(!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0){
       return;
     }
     if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
       var base = path.normalize(
-        api.config.general.paths.public[0] +
+        api.config.general.paths['public'][0] +
         path.sep +
         api.config.servers.websocket.clientJsPath +
         path.sep +
@@ -225,12 +225,12 @@ var initialize = function(api, options, next){
       connection.error = null;
       connection.response = {};
       server.processAction(connection);
-    } else if(verb === 'file'){
+    }else if(verb === 'file'){
       connection.params = {
         file: data.file
       };
       server.processFile(connection);
-    } else {
+    }else{
       var words = [];
       var message;
       if(data.room){
@@ -242,7 +242,7 @@ var initialize = function(api, options, next){
         if(!error){
           message = {status: 'OK', context: 'response', data: data};
           server.sendMessage(connection, message);
-        } else {
+        }else{
           message = {status: error, context: 'response', data: data};
           server.sendMessage(connection, message);
         }

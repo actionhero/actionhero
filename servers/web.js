@@ -41,7 +41,7 @@ var initialize = function(api, options, next){
       server.server = http.createServer(function(req, res){
         handleRequest(req, res);
       });
-    } else {
+    }else{
       var https = require('https');
       server.server = https.createServer(api.config.servers.web.serverOptions, function(req, res){
         handleRequest(req, res);
@@ -95,8 +95,8 @@ var initialize = function(api, options, next){
     var ifModifiedSince;
     var reqHeaders;
     connection.rawConnection.responseHeaders.forEach(function(pair){
-      if( pair[0].toLowerCase() === 'expires' )      { foundExpires = true; }
-      if( pair[0].toLowerCase() === 'cache-control' ){ foundCacheControl = true; }
+      if(pair[0].toLowerCase() === 'expires'){ foundExpires = true; }
+      if(pair[0].toLowerCase() === 'cache-control'){ foundCacheControl = true; }
     });
 
     reqHeaders = connection.rawConnection.req.headers;
@@ -117,7 +117,7 @@ var initialize = function(api, options, next){
     }
     else if(responseHttpCode !== 304){
       server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
-    } else {
+    }else{
       connection.rawConnection.res.writeHead(responseHttpCode, headers);
       connection.rawConnection.res.end();
       connection.destroy();
@@ -134,7 +134,7 @@ var initialize = function(api, options, next){
     // https://nodejs.org/api/zlib.html#zlib_zlib_createinflate_options
     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
     if(api.config.servers.web.compress === true){
-      if(acceptEncoding.match(/\bdeflate\b/)) {
+      if(acceptEncoding.match(/\bdeflate\b/)){
         headers.push(['Content-Encoding', 'deflate']);
         compressor = zlib.createDeflate();
         stringEncoder = zlib.deflate;
@@ -187,11 +187,11 @@ var initialize = function(api, options, next){
     determineRequestParams(connection, function(requestMode){
       if(requestMode === 'api'){
         server.processAction(connection);
-      } else if(requestMode === 'file'){
+      }else if(requestMode === 'file'){
         server.processFile(connection);
-      } else if(requestMode === 'options'){
+      }else if(requestMode === 'options'){
         respondToOptions(connection);
-      } else if(requestMode === 'trace'){
+      }else if(requestMode === 'trace'){
         respondToTrace(connection);
       }
     });
@@ -320,7 +320,7 @@ var initialize = function(api, options, next){
 
       var stringResponse = '';
 
-      if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
+      if(extractHeader(data.connection, 'Content-Type').match(/json/)){
         stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
         if(data.params.callback){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
@@ -379,18 +379,18 @@ var initialize = function(api, options, next){
     }else if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForFiles){
       requestMode = 'file';
       pathParts.shift();
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0){
       requestMode = 'api';
       matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
       for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0){
       requestMode = 'file';
       matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
       for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
     }
 
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
-    if (extensionParts.length > 1){
+    if(extensionParts.length > 1){
       connection.extension = extensionParts[(extensionParts.length - 1)];
     }
 
@@ -418,11 +418,11 @@ var initialize = function(api, options, next){
         for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
-        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files) {
+        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files){
           if(err){
             server.log('error processing form: ' + String(err), 'error');
             connection.error = new Error('There was an error processing this form.');
-          } else {
+          }else{
             connection.rawConnection.params.body = fields;
             connection.rawConnection.params.files = files;
             fillParamsFromWebRequest(connection, files);
@@ -448,10 +448,9 @@ var initialize = function(api, options, next){
       if(connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/'){
         connection.params.file = connection.params.file + api.config.general.directoryFileType;
       }
-      try {
+      try{
         connection.params.file = decodeURIComponent(connection.params.file);
-      }
-      catch(e) {
+      }catch(e){
         connection.error = new Error('There was an error decoding URI: ' + e);
       }
       callback(requestMode);
@@ -495,11 +494,11 @@ var initialize = function(api, options, next){
     for(var i in originalHeaders){
       var key = originalHeaders[i][0];
       var value = originalHeaders[i][1];
-      if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
+      if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0){
         // ignore, it's a duplicate
-      } else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
+      }else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
         // ignore, we can't send this header for HEAD requests
-      } else {
+      }else{
         foundHeaders.push(key.toLowerCase());
         cleanedHeaders.push([key, value]);
       }

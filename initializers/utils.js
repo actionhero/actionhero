@@ -9,7 +9,7 @@ module.exports = {
 
     ////////////////////////////////////////////////////////////////////////////
     // count the number of elements in a hash
-    api.utils.hashLength = function(obj) {
+    api.utils.hashLength = function(obj){
       var size = 0;
       var key;
       for(key in obj){
@@ -26,12 +26,12 @@ module.exports = {
       var response;
 
       for(i in a){
-        if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0 ){
+        if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0){
           c[i] = api.utils.hashMerge(c[i], a[i], arg);
         }else{
           if(typeof a[i] === 'function'){
             response = a[i](arg);
-            if( api.utils.isPlainObject(response) ){
+            if(api.utils.isPlainObject(response)){
               c[i] = api.utils.hashMerge(c[i], response, arg);
             }else{
               c[i] = response;
@@ -42,12 +42,12 @@ module.exports = {
         }
       }
       for(i in b){
-        if(api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0 ){
+        if(api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0){
           c[i] = api.utils.hashMerge(c[i], b[i], arg);
         }else{
           if(typeof b[i] === 'function'){
             response = b[i](arg);
-            if( api.utils.isPlainObject(response) ){
+            if(api.utils.isPlainObject(response)){
               c[i] = api.utils.hashMerge(c[i], response, arg);
             }else{
               c[i] = response;
@@ -91,9 +91,9 @@ module.exports = {
     // unique-ify an array
     api.utils.arrayUniqueify = function(arr){
       var a = [];
-      for(var i = 0; i < arr.length; i++) {
-        for(var j = i + 1; j < arr.length; j++) {
-          if (arr[i] === arr[j]){ j = ++i; }
+      for(var i = 0; i < arr.length; i++){
+        for(var j = i + 1; j < arr.length; j++){
+          if(arr[i] === arr[j]){ j = ++i; }
         }
         a.push(arr[i]);
       }
@@ -112,7 +112,7 @@ module.exports = {
       if(dir[dir.length - 1] !== path.sep){ dir += path.sep; }
 
       if(fs.existsSync(dir)){
-        fs.readdirSync(dir).forEach( function(file) {
+        fs.readdirSync(dir).forEach(function(file){
           var fullFilePath = path.normalize(dir + file);
           if(file[0] !== '.'){ // ignore 'system' files
             var stats = fs.statSync(fullFilePath);
@@ -120,11 +120,11 @@ module.exports = {
             if(stats.isDirectory()){
               child = api.utils.recursiveDirectoryGlob(fullFilePath, extension, followLinkFiles);
               child.forEach(function(c){ results.push(c); });
-            } else if(stats.isSymbolicLink()){
+            }else if(stats.isSymbolicLink()){
               var realPath = fs.readlinkSync(fullFilePath);
               child = api.utils.recursiveDirectoryGlob(realPath, extension, followLinkFiles);
               child.forEach(function(c){ results.push(c); });
-            } else if(stats.isFile()){
+            }else if(stats.isFile()){
               var fileParts = file.split('.');
               var ext = fileParts[(fileParts.length - 1)];
               // real file match
@@ -161,7 +161,7 @@ module.exports = {
         var pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
         try{
           var stats = fs.lstatSync(pluginPathAttempt);
-          if( !pluginRoot && stats.isDirectory() ){ pluginRoot = pluginPathAttempt; }
+          if(!pluginRoot && stats.isDirectory()){ pluginRoot = pluginPathAttempt; }
         }catch(e){ }
       });
 
@@ -173,7 +173,7 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // object Clone
     api.utils.objClone = function(obj){
-      return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name) {
+      return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name){
         return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
       }, {}));
     };
@@ -237,14 +237,14 @@ module.exports = {
       var port = '80';
       var regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
       //if we have brackets parse them and find a port
-      if(-1 < addr.indexOf('[') && -1 < addr.indexOf(']')){
+      if(addr.indexOf('[') > -1 && addr.indexOf(']') > -1){
         var res = regexp.exec(addr);
         if(res === null){
           throw new Error('failed to parse address');
         }
         host = res[1];
         port = res[2];
-      } else {
+      }else{
         host = addr;
       }
       return {host: host, port: parseInt(port, 10)};

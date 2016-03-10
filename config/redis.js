@@ -1,4 +1,4 @@
-exports.default = {
+exports['default'] = {
   redis: function(api){
     var redisDetails = {
       // Which channel to use on redis pub/sub for RPC communication
@@ -14,7 +14,7 @@ exports.default = {
       database : process.env.REDIS_DB   || 0,
     };
 
-    if( process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined ){
+    if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
       redisDetails.pkg  = 'ioredis';
       // there are many more connection options, including support for cluster and sentinel
       // learn more @ https://github.com/luin/ioredis

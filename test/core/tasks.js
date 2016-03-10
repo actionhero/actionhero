@@ -186,14 +186,14 @@ describe('Core: Tasks', function(){
         api.tasks.delayedAt(roundedTime, function(err, tasks){
           should.not.exist(err);
           tasks.length.should.equal(1);
-          tasks[0].class.should.equal('regularTask');
+          tasks[0]['class'].should.equal('regularTask');
         });
 
         api.tasks.allDelayed(function(err, allTasks){
           should.not.exist(err);
           Object.keys(allTasks).length.should.equal(1);
           Object.keys(allTasks)[0].should.equal(String(roundedTime));
-          allTasks[roundedTime][0].class.should.equal('regularTask');
+          allTasks[roundedTime][0]['class'].should.equal('regularTask');
           done();
         });
 
@@ -301,7 +301,7 @@ describe('Core: Tasks', function(){
 
       var listener = function(workerId, queue, job, f){
         queue.should.equal(queue);
-        job.class.should.equal('someCrazyTask');
+        job['class'].should.equal('someCrazyTask');
         job.queue.should.equal('testQueue');
         String(f).should.equal('Error: No job defined for class \'someCrazyTask\'');
         api.resque.multiWorker.removeListener('failure', listener);

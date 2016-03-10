@@ -9,7 +9,7 @@ exports.link = function(binary, next){
   var pluginRoot;
   binary.config.general.paths.plugin.forEach(function(pluginPath){
     var pluginPathAttempt = path.normalize(pluginPath + path.sep + binary.argv.name);
-    if( !pluginRoot && binary.utils.dirExists(pluginPath + path.sep + binary.argv.name) ){
+    if(!pluginRoot && binary.utils.dirExists(pluginPath + path.sep + binary.argv.name)){
       pluginRoot = pluginPathAttempt;
     }
   });
@@ -34,7 +34,7 @@ exports.link = function(binary, next){
     var localLinkLocation  = localLinkDirectory + path.sep + binary.argv.name + '.link';
     var pluginSubSection   = pluginRootRelative + path.sep + c[1];
 
-    if( binary.utils.dirExists(pluginSubSection) ){
+    if(binary.utils.dirExists(pluginSubSection)){
       binary.utils.createDirSafely(localLinkDirectory);
       binary.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection);
     }
@@ -42,7 +42,7 @@ exports.link = function(binary, next){
 
   // copy config files
   var pluginConfigDir = pluginRoot + path.sep + 'config';
-  if( binary.utils.dirExists(pluginConfigDir) ){
+  if(binary.utils.dirExists(pluginConfigDir)){
     fs.readdirSync(pluginConfigDir).forEach(function(pluginConfigFile){
       var content = fs.readFileSync(pluginConfigDir + path.sep + pluginConfigFile);
       var fileParts = pluginConfigFile.split(path.sep);

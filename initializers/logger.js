@@ -10,7 +10,7 @@ module.exports = {
       var t = api.config.logger.transports[i];
       if(typeof t === 'function'){
         transports.push(t(api, winston));
-      } else {
+      }else{
         transports.push(t);
       }
     }

@@ -62,21 +62,21 @@ binary.utils = {
     return s;
   },
   dirExists: function(dir){
-    try {
+    try{
       var stats = fs.lstatSync(dir);
       return (stats.isDirectory() || stats.isSymbolicLink());
-    } catch(e){ return false; }
+    }catch(e){ return false; }
   },
   fileExists: function(file){
-    try {
+    try{
       var stats = fs.lstatSync(file);
       return (stats.isFile() || stats.isSymbolicLink());
-    } catch(e){ return false; }
+    }catch(e){ return false; }
   },
   createDirSafely: function(dir){
     if(binary.utils.dirExists(dir)){
       binary.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping', 'alert');
-    } else {
+    }else{
       binary.log(' - creating directory \'' + path.normalize(dir) + '\'');
       fs.mkdirSync(path.normalize(dir), '0766');
     }
@@ -84,7 +84,7 @@ binary.utils = {
   createFileSafely: function(file, data){
     if(binary.utils.fileExists(file)){
       binary.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
-    } else {
+    }else{
       binary.log(' - wrote file \'' + path.normalize(file) + '\'');
       fs.writeFileSync(path.normalize(file), data);
     }
@@ -92,7 +92,7 @@ binary.utils = {
   createLinkfileSafely: function(filePath, type, refrence){
     if(binary.utils.fileExists(filePath)){
       binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
-    } else {
+    }else{
       binary.log(' - creating linkfile \'' + filePath + '\'');
       fs.writeFileSync(filePath, type);
     }
@@ -100,7 +100,7 @@ binary.utils = {
   createSymlinkSafely: function(destination, source){
     if(binary.utils.dirExists(destination)){
       binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
-    } else {
+    }else{
       binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
       fs.symlinkSync(source, destination, 'dir');
     }
@@ -126,26 +126,26 @@ if(process.env.PWD){
 
 if(process.env.projectRoot){
   binary.projectRoot = process.env.projectRoot;
-} else if(process.env.project_root){
+}else if(process.env.project_root){
   binary.projectRoot = process.env.project_root;
-} else if(process.env.PROJECT_ROOT){
+}else if(process.env.PROJECT_ROOT){
   binary.projectRoot = process.env.PROJECT_ROOT;
-} else {
+}else{
   binary.projectRoot = pwd;
 }
 
 if(process.env.actionheroRoot){
   binary.actionheroRoot = process.env.actionheroRoot;
-} else if(process.env.actionheroRoot){
+}else if(process.env.actionheroRoot){
   binary.actionheroRoot = process.env.actionheroRoot;
-} else if(binary.utils.fileExists(pwd + '/actionhero.js')){
+}else if(binary.utils.fileExists(pwd + '/actionhero.js')){
   // in the actionhero project itself
   binary.actionheroRoot = pwd;
-} else if(binary.utils.fileExists(pwd + '/node_modules/actionhero/actionhero.js')){
+}else if(binary.utils.fileExists(pwd + '/node_modules/actionhero/actionhero.js')){
   // running from a project's node_modules (bin or actionhero)
   binary.actionheroRoot = pwd + '/node_modules/actionhero';
   process.chdir(binary.projectRoot);
-} else {
+}else{
   // installed globally
   binary.actionheroRoot = path.normalize(__dirname + '/../');
 }
@@ -183,10 +183,10 @@ var run = function(){
       binary.log(command + ' ' + args.join(' '), 'info');
       binary.log('spawned child process with pid ' + child.pid, 'notice');
       setTimeout(process.exit, 1000);
-    } else if(binary.argv.isDaemon){
+    }else if(binary.argv.isDaemon){
       binary.logger.remove(winston.transports.Console);
       binary.actions[binary.mainAction](binary, function(){});
-    } else {
+    }else{
       binary.log('actionhero >> ' + binary.mainAction);
       binary.log('project_root >> ' + path.normalize(binary.projectRoot), 'debug');
       binary.log('actionheroRoot >> ' + path.normalize(binary.actionheroRoot), 'debug');
@@ -194,7 +194,7 @@ var run = function(){
         if(toStop === true){ process.exit(); }
       });
     }
-  } else {
+  }else{
     binary.actions.unknownInput(binary, function(){});
     process.exit(1);
   }

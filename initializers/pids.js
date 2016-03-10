@@ -22,20 +22,20 @@ module.exports = {
 
     if(cluster.isMaster){
       api.pids.title = 'actionhero-' + api.pids.sanitizeId();
-    } else {
+    }else{
       api.pids.title = api.pids.sanitizeId();
     }
 
-    try { fs.mkdirSync(api.pids.path); } catch(e) {}
+    try{ fs.mkdirSync(api.pids.path); }catch(e){};
 
     api.pids.writePidFile = function(){
       fs.writeFileSync(api.pids.path + '/' + api.pids.title, api.pids.pid.toString(), 'ascii');
     };
 
     api.pids.clearPidFile = function(){
-      try {
+      try{
         fs.unlinkSync(api.pids.path + '/' + api.pids.title);
-      } catch(e){
+      }catch(e){
         api.log('Unable to remove pidfile', 'error', e);
       }
     };

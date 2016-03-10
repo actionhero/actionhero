@@ -22,7 +22,7 @@ exports.start = function(binary, next){
       if(err){
         binary.log(err);
         process.exit(1);
-      } else {
+      }else{
         state = 'started';
         if(cluster.isWorker){ process.send({state: state}); }
         api = apiFromCallback;

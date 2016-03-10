@@ -73,9 +73,9 @@ module.exports = {
       }
       if(typeof self.attributes.sendWelcomeMessage === 'number'){
         setTimeout(function(){
-          try {
+          try{
             connection.sendMessage({welcome: api.config.general.welcomeMessage, context: 'api'});
-          } catch(e){
+          }catch(e){
             api.log(e, 'error');
           }
         }, self.attributes.sendWelcomeMessage);

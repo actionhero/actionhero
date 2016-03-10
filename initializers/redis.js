@@ -17,7 +17,7 @@ module.exports = {
       calledback: false,
     };
 
-    if(api.config.redis['package'] && !api.config.redis.pkg) {
+    if(api.config.redis['package'] && !api.config.redis.pkg){
       api.log('Depreciation warning: New versions of actionhero utilize "pkg" instead of "package" for redis! Please update your configuration.');
       api.config.redis.pkg = api.config.redis['package'];
     }
@@ -107,11 +107,11 @@ module.exports = {
 
     // Subsciption Handlers
 
-    api.redis.subscriptionHandlers.do = function(message){
-      if(!message.connectionId || ( api.connections && api.connections.connections[message.connectionId]) ){
+    api.redis.subscriptionHandlers['do'] = function(message){
+      if(!message.connectionId || (api.connections && api.connections.connections[message.connectionId])){
         var cmdParts = message.method.split('.');
         var cmd = cmdParts.shift();
-        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object');}
+        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
         var method = api.utils.stringToHash(cmdParts.join('.'));
 
         var callback = function(){
@@ -192,7 +192,7 @@ module.exports = {
 
   stop: function(api, next){
     for(var i in api.redis.clusterCallbakTimeouts){
-      clearTimeout( api.redis.clusterCallbakTimeouts[i] );
+      clearTimeout(api.redis.clusterCallbakTimeouts[i]);
       delete api.redis.clusterCallbakTimeouts[i];
       delete api.redis.clusterCallbaks[i];
     }

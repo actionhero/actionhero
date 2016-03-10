@@ -1,4 +1,4 @@
-exports.default = {
+exports['default'] = {
   servers: {
     web: function(api){
       return {

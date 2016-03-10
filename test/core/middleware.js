@@ -53,7 +53,7 @@ describe('Core: Middleware', function(){
       });
 
       api.specHelper.runAction('randomNumber', function(response){
-        should.not.exist( response._preProcessorNote );
+        should.not.exist(response._preProcessorNote);
         done();
       });
     });
@@ -253,7 +253,7 @@ describe('Core: Middleware', function(){
         name: 'test middleware',
         global: true,
         preProcessor: function(data, next){
-          next(new Error( 'BLOCKED' ));
+          next(new Error('BLOCKED'));
         }
       });
 

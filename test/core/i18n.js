@@ -9,7 +9,7 @@ var tmpPath = require('os').tmpdir() + require('path').sep + 'locale' + require(
 var readLocaleFile = function(locale){
   if(!locale){ locale = api.config.i18n.defaultLocale; }
   var file = api.config.general.paths.locale[0] + '/' + locale + '.json';
-  var contents = String( fs.readFileSync(file) );
+  var contents = String(fs.readFileSync(file));
   var json = JSON.parse(contents);
   return json;
 };
@@ -52,7 +52,7 @@ describe('Core: i18n', function(){
         '[ action @ %s ]',
         'Your random number is %s',
       ].forEach(function(s){
-        should.exist( content[s] );
+        should.exist(content[s]);
         content[s].should.equal(s);
       });
       done();

@@ -51,7 +51,7 @@ module.exports = {
             if(started === 0){ next(); }
           });
         });
-      })(server);
+      }(server));
     }
     if(started === 0){ next(); }
   },
@@ -101,7 +101,7 @@ module.exports = {
             if(started === 0){ next(); }
           });
         }
-      })(server);
+      }(server));
     }
   }
 };

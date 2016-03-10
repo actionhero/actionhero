@@ -237,7 +237,7 @@ describe('Core: Action Cluster', function(){
         var client = new apiA.specHelper.connection();
 
         apiB.connections.apply(client.id, 'sendMessage', {message: 'hi'}, function(connection){
-          var message = connection.messages[( connection.messages.length - 1 )];
+          var message = connection.messages[(connection.messages.length - 1)];
           message.message.should.equal('hi');
 
           done();

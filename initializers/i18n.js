@@ -16,7 +16,7 @@ module.exports = {
       invokeConnectionLocale: function(connection){
         var cmdParts = api.config.i18n.determineConnectionLocale.split('.');
         var cmd = cmdParts.shift();
-        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object');}
+        if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
         var method = api.utils.stringToHash(cmdParts.join('.'));
         var locale = method(connection);
         api.i18n.i18n.setLocale(connection, locale);
@@ -26,7 +26,7 @@ module.exports = {
     var options = api.config.i18n;
     options.directory = api.config.general.paths.locale[0];
     i18n.configure(options);
-    i18n.setLocale( api.config.i18n.serverLocale );
+    i18n.setLocale(api.config.i18n.serverLocale);
 
     api.i18n.i18n = i18n;
 

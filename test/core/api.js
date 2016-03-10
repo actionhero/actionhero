@@ -196,13 +196,13 @@ describe('Core: API', function(){
       api.specHelper.runAction('testAction', {requiredParam: false}, function(response){
         response.params.requiredParam.should.equal(false);
         api.specHelper.runAction('testAction', {requiredParam: []}, function(response){
-          response.params.requiredParam.should.eql( [] );
+          response.params.requiredParam.should.eql([]);
           done();
         });
       });
     });
 
-    it( 'will fail for missing or empty string params', function(done){
+    it('will fail for missing or empty string params', function(done){
       api.specHelper.runAction('testAction', {requiredParam: ''}, function(response){
         response.error.should.containEql('required parameter for this action');
         api.specHelper.runAction('testAction', {}, function(response){
@@ -210,7 +210,7 @@ describe('Core: API', function(){
           done();
         });
       });
-    } );
+    });
 
     it('correct params respect config options', function(done){
       api.config.general.missingParamChecks = [undefined];

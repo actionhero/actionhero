@@ -14,7 +14,7 @@ var url;
 var connectClients = function(callback){
   // get actionheroClient in scope
   // TODO: Perhaps we read this from disk after server boot.
-  eval( api.servers.servers.websocket.compileActionheroClientJS() );
+  eval(api.servers.servers.websocket.compileActionheroClientJS());
 
   var S = api.servers.servers.websocket.server.Socket;
   var url = 'http://localhost:' + api.config.servers.web.port;
@@ -127,7 +127,7 @@ describe('Server: Web Socket', function(){
         var response = responses[i];
         if(i === 0 || i === '0'){
           response.error.should.eql('you have too many pending requests');
-        } else {
+        }else{
           should.not.exist(response.error);
         }
       }
@@ -148,7 +148,7 @@ describe('Server: Web Socket', function(){
 
     it('missing files', function(done){
       clientA.file('missing.html', function(data){
-        data.error.should.equal( 'That file is not found (missing.html)' );
+        data.error.should.equal('That file is not found (missing.html)');
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();
@@ -231,7 +231,7 @@ describe('Server: Web Socket', function(){
 
     it('will update client room info when they change rooms', function(done){
       clientA.rooms[0].should.equal('defaultRoom');
-      should.not.exist( clientA.rooms[1] );
+      should.not.exist(clientA.rooms[1]);
       clientA.roomAdd('otherRoom', function(response){
         should.not.exist(response.error);
         clientA.rooms[0].should.equal('defaultRoom');
@@ -239,7 +239,7 @@ describe('Server: Web Socket', function(){
         clientA.roomLeave('defaultRoom', function(response){
           should.not.exist(response.error);
           clientA.rooms[0].should.equal('otherRoom');
-          should.not.exist( clientA.rooms[1] );
+          should.not.exist(clientA.rooms[1]);
           done();
         });
       });
@@ -333,7 +333,7 @@ describe('Server: Web Socket', function(){
       });
     });
 
-    describe('middleware - say and onSayReceive', function() {
+    describe('middleware - say and onSayReceive', function(){
       before(function(done){
         clientA.roomAdd('defaultRoom', function(){
           clientB.roomAdd('defaultRoom', function(){
@@ -405,12 +405,12 @@ describe('Server: Web Socket', function(){
         api.chatRoom.addMiddleware({
           name: 'first say middleware',
           say: function(connection, room, messagePayload, callback){
-            if (firstSayCall) {
+            if(firstSayCall){
               firstSayCall = false;
-              setTimeout(function() {
+              setTimeout(function(){
                 callback();
               }, 200);
-            } else {
+            }else{
               callback();
             }
           }
@@ -535,8 +535,8 @@ describe('Server: Web Socket', function(){
         clientA.roomAdd('defaultRoom', function(){
           clientA.roomView('defaultRoom', function(response){
             response.data.room.should.equal('defaultRoom');
-            for( var key in response.data.members ){
-              ( response.data.members[key].type === undefined ).should.eql(true);
+            for(var key in response.data.members){
+              (response.data.members[key].type === undefined).should.eql(true);
             }
             setTimeout(function(){
               clientA.roomLeave('defaultRoom', function(){

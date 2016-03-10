@@ -184,7 +184,7 @@ ActionHeroCluster.prototype.writePidFile = function(callback){
 
   if(fs.existsSync(file)){
     var oldpid = parseInt(fs.readFileSync(file));
-    if( isrunning(oldpid) ){
+    if(isrunning(oldpid)){
       return callback(new Error('actionHeroCluster already running (pid ' + oldpid + ')'));
     }
   }
