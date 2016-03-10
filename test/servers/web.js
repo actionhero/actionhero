@@ -551,7 +551,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal( 'That file is not found (../config.json)' );
+        response.body.should.equal( 'That file is not found (..' + path.sep + 'config.json)' );
         done();
       });
     });
