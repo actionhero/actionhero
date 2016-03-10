@@ -1,6 +1,8 @@
 var should  = require('should');
 var request = require('request');
 var fs      = require('fs');
+var os      = require('os');
+var path    = require('path');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -548,7 +550,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal('That file is not found (../config.json)');
+        response.body.should.equal('That file is not found (..' + path.sep + 'config.json)');
         done();
       });
     });
@@ -573,15 +575,15 @@ describe('Server: Web', function(){
       var source = __dirname + '/../../public/simple.html';
 
       before(function(done){
-        fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
-        api.staticFile.searchLoactions.push('/tmp');
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'));
+        api.staticFile.searchLoactions.push(os.tmpdir());
         process.nextTick(function(){
           done();
         });
       });
 
       after(function(done){
-        fs.unlink('/tmp/testFile.html');
+        fs.unlink(os.tmpdir() + path.sep + 'testFile.html');
         api.staticFile.searchLoactions.pop();
         process.nextTick(function(){
           done();
@@ -913,15 +915,15 @@ describe('Server: Web', function(){
       var source = __dirname + '/../../public/logo/sky.jpg';
 
       before(function(done){
-        fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/sky with space.jpg'));
-        api.staticFile.searchLoactions.push('/tmp');
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'sky with space.jpg'));
+        api.staticFile.searchLoactions.push(os.tmpdir());
         process.nextTick(function(){
           done();
         });
       });
 
       after(function(done){
-        fs.unlink('/tmp/sky with space.jpg');
+        fs.unlink(os.tmpdir() + path.sep + 'sky with space.jpg');
         api.staticFile.searchLoactions.pop();
         process.nextTick(function(){
           done();

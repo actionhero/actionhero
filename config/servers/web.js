@@ -1,3 +1,5 @@
+var os = require('os');
+
 exports['default'] = {
   servers: {
     web: function(api){
@@ -51,7 +53,7 @@ exports['default'] = {
         // Options to be applied to incoming file uploads.
         //  More options and details at https://github.com/felixge/node-formidable
         formOptions: {
-          uploadDir: '/tmp',
+          uploadDir: os.tmpdir(),
           keepExtensions: false,
           maxFieldsSize: 1024 * 1024 * 100
         },

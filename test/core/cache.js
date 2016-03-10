@@ -126,7 +126,7 @@ describe('Core: Cache', function(){
 
   it('cache.load with options that extending expireTime should return cached item', function(done){
     var expireTime = 400;
-    var timeout = 320;
+    var timeout = 200;
     //save the initial key
     api.cache.save('testKey_slow', 'abc123', expireTime, function(err, saveResp){
       saveResp.should.equal(true);
