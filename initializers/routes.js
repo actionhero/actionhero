@@ -37,7 +37,7 @@ module.exports = {
     };
 
     api.routes.matchURL = function(pathParts, match, matchTrailingPathParts){
-      var response = { match: false, params: {} };
+      var response = {match: false, params: {}};
       var matchParts = match.split('/');
       var regexp = '';
       var variable = '';
@@ -61,19 +61,19 @@ module.exports = {
 
         if(!pathPart){
           return response;
-        } else if(matchPart[0] === ':' && matchPart.indexOf('(') < 0){
+        }else if(matchPart[0] === ':' && matchPart.indexOf('(') < 0){
           variable = matchPart.replace(':', '');
           response.params[variable] = pathPart;
-        } else if(matchPart[0] === ':' && matchPart.indexOf('(') >= 0){
+        }else if(matchPart[0] === ':' && matchPart.indexOf('(') >= 0){
           variable = matchPart.replace(':', '').split('(')[0];
           regexp = matchPart.substring(matchPart.indexOf('(') + 1, matchPart.length - 1);
           var matches = pathPart.match(new RegExp(regexp, 'g'));
           if(matches){
             response.params[variable] = pathPart;
-          } else {
+          }else{
             return response;
           }
-        } else {
+        }else{
           if(
             pathPart === null ||
             pathPart === undefined ||
@@ -105,7 +105,7 @@ module.exports = {
     api.routes.loadRoutes = function(rawRoutes){
       var counter = 0;
 
-      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch' : [], 'delete': [] };
+      api.routes.routes = {'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': []};
 
       if(!rawRoutes){
         if(api.config.routes){
@@ -113,7 +113,8 @@ module.exports = {
         }
       }
 
-      var v, verb;
+      var v;
+      var verb;
       for(var i in rawRoutes){
         var method = i.toLowerCase();
         for(var j in rawRoutes[i]){

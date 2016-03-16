@@ -20,7 +20,7 @@ var task = {
     var actionProcessor = new api.actionProcessor(connection, function(data){
       if(data.response.error){
         api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)});
-      } else {
+      }else{
         api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)});
       }
 

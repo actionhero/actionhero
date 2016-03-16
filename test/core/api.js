@@ -67,7 +67,7 @@ describe('Core: API', function(){
   describe('api versions', function(){
 
     before(function(done){
-      api.actions.versions.versionedAction = [1,2,3];
+      api.actions.versions.versionedAction = [1, 2, 3];
       api.actions.actions.versionedAction = {
         '1': {
           name: 'versionedAction',
@@ -192,32 +192,31 @@ describe('Core: API', function(){
       done();
     });
 
-
     it('correct params that are falsey (false, []) should be allowed', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: false }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: false}, function(response){
         response.params.requiredParam.should.equal(false);
-        api.specHelper.runAction('testAction', {requiredParam: [] }, function(response){
-          response.params.requiredParam.should.eql( [] );
+        api.specHelper.runAction('testAction', {requiredParam: []}, function(response){
+          response.params.requiredParam.should.eql([]);
           done();
         });
       });
     });
 
-    it( 'will fail for missing or empty string params', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: '' }, function(response){
+    it('will fail for missing or empty string params', function(done){
+      api.specHelper.runAction('testAction', {requiredParam: ''}, function(response){
         response.error.should.containEql('required parameter for this action');
-        api.specHelper.runAction('testAction', { }, function(response){
+        api.specHelper.runAction('testAction', {}, function(response){
           response.error.should.containEql('required parameter for this action');
           done();
         });
       });
-    } );
+    });
 
     it('correct params respect config options', function(done){
-      api.config.general.missingParamChecks = [ undefined ];
-      api.specHelper.runAction('testAction', {requiredParam: '' }, function(response){
+      api.config.general.missingParamChecks = [undefined];
+      api.specHelper.runAction('testAction', {requiredParam: ''}, function(response){
         response.params.requiredParam.should.equal('');
-        api.specHelper.runAction('testAction', {requiredParam: null }, function(response){
+        api.specHelper.runAction('testAction', {requiredParam: null}, function(response){
           should(response.params.requiredParam).eql(null);
           done();
         });
@@ -225,35 +224,35 @@ describe('Core: API', function(){
     });
 
     it('will set a default when params are not provided', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: true}, function(response){
         response.params.fancyParam.should.equal('abc123');
         done();
       });
     });
 
     it('will use validator if provided', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
         response.error.should.match(/Error: fancyParam should be "abc123"/);
         done();
       });
     });
 
     it('validator will have the API object in scope as this', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
         response.error.should.match(new RegExp(api.id));
         done();
       });
     });
 
     it('will use formater if provided (and still use validator)', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123 }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
         response.requesterInformation.receivedParams.fancyParam.should.equal('123');
         done();
       });
     });
 
     it('will filter params not set in the target action or global safelist', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true }, function(response){
+      api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, function(response){
         should.exist(response.requesterInformation.receivedParams.requiredParam);
         should.not.exist(response.requesterInformation.receivedParams.sleepDuration);
         done();

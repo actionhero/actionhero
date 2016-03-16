@@ -78,7 +78,7 @@ module.exports = {
     api.cache.dumpRead = function(file, next){
       api.cache.clear(function(err){
         var stared = 0;
-        var data = JSON.parse( fs.readFileSync(file) );
+        var data = JSON.parse(fs.readFileSync(file));
         for(var key in data){
           stared++;
           var content = data[key];
@@ -118,12 +118,12 @@ module.exports = {
 
       api.redis.client.get(api.cache.redisPrefix + key, function(err, cacheObj){
         if(err){ api.log(err, 'error'); }
-        try { cacheObj = JSON.parse(cacheObj); } catch(e){}
+        try{ cacheObj = JSON.parse(cacheObj); }catch(e){}
         if(!cacheObj){
           if(typeof next === 'function'){
             process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
           }
-        } else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
+        }else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
           var lastReadAt = cacheObj.readAt;
           var expireTimeSeconds;
           cacheObj.readAt = new Date().getTime();
@@ -150,7 +150,7 @@ module.exports = {
               });
             }
           });
-        } else {
+        }else{
           if(typeof next === 'function'){
             process.nextTick(function(){ next(new Error('Object expired'), null, null, null, null); });
           }
@@ -180,7 +180,7 @@ module.exports = {
       }
       var expireTimeSeconds = null;
       var expireTimestamp = null;
-      if(null !== expireTimeMS){
+      if(expireTimeMS !== null){
         expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
         expireTimestamp   = new Date().getTime() + expireTimeMS;
       }
@@ -242,7 +242,7 @@ module.exports = {
             if(err){
               next(err);
             }else{
-              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS/1000), function(err){
+              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(err){
                 lockOk = true;
                 if(err){ lockOk = false; }
                 next(err, lockOk);

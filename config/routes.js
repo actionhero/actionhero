@@ -1,4 +1,4 @@
-exports.default = {
+exports['default'] = {
   routes: function(api){
     return {
 

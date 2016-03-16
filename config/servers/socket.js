@@ -1,4 +1,4 @@
-exports.default = {
+exports['default'] = {
   servers: {
     socket: function(api){
       return {

@@ -16,7 +16,7 @@ module.exports = {
       api.actions.middleware[data.name] = data;
       if(data.global === true){
         api.actions.globalMiddleware.push(data.name);
-        api.actions.globalMiddleware.sort(function(a,b){
+        api.actions.globalMiddleware.sort(function(a, b){
           if(api.actions.middleware[a].priority > api.actions.middleware[b].priority){
             return 1;
           }else{
@@ -28,7 +28,7 @@ module.exports = {
 
     api.actions.validateAction = function(action){
       var fail = function(msg){
-        return next( new Error(msg) );
+        return next(new Error(msg));
       };
 
       if(action.inputs === undefined){
@@ -38,16 +38,16 @@ module.exports = {
       if(typeof action.name !== 'string' || action.name.length < 1){
         fail('an action is missing \'action.name\'');
         return false;
-      } else if(typeof action.description !== 'string' || action.description.length < 1){
+      }else if(typeof action.description !== 'string' || action.description.length < 1){
         fail('Action ' + action.name + ' is missing \'action.description\'');
         return false;
-      } else if(typeof action.run !== 'function'){
+      }else if(typeof action.run !== 'function'){
         fail('Action ' + action.name + ' has no run method');
         return false;
-      } else if(api.connections !== null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
+      }else if(api.connections !== null && api.connections.allowedVerbs.indexOf(action.name) >= 0){
         fail(action.name + ' is a reserved verb for connections. choose a new name');
         return false;
-      } else {
+      }else{
         return true;
       }
     };
@@ -70,10 +70,11 @@ module.exports = {
         api.routes.loadRoutes();
       });
 
-      try {
+      var action;
+      try{
         var collection = require(fullFilePath);
         for(var i in collection){
-          var action = collection[i];
+          action = collection[i];
           if(action.version === null || action.version === undefined){ action.version = 1.0; }
           if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){
             api.actions.actions[action.name] = {};
@@ -87,11 +88,11 @@ module.exports = {
           api.actions.validateAction(api.actions.actions[action.name][action.version]);
           loadMessage(action);
         }
-      } catch(err){
-        try {
+      }catch(err){
+        try{
           api.exceptionHandlers.loader(fullFilePath, err);
           delete api.actions.actions[action.name][action.version];
-        } catch(err2) {
+        }catch(err2){
           throw err;
         }
 

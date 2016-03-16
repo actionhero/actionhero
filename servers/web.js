@@ -14,7 +14,7 @@ var initialize = function(api, options, next){
   // INIT //
   //////////
 
-  var type = 'web'
+  var type = 'web';
   var attributes = {
     canChat: false,
     logConnections: false,
@@ -23,7 +23,7 @@ var initialize = function(api, options, next){
     verbs: [
       // no verbs for connections of this type, as they are to be very short-lived
     ]
-  }
+  };
 
   var server = new api.genericServer(type, options, attributes);
 
@@ -41,23 +41,23 @@ var initialize = function(api, options, next){
       server.server = http.createServer(function(req, res){
         handleRequest(req, res);
       });
-    } else {
+    }else{
       var https = require('https');
       server.server = https.createServer(api.config.servers.web.serverOptions, function(req, res){
         handleRequest(req, res);
       });
     }
 
-    var bootAttempts = 0
+    var bootAttempts = 0;
     server.server.on('error', function(e){
       bootAttempts++;
       if(bootAttempts < api.config.servers.web.bootAttempts){
         server.log('cannot boot web server; trying again [' + String(e) + ']', 'error');
         if(bootAttempts === 1){ cleanSocket(options.bindIP, options.port); }
         setTimeout(function(){
-          server.log('attempting to boot again..')
+          server.log('attempting to boot again..');
           server.server.listen(options.port, options.bindIP);
-        }, 1000)
+        }, 1000);
       }else{
         return next(new Error('cannot start web server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
       }
@@ -67,14 +67,14 @@ var initialize = function(api, options, next){
       chmodSocket(options.bindIP, options.port);
       next();
     });
-  }
+  };
 
   server.stop = function(next){
     server.server.close();
     process.nextTick(function(){
       next();
     });
-  }
+  };
 
   server.sendMessage = function(connection, message){
     var stringResponse = '';
@@ -87,7 +87,7 @@ var initialize = function(api, options, next){
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
 
     server.sendWithCompression(connection, responseHttpCode, headers, stringResponse);
-  }
+  };
 
   server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
     var foundExpires = false;
@@ -95,29 +95,29 @@ var initialize = function(api, options, next){
     var ifModifiedSince;
     var reqHeaders;
     connection.rawConnection.responseHeaders.forEach(function(pair){
-      if( pair[0].toLowerCase() === 'expires' )      { foundExpires = true; }
-      if( pair[0].toLowerCase() === 'cache-control' ){ foundCacheControl = true; }
-    })
+      if(pair[0].toLowerCase() === 'expires'){ foundExpires = true; }
+      if(pair[0].toLowerCase() === 'cache-control'){ foundCacheControl = true; }
+    });
 
     reqHeaders = connection.rawConnection.req.headers;
-    if(reqHeaders['if-modified-since']){ifModifiedSince = new Date(reqHeaders['if-modified-since'])}
+    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']); }
 
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    if(foundExpires === false)      { connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
-    if(foundCacheControl === false) { connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
+    if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
+    if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
 
-    connection.rawConnection.responseHeaders.push(['Last-Modified',new Date(lastModified)]);
+    connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified)]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
-    if(error){ connection.rawConnection.responseHttpCode = 404 }
-    if(ifModifiedSince && lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304}
+    if(error){ connection.rawConnection.responseHttpCode = 404; }
+    if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
     if(error){
       server.sendWithCompression(connection, responseHttpCode, headers, String(error));
     }
     else if(responseHttpCode !== 304){
       server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
-    } else {
+    }else{
       connection.rawConnection.res.writeHead(responseHttpCode, headers);
       connection.rawConnection.res.end();
       connection.destroy();
@@ -126,14 +126,15 @@ var initialize = function(api, options, next){
 
   server.sendWithCompression = function(connection, responseHttpCode, headers, stringResponse, fileStream, fileLength){
     var acceptEncoding = connection.rawConnection.req.headers['accept-encoding'];
-    var compressor, stringEncoder;
+    var compressor;
+    var stringEncoder;
     if(!acceptEncoding){ acceptEncoding = ''; }
 
     // Note: this is not a conformant accept-encoding parser.
     // https://nodejs.org/api/zlib.html#zlib_zlib_createinflate_options
     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
     if(api.config.servers.web.compress === true){
-      if(acceptEncoding.match(/\bdeflate\b/)) {
+      if(acceptEncoding.match(/\bdeflate\b/)){
         headers.push(['Content-Encoding', 'deflate']);
         compressor = zlib.createDeflate();
         stringEncoder = zlib.deflate;
@@ -186,11 +187,11 @@ var initialize = function(api, options, next){
     determineRequestParams(connection, function(requestMode){
       if(requestMode === 'api'){
         server.processAction(connection);
-      } else if(requestMode === 'file'){
+      }else if(requestMode === 'file'){
         server.processFile(connection);
-      } else if(requestMode === 'options'){
+      }else if(requestMode === 'options'){
         respondToOptions(connection);
-      } else if(requestMode === 'trace'){
+      }else if(requestMode === 'trace'){
         respondToTrace(connection);
       }
     });
@@ -206,7 +207,7 @@ var initialize = function(api, options, next){
 
   var handleRequest = function(req, res){
     browser_fingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
-      var responseHeaders = []
+      var responseHeaders = [];
       var cookies =  api.utils.parseCookies(req);
       var responseHttpCode = 200;
       var method = req.method.toUpperCase();
@@ -237,7 +238,7 @@ var initialize = function(api, options, next){
         var forwardedIp = req.headers['x-forwarded-for'].split(',')[0];
         if(forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)){
           // IPv4
-          forwardedIp = forwardedIp.replace('::ffff:',''); // remove any IPv6 information, ie: '::ffff:127.0.0.1'
+          forwardedIp = forwardedIp.replace('::ffff:', ''); // remove any IPv6 information, ie: '::ffff:127.0.0.1'
           parts = forwardedIp.split(':');
           if(parts[0]){ remoteIP = parts[0]; }
           if(parts[1]){ remotePort = parts[1]; }
@@ -254,7 +255,7 @@ var initialize = function(api, options, next){
       }
 
       server.buildConnection({
-      // will emit 'connection'
+        // will emit 'connection'
         rawConnection: {
           req: req,
           res: res,
@@ -271,7 +272,7 @@ var initialize = function(api, options, next){
         remotePort: remotePort
       });
     });
-  }
+  };
 
   var completeResponse = function(data){
     if(data.toRender === true){
@@ -310,7 +311,7 @@ var initialize = function(api, options, next){
           api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
           data.connection.extension
         ){
-          data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
+        data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.lookup(data.connection.extension)]);
       }
 
       if(data.response.error){
@@ -319,7 +320,7 @@ var initialize = function(api, options, next){
 
       var stringResponse = '';
 
-      if( extractHeader(data.connection, 'Content-Type').match(/json/) ){
+      if(extractHeader(data.connection, 'Content-Type').match(/json/)){
         stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
         if(data.params.callback){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
@@ -331,10 +332,10 @@ var initialize = function(api, options, next){
 
       server.sendMessage(data.connection, stringResponse);
     }
-  }
+  };
 
   var extractHeader = function(connection, match){
-    var i = connection.rawConnection.responseHeaders.length - 1
+    var i = connection.rawConnection.responseHeaders.length - 1;
     while(i >= 0){
       if(connection.rawConnection.responseHeaders[i][0].toLowerCase() === match.toLowerCase()){
         return connection.rawConnection.responseHeaders[i][1];
@@ -342,7 +343,7 @@ var initialize = function(api, options, next){
       i--;
     }
     return null;
-  }
+  };
 
   var respondToOptions = function(connection){
     if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] && !extractHeader(connection, 'Access-Control-Allow-Methods')){
@@ -354,20 +355,21 @@ var initialize = function(api, options, next){
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }
     server.sendMessage(connection, '');
-  }
+  };
 
-  var respondToTrace= function(connection){
+  var respondToTrace = function(connection){
     var data = buildRequesterInformation(connection);
     var stringResponse = JSON.stringify(data, null, api.config.servers.web.padding);
     server.sendMessage(connection, stringResponse);
-  }
+  };
 
   var determineRequestParams = function(connection, callback){
     // determine file or api request
     var requestMode = api.config.servers.web.rootEndpointType;
-    var pathname = connection.rawConnection.parsedURL.pathname
+    var pathname = connection.rawConnection.parsedURL.pathname;
     var pathParts = pathname.split('/');
-    var matcherLength, i;
+    var matcherLength;
+    var i;
     while(pathParts[0] === ''){ pathParts.shift(); }
     if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
 
@@ -375,20 +377,20 @@ var initialize = function(api, options, next){
       requestMode = 'api';
       pathParts.shift();
     }else if(pathParts[0] && pathParts[0] === api.config.servers.web.urlPathForFiles){
-      requestMode = 'file'
+      requestMode = 'file';
       pathParts.shift();
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0 ){
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForActions) === 0){
       requestMode = 'api';
       matcherLength = api.config.servers.web.urlPathForActions.split('/').length;
       for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
-    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0 ){
-      requestMode = 'file'
+    }else if(pathParts[0] && pathname.indexOf(api.config.servers.web.urlPathForFiles) === 0){
+      requestMode = 'file';
       matcherLength = api.config.servers.web.urlPathForFiles.split('/').length;
       for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
     }
 
     var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
-    if (extensionParts.length > 1){
+    if(extensionParts.length > 1){
       connection.extension = extensionParts[(extensionParts.length - 1)];
     }
 
@@ -416,11 +418,11 @@ var initialize = function(api, options, next){
         for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
-        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files) {
+        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files){
           if(err){
             server.log('error processing form: ' + String(err), 'error');
             connection.error = new Error('There was an error processing this form.');
-          } else {
+          }else{
             connection.rawConnection.params.body = fields;
             connection.rawConnection.params.files = files;
             fillParamsFromWebRequest(connection, files);
@@ -446,28 +448,27 @@ var initialize = function(api, options, next){
       if(connection.params.file === '' || connection.params.file[connection.params.file.length - 1] === '/'){
         connection.params.file = connection.params.file + api.config.general.directoryFileType;
       }
-      try {
+      try{
         connection.params.file = decodeURIComponent(connection.params.file);
-      }
-      catch(e) {
+      }catch(e){
         connection.error = new Error('There was an error decoding URI: ' + e);
       }
       callback(requestMode);
     }
 
-  }
+  };
 
   var fillParamsFromWebRequest = function(connection, varsHash){
     // helper for JSON posts
     var collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
     if(collapsedVarsHash !== false){
-      varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
+      varsHash = {payload: collapsedVarsHash}; // post was an array, lets call it "payload"
     }
 
     for(var v in varsHash){
       connection.params[v] = varsHash[v];
     }
-  }
+  };
 
   var buildRequesterInformation = function(connection){
     var requesterInformation = {
@@ -484,7 +485,7 @@ var initialize = function(api, options, next){
     }
 
     return requesterInformation;
-  }
+  };
 
   var cleanHeaders = function(connection){
     var originalHeaders = connection.rawConnection.responseHeaders.reverse();
@@ -493,17 +494,17 @@ var initialize = function(api, options, next){
     for(var i in originalHeaders){
       var key = originalHeaders[i][0];
       var value = originalHeaders[i][1];
-      if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0 ){
+      if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0){
         // ignore, it's a duplicate
-      } else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
+      }else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
         // ignore, we can't send this header for HEAD requests
-      } else {
+      }else{
         foundHeaders.push(key.toLowerCase());
         cleanedHeaders.push([key, value]);
       }
     }
     connection.rawConnection.responseHeaders = cleanedHeaders;
-  }
+  };
 
   var cleanSocket = function(bindIP, port){
     if(!bindIP && port.indexOf('/') >= 0){
@@ -515,16 +516,16 @@ var initialize = function(api, options, next){
         }
       });
     }
-  }
+  };
 
   var chmodSocket = function(bindIP, port){
     if(!options.bindIP && options.port.indexOf('/') >= 0){
       fs.chmodSync(port, 0777);
     }
-  }
+  };
 
   next(server);
-}
+};
 
 /////////////////////////////////////////////////////////////////////
 // exports

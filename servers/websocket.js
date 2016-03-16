@@ -1,4 +1,4 @@
-var primus              = require('primus');
+var Primus              = require('primus');
 var UglifyJS            = require('uglify-js');
 var fs                  = require('fs');
 var path                = require('path');
@@ -37,7 +37,7 @@ var initialize = function(api, options, next){
 
   server.start = function(next){
     var webserver = api.servers.servers.web;
-    server.server = new primus(webserver.server, api.config.servers.websocket.server);
+    server.server = new Primus(webserver.server, api.config.servers.websocket.server);
 
     server.server.on('connection', function(rawConnection){
       handleConnection(rawConnection);
@@ -57,7 +57,7 @@ var initialize = function(api, options, next){
 
   server.stop = function(next){
     server.active = false;
-    if( api.config.servers.websocket.destroyClientsOnShutdown === true ){
+    if(api.config.servers.websocket.destroyClientsOnShutdown === true){
       server.connections().forEach(function(connection){
         connection.destroy();
       });
@@ -90,7 +90,7 @@ var initialize = function(api, options, next){
 
     try{
       if(!error){
-        fileStream.on('data', function(d){ content+= d; });
+        fileStream.on('data', function(d){ content += d; });
         fileStream.on('end', function(){
           response.content = content;
           server.sendMessage(connection, response, connection.messageCount);
@@ -156,7 +156,7 @@ var initialize = function(api, options, next){
       '\r\n' +
       'exports.ActionheroClient = ActionheroClient; \r\n' +
       'exports.actionheroClient = actionheroClient; \r\n' +
-      '})(typeof exports === \'undefined\' ? window : exports);' ;
+      '})(typeof exports === \'undefined\' ? window : exports);';
     if(minimize){
       return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code;
     }else{
@@ -165,12 +165,12 @@ var initialize = function(api, options, next){
   };
 
   server.writeClientJS = function(){
-    if(!api.config.general.paths.public || api.config.general.paths.public.length === 0){
+    if(!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0){
       return;
     }
     if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
       var base = path.normalize(
-        api.config.general.paths.public[0] +
+        api.config.general.paths['public'][0] +
         path.sep +
         api.config.servers.websocket.clientJsPath +
         path.sep +
@@ -225,12 +225,12 @@ var initialize = function(api, options, next){
       connection.error = null;
       connection.response = {};
       server.processAction(connection);
-    } else if(verb === 'file'){
+    }else if(verb === 'file'){
       connection.params = {
         file: data.file
       };
       server.processFile(connection);
-    } else {
+    }else{
       var words = [];
       var message;
       if(data.room){
@@ -242,7 +242,7 @@ var initialize = function(api, options, next){
         if(!error){
           message = {status: 'OK', context: 'response', data: data};
           server.sendMessage(connection, message);
-        } else {
+        }else{
           message = {status: error, context: 'response', data: data};
           server.sendMessage(connection, message);
         }

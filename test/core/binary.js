@@ -6,11 +6,11 @@ var os      = require('os');
 var path    = require('path');
 var exec    = require('child_process').exec;
 var testDir = os.tmpdir() + path.sep + 'actionheroTestProject';
-var binary  = path.normalize(__dirname + '/../../bin/actionhero' );
+var binary  = path.normalize(__dirname + '/../../bin/actionhero');
 
 var doBash = function(commands, callback){
   var fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\'';
-  exec(fullCommand ,function(error, data){
+  exec(fullCommand, function(error, data){
     callback(error, data);
   });
 };
@@ -19,10 +19,10 @@ describe('Core: Binary', function(){
 
   if(process.platform === 'win32'){
     console.log('*** CANNOT RUN BINARY TESTS ON WINDOWS.  Sorry. ***');
-    }else{
+  }else{
 
     before(function(done){
-      var sourcePackage = path.normalize(__dirname + '/../../bin/templates/package.json' );
+      var sourcePackage = path.normalize(__dirname + '/../../bin/templates/package.json');
       var commands = [
         'rm -rf ' + testDir,
         'mkdir ' + testDir,
@@ -30,10 +30,10 @@ describe('Core: Binary', function(){
       ];
       doBash(commands, function(){
         var AHPath = path.normalize(__dirname + '/../..');
-        fs.readFile(testDir + '/package.json', 'utf8', function(err, data) {
+        fs.readFile(testDir + '/package.json', 'utf8', function(err, data){
           var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath);
-          fs.writeFile(testDir + '/package.json', result, 'utf8', function() {
-             done();
+          fs.writeFile(testDir + '/package.json', result, 'utf8', function(){
+            done();
           });
         });
       });
@@ -51,9 +51,9 @@ describe('Core: Binary', function(){
 
     it('can generate a new project', function(done){
       doBash([
-          'cd ' + testDir,
-          binary + ' generate'
-        ], function(err){
+        'cd ' + testDir,
+        binary + ' generate'
+      ], function(err){
         should.not.exist(err);
 
         [
@@ -125,7 +125,7 @@ describe('Core: Binary', function(){
         binary + ' generateAction --name=myAction --description=my_description'
       ], function(err){
         should.not.exist(err);
-        var data = String( fs.readFileSync(testDir + '/actions/myAction.js') );
+        var data = String(fs.readFileSync(testDir + '/actions/myAction.js'));
         data.should.containEql('name:                   \'myAction\'');
         data.should.containEql('description:            \'my_description\'');
         data.should.containEql('next(error);');
@@ -139,7 +139,7 @@ describe('Core: Binary', function(){
         binary + ' generateTask --name=myTask --description=my_description --queue=my_queue --frequency=12345'
       ], function(err){
         should.not.exist(err);
-        var data = String( fs.readFileSync(testDir + '/tasks/myTask.js') );
+        var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'));
         data.should.containEql('name:          \'myTask\'');
         data.should.containEql('description:   \'my_description\'');
         data.should.containEql('queue:         \'my_queue\'');
@@ -155,7 +155,7 @@ describe('Core: Binary', function(){
         binary + ' generateServer --name=myServer'
       ], function(err){
         should.not.exist(err);
-        var data = String( fs.readFileSync(testDir + '/servers/myServer.js') );
+        var data = String(fs.readFileSync(testDir + '/servers/myServer.js'));
         data.should.containEql('canChat: true');
         data.should.containEql('logConnections: true');
         data.should.containEql('logExits: true');
@@ -170,7 +170,7 @@ describe('Core: Binary', function(){
         binary + ' generateInitializer --name=myInitializer'
       ], function(err){
         should.not.exist(err);
-        var data = String( fs.readFileSync(testDir + '/initializers/myInitializer.js') );
+        var data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'));
         data.should.containEql('loadPriority:  1000');
         data.should.containEql('startPriority: 1000');
         data.should.containEql('stopPriority:  1000');
@@ -200,3 +200,4 @@ describe('Core: Binary', function(){
 
   }
 });
+

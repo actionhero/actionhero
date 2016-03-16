@@ -24,17 +24,17 @@ module.exports = {
       get: function(connection, callback, counter){
         var self = this;
         if(!counter){ counter = 0; }
-        if(!connection.params.file || !api.staticFile.searchPath(connection, counter) ){
+        if(!connection.params.file || !api.staticFile.searchPath(connection, counter)){
           self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
-        } else {
+        }else{
           var file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
           if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
-          } else {
+          }else{
             self.checkExistence(file, function(exists, truePath){
               if(exists){
                 self.sendFile(truePath, connection, callback);
-              } else {
+              }else{
                 api.staticFile.get(connection, callback, counter + 1);
               }
             });
@@ -47,13 +47,13 @@ module.exports = {
         var lastModified;
         fs.stat(file, function(err, stats){
           if(err){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)) , callback);
-          } else {
+            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)), callback);
+          }else{
             var mime = Mime.lookup(file);
             var length = stats.size;
             var fileStream = fs.createReadStream(file);
             var start = new Date().getTime();
-            lastModified=stats.mtime;
+            lastModified = stats.mtime;
             fileStream.on('close', function(){
               var duration = new Date().getTime() - start;
               self.logRequest(file, connection, length, duration, true);
@@ -77,22 +77,22 @@ module.exports = {
         fs.stat(file, function(err, stats){
           if(err){
             callback(false, file);
-          } else {
+          }else{
             if(stats.isDirectory()){
               var indexPath = file + '/' + api.config.general.directoryFileType;
               api.staticFile.checkExistence(indexPath, callback);
-            } else if(stats.isSymbolicLink()){
+            }else if(stats.isSymbolicLink()){
               fs.readLink(file, function(err, truePath){
                 if(err){
                   callback(false, file);
-                } else {
+                }else{
                   truePath = path.normalize(truePath);
                   api.staticFile.checkExistence(truePath, callback);
                 }
               });
-            } else if(stats.isFile()){
+            }else if(stats.isFile()){
               callback(true, file);
-            } else {
+            }else{
               callback(false, file);
             }
           }
@@ -113,24 +113,24 @@ module.exports = {
 
     // load in the explicit public paths first
     if(api.config.general.paths !== undefined){
-      api.config.general.paths.public.forEach(function(p){
-        api.staticFile.searchLoactions.push( path.normalize(p) );
+      api.config.general.paths['public'].forEach(function(p){
+        api.staticFile.searchLoactions.push(path.normalize(p));
       });
     }
 
     // source the .linked paths from plugins
     if(api.config.general.paths !== undefined){
-      api.config.general.paths.public.forEach(function(p){
+      api.config.general.paths['public'].forEach(function(p){
         var pluginPath = p + path.sep + 'plugins';
-        if( fs.existsSync(pluginPath) ){
+        if(fs.existsSync(pluginPath)){
           fs.readdirSync(pluginPath).forEach(function(file){
             var parts = file.split('.');
             var name = parts[0];
-            if( parts[(parts.length - 1)] === 'link' && fs.readFileSync(pluginPath + path.sep + file).toString() === 'public' ){
+            if(parts[(parts.length - 1)] === 'link' && fs.readFileSync(pluginPath + path.sep + file).toString() === 'public'){
               api.config.general.paths.plugin.forEach(function(potentialPluginPath){
                 potentialPluginPath = path.normalize(potentialPluginPath + path.sep + name + path.sep + 'public');
                 if(fs.existsSync(potentialPluginPath) && api.staticFile.searchLoactions.indexOf(potentialPluginPath) < 0){
-                  api.staticFile.searchLoactions.push( potentialPluginPath );
+                  api.staticFile.searchLoactions.push(potentialPluginPath);
                 }
               });
             }

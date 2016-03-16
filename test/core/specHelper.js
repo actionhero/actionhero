@@ -21,7 +21,7 @@ describe('Core: specHelper', function(){
   it('can make a requset with just params', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.a.Number;
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       done();
     });
   });
@@ -84,7 +84,7 @@ describe('Core: specHelper', function(){
 
     it('missing files', function(done){
       api.specHelper.getStaticFile('missing.html', function(data){
-        data.error.should.equal( 'That file is not found (missing.html)' );
+        data.error.should.equal('That file is not found (missing.html)');
         data.mime.should.equal('text/html');
         should.not.exist(data.content);
         done();

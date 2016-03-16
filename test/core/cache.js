@@ -31,7 +31,7 @@ describe('Core: Cache', function(){
   });
 
   it('cache.save', function(done){
-    api.cache.save('testKey','abc123',null,function(err, resp){
+    api.cache.save('testKey', 'abc123', null, function(err, resp){
       should.not.exist(err);
       resp.should.equal(true);
       done();
@@ -39,14 +39,14 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load', function(done){
-    api.cache.load('testKey',function(err, resp){
+    api.cache.load('testKey', function(err, resp){
       resp.should.equal('abc123');
       done();
     });
   });
 
   it('cache.load failures', function(done){
-    api.cache.load('something else',function(err, resp){
+    api.cache.load('something else', function(err, resp){
       String(err).should.equal('Error: Object not found');
       should.equal(null, resp);
       done();
@@ -54,21 +54,21 @@ describe('Core: Cache', function(){
   });
 
   it('cache.destroy', function(done){
-    api.cache.destroy('testKey',function(err, resp){
+    api.cache.destroy('testKey', function(err, resp){
       resp.should.equal(true);
       done();
     });
   });
 
   it('cache.destroy failure', function(done){
-    api.cache.destroy('testKey',function(err, resp){
+    api.cache.destroy('testKey', function(err, resp){
       resp.should.equal(false);
       done();
     });
   });
 
   it('cache.save with expire time', function(done){
-    api.cache.save('testKey','abc123',10,function(err, resp){
+    api.cache.save('testKey', 'abc123', 10, function(err, resp){
       resp.should.equal(true);
       done();
     });
@@ -145,11 +145,11 @@ describe('Core: Cache', function(){
                   should.equal(null, loadResp);
                   done();
                 });
-              },timeout);
+              }, timeout);
             });
-          },timeout);
+          }, timeout);
         });
-      },timeout);
+      }, timeout);
     });
   });
 
@@ -370,13 +370,13 @@ describe('Core: Cache', function(){
           // proxy for another actionhero instance accessing the same locked object
           api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected);
 
-          api.cache.checkLock(key, null, function(error, lockOk) {
+          api.cache.checkLock(key, null, function(error, lockOk){
             if(error){ return next(error); }
 
-            if (lockOk) {
+            if(lockOk){
               locksRetrieved++;
               api.cache.lock(key, (1000 * 60), next);
-            } else {
+            }else{
               locksRejected++;
               next();
             }
@@ -401,8 +401,8 @@ describe('Core: Cache', function(){
 
   describe('cache dump files', function(){
 
-    if (typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir; } // resolution for node v0.8.x
-    var file = os.tmpdir() + path.sep + "cacheDump";
+    if(typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir; } // resolution for node v0.8.x
+    var file = os.tmpdir() + path.sep + 'cacheDump';
 
     it('can read write the cache to a dump file', function(done){
       api.cache.clear(function(){

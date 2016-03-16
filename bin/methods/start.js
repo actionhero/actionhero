@@ -22,7 +22,7 @@ exports.start = function(binary, next){
       if(err){
         binary.log(err);
         process.exit(1);
-      } else {
+      }else{
         state = 'started';
         if(cluster.isWorker){ process.send({state: state}); }
         api = apiFromCallback;
@@ -56,7 +56,7 @@ exports.start = function(binary, next){
 
   var stopProcess = function(){
     setTimeout(function(){
-      throw new Error('process stop timeout reached.  terminating now.')
+      throw new Error('process stop timeout reached.  terminating now.');
     }, shutdownTimeout);
     // finalTimer.unref();
     stopServer(function(){

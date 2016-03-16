@@ -29,7 +29,7 @@ module.exports = {
         var parts = f.split(/[\/\\]+/);
         var server = parts[(parts.length - 1)].split('.')[0];
         if(api.config.servers[server] && api.config.servers[server].enabled === true){
-          inits[server] = require(f)['initialize'];
+          inits[server] = require(f).initialize;
         }
         api.watchFileAndAct(f, function(){
           api.log(['*** Rebooting due to server (%s) change ***', server], 'info');
@@ -51,7 +51,7 @@ module.exports = {
             if(started === 0){ next(); }
           });
         });
-      })(server);
+      }(server));
     }
     if(started === 0){ next(); }
   },
@@ -101,7 +101,7 @@ module.exports = {
             if(started === 0){ next(); }
           });
         }
-      })(server);
+      }(server));
     }
   }
 };

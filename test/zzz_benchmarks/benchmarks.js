@@ -11,7 +11,7 @@ var multiAction = function(action, count, params, next){
   while(i < count){
     started++;
     var theseParams = {};
-    for (var x in params){
+    for(var x in params){
       theseParams[x] = params[x];
       if(typeof theseParams[x] === 'function'){
         theseParams[x] = theseParams[x]();
