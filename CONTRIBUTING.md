@@ -1,5 +1,14 @@
 # Contributing
 
+## Testing
+
+Be sure that your changes pass the test suite!  Run `npm test` to run the full test suite.
+You will need redis and node.js installed.  No other external dependancies are needed.
+
+**Every contribution to the codebase should have an associated test**
+
+If you need help writing tests, please ask for help in the [chat room](https://gitter.im/evantahler/actionhero)
+
 ## Syntax-checking
 
 Spandex does not create much of it, but when it does, [true action
@@ -21,4 +30,3 @@ for the changes.
 
 NOTE: Currently, templates and actionhero client code throws few linting errors
 that'd be too hacky to work around in linting ruleset.
-
