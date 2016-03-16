@@ -30,7 +30,7 @@
 <ul>
 <li>tell a message to all members in a room.</li>
 <li>connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form <code class="prettyprint">{room: &quot;someOtherRoom}</code>.  mockConnections without an id will be assigned the id of 0</li>
-<li>The <code class="prettyprint">context</code> of messages sent with <code class="prettyprint">api.chatRoom.broadcast</code> always be <code class="prettyprint">user</code> to differentiate these responses from a <code class="prettyprint">response</code> to a request</li>
+<li>The <code class="prettyprint">context</code> of messages sent with <code class="prettyprint">api.chatRoom.broadcast</code> always be <code class="prettyprint">user</code> to differentiate these responses from a <code class="prettyprint">responsee</code> to a request</li>
 </ul>
 
 <h3 id="api-chatroom-add-room-callback">api.chatRoom.add(room, callback)</h3>
@@ -108,7 +108,7 @@
 
 <h2 id="middleware">Middleware</h2>
 
-<p>There are 4 types of middleware you can install for the chat system: <code class="prettyprint">say</code>, <code class="prettyprint">onSayReceive</code>, <code class="prettyprint">join</code>, and <code class="prettyprint">leave</code>.  You can learn more about <a href="/docs#chat-middleware">chat middleware in the middleware section of this document</a></p>
+<p>There are 4 types of middelware you can install for the chat system: <code class="prettyprint">say</code>, <code class="prettyprint">onSayReceive</code>, <code class="prettyprint">join</code>, and <code class="prettyprint">leave</code>.  You can learn more about <a href="/docs#chat-middleware">chat middleware in the middleware section of this document</a></p>
 
 <h2 id="chatting-to-specific-clients">Chatting to specific clients</h2>
 
