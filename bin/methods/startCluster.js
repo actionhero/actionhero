@@ -311,7 +311,7 @@ ActionHeroCluster.prototype.stop = function(callback){
 
 ActionHeroCluster.prototype.sortWorkers = function(){
   var self = this;
-  self.workers.sort(function(a, b){ return (a.id > b.id); });
+  self.workers.sort(function(a, b){ return (a.id - b.id); });
 };
 
 ActionHeroCluster.prototype.work = function(){
