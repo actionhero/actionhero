@@ -15,7 +15,7 @@ os:
   # - osx
   # - windows
 
-script: npm run-script test-travis
+script: npm run-script test:travis
 
 services:
   - redis-server
