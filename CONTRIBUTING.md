@@ -1,5 +1,8 @@
 # Contributing
 
+First, THANK YOU.  
+Actionhero would not be the success it is today without the contributions of [many people](https://github.com/evantahler/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use.
+
 ## Testing
 
 Be sure that your changes pass the test suite!  Run `npm test` to run the full test suite.
