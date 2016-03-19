@@ -241,6 +241,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 - Be sure to change `api.config.general.serverToken` to something unique for your application
 - Turn off [developer mode](/docs/#development-mode) in production.
+- Use `api.config.general.filteredParams` to hide sensitive information from the logs.  You probably don't want to log out `password`, `credit_card`, and other things of that nature.
 
 ### Topology
 
