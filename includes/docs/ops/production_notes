@@ -244,6 +244,7 @@ http <span class="o">{</span>
 <ul>
 <li>Be sure to change <code class="prettyprint">api.config.general.serverToken</code> to something unique for your application</li>
 <li>Turn off <a href="/docs/#development-mode">developer mode</a> in production.</li>
+<li>Use <code class="prettyprint">api.config.general.filteredParams</code> to hide sensitive information from the logs.  You probably don&rsquo;t want to log out <code class="prettyprint">password</code>, <code class="prettyprint">credit_card</code>, and other things of that nature.</li>
 </ul>
 
 <h3 id="topology">Topology</h3>
