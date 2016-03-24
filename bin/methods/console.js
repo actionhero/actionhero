@@ -1,3 +1,5 @@
+'use strict';
+
 var REPL = require('repl');
 
 exports.console = function(binary, next){

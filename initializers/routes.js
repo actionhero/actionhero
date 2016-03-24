@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   loadPriority:  500,
   initialize: function(api, next){

@@ -1,3 +1,5 @@
+'use strict';
+
 var NR = require('node-resque');
 
 module.exports = {

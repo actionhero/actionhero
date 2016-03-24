@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 
 exports.generateServer = function(binary, next){

@@ -1,3 +1,5 @@
+'use strict';
+
 // use me to include the files from a plugin within this project
 var path = require('path');
 var fs   = require('fs');

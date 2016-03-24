@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 
 exports.generateInitializer = function(binary, next){
