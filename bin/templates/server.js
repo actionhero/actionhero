@@ -1,3 +1,4 @@
+"use strict";
 var initialize = function(api, options, next){
 
   //////////
