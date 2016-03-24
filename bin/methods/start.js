@@ -1,3 +1,5 @@
+'use strict';
+
 var cluster = require('cluster');
 var readline = require('readline');
 var os = require('os');

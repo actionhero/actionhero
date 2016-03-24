@@ -1,3 +1,5 @@
+'use strict';
+
 var cluster = require('cluster');
 var path = require('path');
 var argv = require('optimist').argv;

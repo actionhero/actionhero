@@ -1,3 +1,5 @@
+'use strict';
+
 var i18n = require('i18n');
 var path = require('path');
 

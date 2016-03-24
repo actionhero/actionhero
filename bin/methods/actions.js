@@ -1,3 +1,5 @@
+'use strict';
+
 exports.actions = function(binary, next){
   var actionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
   var actionhero = new actionheroPrototype();
