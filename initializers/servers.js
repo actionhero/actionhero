@@ -64,7 +64,21 @@ module.exports = {
     for(var server in api.servers.servers){
       started++;
       if(api.config.servers[server] && api.config.servers[server].enabled === true){
-        api.log(['Starting server: %s', server], 'notice');
+        var message = '';
+        var messageArgs = [];
+        message += 'Starting server: `%s`';
+        messageArgs.push(server);
+        if(api.config.servers[server].bindIP){
+          message += ' @ %s';
+          messageArgs.push(api.config.servers[server].bindIP);
+        }
+        if(api.config.servers[server].port){
+          message += ':%s';
+          messageArgs.push(api.config.servers[server].port);
+        }
+
+        api.log([message].concat(messageArgs), 'notice');
+        
         api.servers.servers[server].start(function(error){
           if(error){ return next(error); }
           process.nextTick(function(){
