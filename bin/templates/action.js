@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 exports.action = {
   name:                   '%%name%%',
   description:            '%%description%%',

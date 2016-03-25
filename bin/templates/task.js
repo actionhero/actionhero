@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 exports.task = {
   name:          '%%name%%',
   description:   '%%description%%',
