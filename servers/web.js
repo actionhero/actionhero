@@ -221,7 +221,9 @@ var initialize = function(api, options, next){
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8']);
 
       for(i in api.config.servers.web.httpHeaders){
-        responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
+        if(api.config.servers.web.httpHeaders[i]){
+          responseHeaders.push([i, api.config.servers.web.httpHeaders[i]]);
+        }
       }
 
       var remoteIP = req.connection.remoteAddress;
