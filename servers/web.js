@@ -348,7 +348,6 @@ var initialize = function(api, options, next){
   };
 
   var respondToOptions = function(connection){
-    console.log(api.config.servers.web.httpHeaders)
     if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] && !extractHeader(connection, 'Access-Control-Allow-Methods')){
       var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
