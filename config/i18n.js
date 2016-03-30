@@ -31,7 +31,7 @@ exports.staging = {
   }
 };
 
-exports.procution = {
+exports.production = {
   i18n: function(){
     return {
       updateFiles: false
