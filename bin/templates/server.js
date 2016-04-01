@@ -1,6 +1,7 @@
+
 'use strict';
 
-var initialize = function(api, options, next){
+var initialize = function(api, options, next) {
 
   //////////
   // INIT //
@@ -22,23 +23,23 @@ var initialize = function(api, options, next){
   // REQUIRED METHODS //
   //////////////////////
 
-  server.start = function(next){
+  server.start = function(next) {
     next();
   };
 
-  server.stop = function(next){
+  server.stop = function(next) {
     next();
   };
 
-  server.sendMessage = function(connection, message, messageCount){
+  server.sendMessage = function(connection, message, messageCount) {
 
   };
 
-  server.sendFile = function(connection, error, fileStream, mime, length){
+  server.sendFile = function(connection, error, fileStream, mime, length) {
 
   };
 
-  server.goodbye = function(connection, reason){
+  server.goodbye = function(connection, reason) {
 
   };
 
@@ -46,11 +47,11 @@ var initialize = function(api, options, next){
   // EVENTS //
   ////////////
 
-  server.on('connection', function(connection){
+  server.on('connection', function(connection) {
 
   });
 
-  server.on('actionComplete', function(data){
+  server.on('actionComplete', function(data) {
 
   });
 

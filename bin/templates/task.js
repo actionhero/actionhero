@@ -1,3 +1,4 @@
+
 'use strict';
 
 exports.task = {
@@ -8,7 +9,7 @@ exports.task = {
   plugins:       [],
   pluginOptions: {},
 
-  run: function(api, params, next){
+  run: function(api, params, next) {
     // your logic here');
     next();
   }
