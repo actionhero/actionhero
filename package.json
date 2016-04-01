@@ -68,6 +68,7 @@
     "start": "node ./bin/actionhero",
     "site": "cd site && EXECJS_RUNTIME=Node bundle exec middleman",
     "site:publish": "cd site && ./deploy.sh",
-    "postpublish": "npm run-script site:publish"
+    "postpublish": "npm run-script site:publish",
+    "lint": "eslint ."
   }
 }

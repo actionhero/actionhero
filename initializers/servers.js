@@ -78,7 +78,7 @@ module.exports = {
         }
 
         api.log([message].concat(messageArgs), 'notice');
-        
+
         api.servers.servers[server].start(function(error){
           if(error){ return next(error); }
           process.nextTick(function(){

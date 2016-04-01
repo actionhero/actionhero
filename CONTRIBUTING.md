@@ -27,6 +27,8 @@ too, and here's a list of few select plugins for your convenience:
 - [Sublime Text plugin](https://github.com/roadhump/SublimeLinter-eslint)
 - [generic syntax-checking Vim plugin](https://github.com/scrooloose/syntastic)
 
+It's easy to check that you got it right even without plugin - just run `npm run lint`!
+
 *Person who does not change is a monument of itself*, so, be not afraid of
 improving the ruleset, but do run through the entirety of the codebase to adjust
 for the changes.
