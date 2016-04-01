@@ -1,3 +1,4 @@
+
 'use strict';
 
 exports.action = {
@@ -12,8 +13,8 @@ exports.action = {
 
   inputs: {},
 
-  run: function(api, data, next){
-    var error = null;
+  run: function(api, data, next) {
+    let error = null;
     // your logic here
     next(error);
   }
