@@ -49,7 +49,7 @@ exports.link = function(binary, next){
       var file = dir + path.sep + pluginConfigFile;
       var stats = fs.lstatSync(file);
       if(stats.isDirectory()){
-        makeLinks(file, (path.sep + pluginConfigFile + path.sep));
+        makeLinks(file, (prepend + path.sep + pluginConfigFile + path.sep));
       }else{
         var content = fs.readFileSync(file);
         var fileParts = pluginConfigFile.split(path.sep);
