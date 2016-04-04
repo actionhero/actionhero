@@ -42,19 +42,28 @@ exports.link = function(binary, next){
     }
   });
 
+  var copyFiles = function(dir, prepend){
+    if(!prepend){ prepend = ''; }
+
+    fs.readdirSync(dir).forEach(function(pluginConfigFile){
+      var file = dir + path.sep + pluginConfigFile;
+      var stats = fs.lstatSync(file);
+      if(stats.isDirectory()){
+        copyFiles(file, (prepend + path.sep + pluginConfigFile + path.sep));
+      }else{
+        var content = fs.readFileSync(file);
+        var fileParts = pluginConfigFile.split(path.sep);
+        var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + prepend + fileParts[(fileParts.length - 1)];
+        if(process.env.ACTIONHERO_CONFIG){
+          localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + prepend + fileParts[(fileParts.length - 1)];
+        }
+        binary.utils.createFileSafely(localConfigFile, content);
+      }
+    });
+  };
+
   // copy config files
   var pluginConfigDir = pluginRoot + path.sep + 'config';
-  if(binary.utils.dirExists(pluginConfigDir)){
-    fs.readdirSync(pluginConfigDir).forEach(function(pluginConfigFile){
-      var content = fs.readFileSync(pluginConfigDir + path.sep + pluginConfigFile);
-      var fileParts = pluginConfigFile.split(path.sep);
-      var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + fileParts[(fileParts.length - 1)];
-      if(process.env.ACTIONHERO_CONFIG){
-        localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + fileParts[(fileParts.length - 1)];
-      }
-      binary.utils.createFileSafely(localConfigFile, content);
-    });
-  }
-
+  copyFiles(pluginConfigDir);
   next(true);
 };
