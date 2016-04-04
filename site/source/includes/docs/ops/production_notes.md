@@ -14,7 +14,7 @@
 exports.production = {
     tasks: function(api){
 
-        // defualt to config for 'server'
+        // default to config for 'server'
         var config = {
           scheduler: false,
           queues: ['*'],

@@ -111,7 +111,7 @@ var ActionHeroCluster = function(args){
   self.workersToRestart = [];
   self.flapCount = 0;
 
-  self.options = self.defualts();
+  self.options = self.defaults();
   for(var i in self.options){
     if(args[i] !== null && args[i] !== undefined){
       self.options[i] = args[i];
@@ -139,7 +139,7 @@ var ActionHeroCluster = function(args){
   });
 };
 
-ActionHeroCluster.prototype.defualts = function(){
+ActionHeroCluster.prototype.defaults = function(){
   return {
     stopTimeout: 3000,
     expectedWorkers: os.cpus().length,

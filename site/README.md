@@ -28,9 +28,9 @@ You will need ruby installed locally and the `github-pages` gem
 
 ## Deploy the code
 
-Open a pull requset to the `master` branch with your changes in the `site` folder.  
+Open a pull request to the `master` branch with your changes in the `site` folder.  
 
-From there, we'll build the `gh-pages` branch out of master (see `pubish.sh` in this directory), and deploy the site.  GitHub pages will automatically build the site for us uppon push.  This is also triggered via `npm postpublish` => `npm run build-gh-pages` which will ensure that on every release of this package, the documenation site is up to date!
+From there, we'll build the `gh-pages` branch out of master (see `deploy.sh` in this directory), and deploy the site.  GitHub pages will automatically build the site for us upon push.  This is also triggered via `npm postpublish` => `npm run build-gh-pages` which will ensure that on every release of this package, the documenation site is up to date!
 
 ## Thanks
 
