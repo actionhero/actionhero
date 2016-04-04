@@ -4,7 +4,7 @@ Initializers are the main way you expand your actionhero server.  This is where 
 
 Initializers run in 3 phases coinciding with the lifecycles of the application: `init`, `start`, and `stop`.  All `init` steps happen before all `start` steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle.
 
-System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priroity level split is purely convention.
+System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priority level split is purely convention.
 
 In general, `initialize()` methods should create prototypes and new objects, and `start()` should boot things or connect to external resources.
 

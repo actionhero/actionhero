@@ -98,7 +98,7 @@ readme.md
 package.json (be sure to include 'actionhero':'x')
 ```
 
-The map to the left describes actionhero's default project layout.
+The map to the right describes actionhero's default project layout.
 
 Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`.
 

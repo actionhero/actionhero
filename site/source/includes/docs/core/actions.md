@@ -210,7 +210,7 @@ The methods `default`, `formatter`, and `validator` have the api object set as `
 
 The methods are applied in this order:
 
-  - `defualt()`
+  - `default()`
   - `formatter()`
   - `validator()`
   - `required()`
@@ -220,7 +220,7 @@ Here's an example...
 ```javascript
 moneyInCents: {
   required:  true,
-  defualt:   function(p){ return 0; },
+  default:   function(p){ return 0; },
   formatter: function(p){ return parseFloat(p); },
   validator: function(p){
     if(isNaN(parseFloat(p)){ return new Error('not a number'); }
@@ -235,8 +235,8 @@ moneyInCents: {
 - If moneyInCents = `4`       => (4 => 4 => 400 => ok)
 - If moneyInCents = `"4"`     => ("4" => 4 => 400 => ok)
 - If moneyInCents = `"-4"`    => ("-4" => -4 => -400 => Error('money cannot be negative'))
-- If moneyInCents = `""`      => 0 (defualt value)
-- If moneyInCents = `null`    => 0 (defualt value)
+- If moneyInCents = `""`      => 0 (default value)
+- If moneyInCents = `null`    => 0 (default value)
 - If moneyInCents = `"hello"` => Error('not a number')
 
 
