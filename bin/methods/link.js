@@ -42,14 +42,14 @@ exports.link = function(binary, next){
     }
   });
 
-  var makeLinks = function(dir, prepend){
+  var copyFiles = function(dir, prepend){
     if(!prepend){ prepend = ''; }
 
     fs.readdirSync(dir).forEach(function(pluginConfigFile){
       var file = dir + path.sep + pluginConfigFile;
       var stats = fs.lstatSync(file);
       if(stats.isDirectory()){
-        makeLinks(file, (prepend + path.sep + pluginConfigFile + path.sep));
+        copyFiles(file, (prepend + path.sep + pluginConfigFile + path.sep));
       }else{
         var content = fs.readFileSync(file);
         var fileParts = pluginConfigFile.split(path.sep);
@@ -64,6 +64,6 @@ exports.link = function(binary, next){
 
   // copy config files
   var pluginConfigDir = pluginRoot + path.sep + 'config';
-  makeLinks(pluginConfigDir);
+  copyFiles(pluginConfigDir);
   next(true);
 };
