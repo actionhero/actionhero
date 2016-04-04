@@ -12,7 +12,7 @@
 <span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
 
-        <span class="c1">// defualt to config for 'server'</span>
+        <span class="c1">// default to config for 'server'</span>
         <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
           <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
           <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>

@@ -263,7 +263,7 @@ readme.md
 package.json <span class="o">(</span>be sure to include <span class="s1">'actionhero'</span>:<span class="s1">'x'</span><span class="o">)</span>
 </code></pre>
 
-<p>The map to the left describes actionhero&rsquo;s default project layout.</p>
+<p>The map to the right describes actionhero&rsquo;s default project layout.</p>
 
 <p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>.</p>
 
@@ -508,7 +508,7 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 <p>The methods are applied in this order:</p>
 
 <ul>
-<li><code class="prettyprint">defualt()</code></li>
+<li><code class="prettyprint">default()</code></li>
 <li><code class="prettyprint">formatter()</code></li>
 <li><code class="prettyprint">validator()</code></li>
 <li><code class="prettyprint">required()</code></li>
@@ -517,7 +517,7 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 <p>Here&rsquo;s an example&hellip;</p>
 <pre class="highlight javascript"><code><span class="nx">moneyInCents</span><span class="err">:</span> <span class="p">{</span>
   <span class="nl">required</span><span class="p">:</span>  <span class="kc">true</span><span class="p">,</span>
-  <span class="nx">defualt</span><span class="err">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">},</span>
+  <span class="k">default</span><span class="err">:</span>   <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">},</span>
   <span class="nx">formatter</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span> <span class="k">return</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span> <span class="p">},</span>
   <span class="nx">validator</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">){</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">p</span><span class="p">)){</span> <span class="k">return</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'not a number'</span><span class="p">);</span> <span class="p">}</span>
@@ -533,8 +533,8 @@ package.json <span class="o">(</span>be sure to include <span class="s1">'action
 <li>If moneyInCents = <code class="prettyprint">4</code>       =&gt; (4 =&gt; 4 =&gt; 400 =&gt; ok)</li>
 <li>If moneyInCents = <code class="prettyprint">&quot;4&quot;</code>     =&gt; (&ldquo;4&rdquo; =&gt; 4 =&gt; 400 =&gt; ok)</li>
 <li>If moneyInCents = <code class="prettyprint">&quot;-4&quot;</code>    =&gt; (&ldquo;-4&rdquo; =&gt; -4 =&gt; -400 =&gt; Error(&lsquo;money cannot be negative&rsquo;))</li>
-<li>If moneyInCents = <code class="prettyprint">&quot;&quot;</code>      =&gt; 0 (defualt value)</li>
-<li>If moneyInCents = <code class="prettyprint">null</code>    =&gt; 0 (defualt value)</li>
+<li>If moneyInCents = <code class="prettyprint">&quot;&quot;</code>      =&gt; 0 (default value)</li>
+<li>If moneyInCents = <code class="prettyprint">null</code>    =&gt; 0 (default value)</li>
 <li>If moneyInCents = <code class="prettyprint">&quot;hello&quot;</code> =&gt; Error(&#39;not a number&rsquo;)</li>
 </ul>
 
@@ -1139,7 +1139,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <p>Initializers run in 3 phases coinciding with the lifecycles of the application: <code class="prettyprint">init</code>, <code class="prettyprint">start</code>, and <code class="prettyprint">stop</code>.  All <code class="prettyprint">init</code> steps happen before all <code class="prettyprint">start</code> steps.  Initializers can define both methods and priorities which will happen at each phase of the server&rsquo;s lifecycle.</p>
 
-<p>System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priroity level split is purely convention.</p>
+<p>System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priority level split is purely convention.</p>
 
 <p>In general, <code class="prettyprint">initialize()</code> methods should create prototypes and new objects, and <code class="prettyprint">start()</code> should boot things or connect to external resources.</p>
 
@@ -3402,7 +3402,7 @@ randomNumber
 <span class="nx">exports</span><span class="p">.</span><span class="nx">production</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">tasks</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">api</span><span class="p">){</span>
 
-        <span class="c1">// defualt to config for 'server'</span>
+        <span class="c1">// default to config for 'server'</span>
         <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
           <span class="na">scheduler</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
           <span class="na">queues</span><span class="p">:</span> <span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>

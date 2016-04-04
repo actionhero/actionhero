@@ -96,7 +96,7 @@ readme.md
 package.json <span class="o">(</span>be sure to include <span class="s1">'actionhero'</span>:<span class="s1">'x'</span><span class="o">)</span>
 </code></pre>
 
-<p>The map to the left describes actionhero&rsquo;s default project layout.</p>
+<p>The map to the right describes actionhero&rsquo;s default project layout.</p>
 
 <p>Actions in <code class="prettyprint">/actions</code> will be loaded in automatically, along <code class="prettyprint">/initializers</code> and <code class="prettyprint">/tasks</code>.</p>
 
