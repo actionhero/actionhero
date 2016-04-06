@@ -64,7 +64,7 @@ If you want to communicate with a websocket client outside of an action, you can
 Methods which the provided actionheroWebSocket object expose are:
 
 ### client.connect(callback)
-  - `callback` will contain (error, detauils)
+  - `callback` will contain (error, details)
   - details here is the same as the `detailsView` method
 
 ### client.action(action, params, callback)
