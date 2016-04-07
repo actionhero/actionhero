@@ -496,4 +496,4 @@ client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
 </script>
 ```
 
-Note that we never called `client.connect`.  More information can be found on the [websocket server docs page](/docsdocs#websocket-server).
+Note that we never called `client.connect`.  More information can be found on the [websocket server docs page](/docs#websocket-server).
