@@ -30,7 +30,7 @@ You can create you own actions by placing them in a `./actions/` folder at the r
 
 Here's an example of a simple action which will return a random number to the client:
 
-You can also define more than one action per file if you would like, to share common methods and componants (like input parsers):
+You can also define more than one action per file if you would like, to share common methods and components (like input parsers):
 
 ```javascript
 
