@@ -67,7 +67,7 @@ actionhero also uses redis to allow for pub/sub communication between nodes.
 You can broadcast and receive messages from other peers in the cluster:
 
 ### api.redis.publish(payload)
-- paylaod must contain:
+- payload must contain:
   - `messageType`  : '{the name of your payload type}',
   - `serverId`     : api.id,
   - `serverToken`  : api.config.general.serverToken,
