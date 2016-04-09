@@ -473,4 +473,4 @@ In this case, we set the array to the param key <code class="prettyprint">payloa
 <span class="nt">&lt;/script&gt;</span>
 </code></pre>
 
-<p>Note that we never called <code class="prettyprint">client.connect</code>.  More information can be found on the <a href="/docsdocs#websocket-server">websocket server docs page</a>.</p>
+<p>Note that we never called <code class="prettyprint">client.connect</code>.  More information can be found on the <a href="/docs#websocket-server">websocket server docs page</a>.</p>
