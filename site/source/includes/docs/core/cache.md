@@ -12,9 +12,9 @@ The cache's redis server is defined by `api.config.redis`.  Note that if `api.co
 
 * Invoke: `api.cache.save(key, value, expireTimeMS, next)`
 	* `expireTimeMS` can be null if you never want the object to expire
-* Callback: `next(error, new)`
+* Callback: `next(error, newObject)`
 	* `error` will be null unless the object can't be saved (perhaps out of ram or a bad object type).
-	* overwriting an existing object will return `new = true`
+	* overwriting an existing object will return `newObject = true`
 
 `api.cache.save` is used to both create new entires or update existing cache entires.  If you don't define an expireTimeMS, `null` will be assumed, and using `null` will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)
 
