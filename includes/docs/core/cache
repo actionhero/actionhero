@@ -16,11 +16,11 @@
 <ul>
 <li><code class="prettyprint">expireTimeMS</code> can be null if you never want the object to expire</li>
 </ul></li>
-<li>Callback: <code class="prettyprint">next(error, new)</code>
+<li>Callback: <code class="prettyprint">next(error, newObject)</code>
 
 <ul>
 <li><code class="prettyprint">error</code> will be null unless the object can&rsquo;t be saved (perhaps out of ram or a bad object type).</li>
-<li>overwriting an existing object will return <code class="prettyprint">new = true</code></li>
+<li>overwriting an existing object will return <code class="prettyprint">newObject = true</code></li>
 </ul></li>
 </ul>
 
