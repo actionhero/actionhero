@@ -279,6 +279,45 @@ http <span class="o">{</span>
 <li>Use redis-cluster or redis-sentinel.  The <a href="https://github.com/luin/ioredis"><code class="prettyprint">ioredis</code></a> redis library has support for them by default.  This allows you to have a High Availability redis configuration.</li>
 </ul>
 
+<h3 id="crashing-and-safety">Crashing and Safety</h3>
+<pre class="highlight shell"><code><span class="gp">&gt; </span>./node_modules./bin/actionhero startCluster --workers 1
+2016-04-11T18:51:32.891Z - info: actionhero &gt;&gt; startCluster
+2016-04-11T18:51:32.904Z - notice:  - STARTING CLUSTER -
+2016-04-11T18:51:32.905Z - notice: pid: 43315
+2016-04-11T18:51:32.911Z - info: starting worker <span class="c">#1</span>
+2016-04-11T18:51:33.097Z - info: <span class="o">[</span>worker <span class="c">#1 (43316)]: starting</span>
+2016-04-11T18:51:33.984Z - info: <span class="o">[</span>worker <span class="c">#1 (43316)]: started</span>
+2016-04-11T18:51:33.985Z - notice: cluster equilibrium state reached with 1 workers
+2016-04-11T18:51:44.775Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]: uncaught exception =&gt; yay is not defined</span>
+2016-04-11T18:51:44.775Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:    ReferenceError: yay is not defined</span>
+2016-04-11T18:51:44.775Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at Object.exports.action.run (/Users/evantahler/Dropbox/Projects/actionhero/actions/bad.js:14:5)</span>
+2016-04-11T18:51:44.775Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:268:31</span>
+2016-04-11T18:51:44.775Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:149:9</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:726:13</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:52:16</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at iterate (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:260:24)</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at async.forEachOfSeries.async.eachOfSeries (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:281:9)</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at _parallel (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:717:9)</span>
+2016-04-11T18:51:44.776Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at Object.async.series (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:739:9)</span>
+2016-04-11T18:51:44.777Z - alert: <span class="o">[</span>worker <span class="c">#1 (43316)]:        at api.actionProcessor.preProcessAction (/Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:148:13)</span>
+2016-04-11T18:51:44.777Z - notice: cluster equilibrium state reached with 1 workers
+2016-04-11T18:51:44.785Z - info: <span class="o">[</span>worker <span class="c">#1 (43316)]: exited</span>
+2016-04-11T18:51:44.785Z - info: starting worker <span class="c">#1</span>
+2016-04-11T18:51:44.960Z - info: <span class="o">[</span>worker <span class="c">#1 (43323)]: starting</span>
+2016-04-11T18:51:45.827Z - info: <span class="o">[</span>worker <span class="c">#1 (43323)]: started</span>
+2016-04-11T18:51:45.827Z - notice: cluster equilibrium state reached with 1 workers
+</code></pre>
+
+<ul>
+<li>Let the app crash rather than being defensive prematurely.  Actionhero has a good logger, and if you are running within <code class="prettyprint">startCluster</code> mode, your server will be restarted.  It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.<br></li>
+<li>We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (<code class="prettyprint">startCluster</code>) to handle error logging.  Domains are deprecated in node.js now for the same reasons we discuss here.
+
+<ul>
+<li>For example, if you timeout connections that are taking too long, what are you going to do about the database connection it was running?  Will you roll it back?  What about the other clients using the same connection pool?  How can you be sure which connection in the mySQL pool was in use?  Rather than handle all these edge cases&hellip; just let your app crash, log, and reboot.<br></li>
+</ul></li>
+<li>As noted above, centralized logging (Splunk et al) will be invaluable here.  You can can also employ a tool like <a href="https://bugsnag.com">BugSnag</a> to collect and correlate errors.</li>
+</ul>
+
 <h3 id="actions">Actions</h3>
 
 <ul>
