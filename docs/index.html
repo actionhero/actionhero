@@ -989,6 +989,22 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 <li>Connection</li>
 <li>Chat</li>
 </ul>
+<pre class="highlight shell"><code><span class="gp">&gt; </span>Client Connects
+<span class="c">#     connection middleware, `create` hook</span>
+<span class="gp">&gt; </span>Client requests an action
+<span class="c">#     action middleware, `preProcessor` hook</span>
+<span class="c">#     action middleware, `postProcessor` hook</span>
+<span class="gp">&gt; </span>Client joins a room
+<span class="c">#     chat middleware, `join` hook</span>
+<span class="gp">&gt; </span>Client says a message <span class="k">in </span>a room
+<span class="c">#     chat middleware, `say` hook</span>
+<span class="c">#     chat middleware, `onSayReceive` hook</span>
+<span class="gp">&gt; </span>Client requests a disconnect <span class="o">(</span>quit<span class="o">)</span>
+<span class="c">#     chat middleware, `leave` hook</span>
+<span class="c">#     connection middleware, `destroy` hook</span>
+</code></pre>
+
+<p>Each type of middleware is distinct from the others, and operates on distinct parts of a client&rsquo;s lifecycle.  For a logical example, please inspect the following connection lifecycle:</p>
 
 <h2 id="action-request-flow">Action Request Flow</h2>
 
