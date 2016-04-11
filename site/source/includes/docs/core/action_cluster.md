@@ -4,7 +4,7 @@
 
 actionhero can be run either as a solitary server or as part of a cluster.  The goal of these cluster helpers is to allow you to create a group of servers which will share state and each be able to handle requests and run tasks.  You can add or remove nodes from the cluster without fear of data loss or task duplication.  You can also run many instances of actionhero on the same server using node.js' cluster methods (`actionhero startCluster`), which you [can learn more about here](/docs#production-notes).
 
-Cluster instances are named sequentially, starting with actionhero-worker-1, and can be retrived from 'api.id'.
+Cluster instances are named sequentially, starting with actionhero-worker-1, and can be retrived from 'api.id'. Logs and PID's, as well as other instance-specific information follow this pattern as well.
 
 ## Cache
 
