@@ -6,6 +6,24 @@ There are 3 types of middleware in actionhero:
 - Connection
 - Chat
 
+```bash
+> Client Connects
+#     connection middleware, `create` hook
+> Client requests an action
+#     action middleware, `preProcessor` hook
+#     action middleware, `postProcessor` hook
+> Client joins a room
+#     chat middleware, `join` hook
+> Client says a message in a room
+#     chat middleware, `say` hook
+#     chat middleware, `onSayReceive` hook
+> Client requests a disconnect (quit)
+#     chat middleware, `leave` hook
+#     connection middleware, `destroy` hook
+```
+
+Each type of middleware is distinct from the others, and operates on distinct parts of a client's lifecycle.  For a logical example, please inspect the following connection lifecycle:
+
 ## Action Request Flow
 
 <img src="/images/connection_flow.png" />
