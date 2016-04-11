@@ -261,6 +261,42 @@ As ActionHero is a framework, much of the work for keeping your application secu
 - Use a CDN. Actionhero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.
 - Use redis-cluster or redis-sentinel.  The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default.  This allows you to have a High Availability redis configuration.
 
+### Crashing and Safety
+
+```bash
+> ./node_modules./bin/actionhero startCluster --workers 1
+2016-04-11T18:51:32.891Z - info: actionhero >> startCluster
+2016-04-11T18:51:32.904Z - notice:  - STARTING CLUSTER -
+2016-04-11T18:51:32.905Z - notice: pid: 43315
+2016-04-11T18:51:32.911Z - info: starting worker #1
+2016-04-11T18:51:33.097Z - info: [worker #1 (43316)]: starting
+2016-04-11T18:51:33.984Z - info: [worker #1 (43316)]: started
+2016-04-11T18:51:33.985Z - notice: cluster equilibrium state reached with 1 workers
+2016-04-11T18:51:44.775Z - alert: [worker #1 (43316)]: uncaught exception => yay is not defined
+2016-04-11T18:51:44.775Z - alert: [worker #1 (43316)]:    ReferenceError: yay is not defined
+2016-04-11T18:51:44.775Z - alert: [worker #1 (43316)]:        at Object.exports.action.run (/Users/evantahler/Dropbox/Projects/actionhero/actions/bad.js:14:5)
+2016-04-11T18:51:44.775Z - alert: [worker #1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:268:31
+2016-04-11T18:51:44.775Z - alert: [worker #1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:149:9
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:726:13
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at /Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:52:16
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at iterate (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:260:24)
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at async.forEachOfSeries.async.eachOfSeries (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:281:9)
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at _parallel (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:717:9)
+2016-04-11T18:51:44.776Z - alert: [worker #1 (43316)]:        at Object.async.series (/Users/evantahler/Dropbox/Projects/actionhero/node_modules/async/lib/async.js:739:9)
+2016-04-11T18:51:44.777Z - alert: [worker #1 (43316)]:        at api.actionProcessor.preProcessAction (/Users/evantahler/Dropbox/Projects/actionhero/initializers/actionProcessor.js:148:13)
+2016-04-11T18:51:44.777Z - notice: cluster equilibrium state reached with 1 workers
+2016-04-11T18:51:44.785Z - info: [worker #1 (43316)]: exited
+2016-04-11T18:51:44.785Z - info: starting worker #1
+2016-04-11T18:51:44.960Z - info: [worker #1 (43323)]: starting
+2016-04-11T18:51:45.827Z - info: [worker #1 (43323)]: started
+2016-04-11T18:51:45.827Z - notice: cluster equilibrium state reached with 1 workers
+```
+
+- Let the app crash rather than being defensive prematurely.  Actionhero has a good logger, and if you are running within `startCluster` mode, your server will be restarted.  It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.  
+- We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`startCluster`) to handle error logging.  Domains are deprecated in node.js now for the same reasons we discuss here.
+  - For example, if you timeout connections that are taking too long, what are you going to do about the database connection it was running?  Will you roll it back?  What about the other clients using the same connection pool?  How can you be sure which connection in the mySQL pool was in use?  Rather than handle all these edge cases... just let your app crash, log, and reboot.  
+- As noted above, centralized logging (Splunk et al) will be invaluable here.  You can can also employ a tool like [BugSnag](https://bugsnag.com) to collect and correlate errors.
+
 ### Actions
 
 - Remember that all params which come in via the `web` and `socket` servers are `String`s.  If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/#inputs) step.
