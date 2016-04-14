@@ -232,6 +232,30 @@ Here is an example nginx config for interfacing with actionhero, including using
 - Note the proxy-pass format to the socket: proxy_pass http://unix:/path/to/socket
 - Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)
 
+## Redis High-availability Configurations
+
+[Redis](http://redis.io/) is technically optional in ActionHero environments, but you will need it if you want to coordinates tasks across a cluster of workers, handle group chat mechanics between WebSocket clients, or do other cross-cluster operations.  In those cases, you'll want your Redis setup to be reliable.  There are 2 methods to achieving HA redis: Sentinels and Cluster.  A simple architectural wireframe of how to deploy the various options is below  The [`ioredis`](https://github.com/luin/ioredis) node package supports both of these connection schemes, and all you need to change is your connection options.
+
+![/images/redis.png](/images/redis.png)
+
+### Sentinel Mode
+
+In Sentinel mode, you have your Redis configured in a normal master->slave configuration. However, rather than hard-code your application to know who the master and slaves are, your application connects to the Sentinel processes instead. These Sentinels transparently pipeline your connection to the proper Redis master, and they do this invisibly to ActionHero / your application.
+
+The biggest advantage to this configuration is high-availability. In the event of a master failure, the Sentinel processes reach a consensus, then elect a new master automatically. Since the same process which handles master election also manages the client connections, no requests are lost - the sentinels hold the connection idle and then replay any pending requests on the new master after election. In the configuration shown in the first diagram above, up to 2 Redis data nodes and any 1 Sentinel can fail without the entire system failing.
+
+Note that it is not necessary to run the Sentinel nodes on separate servers. They can be run as parallel processes on the Redis nodes themselves.
+
+To run this configuration, configure ioredis with a list of the Sentinel nodes and the name of the cluster. The driver will automatically connect to an appropriate Sentinel in round-robin fashion, reconnecting to another node if one is down, or fails.
+
+### Cluster Mode
+
+In Cluster mode, Redis shards all the keys in data into "slots" which are evenly allocated though all the masters in the cluster. The client can connect to any node in the cluster, and if the requested key belongs on another node, it will proxy the request for you (just like the Sentinel would). The cluster can also take care of master re-election for each shard in the event of a master node failure.
+
+Cluster mode provides similar high-availability to Sentinel mode, but the sharding allows more data to be stored in the cluster overall. However, where Sentinel mode requires a minimum of 3 servers, Cluster mode requires a minimum of 6 to reach a quorom and provide full redundancy.
+
+Also an important note:  while you may opt to run “sentinel processes”, it’s the same codebase as regular redis, just running in “sentinel mode”.  The same goes if you run redis in “cluster mode”.
+
 
 ## Best Practices
 
