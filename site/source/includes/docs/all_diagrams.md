@@ -8,3 +8,6 @@
 
 ## cluster topology
 <img src="/images/cluster.png" />
+
+## redis configurations
+<img src="/images/redis.png" />

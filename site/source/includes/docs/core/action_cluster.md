@@ -10,7 +10,7 @@ Cluster instances are named sequentially, starting with actionhero-worker-1, and
 
 Using a [redis](http://redis.io/) backend, actionhero nodes share memory objects (using the `api.cache methods`) and have a common queue for tasks. This means that all peers will have access to all data stored in the cache.  The task system also becomes a common queue which all peers will work on draining.  There should be no changes required to deploy your applicaiton in a cluster.  
 
-Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can [learn more about the cache methods here](/docs#general-cache-notes)
+Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can [learn more about the cache methods here](/docs#general-cache-notes).  You can also [review recommendations about Production Redis configurations](/docs#redis-configurations).
 
 ## RPC
 
@@ -22,7 +22,7 @@ api.connections.apply('abc123', 'set', ['auth', true], function(err){
 ```
 
 In version 9.0.0, actionhero introduced Remote Procedure Calls, or RPC for short.  You can call an RPC method to be excecuted on all nodes in your cluster or just a node which holds a specific connection.  You can call RPC methods with the `api.redis.doCluster` method.  If you provide the optional callback, you will get the first response back (or a timeout error).  RPC calls are invoked with `api.redis.doCluster(method, args, connectionId, callback)`.
-  
+
 For example, if you wanted all nodes to log a message, you would do: `api.redis.doCluster('api.log', ["hello from " + api.id]);`
 
 If you wanted the node which holds connection `abc123` to change their `authorized` status (perhaps because your room authentication relies on this), you would do:
@@ -33,7 +33,7 @@ Two options have been added to the `config/redis.js` config file to support this
 
 **WARNING**
 
-RPC calls are authenticated against `api.config.serverToken` and communication happens over redis pub/sub. BE CAREFUL, as you can call *any* method within the API namespace on an actionhero server, including shutdown() and read *any* data on that node. 
+RPC calls are authenticated against `api.config.serverToken` and communication happens over redis pub/sub. BE CAREFUL, as you can call *any* method within the API namespace on an actionhero server, including shutdown() and read *any* data on that node.
 
 ### Connections
 

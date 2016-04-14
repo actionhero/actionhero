@@ -93,4 +93,4 @@ You can see an example of using the cache within an action in [actions/cacheTest
 
 The timestamps regarding `api.cache.load` are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).
 
-Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state, or use the locking methods.
+Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can [learn more about the cache methods here](/docs#general-cache-notes).  You can also [review recommendations about Production Redis configurations](/docs#redis-configurations).
