@@ -1202,7 +1202,7 @@ You could also configure more nodes to work on the <code class="prettyprint">hig
 
 <p>Using a <a href="http://redis.io/">redis</a> backend, actionhero nodes share memory objects (using the <code class="prettyprint">api.cache methods</code>) and have a common queue for tasks. This means that all peers will have access to all data stored in the cache.  The task system also becomes a common queue which all peers will work on draining.  There should be no changes required to deploy your applicaiton in a cluster.  </p>
 
-<p>Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can <a href="/docs#general-cache-notes">learn more about the cache methods here</a>. You can also <a href="/docs#redis-configurations">review recommendations about Production Redis configurations</a>.</p>
+<p>Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can <a href="/docs#general-cache-notes">learn more about the cache methods here</a></p>
 
 <h2 id="rpc">RPC</h2>
 <pre class="highlight javascript"><code><span class="c1">// This will ask all nodes connected to the cluster if they have connection #`abc123` and if they do, run `connection.set('auth', true) on it`</span>
