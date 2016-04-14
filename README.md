@@ -42,7 +42,11 @@ Or spawn a web API server now:
 - [See a Sample Project (elaborate)](https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf)
 - [View the release history](https://github.com/evantahler/actionhero/releases/)
 
+## Documentation
+Actionhero's documentation can be found @ [http://www.actionherojs.com/docs/](http://www.actionherojs.com/docs/).  If you want to contribute to these docs, visit the [site](https://github.com/evantahler/actionhero/tree/master/site) folder of this project with more instructions. 
+
 ## Who?
+
 * The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/evantahler/actionhero/graphs/contributors)
 * Logo by [Ali Spagnola](http://alispagnola.com/)
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/evantahler/actionhero)
