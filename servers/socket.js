@@ -107,14 +107,16 @@ var initialize = function(api, options, next){
     connection.params = {};
 
     var parseLine = function(line){
-      var blen = Buffer.byteLength(line, 'utf8');
-      if(blen > api.config.servers.socket.maxDataLength && api.config.servers.socket.maxDataLength !== 0){
-        var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength,blen);
-        server.log(error, 'error');
-        server.sendMessage(connection, {status:'error', error: error, context: 'response'});
-        return;
+      if(api.config.servers.socket.maxDataLength !== 0){
+        var blen = Buffer.byteLength(line, 'utf8');
+        if( blen > api.config.servers.socket.maxDataLength){
+          var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength,blen);
+          server.log(error, 'error');
+          server.sendMessage(connection, {status:'error', error: error, context: 'response'});
+          return;
+        }
       }
-      if(blen > 0){
+      if(line.length > 0){
         // increment at the start of the request so that responses can be caught in order on the client
         // this is not handled by the genericServer
         connection.messageCount++;
