@@ -229,8 +229,8 @@ describe('Server: Socket', function(){
     client.on('data', checkResponses);
   });
 
-  it('will error If received data length is bigger then maxSocketDataLength', function(done){
-    api.config.servers.socket.maxSocketDataLength = 64;
+  it('will error If received data length is bigger then maxDataLength', function(done){
+    api.config.servers.socket.maxDataLength = 64;
 
     var msg = {
       action: 'cacheTest',
@@ -240,9 +240,9 @@ describe('Server: Socket', function(){
       }
     };
     makeSocketRequest(client, JSON.stringify(msg), function(response){
-      should(response).not.be.ok();
-      // Return maxSocketDataLength to normal
-      api.config.servers.socket.maxSocketDataLength = 0;
+      response.should.containEql({status: 'error', error: 'data length is too big (64<449)'});
+      // Return maxDataLength back to normal
+      api.config.servers.socket.maxDataLength = 0;
       done();
     });
   });
@@ -251,12 +251,12 @@ describe('Server: Socket', function(){
 
     after(function(done){
       // Return the config back to normal so we don't error other tests
-      api.config.servers.socket.defaultDelimiter = '\n';
+      api.config.servers.socket.delimiter = '\n';
       done();
     });
 
     it('will parse /newline data delimiter',function(done){
-      api.config.servers.socket.defaultDelimiter = '\n';
+      api.config.servers.socket.delimiter = '\n';
       makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
         response.context.should.equal('response');
         done();
@@ -264,16 +264,12 @@ describe('Server: Socket', function(){
     });
 
     it('will parse custom `^]` data delimiter',function(done){
-      api.config.servers.socket.defaultDelimiter = '^]';
+      api.config.servers.socket.delimiter = '^]';
       makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
         response.context.should.equal('response');
         done();
       }, '^]');
     });
-
-    // Errors at socket server start:
-    //  Cannot start socket server @ Wrong delimiter type, delimiter must be string.
-    it('will error If data delimiter is not string');
 
   });
 

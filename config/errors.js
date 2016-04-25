@@ -78,6 +78,10 @@ exports['default'] = {
         return data.connection.localize('you have too many pending requests');
       },
 
+      dataLengthTooLarge: function(maxLength, receivedLength){
+        return 'data length is too big ('+maxLength+'<'+receivedLength+')';
+      },
+
       /////////////////
       // FILE SERVER //
       /////////////////

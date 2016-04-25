@@ -14,9 +14,9 @@ exports['default'] = {
         // Enable TCP KeepAlive pings on each connection?
         setKeepAlive: false,
         // Delimiter string for incoming messages
-        defaultDelimiter: '\n',
+        delimiter: '\n',
         // Maximum incoming message string length in Bytes (use 0 for Infinite)
-        maxSocketDataLength: 0,
+        maxDataLength: 0,
         // What message to send down to a client who requests a `quit`
         goodbyeMessage: 'Bye!'
       };
