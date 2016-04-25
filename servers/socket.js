@@ -48,6 +48,10 @@ var initialize = function(api, options, next){
       });
     }
 
+    if(typeof api.config.servers.socket.defaultDelimiter !== 'string'){
+      return next(new Error('Cannot start socket server @ Wrong delimiter type, delimiter must be string.'));
+    }
+
     server.server.on('error', function(e){
       return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
     });
@@ -107,6 +111,11 @@ var initialize = function(api, options, next){
     connection.params = {};
 
     var parseLine = function(line){
+      var blen = byteLength(line);
+      if(blen > api.config.servers.socket.maxSocketDataLength && api.config.servers.socket.maxSocketDataLength !== 0){
+        server.log('socket error: incoming data length is too big ('+api.config.servers.socket.maxSocketDataLength+'<'+blen+')', 'error');
+        return;
+      }
       if(line.length > 0){
         // increment at the start of the request so that responses can be caught in order on the client
         // this is not handled by the genericServer
@@ -119,13 +128,17 @@ var initialize = function(api, options, next){
       if(checkBreakChars(chunk)){
         connection.destroy();
       }else{
+        // Replace all carriage returns with newlines.
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
         var index;
-        while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1){
+        var d = api.config.servers.socket.defaultDelimiter;
+
+        while((index = connection.rawConnection.socketDataString.indexOf(d)) > -1){
           var data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          data.split('\n').forEach(parseLine);
+          data.split(d).forEach(parseLine);
         }
+
       }
     });
 
@@ -217,6 +230,18 @@ var initialize = function(api, options, next){
     }
     return found;
   };
+
+  var byteLength = function(str) {
+    // returns the byte length of an utf8 string
+    var s = str.length;
+    for (var i=str.length-1; i>=0; i--) {
+      var code = str.charCodeAt(i);
+      if (code > 0x7f && code <= 0x7ff) s++;
+      else if (code > 0x7ff && code <= 0xffff) s+=2;
+      if (code >= 0xDC00 && code <= 0xDFFF) i--; //trail surrogate
+    }
+    return s;
+  }
 
   var gracefulShutdown = function(next, alreadyShutdown){
     if(!alreadyShutdown || alreadyShutdown === false){
