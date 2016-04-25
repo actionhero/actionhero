@@ -112,8 +112,7 @@ var initialize = function(api, options, next){
         if( blen > api.config.servers.socket.maxDataLength){
           var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength,blen);
           server.log(error, 'error');
-          server.sendMessage(connection, {status:'error', error: error, context: 'response'});
-          return;
+          return server.sendMessage(connection, {status:'error', error: error, context: 'response'});
         }
       }
       if(line.length > 0){
