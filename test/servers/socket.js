@@ -12,12 +12,16 @@ var client3 = {};
 var clientDetails = {};
 var client2Details = {};
 
-function makeSocketRequest(thisClient, message, cb){
+function makeSocketRequest(thisClient, message, cb, delimiter){
   var lines = [];
   var counter = 0;
 
+  if(delimiter === null || typeof delimiter === 'undefined'){
+    var delimiter = '\r\n';
+  }
+
   var rsp = function(d){
-    d.split('\n').forEach(function(l){
+    d.split(delimiter).forEach(function(l){
       lines.push(l);
     });
     lines.push();
@@ -38,9 +42,8 @@ function makeSocketRequest(thisClient, message, cb){
   };
 
   setTimeout(respoder, 50);
-
   thisClient.on('data', rsp);
-  thisClient.write(message + '\r\n');
+  thisClient.write(message + delimiter);
 }
 
 var connectClients = function(callback){
@@ -224,6 +227,50 @@ describe('Server: Socket', function(){
     };
 
     client.on('data', checkResponses);
+  });
+
+  it('will error If received data length is bigger then maxDataLength', function(done){
+    api.config.servers.socket.maxDataLength = 64;
+
+    var msg = {
+      action: 'cacheTest',
+      params: {
+        key: uuid.v4(),
+        value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
+      }
+    };
+    makeSocketRequest(client, JSON.stringify(msg), function(response){
+      response.should.containEql({status: 'error', error: 'data length is too big (64<449)'});
+      // Return maxDataLength back to normal
+      api.config.servers.socket.maxDataLength = 0;
+      done();
+    });
+  });
+
+  describe('custom data delimiter', function(){
+
+    after(function(done){
+      // Return the config back to normal so we don't error other tests
+      api.config.servers.socket.delimiter = '\n';
+      done();
+    });
+
+    it('will parse /newline data delimiter',function(done){
+      api.config.servers.socket.delimiter = '\n';
+      makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
+        response.context.should.equal('response');
+        done();
+      }, '\n');
+    });
+
+    it('will parse custom `^]` data delimiter',function(done){
+      api.config.servers.socket.delimiter = '^]';
+      makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
+        response.context.should.equal('response');
+        done();
+      }, '^]');
+    });
+
   });
 
   describe('chat', function(){

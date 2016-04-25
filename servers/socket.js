@@ -107,6 +107,14 @@ var initialize = function(api, options, next){
     connection.params = {};
 
     var parseLine = function(line){
+      if(api.config.servers.socket.maxDataLength > 0){
+        var blen = Buffer.byteLength(line, 'utf8');
+        if( blen > api.config.servers.socket.maxDataLength){
+          var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength,blen);
+          server.log(error, 'error');
+          return server.sendMessage(connection, {status:'error', error: error, context: 'response'});
+        }
+      }
       if(line.length > 0){
         // increment at the start of the request so that responses can be caught in order on the client
         // this is not handled by the genericServer
@@ -119,13 +127,17 @@ var initialize = function(api, options, next){
       if(checkBreakChars(chunk)){
         connection.destroy();
       }else{
+        // Replace all carriage returns with newlines.
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
         var index;
-        while((index = connection.rawConnection.socketDataString.indexOf('\n')) > -1){
+        var d = String(api.config.servers.socket.delimiter);
+
+        while((index = connection.rawConnection.socketDataString.indexOf(d)) > -1){
           var data = connection.rawConnection.socketDataString.slice(0, index);
-          connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + 2);
-          data.split('\n').forEach(parseLine);
+          connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + d.length);
+          data.split(d).forEach(parseLine);
         }
+
       }
     });
 
