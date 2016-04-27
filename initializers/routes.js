@@ -31,6 +31,7 @@ module.exports = {
                 // malformed URL
               }
             }
+            connection.matchedRoute = route;
             connection.params.action = route.action;
             break;
           }

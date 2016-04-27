@@ -281,6 +281,8 @@ exports.default = function(api) {
 
 This would create both `/api/myAction/old` and `/api/myAction/new`, mapping to apiVersion 1 and 2 respectively.
 
+In your actions and middleware, if a route was matched, you can see the details of the match by inspecting `data.connection.matchedRoute` which will include `path` and `action`.
+
 Finally, you can toggle an option, `matchTrailingPathParts`, which allows the final segment of your route to absorb all trailing path parts in a matched variable.
 
 
@@ -315,7 +317,7 @@ get: [
 ],
 ```
 
-**Note**: In regular expressions used for routing, you cannot use the "/" character.   
+**Note**: In regular expressions used for routing, you cannot use the "/" character.
 
 #### Notes
 
@@ -332,8 +334,6 @@ get: [
   - IE: `{ path:"/game/:id(^[a-z]{0,10}$)", action: "gamehandler" }`
   - be sure to double-escape when needed: `{ path: "/login/:userID(^\\d{3}$)", action: "login" }`
 - The HTTP verbs which you can route against are: `api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete']`
-
-**example**:
 
 ```javascript
 exports.default = function(api) {

@@ -664,6 +664,7 @@ describe('Server: Web', function(){
           },
           outputExample: {},
           run:function(api, data, next){
+            data.response.matchedRoute = data.connection.matchedRoute;
             next();
           }
         }
@@ -765,6 +766,15 @@ describe('Server: Web', function(){
       request.get(url + '/api/user/123?action=someFakeAction', function(err, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
+        done();
+      });
+    });
+
+    it('route actions have the matched route availalbe to the action', function(done){
+      request.get(url + '/api/mimeTestAction/thing.json', function(err, response, body){
+        body = JSON.parse(body);
+        body.matchedRoute.path.should.equal('/mimeTestAction/:key');
+        body.matchedRoute.action.should.equal('mimeTestAction');
         done();
       });
     });
