@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   loadPriority:  1000,
   startPriority: 1000,

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   loadPriority:  999,
   initialize: function(api, next){
@@ -9,7 +11,7 @@ module.exports = {
           for(var j in api.actions.actions[i]){
             var action = api.actions.actions[i][j];
             if(action.toDocument !== false){
-              if(!api.documentation.documentation[action.name]){ api.documentation.documentation[action.name] = {} }
+              if(!api.documentation.documentation[action.name]){ api.documentation.documentation[action.name] = {}; }
               api.documentation.documentation[action.name][action.version] = {
                 name: action.name,
                 version: action.version,
@@ -22,8 +24,8 @@ module.exports = {
         }
       }
     };
-    
+
     api.documentation.build();
     next();
   }
-}
+};

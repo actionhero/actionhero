@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <%= partial "includes/main/head" %>
+    </head>
+
+    <body id="page-top" data-spy="scroll" data-target=".navbar-custom">    
+
+        <%= partial "includes/main/nav" %>
+
+        <%= yield %>
+
+        <%= partial "includes/main/footer" %>
+
+        <br />
+
+        <%= partial "includes/main/github_fork" %>
+        <%= partial "includes/common/analytics" %>
+
+    </body>
+
+</html>

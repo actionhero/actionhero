@@ -1,3 +1,5 @@
+'use strict';
+
 var uuid = require('node-uuid');
 
 module.exports = {
@@ -37,7 +39,11 @@ module.exports = {
       applyCatch: function(connectionId, method, args, callback){
         var connection = api.connections.connections[connectionId];
         if(method && args){
-          connection[method].apply(connection, args);
+          if(method === 'sendMessage' || method === 'sendFile'){
+            connection[method](args);
+          }else{
+            connection[method].apply(connection, args);
+          }
         }
         if(typeof callback === 'function'){
           process.nextTick(function(){
@@ -53,7 +59,7 @@ module.exports = {
         api.connections.middleware[data.name] = data;
 
         this.globalMiddleware.push(data.name);
-        this.globalMiddleware.sort(function(a,b){
+        this.globalMiddleware.sort(function(a, b){
           if(api.connections.middleware[a].priority > api.connections.middleware[b].priority){
             return 1;
           }else{
@@ -71,13 +77,13 @@ module.exports = {
         }
       }
       return clean;
-    }
-    
+    };
+
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
     api.connection = function(data){
       var self = this;
-      self.setup(data)
+      self.setup(data);
       api.connections.connections[self.id] = self;
 
       api.connections.globalMiddleware.forEach(function(middlewareName){
@@ -85,27 +91,26 @@ module.exports = {
           api.connections.middleware[middlewareName].create(self);
         }
       });
-    }
+    };
 
     api.connection.prototype.setup = function(data){
       var self = this;
       if(data.id){
         self.id = data.id;
-      } else {
+      }else{
         self.id = self.generateID();
       }
       self.connectedAt = new Date().getTime();
-      
+
       ['type', 'rawConnection'].forEach(function(req){
-        if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object') }
+        if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object'); }
         self[req] = data[req];
       });
 
-      
       ['remotePort', 'remoteIP'].forEach(function(req){
-        if(data[req] === null || data[req] === undefined){ 
+        if(data[req] === null || data[req] === undefined){
           if(api.config.general.enforceConnectionProperties === true){
-            throw new Error(req + ' is required to create a new connection object') 
+            throw new Error(req + ' is required to create a new connection object');
           }else{
             data[req] = 0; // could be a random uuid as well?
           }
@@ -122,39 +127,47 @@ module.exports = {
         totalActions: 0,
         messageCount: 0,
         canChat: false
-      }
+      };
 
       for(var i in connectionDefaults){
         if(self[i] === undefined && data[i] !== undefined){ self[i] = data[i]; }
         if(self[i] === undefined){ self[i] = connectionDefaults[i]; }
       }
-    }
+
+      api.i18n.invokeConnectionLocale(self);
+    };
+
+    api.connection.prototype.localize = function(message){
+      // this.locale will be sourced automatically
+      if(!Array.isArray(message)){ message = [message]; }
+      return api.i18n.i18n.__.apply(this, message);
+    };
 
     api.connection.prototype.generateID = function(){
       return uuid.v4();
-    }
+    };
 
     api.connection.prototype.sendMessage = function(message){
-      throw new Error('I should be replaced with a connection-specific method ['+message+']');
-    }
+      throw new Error('I should be replaced with a connection-specific method [' + message + ']');
+    };
 
     api.connection.prototype.sendFile = function(path){
-      throw new Error('I should be replaced with a connection-specific method ['+path+']');
-    }
+      throw new Error('I should be replaced with a connection-specific method [' + path + ']');
+    };
 
     api.connection.prototype.destroy = function(callback){
       var self = this;
       self.destroyed = true;
-      
+
       api.connections.globalMiddleware.forEach(function(middlewareName){
         if(typeof api.connections.middleware[middlewareName].destroy === 'function'){
           api.connections.middleware[middlewareName].destroy(self);
         }
       });
 
-      if(self.canChat === true){ 
+      if(self.canChat === true){
         self.rooms.forEach(function(room){
-          api.chatRoom.removeMember(self.id, room); 
+          api.chatRoom.removeMember(self.id, room);
         });
       }
       delete api.connections.connections[self.id];
@@ -165,17 +178,19 @@ module.exports = {
         }
         if(typeof server.goodbye === 'function'){ server.goodbye(self); }
       }
-      if(typeof callback === 'function'){ callback() }
-    }
+      if(typeof callback === 'function'){ callback(); }
+    };
 
     api.connection.prototype.set = function(key, value){
       var self = this;
       self[key] = value;
-    }
+    };
 
     api.connection.prototype.verbs = function(verb, words, callback){
       var self = this;
-      var key, value, room;
+      var key;
+      var value;
+      var room;
       var server = api.servers.servers[self.type];
       var allowedVerbs = server.attributes.verbs;
       if(typeof words === 'function' && !callback){
@@ -190,10 +205,10 @@ module.exports = {
         if(verb === 'quit' || verb === 'exit'){
           server.goodbye(self);
 
-        } else if(verb === 'paramAdd'){
+        }else if(verb === 'paramAdd'){
           key = words[0];
           value = words[1];
-          if(words[0].indexOf('=') >= 0){
+          if((words[0]) && (words[0].indexOf('=') >= 0)){
             var parts = words[0].split('=');
             key = parts[0];
             value = parts[1];
@@ -202,37 +217,37 @@ module.exports = {
             self.params[key] = value;
           }
           if(typeof callback === 'function'){ callback(null, null); }
-        } else if(verb === 'paramDelete'){
+        }else if(verb === 'paramDelete'){
           key = words[0];
           delete self.params[key];
           if(typeof callback === 'function'){ callback(null, null); }
 
-        } else if(verb === 'paramView'){
+        }else if(verb === 'paramView'){
           key = words[0];
           if(typeof callback === 'function'){ callback(null, self.params[key]); }
 
-        } else if(verb === 'paramsView'){
+        }else if(verb === 'paramsView'){
           if(typeof callback === 'function'){ callback(null, self.params); }
 
-        } else if(verb === 'paramsDelete'){
+        }else if(verb === 'paramsDelete'){
           for(var i in self.params){
             delete self.params[i];
           }
           if(typeof callback === 'function'){ callback(null, null); }
 
-        } else if(verb === 'roomAdd'){
+        }else if(verb === 'roomAdd'){
           room = words[0];
           api.chatRoom.addMember(self.id, room, function(err, didHappen){
             if(typeof callback === 'function'){ callback(err, didHappen); }
           });
 
-        } else if(verb === 'roomLeave'){
+        }else if(verb === 'roomLeave'){
           room = words[0];
           api.chatRoom.removeMember(self.id, room, function(err, didHappen){
             if(typeof callback === 'function'){ callback(err, didHappen); }
           });
 
-        } else if(verb === 'roomView'){
+        }else if(verb === 'roomView'){
           room = words[0];
           if(self.rooms.indexOf(room) > -1){
             api.chatRoom.roomStatus(room, function(err, roomStatus){
@@ -242,7 +257,7 @@ module.exports = {
             if(typeof callback === 'function'){ callback('not member of room ' + room); }
           }
 
-        } else if(verb === 'detailsView'){
+        }else if(verb === 'detailsView'){
           var details            = {};
           details.id             = self.id;
           details.fingerprint    = self.fingerprint;
@@ -255,23 +270,23 @@ module.exports = {
           details.pendingActions = self.pendingActions;
           if(typeof callback === 'function'){ callback(null, details); }
 
-        } else if(verb === 'documentation'){
+        }else if(verb === 'documentation'){
           if(typeof callback === 'function'){ callback(null, api.documentation.documentation); }
 
-        } else if(verb === 'say'){
+        }else if(verb === 'say'){
           room = words.shift();
           api.chatRoom.broadcast(self, room, words.join(' '), function(err){
             if(typeof callback === 'function'){ callback(err); }
           });
 
-        } else {
-          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(verb), null); }
+        }else{
+          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(self, verb), null); }
         }
-      } else {
-        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(verb), null); }
+      }else{
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(self, verb), null); }
       }
-    }
+    };
 
     next();
   }
-}
+};

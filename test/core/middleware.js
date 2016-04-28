@@ -9,7 +9,7 @@ describe('Core: Middleware', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -23,7 +23,7 @@ describe('Core: Middleware', function(){
     api.actions.globalMiddleware = [];
     done();
   });
-  
+
   describe('action preProcessors', function(){
 
     it('I can define a global preProcessor and it can append the connection', function(done){
@@ -31,7 +31,7 @@ describe('Core: Middleware', function(){
         name: 'test middleware',
         global: true,
         preProcessor: function(data, next){
-          data.response._preProcessorNote = 'note'
+          data.response._preProcessorNote = 'note';
           next();
         }
       });
@@ -47,17 +47,17 @@ describe('Core: Middleware', function(){
         name: 'test middleware',
         global: false,
         preProcessor: function(data, next){
-          data.response._preProcessorNote = 'note'
+          data.response._preProcessorNote = 'note';
           next();
         }
       });
 
       api.specHelper.runAction('randomNumber', function(response){
-        should.not.exist( response._preProcessorNote );
+        should.not.exist(response._preProcessorNote);
         done();
       });
     });
-    
+
     it('preProcessors with priorities run in the right order', function(done){
       // first priority
       api.actions.addMiddleware({
@@ -72,7 +72,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // lower number priority (runs sooner)
       api.actions.addMiddleware({
         name: 'early test middleware',
@@ -85,7 +85,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // old style "default" priority
       api.actions.addMiddleware({
         name: 'default test middleware',
@@ -96,7 +96,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // higher number priority (runs later)
       api.actions.addMiddleware({
         name: 'late test middleware',
@@ -107,7 +107,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteEarly.should.equal('early');
@@ -116,7 +116,7 @@ describe('Core: Middleware', function(){
         done();
       });
     });
-    
+
     it('multiple preProcessors with same priority are executed', function(done){
       api.actions.addMiddleware({
         name: 'first test middleware',
@@ -127,7 +127,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
@@ -137,7 +137,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteSecond.should.equal('second');
@@ -150,7 +150,7 @@ describe('Core: Middleware', function(){
         name: 'test middleware',
         global: true,
         postProcessor: function(data, next){
-          data.response._postProcessorNote = 'note'
+          data.response._postProcessorNote = 'note';
           next();
         }
       });
@@ -159,7 +159,7 @@ describe('Core: Middleware', function(){
         response._postProcessorNote.should.equal('note');
         done();
       });
-    })
+    });
 
     it('postProcessors with priorities run in the right order', function(done){
       // first priority
@@ -175,7 +175,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // lower number priority (runs sooner)
       api.actions.addMiddleware({
         name: 'early test middleware',
@@ -188,7 +188,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // old style "default" priority
       api.actions.addMiddleware({
         name: 'default test middleware',
@@ -199,7 +199,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       // higher number priority (runs later)
       api.actions.addMiddleware({
         name: 'late test middleware',
@@ -210,7 +210,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteEarly.should.equal('early');
@@ -219,7 +219,7 @@ describe('Core: Middleware', function(){
         done();
       });
     });
-    
+
     it('multiple postProcessors with same priority are executed', function(done){
       api.actions.addMiddleware({
         name: 'first middleware',
@@ -230,7 +230,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.actions.addMiddleware({
         name: 'second middleware',
         global: true,
@@ -240,7 +240,7 @@ describe('Core: Middleware', function(){
           next();
         }
       });
-      
+
       api.specHelper.runAction('randomNumber', function(response){
         response._processorNoteFirst.should.equal('first');
         response._processorNoteSecond.should.equal('second');
@@ -253,7 +253,7 @@ describe('Core: Middleware', function(){
         name: 'test middleware',
         global: true,
         preProcessor: function(data, next){
-          next(new Error( 'BLOCKED' ));
+          next(new Error('BLOCKED'));
         }
       });
 
@@ -262,7 +262,7 @@ describe('Core: Middleware', function(){
         should.not.exist(response.randomNumber);
         done();
       });
-    })
+    });
 
     it('postProcessors can modify toRender', function(done){
       api.actions.addMiddleware({
@@ -280,9 +280,9 @@ describe('Core: Middleware', function(){
       setTimeout(function(){
         done();
       }, 1000);
-    })
-  
-  })
+    });
+
+  });
 
   describe('connection create/destroy callbacks', function(){
 
@@ -290,13 +290,13 @@ describe('Core: Middleware', function(){
       api.connections.middleware = {};
       api.connections.globalMiddleware = [];
       done();
-    })
+    });
 
     afterEach(function(done){
       api.connections.middleware = {};
       api.connections.globalMiddleware = [];
       done();
-    })
+    });
 
     it('can create callbacks on connection creation', function(done){
       api.connections.addMiddleware({
@@ -321,8 +321,8 @@ describe('Core: Middleware', function(){
       api.specHelper.runAction('randomNumber', function(response, connection){
         connection.destroy();
       });
-    })
+    });
 
-  })
+  });
 
 });

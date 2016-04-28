@@ -1,8 +1,0 @@
-.DS_Store
-node_modules
-log/*
-cache/*
-npm-debug.log
-dump.rdb
-pids/*
-_site/*

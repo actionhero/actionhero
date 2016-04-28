@@ -1,3 +1,5 @@
+'use strict';
+
 var os = require('os');
 
 module.exports = {
@@ -9,34 +11,28 @@ module.exports = {
 
     var consoleReporter = function(err, type, name, objects, severity){
       var extraMessages = [];
-      
-      if(type === 'loader'){
-        extraMessages.push('! Failed to load ' + objects.fullFilePath)
-      }
 
-      else if(type === 'action'){
+      if(type === 'loader'){
+        extraMessages.push('! Failed to load ' + objects.fullFilePath);
+      }else if(type === 'action'){
         extraMessages.push('! uncaught error from action: ' + name);
         extraMessages.push('! connection details:');
         var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
         for(var i in relevantDetails){
           if(
-            objects.connection[relevantDetails[i]] !== null && 
+            objects.connection[relevantDetails[i]] !== null &&
             objects.connection[relevantDetails[i]] !== undefined &&
             typeof objects.connection[relevantDetails[i]] !== 'function'
           ){
             extraMessages.push('!     ' + relevantDetails[i] + ': ' + JSON.stringify(objects.connection[relevantDetails[i]]));
           }
         }
-      }
-
-      else if(type === 'task'){
+      }else if(type === 'task'){
         extraMessages.push('! uncaught error from task: ' + name + ' on queue ' + objects.queue + ' (worker #' + objects.workerId + ')');
         try{
           extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
         }catch(e){}
-      }
-
-      else {
+      }else{
         extraMessages.push('! Error: ' + err.message);
         extraMessages.push('!     Type: ' + type);
         extraMessages.push('!     Name: ' + name);
@@ -57,7 +53,7 @@ module.exports = {
         api.log('! ' + line, severity);
       }
       api.log('*', severity);
-    }
+    };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
 
@@ -66,7 +62,7 @@ module.exports = {
       for(var i in api.exceptionHandlers.reporters){
         api.exceptionHandlers.reporters[i](err, type, name, objects, severity);
       }
-    }
+    };
 
     ///////////
     // TYPES //
@@ -77,31 +73,31 @@ module.exports = {
       api.exceptionHandlers.report(err, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
     };
 
-    api.exceptionHandlers.action = function(domain, err, data, next){
+    api.exceptionHandlers.action = function(err, data, next){
       var simpleName;
       try{
         simpleName = data.action;
       }catch(e){
         simpleName = err.message;
       }
-      var name = 'action:' + simpleName;    
+      var name = 'action:' + simpleName;
       api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
       if(typeof next === 'function'){ next(); }
     };
 
     api.exceptionHandlers.task = function(err, queue, task, workerId){
-      var simpleName
+      var simpleName;
       try{
-        simpleName = task.class;
+        simpleName = task['class'];
       }catch(e){
         simpleName = err.message;
       }
       var name = 'task:' + simpleName;
-      api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, 'error');
+      api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
     };
-    
+
     next();
 
   }
-}
+};

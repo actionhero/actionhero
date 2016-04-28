@@ -1,0 +1,6 @@
+bin/templates/
+client/
+public/
+site/
+node_modules/
+coverage/

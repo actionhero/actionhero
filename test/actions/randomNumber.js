@@ -9,7 +9,7 @@ describe('Action: RandomNumber', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -22,7 +22,7 @@ describe('Action: RandomNumber', function(){
   it('generates random numbers', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.a.Number;
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       firstNumber = response.randomNumber;
       done();
     });

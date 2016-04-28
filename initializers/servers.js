@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 
 module.exports = {
@@ -20,23 +22,23 @@ module.exports = {
       if(serverFolders.indexOf(p) < 0){
         serverFolders.push(p);
       }
-    })
+    });
 
-    var inits = {}
+    var inits = {};
 
     serverFolders.forEach(function(p){
       api.utils.recursiveDirectoryGlob(p).forEach(function(f){
-        var parts = f.split(/[\/\\]+/)
+        var parts = f.split(/[\/\\]+/);
         var server = parts[(parts.length - 1)].split('.')[0];
         if(api.config.servers[server] && api.config.servers[server].enabled === true){
-          inits[server] = require(f)['initialize'];
+          inits[server] = require(f).initialize;
         }
         api.watchFileAndAct(f, function(){
-          api.log('\r\n\r\n*** rebooting due to server ('+server+') change ***\r\n\r\n', 'info');
+          api.log(['*** Rebooting due to server (%s) change ***', server], 'info');
           api.commands.restart.call(api._self);
         });
       });
-    })
+    });
 
     var started = 0;
     for(var server in inits){
@@ -45,35 +47,49 @@ module.exports = {
         var options = api.config.servers[server];
         inits[server](api, options, function(serverObject){
           api.servers.servers[server] = serverObject;
-          api.log('initialized server: ' + server, 'debug');
+          api.log(['Initialized server: %s', server], 'debug');
           process.nextTick(function(){
             started--;
-            if(started === 0){ next() }
+            if(started === 0){ next(); }
           });
         });
-      })(server)
+      }(server));
     }
-    if(started === 0){ next() }
+    if(started === 0){ next(); }
   },
 
   start: function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.servers.servers) === 0){ next() }
+    if(api.utils.hashLength(api.servers.servers) === 0){ next(); }
     for(var server in api.servers.servers){
       started++;
       if(api.config.servers[server] && api.config.servers[server].enabled === true){
-        api.log('starting server: ' + server, 'notice');
+        var message = '';
+        var messageArgs = [];
+        message += 'Starting server: `%s`';
+        messageArgs.push(server);
+        if(api.config.servers[server].bindIP){
+          message += ' @ %s';
+          messageArgs.push(api.config.servers[server].bindIP);
+        }
+        if(api.config.servers[server].port){
+          message += ':%s';
+          messageArgs.push(api.config.servers[server].port);
+        }
+
+        api.log([message].concat(messageArgs), 'notice');
+
         api.servers.servers[server].start(function(error){
           if(error){ return next(error); }
           process.nextTick(function(){
             started--;
-            if(started === 0){ next() }
+            if(started === 0){ next(); }
           });
         });
       }else{
         process.nextTick(function(){
           started--;
-          if(started === 0){ next() }
+          if(started === 0){ next(); }
         });
       }
     }
@@ -81,27 +97,27 @@ module.exports = {
 
   stop: function(api, next){
     var started = 0;
-    if(api.utils.hashLength(api.servers.servers) === 0){ next() }
+    if(api.utils.hashLength(api.servers.servers) === 0){ next(); }
     for(var server in api.servers.servers){
       started++;
       (function(server){
         if((api.config.servers[server] && api.config.servers[server].enabled === true) || !api.config.servers[server]){
-          api.log('stopping server: ' + server, 'notice');
+          api.log(['Stopping server: %s', server], 'notice');
           api.servers.servers[server].stop(function(error){
             if(error){ return next(error); }
             process.nextTick(function(){
-              api.log('server stopped: ' + server, 'debug');
+              api.log(['Server stopped: %s', server], 'debug');
               started--;
-              if(started === 0){ next() }
+              if(started === 0){ next(); }
             });
           });
         }else{
           process.nextTick(function(){
             started--;
-            if(started === 0){ next() }
+            if(started === 0){ next(); }
           });
         }
-      })(server)
+      }(server));
     }
   }
-}
+};

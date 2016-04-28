@@ -1,0 +1,149 @@
+{
+  "env": {
+    "mocha": true,
+    "node": true
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "before": true,
+    "beforeEach": true,
+    "after": true,
+    "afterEach": true,
+    "ActionheroClient": true
+  },
+  "rules": {
+    "no-bitwise": 2,
+    "camelcase": 0,
+    "curly": 2,
+    "eqeqeq": 2,
+    "guard-for-in": 0,
+    "no-extend-native": 2,
+    "wrap-iife": 2,
+    "no-use-before-define": 0,
+    "no-caller": 2,
+    "no-empty": 0,
+    "no-irregular-whitespace": 2,
+    "no-new": 0,
+    "no-plusplus": 0,
+    "quotes": [
+      2,
+      "single",
+      "avoid-escape"
+    ],
+    "no-undef": 2,
+    "no-unused-vars": 0,
+    "strict": 0,
+    "max-params": 0,
+    "max-depth": 0,
+    "max-statements": 0,
+    "complexity": 0,
+    "max-len": 0,
+    "no-var": 0,
+    "semi": [
+      2,
+      "always"
+    ],
+    "no-cond-assign": 0,
+    "no-debugger": 0,
+    "no-eq-null": 0,
+    "no-eval": 0,
+    "no-unused-expressions": 0,
+    "block-scoped-var": 0,
+    "no-iterator": 0,
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
+    "comma-style": [
+      2,
+      "last"
+    ],
+    "no-loop-func": 0,
+    "no-multi-str": 2,
+    "require-yield": 0,
+    "valid-typeof": 0,
+    "no-proto": 0,
+    "no-script-url": 0,
+    "no-shadow": 0,
+    "dot-notation": [
+      2,
+      {"allowKeywords": false}
+	],
+    "no-new-func": 0,
+    "no-new-wrappers": 0,
+    "no-invalid-this": 0,
+    "array-bracket-spacing": [
+      2,
+      "never"
+    ],
+    "keyword-spacing": [
+		2,
+		{
+			"before": false,
+			"after": false,
+			"overrides": {
+				"return": {"before": true, "after": true}
+			}
+		}
+    ],
+    "space-before-blocks": [
+		2,
+		"never"
+	],
+	"space-in-parens": [
+		2,
+		"never"
+	],
+    "space-before-function-paren": [
+      2,
+      "never"
+    ],
+    "no-spaced-func": 2,
+    "space-unary-ops": [
+      2,
+      {
+        "words": false,
+        "nonwords": false
+      }
+    ],
+    "no-mixed-spaces-and-tabs": 2,
+    "no-trailing-spaces": 2,
+    "block-spacing":  [
+		2,
+		"always"
+	],
+    "yoda": [
+      2,
+      "never"
+    ],
+    "no-with": 2,
+    "no-multiple-empty-lines": 2,
+    "one-var": [
+      2,
+      "never"
+    ],
+    "comma-spacing": [
+      2,
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "semi-spacing": [
+      2,
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "space-infix-ops": 2,
+    "indent": [
+      2,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ]
+  }
+}

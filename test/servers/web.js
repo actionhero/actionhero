@@ -1,10 +1,12 @@
 var should  = require('should');
 var request = require('request');
 var fs      = require('fs');
+var os      = require('os');
+var path    = require('path');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
-var url
+var url;
 
 describe('Server: Web', function(){
 
@@ -13,7 +15,7 @@ describe('Server: Web', function(){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -42,7 +44,7 @@ describe('Server: Web', function(){
   it('params work', function(done){
     request.get(url + '/api?key=value', function(err, response, body){
       body = JSON.parse(body);
-      body.requesterInformation.receivedParams.key.should.equal('value')
+      body.requesterInformation.receivedParams.key.should.equal('value');
       done();
     });
   });
@@ -55,10 +57,35 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('will properly destroy connections', function(){
+
+    it('works for the API', function(done){
+      api.utils.hashLength(api.connections.connections).should.equal(0);
+      request.get(url + '/api/sleepTest', function(){
+        api.utils.hashLength(api.connections.connections).should.equal(0);
+        setTimeout(done, 100);
+      });
+
+      setTimeout(function(){
+        api.utils.hashLength(api.connections.connections).should.equal(1);
+      }, 100);
+    });
+
+    it('works for files', function(done){
+      api.utils.hashLength(api.connections.connections).should.equal(0);
+      request.get(url + '/simple.html', function(){
+        setTimeout(function(){
+          api.utils.hashLength(api.connections.connections).should.equal(0);
+          done();
+        }, 100);
+      });
+    });
+  });
+
   describe('errors', function(){
 
     before(function(done){
-      api.actions.versions.stringErrorTestAction = [1]
+      api.actions.versions.stringErrorTestAction = [1];
       api.actions.actions.stringErrorTestAction = {
         '1': {
           name: 'stringErrorTestAction',
@@ -68,9 +95,9 @@ describe('Server: Web', function(){
             next('broken');
           }
         }
-      }
+      };
 
-      api.actions.versions.errorErrorTestAction = [1]
+      api.actions.versions.errorErrorTestAction = [1];
       api.actions.actions.errorErrorTestAction = {
         '1': {
           name: 'errorErrorTestAction',
@@ -80,19 +107,19 @@ describe('Server: Web', function(){
             next(new Error('broken'));
           }
         }
-      }
+      };
 
-      api.actions.versions.complexErrorTestAction = [1]
+      api.actions.versions.complexErrorTestAction = [1];
       api.actions.actions.complexErrorTestAction = {
         '1': {
           name: 'complexErrorTestAction',
           description: 'complexErrorTestAction',
           version: 1,
           run:function(api, data, next){
-            next({ error: 'broken', reason: 'stuff'});
+            next({error: 'broken', reason: 'stuff'});
           }
         }
-      }
+      };
 
       api.routes.loadRoutes();
       done();
@@ -111,7 +138,7 @@ describe('Server: Web', function(){
     it('errors can be error strings', function(done){
       request.get(url + '/api/stringErrorTestAction/', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('broken')
+        body.error.should.equal('broken');
         done();
       });
     });
@@ -119,50 +146,50 @@ describe('Server: Web', function(){
     it('errors can be error objects and returned plainly', function(done){
       request.get(url + '/api/errorErrorTestAction/', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('broken')
+        body.error.should.equal('broken');
         done();
       });
-    }); 
+    });
 
     it('errors can be complex JSON payloads', function(done){
       request.get(url + '/api/complexErrorTestAction/', function(err, response, body){
         body = JSON.parse(body);
-        body.error.error.should.equal('broken')
-        body.error.reason.should.equal('stuff')
+        body.error.error.should.equal('broken');
+        body.error.reason.should.equal('stuff');
         done();
       });
     });
 
   });
 
-  describe('if disableParamScrubbing is set ', function () {
+  describe('if disableParamScrubbing is set ', function(){
     var orig;
 
-    before(function(done) {
+    before(function(done){
       orig = api.config.general.disableParamScrubbing;
       api.config.general.disableParamScrubbing = true;
       done();
     });
 
-    after(function (done) {
+    after(function(done){
       api.config.general.disableParamScrubbing = orig;
       done();
-    })
+    });
 
-      it('params are not ignored', function(done){
-        request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
-          body = JSON.parse(body);
-          body.requesterInformation.receivedParams.crazyParam123.should.equal('something');
-          done();
-        });
+    it('params are not ignored', function(done){
+      request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
+        body = JSON.parse(body);
+        body.requesterInformation.receivedParams.crazyParam123.should.equal('something');
+        done();
       });
+    });
 
   });
 
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
       body = JSON.parse(body);
-      body.error.should.equal('unknown action or invalid apiVersion')
+      body.error.should.equal('unknown action or invalid apiVersion');
       done();
     });
   });
@@ -178,7 +205,7 @@ describe('Server: Web', function(){
   it('HTTP Verbs should work: GET', function(done){
     request.get(url + '/api/randomNumber', function(err, response, body){
       body = JSON.parse(body);
-      body.randomNumber.should.be.within(0,1)
+      body.randomNumber.should.be.within(0, 1);
       done();
     });
   });
@@ -186,7 +213,7 @@ describe('Server: Web', function(){
   it('HTTP Verbs should work: PUT', function(done){
     request.put(url + '/api/randomNumber', function(err, response, body){
       body = JSON.parse(body);
-      body.randomNumber.should.be.within(0,10)
+      body.randomNumber.should.be.within(0, 10);
       done();
     });
   });
@@ -194,7 +221,7 @@ describe('Server: Web', function(){
   it('HTTP Verbs should work: POST', function(done){
     request.post(url + '/api/randomNumber', function(err, response, body){
       body = JSON.parse(body);
-      body.randomNumber.should.be.within(0,100)
+      body.randomNumber.should.be.within(0, 100);
       done();
     });
   });
@@ -202,7 +229,7 @@ describe('Server: Web', function(){
   it('HTTP Verbs should work: DELETE', function(done){
     request.del(url + '/api/randomNumber', function(err, response, body){
       body = JSON.parse(body);
-      body.randomNumber.should.be.within(0,1000)
+      body.randomNumber.should.be.within(0, 1000);
       done();
     });
   });
@@ -224,9 +251,9 @@ describe('Server: Web', function(){
     });
   });
 
-  describe('connection.rawConnection.params', function () {
+  describe('connection.rawConnection.params', function(){
     before(function(done){
-      api.actions.versions.paramTestAction = [1]
+      api.actions.versions.paramTestAction = [1];
       api.actions.actions.paramTestAction = {
         '1': {
           name: 'paramTestAction',
@@ -237,7 +264,7 @@ describe('Server: Web', function(){
             next();
           }
         }
-      }
+      };
 
       api.routes.loadRoutes();
       done();
@@ -249,24 +276,23 @@ describe('Server: Web', function(){
       done();
     });
 
-
-    it('.query should contain unfiltered query params', function (done) {
+    it('.query should contain unfiltered query params', function(done){
       request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
         body = JSON.parse(body);
         body.query.crazyParam123.should.equal('something');
         done();
       });
-    })
+    });
 
-    it('.body should contain unfiltered request body params', function (done) {
+    it('.body should contain unfiltered request body params', function(done){
       var requestBody = JSON.stringify({key:'value'});
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
         body = JSON.parse(body);
         body.body.key.should.eql('value');
         done();
       });
-    })
-  })
+    });
+  });
 
   it('returnErrorCodes false should still have a status of 200', function(done){
     api.config.servers.web.returnErrorCodes = false;
@@ -290,7 +316,7 @@ describe('Server: Web', function(){
 
     before(function(done){
       api.config.servers.web.returnErrorCodes = true;
-      api.actions.versions.headerTestAction = [1]
+      api.actions.versions.headerTestAction = [1];
       api.actions.actions.headerTestAction = {
         '1': {
           name: 'headerTestAction',
@@ -306,7 +332,7 @@ describe('Server: Web', function(){
             next();
           }
         }
-      }
+      };
 
       api.routes.loadRoutes();
       done();
@@ -316,7 +342,7 @@ describe('Server: Web', function(){
       delete api.actions.actions.headerTestAction;
       delete api.actions.versions.headerTestAction;
       done();
-    })
+    });
 
     it('duplicate headers should be removed (in favor of the last set)', function(done){
       request.get(url + '/api/headerTestAction', function(err, response, body){
@@ -367,11 +393,11 @@ describe('Server: Web', function(){
     });
 
     it('keeps sessions with browser_fingerprint', function(done){
-      var j = request.jar()
-      request.post({url: url+'/api', jar: j}, function(err, response1, body1){
-        request.get({url: url+'/api', jar: j}, function(err, response2, body2){
-          request.put({url: url+'/api', jar: j}, function(err, response3, body3){
-            request.del({url: url+'/api', jar: j}, function(err, response4, body4){
+      var j = request.jar();
+      request.post({url: url + '/api', jar: j}, function(err, response1, body1){
+        request.get({url: url + '/api', jar: j}, function(err, response2, body2){
+          request.put({url: url + '/api', jar: j}, function(err, response3, body3){
+            request.del({url: url + '/api', jar: j}, function(err, response4, body4){
               body1 = JSON.parse(body1);
               body2 = JSON.parse(body2);
               body3 = JSON.parse(body3);
@@ -409,7 +435,7 @@ describe('Server: Web', function(){
     before(function(done){
       api.config.servers.web.returnErrorCodes = true;
 
-      api.actions.versions.statusTestAction = [1]
+      api.actions.versions.statusTestAction = [1];
       api.actions.actions.statusTestAction = {
         '1': {
           name: 'statusTestAction',
@@ -422,25 +448,13 @@ describe('Server: Web', function(){
             if(data.params.key !== 'value'){
               error = 'key != value';
               data.connection.rawConnection.responseHttpCode = 402;
-            } else {
+            }else{
               data.response.good = true;
             }
             next(error);
           }
         }
-      }
-
-      api.actions.versions.brokenAction = [1]
-      api.actions.actions.brokenAction = {
-        '1': {
-          name: 'brokenAction',
-          description: 'I am broken',
-          run:function(api, data, next){
-            BREAK; // undefiend
-            next();
-          }
-        }
-      }
+      };
 
       api.routes.loadRoutes();
       done();
@@ -450,8 +464,6 @@ describe('Server: Web', function(){
       api.config.servers.web.returnErrorCodes = false;
       delete api.actions.versions.statusTestAction;
       delete api.actions.actions.statusTestAction;
-      delete api.actions.versions.brokenAction;
-      delete api.actions.actions.brokenAction;
       done();
     });
 
@@ -469,20 +481,6 @@ describe('Server: Web', function(){
         response.statusCode.should.eql(422);
         done();
       });
-    });
-
-    it('server errors should return a 500', function(done){
-      if(api.config.general.actionDomains === true){
-        request.post(url + '/api/brokenAction', function(err, response, body){
-          body = JSON.parse(body);
-          body.error.should.eql( 'The server experienced an internal error' );
-          response.statusCode.should.eql(500);
-          done();
-        });
-      }else{
-        console.log("skipping broken action test; api.config.general.actionDomains != true")
-        done();
-      }
     });
 
     it('status codes can be set for errors', function(done){
@@ -523,7 +521,7 @@ describe('Server: Web', function(){
             var action = body.documentation[actionName][version];
             action.name.should.be.a.String;
             action.description.should.be.a.String;
-            action.inputs.should.be.an.instanceOf(Object)
+            action.inputs.should.be.an.instanceOf(Object);
           }
         }
         done();
@@ -544,7 +542,7 @@ describe('Server: Web', function(){
 
     it('file: 404 pages', function(done){
       request.get(url + '/public/notARealFile', function(err, response){
-        response.statusCode.should.equal(404)
+        response.statusCode.should.equal(404);
         done();
       });
     });
@@ -552,7 +550,7 @@ describe('Server: Web', function(){
     it('I should not see files outside of the public dir', function(done){
       request.get(url + '/public/../config.json', function(err, response){
         response.statusCode.should.equal(404);
-        response.body.should.equal( api.config.errors.fileNotFound() );
+        response.body.should.equal('That file is not found (..' + path.sep + 'config.json)');
         done();
       });
     });
@@ -574,19 +572,19 @@ describe('Server: Web', function(){
     });
 
     describe('can serve files from more than one directory', function(){
-      var source = __dirname + '/../../public/simple.html'
+      var source = __dirname + '/../../public/simple.html';
 
       before(function(done){
-        fs.createReadStream(source).pipe(fs.createWriteStream('/tmp/testFile.html'));
-        api.config.general.paths.public.push('/tmp');
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'));
+        api.staticFile.searchLoactions.push(os.tmpdir());
         process.nextTick(function(){
           done();
         });
       });
 
       after(function(done){
-        fs.unlink('/tmp/testFile.html');
-        api.config.general.paths.public.pop();
+        fs.unlink(os.tmpdir() + path.sep + 'testFile.html');
+        api.staticFile.searchLoactions.pop();
         process.nextTick(function(){
           done();
         });
@@ -603,14 +601,14 @@ describe('Server: Web', function(){
 
     describe('depth routes', function(){
       before(function(){
-        api.config.servers.web.urlPathForActions = '/craz/y/action/path'
-        api.config.servers.web.urlPathForFiles = '/a/b/c'
-      })
+        api.config.servers.web.urlPathForActions = '/craz/y/action/path';
+        api.config.servers.web.urlPathForFiles = '/a/b/c';
+      });
 
       after(function(){
-        api.config.servers.web.urlPathForActions = 'api'
-        api.config.servers.web.urlPathForFiles = 'public'
-      })
+        api.config.servers.web.urlPathForActions = 'api';
+        api.config.servers.web.urlPathForFiles = 'public';
+      });
 
       it('old action routes stop working', function(done){
         request.get(url + '/api/randomNumber', function(err, response){
@@ -654,23 +652,25 @@ describe('Server: Web', function(){
   describe('routes', function(){
 
     before(function(done){
-      api.actions.versions.mimeTestAction = [1]
+      api.actions.versions.mimeTestAction = [1];
       api.actions.actions.mimeTestAction = {
         '1': {
           name: 'mimeTestAction',
           description: 'I am a test',
           matchExtensionMimeType: true,
           inputs: {
-            key: {required:true}
+            key: {required:true},
+            path: {required:false},
           },
           outputExample: {},
           run:function(api, data, next){
+            data.response.matchedRoute = data.connection.matchedRoute;
             next();
           }
         }
-      }
+      };
 
-      api.actions.versions.login = [1, 2]
+      api.actions.versions.login = [1, 2];
       api.actions.actions.login = {
         '1': {
           name: 'login',
@@ -685,7 +685,7 @@ describe('Server: Web', function(){
             next();
           }
         },
-        
+
         '2': {
           name: 'login',
           description: 'login',
@@ -699,24 +699,25 @@ describe('Server: Web', function(){
             next();
           }
         }
-      }
+      };
 
       api.params.buildPostVariables();
       api.routes.loadRoutes({
         all: [
-          { path: '/user/:userID', action: 'user' }
+          {path: '/user/:userID', action: 'user'}
         ],
         get: [
-          { path: '/bogus/:bogusID', action: 'bogusAction' },
-          { path: '/users', action: 'usersList' },
-          { path: '/c/:key/:value', action: 'cacheTest' },
-          { path: '/mimeTestAction/:key', action: 'mimeTestAction' },
-          { path: '/thing', action: 'thing' },
-          { path: '/thing/stuff', action: 'thingStuff' },
-          { path: '/old_login', action: 'login', apiVersion: '1' }
+          {path: '/bogus/:bogusID', action: 'bogusAction'},
+          {path: '/users', action: 'usersList'},
+          {path: '/c/:key/:value', action: 'cacheTest'},
+          {path: '/mimeTestAction/:key', action: 'mimeTestAction'},
+          {path: '/thing', action: 'thing'},
+          {path: '/thing/stuff', action: 'thingStuff'},
+          {path: '/old_login', action: 'login', apiVersion: '1'},
+          {path: '/a/wild/:key/:path(^.*$)', action: 'mimeTestAction', apiVersion: '1', matchTrailingPathParts: true}
         ],
         post: [
-          { path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login' }
+          {path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login'}
         ]
       });
 
@@ -743,12 +744,12 @@ describe('Server: Web', function(){
         api.routes.routes[verb][0].path.should.equal('/user/:userID');
       });
       done();
-    })
+    });
 
     it('unknown actions are still unknown', function(done){
       request.get(url + '/api/a_crazy_action', function(err, response, body){
         body = JSON.parse(body);
-        body.error.should.equal('unknown action or invalid apiVersion')
+        body.error.should.equal('unknown action or invalid apiVersion');
         done();
       });
     });
@@ -756,7 +757,7 @@ describe('Server: Web', function(){
     it('explicit action declarations still override routed actions, if the defined action is real', function(done){
       request.get(url + '/api/user/123?action=randomNumber', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('randomNumber')
+        body.requesterInformation.receivedParams.action.should.equal('randomNumber');
         done();
       });
     });
@@ -764,16 +765,25 @@ describe('Server: Web', function(){
     it('route actions will override explicit actions, if the defined action is null', function(done){
       request.get(url + '/api/user/123?action=someFakeAction', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
+        body.requesterInformation.receivedParams.action.should.equal('user');
         done();
       });
     });
-    
+
+    it('route actions have the matched route availalbe to the action', function(done){
+      request.get(url + '/api/mimeTestAction/thing.json', function(err, response, body){
+        body = JSON.parse(body);
+        body.matchedRoute.path.should.equal('/mimeTestAction/:key');
+        body.matchedRoute.action.should.equal('mimeTestAction');
+        done();
+      });
+    });
+
     it('Routes should recognize apiVersion as default param', function(done){
       request.get(url + '/api/old_login?user_id=7', function(err, response, body){
         body = JSON.parse(body);
         body.user_id.should.equal('7');
-        body.requesterInformation.receivedParams.action.should.equal('login')
+        body.requesterInformation.receivedParams.action.should.equal('login');
         done();
       });
     });
@@ -781,7 +791,7 @@ describe('Server: Web', function(){
     it('Routes should be mapped for GET (simple)', function(done){
       request.get(url + '/api/users', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('usersList')
+        body.requesterInformation.receivedParams.action.should.equal('usersList');
         done();
       });
     });
@@ -789,8 +799,8 @@ describe('Server: Web', function(){
     it('Routes should be mapped for GET (complex)', function(done){
       request.get(url + '/api/user/1234', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
+        body.requesterInformation.receivedParams.action.should.equal('user');
+        body.requesterInformation.receivedParams.userID.should.equal('1234');
         done();
       });
     });
@@ -798,9 +808,9 @@ describe('Server: Web', function(){
     it('Routes should be mapped for POST', function(done){
       request.post(url + '/api/user/1234?key=value', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        body.requesterInformation.receivedParams.action.should.equal('user');
+        body.requesterInformation.receivedParams.userID.should.equal('1234');
+        body.requesterInformation.receivedParams.key.should.equal('value');
         done();
       });
     });
@@ -808,9 +818,9 @@ describe('Server: Web', function(){
     it('Routes should be mapped for PUT', function(done){
       request.put(url + '/api/user/1234?key=value', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        body.requesterInformation.receivedParams.action.should.equal('user');
+        body.requesterInformation.receivedParams.userID.should.equal('1234');
+        body.requesterInformation.receivedParams.key.should.equal('value');
         done();
       });
     });
@@ -818,9 +828,9 @@ describe('Server: Web', function(){
     it('Routes should be mapped for DELETE', function(done){
       request.del(url + '/api/user/1234?key=value', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        body.requesterInformation.receivedParams.action.should.equal('user');
+        body.requesterInformation.receivedParams.userID.should.equal('1234');
+        body.requesterInformation.receivedParams.key.should.equal('value');
         done();
       });
     });
@@ -828,8 +838,8 @@ describe('Server: Web', function(){
     it('route params trump explicit params', function(done){
       request.get(url + '/api/user/1?userID=2', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1')
+        body.requesterInformation.receivedParams.action.should.equal('user');
+        body.requesterInformation.receivedParams.userID.should.equal('1');
         done();
       });
     });
@@ -837,11 +847,11 @@ describe('Server: Web', function(){
     it('to match, a route much match all parts of the URL', function(done){
       request.get(url + '/api/thing', function(err, response, body){
         body = JSON.parse(body);
-        body.requesterInformation.receivedParams.action.should.equal('thing')
+        body.requesterInformation.receivedParams.action.should.equal('thing');
 
         request.get(url + '/api/thing/stuff', function(err, response, body){
           body = JSON.parse(body);
-          body.requesterInformation.receivedParams.action.should.equal('thingStuff')
+          body.requesterInformation.receivedParams.action.should.equal('thingStuff');
           done();
         });
       });
@@ -898,8 +908,57 @@ describe('Server: Web', function(){
         });
       });
 
+      it('works with with matchTrailingPathParts', function(done){
+        request.get(url + '/api/a/wild/theKey/and/some/more/path', function(err, response, body){
+          body = JSON.parse(body);
+          body.requesterInformation.receivedParams.action.should.equal('mimeTestAction');
+          body.requesterInformation.receivedParams.path.should.equal('and/some/more/path');
+          body.requesterInformation.receivedParams.key.should.equal('theKey');
+          done();
+        });
+      });
+
     });
 
+    describe('spaces in URL with public files', function(){
+
+      var source = __dirname + '/../../public/logo/sky.jpg';
+
+      before(function(done){
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'sky with space.jpg'));
+        api.staticFile.searchLoactions.push(os.tmpdir());
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      after(function(done){
+        fs.unlink(os.tmpdir() + path.sep + 'sky with space.jpg');
+        api.staticFile.searchLoactions.pop();
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      it('will decode %20 or plus sign to a space so that file system can read', function(done){
+        request.get(url + '/sky%20with%20space.jpg', function(err, response){
+          response.statusCode.should.equal(200);
+          response.body.should.be.an.instanceOf(Object);
+          response.headers['content-type'].should.equal('image/jpeg');
+          done();
+        });
+      });
+
+      it('will capture bad encoding in URL and return NOT FOUND', function(done){
+        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function(err, response){
+          response.statusCode.should.equal(404);
+          response.body.should.be.an.instanceOf(String);
+          response.body.should.startWith('That file is not found');
+          done();
+        });
+      });
+
+    });
   });
 
 });

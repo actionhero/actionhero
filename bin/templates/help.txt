@@ -1,4 +1,5 @@
-actionhero - a node.js API framework for both tcp sockets, web sockets, and http clients.
+actionhero - A multi-transport node.js API Server with integrated cluster
+  capabilities and delayed tasks
 
 Binary options:
 * help (default)
@@ -9,21 +10,45 @@ Binary options:
 * generateTask
 * generateInitializer
 * generateServer
+* actions
+* enqueueTask
+* console
+* link
 
 Descriptions:
 
 * actionhero help
   will display this document
 
+* actionhero start --config=[/path/to/config.js] --title=[processTitle]
+    --daemon will start a template actionhero server this is the respondent
+    to "npm start"
+  [config] (optional) path to config.js, defaults to "process.cwd() + '/'
+    + config.js". You can also use ENV[ACTIONHERO_CONFIG].
+  [title] (optional) process title to use for actionhero-s ID, ps, log, and
+    pidFile defaults. Must be unique for each member of the cluster.
+    You can also use ENV[ACTIONHERO_TITLE].
+    Process renaming does not work on OSX/Windows
+  [daemon] (optional) to fork and run as a new background process defaults
+    to false
+
+* actionhero startCluster --workers=[numWorkers]  --daemon
+  will launch a actionhero cluster (using node-s cluster module)
+  [workers] (optional) number of workers (defaults to # CPUs - 2)
+  [daemon] (optional) to fork and run as a new background process defaults
+    to false
+
 * actionhero generate
   will prepare an empty directory with a template actionhero project
 
-* actionhero generateAction --name=[name] --description=[description] --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
+* actionhero generateAction --name=[name] --description=[description]
+    --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
   will generate a new action in "actions"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
 
-* actionhero generateTask --name=[name] --description=[description] --scope=[scope] --frequency=[frequency] 
+* actionhero generateTask --name=[name] --description=[description]
+    --scope=[scope] --frequency=[frequency]
   will generate a new task in "tasks"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
@@ -38,22 +63,22 @@ Descriptions:
   will generate a new server in "servers"
   [name] (required)
 
-* actionhero start --config=[/path/to/config.js] --title=[processTitle]  --daemon
-  will start a template actionhero server
-  this is the respondent to "npm start"
-  [config] (optional) path to config.js, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG].
-  [title] (optional) process title to use for actionhero-s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster.  You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
-  [daemon] (optional) to fork and run as a new background process defaults to false
+* actionhero actions
+  will list all actions in this server to stdout
 
-* actionhero startCluster --exec=[command] --workers=[numWorkers] --pidfile=[path] --log=[path] --title=[clusterTitle] --workerTitlePrefix=[prefix] --config=[/path/to/config.js]  --daemon
-  will launch a actionhero cluster (using node-s cluster module)
-  [exec] (optional) command for the cluster-master to run to stat the workers
-  [workers] (optional) number of workers (defaults to # CPUs - 2)
-  [pidfile] (optional) pidfile location (defaults to process.cwd() + '/pids')
-  [log] (optional) logfile (defaults to process.cwd() + /log/cluster.log)
-  [title] (optional) default actionhero-master  Does not work on OSX/Windows
-  [workerTitlePrefix] (optional) default actionhero-worker
-  [config] (optional) path to config.js for workers, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG]
-  [daemon] (optional) to fork and run as a new background process defaults to false
+* actionhero enqueueTask --name=[taskName] --args=[JSON-formatted args]
+  will enqueue a task into redis
 
-More Help & the actionhero documentation can be found @ http://actionherojs.com
+* actionhero console
+  will open an interactive CLI with the API object in scope.
+  this is sometimes called a REPL
+
+* actionhero link --name=[pluginName]
+  will link the actions, tasks, initializers, etc from a plugin into your
+    top-level project normally, you will have first installed the plugin
+    via `npm install myPlugin`
+
+#############################################################
+## More Help & the actionhero documentation can be found @ ##
+##             http://www.actionherojs.com                 ##
+#############################################################

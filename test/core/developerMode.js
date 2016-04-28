@@ -25,8 +25,8 @@ describe('Core: Developer Mode', function(){
       api = a;
       setTimeout(function(){
         done();
-      }, 1001) // allow the file to get stat-ed once in the original state
-    })
+      }, 1001); // allow the file to get stat-ed once in the original state
+    });
   });
 
   after(function(done){
@@ -42,7 +42,7 @@ describe('Core: Developer Mode', function(){
   it('random numbers work initially', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       should.not.exist(response.error);
-      response.randomNumber.should.be.within(0,1);
+      response.randomNumber.should.be.within(0, 1);
       done();
     });
   });

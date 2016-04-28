@@ -1,7 +1,8 @@
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
+var fs     = require('fs');
+var os     = require('os');
+var path   = require('path');
 var should = require('should');
+var async  = require('async');
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -12,7 +13,7 @@ describe('Core: Cache', function(){
     actionhero.start(function(err, a){
       api = a;
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -30,7 +31,7 @@ describe('Core: Cache', function(){
   });
 
   it('cache.save', function(done){
-    api.cache.save('testKey','abc123',null,function(err, resp){
+    api.cache.save('testKey', 'abc123', null, function(err, resp){
       should.not.exist(err);
       resp.should.equal(true);
       done();
@@ -38,14 +39,14 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load', function(done){
-    api.cache.load('testKey',function(err, resp){
+    api.cache.load('testKey', function(err, resp){
       resp.should.equal('abc123');
       done();
     });
   });
 
   it('cache.load failures', function(done){
-    api.cache.load('something else',function(err, resp){
+    api.cache.load('something else', function(err, resp){
       String(err).should.equal('Error: Object not found');
       should.equal(null, resp);
       done();
@@ -53,21 +54,21 @@ describe('Core: Cache', function(){
   });
 
   it('cache.destroy', function(done){
-    api.cache.destroy('testKey',function(err, resp){
+    api.cache.destroy('testKey', function(err, resp){
       resp.should.equal(true);
       done();
     });
   });
 
   it('cache.destroy failure', function(done){
-    api.cache.destroy('testKey',function(err, resp){
+    api.cache.destroy('testKey', function(err, resp){
       resp.should.equal(false);
       done();
     });
   });
 
   it('cache.save with expire time', function(done){
-    api.cache.save('testKey','abc123',10,function(err, resp){
+    api.cache.save('testKey', 'abc123', 10, function(err, resp){
       resp.should.equal(true);
       done();
     });
@@ -78,7 +79,7 @@ describe('Core: Cache', function(){
       saveResp.should.equal(true);
       setTimeout(function(){
         api.cache.load('testKey_slow', function(err, loadResp){
-          String(err).should.equal('Error: Object expired')
+          String(err).should.equal('Error: Object expired');
           should.equal(null, loadResp);
           done();
         });
@@ -90,7 +91,7 @@ describe('Core: Cache', function(){
     api.cache.save('testKeyInThePast', 'abc123', -1, function(err, saveResp){
       saveResp.should.equal(true);
       api.cache.load('testKeyInThePast', function(err, loadResp){
-        (String(err).indexOf('Error: Object') >= 0).should.equal(true)
+        (String(err).indexOf('Error: Object') >= 0).should.equal(true);
         should.equal(null, loadResp);
         done();
       });
@@ -108,13 +109,13 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load without changing the expireTime will re-apply the redis expire', function(done){
-    var key = 'testKey'
+    var key = 'testKey';
     api.cache.save(key, 'val', 1000, function(){
       api.cache.load(key, function(err, loadResp){
         loadResp.should.equal('val');
         setTimeout(function(){
           api.cache.load(key, function(err, loadResp){
-            String(err).should.equal('Error: Object not found')
+            String(err).should.equal('Error: Object not found');
             should.equal(null, loadResp);
             done();
           });
@@ -124,33 +125,33 @@ describe('Core: Cache', function(){
   });
 
   it('cache.load with options that extending expireTime should return cached item', function(done){
-    var expireTime = 400
-    var timeout = 320
+    var expireTime = 400;
+    var timeout = 200;
     //save the initial key
     api.cache.save('testKey_slow', 'abc123', expireTime, function(err, saveResp){
-      saveResp.should.equal(true)
+      saveResp.should.equal(true);
       //wait for `timeout` and try to load the key
       setTimeout(function(){
         api.cache.load('testKey_slow', {expireTimeMS: expireTime}, function(err, loadResp){
-          loadResp.should.equal('abc123')
+          loadResp.should.equal('abc123');
           //wait another `timeout` and load the key again within the extended expire time
           setTimeout(function(){
             api.cache.load('testKey_slow', function(err, loadResp){
-              loadResp.should.equal('abc123')
+              loadResp.should.equal('abc123');
               //wait another `timeout` and the key load should fail without the extension
               setTimeout(function(){
                 api.cache.load('testKey_slow', function(err, loadResp){
-                  String(err).should.equal('Error: Object not found')
-                  should.equal(null, loadResp)
-                  done()
-                })
-              },timeout)
+                  String(err).should.equal('Error: Object not found');
+                  should.equal(null, loadResp);
+                  done();
+                });
+              }, timeout);
             });
-          },timeout)
-        })
-      },timeout)
-    })
-  })
+          }, timeout);
+        });
+      }, timeout);
+    });
+  });
 
   it('cache.save works with arrays', function(done){
     api.cache.save('array_key', [1, 2, 3], function(err, saveResp){
@@ -194,6 +195,70 @@ describe('Core: Cache', function(){
     });
   });
 
+  describe('lists', function(){
+    it('can push and pop from an array', function(done){
+      var jobs = [];
+
+      jobs.push(function(next){ api.cache.push('testListKey', 'a string', next); });
+      jobs.push(function(next){ api.cache.push('testListKey', ['an array'], next); });
+      jobs.push(function(next){ api.cache.push('testListKey', {what: 'an aobject'}, next); });
+      async.parallel(jobs, function(error){
+        should.not.exist(error);
+        jobs = [];
+
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.equal('a string');
+            next();
+          });
+        });
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.deepEqual(['an array']);
+            next();
+          });
+        });
+        jobs.push(function(next){
+          api.cache.pop('testListKey', function(error, data){
+            data.should.deepEqual({what: 'an aobject'});
+            next();
+          });
+        });
+
+        async.series(jobs, function(error){
+          should.not.exist(error);
+          done();
+        });
+      });
+    });
+
+    it('will return null if the list is empty', function(done){
+      api.cache.pop('emptyListKey', function(error, data){
+        should.not.exist(error);
+        should.not.exist(data);
+        done();
+      });
+    });
+
+    it('can get the length of an array when full', function(done){
+      api.cache.push('testListKey2', 'a string', function(){
+        api.cache.listLength('testListKey2', function(error, l){
+          should.not.exist(error);
+          l.should.equal(1);
+          done();
+        });
+      });
+    });
+
+    it('will return 0 length when the key does not exist', function(done){
+      api.cache.listLength('testListKey3', function(error, l){
+        should.not.exist(error);
+        l.should.equal(0);
+        done();
+      });
+    });
+  });
+
   describe('locks', function(){
 
     var key = 'testKey';
@@ -202,7 +267,7 @@ describe('Core: Cache', function(){
       api.cache.unlock(key, function(){
         done();
       });
-    })
+    });
 
     it('things can be locked, checked, and unlocked aribitrarily', function(done){
       api.cache.lock(key, 100, function(err, lockOk){
@@ -243,7 +308,7 @@ describe('Core: Cache', function(){
         lockOk.should.equal(true);
         api.cache.lockName = 'otherId';
         api.cache.save(key, 'value', function(err){
-          String(err).should.equal('Error: Object Locked')
+          String(err).should.equal('Error: Object Locked');
           done();
         });
       });
@@ -254,13 +319,13 @@ describe('Core: Cache', function(){
         lockOk.should.equal(true);
         api.cache.lockName = 'otherId';
         api.cache.destroy(key, function(err){
-          String(err).should.equal('Error: Object Locked')
+          String(err).should.equal('Error: Object Locked');
           done();
         });
       });
     });
 
-    it('you can opt to retry to obtaina lock if a lock is held (READ)', function(done){
+    it('you can opt to retry to obtain a lock if a lock is held (READ)', function(done){
       api.cache.lock(key, 1, function(err, lockOk){ // will be rounded up to 1s
         lockOk.should.equal(true);
         api.cache.save(key, 'value', function(err, success){
@@ -274,7 +339,7 @@ describe('Core: Cache', function(){
             api.cache.load(key, {retry: 2000}, function(err, data){
               data.should.equal('value');
               var delta = new Date().getTime() - start;
-              (delta >= 1000).should.equal(true)
+              (delta >= 1000).should.equal(true);
               done();
             });
 
@@ -283,12 +348,61 @@ describe('Core: Cache', function(){
       });
     });
 
+    describe('locks are actually blocking', function(){
+      var originalLockName;
+
+      before(function(){
+        originalLockName = api.cache.lockName;
+      });
+
+      after(function(){
+        api.cache.lockName = originalLockName;
+      });
+
+      it('locks are actually blocking', function(done){
+        var key = 'test';
+        var locksRetrieved = 0;
+        var locksRejected  = 0;
+        var concurentLocksCount = 100;
+        var jobs = [];
+
+        var go = function(next){
+          // proxy for another actionhero instance accessing the same locked object
+          api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected);
+
+          api.cache.checkLock(key, null, function(error, lockOk){
+            if(error){ return next(error); }
+
+            if(lockOk){
+              locksRetrieved++;
+              api.cache.lock(key, (1000 * 60), next);
+            }else{
+              locksRejected++;
+              next();
+            }
+          });
+        };
+
+        for(var i = 0; i < concurentLocksCount; i++){
+          jobs.push(go);
+        }
+
+        async.series(jobs, function(error){
+          should.not.exist(error);
+          locksRetrieved.should.be.equal(1); // Only first atempt
+          locksRejected.should.be.equal(concurentLocksCount - 1); // Everything else
+          done();
+        });
+      });
+
+    });
+
   });
 
   describe('cache dump files', function(){
 
-    if (typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir } // resolution for node v0.8.x
-    var file = os.tmpdir() + path.sep + "cacheDump";
+    if(typeof os.tmpdir !== 'function'){ os.tmpdir = os.tmpDir; } // resolution for node v0.8.x
+    var file = os.tmpdir() + path.sep + 'cacheDump';
 
     it('can read write the cache to a dump file', function(done){
       api.cache.clear(function(){
@@ -316,6 +430,6 @@ describe('Core: Cache', function(){
       });
     });
 
-  })
+  });
 
-})
+});

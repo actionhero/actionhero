@@ -26,7 +26,7 @@ describe('Core: Tasks', function(){
           taskOutput.push(params.word);
           next();
         }
-      }
+      };
 
       api.tasks.tasks.periodicTask = {
         name: 'periodicTask',
@@ -39,13 +39,13 @@ describe('Core: Tasks', function(){
           taskOutput.push('periodicTask');
           next();
         }
-      }
+      };
 
       api.tasks.jobs.regularTask  = api.tasks.jobWrapper('regularTask');
       api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask');
 
       done();
-    })
+    });
   });
 
   after(function(done){
@@ -75,9 +75,9 @@ describe('Core: Tasks', function(){
         done();
       });
     });
-  })
+  });
 
-  it('a bad task definition causes an exception' , function(done){
+  it('a bad task definition causes an exception', function(done){
     var badTask = {
       name: 'badTask',
       description: 'task',
@@ -114,7 +114,7 @@ describe('Core: Tasks', function(){
     api.specHelper.runTask('regularTask', {word: 'theWord'}, function(){
       taskOutput[0].should.equal('theWord');
       done();
-    })
+    });
   });
 
   it('no delayed tasks should be scheduled', function(done){
@@ -168,7 +168,7 @@ describe('Core: Tasks', function(){
         should.not.exist(err);
         timestamps.length.should.equal(1);
         var completeTime = Math.floor(time / 1000);
-        Number(timestamps[0]).should.be.within(completeTime, completeTime + 2)
+        Number(timestamps[0]).should.be.within(completeTime, completeTime + 2);
         done();
       });
     });
@@ -176,26 +176,26 @@ describe('Core: Tasks', function(){
 
   it('can see enqueued timestmps & see jobs within those timestamps (single + batch)', function(done){
     var time = new Date().getTime() + 1000;
-    var roundedTime = Math.round(time/1000) * 1000;
+    var roundedTime = Math.round(time / 1000) * 1000;
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, function(err){
       api.tasks.timestamps(function(err, timestamps){
         should.not.exist(err);
-        timestamps.length.should.equal(1)
+        timestamps.length.should.equal(1);
         timestamps[0].should.equal(roundedTime);
-        
-      api.tasks.delayedAt(roundedTime, function(err, tasks){
-        should.not.exist(err);
-        tasks.length.should.equal(1);
-        tasks[0].class.should.equal('regularTask');
-      });
 
-      api.tasks.allDelayed(function(err, allTasks){
-        should.not.exist(err);
-        Object.keys(allTasks).length.should.equal(1);
-        Object.keys(allTasks)[0].should.equal(String(roundedTime));
-        allTasks[roundedTime][0].class.should.equal('regularTask');
-        done();
-      });
+        api.tasks.delayedAt(roundedTime, function(err, tasks){
+          should.not.exist(err);
+          tasks.length.should.equal(1);
+          tasks[0]['class'].should.equal('regularTask');
+        });
+
+        api.tasks.allDelayed(function(err, allTasks){
+          should.not.exist(err);
+          Object.keys(allTasks).length.should.equal(1);
+          Object.keys(allTasks)[0].should.equal(String(roundedTime));
+          allTasks[roundedTime][0]['class'].should.equal('regularTask');
+          done();
+        });
 
       });
     });
@@ -301,12 +301,12 @@ describe('Core: Tasks', function(){
 
       var listener = function(workerId, queue, job, f){
         queue.should.equal(queue);
-        job.class.should.equal('someCrazyTask')
-        job.queue.should.equal('testQueue')
+        job['class'].should.equal('someCrazyTask');
+        job.queue.should.equal('testQueue');
         String(f).should.equal('Error: No job defined for class \'someCrazyTask\'');
         api.resque.multiWorker.removeListener('failure', listener);
         done();
-      }
+      };
 
       api.resque.multiWorker.on('failure', listener);
 

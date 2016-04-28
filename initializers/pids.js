@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var cluster = require('cluster');
 
@@ -18,34 +20,34 @@ module.exports = {
       pidfile = pidfile.replace(new RegExp('\n', 'g'), '');
 
       return pidfile;
-    }
+    };
 
     if(cluster.isMaster){
       api.pids.title = 'actionhero-' + api.pids.sanitizeId();
-    } else {
+    }else{
       api.pids.title = api.pids.sanitizeId();
     }
 
-    try { fs.mkdirSync(api.pids.path) } catch(e) {}
+    try{ fs.mkdirSync(api.pids.path); }catch(e){};
 
     api.pids.writePidFile = function(){
       fs.writeFileSync(api.pids.path + '/' + api.pids.title, api.pids.pid.toString(), 'ascii');
-    }
+    };
 
     api.pids.clearPidFile = function(){
-      try {
+      try{
         fs.unlinkSync(api.pids.path + '/' + api.pids.title);
-      } catch(e){
-        api.log('unable to remove pidfile', 'error', e);
+      }catch(e){
+        api.log('Unable to remove pidfile', 'error', e);
       }
-    }
+    };
 
     next();
   },
 
   start: function(api, next){
     api.pids.writePidFile();
-    api.log('pid: ' + process.pid, 'notice');
+    api.log(['pid: %s', process.pid], 'notice');
     next();
   }
-}
+};

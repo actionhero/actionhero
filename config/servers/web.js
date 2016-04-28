@@ -1,4 +1,6 @@
-exports.default = {
+var os = require('os');
+
+exports['default'] = {
   servers: {
     web: function(api){
       return {
@@ -24,7 +26,7 @@ exports.default = {
         urlPathForActions : 'api',
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
-        //  set to `null` to disable the file server entirely 
+        //  set to `null` to disable the file server entirely
         urlPathForFiles : 'public',
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
@@ -35,7 +37,7 @@ exports.default = {
         queryRouting : true,
         // The header which will be returned for all flat file served from /public; defined in seconds
         flatFileCacheDuration : 60,
-        // How many times should we try to boot the srever?
+        // How many times should we try to boot the server?
         // This might happen if the port is in use by another process or the socketfile is claimed
         bootAttempts: 1,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
@@ -51,7 +53,7 @@ exports.default = {
         // Options to be applied to incoming file uploads.
         //  More options and details at https://github.com/felixge/node-formidable
         formOptions: {
-          uploadDir: '/tmp',
+          uploadDir: os.tmpdir(),
           keepExtensions: false,
           maxFieldsSize: 1024 * 1024 * 100
         },
@@ -64,14 +66,20 @@ exports.default = {
           requesterInformation: true
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
-        //  You can also set connection.rawConnection.responseHttpCode to specify a code per request.
-        returnErrorCodes: true
-      }
+        // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+        returnErrorCodes: true,
+        // should this node server attempt to gzip responses if the client can accept them?
+        // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
+        compress: false,
+        // options to pass to the query parser
+        // learn more about the options @ https://github.com/hapijs/qs
+        queryParseOptions: {},
+      };
     }
   }
-}
+};
 
-exports.production = { 
+exports.production = {
   servers: {
     web: function(api){
       return {
@@ -80,13 +88,13 @@ exports.production = {
           serverInformation: false,
           requesterInformation: false
         }
-      }
+      };
     }
   }
-}
+};
 
 exports.test = {
-  servers: { 
+  servers: {
     web: function(api){
       return {
         secure: false,
@@ -96,7 +104,7 @@ exports.test = {
           serverInformation: true,
           requesterInformation: true
         }
-      }
+      };
     }
   }
-}
+};

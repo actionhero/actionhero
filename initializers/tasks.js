@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   startPriority: 900,
   loadPriority:  699,
@@ -10,26 +12,27 @@ module.exports = {
 
       loadFile: function(fullFilePath, reload){
         var self = this;
-        if(!reload){ reload = false }
+        if(!reload){ reload = false; }
 
         var loadMessage = function(loadedTaskName){
-          api.log('task ' + (reload?'(re)':'') + 'loaded: ' + loadedTaskName + ', ' + fullFilePath, 'debug');
-        }
+          api.log(['task %sloaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
+        };
 
         api.watchFileAndAct(fullFilePath, function(){
           self.loadFile(fullFilePath, true);
         });
 
-        try {
+        var task;
+        try{
           var collection = require(fullFilePath);
           for(var i in collection){
-            var task = collection[i];
+            task = collection[i];
             api.tasks.tasks[task.name] = task;
             self.validateTask(api.tasks.tasks[task.name]);
             api.tasks.jobs[task.name] = self.jobWrapper(task.name);
             loadMessage(task.name);
           }
-        } catch(err){
+        }catch(err){
           api.exceptionHandlers.loader(fullFilePath, err);
           delete api.tasks.tasks[task.name];
           delete api.tasks.jobs[task.name];
@@ -42,8 +45,8 @@ module.exports = {
         var plugins = task.plugins || [];
         var pluginOptions = task.pluginOptions || [];
         if(task.frequency > 0){
-          if(plugins.indexOf('jobLock') < 0)       { plugins.push('jobLock'); }
-          if(plugins.indexOf('queueLock') < 0)     { plugins.push('queueLock'); }
+          if(plugins.indexOf('jobLock') < 0){ plugins.push('jobLock'); }
+          if(plugins.indexOf('queueLock') < 0){ plugins.push('queueLock'); }
           if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
         }
         return {
@@ -65,29 +68,29 @@ module.exports = {
             args.splice(0, 0, api);
             api.tasks.tasks[taskName].run.apply(this, args);
           }
-        }
+        };
       },
 
       validateTask: function(task){
         var fail = function(msg){
           api.log(msg + '; exiting.', 'emerg');
-        }
+        };
         if(typeof task.name !== 'string' || task.name.length < 1){
           fail('a task is missing \'task.name\'');
           return false;
-        } else if(typeof task.description !== 'string' || task.description.length < 1){
+        }else if(typeof task.description !== 'string' || task.description.length < 1){
           fail('Task ' + task.name + ' is missing \'task.description\'');
           return false;
-        } else if(typeof task.frequency !== 'number'){
+        }else if(typeof task.frequency !== 'number'){
           fail('Task ' + task.name + ' has no frequency');
           return false;
-        } else if(typeof task.queue !== 'string'){
+        }else if(typeof task.queue !== 'string'){
           fail('Task ' + task.name + ' has no queue');
           return false;
-        } else if(typeof task.run !== 'function'){
+        }else if(typeof task.run !== 'function'){
           fail('Task ' + task.name + ' has no run method');
           return false;
-        } else {
+        }else{
           return true;
         }
       },
@@ -162,16 +165,20 @@ module.exports = {
         api.resque.queue.retryAndRemoveFailed(failedJob, callback);
       },
 
+      cleanOldWorkers: function(age, callback){
+        api.resque.queue.cleanOldWorkers(age, callback);
+      },
+
       enqueueRecurrentJob: function(taskName, callback){
         var self = this;
         var task = self.tasks[taskName];
         if(task.frequency <= 0){
           callback();
-        } else {
+        }else{
           self.del(task.queue, taskName, {}, function(){
             self.delDelayed(task.queue, taskName, {}, function(){
               self.enqueueIn(task.frequency, taskName, function(){
-                api.log('re-enqueued recurrent job ' + taskName, 'debug');
+                api.log(['re-enqueued recurrent job %s', taskName], api.config.tasks.schedulerLogging.reEnqueue);
                 callback();
               });
             });
@@ -182,24 +189,24 @@ module.exports = {
       enqueueAllRecurrentJobs: function(callback){
         var self = this;
         var started = 0;
-        var loadedTasks = []
+        var loadedTasks = [];
         for(var taskName in self.tasks){
           var task = self.tasks[taskName];
           if(task.frequency > 0){
             started++;
             (function(taskName){
               self.enqueue(taskName, function(err, toRun){
-                if(toRun === true){ 
-                  api.log('enqueuing periodic task: ' + taskName, 'info');
+                if(toRun === true){
+                  api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue);
                   loadedTasks.push(taskName);
                 }
                 started--;
-                if(started === 0 && typeof callback === 'function'){ callback(loadedTasks) }
+                if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
               });
-            })(taskName)
+            }(taskName));
           }
         }
-        if(started === 0 && typeof callback === 'function'){ callback(loadedTasks) }
+        if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
       },
 
       stopRecurrentJob: function(taskName, callback){
@@ -208,7 +215,7 @@ module.exports = {
         var task = self.tasks[taskName];
         if(task.frequency <= 0){
           callback();
-        } else {
+        }else{
           var removedCount = 0;
           self.del(task.queue, task.name, {}, 1, function(err, count){
             removedCount = removedCount + count;
@@ -221,7 +228,7 @@ module.exports = {
       },
 
       details: function(callback){
-        var details = {'queues': {}, 'workers': {} };
+        var details = {'queues': {}, 'workers': {}};
         api.tasks.allWorkingOn(function(err, workers){
           if(err){
             callback(err, details);
@@ -231,17 +238,17 @@ module.exports = {
               if(err){
                 callback(err, details);
               }
-              else if(queues.length === 0){ callback(null, details) }
-              else {
+              else if(queues.length === 0){ callback(null, details); }
+              else{
                 var started = 0;
                 queues.forEach(function(queue){
                   started++;
                   api.resque.queue.length(queue, function(err, length){
                     details.queues[queue] = {
                       length: length
-                    }
+                    };
                     started--;
-                    if(started === 0){ callback(err, details) }
+                    if(started === 0){ callback(err, details); }
                   });
                 });
               }
@@ -249,17 +256,17 @@ module.exports = {
           }
         });
       }
-    }
+    };
 
     api.config.general.paths.task.forEach(function(p){
       api.utils.recursiveDirectoryGlob(p).forEach(function(f){
         api.tasks.loadFile(f);
       });
-    })
+    });
 
     next();
-    
-  }, 
+
+  },
 
   start: function(api, next){
     if(api.config.tasks.scheduler === true){
@@ -270,4 +277,4 @@ module.exports = {
       next();
     }
   },
-}
+};

@@ -1,66 +1,50 @@
+'use strict';
+
 var winston = require('winston');
 
 module.exports = {
   loadPriority:  120,
   initialize: function(api, next){
 
-    var transports = [], i;
+    var transports = [];
+    var i;
     for(i in api.config.logger.transports){
       var t = api.config.logger.transports[i];
       if(typeof t === 'function'){
         transports.push(t(api, winston));
-      } else {
+      }else{
         transports.push(t);
       }
     }
 
-    api.logger = new (winston.Logger)({
-      // TODO We need to manually make these levels until winston switches the order back
-      levels: {
-        emerg: 8,
-        alert: 7,
-        crit: 6,
-        error: 5,
-        warning: 4,
-        notice: 3,
-        info: 2,
-        debug: 1,
-        trace: 0
-      },
-      colors: {
-        trace: 'magenta',
-        input: 'grey',
-        verbose: 'cyan',
-        prompt: 'grey',
-        debug: 'blue',
-        info: 'green',
-        data: 'grey',
-        help: 'cyan',
-        warn: 'yellow',
-        error: 'red'
-      },
-      transports: transports
-    });
+    api.logger = new (winston.Logger)({transports: transports});
 
     if(api.config.logger.levels){
+      api.logger.setLevels(api.config.logger.levels);
+    }else{
       api.logger.setLevels(winston.config.syslog.levels);
     }
 
-    api.log = function(message, severity){
-      if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info' }
-      // if(severity == null || api.logger.levels[severity] == null){ severity = 'info' }
-      var args = [ severity, message ];
-      args.push.apply(args, Array.prototype.slice.call(arguments, 2));
-      api.logger.log.apply(api.logger, args);
+    if(api.config.logger.colors){
+      winston.addColors(api.config.logger.colors);
     }
 
-    var logLevels = [];
-    for(i in api.logger.levels){ logLevels.push(i) }
+    api.log = function(message, severity, data){
+      if(!Array.isArray(message)){ message = [message]; }
+      var localizedMessage = api.i18n.i18n.__.apply(api.i18n.i18n, message);
+      if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
+      var args = [severity, localizedMessage];
+      if(data !== null && data !== undefined){ args.push(data); }
+      api.logger.log.apply(api.logger, args);
+    };
 
-    api.log('*** starting actionhero ***', 'notice')
-    api.log('Logger loaded.  Possible levels include: ', 'trace', logLevels);
+    var logLevels = [];
+    for(i in api.logger.levels){ logLevels.push(i); }
+
+    api.log('*** starting actionhero ***', 'notice');
+    api.log('Logger loaded.  Possible levels include:', 'debug', logLevels);
 
     next();
 
   }
-}
+};
