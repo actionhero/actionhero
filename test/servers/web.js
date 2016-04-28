@@ -571,6 +571,47 @@ describe('Server: Web', function(){
       });
     });
 
+    describe('can serve files from a specific mapped route', function(){
+      before(function(done){
+        fs.writeFileSync(os.tmpdir() + path.sep + 'testFile.html', 'ActionHero Route Test File');
+        api.routes.registerRoute('get', '/my/custom/route', null, null, true, os.tmpdir());
+        api.routes.registerRoute('get', '/my/secret/route', null, null, true, __dirname + '/../../public');
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      after(function(done){
+        fs.unlink(os.tmpdir() + path.sep + 'testFile.html');
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      it('works for routes mapped paths', function(done){
+        request.get(url + '/my/custom/route/testFile.html', function(err, response){
+          response.statusCode.should.equal(200);
+          response.body.should.equal('ActionHero Route Test File');
+          done();
+        });
+      });
+
+      it('returns 404 for files not available in route mapped paths', function(done){
+        request.get(url + '/my/custom/route/fileNotFound.html', function(err, response){
+          response.statusCode.should.equal(404);
+          done();
+        });
+      });
+
+      it('I should not see files outside of the mapped dir', function(done){
+        request.get(url + '/my/secret/route/../config/servers/web.js', function(err, response){
+          response.statusCode.should.equal(404);
+          response.body.should.equal('That file is not found (my/secret/route/../config/servers/web.js)');
+          done();
+        });
+      });
+    });
+
     describe('can serve files from more than one directory', function(){
       var source = __dirname + '/../../public/simple.html';
 

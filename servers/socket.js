@@ -109,8 +109,8 @@ var initialize = function(api, options, next){
     var parseLine = function(line){
       if(api.config.servers.socket.maxDataLength > 0){
         var blen = Buffer.byteLength(line, 'utf8');
-        if( blen > api.config.servers.socket.maxDataLength){
-          var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength,blen);
+        if(blen > api.config.servers.socket.maxDataLength){
+          var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen);
           server.log(error, 'error');
           return server.sendMessage(connection, {status:'error', error: error, context: 'response'});
         }
