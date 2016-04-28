@@ -26,7 +26,16 @@ module.exports = {
       get: function(connection, callback, counter){
         var self = this;
         if(!counter){ counter = 0; }
-        if(!connection.params.file || !api.staticFile.searchPath(connection, counter)){
+        // handle files via routes first
+        if(connection.params.routesFile && connection.params.routesFile.indexOf(path.normalize(connection.matchedRoute.dir)) === 0){
+          self.checkExistence(connection.params.routesFile, function(exists, truePath){
+            if(exists){
+              self.sendFile(truePath, connection, callback);
+            }else{
+              self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
+            }
+          });
+        }else if(!connection.params.file || !api.staticFile.searchPath(connection, counter)){
           self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
         }else{
           var file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
