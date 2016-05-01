@@ -37,7 +37,7 @@ module.exports = {
 
             if(route.dir){
               var requestedFile = connection.rawConnection.parsedURL.pathname.substring(route.path.length, connection.rawConnection.parsedURL.pathname.length);
-              connection.params.routesFile = path.normalize(route.dir + '/'  + requestedFile);
+              connection.params.file = path.normalize(route.dir + '/'  + requestedFile);
             }else{
               connection.params.action = route.action;
             }
