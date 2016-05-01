@@ -29,7 +29,12 @@ module.exports = {
         if(!connection.params.file || !api.staticFile.searchPath(connection, counter)){
           self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
         }else{
-          var file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
+          var file;
+          if(!path.isAbsolute(connection.params.file)){
+            file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
+          } else {
+            file = connection.params.file;
+          }
           if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
           }else{

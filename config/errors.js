@@ -79,7 +79,7 @@ exports['default'] = {
       },
 
       dataLengthTooLarge: function(maxLength, receivedLength){
-        return 'data length is too big ('+maxLength+'<'+receivedLength+')';
+        return 'data length is too big (' + maxLength + '<' + receivedLength + ')';
       },
 
       /////////////////

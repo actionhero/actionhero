@@ -571,6 +571,49 @@ describe('Server: Web', function(){
       });
     });
 
+    describe('can serve files from a specific mapped route', function(){
+      before(function(done){
+        var testFolderPublicPath = __dirname + '/../../public/testFolder';
+        fs.mkdirSync(testFolderPublicPath);
+        fs.writeFileSync(testFolderPublicPath + '/testFile.html', 'ActionHero Route Test File');
+        api.routes.registerRoute('get', '/my/public/route', null, null, true, testFolderPublicPath);
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      after(function(done){
+        var testFolderPublicPath = __dirname + '/../../public/testFolder';
+        fs.unlinkSync(testFolderPublicPath + path.sep + 'testFile.html');
+        fs.rmdirSync(testFolderPublicPath);
+        process.nextTick(function(){
+          done();
+        });
+      });
+
+      it('works for routes mapped paths', function(done){
+        request.get(url + '/my/public/route/testFile.html', function(err, response){
+          response.statusCode.should.equal(200);
+          response.body.should.equal('ActionHero Route Test File');
+          done();
+        });
+      });
+
+      it('returns 404 for files not available in route mapped paths', function(done){
+        request.get(url + '/my/public/route/fileNotFound.html', function(err, response){
+          response.statusCode.should.equal(404);
+          done();
+        });
+      });
+
+      it('I should not see files outside of the mapped dir', function(done){
+        request.get(url + '/my/public/route/../../config/servers/web.js', function(err, response){
+          response.statusCode.should.equal(404);
+          done();
+        });
+      });
+    });
+
     describe('can serve files from more than one directory', function(){
       var source = __dirname + '/../../public/simple.html';
 

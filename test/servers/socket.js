@@ -255,7 +255,7 @@ describe('Server: Socket', function(){
       done();
     });
 
-    it('will parse /newline data delimiter',function(done){
+    it('will parse /newline data delimiter', function(done){
       api.config.servers.socket.delimiter = '\n';
       makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
         response.context.should.equal('response');
@@ -263,7 +263,7 @@ describe('Server: Socket', function(){
       }, '\n');
     });
 
-    it('will parse custom `^]` data delimiter',function(done){
+    it('will parse custom `^]` data delimiter', function(done){
       api.config.servers.socket.delimiter = '^]';
       makeSocketRequest(client, JSON.stringify({action: 'status'}), function(response){
         response.context.should.equal('response');

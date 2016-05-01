@@ -316,8 +316,21 @@ get: [
   { path: '/users/:userId/:path(.*)', action: 'catchAll', matchTrailingPathParts: true }
 ],
 ```
-
 **Note**: In regular expressions used for routing, you cannot use the "/" character.
+
+#### Handling Static Folders with Routes
+
+If you want map a special public folder to a given route you can use the "dir" parameter in your "get" routes in the routes.js file:
+
+```javascript
+get: [
+  { path: '/my/special/folder', dir: __dirname + '/../public/my/special/folder', matchTrailingPathParts: true }
+],
+```
+After mapping this route all files/folders within the mapped folder will be accessible on the route.
+
+You have to map the specified public folder within the "dir" parameter, relative to the routes.js file or absolute. Make sure to set "matchTrailingPathParts" to "true", because when it is set to false, the route will never match when you request a file. (e.g.: site.com/my/special/folder/testfile.txt).
+
 
 #### Notes
 

@@ -444,6 +444,7 @@ var initialize = function(api, options, next){
     // FILE
 
     else if(requestMode === 'file'){
+      api.routes.processRoute(connection, pathParts);
       if(!connection.params.file){
         connection.params.file = pathParts.join(path.sep);
       }

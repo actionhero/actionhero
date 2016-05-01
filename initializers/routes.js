@@ -1,5 +1,7 @@
 'use strict';
 
+var path = require('path');
+
 module.exports = {
   loadPriority:  500,
   initialize: function(api, next){
@@ -32,7 +34,13 @@ module.exports = {
               }
             }
             connection.matchedRoute = route;
-            connection.params.action = route.action;
+
+            if(route.dir){
+              var requestedFile = connection.rawConnection.parsedURL.pathname.substring(route.path.length, connection.rawConnection.parsedURL.pathname.length);
+              connection.params.file = path.normalize(route.dir + '/'  + requestedFile);
+            }else{
+              connection.params.action = route.action;
+            }
             break;
           }
         }
@@ -93,13 +101,13 @@ module.exports = {
 
     // don't ever remove this!
     // this is really handy for plugins
-    api.routes.registerRoute = function(method, path, action, apiVersion, matchTrailingPathParts){
+    api.routes.registerRoute = function(method, path, action, apiVersion, matchTrailingPathParts, dir){
       if(!matchTrailingPathParts){ matchTrailingPathParts = false; }
-
       api.routes.routes[method].push({
         path: path,
         matchTrailingPathParts: matchTrailingPathParts,
         action: action,
+        dir: dir,
         apiVersion: apiVersion
       });
     };
@@ -125,10 +133,10 @@ module.exports = {
           if(method === 'all'){
             for(v in api.routes.verbs){
               verb = api.routes.verbs[v];
-              api.routes.registerRoute(verb, route.path, route.action, route.apiVersion, route.matchTrailingPathParts);
+              api.routes.registerRoute(verb, route.path, route.action, route.apiVersion, route.matchTrailingPathParts, route.dir);
             }
           }else{
-            api.routes.registerRoute(method, route.path, route.action, route.apiVersion, route.matchTrailingPathParts);
+            api.routes.registerRoute(method, route.path, route.action, route.apiVersion, route.matchTrailingPathParts, route.dir);
           }
           counter++;
         }
