@@ -13,12 +13,6 @@ exports.task = {
         //Check if params are older then current task version
         //Migrate the params
         api.log("I'm migrating yo", 'info', params);
-        // format fone numbers
-
-        params.phoneNumbers.forEach(function (item) {
-            item.value = item.value.replace(/-/g, '.');
-        });
-
         cb(params);
     },
 
@@ -27,12 +21,16 @@ exports.task = {
 
         var arrayIndx = Object.keys(params.phoneNumbers);
 
+        // for (var key = 0, len = totallen; key < len; key++) {
         arrayIndx.forEach(function (indx) {
             var thePhoneNumber = params.phoneNumbers[indx].value;
-            var res = thePhoneNumber.split(".", 3);
+            var res = thePhoneNumber.split("-", 3);
             assert(res.length === 3)
         });
 
         next();
     }
 };
+
+
+
