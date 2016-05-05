@@ -88,7 +88,7 @@ module.exports = {
               var _self = this;
               api.tasks.tasks[taskName].migrate.call(_self, args[0], args[1], function(newParams){
                 api.tasks.tasks[taskName].run.call(_self, args[0], newParams, args[2]);
-              })
+              });
             } else {
               api.tasks.tasks[taskName].run.apply(this, args);
             }
