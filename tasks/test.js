@@ -1,6 +1,5 @@
 'use strict';
 
-
 exports.task = {
     name: 'test',
     description: 'test',
