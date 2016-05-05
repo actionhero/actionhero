@@ -17,7 +17,7 @@ exports['default'] = {
       // how long will a lock last before it exipres (ms)?
       lockDuration: 1000 * 10, // 10 seconds
       // Watch for changes in actions and tasks, and reload/restart them on the fly
-      developmentMode: true,
+      developmentMode: false,
       // How many pending actions can a single connection be working on
       simultaneousActions: 5,
       // allow connections to be created without remoteIp and remotePort (they will be set to 0)
@@ -47,7 +47,7 @@ exports['default'] = {
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
-        //'secureRoom': {authorized: true},
+        //'secureRoom': {authorized: true}, 
       }
     };
   }
