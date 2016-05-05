@@ -24,8 +24,9 @@ exports['default'] = {
 
       ---------------------- */
       post: [
-        { path: '/loadQueue', action: 'loadQueue' } // 
-      ]
+        { path: '/loadQueue', action: 'loadQueue' }, //
+        { path: '/hotpatch', action: 'hotpatch'}
+      ],
 
       get: [
         { path: '/hotreload', action: 'hotreload' }, // (GET) /api/users

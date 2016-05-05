@@ -26,10 +26,10 @@ exports.action = {
 
     if (api.tasks.tasks[data.params.id]) {
       // enqueue task
-      api.tasks.enqueue(data.params.id, data.params.params, 'default', (err, toRun) => {
+      api.tasks.enqueueIn(10000, data.params.id, data.params.params, 'default', (err, toRun) => {
         next(err);
       });
-      
+
     } else {
 
       error = new Error("Task not found!");

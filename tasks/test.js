@@ -9,13 +9,6 @@ exports.task = {
     plugins: [],
     pluginOptions: {},
 
-    migrate: function(api, params, cb) {
-        //Check if params are older then current task version
-        //Migrate the params
-        api.log("I'm migrating yo", 'info', params);
-        cb(params);
-    },
-
     run: function(api, params, next) {
         assert(params.phoneNumbers);
 

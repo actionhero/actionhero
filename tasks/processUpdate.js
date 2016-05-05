@@ -2,7 +2,7 @@
 const assert = require('assert');
 
 exports.task = {
-  name: 'test',
+  name: 'testNew',
   description: 'test',
   frequency: 0,
   queue: 'default',
