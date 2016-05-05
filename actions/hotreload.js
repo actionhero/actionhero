@@ -13,11 +13,15 @@ exports.action = {
   inputs: {},
 
   run: function(api, data, next) {
-    let error = null;
     api.log("Received hotreload", "info");
     process.send({
       hotreload: true
+    }, function (err) {
+      data.response = {
+        "hi": "christopher"
+      }
+      next(err);
     });
-    next(error);
+    
   }
 };
