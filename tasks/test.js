@@ -1,10 +1,10 @@
 'use strict';
-
+const assert = require('assert');
 
 exports.task = {
     name: 'test',
     description: 'test',
-    frequency: 10000,
+    frequency: 0,
     queue: 'default',
     plugins: [],
     pluginOptions: {},
@@ -13,14 +13,25 @@ exports.task = {
         //Check if params are older then current task version
         //Migrate the params
         api.log("I'm migrating yo", 'info', params);
+        // format fone numbers
+
+        params.phoneNumbers.forEach(function (item) {
+            item.value = item.value.replace(/-/g, '.');
+        });
+
         cb(params);
     },
 
-    run: function(api, oldParams, next) {
-        // your logic here');
-        api.log("This is: ", 'info', oldParams);
+    run: function(api, params, next) {
+        assert(params.phoneNumbers);
 
-        api.log("Change");
+        var arrayIndx = Object.keys(params.phoneNumbers);
+
+        arrayIndx.forEach(function (indx) {
+            var thePhoneNumber = params.phoneNumbers[indx].value;
+            var res = thePhoneNumber.split(".", 3);
+            assert(res.length === 3)
+        });
 
         next();
     }
