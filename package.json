@@ -40,6 +40,7 @@
     "mime": "^1.3.4",
     "node-resque": "^2.0.0",
     "node-uuid": "^1.4.4",
+    "object-hash": "^1.1.2",
     "optimist": "^0.6.1",
     "primus": "^5.0.1",
     "qs": "^6.0.1",
