@@ -27,6 +27,10 @@ exports['default'] = {
         { path: '/loadQueue', action: 'loadQueue' } // 
       ]
 
+      get: [
+        { path: '/hotreload', action: 'hotreload' }, // (GET) /api/users
+      ],
+
     };
   }
 };
