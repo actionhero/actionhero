@@ -91,6 +91,14 @@ Worker.prototype.start = function(){
       self.parent.flapCount++;
     }
 
+    if(message.hotreload){
+      self.parent.workers.forEach(function(worker){
+        self.parent.workersToRestart.push(worker.id);
+      });
+      
+      self.parent.log('hotreloading ' + self.parent.workersToRestart.length + ' workers', 'alert');
+    }
+
     self.parent.work();
   });
 };
