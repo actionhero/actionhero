@@ -1,9 +1,25 @@
 'use strict';
+const crypto = require('crypto');
 
 module.exports = {
   startPriority: 900,
   loadPriority:  699,
   initialize: function(api, next){
+
+    function hashRun(runFunc){
+      const funcString = runFunc.toString();
+      return crypto.createHash('sha1').update(funcString).digest('hex');
+    }
+
+    function needsMigration(params, currentRunFunc){
+      const currentHash = hashRun(currentRunFunc);
+      const hashDiff = params._hash !== currentHash;
+      if(hashDiff){
+        api.log("Task Run Function has changed!", "debug", {old: params._hash, current: currentHash});
+      }
+
+      return hashDiff;
+    }
 
     api.tasks = {
 
@@ -52,6 +68,7 @@ module.exports = {
         return {
           'plugins': plugins,
           'pluginOptions': pluginOptions,
+          'migrate': api.tasks.tasks[taskName].migrate,
           'perform': function(){
             var args = Array.prototype.slice.call(arguments);
             var cb = args.pop();
@@ -66,7 +83,15 @@ module.exports = {
               }
             );
             args.splice(0, 0, api);
-            api.tasks.tasks[taskName].run.apply(this, args);
+
+            if(api.tasks.tasks[taskName].migrate && needsMigration(args[1], api.tasks.tasks[taskName].run)){
+              var _self = this;
+              api.tasks.tasks[taskName].migrate.call(_self, args[0], args[1], function(newParams){
+                api.tasks.tasks[taskName].run.call(_self, args[0], newParams, args[2]);
+              });
+            } else {
+              api.tasks.tasks[taskName].run.apply(this, args);
+            }
           }
         };
       },
@@ -98,18 +123,21 @@ module.exports = {
       enqueue: function(taskName, params, queue, callback){
         if(typeof queue === 'function' && callback === undefined){ callback = queue; queue = this.tasks[taskName].queue; }
         else if(typeof params === 'function' && callback === undefined && queue === undefined){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+        params._hash = hashRun(api.tasks.tasks[taskName].run);
         api.resque.queue.enqueue(queue, taskName, params, callback);
       },
 
       enqueueAt: function(timestamp, taskName, params, queue, callback){
         if(typeof queue === 'function' && callback === undefined){ callback = queue; queue = this.tasks[taskName].queue; }
         else if(typeof params === 'function' && callback === undefined && queue === undefined){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+        params._hash = hashRun(api.tasks.tasks[taskName].run);
         api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback);
       },
 
       enqueueIn: function(time, taskName, params, queue, callback){
         if(typeof queue === 'function' && callback === undefined){ callback = queue; queue = this.tasks[taskName].queue; }
         else if(typeof params === 'function' && callback === undefined && queue === undefined){ callback = params; queue = this.tasks[taskName].queue; params = {}; }
+        params._hash = hashRun(api.tasks.tasks[taskName].run);
         api.resque.queue.enqueueIn(time, queue, taskName, params, callback);
       },
 

@@ -1,0 +1,146 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta name="description" content="actionhero.js" />
+    <link rel="stylesheet" href="/public/css/actionhero.css" type="text/css">
+    <style type="text/css">
+  
+    textarea, input, button {
+      color: #000;
+      overflow: visible;
+    }
+
+    .brand-heading {
+      font-size: 3em;
+    }
+
+    #editor {
+      height: 30em;
+      margin-top: 1em;
+    }
+
+    h1 {
+      margin: 2em 0 0;
+    }
+
+    </style>
+    <link rel="icon" href="/public/favicon.ico">
+    <title>actionhero.js</title>
+
+    <script src="/public/javascript/actionheroClient.js"></script>
+<script src="javascript/ace.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+
+  <body>
+
+  <section class="intro">
+    <div class="intro-body">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+
+            <h1 class="brand-heading">npm yo installs</h1>
+            <form onsubmit="return install();">
+              <p class="intro-text" id="npm-message"></p>
+              <input type="text" name="package" id="package" placeholder="package"/>
+              
+              <button type="submit">Install</button>
+            </form>
+
+            <h1 class="brand-heading">Deploy yo Code</h1>
+            <form onsubmit="return upload();">
+              <p class="intro-text" id="code-message"></p>
+              <select id="type">
+                <option value="tasks/">Task</option>
+                <option value="actions/">Action</option>
+              </select>
+              <input type="text" name="name" id="name" placeholder="name"/><br/>
+              <pre id="editor">
+'use strict';
+
+exports.task = {
+  name:          'hello',
+  description:   'hello',
+  frequency:     10000,
+  queue:         'default',
+  plugins:       [],
+  pluginOptions: {},
+
+  run: function(api, params, next){
+    api.log("hello!");
+    next();
+  }
+};
+
+              </pre>
+
+              <button type="submit">Deploy</button>
+            </form>
+            
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="text/javascript">
+
+  var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+
+    function upload (event) {
+      var name = document.getElementById('name').value;
+      var type = document.getElementById('type').value;
+      var code = editor.getValue();
+
+      var client = new ActionheroClient();
+
+      if(type && code) {
+        var filename = type + name + ".js";
+
+          client.action('hotpatch', {
+            filename: filename, 
+            contents: btoa(code)
+          }, function(data){
+              console.log("Deployed");
+              done("Deployed!", 'code-message');
+          });
+      }
+
+      return false;
+    }
+
+    function install (event) {
+      var pkg = document.getElementById('package').value;
+      
+      var client = new ActionheroClient();
+
+      if(pkg) {
+
+          client.action('npm', {
+            "package": pkg, 
+          }, function(data){
+              console.log("Installed");
+              done("Installed!", 'npm-message');
+          });
+      }
+
+      return false;
+    }
+
+    function done(message, id) {
+      var $message = document.getElementById(id);
+      $message.innerHTML = message;
+
+      setTimeout(function () {
+        $message.innerHTML = "";
+      }, 1000)
+    }
+
+  </script>
+
+  </body>
+</html>
