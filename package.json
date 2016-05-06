@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "async": "^1.5.0",
+    "atob": "^2.0.3",
     "browser_fingerprint": "^0.0.6",
     "fakeredis": "^1.0.0",
     "formidable": "^1.0.17",

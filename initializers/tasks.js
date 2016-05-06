@@ -13,8 +13,12 @@ module.exports = {
 
     function needsMigration(params, currentRunFunc){
       const currentHash = hashRun(currentRunFunc);
-      api.log("NeedsMigration: ", "info", {old: params._hash, current: currentHash});
-      return params._hash !== currentHash;
+      const hashDiff = params._hash !== currentHash;
+      if(hashDiff){
+        api.log("Task Run Function has changed!", "debug", {old: params._hash, current: currentHash});
+      }
+
+      return hashDiff;
     }
 
     api.tasks = {

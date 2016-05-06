@@ -11,7 +11,7 @@ exports['default'] = {
       // Basic configuration options
       host     : process.env.REDIS_HOST || '127.0.0.1',
       port     : process.env.REDIS_PORT || 6379,
-      database : process.env.REDIS_DB   || 0,
+      database : process.env.REDIS_DB   || 3,
     };
 
     if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
