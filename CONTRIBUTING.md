@@ -10,7 +10,7 @@ You will need redis and node.js installed.  No other external dependancies are n
 
 **Every contribution to the codebase should have an associated test**
 
-If you need help writing tests, please ask for help in the [chat room](https://gitter.im/evantahler/actionhero)
+If you need help writing tests, please ask for help in the [chat room](http://slack.actionherojs.com)
 
 ## Syntax-checking
 
