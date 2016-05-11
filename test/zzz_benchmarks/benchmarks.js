@@ -5,11 +5,11 @@ var api;
 var messages = [];
 
 var multiAction = function(action, count, params, next){
-  var started = 0;
+  var inFlight = 0;
   var i = 0;
   var start = new Date().getTime();
   while(i < count){
-    started++;
+    inFlight++;
     var theseParams = {};
     for(var x in params){
       theseParams[x] = params[x];
@@ -18,8 +18,8 @@ var multiAction = function(action, count, params, next){
       }
     }
     api.specHelper.runAction(action, theseParams, function(){
-      started--;
-      if(started === 0){
+      inFlight--;
+      if(inFlight === 0){
         var durationSeconds = ((new Date().getTime()) - start) / 1000;
         messages.push('benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + 's');
         next(durationSeconds);

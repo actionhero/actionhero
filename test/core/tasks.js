@@ -126,7 +126,8 @@ describe('Core: Tasks', function(){
   });
 
   it('all periodic tasks can be enqueued at boot', function(done){
-    api.tasks.enqueueAllRecurrentJobs(function(){
+    api.tasks.enqueueAllRecurrentJobs(function(error){
+      should.not.exist(error);
       api.resque.queue.length(queue, function(err, length){
         should.not.exist(err);
         length.should.equal(1);

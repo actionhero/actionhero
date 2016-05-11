@@ -1,5 +1,7 @@
 'use strict';
 
+var async = require('async');
+
 module.exports = {
   startPriority: 900,
   loadPriority:  699,
@@ -32,8 +34,8 @@ module.exports = {
             api.tasks.jobs[task.name] = self.jobWrapper(task.name);
             loadMessage(task.name);
           }
-        }catch(err){
-          api.exceptionHandlers.loader(fullFilePath, err);
+        }catch(error){
+          api.exceptionHandlers.loader(fullFilePath, error);
           delete api.tasks.tasks[task.name];
           delete api.tasks.jobs[task.name];
         }
@@ -188,25 +190,28 @@ module.exports = {
 
       enqueueAllRecurrentJobs: function(callback){
         var self = this;
-        var started = 0;
+        var jobs = [];
         var loadedTasks = [];
-        for(var taskName in self.tasks){
+        Object.keys(self.tasks).forEach(function(taskName){
           var task = self.tasks[taskName];
           if(task.frequency > 0){
-            started++;
-            (function(taskName){
-              self.enqueue(taskName, function(err, toRun){
+            jobs.push(function(done){
+              self.enqueue(taskName, function(error, toRun){
+                if(error){ return done(error); }
                 if(toRun === true){
                   api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue);
                   loadedTasks.push(taskName);
                 }
-                started--;
-                if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
+                return done();
               });
-            }(taskName));
+            });
           }
-        }
-        if(started === 0 && typeof callback === 'function'){ callback(loadedTasks); }
+        });
+
+        async.series(jobs, function(error){
+          if(error){ return callback(error); }
+          return callback(null, loadedTasks);
+        });
       },
 
       stopRecurrentJob: function(taskName, callback){
@@ -217,11 +222,11 @@ module.exports = {
           callback();
         }else{
           var removedCount = 0;
-          self.del(task.queue, task.name, {}, 1, function(err, count){
+          self.del(task.queue, task.name, {}, 1, function(error, count){
             removedCount = removedCount + count;
-            self.delDelayed(task.queue, task.name, {}, function(err, timestamps){
+            self.delDelayed(task.queue, task.name, {}, function(error, timestamps){
               removedCount = removedCount + timestamps.length;
-              callback(err, removedCount);
+              callback(error, removedCount);
             });
           });
         }
@@ -229,32 +234,35 @@ module.exports = {
 
       details: function(callback){
         var details = {'queues': {}, 'workers': {}};
-        api.tasks.allWorkingOn(function(err, workers){
-          if(err){
-            callback(err, details);
-          }else{
+        var jobs = [];
+
+        jobs.push(function(done){
+          api.tasks.allWorkingOn(function(error, workers){
+            if(error){ return done(error); }
             details.workers = workers;
-            api.resque.queue.queues(function(err, queues){
-              if(err){
-                callback(err, details);
-              }
-              else if(queues.length === 0){ callback(null, details); }
-              else{
-                var started = 0;
-                queues.forEach(function(queue){
-                  started++;
-                  api.resque.queue.length(queue, function(err, length){
-                    details.queues[queue] = {
-                      length: length
-                    };
-                    started--;
-                    if(started === 0){ callback(err, details); }
-                  });
-                });
-              }
-            });
-          }
+          });
         });
+
+        jobs.push(function(done){
+          api.resque.queue.queues(function(error, queues){
+            if(error){ return done(error); }
+            var queueJobs = [];
+
+            queues.forEach(function(queue){
+              queueJobs.push(function(qdone){
+                api.resque.queue.length(queue, function(error, length){
+                  if(error){ return qdone(error); }
+                  details.queues[queue] = { length: length };
+                  return qdone();
+                });
+              });
+            });
+
+            async.series(queueJobs, done);
+          });
+        });
+
+        async.series(jobs, callback);
       }
     };
 
@@ -270,8 +278,8 @@ module.exports = {
 
   start: function(api, next){
     if(api.config.tasks.scheduler === true){
-      api.tasks.enqueueAllRecurrentJobs(function(){
-        next();
+      api.tasks.enqueueAllRecurrentJobs(function(error){
+        next(error);
       });
     }else{
       next();
