@@ -44,8 +44,8 @@ binary.log = function(message, severity, metadata){
 ///////////////
 
 binary.utils = {
-  hardError: function(err){
-    binary.log(err, 'error');
+  hardError: function(error){
+    binary.log(error, 'error');
     process.exit(1);
   },
   stringifyInputList: function(list){

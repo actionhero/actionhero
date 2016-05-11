@@ -237,21 +237,21 @@ module.exports = {
 
         }else if(verb === 'roomAdd'){
           room = words[0];
-          api.chatRoom.addMember(self.id, room, function(err, didHappen){
-            if(typeof callback === 'function'){ callback(err, didHappen); }
+          api.chatRoom.addMember(self.id, room, function(error, didHappen){
+            if(typeof callback === 'function'){ callback(error, didHappen); }
           });
 
         }else if(verb === 'roomLeave'){
           room = words[0];
-          api.chatRoom.removeMember(self.id, room, function(err, didHappen){
-            if(typeof callback === 'function'){ callback(err, didHappen); }
+          api.chatRoom.removeMember(self.id, room, function(error, didHappen){
+            if(typeof callback === 'function'){ callback(error, didHappen); }
           });
 
         }else if(verb === 'roomView'){
           room = words[0];
           if(self.rooms.indexOf(room) > -1){
-            api.chatRoom.roomStatus(room, function(err, roomStatus){
-              if(typeof callback === 'function'){ callback(err, roomStatus); }
+            api.chatRoom.roomStatus(room, function(error, roomStatus){
+              if(typeof callback === 'function'){ callback(error, roomStatus); }
             });
           }else{
             if(typeof callback === 'function'){ callback('not member of room ' + room); }
@@ -275,8 +275,8 @@ module.exports = {
 
         }else if(verb === 'say'){
           room = words.shift();
-          api.chatRoom.broadcast(self, room, words.join(' '), function(err){
-            if(typeof callback === 'function'){ callback(err); }
+          api.chatRoom.broadcast(self, room, words.join(' '), function(error){
+            if(typeof callback === 'function'){ callback(error); }
           });
 
         }else{

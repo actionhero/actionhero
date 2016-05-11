@@ -215,10 +215,10 @@
     self.client.on('api',          function(message){ alert('['+self.id+'] ' + JSON.stringify(message) ) })
     self.client.on('welcome',      function(message){ console.log('['+self.id+'] ' + JSON.stringify(message) ); })
     self.client.on('say',          function(message){ console.log('['+self.id+'] ' + JSON.stringify(message) ); })
-    self.client.connect(function(err, details){
-      if(err != null){
+    self.client.connect(function(error, details){
+      if(error != null){
         self.running = true;
-        console.log(err);
+        console.log(error);
       }else{
         self.work();
       }
@@ -267,12 +267,12 @@
   }
 
   </script>
-  
+
 </head>
 
 <body>
   <div id="mainContainer">
-    
+
     <div id="resultsContainer">
       <h1>actionhero websocket load test</h1>
       <p class="smallWords">Check the console for logs.<br />Be sure to update your ulimts!</p>

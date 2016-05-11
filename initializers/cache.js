@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var async = require('async');
 
 module.exports = {
   startPriority: 300,
@@ -14,116 +15,115 @@ module.exports = {
     api.cache.lockName     = api.id;
     api.cache.lockRetry    = 100;
 
-    api.cache.keys = function(next){
-      api.redis.client.keys(api.cache.redisPrefix + '*', function(err, keys){
-        next(err, keys);
-      });
+    api.cache.keys = function(callback){
+      api.redis.client.keys(api.cache.redisPrefix + '*', callback);
     };
 
-    api.cache.locks = function(next){
-      api.redis.client.keys(api.cache.lockPrefix + '*', function(err, keys){
-        next(err, keys);
-      });
+    api.cache.locks = function(callback){
+      api.redis.client.keys(api.cache.lockPrefix + '*', callback);
     };
 
-    api.cache.size = function(next){
-      api.cache.keys(function(err, keys){
+    api.cache.size = function(callback){
+      api.cache.keys(function(error, keys){
         var length = 0;
-        if(keys){
-          length = keys.length;
-        }
-        next(err, length);
+        if(keys){ length = keys.length; }
+        callback(error, length);
       });
     };
 
-    api.cache.clear = function(next){
-      api.cache.keys(function(err, keys){
-        if(keys.length > 0){
-          var stared = 0;
-          keys.forEach(function(key){
-            stared++;
-            api.redis.client.del(key, function(err){
-              stared--;
-              if(stared === 0 && typeof next === 'function'){
-                next(err, keys.length);
-              }
+    api.cache.clear = function(callback){
+      api.cache.keys(function(error, keys){
+        if(error && typeof callback === 'function'){ return callback(error); }
+        var jobs = [];
+        keys.forEach(function(key){
+          jobs.push(function(done){ api.redis.client.del(key, done); });
+        });
+
+        async.parallel(jobs, function(error){
+          if(typeof callback === 'function'){ return callback(error); }
+        });
+      });
+    };
+
+    api.cache.dumpWrite = function(file, callback){
+      var data = {};
+      api.cache.keys(function(error, keys){
+        if(error && typeof callback === 'function'){ return callback(error); }
+        var jobs = [];
+        keys.forEach(function(key){
+          jobs.push(function(done){
+            api.redis.client.get(key, function(error, content){
+              if(error){ return done(error); }
+              data[key] = content;
+              return done();
             });
           });
-        }else{
-          if(typeof next === 'function'){ next(err, keys.length); }
-        }
-      });
-    };
-
-    api.cache.dumpWrite = function(file, next){
-      api.cache.keys(function(err, keys){
-        var data = {};
-        var stared = 0;
-        keys.forEach(function(key){
-          stared++;
-          api.redis.client.get(key, function(err, content){
-            stared--;
-            data[key] = content;
-            if(stared === 0){
-              fs.writeFileSync(file, JSON.stringify(data));
-              if(typeof next === 'function'){ next(err, keys.length); }
-            }
-          });
         });
-        if(keys.length === 0){
-          fs.writeFileSync(file, JSON.stringify(data));
-          if(typeof next === 'function'){ next(err, keys.length); }
-        }
+
+        async.parallel(jobs, function(error){
+          if(error){
+            if(typeof callback === 'function'){ return callback(error); }
+          }else{
+            fs.writeFileSync(file, JSON.stringify(data));
+            if(typeof callback === 'function'){ return callback(null, keys.length); }
+          }
+        });
       });
     };
 
-    api.cache.dumpRead = function(file, next){
-      api.cache.clear(function(err){
-        var stared = 0;
-        var data = JSON.parse(fs.readFileSync(file));
-        for(var key in data){
-          stared++;
-          var content = data[key];
-          api.cache.saveDumpedElement(key, content, function(err){
-            stared--;
-            if(stared === 0 && typeof next === 'function'){
-              next(err, api.utils.hashLength(data));
-            }
+    api.cache.dumpRead = function(file, callback){
+      api.cache.clear(function(error){
+        if(error){
+          if(typeof callback === 'function'){ return callback(error); }
+        }else{
+          var jobs = [];
+          try{
+            var data = JSON.parse(fs.readFileSync(file));
+          }catch(error){ return callback(error); }
+
+          Object.keys(data).forEach(function(key){
+            var content = data[key];
+            jobs.push(function(done){ api.cache.saveDumpedElement(key, content, done); });
           });
-        }
-        if(api.utils.hashLength(data) === 0){
-          if(typeof next === 'function'){ next(err, api.utils.hashLength(data)); }
+
+          async.series(jobs, function(error){
+            if(typeof callback === 'function'){ return callback(error, api.utils.hashLength(data)); }
+          });
         }
       });
     };
 
     api.cache.saveDumpedElement = function(key, content, callback){
-      var parsedContent = JSON.parse(content);
-      api.redis.client.set(key, content, function(err){
-        if(parsedContent.expireTimestamp){
+      try{
+        var parsedContent = JSON.parse(content);
+      }catch(error){ return callback(error); }
+
+      api.redis.client.set(key, content, function(error){
+        if(error){ return callback(error); }
+        else if(parsedContent.expireTimestamp){
           var expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000);
           api.redis.client.expire(key, expireTimeSeconds, function(){
-            callback(err);
+            return callback(error);
           });
         }else{
-          callback(err);
+          return callback();
         }
       });
     };
 
-    api.cache.load = function(key, options, next){
+    api.cache.load = function(key, options, callback){
       // optons: options.expireTimeMS, options.retry
       if(typeof options === 'function'){
-        next = options;
+        callback = options;
         options = {};
       }
 
-      api.redis.client.get(api.cache.redisPrefix + key, function(err, cacheObj){
-        if(err){ api.log(err, 'error'); }
+      api.redis.client.get(api.cache.redisPrefix + key, function(error, cacheObj){
+        if(error){ api.log(error, 'error'); }
         try{ cacheObj = JSON.parse(cacheObj); }catch(e){}
         if(!cacheObj){
-          if(typeof next === 'function'){
-            process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
+          if(typeof callback === 'function'){
+            return callback(new Error('Object not found'), null, null, null, null);
           }
         }else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
           var lastReadAt = cacheObj.readAt;
@@ -138,54 +138,57 @@ module.exports = {
             }
           }
 
-          api.cache.checkLock(key, options.retry, function(err, lockOk){
-            if(err || lockOk !== true){
-              if(typeof next === 'function'){ next(new Error('Object Locked')); }
+          api.cache.checkLock(key, options.retry, function(error, lockOk){
+            if(error || lockOk !== true){
+              if(typeof callback === 'function'){ return callback(new Error('Object Locked')); }
             }else{
-              api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(err){
-                if(typeof expireTimeSeconds === 'number'){
-                  api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
-                }
-                if(typeof next === 'function'){
-                  process.nextTick(function(){ next(err, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt); });
+              api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+                if(typeof callback === 'function' && typeof expireTimeSeconds !== 'number'){
+                  return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt);
+                }else{
+                  api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+                    if(typeof callback === 'function'){ return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt); }
+                  });
                 }
               });
             }
           });
         }else{
-          if(typeof next === 'function'){
-            process.nextTick(function(){ next(new Error('Object expired'), null, null, null, null); });
+          if(typeof callback === 'function'){
+            return callback(new Error('Object Expired'));
           }
         }
       });
     };
 
-    api.cache.destroy = function(key, next){
-      api.cache.checkLock(key, null, function(err, lockOk){
-        if(err || lockOk !== true){
-          if(typeof next === 'function'){ next(new Error('Object Locked')); }
+    api.cache.destroy = function(key, callback){
+      api.cache.checkLock(key, null, function(error, lockOk){
+        if(error || lockOk !== true){
+          if(typeof callback === 'function'){ callback(new Error('Object Locked')); }
         }else{
-          api.redis.client.del(api.cache.redisPrefix + key, function(err, count){
-            if(err){ api.log(err, 'error'); }
+          api.redis.client.del(api.cache.redisPrefix + key, function(error, count){
+            if(error){ api.log(error, 'error'); }
             var resp = true;
             if(count !== 1){ resp = false; }
-            if(typeof next === 'function'){ next(null, resp); }
+            if(typeof callback === 'function'){ callback(error, resp); }
           });
         }
       });
     };
 
-    api.cache.save = function(key, value, expireTimeMS, next){
-      if(typeof expireTimeMS === 'function' && typeof next === 'undefined'){
-        next = expireTimeMS;
+    api.cache.save = function(key, value, expireTimeMS, callback){
+      if(typeof expireTimeMS === 'function' && typeof callback === 'undefined'){
+        callback = expireTimeMS;
         expireTimeMS = null;
       }
+
       var expireTimeSeconds = null;
       var expireTimestamp = null;
       if(expireTimeMS !== null){
         expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
         expireTimestamp   = new Date().getTime() + expireTimeMS;
       }
+
       var cacheObj = {
         value:           value,
         expireTimestamp: expireTimestamp,
@@ -193,42 +196,48 @@ module.exports = {
         readAt:          null
       };
 
-      api.cache.checkLock(key, null, function(err, lockOk){
-        if(err || lockOk !== true){
-          if(typeof next === 'function'){ next(new Error('Object Locked')); }
+      api.cache.checkLock(key, null, function(error, lockOk){
+        if(error || lockOk !== true){
+          if(typeof callback === 'function'){ return callback(new Error('Object Locked')); }
         }else{
-          api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(err){
-            if(err === null && expireTimeSeconds){
-              api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds);
+          api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+            if(!error && expireTimeSeconds){
+              api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+                if(typeof callback === 'function'){ return callback(error, true); }
+              });
+            }else{
+              if(typeof callback === 'function'){ return callback(error, true); }
             }
-            if(typeof next === 'function'){ process.nextTick(function(){ next(err, true); }); }
           });
         }
       });
     };
 
-    api.cache.push = function(key, item, next){
+    api.cache.push = function(key, item, callback){
       var object = JSON.stringify({data: item});
-      api.redis.client.rpush(api.cache.redisPrefix + key, object, function(err){
-        if(typeof next === 'function'){ process.nextTick(function(){ next(err); }); }
+      api.redis.client.rpush(api.cache.redisPrefix + key, object, function(error){
+        if(typeof callback === 'function'){ callback(error); }
       });
     };
 
-    api.cache.pop = function(key, next){
-      api.redis.client.lpop(api.cache.redisPrefix + key, function(err, object){
-        if(err){ return next(err); }
-        if(!object){ return next(); }
-        var item = JSON.parse(object);
-        return next(null, item.data);
+    api.cache.pop = function(key, callback){
+      api.redis.client.lpop(api.cache.redisPrefix + key, function(error, object){
+        if(error){ return callback(error); }
+        if(!object){ return callback(); }
+        var item;
+        try{
+          item = JSON.parse(object);
+        }catch(error){ return callback(error); }
+        return callback(null, item.data);
       });
     };
 
-    api.cache.listLength = function(key, next){
-      api.redis.client.llen(api.cache.redisPrefix + key, next);
+    api.cache.listLength = function(key, callback){
+      api.redis.client.llen(api.cache.redisPrefix + key, callback);
     };
 
-    api.cache.lock = function(key, expireTimeMS, next){
-      if(typeof expireTimeMS === 'function' && next === null){
+    api.cache.lock = function(key, expireTimeMS, callback){
+      if(typeof expireTimeMS === 'function' && callback === null){
         expireTimeMS = expireTimeMS;
         expireTimeMS = null;
       }
@@ -236,18 +245,18 @@ module.exports = {
         expireTimeMS = api.cache.lockDuration;
       }
 
-      api.cache.checkLock(key, null, function(err, lockOk){
-        if(err || lockOk !== true){
-          next(err, false);
+      api.cache.checkLock(key, null, function(error, lockOk){
+        if(error || lockOk !== true){
+          return callback(error, false);
         }else{
-          api.redis.client.setnx(api.cache.lockPrefix + key, api.cache.lockName, function(err){
-            if(err){
-              next(err);
+          api.redis.client.setnx(api.cache.lockPrefix + key, api.cache.lockName, function(error){
+            if(error){
+              return callback(error);
             }else{
-              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(err){
+              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(error){
                 lockOk = true;
-                if(err){ lockOk = false; }
-                next(err, lockOk);
+                if(error){ lockOk = false; }
+                return callback(error, lockOk);
               });
             }
           });
@@ -255,35 +264,35 @@ module.exports = {
       });
     };
 
-    api.cache.unlock = function(key, next){
-      api.cache.checkLock(key, null, function(err, lockOk){
-        if(err || lockOk !== true){
-          next(err, false);
+    api.cache.unlock = function(key, callback){
+      api.cache.checkLock(key, null, function(error, lockOk){
+        if(error || lockOk !== true){
+          return callback(error, false);
         }else{
-          api.redis.client.del(api.cache.lockPrefix + key, function(err){
+          api.redis.client.del(api.cache.lockPrefix + key, function(error){
             lockOk = true;
-            if(err){ lockOk = false; }
-            next(err, lockOk);
+            if(error){ lockOk = false; }
+            return callback(error, lockOk);
           });
         }
       });
     };
 
-    api.cache.checkLock = function(key, retry, next, startTime){
+    api.cache.checkLock = function(key, retry, callback, startTime){
       if(startTime === null){ startTime = new Date().getTime(); }
 
-      api.redis.client.get(api.cache.lockPrefix + key, function(err, lockedBy){
-        if(err){
-          next(err, false);
+      api.redis.client.get(api.cache.lockPrefix + key, function(error, lockedBy){
+        if(error){
+          return callback(error, false);
         }else if(lockedBy === api.cache.lockName || lockedBy === null){
-          next(null, true);
+          return callback(null, true);
         }else{
           var delta = new Date().getTime() - startTime;
           if(retry === null || retry === false || delta > retry){
-            next(null, false);
+            return callback(null, false);
           }else{
-            setTimeout(function(){
-              api.cache.checkLock(key, retry, next, startTime);
+            return setTimeout(function(){
+              api.cache.checkLock(key, retry, callback, startTime);
             }, api.cache.lockRetry);
           }
         }

@@ -34,7 +34,7 @@ var connectClients = function(callback){
 describe('Server: Web Socket', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port;
@@ -52,7 +52,7 @@ describe('Server: Web Socket', function(){
   });
 
   it('socket client connections should work: client 1', function(done){
-    clientA.connect(function(err, data){
+    clientA.connect(function(error, data){
       data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
       clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
@@ -61,7 +61,7 @@ describe('Server: Web Socket', function(){
   });
 
   it('socket client connections should work: client 2', function(done){
-    clientB.connect(function(err, data){
+    clientB.connect(function(error, data){
       data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
       clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');
@@ -70,7 +70,7 @@ describe('Server: Web Socket', function(){
   });
 
   it('socket client connections should work: client 3', function(done){
-    clientC.connect(function(err, data){
+    clientC.connect(function(error, data){
       data.context.should.equal('response');
       data.data.totalActions.should.equal(0);
       clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api');

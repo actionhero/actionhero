@@ -18,7 +18,7 @@
       client.on('connected',    function(){ console.log('connected!') })
       client.on('disconnected', function(){ console.log('disconnected :(') })
 
-      client.on('error',        function(err){ console.log('error', err.stack) })
+      client.on('error',        function(error){ console.log('error', error.stack) })
       client.on('reconnect',    function(){ console.log('reconnect') })
       client.on('reconnecting', function(){ console.log('reconnecting') })
 
@@ -30,9 +30,9 @@
       client.on('welcome',      function(message){ appendMessage(message); })
       client.on('say',          function(message){ appendMessage(message); })
 
-      client.connect(function(err, details){
-        if(err != null){
-          console.log(err);
+      client.connect(function(error, details){
+        if(error != null){
+          console.log(error);
         }else{
           client.action('createChatRoom', {name: 'defaultRoom'}, function(data){
             console.log(data)

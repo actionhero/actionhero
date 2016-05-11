@@ -34,7 +34,7 @@ var connectClients = function(callback){
 describe('Server: Web Socket', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port;
@@ -83,11 +83,11 @@ describe('Server: Web Socket', function(){
     });
 
     it('should exist when web server been called', function(done){
-      request.get(url + '/api/', function(err, response, body){
+      request.get(url + '/api/', function(error, response, body){
         body = JSON.parse(body);
         var fingerprint = body.requesterInformation.fingerprint;
         cookieHeader = response.headers['set-cookie'][0];
-        clientA.connect(function(err, response){
+        clientA.connect(function(error, response){
           response.status.should.equal('OK');
           should(response.data).have.property('id');
           var id = response.data.id;
@@ -98,7 +98,7 @@ describe('Server: Web Socket', function(){
     });
 
     it('should not exist when web server has not been called', function(done){
-      clientA.connect(function(err, response){
+      clientA.connect(function(error, response){
         response.status.should.equal('OK');
         should(response.data).have.property('id');
         var id = response.data.id;
@@ -109,7 +109,7 @@ describe('Server: Web Socket', function(){
 
     it('should exist as long as cookie is passed', function(done){
       cookieHeader = api.config.servers.web.fingerprintOptions.cookieKey + '=dummyValue';
-      clientA.connect(function(err, response){
+      clientA.connect(function(error, response){
         response.status.should.equal('OK');
         should(response.data).have.property('id');
         var id = response.data.id;

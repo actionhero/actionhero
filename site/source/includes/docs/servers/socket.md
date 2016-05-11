@@ -125,8 +125,8 @@ client.on("welcome", function(msg){
   console.log("WELCOME: " + msg);
 });
 
-client.on("error", function(err, data){
-  console.log("ERROR: " + err);
+client.on("error", function(error, data){
+  console.log("ERROR: " + error);
   if(data){ console.log(data); }
 });
 
@@ -134,7 +134,7 @@ client.on("end", function(){
   console.log("Connection Ended");
 });
 
-client.on("timeout", function(err, request, caller){
+client.on("timeout", function(error, request, caller){
   console.log(request + " timed out");
 });
 
@@ -147,13 +147,13 @@ client.connect({
 
   // try an action
   var params = { key: "mykey", value: "myValue" };
-  client.actionWithParams("cacheTest", params, function(err, apiResponse, delta){
+  client.actionWithParams("cacheTest", params, function(error, apiResponse, delta){
     console.log("cacheTest action response: " + apiResponse.cacheTestResults.saveResp);
     console.log(" ~ request duration: " + delta + "ms");
   });
 
   // join a chat room and talk
-  client.roomAdd("defaultRoom", function(err){
+  client.roomAdd("defaultRoom", function(error){
     client.say("defaultRoom", "Hello from the actionheroClient");
     client.roomLeave("defaultRoom");
   });

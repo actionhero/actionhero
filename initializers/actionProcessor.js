@@ -145,9 +145,7 @@ module.exports = {
         }
       });
 
-      async.series(processors, function(err){
-        callback(err);
-      });
+      async.series(processors, callback);
     };
 
     api.actionProcessor.prototype.postProcessAction = function(callback){
@@ -165,9 +163,7 @@ module.exports = {
         }
       });
 
-      async.series(processors, function(err){
-        callback(err);
-      });
+      async.series(processors, callback);
     };
 
     api.actionProcessor.prototype.reduceParams = function(){

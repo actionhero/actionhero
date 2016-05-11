@@ -65,7 +65,7 @@ var connectClients = function(callback){
 describe('Server: Socket', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       connectClients(done);
     });
