@@ -26,3 +26,6 @@ after_script:
 
 after_failure:
   - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
+
+notifications:
+  slack: actionherojs:vj5i1wkPqEx0iKf6qXwQSnuX
