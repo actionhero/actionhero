@@ -123,7 +123,7 @@ module.exports = {
         try{ cacheObj = JSON.parse(cacheObj); }catch(e){}
         if(!cacheObj){
           if(typeof next === 'function'){
-            process.nextTick(function(){ next(new Error('Object not found'), null, null, null, null); });
+            process.nextTick(function(){ next(new Error(api.i18n.localize('Object not found')), null, null, null, null); });
           }
         }else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
           var lastReadAt = cacheObj.readAt;
@@ -140,7 +140,7 @@ module.exports = {
 
           api.cache.checkLock(key, options.retry, function(err, lockOk){
             if(err || lockOk !== true){
-              if(typeof next === 'function'){ next(new Error('Object Locked')); }
+              if(typeof next === 'function'){ next(new Error(api.i18n.localize('Object Locked'))); }
             }else{
               api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(err){
                 if(typeof expireTimeSeconds === 'number'){
@@ -154,7 +154,7 @@ module.exports = {
           });
         }else{
           if(typeof next === 'function'){
-            process.nextTick(function(){ next(new Error('Object expired'), null, null, null, null); });
+            process.nextTick(function(){ next(new Error(api.i18n.localize('Object expired')), null, null, null, null); });
           }
         }
       });
@@ -163,7 +163,7 @@ module.exports = {
     api.cache.destroy = function(key, next){
       api.cache.checkLock(key, null, function(err, lockOk){
         if(err || lockOk !== true){
-          if(typeof next === 'function'){ next(new Error('Object Locked')); }
+          if(typeof next === 'function'){ next(new Error(api.i18n.localize('Object Locked'))); }
         }else{
           api.redis.client.del(api.cache.redisPrefix + key, function(err, count){
             if(err){ api.log(err, 'error'); }
