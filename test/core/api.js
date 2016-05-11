@@ -6,7 +6,7 @@ var api;
 describe('Core: API', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       done();
     });

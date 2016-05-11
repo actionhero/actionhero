@@ -5,7 +5,9 @@ exports.enqueueTask = function(binary, next){
   var actionhero = new actionheroPrototype();
   var configChanges = {logger: {transports: null}};
 
-  actionhero.initialize({configChanges: configChanges}, function(err, api){
+  actionhero.initialize({configChanges: configChanges}, function(error, api){
+    if(error){ throw(error); }
+
     try{
       if(!binary.argv.name){ throw new Error('--name required'); }
       if(!api.tasks.tasks[binary.argv.name]){ throw new Error('Task "' + binary.argv.name + '" not found'); }

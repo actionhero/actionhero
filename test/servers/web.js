@@ -11,7 +11,7 @@ var url;
 describe('Server: Web', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       done();
@@ -25,7 +25,7 @@ describe('Server: Web', function(){
   });
 
   it('Server should be up and return data', function(done){
-    request.get(url + '/api/', function(err, response, body){
+    request.get(url + '/api/', function(error, response, body){
       body = JSON.parse(body);
       body.should.be.an.instanceOf(Object);
       done();
@@ -33,7 +33,7 @@ describe('Server: Web', function(){
   });
 
   it('Server basic response should be JSON and have basic data', function(done){
-    request.get(url + '/api/', function(err, response, body){
+    request.get(url + '/api/', function(error, response, body){
       body = JSON.parse(body);
       body.should.be.an.instanceOf(Object);
       body.requesterInformation.should.be.an.instanceOf(Object);
@@ -42,7 +42,7 @@ describe('Server: Web', function(){
   });
 
   it('params work', function(done){
-    request.get(url + '/api?key=value', function(err, response, body){
+    request.get(url + '/api?key=value', function(error, response, body){
       body = JSON.parse(body);
       body.requesterInformation.receivedParams.key.should.equal('value');
       done();
@@ -50,7 +50,7 @@ describe('Server: Web', function(){
   });
 
   it('params are ignored unless they are in the whitelist', function(done){
-    request.get(url + '/api?crazyParam123=something', function(err, response, body){
+    request.get(url + '/api?crazyParam123=something', function(error, response, body){
       body = JSON.parse(body);
       should.not.exist(body.requesterInformation.receivedParams.crazyParam123);
       done();
@@ -136,7 +136,7 @@ describe('Server: Web', function(){
     });
 
     it('errors can be error strings', function(done){
-      request.get(url + '/api/stringErrorTestAction/', function(err, response, body){
+      request.get(url + '/api/stringErrorTestAction/', function(error, response, body){
         body = JSON.parse(body);
         body.error.should.equal('broken');
         done();
@@ -144,7 +144,7 @@ describe('Server: Web', function(){
     });
 
     it('errors can be error objects and returned plainly', function(done){
-      request.get(url + '/api/errorErrorTestAction/', function(err, response, body){
+      request.get(url + '/api/errorErrorTestAction/', function(error, response, body){
         body = JSON.parse(body);
         body.error.should.equal('broken');
         done();
@@ -152,7 +152,7 @@ describe('Server: Web', function(){
     });
 
     it('errors can be complex JSON payloads', function(done){
-      request.get(url + '/api/complexErrorTestAction/', function(err, response, body){
+      request.get(url + '/api/complexErrorTestAction/', function(error, response, body){
         body = JSON.parse(body);
         body.error.error.should.equal('broken');
         body.error.reason.should.equal('stuff');
@@ -177,7 +177,7 @@ describe('Server: Web', function(){
     });
 
     it('params are not ignored', function(done){
-      request.get(url + '/api/testAction/?crazyParam123=something', function(err, response, body){
+      request.get(url + '/api/testAction/?crazyParam123=something', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.crazyParam123.should.equal('something');
         done();
@@ -187,7 +187,7 @@ describe('Server: Web', function(){
   });
 
   it('gibberish actions have the right response', function(done){
-    request.get(url + '/api/IAMNOTANACTION', function(err, response, body){
+    request.get(url + '/api/IAMNOTANACTION', function(error, response, body){
       body = JSON.parse(body);
       body.error.should.equal('unknown action or invalid apiVersion');
       done();
@@ -195,7 +195,7 @@ describe('Server: Web', function(){
   });
 
   it('real actions do not have an error response', function(done){
-    request.get(url + '/api/status', function(err, response, body){
+    request.get(url + '/api/status', function(error, response, body){
       body = JSON.parse(body);
       should.not.exist(body.error);
       done();
@@ -203,7 +203,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: GET', function(done){
-    request.get(url + '/api/randomNumber', function(err, response, body){
+    request.get(url + '/api/randomNumber', function(error, response, body){
       body = JSON.parse(body);
       body.randomNumber.should.be.within(0, 1);
       done();
@@ -211,7 +211,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: PUT', function(done){
-    request.put(url + '/api/randomNumber', function(err, response, body){
+    request.put(url + '/api/randomNumber', function(error, response, body){
       body = JSON.parse(body);
       body.randomNumber.should.be.within(0, 10);
       done();
@@ -219,7 +219,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: POST', function(done){
-    request.post(url + '/api/randomNumber', function(err, response, body){
+    request.post(url + '/api/randomNumber', function(error, response, body){
       body = JSON.parse(body);
       body.randomNumber.should.be.within(0, 100);
       done();
@@ -227,7 +227,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: DELETE', function(done){
-    request.del(url + '/api/randomNumber', function(err, response, body){
+    request.del(url + '/api/randomNumber', function(error, response, body){
       body = JSON.parse(body);
       body.randomNumber.should.be.within(0, 1000);
       done();
@@ -235,7 +235,7 @@ describe('Server: Web', function(){
   });
 
   it('HTTP Verbs should work: Post with Form', function(done){
-    request.post(url + '/api/cacheTest', {form: {key:'key', value: 'value'}}, function(err, response, body){
+    request.post(url + '/api/cacheTest', {form: {key:'key', value: 'value'}}, function(error, response, body){
       body = JSON.parse(body);
       body.cacheTestResults.saveResp.should.eql(true);
       done();
@@ -244,7 +244,7 @@ describe('Server: Web', function(){
 
   it('HTTP Verbs should work: Post with JSON Payload as body', function(done){
     var body = JSON.stringify({key:'key', value: 'value'});
-    request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
+    request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, function(error, response, body){
       body = JSON.parse(body);
       body.cacheTestResults.saveResp.should.eql(true);
       done();
@@ -277,7 +277,7 @@ describe('Server: Web', function(){
     });
 
     it('.query should contain unfiltered query params', function(done){
-      request.get(url + '/api/paramTestAction/?crazyParam123=something', function(err, response, body){
+      request.get(url + '/api/paramTestAction/?crazyParam123=something', function(error, response, body){
         body = JSON.parse(body);
         body.query.crazyParam123.should.equal('something');
         done();
@@ -286,7 +286,7 @@ describe('Server: Web', function(){
 
     it('.body should contain unfiltered request body params', function(done){
       var requestBody = JSON.stringify({key:'value'});
-      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(err, response, body){
+      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, function(error, response, body){
         body = JSON.parse(body);
         body.body.key.should.eql('value');
         done();
@@ -296,7 +296,7 @@ describe('Server: Web', function(){
 
   it('returnErrorCodes false should still have a status of 200', function(done){
     api.config.servers.web.returnErrorCodes = false;
-    request.del(url + '/api/', function(err, response, body){
+    request.del(url + '/api/', function(error, response, body){
       body = JSON.parse(body);
       response.statusCode.should.eql(200);
       done();
@@ -305,7 +305,7 @@ describe('Server: Web', function(){
 
   it('returnErrorCodes can be opted to change http header codes', function(done){
     api.config.servers.web.returnErrorCodes = true;
-    request.del(url + '/api/', function(err, response, body){
+    request.del(url + '/api/', function(error, response, body){
       body = JSON.parse(body);
       response.statusCode.should.eql(404);
       done();
@@ -345,7 +345,7 @@ describe('Server: Web', function(){
     });
 
     it('duplicate headers should be removed (in favor of the last set)', function(done){
-      request.get(url + '/api/headerTestAction', function(err, response, body){
+      request.get(url + '/api/headerTestAction', function(error, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(200);
         response.headers.thing.should.eql('C');
@@ -354,7 +354,7 @@ describe('Server: Web', function(){
     });
 
     it('but duplicate set-cookie requests should be allowed', function(done){
-      request.get(url + '/api/headerTestAction', function(err, response, body){
+      request.get(url + '/api/headerTestAction', function(error, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(200);
         response.headers['set-cookie'].length.should.eql(3); // 2 + session
@@ -365,7 +365,7 @@ describe('Server: Web', function(){
     });
 
     it('should respond to OPTIONS with only HTTP headers', function(done){
-      request({method: 'options', url: url + '/api/cacheTest'}, function(err, response){
+      request({method: 'options', url: url + '/api/cacheTest'}, function(error, response){
         response.statusCode.should.eql(200);
         response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE');
         response.headers['access-control-allow-origin'].should.equal('*');
@@ -375,7 +375,7 @@ describe('Server: Web', function(){
     });
 
     it('should respond to TRACE with parsed params received', function(done){
-      request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, function(err, response, body){
+      request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, function(error, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(200);
         body.receivedParams.key.should.equal('someKey');
@@ -385,7 +385,7 @@ describe('Server: Web', function(){
     });
 
     it('should respond to HEAD requests just like GET, but with no body', function(done){
-      request({method: 'head', url: url + '/api/headerTestAction'}, function(err, response, body){
+      request({method: 'head', url: url + '/api/headerTestAction'}, function(error, response, body){
         response.statusCode.should.eql(200);
         body.should.equal('');
         done();
@@ -394,10 +394,10 @@ describe('Server: Web', function(){
 
     it('keeps sessions with browser_fingerprint', function(done){
       var j = request.jar();
-      request.post({url: url + '/api', jar: j}, function(err, response1, body1){
-        request.get({url: url + '/api', jar: j}, function(err, response2, body2){
-          request.put({url: url + '/api', jar: j}, function(err, response3, body3){
-            request.del({url: url + '/api', jar: j}, function(err, response4, body4){
+      request.post({url: url + '/api', jar: j}, function(error, response1, body1){
+        request.get({url: url + '/api', jar: j}, function(error, response2, body2){
+          request.put({url: url + '/api', jar: j}, function(error, response3, body3){
+            request.del({url: url + '/api', jar: j}, function(error, response4, body4){
               body1 = JSON.parse(body1);
               body2 = JSON.parse(body2);
               body3 = JSON.parse(body3);
@@ -468,7 +468,7 @@ describe('Server: Web', function(){
     });
 
     it('actions that do not exists should return 404', function(done){
-      request.post(url + '/api/aFakeAction', function(err, response, body){
+      request.post(url + '/api/aFakeAction', function(error, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(404);
         done();
@@ -476,7 +476,7 @@ describe('Server: Web', function(){
     });
 
     it('missing params result in a 422', function(done){
-      request.post(url + '/api/statusTestAction', function(err, response, body){
+      request.post(url + '/api/statusTestAction', function(error, response, body){
         body = JSON.parse(body);
         response.statusCode.should.eql(422);
         done();
@@ -484,7 +484,7 @@ describe('Server: Web', function(){
     });
 
     it('status codes can be set for errors', function(done){
-      request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, function(err, response, body){
+      request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, function(error, response, body){
         body = JSON.parse(body);
         body.error.should.eql('key != value');
         response.statusCode.should.eql(402);
@@ -493,7 +493,7 @@ describe('Server: Web', function(){
     });
 
     it('status code should still be 200 if everything is OK', function(done){
-      request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, function(err, response, body){
+      request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, function(error, response, body){
         body = JSON.parse(body);
         body.good.should.eql(true);
         response.statusCode.should.eql(200);
@@ -506,7 +506,7 @@ describe('Server: Web', function(){
   describe('documentation', function(){
 
     it('documentation can be returned via a documentation action', function(done){
-      request.get(url + '/api/showDocumentation', function(err, response, body){
+      request.get(url + '/api/showDocumentation', function(error, response, body){
         body = JSON.parse(body);
         body.documentation.should.be.an.instanceOf(Object);
         done();
@@ -514,7 +514,7 @@ describe('Server: Web', function(){
     });
 
     it('should have actions with all the right parts', function(done){
-      request.get(url + '/api/showDocumentation', function(err, response, body){
+      request.get(url + '/api/showDocumentation', function(error, response, body){
         body = JSON.parse(body);
         for(var actionName in body.documentation){
           for(var version in body.documentation[actionName]){
@@ -533,7 +533,7 @@ describe('Server: Web', function(){
   describe('files', function(){
 
     it('file: an HTML file', function(done){
-      request.get(url + '/public/simple.html', function(err, response){
+      request.get(url + '/public/simple.html', function(error, response){
         response.statusCode.should.equal(200);
         response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
         done();
@@ -541,14 +541,14 @@ describe('Server: Web', function(){
     });
 
     it('file: 404 pages', function(done){
-      request.get(url + '/public/notARealFile', function(err, response){
+      request.get(url + '/public/notARealFile', function(error, response){
         response.statusCode.should.equal(404);
         done();
       });
     });
 
     it('I should not see files outside of the public dir', function(done){
-      request.get(url + '/public/../config.json', function(err, response){
+      request.get(url + '/public/../config.json', function(error, response){
         response.statusCode.should.equal(404);
         response.body.should.equal('That file is not found (..' + path.sep + 'config.json)');
         done();
@@ -556,7 +556,7 @@ describe('Server: Web', function(){
     });
 
     it('file: index page should be served when requesting a path (trailing slash)', function(done){
-      request.get(url + '/public/', function(err, response){
+      request.get(url + '/public/', function(error, response){
         response.statusCode.should.equal(200);
         response.body.should.be.a.String;
         done();
@@ -564,7 +564,7 @@ describe('Server: Web', function(){
     });
 
     it('file: index page should be served when requesting a path (no trailing slash)', function(done){
-      request.get(url + '/public', function(err, response){
+      request.get(url + '/public', function(error, response){
         response.statusCode.should.equal(200);
         response.body.should.be.a.String;
         done();
@@ -592,7 +592,7 @@ describe('Server: Web', function(){
       });
 
       it('works for routes mapped paths', function(done){
-        request.get(url + '/my/public/route/testFile.html', function(err, response){
+        request.get(url + '/my/public/route/testFile.html', function(error, response){
           response.statusCode.should.equal(200);
           response.body.should.equal('ActionHero Route Test File');
           done();
@@ -600,14 +600,14 @@ describe('Server: Web', function(){
       });
 
       it('returns 404 for files not available in route mapped paths', function(done){
-        request.get(url + '/my/public/route/fileNotFound.html', function(err, response){
+        request.get(url + '/my/public/route/fileNotFound.html', function(error, response){
           response.statusCode.should.equal(404);
           done();
         });
       });
 
       it('I should not see files outside of the mapped dir', function(done){
-        request.get(url + '/my/public/route/../../config/servers/web.js', function(err, response){
+        request.get(url + '/my/public/route/../../config/servers/web.js', function(error, response){
           response.statusCode.should.equal(404);
           done();
         });
@@ -634,7 +634,7 @@ describe('Server: Web', function(){
       });
 
       it('works for secondary paths', function(done){
-        request.get(url + '/public/testFile.html', function(err, response){
+        request.get(url + '/public/testFile.html', function(error, response){
           response.statusCode.should.equal(200);
           response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
           done();
@@ -654,28 +654,28 @@ describe('Server: Web', function(){
       });
 
       it('old action routes stop working', function(done){
-        request.get(url + '/api/randomNumber', function(err, response){
+        request.get(url + '/api/randomNumber', function(error, response){
           response.statusCode.should.equal(404);
           done();
         });
       });
 
       it('can ask for nested URL actions', function(done){
-        request.get(url + '/craz/y/action/path/randomNumber', function(err, response){
+        request.get(url + '/craz/y/action/path/randomNumber', function(error, response){
           response.statusCode.should.equal(200);
           done();
         });
       });
 
       it('old file routes stop working', function(done){
-        request.get(url + '/public/simple.html', function(err, response){
+        request.get(url + '/public/simple.html', function(error, response){
           response.statusCode.should.equal(404);
           done();
         });
       });
 
       it('can ask for nested URL files', function(done){
-        request.get(url + '/a/b/c/simple.html', function(err, response){
+        request.get(url + '/a/b/c/simple.html', function(error, response){
           response.statusCode.should.equal(200);
           response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
           done();
@@ -683,7 +683,7 @@ describe('Server: Web', function(){
       });
 
       it('can ask for nested URL files with depth', function(done){
-        request.get(url + '/a/b/c/css/actionhero.css', function(err, response){
+        request.get(url + '/a/b/c/css/actionhero.css', function(error, response){
           response.statusCode.should.equal(200);
           done();
         });
@@ -790,7 +790,7 @@ describe('Server: Web', function(){
     });
 
     it('unknown actions are still unknown', function(done){
-      request.get(url + '/api/a_crazy_action', function(err, response, body){
+      request.get(url + '/api/a_crazy_action', function(error, response, body){
         body = JSON.parse(body);
         body.error.should.equal('unknown action or invalid apiVersion');
         done();
@@ -798,7 +798,7 @@ describe('Server: Web', function(){
     });
 
     it('explicit action declarations still override routed actions, if the defined action is real', function(done){
-      request.get(url + '/api/user/123?action=randomNumber', function(err, response, body){
+      request.get(url + '/api/user/123?action=randomNumber', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('randomNumber');
         done();
@@ -806,7 +806,7 @@ describe('Server: Web', function(){
     });
 
     it('route actions will override explicit actions, if the defined action is null', function(done){
-      request.get(url + '/api/user/123?action=someFakeAction', function(err, response, body){
+      request.get(url + '/api/user/123?action=someFakeAction', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         done();
@@ -814,7 +814,7 @@ describe('Server: Web', function(){
     });
 
     it('route actions have the matched route availalbe to the action', function(done){
-      request.get(url + '/api/mimeTestAction/thing.json', function(err, response, body){
+      request.get(url + '/api/mimeTestAction/thing.json', function(error, response, body){
         body = JSON.parse(body);
         body.matchedRoute.path.should.equal('/mimeTestAction/:key');
         body.matchedRoute.action.should.equal('mimeTestAction');
@@ -823,7 +823,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should recognize apiVersion as default param', function(done){
-      request.get(url + '/api/old_login?user_id=7', function(err, response, body){
+      request.get(url + '/api/old_login?user_id=7', function(error, response, body){
         body = JSON.parse(body);
         body.user_id.should.equal('7');
         body.requesterInformation.receivedParams.action.should.equal('login');
@@ -832,7 +832,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should be mapped for GET (simple)', function(done){
-      request.get(url + '/api/users', function(err, response, body){
+      request.get(url + '/api/users', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('usersList');
         done();
@@ -840,7 +840,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should be mapped for GET (complex)', function(done){
-      request.get(url + '/api/user/1234', function(err, response, body){
+      request.get(url + '/api/user/1234', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         body.requesterInformation.receivedParams.userID.should.equal('1234');
@@ -849,7 +849,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should be mapped for POST', function(done){
-      request.post(url + '/api/user/1234?key=value', function(err, response, body){
+      request.post(url + '/api/user/1234?key=value', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         body.requesterInformation.receivedParams.userID.should.equal('1234');
@@ -859,7 +859,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should be mapped for PUT', function(done){
-      request.put(url + '/api/user/1234?key=value', function(err, response, body){
+      request.put(url + '/api/user/1234?key=value', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         body.requesterInformation.receivedParams.userID.should.equal('1234');
@@ -869,7 +869,7 @@ describe('Server: Web', function(){
     });
 
     it('Routes should be mapped for DELETE', function(done){
-      request.del(url + '/api/user/1234?key=value', function(err, response, body){
+      request.del(url + '/api/user/1234?key=value', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         body.requesterInformation.receivedParams.userID.should.equal('1234');
@@ -879,7 +879,7 @@ describe('Server: Web', function(){
     });
 
     it('route params trump explicit params', function(done){
-      request.get(url + '/api/user/1?userID=2', function(err, response, body){
+      request.get(url + '/api/user/1?userID=2', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('user');
         body.requesterInformation.receivedParams.userID.should.equal('1');
@@ -888,11 +888,11 @@ describe('Server: Web', function(){
     });
 
     it('to match, a route much match all parts of the URL', function(done){
-      request.get(url + '/api/thing', function(err, response, body){
+      request.get(url + '/api/thing', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('thing');
 
-        request.get(url + '/api/thing/stuff', function(err, response, body){
+        request.get(url + '/api/thing/stuff', function(error, response, body){
           body = JSON.parse(body);
           body.requesterInformation.receivedParams.action.should.equal('thingStuff');
           done();
@@ -901,12 +901,12 @@ describe('Server: Web', function(){
     });
 
     it('regexp matches will provide proper variables', function(done){
-      request.post(url + '/api/login/123', function(err, response, body){
+      request.post(url + '/api/login/123', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('login');
         body.requesterInformation.receivedParams.userID.should.equal('123');
 
-        request.post(url + '/api/login/admin', function(err, response, body){
+        request.post(url + '/api/login/admin', function(error, response, body){
           body = JSON.parse(body);
           body.requesterInformation.receivedParams.action.should.equal('login');
           body.requesterInformation.receivedParams.userID.should.equal('admin');
@@ -916,7 +916,7 @@ describe('Server: Web', function(){
     });
 
     it('regexp matches will still work with params with periods and other wacky chars', function(done){
-      request.get(url + '/api/c/key/log_me-in.com$123.jpg', function(err, response, body){
+      request.get(url + '/api/c/key/log_me-in.com$123.jpg', function(error, response, body){
         body = JSON.parse(body);
         body.requesterInformation.receivedParams.action.should.equal('cacheTest');
         body.requesterInformation.receivedParams.value.should.equal('log_me-in.com$123.jpg');
@@ -925,7 +925,7 @@ describe('Server: Web', function(){
     });
 
     it('regexp match failures will be rejected', function(done){
-      request.post(url + '/api/login/1234', function(err, response, body){
+      request.post(url + '/api/login/1234', function(error, response, body){
         body = JSON.parse(body);
         body.error.should.equal('unknown action or invalid apiVersion');
         should.not.exist(body.requesterInformation.receivedParams.userID);
@@ -936,14 +936,14 @@ describe('Server: Web', function(){
     describe('file extensions + routes', function(){
 
       it('will change header information based on extension (when active)', function(done){
-        request.get(url + '/api/mimeTestAction/val.png', function(err, response){
+        request.get(url + '/api/mimeTestAction/val.png', function(error, response){
           response.headers['content-type'].should.equal('image/png');
           done();
         });
       });
 
       it('will not change header information if there is a connection.error', function(done){
-        request.get(url + '/api/mimeTestAction', function(err, response, body){
+        request.get(url + '/api/mimeTestAction', function(error, response, body){
           body = JSON.parse(body);
           response.headers['content-type'].should.equal('application/json; charset=utf-8');
           body.error.should.equal('key is a required parameter for this action');
@@ -952,7 +952,7 @@ describe('Server: Web', function(){
       });
 
       it('works with with matchTrailingPathParts', function(done){
-        request.get(url + '/api/a/wild/theKey/and/some/more/path', function(err, response, body){
+        request.get(url + '/api/a/wild/theKey/and/some/more/path', function(error, response, body){
           body = JSON.parse(body);
           body.requesterInformation.receivedParams.action.should.equal('mimeTestAction');
           body.requesterInformation.receivedParams.path.should.equal('and/some/more/path');
@@ -984,7 +984,7 @@ describe('Server: Web', function(){
       });
 
       it('will decode %20 or plus sign to a space so that file system can read', function(done){
-        request.get(url + '/sky%20with%20space.jpg', function(err, response){
+        request.get(url + '/sky%20with%20space.jpg', function(error, response){
           response.statusCode.should.equal(200);
           response.body.should.be.an.instanceOf(Object);
           response.headers['content-type'].should.equal('image/jpeg');
@@ -993,7 +993,7 @@ describe('Server: Web', function(){
       });
 
       it('will capture bad encoding in URL and return NOT FOUND', function(done){
-        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function(err, response){
+        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function(error, response){
           response.statusCode.should.equal(404);
           response.body.should.be.an.instanceOf(String);
           response.body.should.startWith('That file is not found');

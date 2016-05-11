@@ -64,8 +64,8 @@ ActionheroClient.prototype.connect = function(callback){
     });
   })
 
-  self.client.on('error', function(err){
-    self.emit('error', err);
+  self.client.on('error', function(error){
+    self.emit('error', error);
   });
 
   self.client.on('reconnect', function(){

@@ -16,7 +16,7 @@ Keep in mind that many clients/server can access a cached value simultaneously, 
 
 ```javascript
 // This will ask all nodes connected to the cluster if they have connection #`abc123` and if they do, run `connection.set('auth', true) on it`
-api.connections.apply('abc123', 'set', ['auth', true], function(err){
+api.connections.apply('abc123', 'set', ['auth', true], function(error){
   // do stuff
 });
 ```
@@ -44,7 +44,7 @@ actionhero has exposed `api.connections.apply` which can be used to retrive data
 ### api.connections.apply(connectionId, method, args, callback)
 - connectionId is required
 - if `method` and `args` can be ignored if you just want to retirve information abou a connection, IE: `api.connections.apply(connectionId, callback)`
-- `callback` is of the form `function(err, connectionDetails)`
+- `callback` is of the form `function(error, connectionDetails)`
 
 ## Generic Pub/Sub
 

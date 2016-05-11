@@ -134,7 +134,7 @@ exports.task = {
 
 <% code("javascript") do %>
 // api.tasks.enqueue(nameOfTask, args, queue, callback)
-api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
+api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(error, toRun){
   // enqueued!
 });
 <% end %>
@@ -151,7 +151,7 @@ api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(
 // client 1
 var client1 = new ActionheroClient;
 client1.connect(function(error, details){
-    client1.roomAdd("myChatRoom", function(err){
+    client1.roomAdd("myChatRoom", function(error){
         client1.say('myChatRoom', 'hello from client 1');
     });
 });
@@ -159,7 +159,7 @@ client1.connect(function(error, details){
 // client 2
 var client2 = new ActionheroClient;
 client2.connect(function(error, details){
-    client2.roomAdd("myChatRoom", function(err){
+    client2.roomAdd("myChatRoom", function(error){
         client2.on('say', function(message){
             console.log(message);
         });

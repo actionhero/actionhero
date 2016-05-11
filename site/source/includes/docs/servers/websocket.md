@@ -22,10 +22,10 @@ In `v9.0.0` and later, actionhero will no longer attempt to manage non-sticky cl
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })
 
-  client.on('error',        function(err){ console.log('error', err.stack) })
+  client.on('error',        function(error){ console.log('error', error.stack) })
   client.on('reconnect',    function(){ console.log('reconnect') })
   client.on('reconnecting', function(){ console.log('reconnecting') })
-  
+
   // this will log all messages send the client
   // client.on('message',      function(message){ console.log(message) })
 
@@ -35,9 +35,9 @@ In `v9.0.0` and later, actionhero will no longer attempt to manage non-sticky cl
   client.on('welcome',      function(message){ appendMessage(message); })
   client.on('say',          function(message){ appendMessage(message); })
 
-  client.connect(function(err, details){
-    if(err != null){
-      console.log(err);
+  client.connect(function(error, details){
+    if(error != null){
+      console.log(error);
     }else{
       client.roomAdd("defaultRoom");
       client.action('someAction', {key: 'k', value: 'v'}, function(error, data){
@@ -49,7 +49,7 @@ In `v9.0.0` and later, actionhero will no longer attempt to manage non-sticky cl
 </script>
 ```
 
-`connection.type` for a webSocket client is "webSocket".  This type will not change regardless of if the client has fallen back to another protocol. 
+`connection.type` for a webSocket client is "webSocket".  This type will not change regardless of if the client has fallen back to another protocol.
 
 Data is always returned as JSON objects to the webSocket client.  
 
@@ -78,12 +78,12 @@ Methods which the provided actionheroWebSocket object expose are:
   - note that you have to first join a room with `roomAdd` to chat within it of recieve events
 
 ### client.detailsView(callback)
-  - `callback` will be passed `error`, `response` 
+  - `callback` will be passed `error`, `response`
   - the first response from detailsView will also always be saved to `client.details` for later inspection
   - may contain an `error`
 
 ### client.roomView(room, callback)
-  - will return metadata about the room 
+  - will return metadata about the room
   - may contain an `error`
 
 ### client.roomAdd(room, callback)
@@ -169,7 +169,7 @@ clientJsName:     'actionheroClient',
 // should the server signal clients to not reconnect when the server is shutdown/reboot
 destroyClientsOnShutdown: false,
 
-// Primus Server Options: 
+// Primus Server Options:
 server: {
   // authorization: null,
   // pathname:      '/primus',
@@ -185,7 +185,7 @@ server: {
   // exposed:       false,
 },
 
-// Priumus Client Options: 
+// Priumus Client Options:
 client: {
   // reconnect:        {},
   // timeout:          10000,
@@ -201,4 +201,3 @@ client: {
 ```
 
 You can create your client with options.  Options for both the server and client are stored in `/config/servers/websocket.js`.  Note there are 3 sections: 'server', 'client', and 'generation':
-

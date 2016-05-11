@@ -30,7 +30,7 @@ describe('Core: Binary', function(){
       ];
       doBash(commands, function(){
         var AHPath = path.normalize(__dirname + '/../..');
-        fs.readFile(testDir + '/package.json', 'utf8', function(err, data){
+        fs.readFile(testDir + '/package.json', 'utf8', function(error, data){
           var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath);
           fs.writeFile(testDir + '/package.json', result, 'utf8', function(){
             done();
@@ -53,8 +53,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' generate'
-      ], function(err){
-        should.not.exist(err);
+      ], function(error){
+        should.not.exist(error);
 
         [
           'actions',
@@ -98,8 +98,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' help'
-      ], function(err, data){
-        should.not.exist(err);
+      ], function(error, data){
+        should.not.exist(error);
         data.should.containEql('actionhero startCluster');
         data.should.containEql('Binary options:');
         data.should.containEql('actionhero generateServer');
@@ -111,8 +111,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' win'
-      ], function(err, data){
-        should.exist(err);
+      ], function(error, data){
+        should.exist(error);
         data.should.containEql('\'win\' is not a known action');
         data.should.containEql('run \'actionhero help\' for more information');
         done();
@@ -123,8 +123,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' generateAction --name=myAction --description=my_description'
-      ], function(err){
-        should.not.exist(err);
+      ], function(error){
+        should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/actions/myAction.js'));
         data.should.containEql('name:                   \'myAction\'');
         data.should.containEql('description:            \'my_description\'');
@@ -137,8 +137,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' generateTask --name=myTask --description=my_description --queue=my_queue --frequency=12345'
-      ], function(err){
-        should.not.exist(err);
+      ], function(error){
+        should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'));
         data.should.containEql('name:          \'myTask\'');
         data.should.containEql('description:   \'my_description\'');
@@ -153,8 +153,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' generateServer --name=myServer'
-      ], function(err){
-        should.not.exist(err);
+      ], function(error){
+        should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/servers/myServer.js'));
         data.should.containEql('canChat: true');
         data.should.containEql('logConnections: true');
@@ -168,8 +168,8 @@ describe('Core: Binary', function(){
       doBash([
         'cd ' + testDir,
         binary + ' generateInitializer --name=myInitializer'
-      ], function(err){
-        should.not.exist(err);
+      ], function(error){
+        should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'));
         data.should.containEql('loadPriority:  1000');
         data.should.containEql('startPriority: 1000');
@@ -200,4 +200,3 @@ describe('Core: Binary', function(){
 
   }
 });
-

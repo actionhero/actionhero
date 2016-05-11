@@ -9,7 +9,7 @@ module.exports = {
     api.exceptionHandlers = {};
     api.exceptionHandlers.reporters = [];
 
-    var consoleReporter = function(err, type, name, objects, severity){
+    var consoleReporter = function(error, type, name, objects, severity){
       var extraMessages = [];
 
       if(type === 'loader'){
@@ -33,7 +33,7 @@ module.exports = {
           extraMessages.push('!     arguments: ' + JSON.stringify(objects.task.args));
         }catch(e){}
       }else{
-        extraMessages.push('! Error: ' + err.message);
+        extraMessages.push('! Error: ' + error.message);
         extraMessages.push('!     Type: ' + type);
         extraMessages.push('!     Name: ' + name);
         extraMessages.push('!     Data: ' + JSON.stringify(objects));
@@ -44,9 +44,9 @@ module.exports = {
       }
       var lines;
       try{
-        lines = err.stack.split(os.EOL);
+        lines = error.stack.split(os.EOL);
       }catch(e){
-        lines = new Error(err).stack.split(os.EOL);
+        lines = new Error(error).stack.split(os.EOL);
       }
       for(var l in lines){
         var line = lines[l];
@@ -57,10 +57,10 @@ module.exports = {
 
     api.exceptionHandlers.reporters.push(consoleReporter);
 
-    api.exceptionHandlers.report = function(err, type, name, objects, severity){
+    api.exceptionHandlers.report = function(error, type, name, objects, severity){
       if(!severity){ severity = 'error'; }
       for(var i in api.exceptionHandlers.reporters){
-        api.exceptionHandlers.reporters[i](err, type, name, objects, severity);
+        api.exceptionHandlers.reporters[i](error, type, name, objects, severity);
       }
     };
 
@@ -68,33 +68,33 @@ module.exports = {
     // TYPES //
     ///////////
 
-    api.exceptionHandlers.loader = function(fullFilePath, err){
+    api.exceptionHandlers.loader = function(fullFilePath, error){
       var name = 'loader:' + fullFilePath;
-      api.exceptionHandlers.report(err, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
+      api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
     };
 
-    api.exceptionHandlers.action = function(err, data, next){
+    api.exceptionHandlers.action = function(error, data, next){
       var simpleName;
       try{
         simpleName = data.action;
       }catch(e){
-        simpleName = err.message;
+        simpleName = error.message;
       }
       var name = 'action:' + simpleName;
-      api.exceptionHandlers.report(err, 'action', name, {connection: data.connection}, 'error');
+      api.exceptionHandlers.report(error, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
       if(typeof next === 'function'){ next(); }
     };
 
-    api.exceptionHandlers.task = function(err, queue, task, workerId){
+    api.exceptionHandlers.task = function(error, queue, task, workerId){
       var simpleName;
       try{
         simpleName = task['class'];
       }catch(e){
-        simpleName = err.message;
+        simpleName = error.message;
       }
       var name = 'task:' + simpleName;
-      api.exceptionHandlers.report(err, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
+      api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
     };
 
     next();

@@ -32,7 +32,7 @@ var multiAction = function(action, count, params, next){
 describe('Benchmarks', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       done();
     });

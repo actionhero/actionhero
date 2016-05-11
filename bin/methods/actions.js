@@ -5,7 +5,7 @@ exports.actions = function(binary, next){
   var actionhero = new actionheroPrototype();
   var configChanges = {logger: {transports: null}};
 
-  actionhero.initialize({configChanges: configChanges}, function(err, api){
+  actionhero.initialize({configChanges: configChanges}, function(error, api){
     for(var actionName in api.actions.actions){
 
       binary.log(actionName);

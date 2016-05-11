@@ -10,7 +10,9 @@ exports.console = function(binary, next){
     general: {developmentMode: false}
   };
 
-  actionhero.initialize({configChanges: configChanges}, function(err, api){
+  actionhero.initialize({configChanges: configChanges}, function(error, api){
+    if(error){ throw(error); }
+
     for(var i in api.config.servers){ api.config.servers[i].enabled = false; }
     api.config.general.developmentMode = false;
     api.config.tasks.scheduler         = false;
