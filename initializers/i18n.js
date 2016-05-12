@@ -19,7 +19,6 @@ module.exports = {
         // perhaps your API can use a certain cookie or URL to determine locale
         return api.config.i18n.defaultLocale;
       },
-
       invokeConnectionLocale: function(connection){
         var cmdParts = api.config.i18n.determineConnectionLocale.split('.');
         var cmd = cmdParts.shift();
@@ -28,7 +27,6 @@ module.exports = {
         var locale = method(connection);
         api.i18n.setLocale(connection, locale);
       },
-
       localize: function(message, options){
         if(!Array.isArray(message)){ message = [message]; }
         if(!options){ options = api.i18n; }
