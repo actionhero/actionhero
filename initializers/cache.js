@@ -123,7 +123,7 @@ module.exports = {
         try{ cacheObj = JSON.parse(cacheObj); }catch(e){}
         if(!cacheObj){
           if(typeof callback === 'function'){
-            return callback(new Error('Object not found'), null, null, null, null);
+            return callback(new Error(api.i18n.localize('Object not found')), null, null, null, null);
           }
         }else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
           var lastReadAt = cacheObj.readAt;
@@ -140,7 +140,7 @@ module.exports = {
 
           api.cache.checkLock(key, options.retry, function(error, lockOk){
             if(error || lockOk !== true){
-              if(typeof callback === 'function'){ return callback(new Error('Object Locked')); }
+              if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
             }else{
               api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
                 if(typeof callback === 'function' && typeof expireTimeSeconds !== 'number'){
@@ -155,7 +155,7 @@ module.exports = {
           });
         }else{
           if(typeof callback === 'function'){
-            return callback(new Error('Object Expired'));
+            return callback(new Error(api.i18n.localize('Object Expired')));
           }
         }
       });
@@ -164,7 +164,7 @@ module.exports = {
     api.cache.destroy = function(key, callback){
       api.cache.checkLock(key, null, function(error, lockOk){
         if(error || lockOk !== true){
-          if(typeof callback === 'function'){ callback(new Error('Object Locked')); }
+          if(typeof callback === 'function'){ callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
           api.redis.client.del(api.cache.redisPrefix + key, function(error, count){
             if(error){ api.log(error, 'error'); }
@@ -198,7 +198,7 @@ module.exports = {
 
       api.cache.checkLock(key, null, function(error, lockOk){
         if(error || lockOk !== true){
-          if(typeof callback === 'function'){ return callback(new Error('Object Locked')); }
+          if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
           api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
             if(!error && expireTimeSeconds){
