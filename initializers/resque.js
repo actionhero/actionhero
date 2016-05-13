@@ -17,7 +17,9 @@ module.exports = {
 
       startQueue: function(callback){
         var self = this;
-        self.queue = new NR.queue({connection: self.connectionDetails}, api.tasks.jobs);
+        var queue = NR.queue;
+        if(api.config.tasks.resque.queue){ queue = api.config.tasks.resque.queue; }
+        self.queue = new queue({connection: self.connectionDetails}, api.tasks.jobs);
         self.queue.on('error', function(error){
           api.log(error, 'error', '[api.resque.queue]');
         });
@@ -26,9 +28,11 @@ module.exports = {
 
       startScheduler: function(callback){
         var self = this;
+        var scheduler = NR.scheduler;
+        if(api.config.tasks.resque.scheduler){ scheduler = api.config.tasks.scheduler; }
         if(api.config.tasks.scheduler === true){
           self.schedulerLogging = api.config.tasks.schedulerLogging;
-          self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
+          self.scheduler = new scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
           self.scheduler.on('error', function(error){
             api.log(error, 'error', '[api.resque.scheduler]');
           });
@@ -61,10 +65,12 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
+        var multiWorker = NR.multiWorker;
+        if(api.config.tasks.resque.multiWorker){ multiWorker = api.config.tasks.resque.multiWorker; }
         self.workerLogging = api.config.tasks.workerLogging;
         self.schedulerLogging = api.config.tasks.schedulerLogging;
 
-        self.multiWorker = new NR.multiWorker({
+        self.multiWorker = new multiWorker({
           connection:             api.resque.connectionDetails,
           queues:                 api.config.tasks.queues,
           timeout:                api.config.tasks.timeout,
