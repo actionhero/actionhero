@@ -45,7 +45,7 @@ exports['default'] = {
       redis: api.config.redis,
       // Customize Resque primitives, replace null with required replacement.
       resque: {
-        queue: api.customResque.queue,
+        queue: null,
         multiWorker: null,
         scheduler: null
       }
