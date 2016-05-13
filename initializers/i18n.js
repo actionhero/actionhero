@@ -2,7 +2,6 @@
 
 var i18n = require('i18n');
 var path = require('path');
-var extend = require('util')._extend;
 
 module.exports = {
   loadPriority:  1,
@@ -12,7 +11,7 @@ module.exports = {
     i18n.configure(options);
     i18n.setLocale(api.config.i18n.defaultLocale);
 
-    api.i18n = extend({
+    api.i18n = Object.assign({
       // simplistic determination of locale for connection
       determineConnectionLocale: function(connection){
         // perhpas you want to look at the `accept-language` headers from a web requests
