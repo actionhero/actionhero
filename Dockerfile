@@ -1,5 +1,5 @@
 FROM alpine:3.3
-MAINTAINER evan@evantahler.com
+MAINTAINER admin@actionherojs.com
 
 RUN apk add --update nodejs
 RUN npm install actionhero
