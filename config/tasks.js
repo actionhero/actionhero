@@ -44,7 +44,7 @@ exports['default'] = {
       // What redis server should we connect to for tasks / delayed jobs?
       redis: api.config.redis,
       // Customize Resque primitives, replace null with required replacement.
-      resque: {
+      resque_overrides: {
         queue: null,
         multiWorker: null,
         scheduler: null

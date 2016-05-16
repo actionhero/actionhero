@@ -7,6 +7,8 @@ module.exports = {
   stopPriority:  100,
   loadPriority:  600,
   initialize: function(api, next){
+    
+    var resqueOverrides = api.config.tasks.resque_overrides;
 
     api.resque = {
       verbose: false,
@@ -18,7 +20,7 @@ module.exports = {
       startQueue: function(callback){
         var self = this;
         var queue = NR.queue;
-        if(api.config.tasks.resque.queue){ queue = api.config.tasks.resque.queue; }
+        if(resqueOverrides && resqueOverrides.queue){ queue = resqueOverrides.queue; }
         self.queue = new queue({connection: self.connectionDetails}, api.tasks.jobs);
         self.queue.on('error', function(error){
           api.log(error, 'error', '[api.resque.queue]');
@@ -29,7 +31,7 @@ module.exports = {
       startScheduler: function(callback){
         var self = this;
         var scheduler = NR.scheduler;
-        if(api.config.tasks.resque.scheduler){ scheduler = api.config.tasks.scheduler; }
+        if(resqueOverrides && resqueOverrides.scheduler){ scheduler = resqueOverrides.scheduler; }
         if(api.config.tasks.scheduler === true){
           self.schedulerLogging = api.config.tasks.schedulerLogging;
           self.scheduler = new scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
@@ -66,7 +68,7 @@ module.exports = {
       startMultiWorker: function(callback){
         var self = this;
         var multiWorker = NR.multiWorker;
-        if(api.config.tasks.resque.multiWorker){ multiWorker = api.config.tasks.resque.multiWorker; }
+        if(resqueOverrides && resqueOverrides.multiWorker){ multiWorker = resqueOverrides.multiWorker; }
         self.workerLogging = api.config.tasks.workerLogging;
         self.schedulerLogging = api.config.tasks.schedulerLogging;
 
