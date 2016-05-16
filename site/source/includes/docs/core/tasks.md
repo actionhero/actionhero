@@ -92,7 +92,13 @@ exports.default = {
       // When we kill off a taskProcessor, should we disonnect that local redis connection?
       toDisconnectProcessors: true,
       // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis
+      redis: api.config.redis,
+      // Customize Resque primitives, replace null with required replacement.
+      resque_overrides: {
+        queue: null,
+        multiWorker: null,
+        scheduler: null
+      }
     }
   }
 }
@@ -337,6 +343,71 @@ Sometimes a worker crashes is a severe way, and it doesn't get the time/chance t
 Because there are no 'heartbeats' in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use `api.tasks.retryAndRemoveFailed`) to re-enqueue the job.
 
 You can handle this with an own initializer and the following logic =>
+
+## Extending Resque
+
+In cases where you would like to extend or modify the underlying behaviour or capabilities of Resque you can specify 
+replacements for the Queues, Scheduler, or Multi Worker implementations in the Tasks configuration.
+
+```javascript
+// From /config/tasks.js:
+var myQueue = require('../util/myQueue.js');
+
+exports.default = {
+  tasks: function(api){
+    return {
+      ...
+      // Customize Resque primitives, replace null with required replacement.
+      resque_overrides: {
+        queue: myQueue,  //<-- Explicitly pass replacement Queue implementation
+        multiWorker: null,
+        scheduler: null
+      }
+    }
+  }
+}
+```
+
+```javascript
+//From util/myQueue.js:
+var NR = require('node-resque');
+var pluginRunner = require('../node_modules/node-resque/lib/pluginRunner.js');
+
+let myQueue = NR.queue;
+
+myQueue.prototype.enqueueFront = function(q, func, args, callback){
+  var self = this;
+  if(arguments.length === 3 && typeof args === 'function'){
+   callback = args;
+   args = [];
+  }else if(arguments.length < 3){
+   args = [];
+  }
+
+  args = arrayify(args);
+  var job = self.jobs[func];
+  pluginRunner.runPlugins(self, 'before_enqueue', func, q, job, args, function(err, toRun){
+   if(toRun === false){
+     if(typeof callback === 'function'){ callback(err, toRun); }
+   }else{
+     self.connection.redis.sadd(self.connection.key('queues'), q, function(){
+	   self.connection.redis.lpush(self.connection.key('queue', q), self.encode(q, func, args), function(){
+	     pluginRunner.runPlugins(self, 'after_enqueue', func, q, job, args, function(){
+		   if(typeof callback === 'function'){ callback(err, toRun); }
+	     });
+	   });
+     });
+   }
+  });
+};
+
+module.exports = myQueue;
+```
+
+The above example will give you access to `api.resque.queue.enqueueFront()`, which you could use directly or wrap by 
+extending the `api.tasks` object.
+
+
 
 ## Notes
 
