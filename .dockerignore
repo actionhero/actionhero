@@ -1,26 +1,22 @@
-pids/*
-tmp/*
-log/*
-cache/*
-coverage/*
-node_modules/*
-locales/*
-public/javascript/actionheroClient.js
-public/javascript/actionheroClient.min.js
+*/pids/*
+*/tmp/*
+*/log/*
+*/cache/*
+*/coverage/*
+*/node_modules/*
+*/locales/*
+*/public/javascript/actionheroClient.js
+*/public/javascript/actionheroClient.min.js
 
 # Node / NPM
-npm-debug.log
+*/npm-debug.log
 
 # OS-specific wierdness
-.DS_Store
+*/.DS_Store
 
 # Site
-site/build/*
+*/site
 
 # Redis
-dump.rdb
-cache.dump
-
-# Editor-specific
-/nbproject/*
-/.idea/*
+*/dump.rdb
+*/cache.dump
