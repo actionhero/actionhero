@@ -240,7 +240,7 @@ describe('Server: Socket', function(){
       }
     };
     makeSocketRequest(client, JSON.stringify(msg), function(response){
-      response.should.containEql({status: 'error', error: 'data length is too big (64<449)'});
+      response.should.containEql({status: 'error', error: 'data length is too big (64 received/449 max)'});
       // Return maxDataLength back to normal
       api.config.servers.socket.maxDataLength = 0;
       done();

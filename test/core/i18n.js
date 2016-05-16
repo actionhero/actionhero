@@ -29,7 +29,7 @@ describe('Core: i18n', function(){
       var options = api.config.i18n;
       options.directory = api.config.general.paths.locale[0];
       options.locales = ['en', 'es'];
-      api.i18n.i18n.configure(options);
+      api.i18n.configure(options);
       done();
     });
   });
