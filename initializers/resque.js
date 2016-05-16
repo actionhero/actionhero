@@ -7,6 +7,8 @@ module.exports = {
   stopPriority:  100,
   loadPriority:  600,
   initialize: function(api, next){
+    
+    var resqueOverrides = api.config.tasks.resque_overrides;
 
     api.resque = {
       verbose: false,
@@ -17,7 +19,9 @@ module.exports = {
 
       startQueue: function(callback){
         var self = this;
-        self.queue = new NR.queue({connection: self.connectionDetails}, api.tasks.jobs);
+        var queue = NR.queue;
+        if(resqueOverrides && resqueOverrides.queue){ queue = resqueOverrides.queue; }
+        self.queue = new queue({connection: self.connectionDetails}, api.tasks.jobs);
         self.queue.on('error', function(error){
           api.log(error, 'error', '[api.resque.queue]');
         });
@@ -26,9 +30,11 @@ module.exports = {
 
       startScheduler: function(callback){
         var self = this;
+        var scheduler = NR.scheduler;
+        if(resqueOverrides && resqueOverrides.scheduler){ scheduler = resqueOverrides.scheduler; }
         if(api.config.tasks.scheduler === true){
           self.schedulerLogging = api.config.tasks.schedulerLogging;
-          self.scheduler = new NR.scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
+          self.scheduler = new scheduler({connection: self.connectionDetails, timeout: api.config.tasks.timeout});
           self.scheduler.on('error', function(error){
             api.log(error, 'error', '[api.resque.scheduler]');
           });
@@ -61,10 +67,12 @@ module.exports = {
 
       startMultiWorker: function(callback){
         var self = this;
+        var multiWorker = NR.multiWorker;
+        if(resqueOverrides && resqueOverrides.multiWorker){ multiWorker = resqueOverrides.multiWorker; }
         self.workerLogging = api.config.tasks.workerLogging;
         self.schedulerLogging = api.config.tasks.schedulerLogging;
 
-        self.multiWorker = new NR.multiWorker({
+        self.multiWorker = new multiWorker({
           connection:             api.resque.connectionDetails,
           queues:                 api.config.tasks.queues,
           timeout:                api.config.tasks.timeout,
