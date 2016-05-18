@@ -29,7 +29,7 @@ These methods are to be used within your server (perhaps an action or initialize
 - The `context` of messages sent with `api.chatRoom.broadcast` always be `user` to differentiate these responses from a `responsee` to a request
 
 ### api.chatRoom.list(callback)
-- callback will (error, [rooms])
+- callback will return (error, [rooms])
 
 ### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
