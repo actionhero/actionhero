@@ -101,6 +101,12 @@ module.exports = {
       }
     };
 
+    api.chatRoom.list = function(callback){
+      api.redis.client.smembers(api.chatRoom.keys.rooms, function(error, rooms){
+        if(typeof callback === 'function'){ callback(error, rooms); }
+      });
+    };
+
     api.chatRoom.add = function(room, callback){
       api.chatRoom.exists(room, function(error, found){
         if(found === false){
