@@ -290,6 +290,21 @@ describe('Core: Action Cluster', function(){
         });
       });
 
+      it('can enumarate the rooms present in the system', function(done){
+        apiA.chatRoom.add('defaultRoom', function(error){
+          apiA.chatRoom.add('newRoom', function(error){
+            apiA.chatRoom.list(function(error, rooms){
+              should.not.exist(error);
+              rooms.length.should.equal(3);
+              ['defaultRoom', 'newRoom', 'otherRoom'].forEach(function(r){
+                rooms.indexOf(r).should.be.greaterThan(-1);
+              });
+              done();
+            });
+          });
+        });
+      });
+
       it('server cannot create already existing room', function(done){
         apiA.chatRoom.add('defaultRoom', function(error){
           String(error).should.equal('room exists');

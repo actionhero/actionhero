@@ -28,6 +28,9 @@ These methods are to be used within your server (perhaps an action or initialize
 - connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form `{room: "someOtherRoom}`.  mockConnections without an id will be assigned the id of 0
 - The `context` of messages sent with `api.chatRoom.broadcast` always be `user` to differentiate these responses from a `responsee` to a request
 
+### api.chatRoom.list(callback)
+- callback contains (error, [rooms])
+
 ### api.chatRoom.add(room, callback)
 - callback will return 1 if you created the room, 0 if it already existed
 
