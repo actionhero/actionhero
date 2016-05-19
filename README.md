@@ -2,7 +2,7 @@
 
 ## The Reusable, Scalable, and Quick node.js API Server
 
-<p align="center"><img src="https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero.png" height="300"/></p>
+![https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero-small.png](https://raw.github.com/evantahler/actionhero/master/public/logo/actionhero-small.png)
 
 ***
 **[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Public Site](http://www.actionherojs.com) | [GitHub](https://github.com/evantahler/actionhero) | [Mailing List](https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js) | [Chat](http://slack.actionherojs.com) | [Client](https://github.com/evantahler/actionhero-client)**
