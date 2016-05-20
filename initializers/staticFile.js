@@ -32,9 +32,10 @@ module.exports = {
           var file;
           if(!path.isAbsolute(connection.params.file)){
             file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
-          } else {
+          }else{
             file = connection.params.file;
           }
+
           if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
           }else{
@@ -61,14 +62,16 @@ module.exports = {
             var fileStream = fs.createReadStream(file);
             var start = new Date().getTime();
             lastModified = stats.mtime;
-            fileStream.on('close', function(){
+            fileStream.on('end', function(){
               var duration = new Date().getTime() - start;
               self.logRequest(file, connection, length, duration, true);
             });
             fileStream.on('error', function(error){
               api.log(error);
             });
-            callback(connection, null, fileStream, mime, length, lastModified);
+            fileStream.on('open', function(){
+              callback(connection, null, fileStream, mime, length, lastModified);
+            });
           }
         });
       },

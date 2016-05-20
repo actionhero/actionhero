@@ -146,14 +146,6 @@ module.exports = {
       return uuid.v4();
     };
 
-    api.connection.prototype.sendMessage = function(message){
-      throw new Error('I should be replaced with a connection-specific method [' + message + ']');
-    };
-
-    api.connection.prototype.sendFile = function(path){
-      throw new Error('I should be replaced with a connection-specific method [' + path + ']');
-    };
-
     api.connection.prototype.destroy = function(callback){
       var self = this;
       self.destroyed = true;
@@ -169,7 +161,6 @@ module.exports = {
           api.chatRoom.removeMember(self.id, room);
         });
       }
-      delete api.connections.connections[self.id];
       var server = api.servers.servers[self.type];
       if(server){
         if(server.attributes.logExits === true){
@@ -177,6 +168,9 @@ module.exports = {
         }
         if(typeof server.goodbye === 'function'){ server.goodbye(self); }
       }
+
+      delete api.connections.connections[self.id];
+
       if(typeof callback === 'function'){ callback(); }
     };
 
