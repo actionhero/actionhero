@@ -174,16 +174,18 @@ describe('Core: Action Cluster', function(){
           data[3] = [arg1, arg2]; next();
         };
 
-        apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(error){
-          should.not.exist(error);
-          // callback should work too!
-          data[1][0].should.equal('arg1');
-          data[1][1].should.equal('arg2');
-          data[2][0].should.equal('arg1');
-          data[2][1].should.equal('arg2');
-          data[3][0].should.equal('arg1');
-          data[3][1].should.equal('arg2');
-          done();
+        process.nextTick(function(){
+          apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(error){
+            should.not.exist(error);
+            // callback should work too!
+            data[1][0].should.equal('arg1');
+            data[1][1].should.equal('arg2');
+            data[2][0].should.equal('arg1');
+            data[2][1].should.equal('arg2');
+            data[3][0].should.equal('arg1');
+            data[3][1].should.equal('arg2');
+            done();
+          });
         });
       });
 
