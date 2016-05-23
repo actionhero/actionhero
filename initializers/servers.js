@@ -10,7 +10,7 @@ module.exports = {
   initialize: function(api, next){
 
     api.servers = {};
-    api.servers.servers = [];
+    api.servers.servers = {};
 
     // Load the servers
 
