@@ -145,8 +145,13 @@ var initialize = function(api, options, next){
       }
     }
 
-    // note: the 'end' event may not fire on some OSes; finish will
+    // the 'finish' event deontes a successful transfer
     connection.rawConnection.res.on('finish', function(){
+      connection.destroy();
+    });
+
+    // the 'close' event deontes a failed transfer, but it is probably the client's fault
+    connection.rawConnection.res.on('close', function(){
       connection.destroy();
     });
 
