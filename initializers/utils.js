@@ -138,7 +138,11 @@ module.exports = {
                   child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles);
                   child.forEach(function(c){ results.push(c); });
                 }else{
-                  api.log(['cannot find linked refrence to `%s`', file], 'warning');
+                  try{
+                    api.log(['cannot find linked refrence to `%s`', file], 'warning');
+                  }catch(e){
+                    throw('cannot find linked refrence to' + file);
+                  }
                 }
               }
             }
