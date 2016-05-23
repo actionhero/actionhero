@@ -63,7 +63,7 @@
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
     "test": "node test.js",
-    "test:travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- --timeout 10000",
+    "test:travis": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start": "node ./bin/actionhero",
     "site": "cd site && EXECJS_RUNTIME=Node bundle exec middleman",
