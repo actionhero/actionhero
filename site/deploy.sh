@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit #abort if any command fails
+set +e #abort if any command fails
 
 GIT_REPO="git@github.com:evantahler/actionhero.git"
 GIT_BRANCH="gh-pages"
@@ -28,6 +28,7 @@ cd $SOURE_DIR && bundle exec middleman build --no-clean
 cd $BUILD_DIR
 git add .
 git commit -am "Publish $GIT_BRANCH @ `date`"
+set +e # now we don't care about errors
 git push
 
 echo "---------------------"
