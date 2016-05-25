@@ -87,7 +87,7 @@ module.exports = {
           });
 
           async.series(jobs, function(error){
-            if(typeof callback === 'function'){ return callback(error, api.utils.hashLength(data)); }
+            if(typeof callback === 'function'){ return callback(error, Object.keys(data).length); }
           });
         }
       });

@@ -98,7 +98,7 @@ describe('Core: Tasks', function(){
   it('will clear crashed workers when booting'); //TODO
 
   it('setup worked', function(done){
-    api.utils.hashLength(api.tasks.tasks).should.equal(2 + 1);
+    Object.keys(api.tasks.tasks).length.should.equal(2 + 1);
     done();
   });
 

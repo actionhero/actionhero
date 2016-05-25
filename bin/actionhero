@@ -113,14 +113,6 @@ binary.utils = {
       binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
       fs.symlinkSync(source, destination, 'dir');
     }
-  },
-  hashLength: function(obj){
-    var size = 0;
-    var key;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){ size++; }
-    }
-    return size;
   }
 };
 

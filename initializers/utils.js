@@ -10,17 +10,6 @@ module.exports = {
     if(!api.utils){ api.utils = {}; }
 
     ////////////////////////////////////////////////////////////////////////////
-    // count the number of elements in a hash
-    api.utils.hashLength = function(obj){
-      var size = 0;
-      var key;
-      for(key in obj){
-        if(obj.hasOwnProperty(key)){ size++; }
-      }
-      return size;
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
     api.utils.hashMerge = function(a, b, arg){
       var c = {};
