@@ -82,6 +82,8 @@ Descriptions:
 * actionhero unlink --name=[pluginName]
   will remove the linked actions, tasks, initializers, etc from a plugin in your
     top-level project. Please remove the config files manually  
+  Remember if your plugin was installed via NPM, also be sure to remove it from your
+    package.json or uninstall it with npm uninstall --save
 
 #############################################################
 ## More Help & the actionhero documentation can be found @ ##

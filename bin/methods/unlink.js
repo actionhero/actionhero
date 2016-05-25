@@ -39,6 +39,7 @@ exports.unlink = function(binary, next){
       binary.utils.removeLinkfileSafely(localLinkLocation);
     }
   });
-
+  binary.log('Remember that config files have to be deleted manually');
+  binary.log('If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with "npm uninstall --save"');
   next(true);
 };
