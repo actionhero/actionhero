@@ -18,13 +18,6 @@ describe('Utils', function(){
     });
   });
 
-  it('utils.hashLength', function(done){
-    var testHash = {a: 1, b: 2, c: {aa: 1, bb: 2}};
-    api.utils.hashLength(testHash).should.equal(3);
-    api.utils.hashLength({}).should.equal(0);
-    done();
-  });
-
   it('utils.arrayUniqueify', function(done){
     var a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5];
     api.utils.arrayUniqueify(a).should.eql([1, 2, 3, 4, 5]);
