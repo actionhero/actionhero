@@ -98,6 +98,14 @@ binary.utils = {
       fs.writeFileSync(filePath, type);
     }
   },
+  removeLinkfileSafely: function(filePath, type, refrence){
+    if(!binary.utils.fileExists(filePath)){
+      binary.log(' - link file \'' + filePath + '\' doesn\'t exist, skipping', 'alert');
+    }else{
+      binary.log(' - removing linkfile \'' + filePath + '\'');
+      fs.unlinkSync(filePath);
+    }
+  },  
   createSymlinkSafely: function(destination, source){
     if(binary.utils.dirExists(destination)){
       binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');

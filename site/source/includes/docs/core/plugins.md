@@ -8,7 +8,9 @@ Plugins are loaded after all local actionhero project files, but initializers fo
 
 `api.config.general.paths.plugin` (loaded from `/config/api.js`) is an array which contains the search path for your plugins.  This will default to `./node_modules`, but you can add a local path to your project.  Once you have the plugin search paths set up, you use `npm run actionhero link -- --name nameOfPlugin` (or `./node_modules/.bin/actionhero link --name nameOfPlugin`, which is equivalent) to create links in your top-level project to the plugin.  This will also copy over any config files from the plugin into your project so you can modify them.  The act of "linking" simply creates a `myPlugin.link` file in each component of your top-level project (actions, tasks, etc) which tells actionhero to load up files at boot from that plugin.  
 
-You can delete all (or some) links at any time.
+You can delete the linked files with the "unlink" method using  `npm run actionhero unlink --name nameOfPlugin`.
+Remember that you have to delete the config files of unlinked plugins manually!
+If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with `npm uninstall --save`
 
 ## Creating Plugins
 
