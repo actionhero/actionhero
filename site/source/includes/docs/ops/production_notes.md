@@ -248,6 +248,34 @@ Note that it is not necessary to run the Sentinel nodes on separate servers. The
 
 To run this configuration, configure ioredis with a list of the Sentinel nodes and the name of the cluster. The driver will automatically connect to an appropriate Sentinel in round-robin fashion, reconnecting to another node if one is down, or fails.
 
+An example of a `redis.js` config file for sentinels would be:
+
+```js
+exports.production = {
+  redis: function(api){
+    return {
+      channel: 'actionhero-myApp',
+      rpcTimeout: 5000,
+
+      pkg: 'ioredis',
+      port: null,
+      host: null,
+      password: 'redis-password',
+      database: 0,
+
+      options: {
+        name: 'myCluster',
+        password: 'redis-password',
+        db: 0,
+        sentinels: [
+          { host: '1.2.3.4', port: 26379 },
+        ]
+      }
+    }
+  }
+}
+```
+
 ### Cluster Mode
 
 In Cluster mode, Redis shards all the keys in data into "slots" which are evenly allocated though all the masters in the cluster. The client can connect to any node in the cluster, and if the requested key belongs on another node, it will proxy the request for you (just like the Sentinel would). The cluster can also take care of master re-election for each shard in the event of a master node failure.
@@ -255,6 +283,12 @@ In Cluster mode, Redis shards all the keys in data into "slots" which are evenly
 Cluster mode provides similar high-availability to Sentinel mode, but the sharding allows more data to be stored in the cluster overall. However, where Sentinel mode requires a minimum of 3 servers, Cluster mode requires a minimum of 6 to reach a quorom and provide full redundancy.
 
 Also an important note:  while you may opt to run “sentinel processes”, it’s the same codebase as regular redis, just running in “sentinel mode”.  The same goes if you run redis in “cluster mode”.
+
+An example of a `redis.js` config file for redis cluster would be:
+
+```js
+// TODO
+```
 
 
 ## Best Practices
