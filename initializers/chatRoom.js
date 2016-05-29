@@ -221,7 +221,7 @@ module.exports = {
           if(typeof callback === 'function'){ callback(api.config.errors.connectionAlreadyInRoom(connection, room), false); }
         }
       }else{
-        api.config.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, callback);
+        api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, callback);
       }
     };
 
@@ -250,7 +250,7 @@ module.exports = {
           if(typeof callback === 'function'){ callback(api.config.errors.connectionNotInRoom(connection, room), false); }
         }
       }else{
-        api.config.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, callback);
+        api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, callback);
       }
     };
 
