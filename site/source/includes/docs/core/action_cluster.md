@@ -29,7 +29,7 @@ If you wanted the node which holds connection `abc123` to change their `authoriz
 
 The RPC system is used heavily by Chat.
 
-Two options have been added to the `config/redis.js` config file to support this: `api.config.redis.channel` ( Which channel to use on redis pub/sub for RPC communication ) and `api.config.redis.rpcTimeout` ( How long to wait for an RPC call before considering it a failure )
+Two options have been added to the `config/redis.js` config file to support this: `api.config.general.channel` ( Which channel to use on redis pub/sub for RPC communication ) and `api.config.general.rpcTimeout` ( How long to wait for an RPC call before considering it a failure )
 
 **WARNING**
 

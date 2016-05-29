@@ -19,12 +19,12 @@ module.exports = {
     api.redis.initialize = function(callback){
 
       if(!api.redis.status.subscribed){
-        api.config.redis.subscriber.subscribe(api.config.redis.channel);
+        api.config.redis.subscriber.subscribe(api.config.general.channel);
         api.redis.status.subscribed = true;
 
         api.config.redis.subscriber.on('message', function(messageChannel, message){
           try{ message = JSON.parse(message); }catch(e){ message = {}; }
-          if(messageChannel === api.config.redis.channel && message.serverToken === api.config.general.serverToken){
+          if(messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken){
             if(api.redis.subscriptionHandlers[message.messageType]){
               api.redis.subscriptionHandlers[message.messageType](message);
             }
@@ -53,7 +53,7 @@ module.exports = {
     };
 
     api.redis.publish = function(payload){
-      var channel = api.config.redis.channel;
+      var channel = api.config.general.channel;
       api.config.redis.client.publish(channel, JSON.stringify(payload));
     };
 
@@ -113,7 +113,7 @@ module.exports = {
           }
           delete api.redis.clusterCallbaks[requestId];
           delete api.redis.clusterCallbakTimeouts[requestId];
-        }, api.config.redis.rpcTimeout, requestId);
+        }, api.config.general.rpcTimeout, requestId);
       }
     };
 

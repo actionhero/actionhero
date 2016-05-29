@@ -247,7 +247,7 @@ describe('Core: Action Cluster', function(){
       });
 
       it('failing RPC calls with a callback will have a failure callback', function(done){
-        this.timeout(apiA.config.redis.rpcTimeout * 3);
+        this.timeout(apiA.config.general.rpcTimeout * 3);
 
         apiB.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', function(error){
           String(error).should.equal('Error: RPC Timeout');

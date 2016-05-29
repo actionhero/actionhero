@@ -8,11 +8,6 @@ exports['default'] = {
 
     return {
       '_toExpand': false,
-
-      // Which channel to use on redis pub/sub for RPC communication
-      channel: 'actionhero',
-      // How long to wait for an RPC call before considering it a failure
-      rpcTimeout: 5000,
       // create the redis clients
       client:     Redis.createClient(port, host),
       subscriber: Redis.createClient(port, host),
