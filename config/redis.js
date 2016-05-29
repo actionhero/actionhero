@@ -9,9 +9,9 @@ exports['default'] = {
     return {
       '_toExpand': false,
       // create the redis clients
-      client:     Redis.createClient(port, host),
-      subscriber: Redis.createClient(port, host),
-      tasks:      Redis.createClient(port, host),
+      client:     Redis.createClient(port, host, {fast: true}),
+      subscriber: Redis.createClient(port, host, {fast: true}),
+      tasks:      Redis.createClient(port, host, {fast: true}),
     };
   }
 };
@@ -32,9 +32,9 @@ exports.test = {
       return {
         '_toExpand': false,
 
-        client:     Redis.createClient(port, host),
-        subscriber: Redis.createClient(port, host),
-        tasks:      Redis.createClient(port, host),
+        client:     Redis.createClient(port, host, {fast: true}),
+        subscriber: Redis.createClient(port, host, {fast: true}),
+        tasks:      Redis.createClient(port, host, {fast: true}),
       };
     }
   }
