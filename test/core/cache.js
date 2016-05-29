@@ -285,7 +285,7 @@ describe('Core: Cache', function(){
     it('locks have a TTL and the default will be assumed from config', function(done){
       api.cache.lock(key, null, function(error, lockOk){
         lockOk.should.equal(true);
-        api.redis.client.ttl(api.cache.lockPrefix + key, function(error, ttl){
+        api.config.redis.client.ttl(api.cache.lockPrefix + key, function(error, ttl){
           (ttl >= 9).should.equal(true);
           (ttl <= 10).should.equal(true);
           done();

@@ -16,11 +16,11 @@ module.exports = {
     api.cache.lockRetry    = 100;
 
     api.cache.keys = function(callback){
-      api.redis.client.keys(api.cache.redisPrefix + '*', callback);
+      api.config.redis.client.keys(api.cache.redisPrefix + '*', callback);
     };
 
     api.cache.locks = function(callback){
-      api.redis.client.keys(api.cache.lockPrefix + '*', callback);
+      api.config.redis.client.keys(api.cache.lockPrefix + '*', callback);
     };
 
     api.cache.size = function(callback){
@@ -36,7 +36,7 @@ module.exports = {
         if(error && typeof callback === 'function'){ return callback(error); }
         var jobs = [];
         keys.forEach(function(key){
-          jobs.push(function(done){ api.redis.client.del(key, done); });
+          jobs.push(function(done){ api.config.redis.client.del(key, done); });
         });
 
         async.parallel(jobs, function(error){
@@ -52,7 +52,7 @@ module.exports = {
         var jobs = [];
         keys.forEach(function(key){
           jobs.push(function(done){
-            api.redis.client.get(key, function(error, content){
+            api.config.redis.client.get(key, function(error, content){
               if(error){ return done(error); }
               data[key] = content;
               return done();
@@ -98,11 +98,11 @@ module.exports = {
         var parsedContent = JSON.parse(content);
       }catch(error){ return callback(error); }
 
-      api.redis.client.set(key, content, function(error){
+      api.config.redis.client.set(key, content, function(error){
         if(error){ return callback(error); }
         else if(parsedContent.expireTimestamp){
           var expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000);
-          api.redis.client.expire(key, expireTimeSeconds, function(){
+          api.config.redis.client.expire(key, expireTimeSeconds, function(){
             return callback(error);
           });
         }else{
@@ -118,7 +118,7 @@ module.exports = {
         options = {};
       }
 
-      api.redis.client.get(api.cache.redisPrefix + key, function(error, cacheObj){
+      api.config.redis.client.get(api.cache.redisPrefix + key, function(error, cacheObj){
         if(error){ api.log(error, 'error'); }
         try{ cacheObj = JSON.parse(cacheObj); }catch(e){}
         if(!cacheObj){
@@ -142,11 +142,11 @@ module.exports = {
             if(error || lockOk !== true){
               if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
             }else{
-              api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+              api.config.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
                 if(typeof callback === 'function' && typeof expireTimeSeconds !== 'number'){
                   return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt);
                 }else{
-                  api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+                  api.config.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
                     if(typeof callback === 'function'){ return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt); }
                   });
                 }
@@ -166,7 +166,7 @@ module.exports = {
         if(error || lockOk !== true){
           if(typeof callback === 'function'){ callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
-          api.redis.client.del(api.cache.redisPrefix + key, function(error, count){
+          api.config.redis.client.del(api.cache.redisPrefix + key, function(error, count){
             if(error){ api.log(error, 'error'); }
             var resp = true;
             if(count !== 1){ resp = false; }
@@ -200,9 +200,9 @@ module.exports = {
         if(error || lockOk !== true){
           if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
-          api.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+          api.config.redis.client.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
             if(!error && expireTimeSeconds){
-              api.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+              api.config.redis.client.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
                 if(typeof callback === 'function'){ return callback(error, true); }
               });
             }else{
@@ -215,13 +215,13 @@ module.exports = {
 
     api.cache.push = function(key, item, callback){
       var object = JSON.stringify({data: item});
-      api.redis.client.rpush(api.cache.redisPrefix + key, object, function(error){
+      api.config.redis.client.rpush(api.cache.redisPrefix + key, object, function(error){
         if(typeof callback === 'function'){ callback(error); }
       });
     };
 
     api.cache.pop = function(key, callback){
-      api.redis.client.lpop(api.cache.redisPrefix + key, function(error, object){
+      api.config.redis.client.lpop(api.cache.redisPrefix + key, function(error, object){
         if(error){ return callback(error); }
         if(!object){ return callback(); }
         var item;
@@ -233,7 +233,7 @@ module.exports = {
     };
 
     api.cache.listLength = function(key, callback){
-      api.redis.client.llen(api.cache.redisPrefix + key, callback);
+      api.config.redis.client.llen(api.cache.redisPrefix + key, callback);
     };
 
     api.cache.lock = function(key, expireTimeMS, callback){
@@ -249,11 +249,11 @@ module.exports = {
         if(error || lockOk !== true){
           return callback(error, false);
         }else{
-          api.redis.client.setnx(api.cache.lockPrefix + key, api.cache.lockName, function(error){
+          api.config.redis.client.setnx(api.cache.lockPrefix + key, api.cache.lockName, function(error){
             if(error){
               return callback(error);
             }else{
-              api.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(error){
+              api.config.redis.client.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(error){
                 lockOk = true;
                 if(error){ lockOk = false; }
                 return callback(error, lockOk);
@@ -269,7 +269,7 @@ module.exports = {
         if(error || lockOk !== true){
           return callback(error, false);
         }else{
-          api.redis.client.del(api.cache.lockPrefix + key, function(error){
+          api.config.redis.client.del(api.cache.lockPrefix + key, function(error){
             lockOk = true;
             if(error){ lockOk = false; }
             return callback(error, lockOk);
@@ -281,7 +281,7 @@ module.exports = {
     api.cache.checkLock = function(key, retry, callback, startTime){
       if(startTime === null){ startTime = new Date().getTime(); }
 
-      api.redis.client.get(api.cache.lockPrefix + key, function(error, lockedBy){
+      api.config.redis.client.get(api.cache.lockPrefix + key, function(error, lockedBy){
         if(error){
           return callback(error, false);
         }else if(lockedBy === api.cache.lockName || lockedBy === null){
