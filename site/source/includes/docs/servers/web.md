@@ -503,7 +503,7 @@ Although the `actionheroClient` client-side library is mostly for websockets, it
 
 <script>
 var client = new ActionheroClient();
-client.action('cacheTest', {key: 'k', value: 'v'}, function(err, data){
+client.action('cacheTest', {key: 'k', value: 'v'}, function(error, data){
    // do stuff
 });
 </script>

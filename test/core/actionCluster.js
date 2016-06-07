@@ -25,9 +25,9 @@ var configChanges = {
 };
 
 var startAllServers = function(next){
-  actionhero1.start({configChanges: configChanges[1]}, function(err, a1){
-    actionhero2.start({configChanges: configChanges[2]}, function(err, a2){
-      actionhero3.start({configChanges: configChanges[3]}, function(err, a3){
+  actionhero1.start({configChanges: configChanges[1]}, function(error, a1){
+    actionhero2.start({configChanges: configChanges[2]}, function(error, a2){
+      actionhero3.start({configChanges: configChanges[3]}, function(error, a3){
         apiA = a1;
         apiB = a2;
         apiC = a3;
@@ -93,7 +93,7 @@ describe('Core: Action Cluster', function(){
       });
 
       it('all connections can join the default room and client #1 can see them', function(done){
-        client1.verbs('roomView', 'defaultRoom', function(err, data){
+        client1.verbs('roomView', 'defaultRoom', function(error, data){
           data.room.should.equal('defaultRoom');
           data.membersCount.should.equal(3);
           done();
@@ -101,7 +101,7 @@ describe('Core: Action Cluster', function(){
       });
 
       it('all connections can join the default room and client #2 can see them', function(done){
-        client2.verbs('roomView', 'defaultRoom', function(err, data){
+        client2.verbs('roomView', 'defaultRoom', function(error, data){
           data.room.should.equal('defaultRoom');
           data.membersCount.should.equal(3);
           done();
@@ -109,7 +109,7 @@ describe('Core: Action Cluster', function(){
       });
 
       it('all connections can join the default room and client #3 can see them', function(done){
-        client3.verbs('roomView', 'defaultRoom', function(err, data){
+        client3.verbs('roomView', 'defaultRoom', function(error, data){
           data.room.should.equal('defaultRoom');
           data.membersCount.should.equal(3);
           done();
@@ -134,7 +134,7 @@ describe('Core: Action Cluster', function(){
 
       it('peer 1 writes and peer 2 should read', function(done){
         apiA.cache.save('test_key', 'yay', null, function(){
-          apiB.cache.load('test_key', function(err, value){
+          apiB.cache.load('test_key', function(error, value){
             value.should.equal('yay');
             done();
           });
@@ -143,7 +143,7 @@ describe('Core: Action Cluster', function(){
 
       it('peer 3 deletes and peer 1 cannot read any more', function(done){
         apiC.cache.destroy('test_key', function(){
-          apiA.cache.load('test_key', function(err, value){
+          apiA.cache.load('test_key', function(error, value){
             should.not.exist(value);
             done();
           });
@@ -174,16 +174,18 @@ describe('Core: Action Cluster', function(){
           data[3] = [arg1, arg2]; next();
         };
 
-        apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(err){
-          should.not.exist(err);
-          // callback should work too!
-          data[1][0].should.equal('arg1');
-          data[1][1].should.equal('arg2');
-          data[2][0].should.equal('arg1');
-          data[2][1].should.equal('arg2');
-          data[3][0].should.equal('arg1');
-          data[3][1].should.equal('arg2');
-          done();
+        process.nextTick(function(){
+          apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(error){
+            should.not.exist(error);
+            // callback should work too!
+            data[1][0].should.equal('arg1');
+            data[1][1].should.equal('arg2');
+            data[2][0].should.equal('arg1');
+            data[2][1].should.equal('arg2');
+            data[3][0].should.equal('arg1');
+            data[3][1].should.equal('arg2');
+            done();
+          });
         });
       });
 
@@ -201,8 +203,8 @@ describe('Core: Action Cluster', function(){
           throw new Error('should not be here');
         };
 
-        apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, function(err){
-          should.not.exist(err);
+        apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, function(error){
+          should.not.exist(error);
           data[1][0].should.equal('arg1');
           data[1][1].should.equal('arg2');
           client.destroy();
@@ -245,10 +247,10 @@ describe('Core: Action Cluster', function(){
       });
 
       it('failing RPC calls with a callback will have a failure callback', function(done){
-        this.timeout(apiA.config.redis.rpcTimeout * 2);
+        this.timeout(apiA.config.redis.rpcTimeout * 3);
 
-        apiB.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', function(err){
-          String(err).should.equal('Error: RPC Timeout');
+        apiB.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', function(error){
+          String(error).should.equal('Error: RPC Timeout');
           done();
         });
       });
@@ -264,14 +266,14 @@ describe('Core: Action Cluster', function(){
       });
 
       it('can check if rooms exist', function(done){
-        apiA.chatRoom.exists('defaultRoom', function(err, found){
+        apiA.chatRoom.exists('defaultRoom', function(error, found){
           found.should.equal(true);
           done();
         });
       });
 
       it('can check if a room does not exist', function(done){
-        apiA.chatRoom.exists('missingRoom', function(err, found){
+        apiA.chatRoom.exists('missingRoom', function(error, found){
           found.should.equal(false);
           done();
         });
@@ -279,10 +281,10 @@ describe('Core: Action Cluster', function(){
 
       it('server can create new room', function(done){
         var room = 'newRoom';
-        apiA.chatRoom.exists(room, function(err, found){
+        apiA.chatRoom.exists(room, function(error, found){
           found.should.equal(false);
-          apiA.chatRoom.add(room, function(err){
-            apiA.chatRoom.exists(room, function(err, found){
+          apiA.chatRoom.add(room, function(error){
+            apiA.chatRoom.exists(room, function(error, found){
               found.should.equal(true);
               done();
             });
@@ -291,16 +293,31 @@ describe('Core: Action Cluster', function(){
       });
 
       it('server cannot create already existing room', function(done){
-        apiA.chatRoom.add('defaultRoom', function(err){
-          String(err).should.equal('room exists');
+        apiA.chatRoom.add('defaultRoom', function(error){
+          String(error).should.equal('room exists');
           done();
+        });
+      });
+
+      it('can enumerate all the rooms in the system', function(done){
+        apiA.chatRoom.add('defaultRoom', function(error){
+          apiA.chatRoom.add('newRoom', function(error){
+            apiA.chatRoom.list(function(error, rooms){
+              should.not.exist(error);
+              rooms.length.should.equal(3);
+              ['defaultRoom', 'newRoom', 'otherRoom'].forEach(function(r){
+                rooms.indexOf(r).should.be.greaterThan(-1);
+              });
+              done();
+            });
+          });
         });
       });
 
       it('server can add connections to a LOCAL room', function(done){
         var client = new apiA.specHelper.connection();
         client.rooms.length.should.equal(0);
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
           didAdd.should.equal(true);
           client.rooms[0].should.equal('defaultRoom');
           client.destroy();
@@ -311,7 +328,7 @@ describe('Core: Action Cluster', function(){
       it('server can add connections to a REMOTE room', function(done){
         var client = new apiB.specHelper.connection();
         client.rooms.length.should.equal(0);
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
           didAdd.should.equal(true);
           client.rooms.length.should.equal(1);
           client.rooms[0].should.equal('defaultRoom');
@@ -323,10 +340,10 @@ describe('Core: Action Cluster', function(){
       it('will not re-add a member to a room', function(done){
         var client = new apiA.specHelper.connection();
         client.rooms.length.should.equal(0);
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
           didAdd.should.equal(true);
-          apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
-            err.should.equal('connection already in this room (defaultRoom)');
+          apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
+            error.should.equal('connection already in this room (defaultRoom)');
             didAdd.should.equal(false);
             client.destroy();
             done();
@@ -337,8 +354,8 @@ describe('Core: Action Cluster', function(){
       it('will not add a member to a non-existant room', function(done){
         var client = new apiA.specHelper.connection();
         client.rooms.length.should.equal(0);
-        apiA.chatRoom.addMember(client.id, 'newRoom', function(err, didAdd){
-          err.should.equal('room does not exist');
+        apiA.chatRoom.addMember(client.id, 'newRoom', function(error, didAdd){
+          error.should.equal('room does not exist');
           didAdd.should.equal(false);
           client.destroy();
           done();
@@ -347,7 +364,7 @@ describe('Core: Action Cluster', function(){
 
       it('server will not remove a member not in a room', function(done){
         var client = new apiA.specHelper.connection();
-        apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
+        apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(error, didRemove){
           didRemove.should.equal(false);
           client.destroy();
           done();
@@ -356,9 +373,9 @@ describe('Core: Action Cluster', function(){
 
       it('server can remove connections to a room (local)', function(done){
         var client = new apiA.specHelper.connection();
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
           didAdd.should.equal(true);
-          apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
+          apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(error, didRemove){
             didRemove.should.equal(true);
             client.destroy();
             done();
@@ -368,9 +385,9 @@ describe('Core: Action Cluster', function(){
 
       it('server can remove connections to a room (remote)', function(done){
         var client = new apiB.specHelper.connection();
-        apiB.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
+        apiB.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
           didAdd.should.equal(true);
-          apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(err, didRemove){
+          apiA.chatRoom.removeMember(client.id, 'defaultRoom', function(error, didRemove){
             didRemove.should.equal(true);
             client.destroy();
             done();
@@ -380,11 +397,11 @@ describe('Core: Action Cluster', function(){
 
       it('server can destroy a room and connections will be removed', function(done){
         var client = new apiA.specHelper.connection();
-        apiA.chatRoom.add('newRoom', function(err){
-          apiA.chatRoom.addMember(client.id, 'newRoom', function(err, didAdd){
+        apiA.chatRoom.add('newRoom', function(error){
+          apiA.chatRoom.addMember(client.id, 'newRoom', function(error, didAdd){
             didAdd.should.equal(true);
             client.rooms[0].should.equal('newRoom');
-            apiA.chatRoom.destroy('newRoom', function(err){
+            apiA.chatRoom.destroy('newRoom', function(error){
               client.rooms.length.should.equal(0);
               // TODO: testing for the recepit of this message is a race condition with room.destroy and boradcast in test
               // client.messages[1].message.should.equal('this room has been deleted');
@@ -399,8 +416,8 @@ describe('Core: Action Cluster', function(){
       it('can get a list of room members', function(done){
         var client = new apiA.specHelper.connection();
         client.rooms.length.should.equal(0);
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(err, didAdd){
-          apiA.chatRoom.roomStatus('defaultRoom', function(err, data){
+        apiA.chatRoom.addMember(client.id, 'defaultRoom', function(error, didAdd){
+          apiA.chatRoom.roomStatus('defaultRoom', function(error, data){
             data.room.should.equal('defaultRoom');
             data.membersCount.should.equal(1);
             client.destroy();
@@ -445,11 +462,11 @@ describe('Core: Action Cluster', function(){
             };
           };
 
-          clientA.verbs('roomAdd', 'defaultRoom', function(err, data){
-            should.not.exist(err);
-            clientB.verbs('roomAdd', 'defaultRoom', function(err, data){
-              should.not.exist(err);
-              clientA.verbs('say', ['defaultRoom', 'hi there'], function(err, data){
+          clientA.verbs('roomAdd', 'defaultRoom', function(error, data){
+            should.not.exist(error);
+            clientB.verbs('roomAdd', 'defaultRoom', function(error, data){
+              should.not.exist(error);
+              clientA.verbs('say', ['defaultRoom', 'hi there'], function(error, data){
                 setTimeout(function(){
                   var message = clientB.messages[(clientB.messages.length - 1)];
                   message.thing.should.equal('stuff');
@@ -480,12 +497,12 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd', 'defaultRoom', function(err){
-            should.not.exist(err);
-            clientB.verbs('roomAdd', 'defaultRoom', function(err){
-              should.not.exist(err);
-              clientB.verbs('roomLeave', 'defaultRoom', function(err){
-                should.not.exist(err);
+          clientA.verbs('roomAdd', 'defaultRoom', function(error){
+            should.not.exist(error);
+            clientB.verbs('roomAdd', 'defaultRoom', function(error){
+              should.not.exist(error);
+              clientB.verbs('roomLeave', 'defaultRoom', function(error){
+                should.not.exist(error);
 
                 setTimeout(function(){
                   clientA.messages.pop().message.should.equal('I have left the room: ' + clientB.id);
@@ -510,12 +527,12 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd', 'defaultRoom', function(err){
-            should.not.exist(err);
-            clientB.verbs('roomAdd', 'defaultRoom', function(err){
-              should.not.exist(err);
-              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
-                should.not.exist(err);
+          clientA.verbs('roomAdd', 'defaultRoom', function(error){
+            should.not.exist(error);
+            clientB.verbs('roomAdd', 'defaultRoom', function(error){
+              should.not.exist(error);
+              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(error){
+                should.not.exist(error);
 
                 setTimeout(function(){
                   var lastMessage = clientA.messages[(clientA.messages.length - 1)];
@@ -548,9 +565,9 @@ describe('Core: Action Cluster', function(){
             }
           });
 
-          clientA.verbs('roomAdd', 'defaultRoom', function(err){
-            clientB.verbs('roomAdd', 'defaultRoom', function(err){
-              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(err){
+          clientA.verbs('roomAdd', 'defaultRoom', function(error){
+            clientB.verbs('roomAdd', 'defaultRoom', function(error){
+              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], function(error){
 
                 setTimeout(function(){
                   var lastMessage = clientA.messages[(clientA.messages.length - 1)];

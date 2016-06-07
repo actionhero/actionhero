@@ -101,7 +101,7 @@ api.tasks.enqueue(
     "sendWelcomeEmail",
     {to: 'evan@evantahler.com'},
     'default',
-function(err, toRun){
+function(error, toRun){
   // done!
 });
 
@@ -111,8 +111,8 @@ var task = {
   queue:         "default",
   frequency:     0,
   run: function(api, params, next){
-    api.sendEmail(params.email, function(err){
-      if(err){ api.log(err, 'error'); }
+    api.sendEmail(params.email, function(error){
+      if(error){ api.log(error, 'error'); }
       next();
     })
   }
@@ -169,7 +169,7 @@ var task = {
             <h2>Community</h2>
             <ul class="list-inline banner-social-buttons">
                 <li><a href="https://groups.google.com/forum/?fromgroups=#!forum/actionhero-js" class="btn btn-default btn-lg"></i> <span class="network-name">Mailing List</span></a></li>
-                <li><a href="https://gitter.im/evantahler/actionhero" class="btn btn-default btn-lg"> <span class="network-name">Chat</span></a></li>
+                <li><a href="http://slack.actionherojs.com" class="btn btn-default btn-lg"> <span class="network-name">Chat</span></a></li>
                 <li><a href="https://twitter.com/actionherojs" class="btn btn-default btn-lg"> <span class="network-name">Twitter</span></a></li>
                 <li><a href="https://github.com/evantahler/actionhero/issues" class="btn btn-default btn-lg"> <span class="network-name">Issues</span></a></li>
                 <li><a href="https://github.com/evantahler/actionhero/releases" class="btn btn-default btn-lg"> <span class="network-name">Releases</span></a></li>

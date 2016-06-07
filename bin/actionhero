@@ -44,8 +44,8 @@ binary.log = function(message, severity, metadata){
 ///////////////
 
 binary.utils = {
-  hardError: function(err){
-    binary.log(err, 'error');
+  hardError: function(error){
+    binary.log(error, 'error');
     process.exit(1);
   },
   stringifyInputList: function(list){
@@ -113,14 +113,6 @@ binary.utils = {
       binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
       fs.symlinkSync(source, destination, 'dir');
     }
-  },
-  hashLength: function(obj){
-    var size = 0;
-    var key;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){ size++; }
-    }
-    return size;
   }
 };
 

@@ -18,7 +18,7 @@
           console.log("Web fingerprint: "  + data.requesterInformation.fingerprint);
           // start the websocket client
           client = new ActionheroClient;
-          client.connect(function(err, details){
+          client.connect(function(error, details){
             console.log("WebSocket cleintId: " + client.id);
             console.log("WebSocket fingerprint: " + client.fingerprint);
             // There should be a 3-way match

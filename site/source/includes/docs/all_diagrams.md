@@ -1,6 +1,6 @@
 # All Diagrams
 
-## actionhero sections
+## ActionHero sections
 <img src="/images/actionheroGraphic.png" />
 
 ## request flow

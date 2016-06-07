@@ -6,7 +6,7 @@ var api;
 describe('Utils', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       done();
     });
@@ -16,13 +16,6 @@ describe('Utils', function(){
     actionhero.stop(function(){
       done();
     });
-  });
-
-  it('utils.hashLength', function(done){
-    var testHash = {a: 1, b: 2, c: {aa: 1, bb: 2}};
-    api.utils.hashLength(testHash).should.equal(3);
-    api.utils.hashLength({}).should.equal(0);
-    done();
   });
 
   it('utils.arrayUniqueify', function(done){

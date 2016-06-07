@@ -90,12 +90,12 @@ module.exports = {
           api.actions.validateAction(api.actions.actions[action.name][action.version]);
           loadMessage(action);
         }
-      }catch(err){
+      }catch(error){
         try{
-          api.exceptionHandlers.loader(fullFilePath, err);
+          api.exceptionHandlers.loader(fullFilePath, error);
           delete api.actions.actions[action.name][action.version];
         }catch(err2){
-          throw err;
+          throw error;
         }
 
       }

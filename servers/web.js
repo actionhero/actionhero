@@ -145,8 +145,13 @@ var initialize = function(api, options, next){
       }
     }
 
-    // note: the 'end' event may not fire on some OSes; finish will
+    // the 'finish' event deontes a successful transfer
     connection.rawConnection.res.on('finish', function(){
+      connection.destroy();
+    });
+
+    // the 'close' event deontes a failed transfer, but it is probably the client's fault
+    connection.rawConnection.res.on('close', function(){
       connection.destroy();
     });
 
@@ -420,9 +425,9 @@ var initialize = function(api, options, next){
         for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
-        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files){
-          if(err){
-            server.log('error processing form: ' + String(err), 'error');
+        connection.rawConnection.form.parse(connection.rawConnection.req, function(error, fields, files){
+          if(error){
+            server.log('error processing form: ' + String(error), 'error');
             connection.error = new Error('There was an error processing this form.');
           }else{
             connection.rawConnection.params.body = fields;
@@ -511,9 +516,9 @@ var initialize = function(api, options, next){
 
   var cleanSocket = function(bindIP, port){
     if(!bindIP && port.indexOf('/') >= 0){
-      fs.unlink(port, function(err){
-        if(err){
-          server.log('cannot remove stale socket @' + port + ' : ' + err);
+      fs.unlink(port, function(error){
+        if(error){
+          server.log('cannot remove stale socket @' + port + ' : ' + error);
         }else{
           server.log('removed stale unix socket @ ' + port);
         }

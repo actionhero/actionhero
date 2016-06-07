@@ -1,6 +1,7 @@
 # Contributing
 
-First, THANK YOU.  
+First, **THANK YOU**.  
+
 Actionhero would not be the success it is today without the contributions of [many people](https://github.com/evantahler/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use.
 
 ## Testing
@@ -10,7 +11,7 @@ You will need redis and node.js installed.  No other external dependancies are n
 
 **Every contribution to the codebase should have an associated test**
 
-If you need help writing tests, please ask for help in the [chat room](https://gitter.im/evantahler/actionhero)
+If you need help writing tests, please ask for help in the [chat room](http://slack.actionherojs.com)
 
 ## Syntax-checking
 

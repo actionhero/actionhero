@@ -39,12 +39,12 @@ module.exports = {
         api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
       }
 
-      api.redis.client.on('error', function(err){
-        api.log(['Redis Error (client): %s', err], 'emerg');
+      api.redis.client.on('error', function(error){
+        api.log(['Redis Error (client): %s', error], 'emerg');
       });
 
-      api.redis.subscriber.on('error', function(err){
-        api.log(['Redis Error (subscriber): %s', err], 'emerg');
+      api.redis.subscriber.on('error', function(error){
+        api.log(['Redis Error (subscriber): %s', error], 'emerg');
       });
 
       api.redis.client.on('end', function(){

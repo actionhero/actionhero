@@ -1,5 +1,5 @@
 ---
-title: ActionHero Documentation and API Reference
+title: ActionHero Documentation and API Reference 
 
 # Since most code is JS, we should just have *all* code present all the time
 # language_tabs:
@@ -12,7 +12,7 @@ toc_footers:
   - <a href='https://www.npmjs.com/package/actionhero'>NPM</a>
   - <a href='https://github.com/evantahler/actionHero/releases'>Relase History</a>
   - <a href='https://groups.google.com/forum/#!forum/actionhero-js'>Mailing List</a>
-  - <a href='https://gitter.im/evantahler/actionhero'>Chat</a>
+  - <a href='http://slack.actionherojs.com'>Chat</a>
   - <br/>
   - <a href='http://github.com/tripit/slate'>Documentation Powered by Slate</a>
 

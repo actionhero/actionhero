@@ -3,8 +3,8 @@ sudo: false
 language: node_js
 
 node_js:
-  - "4.0"
-  - "5.0"
+  - "4"
+  - "6"
 
 env:
   - "FAKEREDIS=true"
@@ -27,9 +27,4 @@ after_failure:
   - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
 
 notifications:
-  webhooks:
-    urls:
-      - 'https://webhooks.gitter.im/e/0b77e5af8eb07ea0ea0c'
-    on_success: always
-    on_failure: always
-    on_start:   true
+  slack: actionherojs:vj5i1wkPqEx0iKf6qXwQSnuX
