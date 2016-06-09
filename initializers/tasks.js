@@ -240,6 +240,7 @@ module.exports = {
           api.tasks.allWorkingOn(function(error, workers){
             if(error){ return done(error); }
             details.workers = workers;
+            return done();
           });
         });
 
@@ -258,11 +259,13 @@ module.exports = {
               });
             });
 
-            async.series(queueJobs, done);
+            async.parallel(queueJobs, done);
           });
         });
 
-        async.series(jobs, callback);
+        async.parallel(jobs, function(error){
+          return callback(error, details);
+        });
       }
     };
 
