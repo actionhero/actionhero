@@ -7,6 +7,7 @@ var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
 var uuid                = require('node-uuid');
+var etag                = require('etag');
 
 var initialize = function(api, options, next){
 
@@ -105,12 +106,38 @@ var initialize = function(api, options, next){
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
     if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
-
     connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified)]);
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404; }
     if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
+    if(api.config.servers.web.enableEtag && fileStream){
+      var fileBuffer = !Buffer.isBuffer(fileStream) ? new Buffer(fileStream.toString(), 'utf8') : fileStream;
+      var fileEtag = etag(fileBuffer, {weak: true});
+      connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
+      var noneMatchHeader = reqHeaders['if-none-match'];
+      var cacheCtrlHeader = reqHeaders['cache-control'];
+      var noCache = false;
+      var etagMatches;
+      // check for no-cache cache request directive
+      if (cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
+        noCache = true;
+      }  
+
+      // parse if-none-match
+      if (noneMatchHeader) noneMatchHeader = noneMatchHeader.split(/ *, */);
+
+      // if-none-match
+      if (noneMatchHeader) {
+        etagMatches = noneMatchHeader.some(function (match) {
+          return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
+        });
+      }
+
+      if(etagMatches && !noCache){
+        connection.rawConnection.responseHttpCode = 304;
+      }
+    }
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
     if(error){
       server.sendWithCompression(connection, responseHttpCode, headers, String(error));

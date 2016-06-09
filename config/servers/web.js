@@ -74,6 +74,8 @@ exports['default'] = {
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
         queryParseOptions: {},
+        // when true, an ETAG Header will be provided with each requested static file for caching reasons
+        enableEtag: true
       };
     }
   }

@@ -72,6 +72,28 @@ describe('Core: Static File', function(){
     });
   });
 
+  it('should send back a 304 if the ETAG header is present', function(done){
+    request.get(url + '/simple.html', function(error, response){
+      response.statusCode.should.equal(200);
+      response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />');
+      should.exist(response.headers['etag']);
+      var etag = response.headers['etag'];
+      var options = {
+        url: url + '/simple.html',
+        headers: {
+          'If-None-Match': etag
+        },
+        method: 'get'
+      };
+      request(options, function(error, response){
+        response.statusCode.should.equal(304);
+        response.body.should.equal('');
+        done();
+      });
+
+    });
+  });
+
   it('should send back the file if the header "if-modified-since" is present but condition does not match', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);

@@ -133,7 +133,17 @@ config.servers = {
       serverInformation: true,
       requestorInformation: true
     },
-    returnErrorCodes: false              // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null. You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+    // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
+    // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+    returnErrorCodes: true,
+    // should this node server attempt to gzip responses if the client can accept them?
+    // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
+    compress: false,
+    // options to pass to the query parser
+    // learn more about the options @ https://github.com/hapijs/qs
+    queryParseOptions: {},
+    // when true, an ETAG Header will be provided with each requested static file for caching reasons
+    enableEtag: true  
   }
 }  
 ```
