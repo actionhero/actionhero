@@ -7,7 +7,6 @@ var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
 var uuid                = require('node-uuid');
-var fresh               = require('fresh');
 var etag                = require('etag');
 
 var initialize = function(api, options, next){
@@ -116,9 +115,26 @@ var initialize = function(api, options, next){
       var fileBuffer = !Buffer.isBuffer(fileStream) ? new Buffer(fileStream.toString(), 'utf8') : fileStream;
       var fileEtag = etag(fileBuffer, {weak: true});
       connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
-      var lastModifiedDate = new Date(lastModified);
-      lastModifiedDate.setMilliseconds(0);
-      if(fresh(reqHeaders, {'etag': fileEtag, 'last-modified':lastModifiedDate})){
+      var noneMatchHeader = reqHeaders['if-none-match'];
+      var cacheCtrlHeader = reqHeaders['cache-control'];
+      var noCache = false;
+      var etagMatches;
+      // check for no-cache cache request directive
+      if (cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
+        noCache = true;
+      }  
+
+      // parse if-none-match
+      if (noneMatchHeader) noneMatchHeader = noneMatchHeader.split(/ *, */);
+
+      // if-none-match
+      if (noneMatchHeader) {
+        etagMatches = noneMatchHeader.some(function (match) {
+          return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
+        });
+      }
+
+      if(etagMatches && !noCache){
         connection.rawConnection.responseHttpCode = 304;
       }
     }

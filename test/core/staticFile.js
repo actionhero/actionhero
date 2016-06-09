@@ -87,6 +87,7 @@ describe('Core: Static File', function(){
       };
       request(options, function(error, response){
         response.statusCode.should.equal(304);
+        response.body.should.equal('');
         done();
       });
 
