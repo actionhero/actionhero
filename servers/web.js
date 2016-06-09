@@ -120,16 +120,16 @@ var initialize = function(api, options, next){
       var noCache = false;
       var etagMatches;
       // check for no-cache cache request directive
-      if (cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
+      if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
         noCache = true;
-      }  
+      }
 
       // parse if-none-match
-      if (noneMatchHeader) noneMatchHeader = noneMatchHeader.split(/ *, */);
+      if(noneMatchHeader){ noneMatchHeader = noneMatchHeader.split(/ *, */); }
 
       // if-none-match
-      if (noneMatchHeader) {
-        etagMatches = noneMatchHeader.some(function (match) {
+      if(noneMatchHeader){
+        etagMatches = noneMatchHeader.some(function(match){
           return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
         });
       }
