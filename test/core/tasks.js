@@ -41,8 +41,22 @@ describe('Core: Tasks', function(){
         }
       };
 
+      api.tasks.tasks.slowTask = {
+        name: 'slowTask',
+        description: 'task: ' + this.name,
+        queue: queue,
+        frequency: 0,
+        plugins: [],
+        pluginOptions: {},
+        run: function(api, params, next){
+          taskOutput.push('slowTask');
+          setTimeout(next, 5000);
+        }
+      };
+
       api.tasks.jobs.regularTask  = api.tasks.jobWrapper('regularTask');
       api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask');
+      api.tasks.jobs.slowTask     = api.tasks.jobWrapper('slowTask');
 
       done();
     });
@@ -51,8 +65,10 @@ describe('Core: Tasks', function(){
   after(function(done){
     delete api.tasks.tasks.regularTask;
     delete api.tasks.tasks.periodicTask;
+    delete api.tasks.tasks.slowTask;
     delete api.tasks.jobs.regularTask;
     delete api.tasks.jobs.periodicTask;
+    delete api.tasks.jobs.slowTask;
 
     api.resque.multiWorker.options.minTaskProcessors = 0;
     api.resque.multiWorker.options.maxTaskProcessors = 0;
@@ -98,7 +114,7 @@ describe('Core: Tasks', function(){
   it('will clear crashed workers when booting'); //TODO
 
   it('setup worked', function(done){
-    Object.keys(api.tasks.tasks).length.should.equal(2 + 1);
+    Object.keys(api.tasks.tasks).length.should.equal(3 + 1);
     done();
   });
 
@@ -246,6 +262,34 @@ describe('Core: Tasks', function(){
         });
       });
     });
+  });
+
+  describe('details view in a working system', function(){
+
+    it('can use api.tasks.details to learn about the system', function(done){
+      this.timeout(10 * 1000);
+
+      api.config.tasks.queues = ['*'];
+
+      api.tasks.enqueue('slowTask', {a:1}, function(error){
+        api.resque.multiWorker.start(function(){
+          setTimeout(function(){
+            api.tasks.details(function(error, details){
+              should.not.exist(error);
+              Object.keys(details.queues).should.deepEqual(['testQueue']);
+              details.queues.testQueue.length.should.equal(0);
+              Object.keys(details.workers).length.should.equal(1);
+              var workerName = Object.keys(details.workers)[0];
+              details.workers[workerName].queue.should.equal('testQueue');
+              details.workers[workerName].payload.args.should.deepEqual([{a:1}]);
+              details.workers[workerName].payload['class'].should.equal('slowTask');
+              setTimeout(done, 5000);
+            });
+          }, 2000);
+        });
+      });
+    });
+
   });
 
   describe('full worker flow', function(){
