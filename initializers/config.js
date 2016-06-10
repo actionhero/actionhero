@@ -127,8 +127,14 @@ module.exports = {
           // error loading configuration, abort if all remaining
           // configuration files have been tried and failed
           // indicating inability to progress
-          loadErrors[f] = error.toString();
+          loadErrors[f] = {error: error, msg: error.toString()};
           if(++loadRetries === limit - i){
+            Object.keys(loadErrors).forEach(function(e){
+              console.log(loadErrors[e].error.stack);
+              console.log('');
+              delete loadErrors[e].error;
+            });
+
             throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors));
           }
           // adjust configuration files list: remove and push

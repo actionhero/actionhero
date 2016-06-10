@@ -7,7 +7,7 @@ module.exports = {
   stopPriority:  100,
   loadPriority:  600,
   initialize: function(api, next){
-    
+
     var resqueOverrides = api.config.tasks.resque_overrides;
 
     api.resque = {
@@ -15,7 +15,7 @@ module.exports = {
       queue: null,
       multiWorker: null,
       scheduler: null,
-      connectionDetails: api.config.tasks.redis || {},
+      connectionDetails: {redis: api.config.redis.tasks},
 
       startQueue: function(callback){
         var self = this;
