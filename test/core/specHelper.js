@@ -30,7 +30,7 @@ describe('Core: specHelper', function(){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response){
       response.error.should.equal('Error: unknown action or invalid apiVersion');
       response.messageCount.should.equal(1);
-      response.serverInformation.serverName.should.equal('actionhero API');
+      response.serverInformation.serverName.should.equal('actionhero');
       response.requesterInformation.remoteIP.should.equal('testServer');
       done();
     });

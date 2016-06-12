@@ -14,13 +14,7 @@ exports.sleepTest = {
     'sleepStarted':1420953571322,
     'sleepEnded':1420953572327,
     'sleepDelta':1005,
-    'sleepDuration':1000,
-    'serverInformation':{
-      'serverName':'actionhero API',
-      'apiVersion':'0.0.1',
-      'requestDuration':1006,
-      'currentTime':1420953572327
-    }
+    'sleepDuration':1000
   },
 
   run: function(api, data, next){
