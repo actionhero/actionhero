@@ -100,11 +100,10 @@ module.exports = {
       if(!followLinkFiles){ followLinkFiles = true; }
 
       extension = extension.replace('.', '');
-      if(dir[dir.length - 1] !== path.sep){ dir += path.sep; }
 
       if(fs.existsSync(dir)){
         fs.readdirSync(dir).forEach(function(file){
-          var fullFilePath = path.normalize(dir + file);
+          var fullFilePath = path.join(dir, file);
           if(file[0] !== '.'){ // ignore 'system' files
             var stats = fs.statSync(fullFilePath);
             var child;
