@@ -1,8 +1,12 @@
+var path = require('path');
+
 exports['default'] = {
   general: function(api){
+    var packageJSON = require(api.projectRoot + path.sep + 'package.json');
+
     return {
-      apiVersion: '0.0.1',
-      serverName: 'actionhero API',
+      apiVersion: packageJSON.version,
+      serverName: packageJSON.name,
       // id can be set here, or it will be generated dynamically.
       //  Be sure that every server you run has a unique ID (which will happen when generated dynamically)
       //  id: 'myActionHeroServer',
