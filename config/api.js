@@ -1,12 +1,8 @@
-var path = require('path');
-
 exports['default'] = {
   general: function(api){
-    var packageJSON = require(api.projectRoot + path.sep + 'package.json');
-
     return {
-      apiVersion: packageJSON.version,
-      serverName: packageJSON.name,
+      apiVersion: '0.0.1',
+      serverName: 'actionhero API',
       // id can be set here, or it will be generated dynamically.
       //  Be sure that every server you run has a unique ID (which will happen when generated dynamically)
       //  id: 'myActionHeroServer',
@@ -36,6 +32,10 @@ exports['default'] = {
       directoryFileType : 'index.html',
       // The default priority level given to middleware of all types (action, connection, and say)
       defaultMiddlewarePriority : 100,
+      // Which channel to use on redis pub/sub for RPC communication
+      channel: 'actionhero',
+      // How long to wait for an RPC call before considering it a failure
+      rpcTimeout: 5000,
       // configuration for your actionhero project structure
       paths: {
         'action':      [__dirname + '/../actions'],
