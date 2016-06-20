@@ -3,10 +3,10 @@ services:
   redis:
     image: redis
   actionhero:
-    image: evantahler/actionhero
+    build: .
     ports:
-     - "8080:8080"
-     - "5000:5000"
+     - "8080"
+     - "5000"
     depends_on:
       - redis
     links:
