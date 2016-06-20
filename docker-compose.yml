@@ -1,0 +1,17 @@
+version: '2'
+services:
+  redis:
+    image: redis
+  actionhero:
+    image: evantahler/actionhero
+    ports:
+     - "8080:8080"
+     - "5000:5000"
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
