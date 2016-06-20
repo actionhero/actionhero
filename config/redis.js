@@ -4,7 +4,12 @@ var database = process.env.REDIS_DB   || 0;
 
 exports['default'] = {
   redis: function(api){
-    var Redis = require('fakeredis');
+    var Redis;
+    if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
+      Redis = require('ioredis');
+    }else{
+      Redis = require('fakeredis');
+    }
 
     return {
       '_toExpand': false,
