@@ -198,16 +198,33 @@ module.exports = {
         }
 
         // formatter
-        if(self.params[key] !== undefined && typeof props.formatter === 'function'){
-          self.params[key] = props.formatter.call(api, self.params[key], self);
+        if(self.params[key] !== undefined && props.formatter !== undefined){
+          if(!Array.isArray(props.formatter)){ props.formatter = [props.formatter]; }
+
+          props.formatter.forEach(function(formatter){
+            if(typeof formatter === 'function'){
+              self.params[key] = formatter.call(api, self.params[key], self);
+            }else{
+              var method = api.utils.stringToHash(formatter);
+              self.params[key] = method.call(api, self.params[key], self);
+            }
+          });
         }
 
         // validator
-        if(self.params[key] !== undefined && typeof props.validator === 'function'){
-          var validatorResponse = props.validator.call(api, self.params[key], self);
-          if(validatorResponse !== true){
-            self.validatorErrors.push(validatorResponse);
-          }
+        if(self.params[key] !== undefined && props.validator !== undefined){
+          if(!Array.isArray(props.validator)){ props.validator = [props.validator]; }
+
+          props.validator.forEach(function(validator){
+            var validatorResponse;
+            if(typeof validator === 'function'){
+              validatorResponse = validator.call(api, self.params[key], self);
+            }else{
+              var method = api.utils.stringToHash(validator);
+              validatorResponse = method.call(api, self.params[key], self);
+            }
+            if(validatorResponse !== true){ self.validatorErrors.push(validatorResponse); }
+          });
         }
 
         // required
