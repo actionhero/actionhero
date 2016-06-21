@@ -6,6 +6,13 @@ module.exports = {
   loadPriority:  430,
   initialize: function(api, next){
 
+    var prepareStringMethod = function(method){
+      var cmdParts = method.split('.');
+      var cmd = cmdParts.shift();
+      if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
+      return api.utils.stringToHash(cmdParts.join('.'));
+    };
+
     api.actionProcessor = function(connection, callback){
       if(!connection){
         throw new Error('data.connection is required');
@@ -205,7 +212,7 @@ module.exports = {
             if(typeof formatter === 'function'){
               self.params[key] = formatter.call(api, self.params[key], self);
             }else{
-              var method = api.utils.stringToHash(formatter);
+              var method = prepareStringMethod(formatter);
               self.params[key] = method.call(api, self.params[key], self);
             }
           });
@@ -220,7 +227,7 @@ module.exports = {
             if(typeof validator === 'function'){
               validatorResponse = validator.call(api, self.params[key], self);
             }else{
-              var method = api.utils.stringToHash(validator);
+              var method = prepareStringMethod(validator);
               validatorResponse = method.call(api, self.params[key], self);
             }
             if(validatorResponse !== true){ self.validatorErrors.push(validatorResponse); }
