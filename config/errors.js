@@ -49,7 +49,8 @@ exports['default'] = {
 
       // When a params for an action is invalid
       invalidParams: function(data, validationErrors){
-        return validationErrors.join(', ');
+        if(validationErrors.length >= 0){ return validationErrors[0]; }
+        return 'validation error';
       },
 
       // When a required param for an action is not provided
