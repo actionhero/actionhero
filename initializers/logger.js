@@ -3,7 +3,7 @@
 var winston = require('winston');
 
 module.exports = {
-  loadPriority:  120,
+  loadPriority:  100,
   initialize: function(api, next){
 
     var transports = [];

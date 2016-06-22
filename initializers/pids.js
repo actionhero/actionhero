@@ -5,7 +5,7 @@ var cluster = require('cluster');
 
 module.exports = {
   startPriority: 1,
-  loadPriority:  110,
+  loadPriority:  50,
   initialize: function(api, next){
 
     api.pids = {};
