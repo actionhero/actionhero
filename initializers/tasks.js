@@ -11,6 +11,8 @@ module.exports = {
 
       tasks: {},
       jobs: {},
+      middleware: {},
+      globalMiddleware: [],
 
       loadFile: function(fullFilePath, reload){
         var self = this;
@@ -44,6 +46,7 @@ module.exports = {
       jobWrapper: function(taskName){
         var self = this;
         var task = api.tasks.tasks[taskName];
+        var middleware = task.middleware;
         var plugins = task.plugins || [];
         var pluginOptions = task.pluginOptions || [];
         if(task.frequency > 0){
@@ -51,7 +54,9 @@ module.exports = {
           if(plugins.indexOf('queueLock') < 0){ plugins.push('queueLock'); }
           if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
         }
+        if(api.config.tasks.middleware){ plugins.push(api.taskMiddleware); }
         return {
+          'middleware': middleware,
           'plugins': plugins,
           'pluginOptions': pluginOptions,
           'perform': function(){
@@ -265,6 +270,23 @@ module.exports = {
 
         async.parallel(jobs, function(error){
           return callback(error, details);
+        });
+      }
+    };
+
+    api.tasks.addMiddleware = function(data){
+      if(!data.name){ throw new Error('middleware.name is required'); }
+      if(!data.priority){ data.priority = api.config.general.defaultMiddlewarePriority; }
+      data.priority = Number(data.priority);
+      api.tasks.middleware[data.name] = data;
+      if(data.global === true){
+        api.tasks.globalMiddleware.push(data.name);
+        api.tasks.globalMiddleware.sort(function(a, b){
+          if(api.tasks.middleware[a].priority > api.tasks.middleware[b].priority){
+            return 1;
+          }else{
+            return -1;
+          }
         });
       }
     };

@@ -27,6 +27,10 @@ exports['default'] = {
 
       ---------------------- */
 
+      post: [
+        { path: '/tasks/:task', action: 'taskRunner' }
+      ]
+
     };
   }
 };
