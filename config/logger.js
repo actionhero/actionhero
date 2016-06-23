@@ -32,7 +32,10 @@ exports['default'] = {
       return new (winston.transports.File)({
         filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
         level: 'info',
-        timestamp: true
+        timestamp: true,
+        colorize: true,
+        json: false,
+        tailable: true
       });
     });
 

@@ -6,12 +6,12 @@ exports['default'] = {
       // How long to wait for an RPC call before considering it a failure
       rpcTimeout: 5000,
       // which redis package should you ise?
-      pkg: 'fakeredis',
+      pkg: 'ioredis',
 
       // Basic configuration options
       host     : process.env.REDIS_HOST || '127.0.0.1',
       port     : process.env.REDIS_PORT || 6379,
-      database : process.env.REDIS_DB   || 0,
+      database : process.env.REDIS_DB   || 3,
     };
 
     if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){

@@ -1,12 +1,12 @@
 exports.sleepTest = {
   name: 'sleepTest',
   description: 'I will sleep and then return',
-
+  timeout: 3000,
   inputs: {
     sleepDuration: {
       required: true,
       formatter: function(n){ return parseInt(n); },
-      default: function(){ return 1000; }
+      default: function(){ return 4000; }
     }
   },
 
