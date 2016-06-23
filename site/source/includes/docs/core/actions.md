@@ -239,6 +239,53 @@ moneyInCents: {
 - If moneyInCents = `null`    => 0 (default value)
 - If moneyInCents = `"hello"` => Error('not a number')
 
+Formatters and Validators can also be named method names. For example, you might have an action like:
+
+```js
+exports.cacheTest = {
+  name: 'cacheTest',
+  description: 'I will test the internal cache functions of the API',
+  outputExample: {},
+
+  inputs: {
+    key: {
+      required: true,
+      formatter: [
+         function(s){ return String(s); },
+         'api.formatter.uniqueKeyName' // <----------- HERE
+    },
+    value: {
+      required: true,
+      formatter: function(s){ return String(s); },
+      validator: function(s){
+        if(s.length < 3){ return '`value` should be at least 3 letters long'; }
+        else{ return true; }
+      }
+    },
+  },
+
+  run: function(api, data, next){
+    // ...
+  }
+
+};
+```
+
+You can define `api.formatter.uniqueKeyName` elsewhere in your project, like this initializer:
+
+```js
+module.exports = {
+  initialize: function(api, next){
+    api.formatter = {
+      uniqueKeyName: function(key){
+        return key + '-' + this.connection.id;
+      }
+    };
+
+    next();
+  },
+};
+```
 
 ## The Data Object
 

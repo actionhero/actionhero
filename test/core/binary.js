@@ -94,6 +94,17 @@ describe('Core: Binary', function(){
       });
     });
 
+    it('can call npm install in the new project', function(done){
+      this.timeout(1000 * 60);
+      doBash([
+        'cd ' + testDir,
+        'npm install'
+      ], function(error, data){
+        should.not.exist(error);
+        done();
+      });
+    });
+
     it('can call the help command', function(done){
       doBash([
         'cd ' + testDir,

@@ -244,7 +244,7 @@ describe('Core: API', function(){
       });
     });
 
-    it('will use formater if provided (and still use validator)', function(done){
+    it('will use formatter if provided (and still use validator)', function(done){
       api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
         response.requesterInformation.receivedParams.fancyParam.should.equal('123');
         done();
@@ -255,6 +255,117 @@ describe('Core: API', function(){
       api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, function(response){
         should.exist(response.requesterInformation.receivedParams.requiredParam);
         should.not.exist(response.requesterInformation.receivedParams.sleepDuration);
+        done();
+      });
+    });
+
+  });
+
+  describe('named action validations', function(){
+
+    before(function(done){
+      api.validators = {
+        validator1: function(param){
+          if(typeof param !== 'string'){ return new Error('only strings'); }
+          return true;
+        },
+        validator2: function(param){
+          if(param !== 'correct'){ return new Error('that is not correct'); }
+          return true;
+        }
+      };
+
+      api.actions.versions.testAction = [1];
+      api.actions.actions.testAction = {
+        '1': {
+          name: 'testAction',
+          description: 'I am a test',
+          inputs: {
+            a: {
+              validator: ['api.validators.validator1', 'api.validators.validator2']
+            }
+          },
+          run:function(api, data, next){
+            next();
+          }
+        }
+      };
+
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.versions.testAction;
+      delete api.actions.actions.testAction;
+      delete api.validators;
+      done();
+    });
+
+    it('runs validator arrays in the proper order', function(done){
+      api.specHelper.runAction('testAction', {a: 6}, function(response){
+        response.error.should.equal('Error: only strings');
+        done();
+      });
+    });
+
+    it('runs more than 1 validator', function(done){
+      api.specHelper.runAction('testAction', {a: 'hello'}, function(response){
+        response.error.should.equal('Error: that is not correct');
+        done();
+      });
+    });
+
+    it('succeeds multiple validators', function(done){
+      api.specHelper.runAction('testAction', {a: 'correct'}, function(response){
+        should.not.exist(response.error);
+        done();
+      });
+    });
+
+  });
+
+  describe('named action formatters', function(){
+
+    before(function(done){
+      api.formatters = {
+        formatter1: function(param){
+          return '*' + param + '*';
+        },
+        formatter2: function(param){
+          return '~' + param + '~';
+        }
+      };
+
+      api.actions.versions.testAction = [1];
+      api.actions.actions.testAction = {
+        '1': {
+          name: 'testAction',
+          description: 'I am a test',
+          inputs: {
+            a: {
+              formatter: ['api.formatters.formatter1', 'api.formatters.formatter2']
+            }
+          },
+          run:function(api, data, next){
+            data.response.a = data.params.a;
+            next();
+          }
+        }
+      };
+
+      done();
+    });
+
+    after(function(done){
+      delete api.actions.versions.testAction;
+      delete api.actions.actions.testAction;
+      delete api.formatters;
+      done();
+    });
+
+    it('runs formatter arrays in the proper order', function(done){
+      api.specHelper.runAction('testAction', {a: 6}, function(response){
+        response.a.should.equal('~*6*~');
         done();
       });
     });

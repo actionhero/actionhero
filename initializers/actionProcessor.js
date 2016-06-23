@@ -6,6 +6,13 @@ module.exports = {
   loadPriority:  430,
   initialize: function(api, next){
 
+    var prepareStringMethod = function(method){
+      var cmdParts = method.split('.');
+      var cmd = cmdParts.shift();
+      if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
+      return api.utils.stringToHash(cmdParts.join('.'));
+    };
+
     api.actionProcessor = function(connection, callback){
       if(!connection){
         throw new Error('data.connection is required');
@@ -198,16 +205,33 @@ module.exports = {
         }
 
         // formatter
-        if(self.params[key] !== undefined && typeof props.formatter === 'function'){
-          self.params[key] = props.formatter.call(api, self.params[key], self);
+        if(self.params[key] !== undefined && props.formatter !== undefined){
+          if(!Array.isArray(props.formatter)){ props.formatter = [props.formatter]; }
+
+          props.formatter.forEach(function(formatter){
+            if(typeof formatter === 'function'){
+              self.params[key] = formatter.call(api, self.params[key], self);
+            }else{
+              var method = prepareStringMethod(formatter);
+              self.params[key] = method.call(api, self.params[key], self);
+            }
+          });
         }
 
         // validator
-        if(self.params[key] !== undefined && typeof props.validator === 'function'){
-          var validatorResponse = props.validator.call(api, self.params[key], self);
-          if(validatorResponse !== true){
-            self.validatorErrors.push(validatorResponse);
-          }
+        if(self.params[key] !== undefined && props.validator !== undefined){
+          if(!Array.isArray(props.validator)){ props.validator = [props.validator]; }
+
+          props.validator.forEach(function(validator){
+            var validatorResponse;
+            if(typeof validator === 'function'){
+              validatorResponse = validator.call(api, self.params[key], self);
+            }else{
+              var method = prepareStringMethod(validator);
+              validatorResponse = method.call(api, self.params[key], self);
+            }
+            if(validatorResponse !== true){ self.validatorErrors.push(validatorResponse); }
+          });
         }
 
         // required
