@@ -15,7 +15,7 @@ module.exports = {
       queue: null,
       multiWorker: null,
       scheduler: null,
-      connectionDetails: {redis: api.config.redis.tasks},
+      connectionDetails: {redis: api.redis.clients.tasks},
 
       startQueue: function(callback){
         var self = this;
