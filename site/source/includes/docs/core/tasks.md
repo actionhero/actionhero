@@ -91,8 +91,6 @@ exports.default = {
       maxEventLoopDelay: 5,
       // When we kill off a taskProcessor, should we disonnect that local redis connection?
       toDisconnectProcessors: true,
-      // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis,
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
         queue: null,
@@ -346,7 +344,7 @@ You can handle this with an own initializer and the following logic =>
 
 ## Extending Resque
 
-In cases where you would like to extend or modify the underlying behaviour or capabilities of Resque you can specify 
+In cases where you would like to extend or modify the underlying behaviour or capabilities of Resque you can specify
 replacements for the Queues, Scheduler, or Multi Worker implementations in the Tasks configuration.
 
 ```javascript
@@ -404,7 +402,7 @@ myQueue.prototype.enqueueFront = function(q, func, args, callback){
 module.exports = myQueue;
 ```
 
-The above example will give you access to `api.resque.queue.enqueueFront()`, which you could use directly or wrap by 
+The above example will give you access to `api.resque.queue.enqueueFront()`, which you could use directly or wrap by
 extending the `api.tasks` object.
 
 

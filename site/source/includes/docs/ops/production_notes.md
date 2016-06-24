@@ -20,7 +20,6 @@ exports.production = {
           queues: ['*'],
           verbose: true,
           // ...
-          redis: api.config.redis
         };
 
         if(process.env.ACTIONHERO_ROLE === 'worker'){

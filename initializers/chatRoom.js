@@ -102,7 +102,7 @@ module.exports = {
     };
 
     api.chatRoom.list = function(callback){
-      api.config.redis.client.smembers(api.chatRoom.keys.rooms, function(error, rooms){
+      api.redis.clients.client.smembers(api.chatRoom.keys.rooms, function(error, rooms){
         if(typeof callback === 'function'){ callback(error, rooms); }
       });
     };
@@ -110,7 +110,7 @@ module.exports = {
     api.chatRoom.add = function(room, callback){
       api.chatRoom.exists(room, function(error, found){
         if(found === false){
-          api.config.redis.client.sadd(api.chatRoom.keys.rooms, room, function(error, count){
+          api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room, function(error, count){
             if(typeof callback === 'function'){ callback(error, count); }
           });
         }else{
@@ -123,14 +123,14 @@ module.exports = {
       api.chatRoom.exists(room, function(error, found){
         if(found === true){
           api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room), function(){
-            api.config.redis.client.hgetall(api.chatRoom.keys.members + room, function(error, membersHash){
+            api.redis.clients.client.hgetall(api.chatRoom.keys.members + room, function(error, membersHash){
 
               for(var id in membersHash){
                 api.chatRoom.removeMember(id, room);
               }
 
-              api.config.redis.client.srem(api.chatRoom.keys.rooms, room, function(){
-                api.config.redis.client.del(api.chatRoom.keys.members + room, function(){
+              api.redis.clients.client.srem(api.chatRoom.keys.rooms, room, function(){
+                api.redis.clients.client.del(api.chatRoom.keys.members + room, function(){
                   if(typeof callback === 'function'){ callback(); }
                 });
               });
@@ -144,7 +144,7 @@ module.exports = {
     };
 
     api.chatRoom.exists = function(room, callback){
-      api.config.redis.client.sismember(api.chatRoom.keys.rooms, room, function(error, bool){
+      api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room, function(error, bool){
         var found = false;
         if(bool === 1 || bool === true){
           found = true;
@@ -165,7 +165,7 @@ module.exports = {
         api.chatRoom.exists(room, function(error, found){
           if(found === true){
             var key = api.chatRoom.keys.members + room;
-            api.config.redis.client.hgetall(key, function(error, members){
+            api.redis.clients.client.hgetall(key, function(error, members){
               var cleanedMembers = {};
               var count = 0;
               for(var id in members){
@@ -207,7 +207,7 @@ module.exports = {
                   callback(error, false);
                 }else{
                   var memberDetails = api.chatRoom.generateMemberDetails(connection);
-                  api.config.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
+                  api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
                     connection.rooms.push(room);
                     if(typeof callback === 'function'){ callback(null, true); }
                   });
@@ -235,7 +235,7 @@ module.exports = {
                 if(error){
                   callback(error, false);
                 }else{
-                  api.config.redis.client.hdel(api.chatRoom.keys.members + room, connection.id, function(){
+                  api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id, function(){
                     var index = connection.rooms.indexOf(room);
                     if(index > -1){ connection.rooms.splice(index, 1); }
                     if(typeof callback === 'function'){ callback(null, true); }

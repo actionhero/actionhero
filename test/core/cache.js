@@ -129,14 +129,17 @@ describe('Core: Cache', function(){
     var timeout = 200;
     //save the initial key
     api.cache.save('testKey_slow', 'abc123', expireTime, function(error, saveResp){
+      should.not.exist(error);
       saveResp.should.equal(true);
       //wait for `timeout` and try to load the key
       setTimeout(function(){
         api.cache.load('testKey_slow', {expireTimeMS: expireTime}, function(error, loadResp){
+          should.not.exist(error);
           loadResp.should.equal('abc123');
           //wait another `timeout` and load the key again within the extended expire time
           setTimeout(function(){
             api.cache.load('testKey_slow', function(error, loadResp){
+              should.not.exist(error);
               loadResp.should.equal('abc123');
               //wait another `timeout` and the key load should fail without the extension
               setTimeout(function(){
@@ -285,7 +288,7 @@ describe('Core: Cache', function(){
     it('locks have a TTL and the default will be assumed from config', function(done){
       api.cache.lock(key, null, function(error, lockOk){
         lockOk.should.equal(true);
-        api.config.redis.client.ttl(api.cache.lockPrefix + key, function(error, ttl){
+        api.redis.clients.client.ttl(api.cache.lockPrefix + key, function(error, ttl){
           (ttl >= 9).should.equal(true);
           (ttl <= 10).should.equal(true);
           done();
