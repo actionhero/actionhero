@@ -5,11 +5,12 @@ var password = process.env.REDIS_PASS || null;
 
 exports['default'] = {
   redis: function(api){
-    if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
 
-      // konstructor: The redis client constructor method
-      // args: The arguments to pass to the constructor
-      // buildNew: is it `new konstructor()` or just `konstructor()`?
+    // konstructor: The redis client constructor method
+    // args: The arguments to pass to the constructor
+    // buildNew: is it `new konstructor()` or just `konstructor()`?
+
+    if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
 
       return {
         '_toExpand': false,
