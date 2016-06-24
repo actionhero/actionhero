@@ -10,6 +10,7 @@ exports['default'] = {
     var subscriber;
     var tasks;
 
+    // cleanup if we are rebooting or looing in config load
     if(api.config.redis){
       if(api.config.redis.client){     api.config.redis.client.quit();     }
       if(api.config.redis.subscriber){ api.config.redis.subscriber.quit(); }
