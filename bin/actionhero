@@ -82,14 +82,18 @@ binary.utils = {
       fs.mkdirSync(path.normalize(dir), '0766');
     }
   },
-  createFileSafely: function(file, data){
-    if(binary.utils.fileExists(file)){
+  createFileSafely: function(file, data, overwrite){
+    if(binary.utils.fileExists(file) && !overwrite){
       binary.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
     }else{
-      binary.log(' - wrote file \'' + path.normalize(file) + '\'');
+      if(overwrite && binary.utils.fileExists(file)){
+        binary.log(' - overwritten file \'' + path.normalize(file) + '\'');
+      } else {
+        binary.log(' - wrote file \'' + path.normalize(file) + '\'');
+      }
       fs.writeFileSync(path.normalize(file), data);
     }
-  },
+  }, 
   createLinkfileSafely: function(filePath, type, refrence){
     if(binary.utils.fileExists(filePath)){
       binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
