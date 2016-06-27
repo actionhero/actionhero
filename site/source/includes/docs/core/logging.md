@@ -37,8 +37,8 @@ You can set a transport directly, IE `new (winston.transports.Console)()` or in 
 ```javascript
 api.log('hello'); // will use the default, 'info' level
 api.log('debug message', 'debug') // will not show up unless you have configured your logger in this NODE_ENV to be debug
-api.lot('OH NO', 'emerg') // will show up in all loger levels
-api.lot('the params were', 'info', data.params) // you can log objects too
+api.log('OH NO', 'emerg') // will show up in all logger levels
+api.log('the params were', 'info', data.params) // you can log objects too
 ```
 
 

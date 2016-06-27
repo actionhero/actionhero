@@ -239,6 +239,53 @@ moneyInCents: {
 - If moneyInCents = `null`    => 0 (default value)
 - If moneyInCents = `"hello"` => Error('not a number')
 
+Formatters and Validators can also be named method names. For example, you might have an action like:
+
+```js
+exports.cacheTest = {
+  name: 'cacheTest',
+  description: 'I will test the internal cache functions of the API',
+  outputExample: {},
+
+  inputs: {
+    key: {
+      required: true,
+      formatter: [
+         function(s){ return String(s); },
+         'api.formatter.uniqueKeyName' // <----------- HERE
+    },
+    value: {
+      required: true,
+      formatter: function(s){ return String(s); },
+      validator: function(s){
+        if(s.length < 3){ return '`value` should be at least 3 letters long'; }
+        else{ return true; }
+      }
+    },
+  },
+
+  run: function(api, data, next){
+    // ...
+  }
+
+};
+```
+
+You can define `api.formatter.uniqueKeyName` elsewhere in your project, like this initializer:
+
+```js
+module.exports = {
+  initialize: function(api, next){
+    api.formatter = {
+      uniqueKeyName: function(key){
+        return key + '-' + this.connection.id;
+      }
+    };
+
+    next();
+  },
+};
+```
 
 ## The Data Object
 
@@ -261,7 +308,7 @@ The goal of most actions is to do work and then modify the value of `data.respon
 
 You can also modify properties of the connection by accessing `data.connection`, IE changing the response header for a HTTP request.  
 
-If you don't want your action to respond to the client, of you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
+If you don't want your action to respond to the client, or you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
 
 ## Using Middleware in Actions
 
@@ -271,7 +318,7 @@ You can [learn more about middleware here](/docs#middleware).
 
 ## Notes
 
-* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an erro, be sure that it is an `new Error()` object, and not a string.
+* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an error, be sure that it is a `new Error()` object, and not a string.
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).  
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaniousActions`
 * `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](/docs#middleware) preProcessors will always have access to all params pre-scrubbing.

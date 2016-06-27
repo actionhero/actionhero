@@ -1,6 +1,7 @@
 'use strict';
 
-var uuid = require('node-uuid');
+var uuid  = require('node-uuid');
+var async = require('async');
 
 module.exports = {
   startPriority: 101,
@@ -9,102 +10,79 @@ module.exports = {
   initialize: function(api, next){
 
     api.redis = {};
+    api.redis.clients = {};
     api.redis.clusterCallbaks = {};
     api.redis.clusterCallbakTimeouts = {};
     api.redis.subscriptionHandlers = {};
     api.redis.status = {
-      client: false,
-      subscriber: false,
       subscribed: false,
-      calledback: false,
     };
 
-    if(api.config.redis['package'] && !api.config.redis.pkg){
-      api.log('Depreciation warning: New versions of actionhero utilize "pkg" instead of "package" for redis! Please update your configuration.');
-      api.config.redis.pkg = api.config.redis['package'];
-    }
-
-    var redisPackage = require(api.config.redis.pkg);
-    if(api.config.redis.pkg === 'fakeredis'){
-      api.log('running with fakeredis', 'warning');
-      redisPackage.fast = true;
-    }
-
     api.redis.initialize = function(callback){
-      if(api.config.redis.pkg === 'fakeredis'){
-        api.redis.client     = redisPackage.createClient(String(api.config.redis.host));
-        api.redis.subscriber = redisPackage.createClient(String(api.config.redis.host));
-      }else{
-        api.redis.client     = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
-        api.redis.subscriber = redisPackage.createClient(api.config.redis.port, api.config.redis.host, api.config.redis.options);
-      }
+      var jobs = [];
 
-      api.redis.client.on('error', function(error){
-        api.log(['Redis Error (client): %s', error], 'emerg');
-      });
-
-      api.redis.subscriber.on('error', function(error){
-        api.log(['Redis Error (subscriber): %s', error], 'emerg');
-      });
-
-      api.redis.client.on('end', function(){
-        api.log('Redis Connection Closed (client)', 'debug');
-        api.redis.status.client = false;
-      });
-
-      api.redis.subscriber.on('end', function(){
-        api.log('Redis Connection Closed (subscriber)', 'debug');
-        api.redis.status.subscriber = false;
-        api.redis.status.subscribed = false;
-      });
-
-      api.redis.client.on('connect', function(){
-        if(api.config.redis.database){ api.redis.client.select(api.config.redis.database); }
-        api.log('connected to redis (client)', 'debug');
-        api.redis.status.client = true;
-        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
-          api.redis.status.calledback = true;
-          callback();
-        }
+      ['client', 'subscriber', 'tasks'].forEach(function(r){
+        jobs.push(function(done){
+          if(api.config.redis[r].buildNew === true){
+            var args = api.config.redis[r].args;
+            api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]);
+            api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
+            api.redis.clients[r].on('connect', function(){
+              api.log(['Redis connection `%s` connected', r], 'info');
+              done();
+            });
+          }else{
+            api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args);
+            api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
+            api.log(['Redis connection `%s` connected', r], 'info');
+            done();
+          }
+        });
       });
 
       if(!api.redis.status.subscribed){
-        api.redis.subscriber.subscribe(api.config.redis.channel);
-        api.redis.status.subscribed = true;
-      }
+        jobs.push(function(done){
+          api.redis.clients.subscriber.subscribe(api.config.general.channel);
+          api.redis.status.subscribed = true;
 
-      api.redis.subscriber.on('message', function(messageChannel, message){
-        try{ message = JSON.parse(message); }catch(e){ message = {}; }
-        if(messageChannel === api.config.redis.channel && message.serverToken === api.config.general.serverToken){
-          if(api.redis.subscriptionHandlers[message.messageType]){
-            api.redis.subscriptionHandlers[message.messageType](message);
-          }
-        }
-      });
+          api.redis.clients.subscriber.on('message', function(messageChannel, message){
+            try{ message = JSON.parse(message); }catch(e){ message = {}; }
+            if(messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken){
+              if(api.redis.subscriptionHandlers[message.messageType]){
+                api.redis.subscriptionHandlers[message.messageType](message);
+              }
+            }
+          });
 
-      api.redis.subscriber.on('connect', function(){
-        // if(api.config.redis.database){ api.redis.subscriber.select(api.config.redis.database); }
-        api.log('connected to redis (subscriber)', 'debug');
-        api.redis.status.subscriber = true;
-        if(api.redis.status.client === true && api.redis.status.subscriber === true && api.redis.status.calledback === false){
-          api.redis.status.calledback = true;
-          callback();
-        }
-      });
-
-      if(api.config.redis.pkg === 'fakeredis'){
-        api.redis.status.client = true;
-        api.redis.status.subscriber = true;
-        process.nextTick(function(){
-          api.redis.status.calledback = true;
-          callback();
+          done();
         });
       }
+
+      async.series(jobs, callback);
+
+      // var ready = true;
+      // ['client', 'subscriber', 'tasks'].forEach(function(r){
+      //   if(
+      //     api.redis.clients[r].status && // This check is for fakeredis
+      //     (api.redis.clients[r].status !== 'connected' && api.redis.clients[r].status !== 'ready')
+      //   ){
+      //     ready = false;
+      //     api.log(['Redis connection `%s` not connected', r], 'warning');
+      //   }else{
+      //     api.log(['Redis connection `%s` connected', r], 'info');
+      //   }
+      // });
+      //
+      // if(ready === true){
+      //   callback();
+      // }else{
+      //   setTimeout(api.redis.initialize, 5000, callback);
+      // }
     };
 
     api.redis.publish = function(payload){
-      var channel = api.config.redis.channel;
-      api.redis.client.publish(channel, JSON.stringify(payload));
+      var channel = api.config.general.channel;
+      api.redis.clients.client.publish(channel, JSON.stringify(payload));
     };
 
     // Subsciption Handlers
@@ -163,7 +141,7 @@ module.exports = {
           }
           delete api.redis.clusterCallbaks[requestId];
           delete api.redis.clusterCallbakTimeouts[requestId];
-        }, api.config.redis.rpcTimeout, requestId);
+        }, api.config.general.rpcTimeout, requestId);
       }
     };
 
@@ -181,7 +159,8 @@ module.exports = {
 
     // Boot
 
-    api.redis.initialize(function(){
+    api.redis.initialize(function(error){
+      if(error){ return next(error); }
       api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
       process.nextTick(next);
     });
@@ -201,7 +180,8 @@ module.exports = {
     api.redis.doCluster('api.log', [['actionhero member %s has left the cluster', api.id]], null, null);
 
     process.nextTick(function(){
-      api.redis.subscriber.unsubscribe();
+      api.redis.clients.subscriber.unsubscribe();
+      api.redis.status.subscribed = false;
       next();
     });
   }

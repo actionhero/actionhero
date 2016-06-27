@@ -15,7 +15,7 @@ Relevant chat verbs are:
 
 The special verb for persistent connections `say` makes use of `api.chatRoom.broadcast` to tell a message to all other users in the room, IE: `say myRoom Hello World` from a socket client or `client.say("myRoom", 'Hello World")` for a websocket.
 
-Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if `api.config.redis.fake = true`, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all actionhero servers you are running in parallel.  This is how actionhero scales the chat features.
+Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if you elect to use fakeredis, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all actionhero servers you are running in parallel.  This is how actionhero scales the chat features.
 
 There is no limit to the number of rooms which can be created, but keep in mind that each room stores information in redis, and there load created for each connection.
 

@@ -1,0 +1,33 @@
+version: '2'
+services:
+  haproxy:
+    image: dockercloud/haproxy
+    links:
+      - actionhero
+    ports:
+      - 80:8080
+      - 5000:5000
+      - 1936:1936
+    environment:
+      STATS_AUTH: actionhero:actionhero
+      STATS_PORT: 1936
+      MONITOR_URI: /api/status
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  redis:
+    image: redis
+  actionhero:
+    image: evantahler/actionhero
+    ports:
+     - 8080
+     - 5000
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      TCP_PORTS: 8080,5000
+      ENABLE_TCP_SERVER: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0

@@ -4,7 +4,7 @@ var i18n = require('i18n');
 var path = require('path');
 
 module.exports = {
-  loadPriority:  1,
+  loadPriority:  10,
   initialize: function(api, next){
     var options = api.config.i18n;
     options.directory = path.normalize(api.config.general.paths.locale[0]);

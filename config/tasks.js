@@ -41,8 +41,6 @@ exports['default'] = {
       maxEventLoopDelay: 5,
       // When we kill off a taskProcessor, should we disconnect that local redis connection?
       toDisconnectProcessors: true,
-      // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis,
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
         queue: null,
