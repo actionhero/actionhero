@@ -93,8 +93,8 @@ module.exports = {
         self.multiWorker.on('success',           function(workerId, queue, job, result){  api.log(['worker: job success %s', queue], self.workerLogging.success,       {workerId: workerId, job: {class: job['class'], queue: job.queue}, result: result}); });
         self.multiWorker.on('pause',             function(workerId){                      api.log('worker: paused',                  self.workerLogging.pause,         {workerId: workerId}); });
 
-        self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job); });
-        self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job);   });
+        self.multiWorker.on('failure',           function(workerId, queue, job, failure){ api.exceptionHandlers.task(failure, queue, job, workerId); });
+        self.multiWorker.on('error',             function(workerId, queue, job, error){   api.exceptionHandlers.task(error, queue, job, workerId);   });
 
         // multiWorker emitters
         self.multiWorker.on('internalError',     function(error){                         api.log(error, self.workerLogging.internalError); });
