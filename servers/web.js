@@ -101,7 +101,7 @@ var initialize = function(api, options, next){
     });
 
     reqHeaders = connection.rawConnection.req.headers;
-    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']).toUTCString(); }
+    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']); }
 
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     if(fileStream){
