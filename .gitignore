@@ -18,6 +18,7 @@ npm-debug.log
 
 # Site
 site/build/*
+site/.sass-cache
 
 # Redis
 dump.rdb

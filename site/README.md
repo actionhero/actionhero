@@ -13,6 +13,7 @@ You will need ruby installed locally and the `github-pages` gem
 ## Run the site locally:
 
 - install ruby
+  - you need a ruby version of `>= 2.2.3`.  If this is not the version of ruby you have installed, investigate using [`RBENV`](https://github.com/rbenv/rbenv)
 - install bundler: `gem install bundler`
 - use bundler to install the needed gems `bundle install`
 - run the middleman servers locally `npm run site` (`cd site && EXECJS_RUNTIME=Node bundle exec middleman`)
