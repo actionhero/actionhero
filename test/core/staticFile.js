@@ -65,7 +65,7 @@ describe('Core: Static File', function(){
   it('should send back a 304 if the header "if-modified-since" is present and condition matches', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
-      request({url:url + '/simple.html', headers: {'If-Modified-Since':new Date(Date.now())}}, function(errBis, responseBis, body){
+      request({url:url + '/simple.html', headers: {'If-Modified-Since':new Date().toUTCString()}}, function(errBis, responseBis, body){
         responseBis.statusCode.should.eql(304);
         done();
       });
@@ -98,7 +98,7 @@ describe('Core: Static File', function(){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
       var lastModified = new Date(response.headers['last-modified']);
-      request({url:url + '/simple.html', headers:{'If-Modified-Since':new Date(lastModified.getTime() - 24 * 1000 * 3600)}}, function(errBis, responseBis, body){
+      request({url:url + '/simple.html', headers:{'If-Modified-Since':new Date(lastModified.getTime() - 24 * 1000 * 3600).toUTCString()}}, function(errBis, responseBis, body){
         responseBis.statusCode.should.eql(200);
         done();
       });
