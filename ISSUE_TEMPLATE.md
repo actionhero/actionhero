@@ -1,11 +1,10 @@
-Thank you for submitting an issue!
+# Name of Issue
+Description of Issue
 
-Please make sure to check current open and closed issues to see if your question has been asked or answered before.
+- ActionHero Version: `x.x.x`
+- Node.js Version: `x.x.x`
+- Operating System `(OSX, Ubuntu 14, Windows 10, etc)`
 
-If you are making an example request, please state whether it is `novice`, `intermediate`, or `advanced` so it can be categorized properly. Please also make sure to give an in-depth description of what you're asking to be accomplished.
-
-You must incldue the following information or your issue will be deleted:
-- What actionhero version are you using?
-- What version of node.js are you using?
-- What operating system are you on?
-- Steps to reproduce your error
+# Steps to reproduce your error
+- Make a new actionhero project with `./node_modules/.bin/actionhero generate`
+- create an action with the follwing content... 
