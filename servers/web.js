@@ -101,13 +101,13 @@ var initialize = function(api, options, next){
     });
 
     reqHeaders = connection.rawConnection.req.headers;
-    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']); }
+    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']).toUTCString(); }
 
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
     if(fileStream){
       if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
       if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
-      if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified)]); }
+      if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified).toUTCString()]); }
     }
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
