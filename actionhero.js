@@ -244,7 +244,7 @@ actionhero.prototype.start = function(params, callback){
 
     self.startInitializers.push(function finalStartInitializer(){
       self.api.bootTime = new Date().getTime();
-      self.api.log(['*** Server Started ***'], 'notice');
+      self.api.log(['*** ActionHero Started ***'], 'notice');
       callback(null, self.api);
     });
 
