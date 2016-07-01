@@ -155,7 +155,7 @@ module.exports = {
         var pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
         try{
           var stats = fs.lstatSync(pluginPathAttempt);
-          if(!pluginRoot && stats.isDirectory()){ pluginRoot = pluginPathAttempt; }
+          if(!pluginRoot && (stats.isDirectory() || stats.isSymbolicLink())){ pluginRoot = pluginPathAttempt; }
         }catch(e){ }
       });
 
