@@ -5,6 +5,7 @@ var actionhero = new actionheroPrototype();
 var api;
 
 var tmpPath = require('os').tmpdir() + require('path').sep + 'locale' + require('path').sep;
+console.log(tmpPath)
 
 var readLocaleFile = function(locale){
   if(!locale){ locale = api.config.i18n.defaultLocale; }
@@ -48,7 +49,7 @@ describe('Core: i18n', function(){
       [
         '*** starting actionhero ***',
         'Loaded initializer: %s',
-        '*** Server Started ***',
+        '*** ActionHero Started ***',
         '[ action @ %s ]',
         'Your random number is %s',
       ].forEach(function(s){
