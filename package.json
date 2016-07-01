@@ -54,7 +54,7 @@
     "request": "^2.65.0",
     "coveralls": "^2.11.4",
     "istanbul": "^0.4.0",
-    "eslint": "^2.11.0"
+    "eslint": "^3.0.0"
   },
   "optionalDependencies": {},
   "bin": {
