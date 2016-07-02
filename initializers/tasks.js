@@ -127,6 +127,10 @@ module.exports = {
         api.resque.queue.scheduledAt(q, taskName, args, callback);
       },
 
+      stats: function(callback){
+        api.resque.queue.stats(callback);
+      },
+
       timestamps: function(callback){
         api.resque.queue.timestamps(callback);
       },
