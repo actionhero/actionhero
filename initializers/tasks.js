@@ -249,6 +249,14 @@ module.exports = {
         });
 
         jobs.push(function(done){
+          api.tasks.stats(function(error, stats){
+            if(error){ return done(error); }
+            details.stats = stats;
+            return done();
+          });
+        });
+
+        jobs.push(function(done){
           api.resque.queue.queues(function(error, queues){
             if(error){ return done(error); }
             var queueJobs = [];

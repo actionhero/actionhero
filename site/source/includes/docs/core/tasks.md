@@ -229,6 +229,10 @@ actionhero provides some methods to help inspect the state of your queue.  You c
 - will return an array of all timesamps which have at least one job scheduled to be run
 - for use with `api.tasks.delayedAt`
 
+### api.tasks.stats(next)
+- next(error, stats)
+- will return an array of all stats from your resque cluster
+
 ### api.tasks.delayedAt(timestamp, next)
 - next(error, jobs)
 - will return the list of jobs enqueued to run after this timestamp
