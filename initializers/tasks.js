@@ -132,11 +132,11 @@ module.exports = {
       },
 
       queued: function(q, start, stop, callback){
-        api.resque.queued(q, start, stop, callback);
+        api.resque.queue.queued(q, start, stop, callback);
       },
 
       delQueue: function(q, callback){
-        api.resque.delQueue(q, callback);
+        api.resque.queue.delQueue(q, callback);
       },
 
       timestamps: function(callback){
