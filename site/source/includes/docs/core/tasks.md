@@ -214,6 +214,10 @@ actionhero provides some methods to help inspect the state of your queue.  You c
 - removes all matching instances of queue + taskName + args from the delayed queues
 - timestamps will be an array of the delayed timestamps which the task was removed from
 
+### api.tasks.delQueue(queue, next)
+- next(error)
+- removes all jobs in a resque queue
+
 ### api.tasks.enqueueRecurrentJob(taskName, next)
 - next()
 - will enqueue are recurring job
@@ -228,6 +232,10 @@ actionhero provides some methods to help inspect the state of your queue.  You c
 - next(error, timestamps)
 - will return an array of all timesamps which have at least one job scheduled to be run
 - for use with `api.tasks.delayedAt`
+
+### api.tasks.queued(q, start, stop, next)
+- next(error, jobs)
+- will return an array of all pending jobs in a resque queue (paginated via start/stop)
 
 ### api.tasks.stats(next)
 - next(error, stats)
