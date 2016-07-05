@@ -278,7 +278,7 @@ actionhero.prototype.stop = function(callback){
     self.stopInitializers.push(function finalStopInitializer(){
       self.api.unWatchAllFiles();
       self.api.pids.clearPidFile();
-      self.api.log('The actionhero has been stopped', 'alert');
+      self.api.log('*** ActionHero Stopped ***', 'alert');
       self.api.log('***', 'debug');
       delete self.api.shuttingDown;
       process.nextTick(function(){
@@ -304,14 +304,14 @@ actionhero.prototype.restart = function(callback){
       if(error){ self.api.log(error, 'error'); }
       self.start(self.startingParams, function(error){
         if(error){ self.api.log(error, 'error'); }
-        self.api.log('*** actionhero restarted ***', 'info');
+        self.api.log('*** ActionHero Restarted ***', 'info');
         if(typeof callback === 'function'){ callback(null, self.api); }
       });
     });
   }else{
     self.start(self.startingParams, function(error){
       if(error){ self.api.log(error, 'error'); }
-      self.api.log('*** actionhero restarted ***', 'info');
+      self.api.log('*** ActionHero Restarted ***', 'info');
       if(typeof callback === 'function'){ callback(null, self.api); }
     });
   }
