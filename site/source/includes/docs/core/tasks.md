@@ -241,6 +241,14 @@ actionhero provides some methods to help inspect the state of your queue.  You c
 - next(error, stats)
 - will return an array of all stats from your resque cluster
 
+### api.tasks.locks(next)
+- next(error, locks)
+- will return an array of all locks from your resque cluster (both queue and worker)
+
+### api.tasks.delLock(lockName, next)
+- next(error, count)
+- will return the count of locks deleted (if any)
+
 ### api.tasks.delayedAt(timestamp, next)
 - next(error, jobs)
 - will return the list of jobs enqueued to run after this timestamp
