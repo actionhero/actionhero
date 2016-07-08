@@ -139,6 +139,14 @@ module.exports = {
         api.resque.queue.delQueue(q, callback);
       },
 
+      locks: function(callback){
+        api.resque.queue.locks(callback);
+      },
+
+      delLock: function(lock, callback){
+        api.resque.queue.delLock(lock, callback);
+      },
+
       timestamps: function(callback){
         api.resque.queue.timestamps(callback);
       },
