@@ -436,10 +436,10 @@ exports.action = {
   name: 'uploader',
   description: 'uploader',
   inputs: {
-    file1: {optional: true},
-    file2: {optional: true},
-    key1: {optional: true},
-    key2: {optional: true},
+    file1: {required: true},
+    file2: {required: false},
+    key1: {required: false},
+    key2: {required: false},
   },
   outputExample: null,
   run: function(api, data, next){
