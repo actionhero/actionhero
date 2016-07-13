@@ -11,7 +11,7 @@ exports['default'] = {
         return new (winston.transports.Console)({
           colorize: true,
           level: 'info',
-          timestamp: true,
+          timestamp: function(){ return api.id + ' @ ' + new Date().toISOString(); },
         });
       });
     }
@@ -32,7 +32,7 @@ exports['default'] = {
       return new (winston.transports.File)({
         filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
         level: 'info',
-        timestamp: true
+        timestamp: function(){ return api.id + ' @ ' + new Date().toISOString(); },
       });
     });
 

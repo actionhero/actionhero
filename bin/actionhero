@@ -88,7 +88,7 @@ binary.utils = {
     }else{
       if(overwrite && binary.utils.fileExists(file)){
         binary.log(' - overwritten file \'' + path.normalize(file) + '\'');
-      } else {
+      }else{
         binary.log(' - wrote file \'' + path.normalize(file) + '\'');
       }
       fs.writeFileSync(path.normalize(file), data);
