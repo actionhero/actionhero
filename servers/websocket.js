@@ -169,18 +169,22 @@ var initialize = function(api, options, next){
       return;
     }
     if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
-      var base = path.normalize(
+      const clientJSPath = path.normalize(
         api.config.general.paths['public'][0] +
         path.sep +
         api.config.servers.websocket.clientJsPath +
-        path.sep +
-        api.config.servers.websocket.clientJsName
+        path.sep
       );
+      const clientJSName = api.config.servers.websocket.clientJsName;
+      const clientJSFullPath = clientJSPath + clientJSName;
       try{
-        fs.writeFileSync(base + '.js', server.renderClientJS(false));
-        api.log(['wrote %s.js', base], 'debug');
-        fs.writeFileSync(base + '.min.js', server.renderClientJS(true));
-        api.log(['wrote %s.min.js', base], 'debug');
+        if(!fs.existsSync(clientJSPath)){
+          fs.mkdirSync(clientJSPath);
+        }
+        fs.writeFileSync(clientJSFullPath + '.js', server.renderClientJS(false));
+        api.log(['wrote %s.js', clientJSFullPath], 'debug');
+        fs.writeFileSync(clientJSFullPath + '.min.js', server.renderClientJS(true));
+        api.log(['wrote %s.min.js', clientJSFullPath], 'debug');
       }catch(e){
         api.log('Cannot write client-side JS for websocket server:', 'warning');
         api.log(e, 'warning');
