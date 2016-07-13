@@ -169,14 +169,14 @@ var initialize = function(api, options, next){
       return;
     }
     if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
-      const clientJSPath = path.normalize(
+      var clientJSPath = path.normalize(
         api.config.general.paths['public'][0] +
         path.sep +
         api.config.servers.websocket.clientJsPath +
         path.sep
       );
-      const clientJSName = api.config.servers.websocket.clientJsName;
-      const clientJSFullPath = clientJSPath + clientJSName;
+      var clientJSName = api.config.servers.websocket.clientJsName;
+      var clientJSFullPath = clientJSPath + clientJSName;
       try{
         if(!fs.existsSync(clientJSPath)){
           fs.mkdirSync(clientJSPath);
