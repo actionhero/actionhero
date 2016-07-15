@@ -16,48 +16,53 @@ exports.status = {
     'uptime':10469
   },
 
-  checkRam: function(api, data, callback){
-    var consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
-    data.response.consumedMemoryMB = consumedMemoryMB;
-    if(consumedMemoryMB > maxMemoryAlloted){
-      data.response.status = 'Unhealthy';
-      data.response.problems.push('Using more than 200MP of RAM/HEAP');
-    }
-
-    callback();
-  },
-
-  checkEventLoop: function(api, data, callback){
-    api.utils.eventLoopDelay(10000, function(error, eventLoopDelay){
-      data.response.eventLoopDelay = eventLoopDelay;
-      if(eventLoopDelay > maxEventLoopDelay){
-        data.response.status = 'Unhealthy';
-        data.response.problems.push('EventLoop Blocked for more than 5ms');
-      }
-
-      callback();
-    });
-  },
-
-  checkResqueQueues: function(api, data, callback){
-    api.tasks.details(function(error, details){
-      if(error){ return callback(error); }
-      var length = 0;
-      Object.keys(details.queues).forEach(function(q){
-        length += details.queues[q].length;
-      });
-
-      if(length > maxResqueQueueLength){
-        data.response.status = 'Unhealthy';
-        data.response.problems.push('Resque Queues filling up');
-      }
-
-      callback();
-    });
-  },
-
   run: function(api, data, next){
-    data.response.status            = 'Healthy';
+
+    /* --- Define Helpers --- */
+
+    var checkRam = function(callback){
+      var consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
+      data.response.consumedMemoryMB = consumedMemoryMB;
+      if(consumedMemoryMB > maxMemoryAlloted){
+        data.response.status = data.connection.localize('Unhealthy');
+        data.response.problems.push(data.connection.localize('Using more than 200MB of RAM/HEAP'));
+      }
+
+      callback();
+    };
+
+    var checkEventLoop = function(callback){
+      api.utils.eventLoopDelay(10000, function(error, eventLoopDelay){
+        data.response.eventLoopDelay = eventLoopDelay;
+        if(eventLoopDelay > maxEventLoopDelay){
+          data.response.status = data.connection.localize('Unhealthy');
+          data.response.problems.push(data.connection.localize('EventLoop Blocked for more than 5ms'));
+        }
+
+        callback();
+      });
+    };
+
+    var checkResqueQueues = function(callback){
+      api.tasks.details(function(error, details){
+        if(error){ return callback(error); }
+        var length = 0;
+        Object.keys(details.queues).forEach(function(q){
+          length += details.queues[q].length;
+        });
+
+        if(length > maxResqueQueueLength){
+          data.response.status = data.connection.localize('Unhealthy');
+          data.response.problems.push(data.connection.localize('Resque Queues filling up'));
+        }
+
+        callback();
+      });
+    };
+
+    /* --- Run --- */
+
+    data.response.status            = data.connection.localize('Healthy');
     data.response.problems          = [];
 
     data.response.id                = api.id;
@@ -67,12 +72,11 @@ exports.status = {
     data.response.description       = packageJSON.description;
     data.response.version           = packageJSON.version;
 
-    var self = this;
-    self.checkRam(api, data, function(error){
+    checkRam(function(error){
       if(error){ return next(error); }
-      self.checkEventLoop(api, data, function(error){
+      checkEventLoop(function(error){
         if(error){ return next(error); }
-        self.checkResqueQueues(api, data, function(error){
+        checkResqueQueues(function(error){
           next(error);
         });
       });
