@@ -249,6 +249,8 @@ module.exports = {
       var intervalJobs = [];
       var intervalTimes = [];
 
+      if(!itterations){ return callback(new Error('itterations is required')); }
+
       var i = 0;
       while(i < itterations){
         intervalJobs.push(function(intervalDone){
