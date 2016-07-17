@@ -5,8 +5,7 @@ exports.task = {
   description:   '%%description%%',
   frequency:     %%frequency%%,
   queue:         '%%queue%%',
-  plugins:       [],
-  pluginOptions: {},
+  middleware:    [],
 
   run: function(api, params, next){
     // your logic here
