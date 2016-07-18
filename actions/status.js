@@ -24,7 +24,7 @@ exports.status = {
       var consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
       data.response.consumedMemoryMB = consumedMemoryMB;
       if(consumedMemoryMB > maxMemoryAlloted){
-        data.response.status = data.connection.localize('Unhealthy');
+        data.response.nodeStatus = data.connection.localize('Unhealthy');
         data.response.problems.push(data.connection.localize('Using more than ' + maxMemoryAlloted + 'MB of RAM/HEAP'));
       }
 
@@ -35,7 +35,7 @@ exports.status = {
       api.utils.eventLoopDelay(10000, function(error, eventLoopDelay){
         data.response.eventLoopDelay = eventLoopDelay;
         if(eventLoopDelay > maxEventLoopDelay){
-          data.response.status = data.connection.localize('Node Unhealthy');
+          data.response.nodeStatus = data.connection.localize('Node Unhealthy');
           data.response.problems.push(data.connection.localize('EventLoop Blocked for more than ' + maxEventLoopDelay + 'ms'));
         }
 
@@ -52,7 +52,7 @@ exports.status = {
         });
 
         if(length > maxResqueQueueLength){
-          data.response.status = data.connection.localize('Node Unhealthy');
+          data.response.nodeStatus = data.connection.localize('Node Unhealthy');
           data.response.problems.push(data.connection.localize('Resque Queues over ' + maxResqueQueueLength + ' jobs'));
         }
 
@@ -62,7 +62,7 @@ exports.status = {
 
     /* --- Run --- */
 
-    data.response.status            = data.connection.localize('Node Healthy');
+    data.response.nodeStatus            = data.connection.localize('Node Healthy');
     data.response.problems          = [];
 
     data.response.id                = api.id;
