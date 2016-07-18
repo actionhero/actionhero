@@ -28,6 +28,11 @@ module.exports = {
         self.queue.connect(callback);
       },
 
+      stopQueue: function(callback){
+        if(api.resque.queue){ api.resque.queue.end(callback); }
+        else{ callback(); }
+      },
+
       startScheduler: function(callback){
         var self = this;
         var scheduler = NR.scheduler;
@@ -142,7 +147,7 @@ module.exports = {
   stop: function(api, next){
     api.resque.stopScheduler(function(){
       api.resque.stopMultiWorker(function(){
-        api.resque.queue.end(function(){
+        api.resque.stopQueue(function(){
           next();
         });
       });
