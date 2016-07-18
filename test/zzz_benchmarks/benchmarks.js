@@ -57,7 +57,7 @@ describe('Benchmarks', function(){
   });
 
   it('status', function(done){
-    this.timeout(20 * 1000);
+    this.timeout(30 * 1000);
     multiAction('status', 100, {}, function(){
       done();
     });
