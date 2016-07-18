@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "mocha": "^2.5.1",
-    "should": "^9.0.1",
+    "should": "^10.0.0",
     "request": "^2.65.0",
     "coveralls": "^2.11.4",
     "istanbul": "^0.4.0",

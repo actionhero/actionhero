@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var async = require('async');
 
 module.exports = {
   loadPriority:  0,
@@ -242,6 +243,34 @@ module.exports = {
         host = addr;
       }
       return {host: host, port: parseInt(port, 10)};
+    };
+
+    api.utils.eventLoopDelay = function(itterations, callback){
+      var intervalJobs = [];
+      var intervalTimes = [];
+
+      if(!itterations){ return callback(new Error('itterations is required')); }
+
+      var i = 0;
+      while(i < itterations){
+        intervalJobs.push(function(intervalDone){
+          var start = process.hrtime();
+          process.nextTick(function(){
+            var delta = process.hrtime(start);
+            var ms = delta[1] / 1000000;
+            intervalTimes.push(ms);
+            intervalDone();
+          });
+        });
+        i++;
+      }
+
+      async.series(intervalJobs, function(){
+        var sum = 0;
+        intervalTimes.forEach(function(t){ sum += t; });
+        var avg = Math.round(sum / intervalTimes.length * 10000) / 1000;
+        return callback(null, avg);
+      });
     };
 
     ////////////////////////////////////////////////////////////////////////////
