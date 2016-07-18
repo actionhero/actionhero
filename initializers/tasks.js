@@ -346,13 +346,7 @@ module.exports = {
       api.tasks.middleware[middleware.name] = middleware;
       if(middleware.global === true){
         api.tasks.globalMiddleware.push(middleware.name);
-        api.tasks.globalMiddleware.sort(function(a, b){
-          if(api.tasks.middleware[a].priority > api.tasks.middleware[b].priority){
-            return 1;
-          }else{
-            return -1;
-          }
-        });
+        api.utils.sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
       }
       loadTasks(true);
       callback();

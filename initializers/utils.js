@@ -244,6 +244,18 @@ module.exports = {
       return {host: host, port: parseInt(port, 10)};
     };
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Sort Global Middleware
+    api.utils.sortGlobalMiddleware = function(globalMiddlewareList, middleware){
+      globalMiddlewareList.sort(function(a, b){
+        if(middleware[a].priority > middleware[b].priority){
+          return 1;
+        }else{
+          return -1;
+        }
+      });
+    };
+
     next();
   }
 };
