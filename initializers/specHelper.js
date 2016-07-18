@@ -164,7 +164,7 @@ module.exports = {
 
       api.specHelper.runFullTask = function(taskName, params, next){
         var options = {
-          connection: {},
+          connection: api.redis.clients.tasks,
           queues: api.config.tasks.queues || ['default']
         };
         var worker = new NR.worker(options, api.tasks.jobs);
@@ -173,13 +173,7 @@ module.exports = {
             return next(error);
           }
 
-          worker.performInline(taskName, params, function(error, result){
-            if(error){
-              return next(error);
-            }
-
-            return next(null, result);
-          });
+          worker.performInline(taskName, params, next);
         });
       };
 

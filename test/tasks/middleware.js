@@ -27,7 +27,7 @@ var middleware = {
     try{
       var worker = this.worker;
       var params = this.args[0];
-      params.test.should.be.equal(true);
+      params.test.should.be.equal(true); //Requires disableParamScrubbing or that `test` be a valid param
       var result = worker.result;
       result.randomNumber.should.exist;
       result.shortRandom = result.randomNumber.toPrecision(3);
