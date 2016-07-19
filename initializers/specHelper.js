@@ -1,6 +1,7 @@
 'use strict';
 
 var uuid = require('node-uuid');
+var NR = require('node-resque');
 
 module.exports = {
   startPriority: 901,
@@ -159,6 +160,21 @@ module.exports = {
       // create helpers to run a task
       api.specHelper.runTask = function(taskName, params, next){
         api.tasks.tasks[taskName].run(api, params, next);
+      };
+
+      api.specHelper.runFullTask = function(taskName, params, next){
+        var options = {
+          connection: api.redis.clients.tasks,
+          queues: api.config.tasks.queues || ['default']
+        };
+        var worker = new NR.worker(options, api.tasks.jobs);
+        worker.connect(function(error){
+          if(error){
+            return next(error);
+          }
+
+          worker.performInline(taskName, params, next);
+        });
       };
 
       next();
