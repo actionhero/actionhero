@@ -4,13 +4,13 @@ var actionhero = new actionheroPrototype();
 var api;
 
 var taskParams = {
-  action: 'randomNumber'
+  foo: 'bar'
 };
 
 var middleware = {
   name: 'test-middleware',
   priority: 1000,
-  global: true,
+  global: false,
   preProcessor: function(next){
     try{
       var worker = this.worker;
@@ -29,8 +29,8 @@ var middleware = {
       var params = this.args[0];
       params.test.should.be.equal(true); //Requires disableParamScrubbing or that `test` be a valid param
       var result = worker.result;
-      result.randomNumber.should.exist;
-      result.shortRandom = result.randomNumber.toPrecision(3);
+      result.result.should.equal('done');
+      result.result = 'fin';
 
       next(null, result);
     }catch(e){
@@ -43,7 +43,22 @@ describe('Test: Task Middleware', function(){
   before(function(done){
     actionhero.start(function(error, a){
       api = a;
+
       api.tasks.addMiddleware(middleware, function(error){
+        api.tasks.tasks.middlewareTask = {
+          name: 'middlewareTask',
+          description: 'middlewaretask',
+          queue: 'default',
+          frequency: 0,
+          middleware: ['test-middleware'],
+          run: function(api, params, next){
+            params.test.should.exist;
+            next(null, {result: 'done'});
+          }
+        };
+
+        api.tasks.jobs.middlewareTask = api.tasks.jobWrapper('middlewareTask');
+
         done(error);
       });
     });
@@ -57,9 +72,9 @@ describe('Test: Task Middleware', function(){
   });
 
   it('can modify parameters before a task and modify result after task completion', function(done){
-    api.specHelper.runFullTask('runAction', taskParams, function(error, response){
+    api.specHelper.runFullTask('middlewareTask', taskParams, function(error, response){
       should.not.exist(error);
-      response.shortRandom.should.equal(response.randomNumber.toPrecision(3));
+      response.result.should.equal('fin');
 
       done();
     });

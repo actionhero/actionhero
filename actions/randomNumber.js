@@ -4,9 +4,6 @@ exports.randomNumber = {
   outputExample: {
     randomNumber: 0.123
   },
-  inputs: {
-    test: {}
-  },
 
   run: function(api, data, next){
     data.response.randomNumber = Math.random();
