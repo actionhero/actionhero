@@ -109,6 +109,7 @@ module.exports = {
         var id = uuid.v4();
         api.servers.servers.testServer.buildConnection({
           id             : id,
+          fingerprint    : id,
           rawConnection  : {},
           remoteAddress  : 'testServer',
           remotePort     : 0
