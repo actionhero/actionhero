@@ -21,7 +21,7 @@ if(process.platform === 'win32'){
 }
 
 var mocha = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + execeutable;
-var child = spawn(mocha, ['test'], {
+var child = spawn(mocha, ['test', '--reporter', 'dot'], {
   cwd: __dirname,
   env: testEnv
 });

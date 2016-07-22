@@ -125,6 +125,7 @@ describe('Server: Socket', function(){
       response.data.should.be.an.instanceOf(Object);
       response.data.params.should.be.an.instanceOf(Object);
       response.data.connectedAt.should.be.within(10, new Date().getTime());
+      response.data.id.should.equal(response.data.fingerprint);
       client2Details = response.data; // save for later!
       done();
     });
