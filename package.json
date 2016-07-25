@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "14.0.9",
+  "version": "14.0.10",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -30,7 +30,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "async": "^2.0.0",
+    "async": "^2.0.1",
     "browser_fingerprint": "^0.0.6",
     "etag": "^1.7.0",
     "fakeredis": "^1.0.0",
@@ -42,7 +42,7 @@
     "node-resque": "^2.0.9",
     "node-uuid": "^1.4.4",
     "optimist": "^0.6.1",
-    "primus": "^5.2.2",
+    "primus": "^6.0.0",
     "qs": "^6.0.1",
     "uglify-js": "^2.6.4",
     "winston": "^2.0.0",

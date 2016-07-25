@@ -5,7 +5,6 @@ var actionhero = new actionheroPrototype();
 var api;
 
 var tmpPath = require('os').tmpdir() + require('path').sep + 'locale' + require('path').sep;
-console.log(tmpPath)
 
 var readLocaleFile = function(locale){
   if(!locale){ locale = api.config.i18n.defaultLocale; }

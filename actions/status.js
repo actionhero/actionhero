@@ -51,6 +51,8 @@ exports.status = {
           length += details.queues[q].length;
         });
 
+        data.response.resqueTotalQueueLength = length;
+
         if(length > maxResqueQueueLength){
           data.response.nodeStatus = data.connection.localize('Node Unhealthy');
           data.response.problems.push(data.connection.localize('Resque Queues over ' + maxResqueQueueLength + ' jobs'));
