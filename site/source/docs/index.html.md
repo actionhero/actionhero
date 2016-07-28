@@ -1,5 +1,5 @@
 ---
-title: ActionHero Documentation and API Reference 
+title: ActionHero Documentation and API Reference
 
 # Since most code is JS, we should just have *all* code present all the time
 # language_tabs:
@@ -43,6 +43,7 @@ includes:
   - docs/ops/production_notes
   - docs/ops/running_actionhero
   - docs/ops/testing
+  - docs/ops/upgrade_path
 
   - docs/examples/examples
 
