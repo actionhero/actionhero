@@ -262,14 +262,14 @@ module.exports = {
       api.chatRoom.globalMiddleware.forEach(function(name){
         var m = api.chatRoom.middleware[name];
         if(typeof m[direction] === 'function'){
-          jobs.push(function(callback){
+          jobs.push(function(done){
             if(messagePayload){
               m[direction](connection, room, newMessagePayload, function(error, data){
                 if(data){ newMessagePayload = data; }
-                callback(error, data);
+                done(error, data);
               });
             }else{
-              m[direction](connection, room, callback);
+              m[direction](connection, room, done);
             }
           });
         }
