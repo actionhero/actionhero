@@ -55,11 +55,11 @@ exports.initialize = initialize;
 
 ```
 
-In actionhero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In actionhero, the goal of each server is to ingest a specific type of connection and transform each client into a generic `connection` object which can be operated on by the rest of actionhero.  To help with this, all servers extend `api.genericServer` and fill in the required methods.
+In ActionHero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic `connection` object which can be operated on by the rest of ActionHero.  To help with this, all servers extend `api.genericServer` and fill in the required methods.
 
-To get started, you can use the `generateServer action` (name is required).  This will generate a template server which looks like this => 
+To get started, you can use the `generateServer action` (name is required).  This will generate a template server which looks like this =>
 
-Like initializers, the `start()` and `stop()` methods will be called when the server is to boot up in actionhero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
+Like initializers, the `start()` and `stop()` methods will be called when the server is to boot up in ActionHero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
 
 ## Designing Servers
 
@@ -67,16 +67,16 @@ Like initializers, the `start()` and `stop()` methods will be called when the se
 
 server.buildConnection({
   rawConnection: {
-    req: req, 
-    res: res, 
-    method: method, 
-    cookies: cookies, 
-    responseHeaders: responseHeaders, 
+    req: req,
+    res: res,
+    method: method,
+    cookies: cookies,
+    responseHeaders: responseHeaders,
     responseHttpCode: responseHttpCode,
     parsedURL: parsedURL
-  }, 
-  id: randomNumber(), 
-  remoteAddress: remoteIP, 
+  },
+  id: randomNumber(),
+  remoteAddress: remoteIP,
   remotePort: req.connection.remotePort}
 ); // will emit "connection"
 
@@ -106,7 +106,7 @@ The required attributes are provided in a generated server.
 
 ```javascript
 allowedVerbs: [
-      "quit", 
+      "quit",
       "exit",
       "paramAdd",
       "paramDelete",
@@ -122,9 +122,9 @@ allowedVerbs: [
     ]
 ```
 
-When an incoming message is detected, it is the server's job to build `connection.params`.  In the `web` server, this is accomplished by reading GET, POST, and form data.  For `websocket` clients, that information is expected to be emitted as part of the action's request.  For other clients, like `socket`, actionhero provides helpers for long-lasting clients to operate on themselves.  These are called connection `verbs`.
+When an incoming message is detected, it is the server's job to build `connection.params`.  In the `web` server, this is accomplished by reading GET, POST, and form data.  For `websocket` clients, that information is expected to be emitted as part of the action's request.  For other clients, like `socket`, ActionHero provides helpers for long-lasting clients to operate on themselves.  These are called connection `verbs`.
 
-Clients use verbs to add params to themselves, update the chat room they are in, and more.   The list of verbs currently supported is => 
+Clients use verbs to add params to themselves, update the chat room they are in, and more.   The list of verbs currently supported is =>
 
 Your server should be smart enough to tell when a client is trying to run an action, request a file, or use a verb.  One of the attributes of each server is `allowedVerbs`, which defines what verbs a client is allowed to preform.  A simplified example of how the `socket` server does this:
 
@@ -161,7 +161,7 @@ The `attribute` "canChat" defines if clients of this server can chat.  If client
 
 ## Sending Responses
 
-All servers need to implement the `server.sendMessage = function(connection, message, messageCount)` method so actionhero knows how to talk to each client.  This is likely to make use of `connection.rawConnection`.  If you are writing a server for a persistent connection, it is likely you will need to respond with `messageCount` so that the client knows which request your response is about (as they are not always going to get the responses in order).  
+All servers need to implement the `server.sendMessage = function(connection, message, messageCount)` method so ActionHero knows how to talk to each client.  This is likely to make use of `connection.rawConnection`.  If you are writing a server for a persistent connection, it is likely you will need to respond with `messageCount` so that the client knows which request your response is about (as they are not always going to get the responses in order).  
 
 ## Sending Files
 

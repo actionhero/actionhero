@@ -89,26 +89,26 @@ Descriptions:
 #############################################################
 ```
 
-The suggested method to run your actionhero server is to use the included `./node_modules/.bin/actionhero` binary.  Note that there is no `main.js` or specific start script your project needs.  actionhero handles this for you.  Your actionhero project simply needs to follow the proper directory conventions and it will be bootable.
+The suggested method to run your ActionHero server is to use the included `./node_modules/.bin/actionhero` binary.  Note that there is no `main.js` or specific start script your project needs.  ActionHero handles this for you.  Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.
 
-At the time of this writing the actionhero binary's help contains:
+At the time of this writing the ActionHero binary's help contains:
 
-## Linking the actionhero binary
+## Linking the ActionHero binary
 
-* If you installed actionhero globally (`npm install actionhero -g`) you should have the `actionhero` binary available to you within your shell at all times.
+* If you installed ActionHero globally (`npm install actionhero -g`) you should have the `actionhero` binary available to you within your shell at all times.
 * Otherwise, you can reference the binary from either `./node_modules/.bin/actionhero` or `./node_modules/actionhero/bin/actionhero`.
-* If you installed actionhero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
+* If you installed ActionHero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
 
 ## Environments and Config
 
-By default, actionhero will use the settings found in the `exports.default` blocks in `/config/`.  However, you can set environment-specfic overrides or changes.  actionhero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.
+By default, ActionHero will use the settings found in the `exports.default` blocks in `/config/`.  However, you can set environment-specfic overrides or changes.  ActionHero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files.  This is the recommended way to have separate settings for staging and production.
 
 The load order of configs is:
 - default values in `/config`
 - environment-specific values in `/config`
 - options passed in to boot with `actionhero.start({configChanges: configChanges}, callback)`
 
-## Programatic Use of actionhero
+## Programatic Use of ActionHero
 
 ```javascript
 var actionheroPrototype = require("actionhero").actionheroPrototype;
@@ -139,13 +139,13 @@ actionhero.start(params, function(error, api){
 });
 ```
 
-While **NOT** encouraged, you can always instantiate an actionhero server yourself.  Perhaps you wish to combine actionhero with an existing project.  Here's how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.  
+While **NOT** encouraged, you can always instantiate an ActionHero server yourself.  Perhaps you wish to combine ActionHero with an existing project.  Here's how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.  
 
-Feel free to look at the source of `./node_modules/actionhero/bin/include/start` to see how the main actionhero server is implemented for more information.
+Feel free to look at the source of `./node_modules/actionhero/bin/include/start` to see how the main ActionHero server is implemented for more information.
 
-You can programmatically control an actionhero server with `actionhero.start(params, callback)`, `actionhero.stop(callback)` and `actionhero.restart(callback)`
+You can programmatically control an ActionHero server with `actionhero.start(params, callback)`, `actionhero.stop(callback)` and `actionhero.restart(callback)`
 
-From within actionhero itself (actions, initilizers, etc), you can use `api.commands.start`, `api.commands.stop`, and `api.commands.restart` to control the server.
+From within ActionHero itself (actions, initilizers, etc), you can use `api.commands.start`, `api.commands.stop`, and `api.commands.restart` to control the server.
 
 ## Signals
 
@@ -188,7 +188,7 @@ info: all workers gone
 notice: cluster complete, Bye!
 ```
 
-actionhero is intended to be run on `*nix` operating systems.  The `start` and `startCluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
+ActionHero is intended to be run on `*nix` operating systems.  The `start` and `startCluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
 
 **actionhero start**
 
@@ -206,11 +206,11 @@ All signals should be sent to the cluster master process.  You can still signal 
 - `TTIN`: add one worker
 
 ## Shutting Down
-When using `actionhero start` or `actionhero startCluster`, when you signal actionhero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
+When using `actionhero start` or `actionhero startCluster`, when you signal ActionHero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
 
 Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
 
 ## Windows-Specific Notes
 
-- Sometimes actionhero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell.
-- Sometimes, npm will not install the actionhero binary @ `/node_modules/.bin/actionhero`, but rather it will attempt to create a windows executable and wrapper.  You can launch actionhero directly with `./node_modules/actionhero/bin/actionhero`
+- Sometimes ActionHero may require a git-based module (rather than a NPM module).  You will need to have git installed.  Depending on how you installed git, it may not be available to the node shell.  Be sure to have also installed references to git.  You can also run node/npm install from the git shell.
+- Sometimes, npm will not install the actionhero binary @ `/node_modules/.bin/actionhero`, but rather it will attempt to create a windows executable and wrapper.  You can launch ActionHero directly with `./node_modules/actionhero/bin/actionhero`

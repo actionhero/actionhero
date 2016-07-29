@@ -9,11 +9,11 @@ config.general = {
 }
 ```
 
-actionhero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to `api.config` or initializers are more severe, and will restart the whole application (much like nodemon).
+ActionHero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to `api.config` or initializers are more severe, and will restart the whole application (much like nodemon).
 
 To enable development mode simply set `developmentMode: true` in your `config/api.js`.
 
-Note that `api.config.general.developmentMode` is different from `NODE_ENV`, which by default is "development" (and is logged out when actionhero boots).  `NODE_ENV` is used to determine which config settings to use, and has no effect on developmentMode.
+Note that `api.config.general.developmentMode` is different from `NODE_ENV`, which by default is "development" (and is logged out when ActionHero boots).  `NODE_ENV` is used to determine which config settings to use, and has no effect on developmentMode.
 
 ## Effects of Development Mode
 
@@ -34,13 +34,13 @@ api.watchFileAndAct(path_to_file, function(){
 });
 ```
 
-You can use actionhero's `watchFileAndAct()` method to watch additional files your application may have:
+You can use ActionHero's `watchFileAndAct()` method to watch additional files your application may have:
 
 ## Debugging
 
-You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your actionhero application within the familar Chrome Browser's developer tools.
+You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your ActionHero application within the familar Chrome Browser's developer tools.
 
-Be sure to run actionhero with node's `--debug` flag, ie: `node ./node_modules/.bin/actionhero start --debug`
+Be sure to run ActionHero with node's `--debug` flag, ie: `node ./node_modules/.bin/actionhero start --debug`
 
 ```javascript
 // in package.json
@@ -50,7 +50,7 @@ Be sure to run actionhero with node's `--debug` flag, ie: `node ./node_modules/.
 },
 ```
 
-Start up node-inspector (both node-inspector and actionhero have the same default port, so you will need to change one of them) `./node_modules/.bin/node-inspector --web-port=1234`
+Start up node-inspector (both node-inspector and ActionHero have the same default port, so you will need to change one of them) `./node_modules/.bin/node-inspector --web-port=1234`
 
 That's it! Now you can visit `http://0.0.0.0:1234/debug?port=5858` and start debugging.  Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects.  IE: I put a breakpoint in the default `status` action in the `run` method:
 
@@ -78,7 +78,7 @@ Running "console" task
   'status' ]
 ```
 
-actionhero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running instance of actionhero and manually call all the methods on the `api` namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running `actionhero console` will load up a version of action hero in your terminal where you have access to the `api` object.  This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  
+ActionHero now has a REPL (`v9.0.0`)! This means you can 'connect' to a running instance of ActionHero and manually call all the methods on the `api` namespace.  This combined with the new RPC tools make this a powerful debugging and development tool.  Running `ActionHero console` will load up a version of action hero in your terminal where you have access to the `api` object.  This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  
 
 The REPL will:
 
