@@ -36,6 +36,13 @@ var middleware = {
     }catch(e){
       next(e);
     }
+  },
+  preEnqueue: function(next){
+    var params = this.args[0];
+    if(params.invalid){
+      return next(new Error('Invalid Parameter'), false);
+    }
+    next();
   }
 };
 
@@ -77,6 +84,18 @@ describe('Test: Task Middleware', function(){
       response.result.should.equal('fin');
 
       done();
+    });
+  });
+
+  it('should reject task with improper params', function(done){
+    api.tasks.enqueue('middlewareTask', {invalid: true}, 'test', function(error, toRun){
+      should.exist(error);
+      error.message.should.equal('Invalid Parameter');
+      api.tasks.queued('test', 0, 10, function(error, tasks){
+        should.not.exist(error);
+        tasks.length.should.equal(0);
+        done();
+      });
     });
   });
 });
