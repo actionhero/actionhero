@@ -348,7 +348,7 @@ describe('Core: Tasks', function(){
         queue.should.equal(queue);
         job['class'].should.equal('someCrazyTask');
         job.queue.should.equal('testQueue');
-        String(f).should.equal('Error: No job defined for class \'someCrazyTask\'');
+        String(f).should.equal('Error: No job defined for class "someCrazyTask"');
         api.resque.multiWorker.removeListener('failure', listener);
         done();
       };
