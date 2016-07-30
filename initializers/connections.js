@@ -120,7 +120,7 @@ module.exports = {
 
       var connectionDefaults = {
         error: null,
-        fingerprint: null,
+        fingerprint: self.id,
         rooms: [],
         params: {},
         pendingActions: 0,

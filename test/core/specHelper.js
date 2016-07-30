@@ -108,6 +108,7 @@ describe('Core: specHelper', function(){
         response.messageCount.should.equal(1);
         connection.messages.length.should.equal(2);
         connId.should.equal(connection.id);
+        conn.fingerprint.should.equal(connId);
         done();
       });
     });
@@ -117,6 +118,16 @@ describe('Core: specHelper', function(){
         response.messageCount.should.equal(2);
         connection.messages.length.should.equal(3);
         connId.should.equal(connection.id);
+        conn.fingerprint.should.equal(connId);
+        done();
+      });
+    });
+
+    it('will generate new ids and fingerprints for a new connection', function(done){
+      api.specHelper.runAction('randomNumber', {}, function(response, connection){
+        response.messageCount.should.equal(1);
+        connection.id.should.not.equal(connId);
+        connection.fingerprint.should.not.equal(connId);
         done();
       });
     });

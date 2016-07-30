@@ -349,6 +349,6 @@ var api = {
 ```
 
 
-By now you will have noticed that most sections of actionhero are initilized with access to the `api` object.  The `api` object is the top-level container/namespace for all of actionhero's data and methods.  We use the `api` object to avoide polluting any global namespaces.  The api object is availalbe to all parts of actionhero to share data and state.  Feel free to modify or add too the api object as you see fit, but be mindful of the data it already contains.  
+By now you will have noticed that most sections of ActionHero are initialized with access to the `api` object.  The `api` object is the top-level container/namespace for all of ActionHero's data and methods.  We use the `api` object to avoid polluting any global namespaces.  The api object is available to all parts of ActionHero to share data and state.  Feel free to modify or add too the api object as you see fit, but be mindful of the data it already contains.  
 
-Collections that you are reccomended not leave unmodifeid are un-expanded `[Object]`s and/or commented out.
+Collections that you are recommended not leave unmodified are un-expanded `[Object]`s and/or commented out.

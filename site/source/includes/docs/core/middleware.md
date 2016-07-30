@@ -1,6 +1,6 @@
 # Middleware
 
-There are 4 types of middleware in actionhero:
+There are 4 types of middleware in ActionHero:
 
 - Action
 - Connection
@@ -57,9 +57,9 @@ var middleware = {
 api.actions.addMiddleware(middleware);
 ```
 
-actionhero provides hooks for you to execute custom code both before and after the execution of all or some actions.  This is a great place to write authentication logic or custom loggers.  
+ActionHero provides hooks for you to execute custom code both before and after the execution of all or some actions.  This is a great place to write authentication logic or custom loggers.  
 
-Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definiton.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
+Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`.  Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definition.  You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
 
 Each processor is passed `data` and the callback `next`.  Just like within actions, you can modify the `data` object to add to `data.response` to create a response to the client.  If you pass `error` to the callback `next`, that error will be returned to the client.  If a `preProcessor` has an error, the action will never be called.
 

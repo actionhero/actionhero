@@ -2,7 +2,7 @@
 
 ## General
 
-actionhero ships with a chat framework which may be used by all persistent connections (`socket` and `websocket`).  There are methods to create and manage chat rooms and control the users in those rooms.  Chat does not have to be for peer-to-peer communication, and is a metaphor used for many things, including game state in MMOs.
+ActionHero ships with a chat framework which may be used by all persistent connections (`socket` and `websocket`).  There are methods to create and manage chat rooms and control the users in those rooms.  Chat does not have to be for peer-to-peer communication, and is a metaphor used for many things, including game state in MMOs.
 
 Clients themselves interact with rooms via `verbs`.  Verbs are short-form commands that will attempt to modify the connection's state, either joining or leaving a room.  Clients can be in many rooms at once.
 
@@ -15,7 +15,7 @@ Relevant chat verbs are:
 
 The special verb for persistent connections `say` makes use of `api.chatRoom.broadcast` to tell a message to all other users in the room, IE: `say myRoom Hello World` from a socket client or `client.say("myRoom", 'Hello World")` for a websocket.
 
-Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if you elect to use fakeredis, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all actionhero servers you are running in parallel.  This is how actionhero scales the chat features.
+Chat on multiple actionHero nodes relies on redis for both chat (pub/sub) and a key store defined by `api.config.redis`. Note that if you elect to use fakeredis, you will be using an in-memory redis server rather than a real redis process, which does not work to share data across nodes.  The redis store and the key store don't need to be the same instance of redis, but they do need to be the same for all ActionHero servers you are running in parallel.  This is how ActionHero scales the chat features.
 
 There is no limit to the number of rooms which can be created, but keep in mind that each room stores information in redis, and there load created for each connection.
 
@@ -26,7 +26,7 @@ These methods are to be used within your server (perhaps an action or initialize
 ### api.chatRoom.broadcast(connection, room, message, callback)
 - tell a message to all members in a room.
 - connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form `{room: "someOtherRoom}`.  mockConnections without an id will be assigned the id of 0
-- The `context` of messages sent with `api.chatRoom.broadcast` always be `user` to differentiate these responses from a `responsee` to a request
+- The `context` of messages sent with `api.chatRoom.broadcast` always be `user` to differentiate these responses from a `response` to a request
 
 ### api.chatRoom.list(callback)
 - callback will return (error, [rooms])

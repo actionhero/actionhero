@@ -43,12 +43,12 @@ npm start
 
 Visit `http://127.0.0.1:8080` in your browser to see the actionhero in action!
 
-You can also opt to install actionhero globally `npm install actionhero -g` and then you can just call `actionhero start`.
+You can also opt to install ActionHero globally `npm install actionhero -g` and then you can just call `actionhero start`.
 
 ## Application Structure
 
 ```bash
-# Actionhero Project Layout
+# ActionHero Project Layout
 
 |- config
 | -- api.js
@@ -74,7 +74,7 @@ You can also opt to install actionhero globally `npm install actionhero -g` and 
 |-- (default location for logs)
 |
 |- node_modules
-|-- (your modules, actionhero should be npm installed in here)
+|-- (your modules, ActionHero should be npm installed in here)
 |
 |- pids
 |-- (pidfiles for your running servers)
@@ -98,7 +98,7 @@ readme.md
 package.json (be sure to include 'actionhero':'x')
 ```
 
-The map to the right describes actionhero's default project layout.
+The map to the right describes ActionHero's default project layout.
 
 Actions in `/actions` will be loaded in automatically, along `/initializers` and `/tasks`.
 
@@ -107,4 +107,4 @@ Actions in `/actions` will be loaded in automatically, along `/initializers` and
 If you wish to customize your project's paths, you can do so within `config/api.js` in the `api.config.general.paths` section
 
 ## Tutorial
-Want to see an example application using actionhero?  You can check out the code and follow the detailed guide [here (https://github.com/evantahler/actionhero-tutorial)](https://github.com/evantahler/actionhero-tutorial).  This project demonstrates many of the core features of actionhero in a simple project.
+Want to see an example application using ActionHero?  You can check out the code and follow the detailed guide [here (https://github.com/evantahler/actionhero-tutorial)](https://github.com/evantahler/actionhero-tutorial).  This project demonstrates many of the core features of ActionHero in a simple project.
