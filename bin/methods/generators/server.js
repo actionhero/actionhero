@@ -6,6 +6,7 @@ exports.server = function(binary, next){
 
   if(!binary.argv.name && !binary.argv._[2]){ binary.utils.hardError('name is a required input'); }
 
+  var name = !binary.argv.name ? binary.argv._[2] : binary.argv.name;
   var data = fs.readFileSync(binary.actionheroRoot + '/bin/templates/server.js');
   data = String(data);
 
@@ -13,10 +14,13 @@ exports.server = function(binary, next){
     'name',
   ].forEach(function(v){
     var regex = new RegExp('%%' + v + '%%', 'g');
+    if (v === 'name'){
+      data = data.replace(regex, name);
+    }
     data = data.replace(regex, binary.argv[v]);
   });
 
-  binary.utils.createFileSafely(binary.config.general.paths.server[0] + '/' + (!binary.argv.name ? binary.argv._[2] : binary.argv.name) + '.js', data);
+  binary.utils.createFileSafely(binary.config.general.paths.server[0] + '/' + name + '.js', data);
 
   next(true);
 };
