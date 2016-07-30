@@ -155,6 +155,7 @@ if(process.env.actionheroRoot){
 binary.argv = require('optimist').argv;
 
 binary.actions = {};
+binary.deprecatedWarnings = [];
 
 fs.readdirSync(binary.actionheroRoot + '/bin/methods/').sort().forEach(function(file){
   if(file.indexOf('.js') > 0){

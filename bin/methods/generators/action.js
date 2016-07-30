@@ -2,9 +2,8 @@
 
 var fs = require('fs');
 
-exports.generateAction = function(binary, next){
-
-  if(!binary.argv.name){ binary.utils.hardError('name is a required input'); }
+exports.action = function(binary, next){
+  if(!binary.argv.name && !binary.argv._[2]){ binary.utils.hardError('name is a required input'); }
   if(!binary.argv.description){ binary.argv.description = binary.argv.name; }
 
   var data = fs.readFileSync(binary.actionheroRoot + '/bin/templates/action.js');
@@ -18,7 +17,7 @@ exports.generateAction = function(binary, next){
     data = data.replace(regex, binary.argv[v]);
   });
 
-  binary.utils.createFileSafely(binary.config.general.paths.action[0] + '/' + binary.argv.name + '.js', data);
+  binary.utils.createFileSafely(binary.config.general.paths.action[0] + '/' + (!binary.argv.name ? binary.argv._[2] : binary.argv.name) + '.js', data);
 
   next(true);
 };
