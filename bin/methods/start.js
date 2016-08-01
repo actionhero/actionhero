@@ -69,7 +69,7 @@ module.exports = function(api, next){
   var checkForInernalStopTimer;
   var checkForInernalStop = function(){
     clearTimeout(checkForInernalStopTimer);
-    if(api._context.api.running !== true && state === 'started'){
+    if(api.running !== true && state === 'started'){
       process.exit(0);
     }
     checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout);
