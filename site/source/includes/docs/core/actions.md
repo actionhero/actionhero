@@ -26,7 +26,7 @@ The core of ActionHero is the Action framework, and **actions** are the basic un
 
 The goal of an action is to read `data.params` (which are the arguments a connection provides), do work, and set the `data.response` (and `error` when needed) values to build the response to the client.
 
-You can create you own actions by placing them in a `./actions/` folder at the root of your application.  You can use the generator with `actionhero generateAction --name=myAction`
+You can create you own actions by placing them in a `./actions/` folder at the root of your application.  You can use the generator with `actionhero generate action --name=myAction`
 
 Here's an example of a simple action which will return a random number to the client:
 

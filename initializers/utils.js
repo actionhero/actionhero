@@ -275,6 +275,83 @@ module.exports = {
       });
     };
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Sort Global Middleware
+    api.utils.sortGlobalMiddleware = function(globalMiddlewareList, middleware){
+      globalMiddlewareList.sort(function(a, b){
+        if(middleware[a].priority > middleware[b].priority){
+          return 1;
+        }else{
+          return -1;
+        }
+      });
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // File utils
+    api.utils.dirExists = function(dir){
+      try{
+        var stats = fs.lstatSync(dir);
+        return (stats.isDirectory() || stats.isSymbolicLink());
+      }catch(e){ return false; }
+    };
+
+    api.utils.fileExists = function(file){
+      try{
+        var stats = fs.lstatSync(file);
+        return (stats.isFile() || stats.isSymbolicLink());
+      }catch(e){ return false; }
+    },
+
+    api.utils.createDirSafely = function(dir){
+      if(api.utils.dirExists(dir)){
+        api.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping', 'alert');
+      }else{
+        api.log(' - creating directory \'' + path.normalize(dir) + '\'');
+        fs.mkdirSync(path.normalize(dir), '0766');
+      }
+    };
+
+    api.utils.createFileSafely = function(file, data, overwrite){
+      if(api.utils.fileExists(file) && !overwrite){
+        api.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
+      }else{
+        if(overwrite && api.utils.fileExists(file)){
+          api.log(' - overwritten file \'' + path.normalize(file) + '\'');
+        }else{
+          api.log(' - wrote file \'' + path.normalize(file) + '\'');
+        }
+        fs.writeFileSync(path.normalize(file), data);
+      }
+    };
+
+    api.utils.createLinkfileSafely = function(filePath, type, refrence){
+      if(api.utils.fileExists(filePath)){
+        api.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
+      }else{
+        api.log(' - creating linkfile \'' + filePath + '\'');
+        fs.writeFileSync(filePath, type);
+      }
+    };
+
+    api.utils.removeLinkfileSafely = function(filePath, type, refrence){
+      if(!api.utils.fileExists(filePath)){
+        api.log(' - link file \'' + filePath + '\' doesn\'t exist, skipping', 'alert');
+      }else{
+        api.log(' - removing linkfile \'' + filePath + '\'');
+        fs.unlinkSync(filePath);
+      }
+    };
+
+    api.utils.createSymlinkSafely = function(destination, source){
+      if(api.utils.dirExists(destination)){
+        api.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
+      }else{
+        api.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
+        fs.symlinkSync(source, destination, 'dir');
+      }
+    };
+
     next();
   }
 };
