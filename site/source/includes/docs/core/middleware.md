@@ -179,13 +179,15 @@ api.chatRoom.addMiddleware({
 If a `say` is blocked/errored, the message will simply not be delivered to the client.  If a  `join` or  `leave` is blocked/errored, the verb or method used to invoke the call will be returned that error.
 
 ## Task Middleware
-Task middleware is implemented as a thin wrapper around Node Resque plugins and currently exposes the `before_perform`
- and `after_perform` functions of Resque plugins through `preProcessor` and `postProcessor` methods. Each middleware
- requires a `name` and at least one `preProcessor` or `postProcessor`. In addition, a middleware can be global, in
- which case it also requires a `priority`.
+Task middleware is implemented as a thin wrapper around Node Resque plugins and currently exposes the `before_perform`, 
+`after_perform`, `before_enqueue`, and `after_enqueue` functions of Resque plugins through `preProcessor`, `postProcessor`,
+ `preEnqueue`, and `postEnqueue` methods. Each middleware requires a `name` and at least one function. In addition, 
+ a middleware can be global, in which case it also requires a `priority`.
 
  In the `preProcessor`, you can access the original task `params` through `this.args[0]`.
  In the `postProcessor`, you can access the task result at `this.worker.result`.
+ In the `preEnqueue` and `postEnqueue` you can access the task `params` through `this.args[0]`. If you wish to prevent a task from being enqueued
+ using the `preEnqueue` middleware you must explicitly set the `toRun` value to `false` in the callback.
  Because the task middleware is executed by Resque `this` is an instance of a Resque Worker and contains a number of
  other elements which may be useful in a middleware.
 
@@ -214,6 +216,15 @@ module.exports = {
           var seconds = elapsed[0];
           var millis = elapsed[1] / 1000000;
           api.log('Task ' + worker.job.class + ' finished in ' + seconds + ' s and ' + millis + ' ms.', 'info');
+          next();
+        },
+        preEnqueue: function(next){
+          var params = this.args[0];
+          //Validate params
+          next(null, true); //callback is in form cb(error, toRun)
+        },
+        postEnqueue: function(next){
+          api.log("Task successfully enqueued!");
           next();
         }
       }

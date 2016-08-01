@@ -77,6 +77,8 @@ module.exports = {
 
             if(api.tasks.middleware[m].preProcessor){ plugin.prototype.before_perform = api.tasks.middleware[m].preProcessor; }
             if(api.tasks.middleware[m].postProcessor){ plugin.prototype.after_perform = api.tasks.middleware[m].postProcessor; }
+            if(api.tasks.middleware[m].preEnqueue){ plugin.prototype.before_enqueue = api.tasks.middleware[m].preEnqueue; }
+            if(api.tasks.middleware[m].postEnqueue){ plugin.prototype.after_enqueue = api.tasks.middleware[m].postEnqueue; }
 
             plugins.push(plugin);
           }
