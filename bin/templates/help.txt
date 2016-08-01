@@ -42,13 +42,13 @@ Descriptions:
 * actionhero generate
   will prepare an empty directory with a template actionhero project
 
-* actionhero generateAction --name=[name] --description=[description]
+* actionhero generate action <name> --description=[description]
     --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
   will generate a new action in "actions"
   [name] (required)
   [description] (required) should be wrapped in quotes if it contains spaces
 
-* actionhero generateTask --name=[name] --description=[description]
+* actionhero generate task <name> --description=[description]
     --scope=[scope] --frequency=[frequency]
   will generate a new task in "tasks"
   [name] (required)
@@ -56,11 +56,11 @@ Descriptions:
   [scope] (optional) can be "any" or "all"
   [frequency] (optional)
 
-* actionhero generateInitializer --name=[name]
+* actionhero generate initializer <name>
   will generate a new initializer in "initializers"
   [name] (required)
 
-* actionhero generateServer --name=[name]
+* actionhero generate server <name>
   will generate a new server in "servers"
   [name] (required)
 
@@ -81,7 +81,7 @@ Descriptions:
 
 * actionhero unlink --name=[pluginName]
   will remove the linked actions, tasks, initializers, etc from a plugin in your
-    top-level project. Please remove the config files manually  
+    top-level project. Please remove the config files manually
   Remember if your plugin was installed via NPM, also be sure to remove it from your
     package.json or uninstall it with npm uninstall --save
 

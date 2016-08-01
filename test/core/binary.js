@@ -113,7 +113,7 @@ describe('Core: Binary', function(){
         should.not.exist(error);
         data.should.containEql('actionhero startCluster');
         data.should.containEql('Binary options:');
-        data.should.containEql('actionhero generateServer');
+        data.should.containEql('actionhero generate server');
         done();
       });
     });
@@ -133,7 +133,7 @@ describe('Core: Binary', function(){
     it('can generate an action', function(done){
       doBash([
         'cd ' + testDir,
-        binary + ' generateAction --name=myAction --description=my_description'
+        binary + ' generate action myAction --description=my_description'
       ], function(error){
         should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/actions/myAction.js'));
@@ -147,7 +147,7 @@ describe('Core: Binary', function(){
     it('can generate a task', function(done){
       doBash([
         'cd ' + testDir,
-        binary + ' generateTask --name=myTask --description=my_description --queue=my_queue --frequency=12345'
+        binary + ' generate task myTask --description=my_description --queue=my_queue --frequency=12345'
       ], function(error){
         should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'));
@@ -163,7 +163,7 @@ describe('Core: Binary', function(){
     it('can generate a server', function(done){
       doBash([
         'cd ' + testDir,
-        binary + ' generateServer --name=myServer'
+        binary + ' generate server myServer'
       ], function(error){
         should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/servers/myServer.js'));
@@ -178,7 +178,7 @@ describe('Core: Binary', function(){
     it('can generate a initializer', function(done){
       doBash([
         'cd ' + testDir,
-        binary + ' generateInitializer --name=myInitializer'
+        binary + ' generate initializer myInitializer'
       ], function(error){
         should.not.exist(error);
         var data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'));
