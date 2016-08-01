@@ -52,7 +52,7 @@
     "mocha": "^3.0.0",
     "should": "^10.0.0",
     "request": "^2.65.0",
-    "coveralls": "^2.11.4",
+    "coveralls": "^2.11.12",
     "istanbul": "^0.4.0",
     "eslint": "^3.0.0"
   },
