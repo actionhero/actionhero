@@ -98,7 +98,7 @@ module.exports = {
     }
 
     if(configPaths.length < 1){
-      throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
+      return next(new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG'));
     }
 
     var rebootCallback = function(file){
@@ -135,7 +135,7 @@ module.exports = {
               delete loadErrors[e].error;
             });
 
-            throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors));
+            return next(new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors)));
           }
           // adjust configuration files list: remove and push
           // failed configuration to the end of the list and

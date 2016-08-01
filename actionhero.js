@@ -13,10 +13,13 @@ var async = require('async');
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){
-    api.log(['Error with initializer step: %s', type], 'emerg');
-    errors.forEach(function(error){
-      api.log(error.stack, 'emerg');
-    });
+    if(api.log){
+      api.log(['Error with initializer step: %s', type], 'emerg');
+      errors.forEach(function(error){ api.log(error.stack, 'emerg'); });
+    }else{
+      console.error('Error with initializer step: ' + type);
+      errors.forEach(function(error){ console.error(error.stack); });
+    }
     api.commands.stop.call(api, function(){
       process.exit(1);
     });
@@ -290,7 +293,7 @@ actionhero.prototype.stop = function(callback){
   }else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   }else{
-    self.api.log('Cannot shut down actionhero, not running', 'error');
+    if(self.api.log){ self.api.log('Cannot shut down actionhero, not running', 'error'); }
     if(typeof callback === 'function'){ callback(null, self.api); }
   }
 };
