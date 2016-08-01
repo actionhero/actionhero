@@ -41,7 +41,7 @@ title: actionhero.js - Home
 
 
 <% code("javascript", {'background-color' => 'white'}) do %>
-// actionhero generateAction --name=randomNumber
+// actionhero generate action --name=randomNumber
 // File: actions/randomNumber.js
 
 exports.randomNumber = {
@@ -114,7 +114,7 @@ client.connect(function(error, details){
         <h4>ActionHero also lets you perform tasks in the background...</h4>
 
 <% code("javascript") do %>
-// actionhero generateTask --name=sendEmail
+// actionhero generate action --name=sendEmail
 // File: tasks/sendEmail.js
 exports.task = {
     name:        'sendEmail',
@@ -178,7 +178,7 @@ client2.connect(function(error, details){
 # start 1 instance
 ./node_modules/.bin/actionhero start
 # start a cluster
-./node_modules/.bin/actionhero startCluster
+./node_modules/.bin/actionhero start cluster
 <% end %>
 
 </section>

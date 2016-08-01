@@ -178,7 +178,7 @@ exports.sayGoodbye = {
 2013-11-28 15:21:56 - debug: re-enqueued reccurent job sayGoodbye
 ```
 
-You can create you own tasks by placing them in a `./tasks/` directory at the root of your application.  You can use the generator `actionhero generateTask --name=myTask`. Like actions, all tasks have some required metadata:
+You can create you own tasks by placing them in a `./tasks/` directory at the root of your application.  You can use the generator `actionhero generate task --name=myTask`. Like actions, all tasks have some required metadata:
 
 * `task.name`: The unique name of your task
 * `task.description`: a description

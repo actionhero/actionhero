@@ -162,7 +162,7 @@ From within ActionHero itself (actions, initilizers, etc), you can use `api.comm
 ## Signals
 
 ```bash
-> ./node_modules/.bin/actionhero startCluster --workers=2
+> ./node_modules/.bin/actionhero start cluster --workers=2
 info: actionhero >> startCluster
 notice:  - STARTING CLUSTER -
 notice: pid: 41382
@@ -207,7 +207,7 @@ ActionHero is intended to be run on `*nix` operating systems.  The `start` and `
 - `kill` / `term` / `int` : Process will attempt to "gracefully" shut down.  That is, the worker will close all server connections (possibly sending a shutdown message to clients, depending on server type), stop all task workers, and eventually shut down.  This action may take some time to fully complete.
 - `USR2`: Process will restart itself.  The process will preform the "graceful shutdown" above, and they restart.
 
-**actionhero startCluster**
+**actionhero start cluster**
 
 All signals should be sent to the cluster master process.  You can still signal the termination of a worker, but the cluster manager will start a new one in its place.
 
@@ -218,9 +218,9 @@ All signals should be sent to the cluster master process.  You can still signal 
 - `TTIN`: add one worker
 
 ## Shutting Down
-When using `actionhero start` or `actionhero startCluster`, when you signal ActionHero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
+When using `actionhero start` or `actionhero start cluster`, when you signal ActionHero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
 
-Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
+Because things sometimes go wrong, `actionhero start` and `actionhero start cluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
 
 ## Windows-Specific Notes
 
