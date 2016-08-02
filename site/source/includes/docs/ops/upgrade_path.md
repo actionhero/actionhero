@@ -7,7 +7,7 @@ ActionHero follows [semantic versioning](http://semver.org/).  This means that a
 ## Upgrading from v13.x.x to v14.x.x
 **Full Release Notes: [GitHub](https://github.com/evantahler/actionhero/releases/tag/v14.0.0)**
 
-Breaking Changes and How to Overcome Them:
+**Breaking Changes and How to Overcome Them:**
 
 - Redis Client Configurations have changed drastically.  This allows for greater configuration, but at a complexity cost.
   - The easiest way to upgrade your `config/redis.js` is to take if from the [master branch](https://github.com/evantahler/actionhero/blob/master/config/redis.js) directly and re-apply your configuration.
@@ -18,7 +18,7 @@ Breaking Changes and How to Overcome Them:
 ## Upgrading from v12.x.x to v13.x.x
 **Full Release Notes: [GitHub](https://github.com/evantahler/actionhero/releases/tag/v13.0.0)**
 
-Breaking Changes and How to Overcome Them:
+**Breaking Changes and How to Overcome Them:**
 
 - Pluggins
   - `config/plugins.js` is removed.  Delete yours.  
@@ -37,6 +37,8 @@ Breaking Changes and How to Overcome Them:
 ## Upgrading from v11.x.x to v12.x.x
 **Full Release Notes: [GitHub](https://github.com/evantahler/actionhero/releases/tag/v12.0.0)**
 
+**Breaking Changes and How to Overcome Them:**
+
 - Redis configuration
   - Switch from using the `redis` npm pacakge to `ioredis`.  Change this in your package.json.
  - `ioredis` handles passwords slightly differently.  Read the [ioredis](https://github.com/luin/ioredis) documentation to learn more.
@@ -46,6 +48,8 @@ Breaking Changes and How to Overcome Them:
 
 ## Upgrading from v10.x.x to v11.x.x
 **Full Release Notes: [GitHub](https://github.com/evantahler/actionhero/releases/tag/v11.0.0)**
+
+**Breaking Changes and How to Overcome Them:**
 
 - Action Syntax changed
   - Actions now look like
