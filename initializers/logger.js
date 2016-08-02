@@ -40,7 +40,7 @@ module.exports = {
     var logLevels = [];
     for(i in api.logger.levels){ logLevels.push(i); }
 
-    api.log('*** starting actionhero ***', 'notice');
+    api.log('*** Starting ActionHero ***', 'notice');
     api.log('Logger loaded.  Possible levels include:', 'debug', logLevels);
 
     next();

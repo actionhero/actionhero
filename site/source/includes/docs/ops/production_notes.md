@@ -80,7 +80,7 @@ You can set a few environment variables to affect how ActionHero runs:
 
 When deploying ActionHero, you will probably have more than 1 process.  You can use the cluster manager to keep an eye on the workers and manage them
 
-- Start the cluster with 2 workers: `./node_modules/.bin/actionhero startCluster --workers=2`
+- Start the cluster with 2 workers: `./node_modules/.bin/actionhero start cluster --workers=2`
 
 When deploying new code, you can gracefully restart your workers by sending the `USR2` signal to the cluster manager to signal a reload to all workers.  You don't need to start and stop the cluster-master.  This allows for 0-downtime deployments.  
 
@@ -321,7 +321,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 ### Crashing and Safety
 
 ```bash
-> ./node_modules./bin/actionhero startCluster --workers 1
+> ./node_modules./bin/actionhero start cluster --workers 1
 2016-04-11T18:51:32.891Z - info: actionhero >> startCluster
 2016-04-11T18:51:32.904Z - notice:  - STARTING CLUSTER -
 2016-04-11T18:51:32.905Z - notice: pid: 43315

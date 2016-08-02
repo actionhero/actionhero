@@ -1,225 +1,83 @@
 #!/usr/bin/env node
 'use strict';
 
-var cluster = require('cluster');
-var fs = require('fs');
-var winston = require('winston');
-var path = require('path');
-var spawn = require('child_process').spawn;
+var cluster  = require('cluster');
+var fs       = require('fs');
+var winston  = require('winston');
+var path     = require('path');
+var optimist = require('optimist');
+var spawn    = require('child_process').spawn;
 
-var binary = {};
-
-////////////
-// logger //
-////////////
-
-var transports = [];
-if(cluster.isMaster){
-  transports.push(
-    new (winston.transports.Console)({
-      colorize: true,
-      timestamp: true
-    })
-  );
-}
-
-binary.logger = new(winston.Logger)({
-  levels: winston.config.syslog.levels,
-  transports: transports
-});
-
-binary.log = function(message, severity, metadata){
-  if(binary.argv.silent !== 'true'){
-    if(!severity){ severity = 'info'; }
-    if(metadata){
-      binary.logger.log(severity, message, metadata);
-    }else{
-      binary.logger.log(severity, message);
-    }
-  }
-};
-
-///////////////
-// utilities //
-///////////////
-
-binary.utils = {
-  hardError: function(error){
-    binary.log(error, 'error');
-    process.exit(1);
-  },
-  stringifyInputList: function(list){
-    var s = '';
-    if(!list){ return s; }
-    var arr = list.split(',');
-    var used = 0;
-    for(var i in arr){
-      if(used > 0){ s += ', '; }
-      if(arr[i].length > 0){
-        s += '\'' + arr[i] + '\'';
-        used++;
-      }
-    }
-    return s;
-  },
-  dirExists: function(dir){
-    try{
-      var stats = fs.lstatSync(dir);
-      return (stats.isDirectory() || stats.isSymbolicLink());
-    }catch(e){ return false; }
-  },
-  fileExists: function(file){
-    try{
-      var stats = fs.lstatSync(file);
-      return (stats.isFile() || stats.isSymbolicLink());
-    }catch(e){ return false; }
-  },
-  createDirSafely: function(dir){
-    if(binary.utils.dirExists(dir)){
-      binary.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping', 'alert');
-    }else{
-      binary.log(' - creating directory \'' + path.normalize(dir) + '\'');
-      fs.mkdirSync(path.normalize(dir), '0766');
-    }
-  },
-  createFileSafely: function(file, data, overwrite){
-    if(binary.utils.fileExists(file) && !overwrite){
-      binary.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
-    }else{
-      if(overwrite && binary.utils.fileExists(file)){
-        binary.log(' - overwritten file \'' + path.normalize(file) + '\'');
-      }else{
-        binary.log(' - wrote file \'' + path.normalize(file) + '\'');
-      }
-      fs.writeFileSync(path.normalize(file), data);
-    }
-  },
-  createLinkfileSafely: function(filePath, type, refrence){
-    if(binary.utils.fileExists(filePath)){
-      binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
-    }else{
-      binary.log(' - creating linkfile \'' + filePath + '\'');
-      fs.writeFileSync(filePath, type);
-    }
-  },
-  removeLinkfileSafely: function(filePath, type, refrence){
-    if(!binary.utils.fileExists(filePath)){
-      binary.log(' - link file \'' + filePath + '\' doesn\'t exist, skipping', 'alert');
-    }else{
-      binary.log(' - removing linkfile \'' + filePath + '\'');
-      fs.unlinkSync(filePath);
-    }
-  },
-  createSymlinkSafely: function(destination, source){
-    if(binary.utils.dirExists(destination)){
-      binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
-    }else{
-      binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
-      fs.symlinkSync(source, destination, 'dir');
-    }
-  }
-};
-
-//////////
-// Load //
-//////////
-
-var pwd = path.normalize(process.cwd());
+var actionheroRoot = path.normalize(__dirname + '/..');
+var projectRoot;
 
 if(process.env.projectRoot){
-  binary.projectRoot = process.env.projectRoot;
+  projectRoot = process.env.projectRoot;
 }else if(process.env.project_root){
-  binary.projectRoot = process.env.project_root;
+  projectRoot = process.env.project_root;
 }else if(process.env.PROJECT_ROOT){
-  binary.projectRoot = process.env.PROJECT_ROOT;
+  projectRoot = process.env.PROJECT_ROOT;
 }else{
-  binary.projectRoot = pwd;
+  projectRoot = path.normalize(process.cwd());
 }
 
-if(process.env.actionheroRoot){
-  binary.actionheroRoot = process.env.actionheroRoot;
-}else if(process.env.actionheroRoot){
-  binary.actionheroRoot = process.env.actionheroRoot;
-}else if(binary.utils.fileExists(pwd + '/actionhero.js')){
-  // in the actionhero project itself
-  binary.actionheroRoot = pwd;
-}else if(binary.utils.fileExists(pwd + '/node_modules/actionhero/actionhero.js')){
-  // running from a project's node_modules (bin or actionhero)
-  binary.actionheroRoot = pwd + '/node_modules/actionhero';
-  process.chdir(binary.projectRoot);
+var actionheroPrototype = require(actionheroRoot + '/actionhero.js').actionheroPrototype;
+var actionhero = new actionheroPrototype();
+var configChanges = {};
+
+var commands = [];
+if(!optimist.argv._ || optimist.argv._.length === 0){ commands.push('start'); }
+optimist.argv._.forEach(function(arg){ commands.push(arg); });
+
+if(commands.length === 1 && commands[0] === 'generate'){
+
+  // when generating the project from scratch, we cannot rely on the normal initilizers
+  var runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
+  runner({projectRoot: projectRoot}, function(error){
+    if(error){ throw error; }
+    setTimeout(process.exit, 500, 0);
+  });
+
 }else{
-  // installed globally
-  binary.actionheroRoot = path.normalize(__dirname + '/../');
-}
 
-binary.argv = require('optimist').argv;
+  actionhero.initialize({configChanges: configChanges}, function(error, api){
+    if(error){ throw error; }
+    api._context = actionhero;
 
-binary.actions = {};
+    try{
+      var runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
 
-fs.readdirSync(binary.actionheroRoot + '/bin/methods/').sort().forEach(function(file){
-  if(file.indexOf('.js') > 0){
-    var action = file.split('.')[0];
-    binary.actions[action] = require(binary.actionheroRoot + '/bin/methods/' + file)[action];
-  }
-});
+      api.log('--------------------------------------');
+      api.log('ACTIONHERO COMMAND >> ' + commands.join(' '));
+      api.log('projectRoot: ' + path.normalize(projectRoot), 'debug');
+      api.log('actionheroRoot: ' + path.normalize(actionheroRoot), 'debug');
+      api.log('--------------------------------------');
 
-binary.mainAction = binary.argv._[0];
-if(!binary.mainAction){ binary.mainAction = 'start'; }
-
-binary.isDaemon = (binary.argv.isDaemon === 'true');
-
-var run = function(){
-  if(binary.actions[binary.mainAction]){
-    if(binary.argv.daemon){
-      var args = process.argv.splice(2);
-      for(var i in args){
-        if(args[i].indexOf('--daemon') >= 0){
-          args.splice(i, 1);
-          break;
+      if(optimist.argv.daemon){
+        var newArgs = process.argv.splice(2);
+        for(var i in newArgs){
+          if(newArgs[i].indexOf('--daemon') >= 0){ newArgs.splice(i, 1); }
         }
+        newArgs.push('--isDaemon=true');
+        var command = path.normalize(actionheroRoot + '/bin/actionhero');
+        var child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
+        api.log(command + ' ' + newArgs.join(' '), 'debug');
+        api.log('spawned child process with pid ' + child.pid, 'notice');
+        process.nextTick(process.exit);
+      }else{
+        runner(api, function(error, toStop){
+          if(error){ throw error; }
+          if(toStop){ setTimeout(process.exit, 500, 0); }
+        });
       }
-      args.push('--isDaemon=true');
-      var command = path.normalize(binary.actionheroRoot + '/bin/actionhero');
-      var child = spawn(command, args, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
-      // child.unref();
-      binary.log(command + ' ' + args.join(' '), 'info');
-      binary.log('spawned child process with pid ' + child.pid, 'notice');
-      setTimeout(process.exit, 1000);
-    }else if(binary.argv.isDaemon){
-      binary.logger.remove(winston.transports.Console);
-      binary.actions[binary.mainAction](binary, function(){});
-    }else{
-      binary.log('actionhero >> ' + binary.mainAction);
-      binary.log('project_root >> ' + path.normalize(binary.projectRoot), 'debug');
-      binary.log('actionheroRoot >> ' + path.normalize(binary.actionheroRoot), 'debug');
-      binary.actions[binary.mainAction](binary, function(toStop){
-        if(toStop === true){ process.exit(); }
-      });
-    }
-  }else{
-    binary.actions.unknownInput(binary, function(){});
-    process.exit(1);
-  }
-};
-
-// source the config paths from the project's config
-var utilLoader   = require(binary.actionheroRoot + '/initializers/utils.js');
-var configLoader = require(binary.actionheroRoot + '/initializers/config.js');
-
-utilLoader.initialize(binary, function(){
-  try{
-    configLoader.initialize(binary, function(error){
-      if(error){ throw error; }
-      for(var type in binary.config.general.paths){
-        binary.config.general.paths[type] = binary.config.general.paths[type].map(path.normalize);
+    }catch(e){
+      if(!e.message.match(/Cannot find module/)){
+        throw(e);
+      }else{
+        api.log('Error: `' + commands.join(' ') + '` is not a method I can perform.', 'error');
+        api.log('run `actionhero help` to learn more.', 'error');
+        setTimeout(process.exit, 500, 1);
       }
-      run();
-    });
-  }catch(e){
-    if(e.message.match(/No config directory found in this project/)){
-      run();
-    }else{
-      throw e;
     }
-  }
-});
+  });
+}

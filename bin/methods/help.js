@@ -2,8 +2,8 @@
 
 var fs = require('fs');
 
-exports.help = function(binary, next){
-  var help = fs.readFileSync(binary.actionheroRoot + '/bin/templates/help.txt');
-  binary.log(help.toString());
-  next(true);
+module.exports = function(api, next){
+  var help = fs.readFileSync(__dirname + '/../templates/help.txt').toString();
+  help.split('\n').forEach(function(line){ console.log(line); });
+  next(null, true);
 };

@@ -31,6 +31,12 @@ var async     = require('async');
 var readline  = require('readline');
 var winston   = require('winston');
 var isrunning = require('is-running');
+var optimist  = require('optimist');
+
+var argv = optimist
+  .describe('workers', 'How many worker node processes')
+  .default('workers', os.cpus().length)
+  .argv;
 
 /////////////////////////////////////////
 
@@ -378,12 +384,12 @@ ActionHeroCluster.prototype.work = function(){
 
 /////////////////////////////////////////
 
-exports.startCluster = function(binary){
+module.exports = function(api){
   var options = {
-    execPath: path.normalize(binary.actionheroRoot + '/bin/actionhero'),
+    execPath: path.normalize(__dirname + '/../../actionhero'),
     args: 'start',
-    silent: (binary.argv.silent === 'true' || binary.argv.silent === true) ? true : false,
-    expectedWorkers: binary.argv.workers,
+    silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true) ? true : false,
+    expectedWorkers: optimist.argv.workers,
     buildEnv: function(workerId){
       var self = this;
       var env  = {};

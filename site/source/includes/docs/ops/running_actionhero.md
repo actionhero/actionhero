@@ -3,88 +3,100 @@
 ## The actionhero Binary
 
 ```bash
-actionhero - A multi-transport node.js API Server with integrated cluster
+ActionHero - A multi-transport node.js API Server with integrated cluster
   capabilities and delayed tasks
 
 Binary options:
 * help (default)
 * start
-* startCluster
+* start cluster
 * generate
-* generateAction
-* generateTask
-* generateInitializer
-* generateServer
-* actions
-* enqueueTask
+* generate action
+* generate task
+* generate initializer
+* generate server
+* actions list
+* tasks enqueue
 * console
 * link
+* unlink
 
 Descriptions:
 
 * actionhero help
   will display this document
 
-* actionhero start --config=[/path/to/config.js] --title=[processTitle]  
-    --daemon will start a template actionhero server this is the respondent
-    to "npm start"
+* actionhero start --config=[/path/to/config] --title=[processTitle]
+    --daemon
   [config] (optional) path to config.js, defaults to "process.cwd() + '/'
     + config.js". You can also use ENV[ACTIONHERO_CONFIG].
-  [title] (optional) process title to use for actionhero-s ID, ps, log, and
-    pidFile defaults. Must be unique for each member of the cluster.  
+  [title] (optional) process title to use for ActionHero's ID, ps, log, and
+    pidFile defaults. Must be unique for each member of the cluster.
     You can also use ENV[ACTIONHERO_TITLE].
     Process renaming does not work on OSX/Windows
   [daemon] (optional) to fork and run as a new background process defaults
     to false
 
-* actionhero startCluster --workers=[numWorkers]  --daemon
-  will launch a actionhero cluster (using node-s cluster module)
+* actionhero start cluster --workers=[numWorkers]  --daemon
+  will launch a ActionHero cluster (using node-s cluster module)
   [workers] (optional) number of workers (defaults to # CPUs - 2)
   [daemon] (optional) to fork and run as a new background process defaults
     to false
 
 * actionhero generate
-  will prepare an empty directory with a template actionhero project
+  will prepare an empty directory with a template ActionHero project
 
-* actionhero generateAction --name=[name] --description=[description]
-    --inputsRequired=[inputsRequired] --inputsOptional=[inputsOptional]
+* actionhero generate action --name=[name] --description=[description]
   will generate a new action in "actions"
   [name] (required)
-  [description] (required) should be wrapped in quotes if it contains spaces
+  [description] (optional)
 
-* actionhero generateTask --name=[name] --description=[description]
+* actionhero generate task --name=[name] --description=[description]
     --scope=[scope] --frequency=[frequency]
   will generate a new task in "tasks"
   [name] (required)
-  [description] (required) should be wrapped in quotes if it contains spaces
-  [scope] (optional) can be "any" or "all"
+  [description] (optional)
+  [queue] (required)
   [frequency] (optional)
 
-* actionhero generateInitializer --name=[name]
+* actionhero generate initializer --name=[name] --loadPriority=[p]
+    --startPriority=[p] --stopPriority=[p]
   will generate a new initializer in "initializers"
   [name] (required)
+  [loadPriority] (optional)
+  [startPriority] (optional)
+  [stopPriority] (optional)
 
-* actionhero generateServer --name=[name]
+* actionhero generate server --name=[name]
   will generate a new server in "servers"
   [name] (required)
 
-* actionhero actions
+* actionhero actions list
   will list all actions in this server to stdout
 
-* actionhero enqueueTask --name=[taskName] --args=[JSON-formatted args]
+* actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]
   will enqueue a task into redis
 
 * actionhero console
   will open an interactive CLI with the API object in scope.
   this is sometimes called a REPL
 
-* actionhero link --name=[pluginName]
+* actionhero link --name=[pluginName] --overwriteConfig=[overwriteConfig]
   will link the actions, tasks, initializers, etc from a plugin into your
     top-level project normally, you will have first installed the plugin
     via `npm install myPlugin`
+  [name] (required)
+  [overwriteConfig] (optional) default: false
+
+* actionhero unlink --name=[pluginName]
+  will remove the linked actions, tasks, initializers, etc from a plugin in your
+    top-level project. Please remove the config files manually
+  Remember if your plugin was installed via NPM, also be sure to remove it from your
+    package.json or uninstall it with npm uninstall --save
+  [name] (required)
 
 #############################################################
-## More Help & the actionhero documentation can be found @ ##
+## More Help & the ActionHero documentation can be found @ ##
 ##             http://www.actionherojs.com                 ##
 #############################################################
 ```
@@ -150,7 +162,7 @@ From within ActionHero itself (actions, initilizers, etc), you can use `api.comm
 ## Signals
 
 ```bash
-> ./node_modules/.bin/actionhero startCluster --workers=2
+> ./node_modules/.bin/actionhero start cluster --workers=2
 info: actionhero >> startCluster
 notice:  - STARTING CLUSTER -
 notice: pid: 41382
@@ -195,7 +207,7 @@ ActionHero is intended to be run on `*nix` operating systems.  The `start` and `
 - `kill` / `term` / `int` : Process will attempt to "gracefully" shut down.  That is, the worker will close all server connections (possibly sending a shutdown message to clients, depending on server type), stop all task workers, and eventually shut down.  This action may take some time to fully complete.
 - `USR2`: Process will restart itself.  The process will preform the "graceful shutdown" above, and they restart.
 
-**actionhero startCluster**
+**actionhero start cluster**
 
 All signals should be sent to the cluster master process.  You can still signal the termination of a worker, but the cluster manager will start a new one in its place.
 
@@ -206,9 +218,9 @@ All signals should be sent to the cluster master process.  You can still signal 
 - `TTIN`: add one worker
 
 ## Shutting Down
-When using `actionhero start` or `actionhero startCluster`, when you signal ActionHero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
+When using `actionhero start` or `actionhero start cluster`, when you signal ActionHero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
 
-Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
+Because things sometimes go wrong, `actionhero start` and `actionhero start cluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
 
 ## Windows-Specific Notes
 

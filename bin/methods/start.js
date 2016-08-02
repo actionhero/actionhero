@@ -4,9 +4,8 @@ var cluster = require('cluster');
 var readline = require('readline');
 var os = require('os');
 
-exports.start = function(binary, next){
-  var ActionheroPrototype = require(binary.actionheroRoot + '/actionhero.js').actionheroPrototype;
-  var actionhero = new ActionheroPrototype();
+module.exports = function(api, next){
+  var state;
 
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
   var shutdownTimeout = 1000 * 30;
@@ -14,15 +13,12 @@ exports.start = function(binary, next){
     shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT);
   }
 
-  var api = {};
-  var state;
-
   var startServer = function(callback){
     state = 'starting';
     if(cluster.isWorker){ process.send({state: state}); }
-    actionhero.start(function(error, apiFromCallback){
+    api._context.start(function(error, apiFromCallback){
       if(error){
-        binary.log(error);
+        api.log(error);
         process.exit(1);
       }else{
         state = 'started';
@@ -37,7 +33,7 @@ exports.start = function(binary, next){
   var stopServer = function(callback){
     state = 'stopping';
     if(cluster.isWorker){ process.send({state: state}); }
-    actionhero.stop(function(){
+    api._context.stop(function(){
       state = 'stopped';
       if(cluster.isWorker){ process.send({state: state}); }
       api = null;
@@ -48,7 +44,7 @@ exports.start = function(binary, next){
   var restartServer = function(callback){
     state = 'restarting';
     if(cluster.isWorker){ process.send({state: state}); }
-    actionhero.restart(function(error, apiFromCallback){
+    api._context.restart(function(error, apiFromCallback){
       if(error){ throw(error); }
 
       state = 'started';
@@ -73,7 +69,7 @@ exports.start = function(binary, next){
   var checkForInernalStopTimer;
   var checkForInernalStop = function(){
     clearTimeout(checkForInernalStopTimer);
-    if(actionhero.api.running !== true && state === 'started'){
+    if(api.running !== true && state === 'started'){
       process.exit(0);
     }
     checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout);

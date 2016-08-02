@@ -46,7 +46,7 @@ describe('Core: i18n', function(){
       response.randomNumber.should.be.within(0, 1);
       var content = readLocaleFile();
       [
-        '*** starting actionhero ***',
+        '*** Starting ActionHero ***',
         'Loaded initializer: %s',
         '*** ActionHero Started ***',
         '[ action @ %s ]',
