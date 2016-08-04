@@ -34,7 +34,7 @@ exports['default'] = {
       missingParamChecks: [null, '', undefined],
       // The default filetype to server when a user requests a directory
       directoryFileType : 'index.html',
-      // The default priority level given to middleware of all types (action, connection, and say)
+      // The default priority level given to middleware of all types (action, connection, say, and task)
       defaultMiddlewarePriority : 100,
       // Which channel to use on redis pub/sub for RPC communication
       channel: 'actionhero',

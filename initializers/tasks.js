@@ -11,6 +11,8 @@ module.exports = {
 
       tasks: {},
       jobs: {},
+      middleware: {},
+      globalMiddleware: [],
 
       loadFile: function(fullFilePath, reload){
         var self = this;
@@ -44,6 +46,7 @@ module.exports = {
       jobWrapper: function(taskName){
         var self = this;
         var task = api.tasks.tasks[taskName];
+        var middleware = task.middleware || [];
         var plugins = task.plugins || [];
         var pluginOptions = task.pluginOptions || [];
         if(task.frequency > 0){
@@ -51,6 +54,39 @@ module.exports = {
           if(plugins.indexOf('queueLock') < 0){ plugins.push('queueLock'); }
           if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
         }
+        //load middleware into plugins
+        function processMiddleware(m){
+          if(api.tasks.middleware[m]){ //Ignore middleware until it has been loaded.
+            var plugin = function(worker, func, queue, job, args, options){
+              var self = this;
+              self.name = m;
+              self.worker = worker;
+              self.queue = queue;
+              self.func = func;
+              self.job = job;
+              self.args = args;
+              self.options = options;
+              self.api = api;
+
+              if(self.worker.queueObject){
+                self.queueObject = self.worker.queueObject;
+              }else{
+                self.queueObject = self.worker;
+              }
+            };
+
+            if(api.tasks.middleware[m].preProcessor){ plugin.prototype.before_perform = api.tasks.middleware[m].preProcessor; }
+            if(api.tasks.middleware[m].postProcessor){ plugin.prototype.after_perform = api.tasks.middleware[m].postProcessor; }
+            if(api.tasks.middleware[m].preEnqueue){ plugin.prototype.before_enqueue = api.tasks.middleware[m].preEnqueue; }
+            if(api.tasks.middleware[m].postEnqueue){ plugin.prototype.after_enqueue = api.tasks.middleware[m].postEnqueue; }
+
+            plugins.push(plugin);
+          }
+        }
+
+        api.tasks.globalMiddleware.forEach(processMiddleware);
+        middleware.forEach(processMiddleware);
+
         return {
           'plugins': plugins,
           'pluginOptions': pluginOptions,
@@ -297,11 +333,28 @@ module.exports = {
       }
     };
 
-    api.config.general.paths.task.forEach(function(p){
-      api.utils.recursiveDirectoryGlob(p).forEach(function(f){
-        api.tasks.loadFile(f);
+    function loadTasks(reload){
+      api.config.general.paths.task.forEach(function(p){
+        api.utils.recursiveDirectoryGlob(p).forEach(function(f){
+          api.tasks.loadFile(f, reload);
+        });
       });
-    });
+    }
+
+    api.tasks.addMiddleware = function(middleware, callback){
+      if(!middleware.name){ return callback(new Error('middleware.name is required')); }
+      if(!middleware.priority){ middleware.priority = api.config.general.defaultMiddlewarePriority; }
+      middleware.priority = Number(middleware.priority);
+      api.tasks.middleware[middleware.name] = middleware;
+      if(middleware.global === true){
+        api.tasks.globalMiddleware.push(middleware.name);
+        api.utils.sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
+      }
+      loadTasks(true);
+      callback();
+    };
+
+    loadTasks(false);
 
     next();
 
