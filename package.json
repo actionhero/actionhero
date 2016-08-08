@@ -49,7 +49,7 @@
     "ws": "^1.1.1"
   },
   "devDependencies": {
-    "mocha": "^3.0.1",
+    "mocha": "^3.0.2",
     "should": "^10.0.0",
     "request": "^2.65.0",
     "coveralls": "^2.11.12",
