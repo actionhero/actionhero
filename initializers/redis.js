@@ -27,10 +27,8 @@ module.exports = {
             var args = api.config.redis[r].args;
             api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]);
             api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
-            api.redis.clients[r].on('connect', function(){
-              api.log(['Redis connection `%s` connected', r], 'debug');
-              done();
-            });
+            api.redis.clients[r].on('connect', function(){ api.log(['Redis connection `%s` connected', r], 'debug'); });
+            api.redis.clients[r].once('connect', done);
           }else{
             api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args);
             api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
