@@ -30,7 +30,7 @@ Each type of middleware is distinct from the others, and operates on distinct pa
 
 ## Action Request Flow
 
-<img src="/images/connection_flow.png" />
+<img src="/images/connection_flow_actions.png" />
 
 ## Action Middleware
 
@@ -178,10 +178,14 @@ api.chatRoom.addMiddleware({
 
 If a `say` is blocked/errored, the message will simply not be delivered to the client.  If a  `join` or  `leave` is blocked/errored, the verb or method used to invoke the call will be returned that error.
 
+## Task Request Flow
+
+<img src="/images/connection_flow_tasks.png" />
+
 ## Task Middleware
-Task middleware is implemented as a thin wrapper around Node Resque plugins and currently exposes the `before_perform`, 
+Task middleware is implemented as a thin wrapper around Node Resque plugins and currently exposes the `before_perform`,
 `after_perform`, `before_enqueue`, and `after_enqueue` functions of Resque plugins through `preProcessor`, `postProcessor`,
- `preEnqueue`, and `postEnqueue` methods. Each middleware requires a `name` and at least one function. In addition, 
+ `preEnqueue`, and `postEnqueue` methods. Each middleware requires a `name` and at least one function. In addition,
  a middleware can be global, in which case it also requires a `priority`.
 
  In the `preProcessor`, you can access the original task `params` through `this.args[0]`.

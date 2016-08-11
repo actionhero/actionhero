@@ -3,8 +3,11 @@
 ## ActionHero sections
 <img src="/images/actionheroGraphic.png" />
 
-## request flow
-<img src="/images/connection_flow.png" />
+## ActionHero Action Request Flow
+<img src="/images/connection_flow_actions.png" />
+
+## ActionHero Task Request Flow
+<img src="/images/connection_flow_tasks.png" />
 
 ## cluster topology
 <img src="/images/cluster.png" />
