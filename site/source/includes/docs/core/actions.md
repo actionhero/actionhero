@@ -253,6 +253,7 @@ exports.cacheTest = {
       formatter: [
          function(s){ return String(s); },
          'api.formatter.uniqueKeyName' // <----------- HERE
+      ]
     },
     value: {
       required: true,
