@@ -253,6 +253,7 @@ exports.cacheTest = {
       formatter: [
          function(s){ return String(s); },
          'api.formatter.uniqueKeyName' // <----------- HERE
+      ]
     },
     value: {
       required: true,
@@ -302,7 +303,7 @@ data = {
 }
 ```
 
-The `data` object passed into your action captures the state of of the connection at the time the action was started.  Midleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the `data` object:
+The `data` object passed into your action captures the state of the connection at the time the action was started.  Midleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the `data` object:
 
 The goal of most actions is to do work and then modify the value of `data.response`, which will eventually be sent down to the client.  
 
