@@ -61,17 +61,4 @@ When creating plugins, you may find yourself wanting to do things which could no
 
 ## Published Plugins
 
-- [ah-stats-plugin](https://github.com/evantahler/ah-stats-plugin) Stats Integration (redis backed)
-- [ah-airbrake-plugin](https://github.com/evantahler/ah-airbrake-plugin) Airbrake Integration
-- [ah-newrelic-plugin](https://github.com/evantahler/ah-newrelic-plugin) NewRelic Integration
-- [ah-sequelize-plugin](https://github.com/evantahler/ah-sequelize-plugin) Sequelize Integration for mySQL or Postgres
-- [ah-nodemailer-plugin](https://github.com/panjiesw/ah-nodemailer-plugin) Nodemailer Integration
-- [ah-ratelimit-plugin](https://github.com/innerdvations/ah-ratelimit-plugin) Rate Limits
-- [ah-autosession-plugin](https://github.com/innerdvations/ah-autosession-plugin) Sessions (based off of redis-sessions)
-- [ah-dashboard-plugin](https://github.com/S3bb1/ah-dashboard-plugin) Dashboard for ActionHero
-- [ah-jwtauth-plugin](https://github.com/lookaflyingdonkey/ah-jwtauth-plugin) JSON Web Token Authentication
-- [ah-mongoose-plugin](https://github.com/lookaflyingdonkey/ah-mongoose-plugin) Mongoose Model Loader
-- [ah-xsignature-plugin](https://github.com/lookaflyingdonkey/ah-xsignature-plugin) Content Checksum for Actions
-- [ah-swagger-plugin](https://github.com/supamii/ah-swagger-plugin) Swagger UI Documentation
-- [ah-mongodb-plugin](https://github.com/eduardogch/ah-mongodb-plugin) MongoDB + Mongoose
-- [ah-rethinkdb-plugin](https://github.com/eduardogch/ah-rethinkdb-plugin) RethinkDB + Mongoose
+You can view a list of plugins maintined by [@l0oky](https://github.com/l0oky) via [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
