@@ -232,7 +232,7 @@ var initialize = function(api, options, next){
 
   var gracefulShutdown = function(next, alreadyShutdown){
     if(!alreadyShutdown || alreadyShutdown === false){
-      server.server.close();
+      if(server.server){ server.server.close(); }
     }
     var pendingConnections = 0;
     server.connections().forEach(function(connection){
