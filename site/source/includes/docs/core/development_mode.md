@@ -30,7 +30,7 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 ```javascript
 api.watchFileAndAct(path_to_file, function(){
   api.log('rebooting due to config change: ' + path_to_file, 'info');
-  api.commands.restart.call(api._self);
+  api.commands.restart();
 });
 ```
 

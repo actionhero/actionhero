@@ -64,10 +64,10 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.api._self = self;
   self.api.commands = {
-    initialize: self.initialize,
-    start: self.start,
-    stop: self.stop,
-    restart: self.restart
+    initialize: function(params, callback){ self.initialize.call(self, params, callback); },
+    start:      function(params, callback){ self.start.call(self, params, callback); },
+    stop:       function(callback){ self.stop.call(self, callback); },
+    restart:    function(callback){ self.restart.call(self, callback); }
   };
 
   self.api.projectRoot = process.cwd();
@@ -140,7 +140,7 @@ actionhero.prototype.initialize = function(params, callback){
         var loadFunction = function(next){
           self.api.watchFileAndAct(file, function(){
             self.api.log(['*** Rebooting due to initializer change (%s) ***', file], 'info');
-            self.api.commands.restart.call(self.api._self);
+            self.api.commands.restart();
           });
 
           if(typeof self.initializers[initializer].initialize === 'function'){
