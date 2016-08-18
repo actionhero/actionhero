@@ -341,8 +341,8 @@ module.exports = {
       });
     }
 
-    api.tasks.addMiddleware = function(middleware, callback){
-      if(!middleware.name){ return callback(new Error('middleware.name is required')); }
+    api.tasks.addMiddleware = function(middleware){
+      if(!middleware.name){ throw new Error('middleware.name is required'); }
       if(!middleware.priority){ middleware.priority = api.config.general.defaultMiddlewarePriority; }
       middleware.priority = Number(middleware.priority);
       api.tasks.middleware[middleware.name] = middleware;
@@ -351,7 +351,6 @@ module.exports = {
         api.utils.sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
       }
       loadTasks(true);
-      callback();
     };
 
     loadTasks(false);
