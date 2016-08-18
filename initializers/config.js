@@ -104,7 +104,7 @@ module.exports = {
     var rebootCallback = function(file){
       api.log(['*** rebooting due to config change (%s) ***', file], 'info');
       delete require.cache[require.resolve(file)];
-      api.commands.restart.call(api._self);
+      api.commands.restart();
     };
 
     api.loadConfigDirectory = function(configPath, watch){
