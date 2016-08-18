@@ -234,9 +234,7 @@ module.exports = {
       }
     };
 
-    api.tasks.addMiddleware(api.taskTimer.middleware, function(error){
-      next(error);
-    });
+    api.tasks.addMiddleware(api.taskTimer.middleware);
   }
 };
 ```

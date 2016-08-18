@@ -51,23 +51,23 @@ describe('Test: Task Middleware', function(){
     actionhero.start(function(error, a){
       api = a;
 
-      api.tasks.addMiddleware(middleware, function(error){
-        api.tasks.tasks.middlewareTask = {
-          name: 'middlewareTask',
-          description: 'middlewaretask',
-          queue: 'default',
-          frequency: 0,
-          middleware: ['test-middleware'],
-          run: function(api, params, next){
-            params.test.should.exist;
-            next(null, {result: 'done'});
-          }
-        };
+      api.tasks.addMiddleware(middleware);
 
-        api.tasks.jobs.middlewareTask = api.tasks.jobWrapper('middlewareTask');
+      api.tasks.tasks.middlewareTask = {
+        name: 'middlewareTask',
+        description: 'middlewaretask',
+        queue: 'default',
+        frequency: 0,
+        middleware: ['test-middleware'],
+        run: function(api, params, next){
+          params.test.should.exist;
+          next(null, {result: 'done'});
+        }
+      };
 
-        done(error);
-      });
+      api.tasks.jobs.middlewareTask = api.tasks.jobWrapper('middlewareTask');
+
+      done(error);
     });
   });
 
