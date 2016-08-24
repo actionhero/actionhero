@@ -42,7 +42,7 @@
     "node-resque": "^3.0.0",
     "node-uuid": "^1.4.4",
     "optimist": "^0.6.1",
-    "primus": "^6.0.0",
+    "primus": "^6.0.2",
     "qs": "^6.0.1",
     "uglify-js": "^2.7.2",
     "winston": "^2.0.0",
