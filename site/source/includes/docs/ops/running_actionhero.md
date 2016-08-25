@@ -163,7 +163,7 @@ From within ActionHero itself (actions, initilizers, etc), you can use `api.comm
 
 ```bash
 > ./node_modules/.bin/actionhero start cluster --workers=2
-info: actionhero >> startCluster
+info: actionhero >> start cluster
 notice:  - STARTING CLUSTER -
 notice: pid: 41382
 info: starting worker #1
@@ -200,7 +200,7 @@ info: all workers gone
 notice: cluster complete, Bye!
 ```
 
-ActionHero is intended to be run on `*nix` operating systems.  The `start` and `startCluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
+ActionHero is intended to be run on `*nix` operating systems.  The `start` and `start cluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
 
 **actionhero start**
 
