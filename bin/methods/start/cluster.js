@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// TO START IN CONSOLE: "./bin/actionhero startCluster"
+// TO START IN CONSOLE: "./bin/actionhero start cluster"
 //
 // ** Production-ready actionhero cluster **
 // - be sure to enable redis so that workers can share state
@@ -15,7 +15,7 @@
 // - TTOU and TTIN signals to subtract/add workers
 // - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
-//   -- Simple Daemon: "actionhero startCluster --daemon"
+//   -- Simple Daemon: "actionhero start cluster --daemon"
 //
 // * Setting process titles does not work on windows or OSX
 //

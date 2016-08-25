@@ -302,10 +302,10 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 ### Topology
 
-- Run a cluster via `startCluster`.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
-    - You can run 1 ActionHero instance per core (assuming the server is dedicated to ActionHero), and that is the default behavior of `startCluster`.
+- Run a cluster via `start cluster`.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
+    - You can run 1 ActionHero instance per core (assuming the server is dedicated to ActionHero), and that is the default behavior of `start cluster`.
     - You don't need a tool like PM2 to manage ActionHero cluster process, but you can.
-    - You can use an init script to `startCluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
+    - You can use an init script to `start cluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
 - Never run tasks on the same ActionHero instances you run your servers on; never run your servers on the same ActionHero instances you run your tasks on
     - Yes, under most situations running servers + tasks on the same instance will work OK, but the load profiles (and often the types of packages required) vary in each deployment.  Actions are designed to respond quickly and offload hard computations to tasks.  Tasks are designed to work slower computations.
     - Do any CPU-intensive work in a task.  If a client needs to see the result of a CPU-intensive operation, poll for it (or use web-sockets)
@@ -322,7 +322,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 ```bash
 > ./node_modules./bin/actionhero start cluster --workers 1
-2016-04-11T18:51:32.891Z - info: actionhero >> startCluster
+2016-04-11T18:51:32.891Z - info: actionhero >> start cluster
 2016-04-11T18:51:32.904Z - notice:  - STARTING CLUSTER -
 2016-04-11T18:51:32.905Z - notice: pid: 43315
 2016-04-11T18:51:32.911Z - info: starting worker #1
@@ -349,8 +349,8 @@ As ActionHero is a framework, much of the work for keeping your application secu
 2016-04-11T18:51:45.827Z - notice: cluster equilibrium state reached with 1 workers
 ```
 
-- Let the app crash rather than being defensive prematurely.  ActionHero has a good logger, and if you are running within `startCluster` mode, your server will be restarted.  It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.  
-- We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`startCluster`) to handle error logging.  Domains are deprecated in node.js now for the same reasons we discuss here.
+- Let the app crash rather than being defensive prematurely.  ActionHero has a good logger, and if you are running within `start cluster` mode, your server will be restarted.  It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.  
+- We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`start cluster`) to handle error logging.  Domains are deprecated in node.js now for the same reasons we discuss here.
   - For example, if you timeout connections that are taking too long, what are you going to do about the database connection it was running?  Will you roll it back?  What about the other clients using the same connection pool?  How can you be sure which connection in the mySQL pool was in use?  Rather than handle all these edge cases... just let your app crash, log, and reboot.  
 - As noted above, centralized logging (Splunk et al) will be invaluable here.  You can can also employ a tool like [BugSnag](https://bugsnag.com) to collect and correlate errors.
 

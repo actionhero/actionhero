@@ -11,16 +11,18 @@ ActionHero follows [semantic versioning](http://semver.org/).  This means that a
 
 **Breaking Changes and How to Overcome Them:**
 
-- The ActionHero binary has had it's commands changed.  
-  - Any deployment or automation tools you use will need to be updated accordingly.
-```
+```bash
 `actionhero generateAction --name=[name]`      -> `actionhero generate action --name=[name]`
 `actionhero generateInitializer --name=[name]` -> `actionhero generate initializer --name=[name]`
 `actionhero generateServer --name=[name]`      -> `actionhero generate server --name=[name]`
 `actionhero generateTask --name=[name]`        -> `actionhero generate task --name=[name]`
 ```
+
+- The ActionHero binary has had it's commands changed.  
+  - Any deployment or automation tools you use will need to be updated accordingly.
 - Tasks now use middleware instead of plugins.
   - You will need to convert all uses of task plugins to task middleware.
+
 
 ## Upgrading from v13.x.x to v14.x.x
 **Full Release Notes: [GitHub](https://github.com/evantahler/actionhero/releases/tag/v14.0.0)**

@@ -30,7 +30,7 @@ You also don't need to use these test helpers, and you may want to make a 'real'
     "help"         : "actionhero help",
     "start"        : "actionhero start",
     "actionhero"   : "actionhero",
-    "startCluster" : "actionhero start cluster",
+    "start cluster": "actionhero start cluster",
     "test"         : "NODE_ENV=test mocha"
   }
 }
