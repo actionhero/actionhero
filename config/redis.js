@@ -13,8 +13,8 @@ exports['default'] = {
 
     if(process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined){
 
-      function retryStrategy(times) {
-        if (times === 1) {
+      function retryStrategy(times){
+        if(times === 1){
           api.log('Unable to connect to Redis - please check your Redis config!', 'error');
           return 5000;
         }
