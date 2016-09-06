@@ -147,7 +147,7 @@ var ActionHeroCluster = function(args){
 
 ActionHeroCluster.prototype.defaults = function(){
   return {
-    id: 'AcionHeroCluster',
+    id: 'ActionHeroCluster',
     stopTimeout: 3000,
     expectedWorkers: os.cpus().length,
     flapWindow: 1000 * 30,
