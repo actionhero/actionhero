@@ -134,7 +134,7 @@ var ActionHeroCluster = function(args){
     transports.push(
       new(winston.transports.Console)({
         colorize: true,
-        timestamp: true
+        timestamp: function(){ return self.options.id + ' @ ' + new Date().toISOString(); },
       })
     );
   }
@@ -147,6 +147,7 @@ var ActionHeroCluster = function(args){
 
 ActionHeroCluster.prototype.defaults = function(){
   return {
+    id: 'AcionHeroCluster',
     stopTimeout: 3000,
     expectedWorkers: os.cpus().length,
     flapWindow: 1000 * 30,
@@ -390,6 +391,7 @@ module.exports = function(api){
     args: 'start',
     silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true) ? true : false,
     expectedWorkers: optimist.argv.workers,
+    id: api.id,
     buildEnv: function(workerId){
       var self = this;
       var env  = {};
