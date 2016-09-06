@@ -6,9 +6,12 @@ var fs   = require('fs');
 
 exports.link = function(binary, next){
   if(!binary.argv.name){ binary.utils.hardError('name (of the plugin to link) is a required input'); }
+
   if(!binary.argv.linkRelativeBase){ binary.argv.linkRelativeBase = binary.projectRoot + path.sep; }
 
   var pluginRoot;
+  var overwriteConfig = false;
+  if(binary.argv.overwriteConfig){ overwriteConfig = true; }
   binary.config.general.paths.plugin.forEach(function(pluginPath){
     var pluginPathAttempt = path.normalize(pluginPath + path.sep + binary.argv.name);
     if(!pluginRoot && binary.utils.dirExists(pluginPath + path.sep + binary.argv.name)){
@@ -44,22 +47,23 @@ exports.link = function(binary, next){
 
   var copyFiles = function(dir, prepend){
     if(!prepend){ prepend = ''; }
-
-    fs.readdirSync(dir).forEach(function(pluginConfigFile){
-      var file = dir + path.sep + pluginConfigFile;
-      var stats = fs.lstatSync(file);
-      if(stats.isDirectory()){
-        copyFiles(file, (prepend + path.sep + pluginConfigFile + path.sep));
-      }else{
-        var content = fs.readFileSync(file);
-        var fileParts = pluginConfigFile.split(path.sep);
-        var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + prepend + fileParts[(fileParts.length - 1)];
-        if(process.env.ACTIONHERO_CONFIG){
-          localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + prepend + fileParts[(fileParts.length - 1)];
+    if(binary.utils.dirExists(dir)){
+      fs.readdirSync(dir).forEach(function(pluginConfigFile){
+        var file = dir + path.sep + pluginConfigFile;
+        var stats = fs.lstatSync(file);
+        if(stats.isDirectory()){
+          copyFiles(file, (prepend + path.sep + pluginConfigFile + path.sep));
+        }else{
+          var content = fs.readFileSync(file);
+          var fileParts = pluginConfigFile.split(path.sep);
+          var localConfigFile = binary.argv.linkRelativeBase + 'config' + path.sep + prepend + fileParts[(fileParts.length - 1)];
+          if(process.env.ACTIONHERO_CONFIG){
+            localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + prepend + fileParts[(fileParts.length - 1)];
+          }
+          binary.utils.createFileSafely(localConfigFile, content, overwriteConfig);
         }
-        binary.utils.createFileSafely(localConfigFile, content);
-      }
-    });
+      });
+    }  
   };
 
   // copy config files

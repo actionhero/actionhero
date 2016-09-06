@@ -49,7 +49,8 @@ exports['default'] = {
 
       // When a params for an action is invalid
       invalidParams: function(data, validationErrors){
-        return validationErrors.join(', ');
+        if(validationErrors.length >= 0){ return validationErrors[0]; }
+        return 'validation error';
       },
 
       // When a required param for an action is not provided
@@ -79,7 +80,7 @@ exports['default'] = {
       },
 
       dataLengthTooLarge: function(maxLength, receivedLength){
-        return 'data length is too big (' + maxLength + '<' + receivedLength + ')';
+        return api.i18n.localize(['data length is too big (%u received/%u max)', maxLength, receivedLength]);
       },
 
       /////////////////
@@ -127,19 +128,19 @@ exports['default'] = {
       },
 
       connectionRoomHasBeenDeleted: function(room){
-        return 'this room has been deleted';
+        return api.i18n.localize('this room has been deleted');
       },
 
       connectionRoomNotExist: function(room){
-        return 'room does not exist';
+        return api.i18n.localize('room does not exist');
       },
 
       connectionRoomExists: function(room){
-        return 'room exists';
+        return api.i18n.localize('room exists');
       },
 
       connectionRoomRequired: function(room){
-        return 'a room is required';
+        return api.i18n.localize('a room is required');
       },
 
     };

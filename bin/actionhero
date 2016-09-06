@@ -44,8 +44,8 @@ binary.log = function(message, severity, metadata){
 ///////////////
 
 binary.utils = {
-  hardError: function(err){
-    binary.log(err, 'error');
+  hardError: function(error){
+    binary.log(error, 'error');
     process.exit(1);
   },
   stringifyInputList: function(list){
@@ -82,14 +82,18 @@ binary.utils = {
       fs.mkdirSync(path.normalize(dir), '0766');
     }
   },
-  createFileSafely: function(file, data){
-    if(binary.utils.fileExists(file)){
+  createFileSafely: function(file, data, overwrite){
+    if(binary.utils.fileExists(file) && !overwrite){
       binary.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
     }else{
-      binary.log(' - wrote file \'' + path.normalize(file) + '\'');
+      if(overwrite && binary.utils.fileExists(file)){
+        binary.log(' - overwritten file \'' + path.normalize(file) + '\'');
+      } else {
+        binary.log(' - wrote file \'' + path.normalize(file) + '\'');
+      }
       fs.writeFileSync(path.normalize(file), data);
     }
-  },
+  }, 
   createLinkfileSafely: function(filePath, type, refrence){
     if(binary.utils.fileExists(filePath)){
       binary.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
@@ -98,6 +102,14 @@ binary.utils = {
       fs.writeFileSync(filePath, type);
     }
   },
+  removeLinkfileSafely: function(filePath, type, refrence){
+    if(!binary.utils.fileExists(filePath)){
+      binary.log(' - link file \'' + filePath + '\' doesn\'t exist, skipping', 'alert');
+    }else{
+      binary.log(' - removing linkfile \'' + filePath + '\'');
+      fs.unlinkSync(filePath);
+    }
+  },  
   createSymlinkSafely: function(destination, source){
     if(binary.utils.dirExists(destination)){
       binary.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
@@ -105,14 +117,6 @@ binary.utils = {
       binary.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
       fs.symlinkSync(source, destination, 'dir');
     }
-  },
-  hashLength: function(obj){
-    var size = 0;
-    var key;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){ size++; }
-    }
-    return size;
   }
 };
 

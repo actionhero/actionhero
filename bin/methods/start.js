@@ -20,9 +20,9 @@ exports.start = function(binary, next){
   var startServer = function(callback){
     state = 'starting';
     if(cluster.isWorker){ process.send({state: state}); }
-    actionhero.start(function(err, apiFromCallback){
-      if(err){
-        binary.log(err);
+    actionhero.start(function(error, apiFromCallback){
+      if(error){
+        binary.log(error);
         process.exit(1);
       }else{
         state = 'started';
@@ -48,7 +48,9 @@ exports.start = function(binary, next){
   var restartServer = function(callback){
     state = 'restarting';
     if(cluster.isWorker){ process.send({state: state}); }
-    actionhero.restart(function(err, apiFromCallback){
+    actionhero.restart(function(error, apiFromCallback){
+      if(error){ throw(error); }
+
       state = 'started';
       if(cluster.isWorker){ process.send({state: state}); }
       api = apiFromCallback;

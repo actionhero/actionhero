@@ -6,7 +6,7 @@ var api;
 describe('Action: Show Documentation', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       done();
     });
@@ -21,7 +21,7 @@ describe('Action: Show Documentation', function(){
   it('returns the correct parts', function(done){
     api.specHelper.runAction('showDocumentation', function(response){
       Object.keys(response.documentation).length.should.equal(6); // 6 actions
-      response.serverInformation.serverName.should.equal('actionhero API');
+      response.serverInformation.serverName.should.equal('actionhero');
       done();
     });
   });

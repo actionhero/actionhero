@@ -16,19 +16,19 @@ There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `per
 ```javascript
 // Enqueue the task now, and process it ASAP
 // api.tasks.enqueue(nameOfTask, args, queue, callback)
-api.tasks.enqueue("sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
+api.tasks.enqueue("sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(error, toRun){
   // enqueued!
 });
 
 // Enqueue the task now, and process it once `timestamp` has arrived
 // api.tasks.enqueueAt(timestamp, nameOfTask, args, queue, callback)
-api.tasks.enqueueAt(1234556, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
+api.tasks.enqueueAt(1234556, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(error, toRun){
   // enqueued!
 });
 
 // Enqueue the task now, and process it once `delay` (ms) has passed
 // api.tasks.enqueueIn(delay, nameOfTask, args, queue, callback)
-api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(err, toRun){
+api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'default', function(error, toRun){
   // enqueued!
 });
 ```
@@ -48,7 +48,7 @@ The final type of task, periodic tasks, are defined with a `task.frequency` of g
 ```javascript
 // From /config/tasks.js:
 
-exports.default = { 
+exports.default = {
   tasks: function(api){
     return {
       // Should this node run a scheduler to promote delayed tasks?
@@ -58,7 +58,7 @@ exports.default = {
       // Logging levels of task workers
       workerLogging : {
         failure   : 'error', // task failure
-        success   : 'info',  // task success 
+        success   : 'info',  // task success
         start     : 'info',
         end       : 'info',
         cleaning_worker : 'info',
@@ -91,8 +91,12 @@ exports.default = {
       maxEventLoopDelay: 5,
       // When we kill off a taskProcessor, should we disonnect that local redis connection?
       toDisconnectProcessors: true,
-      // What redis server should we connect to for tasks / delayed jobs?
-      redis: api.config.redis
+      // Customize Resque primitives, replace null with required replacement.
+      resque_overrides: {
+        queue: null,
+        multiWorker: null,
+        scheduler: null
+      }
     }
   }
 }
@@ -118,12 +122,12 @@ var task = {
   name:          "sendWelcomeEmail",
   description:   "I will send a new user a welcome email",
   queue:         "default",
-  plugins:       [], 
-  pluginOptions: [], 
+  plugins:       [],
+  pluginOptions: [],
   frequency:     0,
   run: function(api, params, next){
-    api.sendEmail(params.email, function(err){
-      next(err); //task will fail if sendEmail does
+    api.sendEmail(params.email, function(error){
+      next(error); //task will fail if sendEmail does
     })
   }
 };
@@ -136,7 +140,7 @@ exports.sayHello = {
   name:          'sayHello',
   description:   'I say hello',
   queue:         "default",
-  plugins:       [], 
+  plugins:       [],
   pluginOptions: [],
   frequency:     1000,
   run: function(api, params, next){
@@ -149,7 +153,7 @@ exports.sayGoodbye = {
   name:          'sayGoodbye',
   description:   'I say goodbye',
   queue:         "default",
-  plugins:       [], 
+  plugins:       [],
   pluginOptions: [],
   frequency:     2000,
   run: function(api, params, next){
@@ -187,26 +191,26 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 
 * `api`: The actionhero api object
 * `params`: An array of parameters that the task was enqueued with. This is whatever was passed as the second argument to `api.tasks.enqueue`
-* `next`: A callback to call when the task is done. This callback is of the type `function(error, result)`. 
-  * Passing an `error` object will cause the job to be marked as a failure. 
+* `next`: A callback to call when the task is done. This callback is of the type `function(error, result)`.
+  * Passing an `error` object will cause the job to be marked as a failure.
   * The result is currently not captured anywhere.
-    
+
 
 ## Queue Inspection
 actionhero provides some methods to help inspect the state of your queue.  You can use these methods to check if your jobs are processing in a timely manner, if there are errors in task processing, etc.
 
 ### api.tasks.scheduledAt(queue, taskName, args, next)
-- next(err, timestamps)
+- next(error, timestamps)
 - finds all matching instances of queue + taskName + args from the delayed queues
 - timestamps will be an array of the delayed timestamps
 
 ### api.tasks.del(queue, taskName, args, count, next)
-- next(err, count)
+- next(error, count)
 - removes all matching instances of queue + taskName + args from the normal queues
 - count is how many instances of this task were removed
 
 ### api.tasks.delDelayed(queue, taskName, args, next)
-- next(err, timestamps)
+- next(error, timestamps)
 - removes all matching instances of queue + taskName + args from the delayed queues
 - timestamps will be an array of the delayed timestamps which the task was removed from
 
@@ -216,55 +220,55 @@ actionhero provides some methods to help inspect the state of your queue.  You c
 - might not actually enqueue the job if it is already enqueued due to resque plugins
 
 ### api.tasks.stopRecurrentJob(taskName, next)
-- next(err, removedCount)
+- next(error, removedCount)
 - will remove all instances of `taskName` from the delayed queues and normal queues
 - removedCount will inform you of how many instances of this job were removed
 
 ### api.tasks.timestamps(next)
-- next(err, timestamps)
-- will return an array of all timesamps which have at least one job scheduled to be run 
+- next(error, timestamps)
+- will return an array of all timesamps which have at least one job scheduled to be run
 - for use with `api.tasks.delayedAt`
 
 ### api.tasks.delayedAt(timestamp, next)
-- next(err, jobs)
+- next(error, jobs)
 - will return the list of jobs enqueued to run after this timestamp
 
 ### api.tasks.allDelayed(next)
-- next(err, jobs)
+- next(error, jobs)
 - will return the list of all jobs enqueued by the timestamp they are enqueued to run at
 
 ### api.tasks.workers(next)
-- next(err, workers)
+- next(error, workers)
 - list all taskProcessors
 
 ### api.tasks.workingOn(workerName, queues, next)
-- next(err, status)
+- next(error, status)
 - list what a specific taskProcessors (defined by the name of the server + queues) is working on (or sleeping)
 
 ### api.tasks.allWorkingOn(next)
-- next(err, workers)
+- next(error, workers)
 - list what all taskProcessors are working on (or sleeping)
 
 ### api.tasks.details(next)
-- next(err, details)
+- next(error, details)
 - details is a hash of all the queues in the system and how long they are
 - this method also returns metadata about the taskProcessors and what they are currently working on
 
 ### api.tasks.failedCount(next)
-- next(err, failedCount)
+- next(error, failedCount)
 - `failedCount` is how many resque jobs are in the failed queue.
 
 ### api.tasks.failed(start, stop, next)
-- next(err, failedJobs)
+- next(error, failedJobs)
 - `failedJobs` is an array listing the data of the failed jobs.  You can see an example at https://github.com/taskrabbit/node-resque#failed-job-managment
 
 ### api.tasks.removeFailed(failedJob, next)
-- next(err, removedCount)
+- next(error, removedCount)
 - the input `failedJob` is an expanded node object representing the failed job, retrieved via `api.tasks.failed`
 
 ### api.tasks.retryAndRemoveFailed(failedJob, next)
-- next(err, failedJob)
-- the input `failedJob` is an expanded node object representing the failed job, retrieved via `api.tasks.failed`
+- next(error, failedJob)
+- the error `failedJob` is an expanded node object representing the failed job, retrieved via `api.tasks.failed`
 
 ## Job Schedules
 
@@ -280,13 +284,13 @@ module.exports = {
   },
 
   start: function(api, next){
-    
+
     // do this job every 10 seconds, cron style
-    var job = schedule.scheduleJob('0,10,20,30,40,50 * * * * *', function(){ 
-      // we want to ensure that only one instance of this job is scheduled in our environment at once, 
+    var job = schedule.scheduleJob('0,10,20,30,40,50 * * * * *', function(){
+      // we want to ensure that only one instance of this job is scheduled in our environment at once,
       // no matter how many schedulers we have running
 
-      if(api.resque.scheduler && api.resque.scheduler.master){ 
+      if(api.resque.scheduler && api.resque.scheduler.master){
         api.tasks.enqueue('sayHello', {time: new Date().toString()}, 'default', function(error){
           if(error){ api.log(error, 'error'); }
         });
@@ -312,7 +316,7 @@ You may want to schedule jobs every minute/hour/day, like a distributed CRON job
 
 Assuming you are running actionhero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An [initializer for this](/docs#initializers) would look like:
 
-Be sure to have the scheduler enabled on at least one of your actionhero servers! 
+Be sure to have the scheduler enabled on at least one of your actionhero servers!
 
 ## Failed Job Management
 
@@ -320,9 +324,9 @@ Be sure to have the scheduler enabled on at least one of your actionhero servers
 
 var removeStuckWorkersOlderThan = 10000; // 10000ms
 api.log('removing stuck workers solder than ' + removeStuckWorkersOlderThan + 'ms', 'info');
-api.tasks.cleanOldWorkers(removeStuckWorkersOlderThan, function(err, result){
-  if(err){
-    api.log(err, 'error'); 
+api.tasks.cleanOldWorkers(removeStuckWorkersOlderThan, function(error, result){
+  if(error){
+    api.log(error, 'error');
   }
   if(Object.keys(result).length > 0){
     api.log('removed stuck workers with errors: ', 'info', result);
@@ -336,7 +340,72 @@ Sometimes a worker crashes is a severe way, and it doesn't get the time/chance t
 
 Because there are no 'heartbeats' in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use `api.tasks.retryAndRemoveFailed`) to re-enqueue the job.
 
-You can handle this with an own initializer and the following logic => 
+You can handle this with an own initializer and the following logic =>
+
+## Extending Resque
+
+In cases where you would like to extend or modify the underlying behaviour or capabilities of Resque you can specify
+replacements for the Queues, Scheduler, or Multi Worker implementations in the Tasks configuration.
+
+```javascript
+// From /config/tasks.js:
+var myQueue = require('../util/myQueue.js');
+
+exports.default = {
+  tasks: function(api){
+    return {
+      ...
+      // Customize Resque primitives, replace null with required replacement.
+      resque_overrides: {
+        queue: myQueue,  //<-- Explicitly pass replacement Queue implementation
+        multiWorker: null,
+        scheduler: null
+      }
+    }
+  }
+}
+```
+
+```javascript
+//From util/myQueue.js:
+var NR = require('node-resque');
+var pluginRunner = require('../node_modules/node-resque/lib/pluginRunner.js');
+
+let myQueue = NR.queue;
+
+myQueue.prototype.enqueueFront = function(q, func, args, callback){
+  var self = this;
+  if(arguments.length === 3 && typeof args === 'function'){
+   callback = args;
+   args = [];
+  }else if(arguments.length < 3){
+   args = [];
+  }
+
+  args = arrayify(args);
+  var job = self.jobs[func];
+  pluginRunner.runPlugins(self, 'before_enqueue', func, q, job, args, function(err, toRun){
+   if(toRun === false){
+     if(typeof callback === 'function'){ callback(err, toRun); }
+   }else{
+     self.connection.redis.sadd(self.connection.key('queues'), q, function(){
+	   self.connection.redis.lpush(self.connection.key('queue', q), self.encode(q, func, args), function(){
+	     pluginRunner.runPlugins(self, 'after_enqueue', func, q, job, args, function(){
+		   if(typeof callback === 'function'){ callback(err, toRun); }
+	     });
+	   });
+     });
+   }
+  });
+};
+
+module.exports = myQueue;
+```
+
+The above example will give you access to `api.resque.queue.enqueueFront()`, which you could use directly or wrap by
+extending the `api.tasks` object.
+
+
 
 ## Notes
 

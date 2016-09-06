@@ -38,11 +38,11 @@ exports.cacheTest = {
 
     data.response.cacheTestResults = {};
 
-    api.cache.save(key, value, 5000, function(err, resp){
+    api.cache.save(key, value, 5000, function(error, resp){
       data.response.cacheTestResults.saveResp = resp;
-      api.cache.size(function(err, numberOfCacheObjects){
+      api.cache.size(function(error, numberOfCacheObjects){
         data.response.cacheTestResults.sizeResp = numberOfCacheObjects;
-        api.cache.load(key, function(err, resp, expireTimestamp, createdAt, readAt){
+        api.cache.load(key, function(error, resp, expireTimestamp, createdAt, readAt){
           data.response.cacheTestResults.loadResp = {
             key: key,
             value: resp,
@@ -50,9 +50,9 @@ exports.cacheTest = {
             createdAt: createdAt,
             readAt: readAt
           };
-          api.cache.destroy(key, function(err, resp){
+          api.cache.destroy(key, function(error, resp){
             data.response.cacheTestResults.deleteResp = resp;
-            next(err);
+            next(error);
           });
         });
       });

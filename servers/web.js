@@ -7,6 +7,7 @@ var formidable          = require('formidable');
 var browser_fingerprint = require('browser_fingerprint');
 var Mime                = require('mime');
 var uuid                = require('node-uuid');
+var etag                = require('etag');
 
 var initialize = function(api, options, next){
 
@@ -103,14 +104,42 @@ var initialize = function(api, options, next){
     if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']); }
 
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
-    if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
-    if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
-
-    connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified)]);
+    if(fileStream){
+      if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
+      if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
+      if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified)]); }
+    }
     cleanHeaders(connection);
     var headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404; }
     if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
+    if(api.config.servers.web.enableEtag && fileStream){
+      var fileBuffer = !Buffer.isBuffer(fileStream) ? new Buffer(fileStream.toString(), 'utf8') : fileStream;
+      var fileEtag = etag(fileBuffer, {weak: true});
+      connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
+      var noneMatchHeader = reqHeaders['if-none-match'];
+      var cacheCtrlHeader = reqHeaders['cache-control'];
+      var noCache = false;
+      var etagMatches;
+      // check for no-cache cache request directive
+      if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
+        noCache = true;
+      }
+
+      // parse if-none-match
+      if(noneMatchHeader){ noneMatchHeader = noneMatchHeader.split(/ *, */); }
+
+      // if-none-match
+      if(noneMatchHeader){
+        etagMatches = noneMatchHeader.some(function(match){
+          return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
+        });
+      }
+
+      if(etagMatches && !noCache){
+        connection.rawConnection.responseHttpCode = 304;
+      }
+    }
     var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
     if(error){
       server.sendWithCompression(connection, responseHttpCode, headers, String(error));
@@ -145,8 +174,13 @@ var initialize = function(api, options, next){
       }
     }
 
-    // note: the 'end' event may not fire on some OSes; finish will
+    // the 'finish' event deontes a successful transfer
     connection.rawConnection.res.on('finish', function(){
+      connection.destroy();
+    });
+
+    // the 'close' event deontes a failed transfer, but it is probably the client's fault
+    connection.rawConnection.res.on('close', function(){
       connection.destroy();
     });
 
@@ -420,9 +454,9 @@ var initialize = function(api, options, next){
         for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
-        connection.rawConnection.form.parse(connection.rawConnection.req, function(err, fields, files){
-          if(err){
-            server.log('error processing form: ' + String(err), 'error');
+        connection.rawConnection.form.parse(connection.rawConnection.req, function(error, fields, files){
+          if(error){
+            server.log('error processing form: ' + String(error), 'error');
             connection.error = new Error('There was an error processing this form.');
           }else{
             connection.rawConnection.params.body = fields;
@@ -511,9 +545,9 @@ var initialize = function(api, options, next){
 
   var cleanSocket = function(bindIP, port){
     if(!bindIP && port.indexOf('/') >= 0){
-      fs.unlink(port, function(err){
-        if(err){
-          server.log('cannot remove stale socket @' + port + ' : ' + err);
+      fs.unlink(port, function(error){
+        if(error){
+          server.log('cannot remove stale socket @' + port + ' : ' + error);
         }else{
           server.log('removed stale unix socket @ ' + port);
         }

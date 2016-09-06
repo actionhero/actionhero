@@ -39,14 +39,14 @@ var middleware = {
     if(!data.params.userId){
       next(new Error('All actions require a userId') );
     }else{
-      next(err);
+      next();
     }
   },
   postProcessor: function(data, next){
     if(data.thing.stuff == false){
       data.toRender = false;
     }
-    next(err);
+    next(error);
   }
 }
 

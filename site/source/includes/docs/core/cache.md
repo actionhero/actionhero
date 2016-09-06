@@ -4,7 +4,7 @@
 
 actionhero ships with the functions needed for a distributed key-value cache.  You can cache strings, numbers, arrays and objects (anything that responds to `JSON.stringify`).  
 
-The cache's redis server is defined by `api.config.redis`.  Note that if `api.config.redis.fake = true`, you will be using an in-memory redis server rather than a real redis process.
+The cache's redis server is defined by `api.config.redis`.  It is possible to use fakeredis.
 
 ## Cache Methods
 

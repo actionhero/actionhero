@@ -9,7 +9,7 @@ exports.task = {
   pluginOptions: {},
 
   run: function(api, params, next){
-    // your logic here');
+    // your logic here
     next();
   }
 };

@@ -14,6 +14,7 @@ set :css_dir, 'stylesheets/docs'
 set :js_dir, 'javascripts/docs'
 set :images_dir, 'images'
 set :fonts_dir, 'fonts'
+set :build_dir, '/tmp/actionhero-site'
 
 # Activate the syntax highlighter
 activate :syntax

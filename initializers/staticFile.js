@@ -32,9 +32,10 @@ module.exports = {
           var file;
           if(!path.isAbsolute(connection.params.file)){
             file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
-          } else {
+          }else{
             file = connection.params.file;
           }
+
           if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
           }else{
@@ -52,23 +53,25 @@ module.exports = {
       sendFile: function(file, connection, callback){
         var self = this;
         var lastModified;
-        fs.stat(file, function(err, stats){
-          if(err){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(err)), callback);
+        fs.stat(file, function(error, stats){
+          if(error){
+            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(error)), callback);
           }else{
             var mime = Mime.lookup(file);
             var length = stats.size;
             var fileStream = fs.createReadStream(file);
             var start = new Date().getTime();
             lastModified = stats.mtime;
-            fileStream.on('close', function(){
+            fileStream.on('end', function(){
               var duration = new Date().getTime() - start;
               self.logRequest(file, connection, length, duration, true);
             });
-            fileStream.on('error', function(err){
-              api.log(err);
+            fileStream.on('error', function(error){
+              api.log(error);
             });
-            callback(connection, null, fileStream, mime, length, lastModified);
+            fileStream.on('open', function(){
+              callback(connection, null, fileStream, mime, length, lastModified);
+            });
           }
         });
       },
@@ -81,16 +84,16 @@ module.exports = {
       },
 
       checkExistence: function(file, callback){
-        fs.stat(file, function(err, stats){
-          if(err){
+        fs.stat(file, function(error, stats){
+          if(error){
             callback(false, file);
           }else{
             if(stats.isDirectory()){
               var indexPath = file + '/' + api.config.general.directoryFileType;
               api.staticFile.checkExistence(indexPath, callback);
             }else if(stats.isSymbolicLink()){
-              fs.readLink(file, function(err, truePath){
-                if(err){
+              fs.readLink(file, function(error, truePath){
+                if(error){
                   callback(false, file);
                 }else{
                   truePath = path.normalize(truePath);

@@ -50,9 +50,9 @@ module.exports = {
           }
         };
         var messagePayload = api.chatRoom.generateMessagePayload(payload);
-        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(err, newPayload){
-          if(err){
-            if(typeof callback === 'function'){ process.nextTick(function(){ callback(err); }); }
+        api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload, function(error, newPayload){
+          if(error){
+            if(typeof callback === 'function'){ process.nextTick(function(){ callback(error); }); }
           }else{
             var payloadToSend = {
               messageType: 'chat',
@@ -94,18 +94,24 @@ module.exports = {
     api.chatRoom.incomingMessagePerConnection = function(connection, messagePayload){
       if(connection.canChat === true){
         if(connection.rooms.indexOf(messagePayload.room) > -1){
-          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(err, newMessagePayload){
-            if(!err){ connection.sendMessage(newMessagePayload, 'say'); }
+          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, function(error, newMessagePayload){
+            if(!error){ connection.sendMessage(newMessagePayload, 'say'); }
           });
         }
       }
     };
 
+    api.chatRoom.list = function(callback){
+      api.redis.clients.client.smembers(api.chatRoom.keys.rooms, function(error, rooms){
+        if(typeof callback === 'function'){ callback(error, rooms); }
+      });
+    };
+
     api.chatRoom.add = function(room, callback){
-      api.chatRoom.exists(room, function(err, found){
+      api.chatRoom.exists(room, function(error, found){
         if(found === false){
-          api.redis.client.sadd(api.chatRoom.keys.rooms, room, function(err, count){
-            if(typeof callback === 'function'){ callback(err, count); }
+          api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room, function(error, count){
+            if(typeof callback === 'function'){ callback(error, count); }
           });
         }else{
           if(typeof callback === 'function'){ callback(api.config.errors.connectionRoomExists(room), null); }
@@ -114,17 +120,17 @@ module.exports = {
     };
 
     api.chatRoom.destroy = function(room, callback){
-      api.chatRoom.exists(room, function(err, found){
+      api.chatRoom.exists(room, function(error, found){
         if(found === true){
           api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room), function(){
-            api.redis.client.hgetall(api.chatRoom.keys.members + room, function(err, membersHash){
+            api.redis.clients.client.hgetall(api.chatRoom.keys.members + room, function(error, membersHash){
 
               for(var id in membersHash){
                 api.chatRoom.removeMember(id, room);
               }
 
-              api.redis.client.srem(api.chatRoom.keys.rooms, room, function(){
-                api.redis.client.del(api.chatRoom.keys.members + room, function(){
+              api.redis.clients.client.srem(api.chatRoom.keys.rooms, room, function(){
+                api.redis.clients.client.del(api.chatRoom.keys.members + room, function(){
                   if(typeof callback === 'function'){ callback(); }
                 });
               });
@@ -138,12 +144,12 @@ module.exports = {
     };
 
     api.chatRoom.exists = function(room, callback){
-      api.redis.client.sismember(api.chatRoom.keys.rooms, room, function(err, bool){
+      api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room, function(error, bool){
         var found = false;
         if(bool === 1 || bool === true){
           found = true;
         }
-        if(typeof callback === 'function'){ callback(err, found); }
+        if(typeof callback === 'function'){ callback(error, found); }
       });
     };
 
@@ -156,10 +162,10 @@ module.exports = {
 
     api.chatRoom.roomStatus = function(room, callback){
       if(room){
-        api.chatRoom.exists(room, function(err, found){
+        api.chatRoom.exists(room, function(error, found){
           if(found === true){
             var key = api.chatRoom.keys.members + room;
-            api.redis.client.hgetall(key, function(err, members){
+            api.redis.clients.client.hgetall(key, function(error, members){
               var cleanedMembers = {};
               var count = 0;
               for(var id in members){
@@ -194,14 +200,14 @@ module.exports = {
       if(api.connections.connections[connectionId]){
         var connection = api.connections.connections[connectionId];
         if(connection.rooms.indexOf(room) < 0){
-          api.chatRoom.exists(room, function(err, found){
+          api.chatRoom.exists(room, function(error, found){
             if(found === true){
-              api.chatRoom.handleCallbacks(connection, room, 'join', null, function(err){
-                if(err){
-                  callback(err, false);
+              api.chatRoom.handleCallbacks(connection, room, 'join', null, function(error){
+                if(error){
+                  callback(error, false);
                 }else{
                   var memberDetails = api.chatRoom.generateMemberDetails(connection);
-                  api.redis.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
+                  api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails), function(){
                     connection.rooms.push(room);
                     if(typeof callback === 'function'){ callback(null, true); }
                   });
@@ -223,13 +229,13 @@ module.exports = {
       if(api.connections.connections[connectionId]){
         var connection = api.connections.connections[connectionId];
         if(connection.rooms.indexOf(room) > -1){
-          api.chatRoom.exists(room, function(err, found){
+          api.chatRoom.exists(room, function(error, found){
             if(found){
-              api.chatRoom.handleCallbacks(connection, room, 'leave', null, function(err){
-                if(err){
-                  callback(err, false);
+              api.chatRoom.handleCallbacks(connection, room, 'leave', null, function(error){
+                if(error){
+                  callback(error, false);
                 }else{
-                  api.redis.client.hdel(api.chatRoom.keys.members + room, connection.id, function(){
+                  api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id, function(){
                     var index = connection.rooms.indexOf(room);
                     if(index > -1){ connection.rooms.splice(index, 1); }
                     if(typeof callback === 'function'){ callback(null, true); }
@@ -248,7 +254,7 @@ module.exports = {
       }
     };
 
-    api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, next){
+    api.chatRoom.handleCallbacks = function(connection, room, direction, messagePayload, callback){
       var jobs = [];
       var newMessagePayload;
       if(messagePayload){ newMessagePayload = api.utils.objClone(messagePayload); }
@@ -258,9 +264,9 @@ module.exports = {
         if(typeof m[direction] === 'function'){
           jobs.push(function(callback){
             if(messagePayload){
-              m[direction](connection, room, newMessagePayload, function(err, data){
+              m[direction](connection, room, newMessagePayload, function(error, data){
                 if(data){ newMessagePayload = data; }
-                callback(err, data);
+                callback(error, data);
               });
             }else{
               m[direction](connection, room, callback);
@@ -269,12 +275,12 @@ module.exports = {
         }
       });
 
-      async.series(jobs, function(err, data){
+      async.series(jobs, function(error, data){
         while(data.length > 0){
           var thisData = data.shift();
           if(thisData){ newMessagePayload = thisData; }
         }
-        next(err, newMessagePayload);
+        callback(error, newMessagePayload);
       });
     };
 

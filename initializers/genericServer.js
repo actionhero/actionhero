@@ -86,8 +86,7 @@ module.exports = {
 
     api.genericServer.prototype.processAction = function(connection){
       var self = this;
-      var actionProcessor = new api.actionProcessor(connection,
-      function(data){
+      var actionProcessor = new api.actionProcessor(connection, function(data){
         self.emit('actionComplete', data);
       });
 

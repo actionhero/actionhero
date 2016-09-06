@@ -16,7 +16,7 @@ Keep in mind that many clients/server can access a cached value simultaneously, 
 
 ```javascript
 // This will ask all nodes connected to the cluster if they have connection #`abc123` and if they do, run `connection.set('auth', true) on it`
-api.connections.apply('abc123', 'set', ['auth', true], function(err){
+api.connections.apply('abc123', 'set', ['auth', true], function(error){
   // do stuff
 });
 ```
@@ -29,7 +29,7 @@ If you wanted the node which holds connection `abc123` to change their `authoriz
 
 The RPC system is used heavily by Chat.
 
-Two options have been added to the `config/redis.js` config file to support this: `api.config.redis.channel` ( Which channel to use on redis pub/sub for RPC communication ) and `api.config.redis.rpcTimeout` ( How long to wait for an RPC call before considering it a failure )
+Two options have been added to the `config/redis.js` config file to support this: `api.config.general.channel` ( Which channel to use on redis pub/sub for RPC communication ) and `api.config.general.rpcTimeout` ( How long to wait for an RPC call before considering it a failure )
 
 **WARNING**
 
@@ -44,7 +44,7 @@ actionhero has exposed `api.connections.apply` which can be used to retrive data
 ### api.connections.apply(connectionId, method, args, callback)
 - connectionId is required
 - if `method` and `args` can be ignored if you just want to retirve information abou a connection, IE: `api.connections.apply(connectionId, callback)`
-- `callback` is of the form `function(err, connectionDetails)`
+- `callback` is of the form `function(error, connectionDetails)`
 
 ## Generic Pub/Sub
 

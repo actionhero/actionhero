@@ -8,7 +8,9 @@
   },
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
-    "ws"         : "latest"
+    "ws"         : "latest",
+    "fakeredis"  : "latest",
+    "ioredis"    : "latest"
   },
   "devDependencies" : {
     "mocha"  : "latest",

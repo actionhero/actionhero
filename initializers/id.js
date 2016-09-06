@@ -5,7 +5,7 @@ var path = require('path');
 var argv = require('optimist').argv;
 
 module.exports = {
-  loadPriority:  100,
+  loadPriority:  10,
   startPriority: 2,
   initialize: function(api, next){
     if(argv.title){

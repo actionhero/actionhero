@@ -50,7 +50,6 @@ var api = {
 
   // UTILS //
   utils:{
-    hashLength:             [Function],
     hashMerge:              [Function],
     isPlainObject:          [Function],
     arrayUniqueify:         [Function],

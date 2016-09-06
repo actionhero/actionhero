@@ -1,10 +1,6 @@
 # Utils
 
-ActionHero ships with a few utility methods exposed for your convince: 
-
-### api.utils.hashLength(obj)
-- calculates the 'size' of primary, top level keys in the hash
-- `api.utils.hashLength({a: 1, b: 2})` would be 2
+ActionHero ships with a few utility methods exposed for your convince:
 
 ### api.utils.hashMerge(a, b)
 - create a new hash which looks like b merged into a

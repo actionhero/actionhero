@@ -5,11 +5,11 @@ var api;
 var messages = [];
 
 var multiAction = function(action, count, params, next){
-  var started = 0;
+  var inFlight = 0;
   var i = 0;
   var start = new Date().getTime();
   while(i < count){
-    started++;
+    inFlight++;
     var theseParams = {};
     for(var x in params){
       theseParams[x] = params[x];
@@ -18,8 +18,8 @@ var multiAction = function(action, count, params, next){
       }
     }
     api.specHelper.runAction(action, theseParams, function(){
-      started--;
-      if(started === 0){
+      inFlight--;
+      if(inFlight === 0){
         var durationSeconds = ((new Date().getTime()) - start) / 1000;
         messages.push('benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + 's');
         next(durationSeconds);
@@ -32,7 +32,7 @@ var multiAction = function(action, count, params, next){
 describe('Benchmarks', function(){
 
   before(function(done){
-    actionhero.start(function(err, a){
+    actionhero.start(function(error, a){
       api = a;
       done();
     });
@@ -50,21 +50,21 @@ describe('Benchmarks', function(){
   });
 
   it('randomNumber', function(done){
-    this.timeout(10 * 1000);
+    this.timeout(20 * 1000);
     multiAction('randomNumber', 1000, {}, function(){
       done();
     });
   });
 
   it('status', function(done){
-    this.timeout(10 * 1000);
+    this.timeout(20 * 1000);
     multiAction('status', 1000, {}, function(){
       done();
     });
   });
 
   it('cacheTest', function(done){
-    this.timeout(10 * 1000);
+    this.timeout(20 * 1000);
     multiAction('cacheTest', 1000, {
       key:   function(){ return uuid.v4(); },
       value: function(){ return uuid.v4(); }
@@ -74,14 +74,14 @@ describe('Benchmarks', function(){
   });
 
   it('sleepTest', function(done){
-    this.timeout(10 * 1000);
+    this.timeout(20 * 1000);
     multiAction('sleepTest', 1000, {}, function(){
       done();
     });
   });
 
   it('debug', function(done){
-    this.timeout(10 * 1000);
+    this.timeout(20 * 1000);
     multiAction('debug', 1000, {}, function(){
       done();
     });

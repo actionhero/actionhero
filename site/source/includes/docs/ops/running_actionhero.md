@@ -115,19 +115,19 @@ var actionheroPrototype = require("actionhero").actionheroPrototype;
 var actionhero = new actionheroPrototype();
 
 var timer = 5000;
-actionhero.start(params, function(err, api){
+actionhero.start(params, function(error, api){
 
   api.log(" >> Boot Successful!");
   setTimeout(function(){
 
     api.log(" >> restarting server...");
-    actionhero.restart(function(err, api){
+    actionhero.restart(function(error, api){
 
       api.log(" >> Restarted!");
       setTimeout(function(){
 
         api.log(" >> stopping server...");
-        actionhero.stop(function(err, api){
+        actionhero.stop(function(error, api){
 
           api.log(" >> Stopped!");
           process.exit();
@@ -208,7 +208,7 @@ All signals should be sent to the cluster master process.  You can still signal 
 ## Shutting Down
 When using `actionhero start` or `actionhero startCluster`, when you signal actionhero to stop via the signals above (or from within your running application via `api.commands.stop()`), actionhero will attempt to gracefully shutdown.  This will include running any initializer's `stop()` method.  This will close any open servers, and attempt to allow any running tasks to complete.
 
-Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit. 
+Because things sometimes go wrong, `actionhero start` and `actionhero startCluster` also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the `ACTIONHERO_SHUTDOWN_TIMEOUT` environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.
 
 ## Windows-Specific Notes
 

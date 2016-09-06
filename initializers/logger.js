@@ -3,7 +3,7 @@
 var winston = require('winston');
 
 module.exports = {
-  loadPriority:  120,
+  loadPriority:  100,
   initialize: function(api, next){
 
     var transports = [];
@@ -30,8 +30,7 @@ module.exports = {
     }
 
     api.log = function(message, severity, data){
-      if(!Array.isArray(message)){ message = [message]; }
-      var localizedMessage = api.i18n.i18n.__.apply(api.i18n.i18n, message);
+      var localizedMessage = api.i18n.localize(message);
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
       var args = [severity, localizedMessage];
       if(data !== null && data !== undefined){ args.push(data); }

@@ -10,17 +10,6 @@ module.exports = {
     if(!api.utils){ api.utils = {}; }
 
     ////////////////////////////////////////////////////////////////////////////
-    // count the number of elements in a hash
-    api.utils.hashLength = function(obj){
-      var size = 0;
-      var key;
-      for(key in obj){
-        if(obj.hasOwnProperty(key)){ size++; }
-      }
-      return size;
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
     api.utils.hashMerge = function(a, b, arg){
       var c = {};
@@ -111,11 +100,10 @@ module.exports = {
       if(!followLinkFiles){ followLinkFiles = true; }
 
       extension = extension.replace('.', '');
-      if(dir[dir.length - 1] !== path.sep){ dir += path.sep; }
 
       if(fs.existsSync(dir)){
         fs.readdirSync(dir).forEach(function(file){
-          var fullFilePath = path.normalize(dir + file);
+          var fullFilePath = path.join(dir, file);
           if(file[0] !== '.'){ // ignore 'system' files
             var stats = fs.statSync(fullFilePath);
             var child;
@@ -138,7 +126,11 @@ module.exports = {
                   child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles);
                   child.forEach(function(c){ results.push(c); });
                 }else{
-                  api.log(['cannot find linked refrence to `%s`', file], 'warning');
+                  try{
+                    api.log(['cannot find linked refrence to `%s`', file], 'warning');
+                  }catch(e){
+                    throw('cannot find linked refrence to' + file);
+                  }
                 }
               }
             }
