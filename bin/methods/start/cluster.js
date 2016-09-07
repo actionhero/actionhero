@@ -36,7 +36,8 @@ var optimist  = require('optimist');
 var argv = optimist
   .describe('workers', 'How many worker node processes')
   .default('workers', os.cpus().length)
-  .describe('workerTitlePrefix', 'Worker title prefix, set `--workerTitlePrefix=hostname`, your app.id would be like `your_host_name-#`')
+  .describe('workerTitlePrefix', 'Set worker title prefix')
+  .default('workerTitlePrefix', 'actionhero-worker-')
   .argv;
 
 /////////////////////////////////////////
@@ -147,12 +148,6 @@ var ActionHeroCluster = function(args){
 };
 
 ActionHeroCluster.prototype.defaults = function(){
-  var title = optimist.argv.workerTitlePrefix;
-  if(!title && title != '' )
-    title = 'actionhero-worker-';
-  else if(title == 'hostname')
-    title = os.hostname() + '-';
-
   return {
     id: 'ActionHeroCluster',
     stopTimeout: 3000,
@@ -163,7 +158,7 @@ ActionHeroCluster.prototype.defaults = function(){
     pidfile: 'cluster_pidfile',
     logPath: process.cwd() + '/log',
     logFile: 'cluster.log',
-    workerTitlePrefix: title,
+    workerTitlePrefix: 'actionhero-worker-',
     args: '',
     buildEnv: null,
   };
@@ -407,7 +402,12 @@ module.exports = function(api){
         env[k] = process.env[k];
       }
 
-      var title = self.options.workerTitlePrefix + workerId;
+      var title = optimist.argv.workerTitlePrefix
+      
+      if(title == 'hostname')
+        title = os.hostname() + '-';
+
+      title += workerId;
       env.title = title;
       env.ACTIONHERO_TITLE = title;
 
