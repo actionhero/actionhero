@@ -36,6 +36,8 @@ var optimist  = require('optimist');
 var argv = optimist
   .describe('workers', 'How many worker node processes')
   .default('workers', os.cpus().length)
+  .describe('workerTitlePrefix', 'Set worker title prefix')
+  .default('workerTitlePrefix', 'actionhero-worker-')
   .argv;
 
 /////////////////////////////////////////
@@ -400,7 +402,12 @@ module.exports = function(api){
         env[k] = process.env[k];
       }
 
-      var title = self.options.workerTitlePrefix + workerId;
+      var title = optimist.argv.workerTitlePrefix
+      
+      if(title == 'hostname')
+        title = os.hostname() + '-';
+
+      title += workerId;
       env.title = title;
       env.ACTIONHERO_TITLE = title;
 

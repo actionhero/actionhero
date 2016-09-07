@@ -32,9 +32,13 @@ Descriptions:
   [daemon] (optional) to fork and run as a new background process defaults
     to false
 
-* actionhero start cluster --workers=[numWorkers]  --daemon
+* actionhero start cluster --workers=[numWorkers] --workerTitlePrefix=[title]
+    --daemon
   will launch a ActionHero cluster (using node-s cluster module)
   [workers] (optional) number of workers (defaults to # CPUs - 2)
+  [title] (optional) worker title prefix (default 'actionhero-worker-')
+    set `--workerTitlePrefix=hostname`, your app.id would be like 
+    `your_host_name-#`
   [daemon] (optional) to fork and run as a new background process defaults
     to false
 
