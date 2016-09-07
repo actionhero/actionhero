@@ -114,8 +114,8 @@ var initialize = function(api, options, next){
     if(error){ connection.rawConnection.responseHttpCode = 404; }
     if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
     if(api.config.servers.web.enableEtag && fileStream){
-      var fileBuffer = !Buffer.isBuffer(fileStream) ? new Buffer(fileStream.toString(), 'utf8') : fileStream;
-      var fileEtag = etag(fileBuffer, {weak: true});
+      var filestats = fs.statSync(fileStream.path);
+      var fileEtag = etag(filestats, {weak: true});
       connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
       var noneMatchHeader = reqHeaders['if-none-match'];
       var cacheCtrlHeader = reqHeaders['cache-control'];
