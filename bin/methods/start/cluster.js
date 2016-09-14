@@ -404,9 +404,9 @@ module.exports = function(api){
 
       var title = optimist.argv.workerTitlePrefix
       
-      if(title == null || title == '')
+      if(title === null || title === '')
         title = 'actionhero-worker-';
-      else if(title == 'hostname')
+      else if(title === 'hostname')
         title = os.hostname() + '-';
 
       title += workerId;
