@@ -94,6 +94,23 @@ describe('Core: Static File', function(){
     });
   });
 
+
+  it('should send a different etag for other files', function(done){
+    request.get(url + '/simple.html', function(error, response){
+      response.statusCode.should.equal(200);
+      should.exist(response.headers['etag']);
+      var etagSimple = response.headers['etag'];
+      request.get(url + '/index.html', function(error, response){
+        response.statusCode.should.equal(200);
+        should.exist(response.headers['etag']);
+        var etagIndex = response.headers['etag'];
+        should.notEqual(etagIndex, etagSimple);
+        done();
+      });
+
+    });
+  });
+
   it('should send back the file if the header "if-modified-since" is present but condition does not match', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);

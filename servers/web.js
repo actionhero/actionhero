@@ -114,42 +114,54 @@ var initialize = function(api, options, next){
     if(error){ connection.rawConnection.responseHttpCode = 404; }
     if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
     if(api.config.servers.web.enableEtag && fileStream){
-      var fileBuffer = !Buffer.isBuffer(fileStream) ? new Buffer(fileStream.toString(), 'utf8') : fileStream;
-      var fileEtag = etag(fileBuffer, {weak: true});
-      connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
-      var noneMatchHeader = reqHeaders['if-none-match'];
-      var cacheCtrlHeader = reqHeaders['cache-control'];
-      var noCache = false;
-      var etagMatches;
-      // check for no-cache cache request directive
-      if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
-        noCache = true;
-      }
+      fs.stat(fileStream.path, function(error, filestats){
+        var fileEtag = etag(filestats, {weak: true});
+        connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
+        var noneMatchHeader = reqHeaders['if-none-match'];
+        var cacheCtrlHeader = reqHeaders['cache-control'];
+        var noCache = false;
+        var etagMatches;
+        // check for no-cache cache request directive
+        if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
+          noCache = true;
+        }
 
-      // parse if-none-match
-      if(noneMatchHeader){ noneMatchHeader = noneMatchHeader.split(/ *, */); }
+        // parse if-none-match
+        if(noneMatchHeader){ noneMatchHeader = noneMatchHeader.split(/ *, */); }
 
-      // if-none-match
-      if(noneMatchHeader){
-        etagMatches = noneMatchHeader.some(function(match){
-          return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
-        });
-      }
+        // if-none-match
+        if(noneMatchHeader){
+          etagMatches = noneMatchHeader.some(function(match){
+            return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
+          });
+        }
 
-      if(etagMatches && !noCache){
-        connection.rawConnection.responseHttpCode = 304;
+        if(etagMatches && !noCache){
+          connection.rawConnection.responseHttpCode = 304;
+        }
+        var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+        if(error){
+          server.sendWithCompression(connection, responseHttpCode, headers, String(error));
+        }else if(responseHttpCode !== 304){
+          server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+        }else{
+          connection.rawConnection.res.writeHead(responseHttpCode, headers);
+          connection.rawConnection.res.end();
+          connection.destroy();
+        }
+      });
+    } else {
+      var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+      if(error){
+        server.sendWithCompression(connection, responseHttpCode, headers, String(error));
       }
-    }
-    var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-    if(error){
-      server.sendWithCompression(connection, responseHttpCode, headers, String(error));
-    }
-    else if(responseHttpCode !== 304){
-      server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
-    }else{
-      connection.rawConnection.res.writeHead(responseHttpCode, headers);
-      connection.rawConnection.res.end();
-      connection.destroy();
+      else if(responseHttpCode !== 304){
+        server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+      }else{
+        connection.rawConnection.res.writeHead(responseHttpCode, headers);
+        connection.rawConnection.res.end();
+        connection.destroy();
+      }
     }
   };
 
