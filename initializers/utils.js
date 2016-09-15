@@ -130,7 +130,7 @@ module.exports = {
                   try{
                     api.log(['cannot find linked refrence to `%s`', file], 'warning');
                   }catch(e){
-                    throw('cannot find linked refrence to' + file);
+                    throw('cannot find linked refrence to ' + file);
                   }
                 }
               }
