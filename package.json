@@ -51,7 +51,7 @@
   "devDependencies": {
     "mocha": "^3.0.2",
     "should": "^11.0.0",
-    "request": "^2.65.0",
+    "request": "^2.75.0",
     "coveralls": "^2.11.13",
     "istanbul": "^0.4.0",
     "eslint": "^3.5.0"
