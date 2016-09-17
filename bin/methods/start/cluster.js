@@ -402,12 +402,13 @@ module.exports = function(api){
         env[k] = process.env[k];
       }
 
-      var title = optimist.argv.workerTitlePrefix
-      
-      if(title === null || title === '')
+      var title = optimist.argv.workerTitlePrefix;
+
+      if(!title || title === ''){
         title = 'actionhero-worker-';
-      else if(title === 'hostname')
+      }else if(title === 'hostname'){
         title = os.hostname() + '-';
+      }
 
       title += workerId;
       env.title = title;
