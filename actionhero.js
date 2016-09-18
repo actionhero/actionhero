@@ -13,10 +13,13 @@ var async = require('async');
 var fatalError = function(api, errors, type){
   if(errors && !(errors instanceof Array)){ errors = [errors]; }
   if(errors){
-    api.log(['Error with initializer step: %s', type], 'emerg');
-    errors.forEach(function(error){
-      api.log(error.stack, 'emerg');
-    });
+    if(api.log){
+      api.log(['Error with initializer step: %s', type], 'emerg');
+      errors.forEach(function(error){ api.log(error.stack, 'emerg'); });
+    }else{
+      console.error('Error with initializer step: ' + type);
+      errors.forEach(function(error){ console.error(error.stack); });
+    }
     api.commands.stop.call(api, function(){
       process.exit(1);
     });
@@ -61,10 +64,10 @@ actionhero.prototype.initialize = function(params, callback){
 
   self.api._self = self;
   self.api.commands = {
-    initialize: self.initialize,
-    start: self.start,
-    stop: self.stop,
-    restart: self.restart
+    initialize: function(params, callback){ self.initialize.call(self, params, callback); },
+    start:      function(params, callback){ self.start.call(self, params, callback); },
+    stop:       function(callback){ self.stop.call(self, callback); },
+    restart:    function(callback){ self.restart.call(self, callback); }
   };
 
   self.api.projectRoot = process.cwd();
@@ -137,7 +140,7 @@ actionhero.prototype.initialize = function(params, callback){
         var loadFunction = function(next){
           self.api.watchFileAndAct(file, function(){
             self.api.log(['*** Rebooting due to initializer change (%s) ***', file], 'info');
-            self.api.commands.restart.call(self.api._self);
+            self.api.commands.restart();
           });
 
           if(typeof self.initializers[initializer].initialize === 'function'){
@@ -290,7 +293,7 @@ actionhero.prototype.stop = function(callback){
   }else if(self.api.shuttingDown === true){
     // double sigterm; ignore it
   }else{
-    self.api.log('Cannot shut down actionhero, not running', 'error');
+    if(self.api.log){ self.api.log('Cannot shut down actionhero, not running', 'error'); }
     if(typeof callback === 'function'){ callback(null, self.api); }
   }
 };

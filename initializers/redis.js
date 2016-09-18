@@ -27,14 +27,12 @@ module.exports = {
             var args = api.config.redis[r].args;
             api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]);
             api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
-            api.redis.clients[r].on('connect', function(){
-              api.log(['Redis connection `%s` connected', r], 'info');
-              done();
-            });
+            api.redis.clients[r].on('connect', function(){ api.log(['Redis connection `%s` connected', r], 'debug'); });
+            api.redis.clients[r].once('connect', done);
           }else{
             api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args);
             api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
-            api.log(['Redis connection `%s` connected', r], 'info');
+            api.log(['Redis connection `%s` connected', r], 'debug');
             done();
           }
         });
@@ -59,25 +57,6 @@ module.exports = {
       }
 
       async.series(jobs, callback);
-
-      // var ready = true;
-      // ['client', 'subscriber', 'tasks'].forEach(function(r){
-      //   if(
-      //     api.redis.clients[r].status && // This check is for fakeredis
-      //     (api.redis.clients[r].status !== 'connected' && api.redis.clients[r].status !== 'ready')
-      //   ){
-      //     ready = false;
-      //     api.log(['Redis connection `%s` not connected', r], 'warning');
-      //   }else{
-      //     api.log(['Redis connection `%s` connected', r], 'info');
-      //   }
-      // });
-      //
-      // if(ready === true){
-      //   callback();
-      // }else{
-      //   setTimeout(api.redis.initialize, 5000, callback);
-      // }
     };
 
     api.redis.publish = function(payload){
@@ -161,13 +140,13 @@ module.exports = {
 
     api.redis.initialize(function(error){
       if(error){ return next(error); }
-      api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
       process.nextTick(next);
     });
 
   },
 
   start: function(api, next){
+    api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
     next();
   },
 

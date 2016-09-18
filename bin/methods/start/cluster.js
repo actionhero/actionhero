@@ -2,7 +2,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// TO START IN CONSOLE: "./bin/actionhero startCluster"
+// TO START IN CONSOLE: "./bin/actionhero start cluster"
 //
 // ** Production-ready actionhero cluster **
 // - be sure to enable redis so that workers can share state
@@ -15,7 +15,7 @@
 // - TTOU and TTIN signals to subtract/add workers
 // - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
 // - Can be run as a daemon or in-console
-//   -- Simple Daemon: "actionhero startCluster --daemon"
+//   -- Simple Daemon: "actionhero start cluster --daemon"
 //
 // * Setting process titles does not work on windows or OSX
 //
@@ -31,6 +31,14 @@ var async     = require('async');
 var readline  = require('readline');
 var winston   = require('winston');
 var isrunning = require('is-running');
+var optimist  = require('optimist');
+
+var argv = optimist
+  .describe('workers', 'How many worker node processes')
+  .default('workers', os.cpus().length)
+  .describe('workerTitlePrefix', 'Set worker title prefix')
+  .default('workerTitlePrefix', 'actionhero-worker-')
+  .argv;
 
 /////////////////////////////////////////
 
@@ -128,7 +136,7 @@ var ActionHeroCluster = function(args){
     transports.push(
       new(winston.transports.Console)({
         colorize: true,
-        timestamp: true
+        timestamp: function(){ return self.options.id + ' @ ' + new Date().toISOString(); },
       })
     );
   }
@@ -141,6 +149,7 @@ var ActionHeroCluster = function(args){
 
 ActionHeroCluster.prototype.defaults = function(){
   return {
+    id: 'ActionHeroCluster',
     stopTimeout: 3000,
     expectedWorkers: os.cpus().length,
     flapWindow: 1000 * 30,
@@ -378,12 +387,13 @@ ActionHeroCluster.prototype.work = function(){
 
 /////////////////////////////////////////
 
-exports.startCluster = function(binary){
+module.exports = function(api){
   var options = {
-    execPath: path.normalize(binary.actionheroRoot + '/bin/actionhero'),
+    execPath: path.normalize(__dirname + '/../../actionhero'),
     args: 'start',
-    silent: (binary.argv.silent === 'true' || binary.argv.silent === true) ? true : false,
-    expectedWorkers: binary.argv.workers,
+    silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true) ? true : false,
+    expectedWorkers: optimist.argv.workers,
+    id: api.id,
     buildEnv: function(workerId){
       var self = this;
       var env  = {};
@@ -392,7 +402,15 @@ exports.startCluster = function(binary){
         env[k] = process.env[k];
       }
 
-      var title = self.options.workerTitlePrefix + workerId;
+      var title = optimist.argv.workerTitlePrefix;
+
+      if(!title || title === ''){
+        title = 'actionhero-worker-';
+      }else if(title === 'hostname'){
+        title = os.hostname() + '-';
+      }
+
+      title += workerId;
       env.title = title;
       env.ACTIONHERO_TITLE = title;
 

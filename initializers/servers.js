@@ -44,7 +44,7 @@ module.exports = {
         }
         api.watchFileAndAct(f, function(){
           api.log(['*** Rebooting due to server (%s) change ***', serverName], 'info');
-          api.commands.restart.call(api._self);
+          api.commands.restart();
         });
       });
     });

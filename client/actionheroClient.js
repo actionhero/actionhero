@@ -54,13 +54,13 @@ ActionheroClient.prototype.connect = function(callback){
 
   self.client.on('open', function(){
     self.configure(function(details){
-      self.emit('connected');
       if(self.state === 'connected'){
         //
       }else{
         self.state = 'connected';
         if(typeof callback === 'function'){ callback(null, details); }
       }
+      self.emit('connected');
     });
   })
 

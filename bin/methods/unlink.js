@@ -1,28 +1,32 @@
 'use strict';
 
 // use me to exclude the files from a plugin within this project
-var path = require('path');
-var fs   = require('fs');
+var path     = require('path');
+var fs       = require('fs');
+var optimist = require('optimist');
+var argv = optimist
+  .demand('name')
+  .describe('name', 'The name of the plugin')
+  .argv;
 
-exports.unlink = function(binary, next){
-  if(!binary.argv.name){ binary.utils.hardError('name (of the plugin to link) is a required input'); }
-  if(!binary.argv.linkRelativeBase){ binary.argv.linkRelativeBase = binary.projectRoot + path.sep; }
-
+module.exports = function(api, next){
+  var linkRelativeBase = api.projectRoot + path.sep;
   var pluginRoot;
-  binary.config.general.paths.plugin.forEach(function(pluginPath){
-    var pluginPathAttempt = path.normalize(pluginPath + path.sep + binary.argv.name);
-    if(!pluginRoot && binary.utils.dirExists(pluginPath + path.sep + binary.argv.name)){
+
+  api.config.general.paths.plugin.forEach(function(pluginPath){
+    var pluginPathAttempt = path.normalize(pluginPath + path.sep + argv.name);
+    if(!pluginRoot && api.utils.dirExists(pluginPath + path.sep + argv.name)){
       pluginRoot = pluginPathAttempt;
     }
   });
 
   if(!pluginRoot){
-    binary.log('plugin `' + binary.argv.name + '` not found in plugin paths', 'warning', binary.config.general.paths.plugin);
-    return next(true);
+    api.log('plugin `' + argv.name + '` not found in plugin paths', 'warning', api.config.general.paths.plugin);
+    return next(null, true);
   }
 
-  var pluginRootRelative = pluginRoot.replace(binary.argv.linkRelativeBase, '');
-  binary.log('unlinking the plugin found at ' + pluginRootRelative);
+  var pluginRootRelative = pluginRoot.replace(linkRelativeBase, '');
+  api.log('unlinking the plugin found at ' + pluginRootRelative);
 
   // unlink actionable files
   [
@@ -32,14 +36,15 @@ exports.unlink = function(binary, next){
     ['server', 'servers'],
     ['initializer', 'initializers'],
   ].forEach(function(c){
-    var localLinkDirectory = binary.config.general.paths[c[0]][0] + path.sep + 'plugins';
-    var localLinkLocation  = localLinkDirectory + path.sep + binary.argv.name + '.link';
+    var localLinkDirectory = path.normalize(api.config.general.paths[c[0]][0] + path.sep + 'plugins');
+    var localLinkLocation  = path.normalize(localLinkDirectory + path.sep + argv.name + '.link');
 
-    if(binary.utils.dirExists(localLinkDirectory)){
-      binary.utils.removeLinkfileSafely(localLinkLocation);
+    if(api.utils.dirExists(localLinkDirectory)){
+      api.utils.removeLinkfileSafely(localLinkLocation);
     }
   });
-  binary.log('Remember that config files have to be deleted manually');
-  binary.log('If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with "npm uninstall --save"');
-  next(true);
+
+  api.log('Remember that config files have to be deleted manually', 'warning');
+  api.log('If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with "npm uninstall --save"', 'warning');
+  next(null, true);
 };

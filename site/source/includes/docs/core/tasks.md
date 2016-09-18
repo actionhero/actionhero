@@ -2,9 +2,9 @@
 
 ## General
 
-Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With actionhero, there is no need to run a separate daemon to process these jobs.  actionhero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem.
+Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With ActionHero, there is no need to run a separate daemon to process these jobs.  ActionHero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem.
 
-There are 3 types of tasks actionhero can process: `normal`, `delayed`, and `periodic`.
+There are 3 types of tasks ActionHero can process: `normal`, `delayed`, and `periodic`.
 
   * `normal` tasks are enqueued and processed one-by-one by the task TaskProcessors
   * `delayed` tasks are enqueued in a special 'delayed' queue to only be processed at some time in the future (defined either by a timestamp in ms or miliseconds-from-now)
@@ -33,7 +33,7 @@ api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'def
 });
 ```
 
-Here are examples of the 3 ways to programatically enqueue a task.
+Here are examples of the 3 ways to programmatically enqueue a task.
 
 "sendWelcomeEmail" should be a task defined in the project, and `{to: 'evan@evantahler.com'}` are arguments to that task.  This task will be processed by TaskProcessors assigned to the 'default queue'.
 
@@ -41,7 +41,7 @@ You can also enqueue tasks to be run at some time in the future (timestamp is in
 
 `enqueueAt` asks for a timestamp (in ms) to run at, and `enqueueIn` asks for the number of ms from now to run.
 
-The final type of task, periodic tasks, are defined with a `task.frequency` of greater than 0, and are loaded in by actionhero when it boots.  You cannot modify these tasks once the server is running.
+The final type of task, periodic tasks, are defined with a `task.frequency` of greater than 0, and are loaded in by ActionHero when it boots.  You cannot modify these tasks once the server is running.
 
 ## Processing Tasks
 
@@ -102,13 +102,13 @@ exports.default = {
 }
 ```
 
-To work these tasks, you need to run actionhero with at least one `taskProcessor`.  `TaskProcessor`s run in-line with the rest of your server and process jobs.  This is controlled by settings in [/config/tasks.js](https://github.com/evantahler/actionhero/blob/master/config/tasks.js).
+To work these tasks, you need to run ActionHero with at least one `taskProcessor`.  `TaskProcessor`s run in-line with the rest of your server and process jobs.  This is controlled by settings in [/config/tasks.js](https://github.com/evantahler/actionhero/blob/master/config/tasks.js).
 
-If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of actionhero that will periodically check the delayed queues for jobs that are ready to work now, and move them to the normal queues when the time comes.
+If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of ActionHero that will periodically check the delayed queues for jobs that are ready to work now, and move them to the normal queues when the time comes.
 
-Because node and actionhero are asynchronous, we can process more than one job at a time.  However, if the jobs we are processing are CPU-intensive, we want to limit how many we are working on at one time.  To do this, we tell actionhero to run somewhere between `minTaskProcessors` and `maxTaskProcessors` and check every so often if the server could be working more or less jobs at a time.  Depending on the response characteristics you want for your server, you can modify these values.  
+Because node and ActionHero are asynchronous, we can process more than one job at a time.  However, if the jobs we are processing are CPU-intensive, we want to limit how many we are working on at one time.  To do this, we tell ActionHero to run somewhere between `minTaskProcessors` and `maxTaskProcessors` and check every so often if the server could be working more or less jobs at a time.  Depending on the response characteristics you want for your server, you can modify these values.  
 
-In production, it is best to set up some actionhero servers that only handle requests from clients (that is, servers with no TaskProcessors) and others that handle no requests, and only process jobs (that is, no servers, many `TaskProcessor`s).
+In production, it is best to set up some ActionHero servers that only handle requests from clients (that is, servers with no TaskProcessors) and others that handle no requests, and only process jobs (that is, no servers, many `TaskProcessor`s).
 
 As you noticed above, when you enqueue a task, you tell it which queue to be enqueued within.  This is so you can separate load or priority.  For example, you might have a `high` priority queue which does jobs like "sendPushMessage" and a `low` priority queue which does a task like "cleanupCache".  You tell the `taskProcessor`s which jobs to work, and in which priority. For the example above, you would ensure that all `high` jobs happen before all `low` jobs by setting: `api.config.tasks.queues = ['high', 'low']`.
 You could also configure more nodes to work on the `high` queue than the `low` queue, thus further ensuring that `high` priority jobs are processed faster and sooner than `low` priority jobs.
@@ -178,18 +178,18 @@ exports.sayGoodbye = {
 2013-11-28 15:21:56 - debug: re-enqueued reccurent job sayGoodbye
 ```
 
-You can create you own tasks by placing them in a `./tasks/` directory at the root of your application.  You can use the generator `actionhero generateTask --name=myTask`. Like actions, all tasks have some required metadata:
+You can create you own tasks by placing them in a `./tasks/` directory at the root of your application.  You can use the generator `actionhero generate task --name=myTask`. Like actions, all tasks have some required metadata:
 
 * `task.name`: The unique name of your task
 * `task.description`: a description
 * `task.queue`: the default queue to run this task within (can be overwritten when enqueued)
-* `task.frequency`: In milliseconds, how often should I run?.  A frequency of >0 denotes this task as periodic and actionhero will automatically enqueued when the server boots.  Only one instance of a periodic task will be enqueued within the cluster at a time, regardless of how many actionhero nodes are connected.
+* `task.frequency`: In milliseconds, how often should I run?.  A frequency of >0 denotes this task as periodic and ActionHero will automatically enqueued when the server boots.  Only one instance of a periodic task will be enqueued within the cluster at a time, regardless of how many ActionHero nodes are connected.
 * `task.plugins`: You can use resque plugins in your task from the node-resque project.  Plugins modify how your tasks are enqueued.  For example, if you use the `queue-lock` plugin, only one instance of any job (with similar arguments) can be enqueued at a time.  You can learn more about plugins from the [node-resque project](https://github.com/taskrabbit/node-resque#plugins).
 * `task.pluginOptions`: a hash of options for the plugins
 
 `task.run` contains the actual work that the task does. It takes the following arguments:
 
-* `api`: The actionhero api object
+* `api`: The ActionHero api object
 * `params`: An array of parameters that the task was enqueued with. This is whatever was passed as the second argument to `api.tasks.enqueue`
 * `next`: A callback to call when the task is done. This callback is of the type `function(error, result)`.
   * Passing an `error` object will cause the job to be marked as a failure.
@@ -197,7 +197,7 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 
 
 ## Queue Inspection
-actionhero provides some methods to help inspect the state of your queue.  You can use these methods to check if your jobs are processing in a timely manner, if there are errors in task processing, etc.
+ActionHero provides some methods to help inspect the state of your queue.  You can use these methods to check if your jobs are processing in a timely manner, if there are errors in task processing, etc.
 
 ### api.tasks.scheduledAt(queue, taskName, args, next)
 - next(error, timestamps)
@@ -332,11 +332,11 @@ module.exports = {
 };
 ```
 
-You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like [node-schedule](https://github.com/tejasmanohar/node-schedule) and [node-cron](https://github.com/ncb000gt/node-cron).  Actionhero exposes [node-resque's](https://github.com/taskrabbit/node-resque) scheduler to you so you can use the scheduler package of your choice.  
+You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like [node-schedule](https://github.com/tejasmanohar/node-schedule) and [node-cron](https://github.com/ncb000gt/node-cron).  ActionHero exposes [node-resque's](https://github.com/taskrabbit/node-resque) scheduler to you so you can use the scheduler package of your choice.  
 
-Assuming you are running actionhero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An [initializer for this](/docs#initializers) would look like:
+Assuming you are running ActionHero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An [initializer for this](/docs#initializers) would look like:
 
-Be sure to have the scheduler enabled on at least one of your actionhero servers!
+Be sure to have the scheduler enabled on at least one of your ActionHero servers!
 
 ## Failed Job Management
 
@@ -431,8 +431,8 @@ extending the `api.tasks` object.
 
 Note that the `frequency`, `enqueueIn` and `enqueueAt` times are when a task is **allowed** to run, not when it **will** run.  TaskProcessors will work tasks in a first-in-first-out manner.  TaskProcessors also `sleep` when there is no work to do, and will take some time (default 5 seconds) to wake up and check for more work to do.
 
-Remember that each actionhero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this **will** block tasks, actions, and clients from working.  However, if your tasks are meant to communicate with external services (reading from a database, sending an email, etc), then these are perfect candidates to be run simultaneously as the single thread can work on other things while waiting for these operations to complete.  
+Remember that each ActionHero server uses one thread and one event loop, so that if you have computationally intensive task (like computing Fibonacci numbers), this **will** block tasks, actions, and clients from working.  However, if your tasks are meant to communicate with external services (reading from a database, sending an email, etc), then these are perfect candidates to be run simultaneously as the single thread can work on other things while waiting for these operations to complete.  
 
-Tasks are stored in redis.  Be sure to enable non-fake redis if you want your tasks to persist and be shared across more than one actionhero server.
+Tasks are stored in redis.  Be sure to enable non-fake redis if you want your tasks to persist and be shared across more than one ActionHero server.
 
-If you are running a single actionhero server, all tasks will be run locally.  As you add more servers, the work will be split evenly across all nodes.  It is very likely that your job will be run on different nodes each time.
+If you are running a single ActionHero server, all tasks will be run locally.  As you add more servers, the work will be split evenly across all nodes.  It is very likely that your job will be run on different nodes each time.

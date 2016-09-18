@@ -49,6 +49,7 @@ module.exports = {
             self.scheduler.on('poll',              function(){               api.log('resque scheduler polling', self.schedulerLogging.poll); });
             self.scheduler.on('working_timestamp', function(timestamp){      api.log(['resque scheduler working timestamp %s', timestamp], self.schedulerLogging.working_timestamp); });
             self.scheduler.on('transferred_job',   function(timestamp, job){ api.log(['resque scheduler enqueuing job %s', timestamp], self.schedulerLogging.transferred_job, job); });
+            self.scheduler.on('master',            function(state){          api.log(['This node is now the Resque scheduler master']); });
 
             self.scheduler.start();
             callback();

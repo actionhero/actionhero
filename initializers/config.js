@@ -98,13 +98,13 @@ module.exports = {
     }
 
     if(configPaths.length < 1){
-      throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG');
+      return next(new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG'));
     }
 
     var rebootCallback = function(file){
       api.log(['*** rebooting due to config change (%s) ***', file], 'info');
       delete require.cache[require.resolve(file)];
-      api.commands.restart.call(api._self);
+      api.commands.restart();
     };
 
     api.loadConfigDirectory = function(configPath, watch){
@@ -135,7 +135,7 @@ module.exports = {
               delete loadErrors[e].error;
             });
 
-            throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors));
+            return next(new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors)));
           }
           // adjust configuration files list: remove and push
           // failed configuration to the end of the list and

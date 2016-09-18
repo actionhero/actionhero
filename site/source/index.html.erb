@@ -7,8 +7,8 @@ title: actionhero.js - Home
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
-                    <h1 class="brand-heading">actionhero</h1>
-                    <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server!</p>
+                    <h1 class="brand-heading">ActionHero</h1>
+                    <p class="intro-text">The Reusable, Scalable, and Quick node.js API Server... for stateless and stateful applications!</p>
                     <a href="http://github.com/evantahler/actionhero">
                         <img src="/images/logo/actionhero_400.png" width="300" />
                     </a>
@@ -20,8 +20,8 @@ title: actionhero.js - Home
 
 <section id="about" class="container content-section text-center">
     <div class="row">
-        <h2>What is actionhero?</h2>
-        <h4>actionhero.js is a multi-transport Node.JS API Server with integrated cluster capabilities and delayed tasks.</h4>
+        <h2>What is ActionHero?</h2>
+        <h4>ActionHero is a multi-transport Node.JS API Server with integrated cluster capabilities and delayed tasks.</h4>
         <div align="center" >
             <a href="https://www.npmjs.com/package/actionhero" ><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" /></a>
             <a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square"></a>
@@ -29,6 +29,7 @@ title: actionhero.js - Home
             <a href="http://travis-ci.org/evantahler/actionhero"><img src="https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat-square"></a>
             <a href="https://david-dm.org/evantahler/actionhero"><img src="https://david-dm.org/evantahler/actionhero.svg?style=flat-square"></a>
             <a href="http://slack.actionherojs.com"><img src="http://slack.actionherojs.com/badge.svg"></a>
+            <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg"></a>
             <!-- <a href="https://coveralls.io/r/evantahler/actionhero?branch=master"><img src="https://coveralls.io/repos/evantahler/actionhero/badge.svg?branch=master"></a> -->
         </div>
     </div>
@@ -37,11 +38,11 @@ title: actionhero.js - Home
 <section id="about" class="container content-section text-center">
     <div class="row">
         <h2>What does that mean?</h2>
-        <h4>In actionhero, you make actions which respond to client requests.</h4>
+        <h4>In ActionHero, you make actions which respond to client requests.</h4>
 
 
 <% code("javascript", {'background-color' => 'white'}) do %>
-// actionhero generateAction --name=randomNumber
+// actionhero generate action --name=randomNumber
 // File: actions/randomNumber.js
 
 exports.randomNumber = {
@@ -111,10 +112,10 @@ client.connect(function(error, details){
 
 <section id="about" class="container content-section text-center">
     <div class="row">
-        <h4>actionhero also lets you perform tasks in the background...</h4>
+        <h4>ActionHero also lets you perform tasks in the background...</h4>
 
 <% code("javascript") do %>
-// actionhero generateTask --name=sendEmail
+// actionhero generate action --name=sendEmail
 // File: tasks/sendEmail.js
 exports.task = {
     name:        'sendEmail',
@@ -144,7 +145,7 @@ api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(
 
 <section id="about" class="container content-section text-center">
     <div class="row">
-        <h4>actionhero enables clients to talk to each other.</h4>
+        <h4>ActionHero enables clients to talk to each other.</h4>
     </div>
 
 <% code("javascript") do %>
@@ -171,14 +172,14 @@ client2.connect(function(error, details){
 
 <section id="about" class="container content-section text-center">
     <div class="row">
-        <h4>actionhero can do all of this, and it can work on one server or hundreds (actionhero is cluster-ready from the get-go).</h4>
+        <h4>ActionHero can do all of this, and it can work on one server or hundreds (ActionHero is cluster-ready from the get-go).</h4>
     </div>
 
 <% code("bash") do %>
 # start 1 instance
 ./node_modules/.bin/actionhero start
 # start a cluster
-./node_modules/.bin/actionhero startCluster
+./node_modules/.bin/actionhero start cluster
 <% end %>
 
 </section>

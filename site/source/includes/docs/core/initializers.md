@@ -1,6 +1,6 @@
 # Initializers
 
-Initializers are the main way you expand your actionhero server.  This is where you connect to databases, modify the global `api` object with new classes and helper methods, and set up your [middleware](docs#middleware).
+Initializers are the main way you expand your ActionHero server.  This is where you connect to databases, modify the global `api` object with new classes and helper methods, and set up your [middleware](docs#middleware).
 
 Initializers run in 3 phases coinciding with the lifecycles of the application: `init`, `start`, and `stop`.  All `init` steps happen before all `start` steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle.
 
@@ -39,4 +39,4 @@ You can generate a file of this type with `actionhero generateInitializer --name
 
 ## Errors
 
-You can pass an error to the callback of any step in the initializer.  Doing so will cause actionhero to log the error and stop the server.  For example, you might throw an error if you cannot connect to an external service at boot, [like a database](https://github.com/evantahler/ah-sequelize-plugin/blob/master/initializers/sequelize.js). 
+You can pass an error to the callback of any step in the initializer.  Doing so will cause ActionHero to log the error and stop the server.  For example, you might throw an error if you cannot connect to an external service at boot, [like a database](https://github.com/evantahler/ah-sequelize-plugin/blob/master/initializers/sequelize.js). 
