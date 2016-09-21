@@ -1,9 +1,11 @@
-var fs = require('fs');
-var cluster = require('cluster');
+'use strict';
+
+const fs = require('fs');
+const cluster = require('cluster');
 
 exports['default'] = {
   logger: function(api){
-    var logger = {transports: []};
+    let logger = {transports: []};
 
     // console logger
     if(cluster.isMaster){
@@ -19,7 +21,7 @@ exports['default'] = {
     // file logger
     logger.transports.push(function(api, winston){
       if(api.config.general.paths.log.length === 1){
-        var logDirectory = api.config.general.paths.log[0];
+        const logDirectory = api.config.general.paths.log[0];
         try{
           fs.mkdirSync(logDirectory);
         }catch(e){

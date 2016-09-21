@@ -1,7 +1,7 @@
 'use strict';
 
-var optimist = require('optimist');
-var argv = optimist
+const optimist = require('optimist');
+const argv = optimist
   .demand('name')
   .describe('args', 'JSON-encoded arguments for the task')
   .describe('name', 'The name of the task to run')
@@ -11,7 +11,7 @@ module.exports = function(api, next){
 
   if(!api.tasks.tasks[argv.name]){ throw new Error('Task "' + argv.name + '" not found'); }
 
-  var args = {};
+  let args = {};
   if(argv.args){ args = JSON.parse(argv.args); }
 
   api.resque.startQueue(function(){

@@ -1,10 +1,12 @@
-var path = require('path');
-var packageJSON = require(path.normalize(__dirname + path.sep + '..' + path.sep  + 'package.json'));
+'use strict';
+
+const path = require('path');
+const packageJSON = require(path.normalize(__dirname + path.sep + '..' + path.sep  + 'package.json'));
 
 // These values are probably good starting points, but you should expect to tweak them for your application
-var maxEventLoopDelay    = process.env.eventLoopDelay || 5;
-var maxMemoryAlloted     = process.env.maxMemoryAlloted || 200;
-var maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
+const maxEventLoopDelay    = process.env.eventLoopDelay || 5;
+const maxMemoryAlloted     = process.env.maxMemoryAlloted || 200;
+const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
 
 exports.status = {
   name: 'status',
@@ -20,8 +22,8 @@ exports.status = {
 
     /* --- Define Helpers --- */
 
-    var checkRam = function(callback){
-      var consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
+    const checkRam = function(callback){
+      const consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
       data.response.consumedMemoryMB = consumedMemoryMB;
       if(consumedMemoryMB > maxMemoryAlloted){
         data.response.nodeStatus = data.connection.localize('Unhealthy');
@@ -31,7 +33,7 @@ exports.status = {
       callback();
     };
 
-    var checkEventLoop = function(callback){
+    const checkEventLoop = function(callback){
       api.utils.eventLoopDelay(10000, function(error, eventLoopDelay){
         data.response.eventLoopDelay = eventLoopDelay;
         if(eventLoopDelay > maxEventLoopDelay){
@@ -43,10 +45,10 @@ exports.status = {
       });
     };
 
-    var checkResqueQueues = function(callback){
+    const checkResqueQueues = function(callback){
       api.tasks.details(function(error, details){
         if(error){ return callback(error); }
-        var length = 0;
+        let length = 0;
         Object.keys(details.queues).forEach(function(q){
           length += details.queues[q].length;
         });

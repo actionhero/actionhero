@@ -23,7 +23,7 @@ module.exports = {
     };
 
     api.actions.validateAction = function(action){
-      var fail = function(msg){
+      const fail = (msg) => {
         return next(new Error(msg));
       };
 
@@ -51,8 +51,8 @@ module.exports = {
     api.actions.loadFile = function(fullFilePath, reload){
       if(reload === null){ reload = false; }
 
-      var loadMessage = function(action){
-        var msgString = '';
+      const loadMessage = (action) => {
+        let msgString = '';
         if(reload){
           api.log(['action reloaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug');
         }else{
@@ -66,10 +66,11 @@ module.exports = {
         api.routes.loadRoutes();
       });
 
-      var action;
+      let action;
+
       try{
-        var collection = require(fullFilePath);
-        for(var i in collection){
+        const collection = require(fullFilePath);
+        for(let i in collection){
           action = collection[i];
           if(action.version === null || action.version === undefined){ action.version = 1.0; }
           if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){

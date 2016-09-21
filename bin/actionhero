@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 'use strict';
 
-var cluster  = require('cluster');
-var fs       = require('fs');
-var winston  = require('winston');
-var path     = require('path');
-var optimist = require('optimist');
-var spawn    = require('child_process').spawn;
+const cluster  = require('cluster');
+const fs       = require('fs');
+const winston  = require('winston');
+const path     = require('path');
+const optimist = require('optimist');
+const spawn    = require('child_process').spawn;
 
-var actionheroRoot = path.normalize(__dirname + '/..');
-var projectRoot;
+const actionheroRoot = path.normalize(__dirname + '/..');
+let projectRoot;
 
 if(process.env.projectRoot){
   projectRoot = process.env.projectRoot;
@@ -21,18 +21,18 @@ if(process.env.projectRoot){
   projectRoot = path.normalize(process.cwd());
 }
 
-var actionheroPrototype = require(actionheroRoot + '/actionhero.js').actionheroPrototype;
-var actionhero = new actionheroPrototype();
-var configChanges = {};
+const actionheroPrototype = require(actionheroRoot + '/actionhero.js').actionheroPrototype;
+const actionhero = new actionheroPrototype();
+const configChanges = {};
 
-var commands = [];
+let commands = [];
 if(!optimist.argv._ || optimist.argv._.length === 0){ commands.push('start'); }
 optimist.argv._.forEach(function(arg){ commands.push(arg); });
 
 if(commands.length === 1 && commands[0] === 'generate'){
 
   // when generating the project from scratch, we cannot rely on the normal initilizers
-  var runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
+  const runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
   runner({projectRoot: projectRoot}, function(error){
     if(error){ throw error; }
     setTimeout(process.exit, 500, 0);
@@ -45,7 +45,7 @@ if(commands.length === 1 && commands[0] === 'generate'){
     api._context = actionhero;
 
     try{
-      var runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
+      const runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
 
       api.log('--------------------------------------');
       api.log('ACTIONHERO COMMAND >> ' + commands.join(' '));
@@ -54,13 +54,13 @@ if(commands.length === 1 && commands[0] === 'generate'){
       api.log('--------------------------------------');
 
       if(optimist.argv.daemon){
-        var newArgs = process.argv.splice(2);
-        for(var i in newArgs){
+        let newArgs = process.argv.splice(2);
+        for(let i in newArgs){
           if(newArgs[i].indexOf('--daemon') >= 0){ newArgs.splice(i, 1); }
         }
         newArgs.push('--isDaemon=true');
-        var command = path.normalize(actionheroRoot + '/bin/actionhero');
-        var child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
+        const command = path.normalize(actionheroRoot + '/bin/actionhero');
+        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
         api.log(command + ' ' + newArgs.join(' '), 'debug');
         api.log('spawned child process with pid ' + child.pid, 'notice');
         process.nextTick(process.exit);
