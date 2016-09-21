@@ -58,7 +58,7 @@ module.exports = {
         //load middleware into plugins
         const processMiddleware = (m) => {
           if(api.tasks.middleware[m]){ //Ignore middleware until it has been loaded.
-            const plugin = (worker, func, queue, job, args, options) => {
+            const plugin = function(worker, func, queue, job, args, options){
               this.name = m;
               this.worker = worker;
               this.queue = queue;
