@@ -1,15 +1,15 @@
 'use strict';
 
-var winston = require('winston');
+const winston = require('winston');
 
 module.exports = {
   loadPriority:  100,
   initialize: function(api, next){
 
-    var transports = [];
-    var i;
+    let transports = [];
+    let i;
     for(i in api.config.logger.transports){
-      var t = api.config.logger.transports[i];
+      let t = api.config.logger.transports[i];
       if(typeof t === 'function'){
         transports.push(t(api, winston));
       }else{
@@ -30,14 +30,14 @@ module.exports = {
     }
 
     api.log = function(message, severity, data){
-      var localizedMessage = api.i18n.localize(message);
+      let localizedMessage = api.i18n.localize(message);
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
-      var args = [severity, localizedMessage];
+      let args = [severity, localizedMessage];
       if(data !== null && data !== undefined){ args.push(data); }
       api.logger.log.apply(api.logger, args);
     };
 
-    var logLevels = [];
+    let logLevels = [];
     for(i in api.logger.levels){ logLevels.push(i); }
 
     api.log('*** Starting ActionHero ***', 'notice');
