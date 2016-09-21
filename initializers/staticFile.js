@@ -1,8 +1,8 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var Mime = require('mime');
+const fs = require('fs');
+const path = require('path');
+const Mime = require('mime');
 
 module.exports = {
   loadPriority:  510,
@@ -24,12 +24,11 @@ module.exports = {
       // connection.params.file should be set
       // callback is of the form: callback(connection, error, fileStream, mime, length)
       get: function(connection, callback, counter){
-        var self = this;
         if(!counter){ counter = 0; }
         if(!connection.params.file || !api.staticFile.searchPath(connection, counter)){
-          self.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
+          this.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback);
         }else{
-          var file;
+          let file;
           if(!path.isAbsolute(connection.params.file)){
             file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file);
           }else{
@@ -39,9 +38,9 @@ module.exports = {
           if(file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0){
             api.staticFile.get(connection, callback, counter + 1);
           }else{
-            self.checkExistence(file, function(exists, truePath){
+            this.checkExistence(file, (exists, truePath) => {
               if(exists){
-                self.sendFile(truePath, connection, callback);
+                this.sendFile(truePath, connection, callback);
               }else{
                 api.staticFile.get(connection, callback, counter + 1);
               }
@@ -51,25 +50,24 @@ module.exports = {
       },
 
       sendFile: function(file, connection, callback){
-        var self = this;
-        var lastModified;
-        fs.stat(file, function(error, stats){
+        let lastModified;
+        fs.stat(file, (error, stats) => {
           if(error){
-            self.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(error)), callback);
+            this.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(error)), callback);
           }else{
-            var mime = Mime.lookup(file);
-            var length = stats.size;
-            var fileStream = fs.createReadStream(file);
-            var start = new Date().getTime();
+            let mime = Mime.lookup(file);
+            let length = stats.size;
+            let fileStream = fs.createReadStream(file);
+            let start = new Date().getTime();
             lastModified = stats.mtime;
-            fileStream.on('end', function(){
-              var duration = new Date().getTime() - start;
-              self.logRequest(file, connection, length, duration, true);
+            fileStream.on('end', () => {
+              let duration = new Date().getTime() - start;
+              this.logRequest(file, connection, length, duration, true);
             });
-            fileStream.on('error', function(error){
+            fileStream.on('error', (error) => {
               api.log(error);
             });
-            fileStream.on('open', function(){
+            fileStream.on('open', () => {
               callback(connection, null, fileStream, mime, length, lastModified);
             });
           }
@@ -77,19 +75,18 @@ module.exports = {
       },
 
       sendFileNotFound: function(connection, errorMessage, callback){
-        var self = this;
         connection.error = new Error(errorMessage);
-        self.logRequest('{404: not found}', connection, null, null, false);
+        this.logRequest('{404: not found}', connection, null, null, false);
         callback(connection, api.config.errors.fileNotFound(connection), null, 'text/html', api.config.errors.fileNotFound(connection).length);
       },
 
       checkExistence: function(file, callback){
-        fs.stat(file, function(error, stats){
+        fs.stat(file, (error, stats) => {
           if(error){
             callback(false, file);
           }else{
             if(stats.isDirectory()){
-              var indexPath = file + '/' + api.config.general.directoryFileType;
+              let indexPath = file + '/' + api.config.general.directoryFileType;
               api.staticFile.checkExistence(indexPath, callback);
             }else if(stats.isSymbolicLink()){
               fs.readLink(file, function(error, truePath){
@@ -130,12 +127,12 @@ module.exports = {
 
     // source the .linked paths from plugins
     if(api.config.general.paths !== undefined){
-      api.config.general.paths['public'].forEach(function(p){
-        var pluginPath = p + path.sep + 'plugins';
+      api.config.general.paths['public'].forEach((p) => {
+        let pluginPath = p + path.sep + 'plugins';
         if(fs.existsSync(pluginPath)){
           fs.readdirSync(pluginPath).forEach(function(file){
-            var parts = file.split('.');
-            var name = parts[0];
+            let parts = file.split('.');
+            let name = parts[0];
             if(parts[(parts.length - 1)] === 'link' && fs.readFileSync(pluginPath + path.sep + file).toString() === 'public'){
               api.config.general.paths.plugin.forEach(function(potentialPluginPath){
                 potentialPluginPath = path.normalize(potentialPluginPath + path.sep + name + path.sep + 'public');

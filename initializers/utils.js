@@ -1,8 +1,8 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var async = require('async');
+const fs = require('fs');
+const path = require('path');
+const async = require('async');
 
 module.exports = {
   loadPriority:  0,
@@ -13,9 +13,9 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
     api.utils.hashMerge = function(a, b, arg){
-      var c = {};
-      var i;
-      var response;
+      let c = {};
+      let i;
+      let response;
 
       for(i in a){
         if(api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0){
@@ -53,10 +53,10 @@ module.exports = {
     };
 
     api.utils.isPlainObject = function(o){
-      var safeTypes     = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer];
-      var safeInstances = ['boolean', 'number', 'string', 'function'];
-      var expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
-      var i;
+      const safeTypes     = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer];
+      const safeInstances = ['boolean', 'number', 'string', 'function'];
+      const expandPreventMatchKey = '_toExpand'; // set `_toExpand = false` within an object if you don't want to expand it
+      let i;
 
       if(!o){ return false; }
       if((o instanceof Object) === false){ return false; }
@@ -82,9 +82,9 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // unique-ify an array
     api.utils.arrayUniqueify = function(arr){
-      var a = [];
-      for(var i = 0; i < arr.length; i++){
-        for(var j = i + 1; j < arr.length; j++){
+      let a = [];
+      for(let i = 0; i < arr.length; i++){
+        for(let j = i + 1; j < arr.length; j++){
           if(arr[i] === arr[j]){ j = ++i; }
         }
         a.push(arr[i]);
@@ -95,7 +95,7 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // get all .js files in a directory
     api.utils.recursiveDirectoryGlob = function(dir, extension, followLinkFiles){
-      var results = [];
+      let results = [];
 
       if(!extension){ extension = '.js'; }
       if(!followLinkFiles){ followLinkFiles = true; }
@@ -103,29 +103,29 @@ module.exports = {
       extension = extension.replace('.', '');
 
       if(fs.existsSync(dir)){
-        fs.readdirSync(dir).forEach(function(file){
-          var fullFilePath = path.join(dir, file);
+        fs.readdirSync(dir).forEach((file) => {
+          let fullFilePath = path.join(dir, file);
           if(file[0] !== '.'){ // ignore 'system' files
-            var stats = fs.statSync(fullFilePath);
-            var child;
+            let stats = fs.statSync(fullFilePath);
+            let child;
             if(stats.isDirectory()){
               child = api.utils.recursiveDirectoryGlob(fullFilePath, extension, followLinkFiles);
-              child.forEach(function(c){ results.push(c); });
+              child.forEach((c) => { results.push(c); });
             }else if(stats.isSymbolicLink()){
-              var realPath = fs.readlinkSync(fullFilePath);
+              let realPath = fs.readlinkSync(fullFilePath);
               child = api.utils.recursiveDirectoryGlob(realPath, extension, followLinkFiles);
-              child.forEach(function(c){ results.push(c); });
+              child.forEach((c) => { results.push(c); });
             }else if(stats.isFile()){
-              var fileParts = file.split('.');
-              var ext = fileParts[(fileParts.length - 1)];
+              let fileParts = file.split('.');
+              let ext = fileParts[(fileParts.length - 1)];
               // real file match
               if(ext === extension){ results.push(fullFilePath); }
               // linkfile traversal
               if(ext === 'link' && followLinkFiles === true){
-                var linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin);
+                let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin);
                 if(linkedPath){
                   child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles);
-                  child.forEach(function(c){ results.push(c); });
+                  child.forEach((c) => { results.push(c); });
                 }else{
                   try{
                     api.log(['cannot find linked refrence to `%s`', file], 'warning');
@@ -143,32 +143,32 @@ module.exports = {
     };
 
     api.utils.sourceRelativeLinkPath = function(linkfile, pluginPaths){
-      var type = fs.readFileSync(linkfile).toString();
-      var pathParts = linkfile.split(path.sep);
-      var name = pathParts[(pathParts.length - 1)].split('.')[0];
-      var pathsToTry = pluginPaths.slice(0);
-      var pluginRoot;
+      const type = fs.readFileSync(linkfile).toString();
+      const pathParts = linkfile.split(path.sep);
+      const name = pathParts[(pathParts.length - 1)].split('.')[0];
+      const pathsToTry = pluginPaths.slice(0);
+      let pluginRoot;
 
       // TODO: always also try the local destination's `node_modules` to allow for nested plugins
       // This might be a security risk without requiring explicit sourcing
 
-      pathsToTry.forEach(function(pluginPath){
-        var pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
+      pathsToTry.forEach((pluginPath) => {
+        let pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
         try{
-          var stats = fs.lstatSync(pluginPathAttempt);
+          let stats = fs.lstatSync(pluginPathAttempt);
           if(!pluginRoot && (stats.isDirectory() || stats.isSymbolicLink())){ pluginRoot = pluginPathAttempt; }
         }catch(e){ }
       });
 
       if(!pluginRoot){ return false; }
-      var pluginSection = path.normalize(pluginRoot + path.sep + type);
+      let pluginSection = path.normalize(pluginRoot + path.sep + type);
       return pluginSection;
     };
 
     ////////////////////////////////////////////////////////////////////////////
     // object Clone
     api.utils.objClone = function(obj){
-      return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce(function(memo, name){
+      return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce((memo, name) => {
         return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo;
       }, {}));
     };
@@ -177,14 +177,14 @@ module.exports = {
     // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
     api.utils.collapseObjectToArray = function(obj){
       try{
-        var keys = Object.keys(obj);
+        const keys = Object.keys(obj);
         if(keys.length < 1){ return false; }
         if(keys[0] !== '0'){ return false; }
         if(keys[(keys.length - 1)] !== String(keys.length - 1)){ return false; }
 
-        var arr = [];
-        for(var i in keys){
-          var key = keys[i];
+        let arr = [];
+        for(let i in keys){
+          let key = keys[i];
           if(String(parseInt(key)) !== key){ return false; }
           else{ arr.push(obj[key]); }
         }
@@ -198,11 +198,11 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // get this servers external interface
     api.utils.getExternalIPAddress = function(){
-      var os = require('os');
-      var ifaces = os.networkInterfaces();
-      var ip = false;
-      for(var dev in ifaces){
-        ifaces[dev].forEach(function(details){
+      const os = require('os');
+      const ifaces = os.networkInterfaces();
+      let ip = false;
+      for(let dev in ifaces){
+        ifaces[dev].forEach((details) => {
           if(details.family === 'IPv4' && details.address !== '127.0.0.1'){
             ip = details.address;
           }
@@ -214,10 +214,10 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // cookie parse from headers of http(s) requests
     api.utils.parseCookies = function(req){
-      var cookies = {};
+      let cookies = {};
       if(req.headers.cookie){
-        req.headers.cookie.split(';').forEach(function(cookie){
-          var parts = cookie.split('=');
+        req.headers.cookie.split(';').forEach((cookie) => {
+          let parts = cookie.split('=');
           cookies[parts[0].trim()] = (parts[1] || '').trim();
         });
       }
@@ -228,12 +228,12 @@ module.exports = {
     // parse an IPv6 address
     // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
     api.utils.parseIPv6URI = function(addr){
-      var host = '::1';
-      var port = '80';
-      var regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
+      let host = '::1';
+      let port = '80';
+      let regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/);
       //if we have brackets parse them and find a port
       if(addr.indexOf('[') > -1 && addr.indexOf(']') > -1){
-        var res = regexp.exec(addr);
+        let res = regexp.exec(addr);
         if(res === null){
           throw new Error('failed to parse address');
         }
@@ -248,18 +248,18 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // Check on how long the event loop is blocked for
     api.utils.eventLoopDelay = function(itterations, callback){
-      var intervalJobs = [];
-      var intervalTimes = [];
+      let intervalJobs = [];
+      let intervalTimes = [];
 
       if(!itterations){ return callback(new Error('itterations is required')); }
 
-      var i = 0;
+      let i = 0;
       while(i < itterations){
-        intervalJobs.push(function(intervalDone){
-          var start = process.hrtime();
-          process.nextTick(function(){
-            var delta = process.hrtime(start);
-            var ms = (delta[0] * 1000) + (delta[1] / 1000000);
+        intervalJobs.push((intervalDone) => {
+          let start = process.hrtime();
+          process.nextTick(() => {
+            let delta = process.hrtime(start);
+            let ms = (delta[0] * 1000) + (delta[1] / 1000000);
             intervalTimes.push(ms);
             intervalDone();
           });
@@ -268,9 +268,9 @@ module.exports = {
       }
 
       async.series(intervalJobs, function(){
-        var sum = 0;
-        intervalTimes.forEach(function(t){ sum += t; });
-        var avg = Math.round(sum / intervalTimes.length * 10000) / 1000;
+        let sum = 0;
+        intervalTimes.forEach((t) => { sum += t; });
+        let avg = Math.round(sum / intervalTimes.length * 10000) / 1000;
         return callback(null, avg);
       });
     };
@@ -278,7 +278,7 @@ module.exports = {
     ////////////////////////////////////////////////////////////////////////////
     // Sort Global Middleware
     api.utils.sortGlobalMiddleware = function(globalMiddlewareList, middleware){
-      globalMiddlewareList.sort(function(a, b){
+      globalMiddlewareList.sort((a, b) => {
         if(middleware[a].priority > middleware[b].priority){
           return 1;
         }else{
@@ -291,14 +291,14 @@ module.exports = {
     // File utils
     api.utils.dirExists = function(dir){
       try{
-        var stats = fs.lstatSync(dir);
+        let stats = fs.lstatSync(dir);
         return (stats.isDirectory() || stats.isSymbolicLink());
       }catch(e){ return false; }
     };
 
     api.utils.fileExists = function(file){
       try{
-        var stats = fs.lstatSync(file);
+        let stats = fs.lstatSync(file);
         return (stats.isFile() || stats.isSymbolicLink());
       }catch(e){ return false; }
     },
