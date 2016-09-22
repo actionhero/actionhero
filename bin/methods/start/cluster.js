@@ -147,7 +147,7 @@ const ActionHeroCluster = function(args){
 ActionHeroCluster.prototype.defaults = function(){
   return {
     id: 'ActionHeroCluster',
-    stopTimeout: 3000,
+    stopTimeout: 1000,
     expectedWorkers: os.cpus().length,
     flapWindow: 1000 * 30,
     execPath: __filename,
@@ -302,7 +302,7 @@ ActionHeroCluster.prototype.stop = function(callback){
     callback();
   }else{
     this.log(this.workers.length  + ' workers running, waiting on stop', 'info');
-    setTimeout(function(){ this.stop(callback); }, this.options.stopTimeout);
+    setTimeout(() => { this.stop(callback); }, this.options.stopTimeout);
   }
 
   if(this.options.expectedWorkers > 0){
