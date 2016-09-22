@@ -1,5 +1,7 @@
+'use strict';
+
 // error messages can be strings of objects
-var util = require('util');
+const util = require('util');
 
 exports['default'] = {
   errors: function(api){

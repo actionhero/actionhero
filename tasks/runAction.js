@@ -1,4 +1,4 @@
-var task = {
+const task = {
   name:          'runAction',
   description:   'I will run an action and return the connection object',
   queue:         'default',
@@ -8,7 +8,7 @@ var task = {
   run: function(api, params, next){
     if(!params){ params = {}; }
 
-    var connection = new api.connection({
+    const connection = new api.connection({
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
@@ -17,7 +17,7 @@ var task = {
 
     connection.params = params;
 
-    var actionProcessor = new api.actionProcessor(connection, function(data){
+    const actionProcessor = new api.actionProcessor(connection, function(data){
       if(data.response.error){
         api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)});
       }else{

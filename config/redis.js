@@ -1,8 +1,8 @@
-var host     = process.env.REDIS_HOST || '127.0.0.1';
-var port     = process.env.REDIS_PORT || 6379;
-var db       = process.env.REDIS_DB   || 0;
-var password = process.env.REDIS_PASS || null;
-var maxBackoff = 1000;
+const host     = process.env.REDIS_HOST || '127.0.0.1';
+const port     = process.env.REDIS_PORT || 6379;
+const db       = process.env.REDIS_DB   || 0;
+const password = process.env.REDIS_PASS || null;
+const maxBackoff = 1000;
 
 exports['default'] = {
   redis: function(api){

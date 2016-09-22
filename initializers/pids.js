@@ -1,7 +1,7 @@
 'use strict';
 
-var fs = require('fs');
-var cluster = require('cluster');
+const fs = require('fs');
+const cluster = require('cluster');
 
 module.exports = {
   startPriority: 1,
@@ -13,7 +13,7 @@ module.exports = {
     api.pids.path = api.config.general.paths.pid[0]; // it would be silly to have more than one pid
 
     api.pids.sanitizeId = function(){
-      var pidfile = api.id;
+      let pidfile = api.id;
       pidfile = pidfile.replace(new RegExp(':', 'g'), '-');
       pidfile = pidfile.replace(new RegExp(' ', 'g'), '_');
       pidfile = pidfile.replace(new RegExp('\r', 'g'), '');

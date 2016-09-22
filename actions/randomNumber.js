@@ -1,3 +1,5 @@
+'use strict';
+
 exports.randomNumber = {
   name: 'randomNumber',
   description: 'I am an API method which will generate a random number',

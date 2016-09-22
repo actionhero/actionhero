@@ -1,7 +1,7 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
+const EventEmitter = require('events').EventEmitter;
+const util = require('util');
 
 module.exports = {
   loadPriority:  450,
@@ -35,7 +35,7 @@ module.exports = {
 
       // you can overwrite attributes with options
       // this could cause some problems, be careful
-      for(var key in this.options){
+      for(let key in this.options){
         if(this.attributes[key] !== null && this.attributes[key] !== undefined){
           this.attributes[key] = this.options[key];
         }
@@ -45,70 +45,69 @@ module.exports = {
     util.inherits(api.genericServer, EventEmitter);
 
     api.genericServer.prototype.buildConnection = function(data){
-      var self = this;
-      var details = {
-        type: self.type,
+      const details = {
+        type: this.type,
         id: data.id,
         remotePort: data.remotePort,
         remoteIP: data.remoteAddress,
         rawConnection: data.rawConnection
       };
-      if(self.attributes.canChat === true){ details.canChat = true; }
+      if(this.attributes.canChat === true){ details.canChat = true; }
       if(data.fingerprint){ details.fingerprint = data.fingerprint; }
-      var connection = new api.connection(details);
+      const connection = new api.connection(details);
 
-      connection.sendMessage = function(message){
-        self.sendMessage(connection, message);
+      connection.sendMessage = (message) => {
+        this.sendMessage(connection, message);
       };
-      connection.sendFile = function(path){
+
+      connection.sendFile = (path) => {
         connection.params.file = path;
-        self.processFile(connection);
+        this.processFile(connection);
       };
-      self.emit('connection', connection);
 
-      if(self.attributes.logConnections === true){
-        self.log('new connection', 'info', {to: connection.remoteIP});
+      this.emit('connection', connection);
+
+      if(this.attributes.logConnections === true){
+        this.log('new connection', 'info', {to: connection.remoteIP});
       }
 
-      if(self.attributes.sendWelcomeMessage === true){
+      if(this.attributes.sendWelcomeMessage === true){
         connection.sendMessage({welcome: api.config.general.welcomeMessage, context: 'api'});
       }
-      if(typeof self.attributes.sendWelcomeMessage === 'number'){
-        setTimeout(function(){
+
+      if(typeof this.attributes.sendWelcomeMessage === 'number'){
+        setTimeout(() => {
           try{
             connection.sendMessage({welcome: api.config.general.welcomeMessage, context: 'api'});
           }catch(e){
             api.log(e, 'error');
           }
-        }, self.attributes.sendWelcomeMessage);
+        }, this.attributes.sendWelcomeMessage);
       }
     };
 
     api.genericServer.prototype.processAction = function(connection){
-      var self = this;
-      var actionProcessor = new api.actionProcessor(connection, function(data){
-        self.emit('actionComplete', data);
+      const actionProcessor = new api.actionProcessor(connection, (data) => {
+        this.emit('actionComplete', data);
       });
 
       actionProcessor.processAction();
     };
 
     api.genericServer.prototype.processFile = function(connection){
-      var self = this;
-      api.staticFile.get(connection, function(connection, error, fileStream, mime, length, lastModified){
-        self.sendFile(connection, error, fileStream, mime, length, lastModified);
+      api.staticFile.get(connection, (connection, error, fileStream, mime, length, lastModified) => {
+        this.sendFile(connection, error, fileStream, mime, length, lastModified);
       });
     };
 
     api.genericServer.prototype.connections = function(){
-      var self = this;
-      var connections = [];
-      for(var i in api.connections.connections){
-        var connection = api.connections.connections[i];
-        if(connection.type === self.type){
-          connections.push(connection);
-        }
+      let connections = [];
+
+      for(let i in api.connections.connections){
+        let connection = api.connections.connections[i];
+        if(connection.type === this.type){ connections.push(connection); }
       }
+
       return connections;
     };
 
@@ -116,7 +115,7 @@ module.exports = {
       api.log(['[server: %s] %s', this.type, message], severity, data);
     };
 
-    var methodNotDefined = function(){
+    const methodNotDefined = function(){
       throw new Error('The containing method should be defined for this server type');
     };
 

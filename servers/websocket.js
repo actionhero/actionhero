@@ -1,18 +1,20 @@
-var Primus              = require('primus');
-var UglifyJS            = require('uglify-js');
-var fs                  = require('fs');
-var path                = require('path');
-var util                = require('util');
-var browser_fingerprint = require('browser_fingerprint');
+'use strict';
 
-var initialize = function(api, options, next){
+const Primus              = require('primus');
+const UglifyJS            = require('uglify-js');
+const fs                  = require('fs');
+const path                = require('path');
+const util                = require('util');
+const browser_fingerprint = require('browser_fingerprint');
+
+const initialize = function(api, options, next){
 
   //////////
   // INIT //
   //////////
 
-  var type = 'websocket';
-  var attributes = {
+  const type = 'websocket';
+  const attributes = {
     canChat:               true,
     logConnections:        true,
     logExits:              true,
@@ -29,21 +31,21 @@ var initialize = function(api, options, next){
     ]
   };
 
-  var server = new api.genericServer(type, options, attributes);
+  const server = new api.genericServer(type, options, attributes);
 
   //////////////////////
   // REQUIRED METHODS //
   //////////////////////
 
   server.start = function(next){
-    var webserver = api.servers.servers.web;
+    const webserver = api.servers.servers.web;
     server.server = new Primus(webserver.server, api.config.servers.websocket.server);
 
-    server.server.on('connection', function(rawConnection){
+    server.server.on('connection', (rawConnection) => {
       handleConnection(rawConnection);
     });
 
-    server.server.on('disconnection', function(rawConnection){
+    server.server.on('disconnection', (rawConnection) => {
       handleDisconnection(rawConnection);
     });
 
@@ -58,13 +60,11 @@ var initialize = function(api, options, next){
   server.stop = function(next){
     server.active = false;
     if(api.config.servers.websocket.destroyClientsOnShutdown === true){
-      server.connections().forEach(function(connection){
+      server.connections().forEach((connection) => {
         connection.destroy();
       });
     }
-    process.nextTick(function(){
-      next();
-    });
+    process.nextTick(next);
   };
 
   server.sendMessage = function(connection, message, messageCount){
@@ -79,8 +79,8 @@ var initialize = function(api, options, next){
   };
 
   server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
-    var content = '';
-    var response = {
+    let content = '';
+    let response = {
       error        : error,
       content      : null,
       mime         : mime,
@@ -91,7 +91,7 @@ var initialize = function(api, options, next){
     try{
       if(!error){
         fileStream.on('data', function(d){ content += d; });
-        fileStream.on('end', function(){
+        fileStream.on('end', () => {
           response.content = content;
           server.sendMessage(connection, response, connection.messageCount);
         });
@@ -113,7 +113,7 @@ var initialize = function(api, options, next){
   ////////////
 
   server.on('connection', function(connection){
-    connection.rawConnection.on('data', function(data){
+    connection.rawConnection.on('data', (data) => {
       handleData(connection, data);
     });
   });
@@ -130,15 +130,15 @@ var initialize = function(api, options, next){
   ////////////
 
   server.compileActionheroClientJS = function(){
-    var ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
-    var url = api.config.servers.websocket.clientUrl;
+    let ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString();
+    let url = api.config.servers.websocket.clientUrl;
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
-    var defaults = {};
-    for(var i in api.config.servers.websocket.client){
+    let defaults = {};
+    for(let i in api.config.servers.websocket.client){
       defaults[i] = api.config.servers.websocket.client[i];
     }
     defaults.url = url;
-    var defaultsString = util.inspect(defaults);
+    let defaultsString = util.inspect(defaults);
     defaultsString = defaultsString.replace('\'window.location.origin\'', 'window.location.origin');
     ahClientSource = ahClientSource.replace('%%DEFAULTS%%', 'return ' + defaultsString);
 
@@ -147,8 +147,8 @@ var initialize = function(api, options, next){
 
   server.renderClientJS = function(minimize){
     if(!minimize){ minimize = false; }
-    var libSource = api.servers.servers.websocket.server.library();
-    var ahClientSource = server.compileActionheroClientJS();
+    let libSource = api.servers.servers.websocket.server.library();
+    let ahClientSource = server.compileActionheroClientJS();
     ahClientSource =
       ';;;\r\n' +
       '(function(exports){ \r\n' +
@@ -169,14 +169,14 @@ var initialize = function(api, options, next){
       return;
     }
     if(api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName){
-      var clientJSPath = path.normalize(
+      let clientJSPath = path.normalize(
         api.config.general.paths['public'][0] +
         path.sep +
         api.config.servers.websocket.clientJsPath +
         path.sep
       );
-      var clientJSName = api.config.servers.websocket.clientJsName;
-      var clientJSFullPath = clientJSPath + clientJSName;
+      let clientJSName = api.config.servers.websocket.clientJsName;
+      let clientJSFullPath = clientJSPath + clientJSName;
       try{
         if(!fs.existsSync(clientJSPath)){
           fs.mkdirSync(clientJSPath);
@@ -197,9 +197,9 @@ var initialize = function(api, options, next){
   // HELPERS //
   /////////////
 
-  var handleConnection = function(rawConnection){
-    var parsedCookies   = browser_fingerprint.parseCookies(rawConnection);
-    var fingerprint     = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey];
+  const handleConnection = function(rawConnection){
+    const parsedCookies   = browser_fingerprint.parseCookies(rawConnection);
+    const fingerprint     = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey];
     server.buildConnection({
       rawConnection  : rawConnection,
       remoteAddress  : rawConnection.address.ip,
@@ -208,8 +208,8 @@ var initialize = function(api, options, next){
     });
   };
 
-  var handleDisconnection = function(rawConnection){
-    for(var i in server.connections()){
+  const handleDisconnection = function(rawConnection){
+    for(let i in server.connections()){
       if(server.connections()[i] && rawConnection.id === server.connections()[i].rawConnection.id){
         server.connections()[i].destroy();
         break;
@@ -217,13 +217,13 @@ var initialize = function(api, options, next){
     }
   };
 
-  var handleData = function(connection, data){
-    var verb = data.event;
+  const handleData = function(connection, data){
+    const verb = data.event;
     delete data.event;
     connection.messageCount++;
     connection.params = {};
     if(verb === 'action'){
-      for(var v in data.params){
+      for(let v in data.params){
         connection.params[v] = data.params[v];
       }
       connection.error = null;
@@ -235,14 +235,14 @@ var initialize = function(api, options, next){
       };
       server.processFile(connection);
     }else{
-      var words = [];
-      var message;
+      let words = [];
+      let message;
       if(data.room){
         words.push(data.room);
         delete data.room;
       }
-      for(var i in data){ words.push(data[i]); }
-      connection.verbs(verb, words, function(error, data){
+      for(let i in data){ words.push(data[i]); }
+      connection.verbs(verb, words, (error, data) => {
         if(!error){
           message = {status: 'OK', context: 'response', data: data};
           server.sendMessage(connection, message);

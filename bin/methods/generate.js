@@ -1,7 +1,7 @@
 'use strict';
 
-var fs   = require('fs');
-var path = require('path');
+const fs   = require('fs');
+const path = require('path');
 
 module.exports = function(api, next){
   // proxy the logger, as we can't use the real one yet
@@ -15,11 +15,11 @@ module.exports = function(api, next){
 
     //////// DOCUMENTS ////////
 
-    var documents = {};
+    let documents = {};
 
     documents.projectMap = fs.readFileSync(__dirname + '/../templates/projectMap.txt');
 
-    var oldFileMap = {
+    const oldFileMap = {
       configApiJs         : '/config/api.js',
       configLoggerJs      : '/config/logger.js',
       configRedisJs       : '/config/redis.js',
@@ -41,11 +41,12 @@ module.exports = function(api, next){
       publicCss           : '/public/css/actionhero.css',
       exampleTest         : '/test/template.js.example'
     };
-    for(var name in oldFileMap){
+
+    for(let name in oldFileMap){
       documents[name] = fs.readFileSync(__dirname + '/../../' + oldFileMap[name]);
     }
 
-    var AHversionNumber = JSON.parse(documents.packageJson).version;
+    const AHversionNumber = JSON.parse(documents.packageJson).version;
 
     documents.packageJson = String(fs.readFileSync(__dirname + '/../templates/package.json'));
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
@@ -75,7 +76,7 @@ module.exports = function(api, next){
     });
 
     // make files
-    var newFileMap = {
+    const newFileMap = {
       '/config/api.js'                                : 'configApiJs',
       '/config/logger.js'                             : 'configLoggerJs',
       '/config/redis.js'                              : 'configRedisJs',
@@ -98,7 +99,8 @@ module.exports = function(api, next){
       '/README.md'                                    : 'readmeMd',
       '/test/example.js'                              : 'exampleTest'
     };
-    for(var file in newFileMap){
+
+    for(let file in newFileMap){
       api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]]);
     }
 

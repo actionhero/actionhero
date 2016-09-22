@@ -23,17 +23,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var fs        = require('fs');
-var cluster   = require('cluster');
-var path      = require('path');
-var os        = require('os');
-var async     = require('async');
-var readline  = require('readline');
-var winston   = require('winston');
-var isrunning = require('is-running');
-var optimist  = require('optimist');
+const fs        = require('fs');
+const cluster   = require('cluster');
+const path      = require('path');
+const os        = require('os');
+const async     = require('async');
+const readline  = require('readline');
+const winston   = require('winston');
+const isrunning = require('is-running');
+const optimist  = require('optimist');
 
-var argv = optimist
+const argv = optimist
   .describe('workers', 'How many worker node processes')
   .default('workers', os.cpus().length)
   .describe('workerTitlePrefix', 'Set worker title prefix')
@@ -42,20 +42,18 @@ var argv = optimist
 
 /////////////////////////////////////////
 
-var Worker = function(parent, id, env){
-  var self = this;
-  self.state = null;
-  self.id = id;
-  self.env = env;
-  self.parent = parent;
+const Worker = function(parent, id, env){
+  this.state = null;
+  this.id = id;
+  this.env = env;
+  this.parent = parent;
 };
 
 Worker.prototype.logPrefix = function(){
-  var self = this;
-  var s = '';
-  s += '[worker #' + self.id;
-  if(self.worker && self.worker.process){
-    s += ' (' + self.worker.process.pid + ')]: ';
+  let s = '';
+  s += '[worker #' + this.id;
+  if(this.worker && this.worker.process){
+    s += ' (' + this.worker.process.pid + ')]: ';
   }else{
     s += ']: ';
   }
@@ -63,43 +61,41 @@ Worker.prototype.logPrefix = function(){
 };
 
 Worker.prototype.start = function(){
-  var self = this;
+  this.worker = cluster.fork(this.env);
 
-  self.worker = cluster.fork(self.env);
+  this.worker.on('exit', () => {
+    this.parent.log(this.logPrefix() + 'exited', 'info');
 
-  self.worker.on('exit', function(){
-    self.parent.log(self.logPrefix() + 'exited', 'info');
-
-    for(var i in self.parent.workers){
-      if(self.parent.workers[i].id === self.id){
-        self.parent.workers.splice(i, 1);
+    for(let i in this.parent.workers){
+      if(this.parent.workers[i].id === this.id){
+        this.parent.workers.splice(i, 1);
         break;
       }
     }
 
-    self.parent.work();
+    this.parent.work();
   });
 
-  self.worker.on('message', function(message){
+  this.worker.on('message', (message) => {
     if(message.state){
-      self.state = message.state;
-      self.parent.log(self.logPrefix() + message.state, 'info');
+      this.state = message.state;
+      this.parent.log(this.logPrefix() + message.state, 'info');
     }
 
     if(message.uncaughtException){
-      self.parent.log(self.logPrefix() + 'uncaught exception => ' + message.uncaughtException.message, 'alert');
-      message.uncaughtException.stack.forEach(function(line){
-        self.parent.log(self.logPrefix() + '   ' + line, 'alert');
+      this.parent.log(this.logPrefix() + 'uncaught exception => ' + message.uncaughtException.message, 'alert');
+      message.uncaughtException.stack.forEach((line) => {
+        this.parent.log(this.logPrefix() + '   ' + line, 'alert');
       });
-      self.parent.flapCount++;
+      this.parent.flapCount++;
     }
 
     if(message.unhandledRejection){
-      self.parent.log('worker #' + self.worker.id + ' [' + self.worker.process.pid + ']: unhandled rejection => ' + JSON.stringify(message.unhandledRejection), 'alert');
-      self.parent.flapCount++;
+      this.parent.log('worker #' + this.worker.id + ' [' + this.worker.process.pid + ']: unhandled rejection => ' + JSON.stringify(message.unhandledRejection), 'alert');
+      this.parent.flapCount++;
     }
 
-    self.parent.work();
+    this.parent.work();
   });
 };
 
@@ -113,35 +109,36 @@ Worker.prototype.restart = function(){
 
 /////////////////////////////////////////
 
-var ActionHeroCluster = function(args){
-  var self = this;
-  self.workers = [];
-  self.workersToRestart = [];
-  self.flapCount = 0;
+const ActionHeroCluster = function(args){
+  this.workers = [];
+  this.workersToRestart = [];
+  this.flapCount = 0;
 
-  self.options = self.defaults();
-  for(var i in self.options){
+  this.options = this.defaults();
+  for(let i in this.options){
     if(args[i] !== null && args[i] !== undefined){
-      self.options[i] = args[i];
+      this.options[i] = args[i];
     }
   }
 
-  var transports = [];
+  let transports = [];
   transports.push(
     new(winston.transports.File)({
-      filename: self.options.logPath + '/' + self.options.logFile
+      filename: this.options.logPath + '/' + this.options.logFile
     })
   );
   if(cluster.isMaster && args.silent !== true){
+    let consoleOptions = {
+      colorize: true,
+      timestamp: () => { return this.options.id + ' @ ' + new Date().toISOString(); },
+    };
+
     transports.push(
-      new(winston.transports.Console)({
-        colorize: true,
-        timestamp: function(){ return self.options.id + ' @ ' + new Date().toISOString(); },
-      })
+      new(winston.transports.Console)(consoleOptions)
     );
   }
 
-  self.logger = new(winston.Logger)({
+  this.logger = new(winston.Logger)({
     levels: winston.config.syslog.levels,
     transports: transports
   });
@@ -150,7 +147,7 @@ var ActionHeroCluster = function(args){
 ActionHeroCluster.prototype.defaults = function(){
   return {
     id: 'ActionHeroCluster',
-    stopTimeout: 3000,
+    stopTimeout: 1000,
     expectedWorkers: os.cpus().length,
     flapWindow: 1000 * 30,
     execPath: __filename,
@@ -165,23 +162,21 @@ ActionHeroCluster.prototype.defaults = function(){
 };
 
 ActionHeroCluster.prototype.log = function(message, severity){
-  var self = this;
-  self.logger.log(severity, message);
+  this.logger.log(severity, message);
 };
 
 ActionHeroCluster.prototype.buildEnv = function(workerId){
-  var self = this;
-  if(typeof self.options.buildEnv === 'function'){
-    return self.options.buildEnv.call(self, workerId);
+  if(typeof this.options.buildEnv === 'function'){
+    return this.options.buildEnv.call(this, workerId);
   }else{
     return {
-      title: self.options.workerTitlePrefix + workerId,
+      title: this.options.workerTitlePrefix + workerId,
     };
   }
 };
 
 ActionHeroCluster.prototype.configurePath = function(p, callback){
-  var stats = fs.lstatSync(p);
+  const stats = fs.lstatSync(p);
   if(stats.isDirectory() || stats.isSymbolicLink()){
     process.nextTick(callback);
   }else{
@@ -190,11 +185,10 @@ ActionHeroCluster.prototype.configurePath = function(p, callback){
 };
 
 ActionHeroCluster.prototype.writePidFile = function(callback){
-  var self = this;
-  var file = self.options.pidPath + '/' + self.options.pidfile;
+  const file = this.options.pidPath + '/' + this.options.pidfile;
 
   if(fs.existsSync(file)){
-    var oldpid = parseInt(fs.readFileSync(file));
+    const oldpid = parseInt(fs.readFileSync(file));
     if(isrunning(oldpid)){
       return callback(new Error('actionHeroCluster already running (pid ' + oldpid + ')'));
     }
@@ -205,182 +199,177 @@ ActionHeroCluster.prototype.writePidFile = function(callback){
 };
 
 ActionHeroCluster.prototype.start = function(callback){
-  var self = this;
-  var jobs = [];
+  let jobs = [];
 
-  self.log(JSON.stringify(self.options), 'debug');
+  this.log(JSON.stringify(this.options), 'debug');
 
   cluster.setupMaster({
-    exec: self.options.execPath,
-    args: self.options.args.split(' '),
+    exec: this.options.execPath,
+    args: this.options.args.split(' '),
     silent: true
   });
 
-  process.on('SIGINT', function(){
-    self.log('Signal: SIGINT', 'info');
-    self.stop(process.exit);
+  process.on('SIGINT', () => {
+    this.log('Signal: SIGINT', 'info');
+    this.stop(process.exit);
   });
 
-  process.on('SIGTERM', function(){
-    self.log('Signal: SIGTERM', 'info');
-    self.stop(process.exit);
+  process.on('SIGTERM', () => {
+    this.log('Signal: SIGTERM', 'info');
+    this.stop(process.exit);
   });
 
-  process.on('SIGUSR2', function(){
-    self.log('Signal: SIGUSR2', 'info');
-    self.log('swap out new workers one-by-one', 'info');
-    self.workers.forEach(function(worker){
-      self.workersToRestart.push(worker.id);
+  process.on('SIGUSR2', () => {
+    this.log('Signal: SIGUSR2', 'info');
+    this.log('swap out new workers one-by-one', 'info');
+    this.workers.forEach((worker) => {
+      this.workersToRestart.push(worker.id);
     });
-    self.work();
+    this.work();
   });
 
-  process.on('SIGHUP', function(){
-    self.log('Signal: SIGHUP', 'info');
-    self.log('reload all workers now', 'info');
-    self.workers.forEach(function(worker){
+  process.on('SIGHUP', () => {
+    this.log('Signal: SIGHUP', 'info');
+    this.log('reload all workers now', 'info');
+    this.workers.forEach(function(worker){
       worker.restart();
     });
   });
 
-  process.on('SIGTTIN', function(){
-    self.log('Signal: SIGTTIN', 'info');
-    self.log('add a worker', 'info');
-    self.options.expectedWorkers++;
-    self.work();
+  process.on('SIGTTIN', () => {
+    this.log('Signal: SIGTTIN', 'info');
+    this.log('add a worker', 'info');
+    this.options.expectedWorkers++;
+    this.work();
   });
 
-  process.on('SIGTTOU', function(){
-    self.log('Signal: SIGTTOU', 'info');
-    self.log('remove a worker', 'info');
-    self.options.expectedWorkers--;
-    self.work();
+  process.on('SIGTTOU', () => {
+    this.log('Signal: SIGTTOU', 'info');
+    this.log('remove a worker', 'info');
+    this.options.expectedWorkers--;
+    this.work();
   });
 
   if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
-    var rl = readline.createInterface({
+    const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
-    rl.on('SIGINT', function(){
+    rl.on('SIGINT', () => {
       process.emit('SIGINT');
     });
   }
 
-  jobs.push(function(done){
-    self.log(' - STARTING CLUSTER -', 'notice');
-    self.log('pid: ' + process.pid, 'notice');
+  jobs.push((done) => {
+    this.log(' - STARTING CLUSTER -', 'notice');
+    this.log('pid: ' + process.pid, 'notice');
     process.nextTick(done);
   });
 
-  jobs.push(function(done){
-    if(self.flapTimer){ clearInterval(self.flapTimer); }
-    self.flapTimer = setInterval(function(){
-      if(self.flapCount > (self.options.expectedWorkers * 2)){
-        self.log('CLUSTER IS FLAPPING (' + self.flapCount + ' crashes in ' + self.options.flapWindow + 'ms). Stopping', 'emerg');
-        self.stop(process.exit);
+  jobs.push((done) => {
+    if(this.flapTimer){ clearInterval(this.flapTimer); }
+    this.flapTimer = setInterval(() => {
+      if(this.flapCount > (this.options.expectedWorkers * 2)){
+        this.log('CLUSTER IS FLAPPING (' + this.flapCount + ' crashes in ' + this.options.flapWindow + 'ms). Stopping', 'emerg');
+        this.stop(process.exit);
       }else{
-        self.flapCount = 0;
+        this.flapCount = 0;
       }
-    }, self.options.flapWindow);
+    }, this.options.flapWindow);
 
     done();
   });
 
-  jobs.push(function(done){ self.configurePath(self.options.logPath, done); });
-  jobs.push(function(done){ self.configurePath(self.options.pidPath, done); });
-  jobs.push(function(done){ self.writePidFile(done); });
+  jobs.push((done) => { this.configurePath(this.options.logPath, done); });
+  jobs.push((done) => { this.configurePath(this.options.pidPath, done); });
+  jobs.push((done) => { this.writePidFile(done); });
 
-  async.series(jobs, function(error){
+  async.series(jobs, (error) => {
     if(error){
-      self.log(error, 'error');
+      this.log(error, 'error');
       process.exit(1);
     }
     else{
-      self.work();
+      this.work();
       if(typeof callback === 'function'){ callback(); }
     }
   });
 };
 
 ActionHeroCluster.prototype.stop = function(callback){
-  var self = this;
-
-  if(self.workers.length === 0){
-    self.log('all workers stopped', 'notice');
+  if(this.workers.length === 0){
+    this.log('all workers stopped', 'notice');
     callback();
   }else{
-    self.log(self.workers.length  + ' workers running, waiting on stop', 'info');
-    setTimeout(function(){ self.stop(callback); }, self.options.stopTimeout);
+    this.log(this.workers.length  + ' workers running, waiting on stop', 'info');
+    setTimeout(() => { this.stop(callback); }, this.options.stopTimeout);
   }
 
-  if(self.options.expectedWorkers > 0){
-    self.options.expectedWorkers = 0;
-    self.work();
+  if(this.options.expectedWorkers > 0){
+    this.options.expectedWorkers = 0;
+    this.work();
   }
 };
 
 ActionHeroCluster.prototype.sortWorkers = function(){
-  var self = this;
-  self.workers.sort(function(a, b){ return (a.id - b.id); });
+  this.workers.sort(function(a, b){ return (a.id - b.id); });
 };
 
 ActionHeroCluster.prototype.work = function(){
-  var self = this;
-  var worker;
-  var workerId;
-  self.sortWorkers();
-  var stateCounts = {};
+  let worker;
+  let workerId;
+  this.sortWorkers();
+  let stateCounts = {};
 
-  self.workers.forEach(function(w){
+  this.workers.forEach((w) => {
     if(!stateCounts[w.state]){ stateCounts[w.state] = 0; }
     stateCounts[w.state]++;
   });
 
   if(
-      self.options.expectedWorkers < self.workers.length &&
+      this.options.expectedWorkers < this.workers.length &&
       !stateCounts.stopping &&
       !stateCounts.stopped &&
       !stateCounts.restarting
     ){
-    worker = self.workers[(self.workers.length - 1)];
-    self.log('signaling worker #' + worker.id + ' to stop', 'info');
+    worker = this.workers[(this.workers.length - 1)];
+    this.log('signaling worker #' + worker.id + ' to stop', 'info');
     worker.stop();
   }
 
   else if(
-      self.options.expectedWorkers > self.workers.length &&
+      (this.options.expectedWorkers > this.workers.length) &&
       !stateCounts.starting &&
       !stateCounts.restarting
     ){
     workerId = 1;
-    self.workers.forEach(function(w){
+    this.workers.forEach((w) => {
       if(w.id === workerId){ workerId++; }
     });
 
-    self.log('starting worker #' + workerId, 'info');
-    var env = self.buildEnv(workerId);
-    worker = new Worker(self, workerId, env);
+    this.log('starting worker #' + workerId, 'info');
+    let env = this.buildEnv(workerId);
+    worker = new Worker(this, workerId, env);
     worker.start();
-    self.workers.push(worker);
+    this.workers.push(worker);
   }
 
   else if(
-    self.workersToRestart.length > 0 &&
+    this.workersToRestart.length > 0 &&
     !stateCounts.starting &&
     !stateCounts.stopping &&
     !stateCounts.stopped &&
     !stateCounts.restarting
   ){
-    workerId = self.workersToRestart.pop();
-    self.workers.forEach(function(w){
+    workerId = this.workersToRestart.pop();
+    this.workers.forEach((w) => {
       if(w.id === workerId){ w.stop(); }
     });
   }
 
   else{
-    if(stateCounts.started === self.workers.length){
-      self.log('cluster equilibrium state reached with ' + self.workers.length + ' workers', 'notice');
+    if(stateCounts.started === this.workers.length){
+      this.log('cluster equilibrium state reached with ' + this.workers.length + ' workers', 'notice');
     }
   }
 };
@@ -388,21 +377,20 @@ ActionHeroCluster.prototype.work = function(){
 /////////////////////////////////////////
 
 module.exports = function(api){
-  var options = {
+  let options = {
     execPath: path.normalize(__dirname + '/../../actionhero'),
     args: 'start',
     silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true) ? true : false,
     expectedWorkers: optimist.argv.workers,
     id: api.id,
-    buildEnv: function(workerId){
-      var self = this;
-      var env  = {};
+    buildEnv: (workerId) => {
+      let env  = {};
 
-      for(var k in process.env){
+      for(let k in process.env){
         env[k] = process.env[k];
       }
 
-      var title = optimist.argv.workerTitlePrefix;
+      let title = optimist.argv.workerTitlePrefix;
 
       if(!title || title === ''){
         title = 'actionhero-worker-';
@@ -418,6 +406,6 @@ module.exports = function(api){
     }
   };
 
-  var ahc = new ActionHeroCluster(options);
+  const ahc = new ActionHeroCluster(options);
   ahc.start();
 };

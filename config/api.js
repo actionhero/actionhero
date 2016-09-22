@@ -1,8 +1,10 @@
-var path = require('path');
+'use strict';
+
+const path = require('path');
 
 exports['default'] = {
   general: function(api){
-    var packageJSON = require(api.projectRoot + path.sep + 'package.json');
+    const packageJSON = require(api.projectRoot + path.sep + 'package.json');
 
     return {
       apiVersion: packageJSON.version,

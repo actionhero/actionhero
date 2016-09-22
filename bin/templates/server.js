@@ -1,14 +1,14 @@
 'use strict';
 
-var initialize = function(api, options, next){
+const initialize = function(api, options, next){
 
   //////////
   // INIT //
   //////////
 
-  var type = '%%name%%';
+  const type = '%%name%%';
 
-  var attributes = {
+  const attributes = {
     canChat: true,
     logConnections: true,
     logExits: true,
@@ -16,7 +16,7 @@ var initialize = function(api, options, next){
     verbs: []
   };
 
-  var server = new api.genericServer(type, options, attributes);
+  const server = new api.genericServer(type, options, attributes);
 
   //////////////////////
   // REQUIRED METHODS //

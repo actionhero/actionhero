@@ -1,7 +1,7 @@
 'use strict';
 
-var fs = require('fs');
-var async = require('async');
+const fs = require('fs');
+const async = require('async');
 
 module.exports = {
   startPriority: 300,
@@ -15,7 +15,7 @@ module.exports = {
     api.cache.lockName     = api.id;
     api.cache.lockRetry    = 100;
 
-    var redis = api.redis.clients.client;
+    const redis = api.redis.clients.client;
 
     api.cache.keys = function(callback){
       redis.keys(api.cache.redisPrefix + '*', callback);
@@ -26,35 +26,35 @@ module.exports = {
     };
 
     api.cache.size = function(callback){
-      api.cache.keys(function(error, keys){
-        var length = 0;
+      api.cache.keys((error, keys) => {
+        let length = 0;
         if(keys){ length = keys.length; }
         callback(error, length);
       });
     };
 
     api.cache.clear = function(callback){
-      api.cache.keys(function(error, keys){
+      api.cache.keys((error, keys) => {
         if(error && typeof callback === 'function'){ return callback(error); }
-        var jobs = [];
-        keys.forEach(function(key){
-          jobs.push(function(done){ redis.del(key, done); });
+        let jobs = [];
+        keys.forEach((key) => {
+          jobs.push((done) => { redis.del(key, done); });
         });
 
-        async.parallel(jobs, function(error){
+        async.parallel(jobs, (error) => {
           if(typeof callback === 'function'){ return callback(error); }
         });
       });
     };
 
     api.cache.dumpWrite = function(file, callback){
-      var data = {};
-      api.cache.keys(function(error, keys){
+      let data = {};
+      api.cache.keys((error, keys) => {
         if(error && typeof callback === 'function'){ return callback(error); }
-        var jobs = [];
-        keys.forEach(function(key){
-          jobs.push(function(done){
-            redis.get(key, function(error, content){
+        let jobs = [];
+        keys.forEach((key) => {
+          jobs.push((done) => {
+            redis.get(key, (error, content) => {
               if(error){ return done(error); }
               data[key] = content;
               return done();
@@ -74,21 +74,22 @@ module.exports = {
     };
 
     api.cache.dumpRead = function(file, callback){
-      api.cache.clear(function(error){
+      api.cache.clear((error) => {
         if(error){
           if(typeof callback === 'function'){ return callback(error); }
         }else{
-          var jobs = [];
+          let jobs = [];
+          let data;
           try{
-            var data = JSON.parse(fs.readFileSync(file));
+            data = JSON.parse(fs.readFileSync(file));
           }catch(error){ return callback(error); }
 
-          Object.keys(data).forEach(function(key){
-            var content = data[key];
+          Object.keys(data).forEach((key) => {
+            let content = data[key];
             jobs.push(function(done){ api.cache.saveDumpedElement(key, content, done); });
           });
 
-          async.series(jobs, function(error){
+          async.series(jobs, (error) => {
             if(typeof callback === 'function'){ return callback(error, Object.keys(data).length); }
           });
         }
@@ -96,15 +97,16 @@ module.exports = {
     };
 
     api.cache.saveDumpedElement = function(key, content, callback){
+      let parsedContent;
       try{
-        var parsedContent = JSON.parse(content);
+        parsedContent = JSON.parse(content);
       }catch(error){ return callback(error); }
 
-      redis.set(key, content, function(error){
+      redis.set(key, content, (error) => {
         if(error){ return callback(error); }
         else if(parsedContent.expireTimestamp){
-          var expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000);
-          redis.expire(key, expireTimeSeconds, function(){
+          const expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000);
+          redis.expire(key, expireTimeSeconds, () => {
             return callback(error);
           });
         }else{
@@ -128,8 +130,8 @@ module.exports = {
             return callback(new Error(api.i18n.localize('Object not found')), null, null, null, null);
           }
         }else if(cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null){
-          var lastReadAt = cacheObj.readAt;
-          var expireTimeSeconds;
+          const lastReadAt = cacheObj.readAt;
+          let expireTimeSeconds;
           cacheObj.readAt = new Date().getTime();
           if(cacheObj.expireTimestamp){
             if(options.expireTimeMS){
@@ -144,11 +146,11 @@ module.exports = {
             if(error || lockOk !== true){
               if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
             }else{
-              redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+              redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
                 if(typeof callback === 'function' && typeof expireTimeSeconds !== 'number'){
                   return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt);
                 }else{
-                  redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+                  redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, (error) => {
                     if(typeof callback === 'function'){ return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt); }
                   });
                 }
@@ -164,13 +166,13 @@ module.exports = {
     };
 
     api.cache.destroy = function(key, callback){
-      api.cache.checkLock(key, null, function(error, lockOk){
+      api.cache.checkLock(key, null, (error, lockOk) => {
         if(error || lockOk !== true){
           if(typeof callback === 'function'){ callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
-          redis.del(api.cache.redisPrefix + key, function(error, count){
+          redis.del(api.cache.redisPrefix + key, (error, count) => {
             if(error){ api.log(error, 'error'); }
-            var resp = true;
+            let resp = true;
             if(count !== 1){ resp = false; }
             if(typeof callback === 'function'){ callback(error, resp); }
           });
@@ -184,14 +186,14 @@ module.exports = {
         expireTimeMS = null;
       }
 
-      var expireTimeSeconds = null;
-      var expireTimestamp = null;
+      let expireTimeSeconds = null;
+      let expireTimestamp = null;
       if(expireTimeMS !== null){
         expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
         expireTimestamp   = new Date().getTime() + expireTimeMS;
       }
 
-      var cacheObj = {
+      const cacheObj = {
         value:           value,
         expireTimestamp: expireTimestamp,
         createdAt:       new Date().getTime(),
@@ -202,9 +204,9 @@ module.exports = {
         if(error || lockOk !== true){
           if(typeof callback === 'function'){ return callback(new Error(api.i18n.localize('Object Locked'))); }
         }else{
-          redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), function(error){
+          redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
             if(!error && expireTimeSeconds){
-              redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, function(error){
+              redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, (error) => {
                 if(typeof callback === 'function'){ return callback(error, true); }
               });
             }else{
@@ -216,17 +218,17 @@ module.exports = {
     };
 
     api.cache.push = function(key, item, callback){
-      var object = JSON.stringify({data: item});
-      redis.rpush(api.cache.redisPrefix + key, object, function(error){
+      let object = JSON.stringify({data: item});
+      redis.rpush(api.cache.redisPrefix + key, object, (error) => {
         if(typeof callback === 'function'){ callback(error); }
       });
     };
 
     api.cache.pop = function(key, callback){
-      redis.lpop(api.cache.redisPrefix + key, function(error, object){
+      redis.lpop(api.cache.redisPrefix + key, (error, object) => {
         if(error){ return callback(error); }
         if(!object){ return callback(); }
-        var item;
+        let item;
         try{
           item = JSON.parse(object);
         }catch(error){ return callback(error); }
@@ -247,15 +249,15 @@ module.exports = {
         expireTimeMS = api.cache.lockDuration;
       }
 
-      api.cache.checkLock(key, null, function(error, lockOk){
+      api.cache.checkLock(key, null, (error, lockOk) => {
         if(error || lockOk !== true){
           return callback(error, false);
         }else{
-          redis.setnx(api.cache.lockPrefix + key, api.cache.lockName, function(error){
+          redis.setnx(api.cache.lockPrefix + key, api.cache.lockName, (error) => {
             if(error){
               return callback(error);
             }else{
-              redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), function(error){
+              redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), (error) => {
                 lockOk = true;
                 if(error){ lockOk = false; }
                 return callback(error, lockOk);
@@ -267,11 +269,11 @@ module.exports = {
     };
 
     api.cache.unlock = function(key, callback){
-      api.cache.checkLock(key, null, function(error, lockOk){
+      api.cache.checkLock(key, null, (error, lockOk) => {
         if(error || lockOk !== true){
           return callback(error, false);
         }else{
-          redis.del(api.cache.lockPrefix + key, function(error){
+          redis.del(api.cache.lockPrefix + key, (error) => {
             lockOk = true;
             if(error){ lockOk = false; }
             return callback(error, lockOk);
@@ -283,17 +285,17 @@ module.exports = {
     api.cache.checkLock = function(key, retry, callback, startTime){
       if(startTime === null){ startTime = new Date().getTime(); }
 
-      redis.get(api.cache.lockPrefix + key, function(error, lockedBy){
+      redis.get(api.cache.lockPrefix + key, (error, lockedBy) => {
         if(error){
           return callback(error, false);
         }else if(lockedBy === api.cache.lockName || lockedBy === null){
           return callback(null, true);
         }else{
-          var delta = new Date().getTime() - startTime;
+          const delta = new Date().getTime() - startTime;
           if(retry === null || retry === false || delta > retry){
             return callback(null, false);
           }else{
-            return setTimeout(function(){
+            return setTimeout(() => {
               api.cache.checkLock(key, retry, callback, startTime);
             }, api.cache.lockRetry);
           }

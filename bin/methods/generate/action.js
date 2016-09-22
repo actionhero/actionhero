@@ -1,8 +1,8 @@
 'use strict';
 
-var fs = require('fs');
-var optimist = require('optimist');
-var argv = optimist
+const fs = require('fs');
+const optimist = require('optimist');
+const argv = optimist
   .demand('name')
   .describe('name', 'The name of the action')
   .describe('description', 'The description of the action')
@@ -11,14 +11,14 @@ var argv = optimist
 
 module.exports = function(api, next){
 
-  var data = fs.readFileSync(__dirname + '/../../templates/action.js');
+  let data = fs.readFileSync(__dirname + '/../../templates/action.js');
   data = String(data);
 
   [
     'name',
     'description',
   ].forEach(function(v){
-    var regex = new RegExp('%%' + v + '%%', 'g');
+    let regex = new RegExp('%%' + v + '%%', 'g');
     data = data.replace(regex, argv[v]);
   });
 

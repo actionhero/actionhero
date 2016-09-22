@@ -1,19 +1,19 @@
 'use strict';
 
-var cluster = require('cluster');
-var readline = require('readline');
-var os = require('os');
+const cluster = require('cluster');
+const readline = require('readline');
+const os = require('os');
 
 module.exports = function(api, next){
-  var state;
+  let state;
 
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
-  var shutdownTimeout = 1000 * 30;
+  let shutdownTimeout = 1000 * 30;
   if(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT){
     shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT);
   }
 
-  var startServer = function(callback){
+  const startServer = function(callback){
     state = 'starting';
     if(cluster.isWorker){ process.send({state: state}); }
     api._context.start(function(error, apiFromCallback){
@@ -30,7 +30,7 @@ module.exports = function(api, next){
     });
   };
 
-  var stopServer = function(callback){
+  const stopServer = function(callback){
     state = 'stopping';
     if(cluster.isWorker){ process.send({state: state}); }
     api._context.stop(function(){
@@ -41,7 +41,7 @@ module.exports = function(api, next){
     });
   };
 
-  var restartServer = function(callback){
+  const restartServer = function(callback){
     state = 'restarting';
     if(cluster.isWorker){ process.send({state: state}); }
     api._context.restart(function(error, apiFromCallback){
@@ -54,7 +54,7 @@ module.exports = function(api, next){
     });
   };
 
-  var stopProcess = function(){
+  const stopProcess = function(){
     setTimeout(function(){
       throw new Error('process stop timeout reached.  terminating now.');
     }, shutdownTimeout);
@@ -66,8 +66,8 @@ module.exports = function(api, next){
     });
   };
 
-  var checkForInernalStopTimer;
-  var checkForInernalStop = function(){
+  let checkForInernalStopTimer;
+  const checkForInernalStop = function(){
     clearTimeout(checkForInernalStopTimer);
     if(api.running !== true && state === 'started'){
       process.exit(0);
@@ -86,7 +86,7 @@ module.exports = function(api, next){
     });
 
     process.on('uncaughtException', function(error){
-      var stack;
+      let stack;
       try{
         stack = error.stack.split(os.EOL);
       }catch(e){
@@ -110,7 +110,7 @@ module.exports = function(api, next){
   process.on('SIGUSR2', function(){ restartServer(); });
 
   if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
-    var rl = readline.createInterface({
+    const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });

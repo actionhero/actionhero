@@ -1,6 +1,6 @@
 'use strict';
 
-var os = require('os');
+const os = require('os');
 
 module.exports = {
   loadPriority:  130,
@@ -9,16 +9,16 @@ module.exports = {
     api.exceptionHandlers = {};
     api.exceptionHandlers.reporters = [];
 
-    var consoleReporter = function(error, type, name, objects, severity){
-      var extraMessages = [];
+    const consoleReporter = function(error, type, name, objects, severity){
+      let extraMessages = [];
 
       if(type === 'loader'){
         extraMessages.push('! Failed to load ' + objects.fullFilePath);
       }else if(type === 'action'){
         extraMessages.push('! uncaught error from action: ' + name);
         extraMessages.push('! connection details:');
-        var relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
-        for(var i in relevantDetails){
+        const relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room'];
+        for(let i in relevantDetails){
           if(
             objects.connection[relevantDetails[i]] !== null &&
             objects.connection[relevantDetails[i]] !== undefined &&
@@ -39,17 +39,17 @@ module.exports = {
         extraMessages.push('!     Data: ' + JSON.stringify(objects));
       }
 
-      for(var m in extraMessages){
+      for(let m in extraMessages){
         api.log(extraMessages[m], severity);
       }
-      var lines;
+      let lines;
       try{
         lines = error.stack.split(os.EOL);
       }catch(e){
         lines = new Error(error).stack.split(os.EOL);
       }
-      for(var l in lines){
-        var line = lines[l];
+      for(let l in lines){
+        let line = lines[l];
         api.log('! ' + line, severity);
       }
       api.log('*', severity);
@@ -59,7 +59,7 @@ module.exports = {
 
     api.exceptionHandlers.report = function(error, type, name, objects, severity){
       if(!severity){ severity = 'error'; }
-      for(var i in api.exceptionHandlers.reporters){
+      for(let i in api.exceptionHandlers.reporters){
         api.exceptionHandlers.reporters[i](error, type, name, objects, severity);
       }
     };
@@ -69,31 +69,31 @@ module.exports = {
     ///////////
 
     api.exceptionHandlers.loader = function(fullFilePath, error){
-      var name = 'loader:' + fullFilePath;
+      let name = 'loader:' + fullFilePath;
       api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert');
     };
 
     api.exceptionHandlers.action = function(error, data, next){
-      var simpleName;
+      let simpleName;
       try{
         simpleName = data.action;
       }catch(e){
         simpleName = error.message;
       }
-      var name = 'action:' + simpleName;
+      let name = 'action:' + simpleName;
       api.exceptionHandlers.report(error, 'action', name, {connection: data.connection}, 'error');
       data.connection.response = {}; // no partial responses
       if(typeof next === 'function'){ next(); }
     };
 
     api.exceptionHandlers.task = function(error, queue, task, workerId){
-      var simpleName;
+      let simpleName;
       try{
         simpleName = task['class'];
       }catch(e){
         simpleName = error.message;
       }
-      var name = 'task:' + simpleName;
+      let name = 'task:' + simpleName;
       api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure);
     };
 
