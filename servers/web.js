@@ -272,8 +272,8 @@ const initialize = function(api, options, next){
         }
       }
 
-      const remoteIP = req.connection.remoteAddress;
-      const remotePort = req.connection.remotePort;
+      let remoteIP = req.connection.remoteAddress;
+      let remotePort = req.connection.remotePort;
 
       // helpers for unix socket bindings with no forward
       if(!remoteIP && !remotePort){
