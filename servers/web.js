@@ -1,22 +1,24 @@
-var url                 = require('url');
-var qs                  = require('qs');
-var fs                  = require('fs');
-var path                = require('path');
-var zlib                = require('zlib');
-var formidable          = require('formidable');
-var browser_fingerprint = require('browser_fingerprint');
-var Mime                = require('mime');
-var uuid                = require('node-uuid');
-var etag                = require('etag');
+'use strict';
 
-var initialize = function(api, options, next){
+const url                 = require('url');
+const qs                  = require('qs');
+const fs                  = require('fs');
+const path                = require('path');
+const zlib                = require('zlib');
+const formidable          = require('formidable');
+const browser_fingerprint = require('browser_fingerprint');
+const Mime                = require('mime');
+const uuid                = require('node-uuid');
+const etag                = require('etag');
+
+const initialize = function(api, options, next){
 
   //////////
   // INIT //
   //////////
 
-  var type = 'web';
-  var attributes = {
+  const type = 'web';
+  const attributes = {
     canChat: false,
     logConnections: false,
     logExits: false,
@@ -26,7 +28,7 @@ var initialize = function(api, options, next){
     ]
   };
 
-  var server = new api.genericServer(type, options, attributes);
+  const server = new api.genericServer(type, options, attributes);
 
   if(['api', 'file'].indexOf(api.config.servers.web.rootEndpointType) < 0){
     throw new Error('api.config.servers.web.rootEndpointType can only be \'api\' or \'file\'');
@@ -38,24 +40,24 @@ var initialize = function(api, options, next){
 
   server.start = function(next){
     if(options.secure === false){
-      var http = require('http');
-      server.server = http.createServer(function(req, res){
+      const http = require('http');
+      server.server = http.createServer((req, res) => {
         handleRequest(req, res);
       });
     }else{
-      var https = require('https');
-      server.server = https.createServer(api.config.servers.web.serverOptions, function(req, res){
+      const https = require('https');
+      server.server = https.createServer(api.config.servers.web.serverOptions, (req, res) => {
         handleRequest(req, res);
       });
     }
 
-    var bootAttempts = 0;
-    server.server.on('error', function(e){
+    let bootAttempts = 0;
+    server.server.on('error', (e) => {
       bootAttempts++;
       if(bootAttempts < api.config.servers.web.bootAttempts){
         server.log('cannot boot web server; trying again [' + String(e) + ']', 'error');
         if(bootAttempts === 1){ cleanSocket(options.bindIP, options.port); }
-        setTimeout(function(){
+        setTimeout(() => {
           server.log('attempting to boot again..');
           server.server.listen(options.port, options.bindIP);
         }, 1000);
@@ -64,7 +66,7 @@ var initialize = function(api, options, next){
       }
     });
 
-    server.server.listen(options.port, options.bindIP, function(){
+    server.server.listen(options.port, options.bindIP, () => {
       chmodSocket(options.bindIP, options.port);
       next();
     });
@@ -72,30 +74,28 @@ var initialize = function(api, options, next){
 
   server.stop = function(next){
     server.server.close();
-    process.nextTick(function(){
-      next();
-    });
+    process.nextTick(next);
   };
 
   server.sendMessage = function(connection, message){
-    var stringResponse = '';
+    let stringResponse = '';
     if(connection.rawConnection.method !== 'HEAD'){
       stringResponse = String(message);
     }
 
     cleanHeaders(connection);
-    var headers = connection.rawConnection.responseHeaders;
-    var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+    const headers = connection.rawConnection.responseHeaders;
+    const responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
 
     server.sendWithCompression(connection, responseHttpCode, headers, stringResponse);
   };
 
   server.sendFile = function(connection, error, fileStream, mime, length, lastModified){
-    var foundExpires = false;
-    var foundCacheControl = false;
-    var ifModifiedSince;
-    var reqHeaders;
-    connection.rawConnection.responseHeaders.forEach(function(pair){
+    let foundExpires = false;
+    let foundCacheControl = false;
+    let ifModifiedSince;
+    let reqHeaders;
+    connection.rawConnection.responseHeaders.forEach((pair) => {
       if(pair[0].toLowerCase() === 'expires'){ foundExpires = true; }
       if(pair[0].toLowerCase() === 'cache-control'){ foundCacheControl = true; }
     });
@@ -110,17 +110,17 @@ var initialize = function(api, options, next){
       if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified).toUTCString()]); }
     }
     cleanHeaders(connection);
-    var headers = connection.rawConnection.responseHeaders;
+    const headers = connection.rawConnection.responseHeaders;
     if(error){ connection.rawConnection.responseHttpCode = 404; }
     if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
     if(api.config.servers.web.enableEtag && fileStream){
-      fs.stat(fileStream.path, function(error, filestats){
-        var fileEtag = etag(filestats, {weak: true});
+      fs.stat(fileStream.path, (error, filestats) => {
+        const fileEtag = etag(filestats, {weak: true});
         connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
-        var noneMatchHeader = reqHeaders['if-none-match'];
-        var cacheCtrlHeader = reqHeaders['cache-control'];
-        var noCache = false;
-        var etagMatches;
+        let noneMatchHeader = reqHeaders['if-none-match'];
+        let cacheCtrlHeader = reqHeaders['cache-control'];
+        let noCache = false;
+        let etagMatches;
         // check for no-cache cache request directive
         if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
           noCache = true;
@@ -131,7 +131,7 @@ var initialize = function(api, options, next){
 
         // if-none-match
         if(noneMatchHeader){
-          etagMatches = noneMatchHeader.some(function(match){
+          etagMatches = noneMatchHeader.some((match) => {
             return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
           });
         }
@@ -139,7 +139,7 @@ var initialize = function(api, options, next){
         if(etagMatches && !noCache){
           connection.rawConnection.responseHttpCode = 304;
         }
-        var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+        let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
         if(error){
           server.sendWithCompression(connection, responseHttpCode, headers, String(error));
         }else if(responseHttpCode !== 304){
@@ -150,8 +150,8 @@ var initialize = function(api, options, next){
           connection.destroy();
         }
       });
-    } else {
-      var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+    }else{
+      let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
       if(error){
         server.sendWithCompression(connection, responseHttpCode, headers, String(error));
       }
@@ -166,9 +166,9 @@ var initialize = function(api, options, next){
   };
 
   server.sendWithCompression = function(connection, responseHttpCode, headers, stringResponse, fileStream, fileLength){
-    var acceptEncoding = connection.rawConnection.req.headers['accept-encoding'];
-    var compressor;
-    var stringEncoder;
+    let acceptEncoding = connection.rawConnection.req.headers['accept-encoding'];
+    let compressor;
+    let stringEncoder;
     if(!acceptEncoding){ acceptEncoding = ''; }
 
     // Note: this is not a conformant accept-encoding parser.
@@ -187,12 +187,12 @@ var initialize = function(api, options, next){
     }
 
     // the 'finish' event deontes a successful transfer
-    connection.rawConnection.res.on('finish', function(){
+    connection.rawConnection.res.on('finish', () => {
       connection.destroy();
     });
 
     // the 'close' event deontes a failed transfer, but it is probably the client's fault
-    connection.rawConnection.res.on('close', function(){
+    connection.rawConnection.res.on('close', () => {
       connection.destroy();
     });
 
@@ -208,7 +208,7 @@ var initialize = function(api, options, next){
       }
     }else{
       if(stringEncoder){
-        stringEncoder(stringResponse, function(error, zippedString){
+        stringEncoder(stringResponse, (error, zippedString) => {
           headers.push(['Content-Length', zippedString.length]);
           connection.rawConnection.res.writeHead(responseHttpCode, headers);
           connection.rawConnection.res.end(zippedString);
@@ -229,8 +229,8 @@ var initialize = function(api, options, next){
   // EVENTS //
   ////////////
 
-  server.on('connection', function(connection){
-    determineRequestParams(connection, function(requestMode){
+  server.on('connection', (connection) => {
+    determineRequestParams(connection, (requestMode) => {
       if(requestMode === 'api'){
         server.processAction(connection);
       }else if(requestMode === 'file'){
@@ -243,7 +243,7 @@ var initialize = function(api, options, next){
     });
   });
 
-  server.on('actionComplete', function(data){
+  server.on('actionComplete', (data) => {
     completeResponse(data);
   });
 
@@ -251,14 +251,14 @@ var initialize = function(api, options, next){
   // HELPERS //
   /////////////
 
-  var handleRequest = function(req, res){
-    browser_fingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, function(fingerprint, elementHash, cookieHash){
-      var responseHeaders = [];
-      var cookies =  api.utils.parseCookies(req);
-      var responseHttpCode = 200;
-      var method = req.method.toUpperCase();
-      var parsedURL = url.parse(req.url, true);
-      var i;
+  const handleRequest = function(req, res){
+    browser_fingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, (fingerprint, elementHash, cookieHash) => {
+      let responseHeaders = [];
+      let cookies =  api.utils.parseCookies(req);
+      let responseHttpCode = 200;
+      let method = req.method.toUpperCase();
+      let parsedURL = url.parse(req.url, true);
+      let i;
       for(i in cookieHash){
         responseHeaders.push([i, cookieHash[i]]);
       }
@@ -272,8 +272,8 @@ var initialize = function(api, options, next){
         }
       }
 
-      var remoteIP = req.connection.remoteAddress;
-      var remotePort = req.connection.remotePort;
+      const remoteIP = req.connection.remoteAddress;
+      const remotePort = req.connection.remotePort;
 
       // helpers for unix socket bindings with no forward
       if(!remoteIP && !remotePort){
@@ -282,8 +282,8 @@ var initialize = function(api, options, next){
       }
 
       if(req.headers['x-forwarded-for']){
-        var parts;
-        var forwardedIp = req.headers['x-forwarded-for'].split(',')[0];
+        let parts;
+        let forwardedIp = req.headers['x-forwarded-for'].split(',')[0];
         if(forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)){
           // IPv4
           forwardedIp = forwardedIp.replace('::ffff:', ''); // remove any IPv6 information, ie: '::ffff:127.0.0.1'
@@ -322,10 +322,10 @@ var initialize = function(api, options, next){
     });
   };
 
-  var completeResponse = function(data){
+  const completeResponse = function(data){
     if(data.toRender === true){
       if(api.config.servers.web.metadataOptions.serverInformation){
-        var stopTime = new Date().getTime();
+        const stopTime = new Date().getTime();
         data.response.serverInformation = {
           serverName:      api.config.general.serverName,
           apiVersion:      api.config.general.apiVersion,
@@ -366,7 +366,7 @@ var initialize = function(api, options, next){
         data.response.error = api.config.errors.serializers.servers.web(data.response.error);
       }
 
-      var stringResponse = '';
+      let stringResponse = '';
 
       if(extractHeader(data.connection, 'Content-Type').match(/json/)){
         stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
@@ -382,8 +382,8 @@ var initialize = function(api, options, next){
     }
   };
 
-  var extractHeader = function(connection, match){
-    var i = connection.rawConnection.responseHeaders.length - 1;
+  const extractHeader = function(connection, match){
+    let i = connection.rawConnection.responseHeaders.length - 1;
     while(i >= 0){
       if(connection.rawConnection.responseHeaders[i][0].toLowerCase() === match.toLowerCase()){
         return connection.rawConnection.responseHeaders[i][1];
@@ -393,31 +393,31 @@ var initialize = function(api, options, next){
     return null;
   };
 
-  var respondToOptions = function(connection){
+  const respondToOptions = function(connection){
     if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Methods'] && !extractHeader(connection, 'Access-Control-Allow-Methods')){
-      var methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
+      const methods = 'HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Methods', methods]);
     }
     if(!api.config.servers.web.httpHeaders['Access-Control-Allow-Origin'] && !extractHeader(connection, 'Access-Control-Allow-Origin')){
-      var origin = '*';
+      const origin = '*';
       connection.rawConnection.responseHeaders.push(['Access-Control-Allow-Origin', origin]);
     }
     server.sendMessage(connection, '');
   };
 
-  var respondToTrace = function(connection){
-    var data = buildRequesterInformation(connection);
-    var stringResponse = JSON.stringify(data, null, api.config.servers.web.padding);
+  const respondToTrace = function(connection){
+    const data = buildRequesterInformation(connection);
+    const stringResponse = JSON.stringify(data, null, api.config.servers.web.padding);
     server.sendMessage(connection, stringResponse);
   };
 
-  var determineRequestParams = function(connection, callback){
+  const determineRequestParams = function(connection, callback){
     // determine file or api request
-    var requestMode = api.config.servers.web.rootEndpointType;
-    var pathname = connection.rawConnection.parsedURL.pathname;
-    var pathParts = pathname.split('/');
-    var matcherLength;
-    var i;
+    let requestMode = api.config.servers.web.rootEndpointType;
+    let pathname = connection.rawConnection.parsedURL.pathname;
+    let pathParts = pathname.split('/');
+    let matcherLength;
+    let i;
     while(pathParts[0] === ''){ pathParts.shift(); }
     if(pathParts[pathParts.length - 1] === ''){ pathParts.pop(); }
 
@@ -437,7 +437,7 @@ var initialize = function(api, options, next){
       for(i = 0; i < (matcherLength - 1); i++){ pathParts.shift(); }
     }
 
-    var extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
+    let extensionParts = connection.rawConnection.parsedURL.pathname.split('.');
     if(extensionParts.length > 1){
       connection.extension = extensionParts[(extensionParts.length - 1)];
     }
@@ -451,7 +451,7 @@ var initialize = function(api, options, next){
     // API
     else if(requestMode === 'api'){
       if(connection.rawConnection.method === 'TRACE'){ requestMode = 'trace'; }
-      var search = connection.rawConnection.parsedURL.search.slice(1);
+      let search = connection.rawConnection.parsedURL.search.slice(1);
       fillParamsFromWebRequest(connection, qs.parse(search, api.config.servers.web.queryParseOptions));
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query;
       if(
@@ -466,7 +466,7 @@ var initialize = function(api, options, next){
         for(i in api.config.servers.web.formOptions){
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i];
         }
-        connection.rawConnection.form.parse(connection.rawConnection.req, function(error, fields, files){
+        connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
           if(error){
             server.log('error processing form: ' + String(error), 'error');
             connection.error = new Error('There was an error processing this form.');
@@ -507,27 +507,27 @@ var initialize = function(api, options, next){
 
   };
 
-  var fillParamsFromWebRequest = function(connection, varsHash){
+  const fillParamsFromWebRequest = function(connection, varsHash){
     // helper for JSON posts
-    var collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
+    let collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
     if(collapsedVarsHash !== false){
       varsHash = {payload: collapsedVarsHash}; // post was an array, lets call it "payload"
     }
 
-    for(var v in varsHash){
+    for(let v in varsHash){
       connection.params[v] = varsHash[v];
     }
   };
 
-  var buildRequesterInformation = function(connection){
-    var requesterInformation = {
+  const buildRequesterInformation = function(connection){
+    let requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
       remoteIP: connection.remoteIP,
       receivedParams: {}
     };
 
-    for(var p in connection.params){
+    for(let p in connection.params){
       if(api.config.general.disableParamScrubbing === true || api.params.postVariables.indexOf(p) >= 0){
         requesterInformation.receivedParams[p] = connection.params[p];
       }
@@ -536,13 +536,13 @@ var initialize = function(api, options, next){
     return requesterInformation;
   };
 
-  var cleanHeaders = function(connection){
-    var originalHeaders = connection.rawConnection.responseHeaders.reverse();
-    var foundHeaders = [];
-    var cleanedHeaders = [];
-    for(var i in originalHeaders){
-      var key = originalHeaders[i][0];
-      var value = originalHeaders[i][1];
+  const cleanHeaders = function(connection){
+    const originalHeaders = connection.rawConnection.responseHeaders.reverse();
+    let foundHeaders = [];
+    let cleanedHeaders = [];
+    for(let i in originalHeaders){
+      let key = originalHeaders[i][0];
+      let value = originalHeaders[i][1];
       if(foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0){
         // ignore, it's a duplicate
       }else if(connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding'){
@@ -555,9 +555,9 @@ var initialize = function(api, options, next){
     connection.rawConnection.responseHeaders = cleanedHeaders;
   };
 
-  var cleanSocket = function(bindIP, port){
+  const cleanSocket = function(bindIP, port){
     if(!bindIP && port.indexOf('/') >= 0){
-      fs.unlink(port, function(error){
+      fs.unlink(port, (error) => {
         if(error){
           server.log('cannot remove stale socket @' + port + ' : ' + error);
         }else{
@@ -567,9 +567,9 @@ var initialize = function(api, options, next){
     }
   };
 
-  var chmodSocket = function(bindIP, port){
+  const chmodSocket = function(bindIP, port){
     if(!options.bindIP && options.port.indexOf('/') >= 0){
-      fs.chmodSync(port, 0777);
+      fs.chmodSync(port, '0777');
     }
   };
 
