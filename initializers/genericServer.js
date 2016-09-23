@@ -54,7 +54,7 @@ module.exports = {
       };
       if(this.attributes.canChat === true){ details.canChat = true; }
       if(data.fingerprint){ details.fingerprint = data.fingerprint; }
-      const connection = new api.connection(details);
+      let connection = new api.connection(details);
 
       connection.sendMessage = (message) => {
         this.sendMessage(connection, message);
