@@ -95,26 +95,56 @@ const initialize = function(api, options, next){
     let foundCacheControl = false;
     let ifModifiedSince;
     let reqHeaders;
+
     connection.rawConnection.responseHeaders.forEach((pair) => {
       if(pair[0].toLowerCase() === 'expires'){ foundExpires = true; }
       if(pair[0].toLowerCase() === 'cache-control'){ foundCacheControl = true; }
     });
 
-    reqHeaders = connection.rawConnection.req.headers;
-    if(reqHeaders['if-modified-since']){ ifModifiedSince = new Date(reqHeaders['if-modified-since']); }
-
     connection.rawConnection.responseHeaders.push(['Content-Type', mime]);
+
     if(fileStream){
-      if(foundExpires === false){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
-      if(foundCacheControl === false){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
+      if(!foundCacheControl){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
+    }
+    if(fileStream && !api.config.servers.web.enableEtag){
+      if(!foundExpires){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
       if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified).toUTCString()]); }
     }
+
     cleanHeaders(connection);
     const headers = connection.rawConnection.responseHeaders;
-    if(error){ connection.rawConnection.responseHttpCode = 404; }
-    if(ifModifiedSince && lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
+    reqHeaders = connection.rawConnection.req.headers;
+
+    let sendRequestResult = function() {
+      let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode, 10);
+      if(error){
+        server.sendWithCompression(connection, responseHttpCode, headers, String(error));
+      }else if(responseHttpCode !== 304){
+        server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
+      }else{
+        connection.rawConnection.res.writeHead(responseHttpCode, headers);
+        connection.rawConnection.res.end();
+        connection.destroy();
+      }
+    }
+
+    if(reqHeaders['if-modified-since']){
+      ifModifiedSince = new Date(reqHeaders['if-modified-since']);
+      if(lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304; }
+      return sendRequestResult();
+    }
+
+    if(error){
+      connection.rawConnection.responseHttpCode = 404;
+      return sendRequestResult();
+    }
+
     if(api.config.servers.web.enableEtag && fileStream){
       fs.stat(fileStream.path, (error, filestats) => {
+        if (error){
+          server.log('Error receving file statistics: ' + String(error), 'error');
+          return sendRequestResult();
+        }
         const fileEtag = etag(filestats, {weak: true});
         connection.rawConnection.responseHeaders.push(['ETag', fileEtag]);
         let noneMatchHeader = reqHeaders['if-none-match'];
@@ -125,43 +155,21 @@ const initialize = function(api, options, next){
         if(cacheCtrlHeader && cacheCtrlHeader.indexOf('no-cache') !== -1){
           noCache = true;
         }
-
         // parse if-none-match
         if(noneMatchHeader){ noneMatchHeader = noneMatchHeader.split(/ *, */); }
-
         // if-none-match
         if(noneMatchHeader){
           etagMatches = noneMatchHeader.some((match) => {
             return match === '*' || match === fileEtag || match === 'W/' + fileEtag;
           });
         }
-
         if(etagMatches && !noCache){
           connection.rawConnection.responseHttpCode = 304;
         }
-        let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-        if(error){
-          server.sendWithCompression(connection, responseHttpCode, headers, String(error));
-        }else if(responseHttpCode !== 304){
-          server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
-        }else{
-          connection.rawConnection.res.writeHead(responseHttpCode, headers);
-          connection.rawConnection.res.end();
-          connection.destroy();
-        }
+        sendRequestResult();
       });
     }else{
-      let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-      if(error){
-        server.sendWithCompression(connection, responseHttpCode, headers, String(error));
-      }
-      else if(responseHttpCode !== 304){
-        server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length);
-      }else{
-        connection.rawConnection.res.writeHead(responseHttpCode, headers);
-        connection.rawConnection.res.end();
-        connection.destroy();
-      }
+      sendRequestResult();
     }
   };
 
