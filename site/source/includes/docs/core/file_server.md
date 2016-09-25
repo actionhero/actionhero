@@ -41,7 +41,7 @@ On .nix operating system's symlinks for both files and folders will be followed.
 
 ## Web Clients
 
-- `Cache-Control` and `Expires` headers will be sent, as defined by `api.config.commonWeb.flatFileCacheDuration`
+- `Cache-Control` and `Expires` or respectively `ETag` headers (depending on configuration) will be sent with it's caching or revalidation time defined by `api.config.servers.web.flatFileCacheDuration`
 - Content-Types for files will attempt to be determined using the [mime package](https://npmjs.org/package/mime)
 - web clients may request `connection.params.file` directly within an action which makes use of  `api.sendFile`, or if they are  under the `api.config.servers.web.urlPathForFiles` route, the file will be looked up as if the route matches the directory structure under `flatFileDirectory`.
 - if your action wants to send content down to a client directly, you will do so like this `server.sendFile(connection, null, stream, 'text/html', length);`
