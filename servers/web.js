@@ -107,7 +107,6 @@ const initialize = function(api, options, next){
       if(!foundCacheControl){ connection.rawConnection.responseHeaders.push(['Cache-Control', 'max-age=' + api.config.servers.web.flatFileCacheDuration + ', must-revalidate, public']); }
     }
     if(fileStream && !api.config.servers.web.enableEtag){
-      if(!foundExpires){ connection.rawConnection.responseHeaders.push(['Expires', new Date(new Date().getTime() + api.config.servers.web.flatFileCacheDuration * 1000).toUTCString()]); }
       if(lastModified){ connection.rawConnection.responseHeaders.push(['Last-Modified', new Date(lastModified).toUTCString()]); }
     }
 
@@ -130,6 +129,7 @@ const initialize = function(api, options, next){
 
     if(reqHeaders['if-modified-since']){
       ifModifiedSince = new Date(reqHeaders['if-modified-since']);
+      lastModified.setMilliseconds(0);
       if(lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304; }
       return sendRequestResult();
     }
