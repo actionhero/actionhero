@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+'use strict';
+
 /*
 I am a simple wrapper around mocha which sets various envirnment variables
 I mainly exist so windows can run tests and set the NODE_ENV:/
