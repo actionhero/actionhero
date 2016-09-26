@@ -37,8 +37,12 @@ exports['default'] = {
         simpleRouting : true,
         // queryRouting allows an action to be defined via a URL param, ie: /api?action=:action
         queryRouting : true,
-        // The header which will be returned for all flat file served from /public; defined in seconds
+        // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration : 60,
+        // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;
+        // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therfore the file) changed
+        // or continue to use the cached file if it's still valid
+        enableEtag: true,
         // How many times should we try to boot the server?
         // This might happen if the port is in use by another process or the socketfile is claimed
         bootAttempts: 1,
@@ -75,9 +79,7 @@ exports['default'] = {
         compress: false,
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
-        queryParseOptions: {},
-        // when true, an ETAG Header will be provided with each requested static file for caching reasons
-        enableEtag: true
+        queryParseOptions: {}
       };
     }
   }

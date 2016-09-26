@@ -54,10 +54,18 @@ describe('Core: Static File', function(){
     });
   });
 
-  it('should send back the last modified time', function(done){
+  it('should send back the cache-control header', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
-      response.headers['last-modified'].should.be.ok;
+      response.headers['cache-control'].should.be.ok;
+      done();
+    });
+  });
+
+  it('should send back the etag header', function(done){
+    request.get(url + '/simple.html', function(error, response, body){
+      response.statusCode.should.eql(200);
+      response.headers['etag'].should.be.ok;
       done();
     });
   });
