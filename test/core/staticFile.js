@@ -130,4 +130,25 @@ describe('Core: Static File', function(){
     });
   });
 
+  it('should respect accept-encoding header priority', function(done){
+    var serverCompressionState = api.config.servers.web.compress;
+    serverCompressionState.should.be.a.Boolean();
+    api.config.servers.web.compress = true; //activate compression, default is likely to be false
+
+    request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip, deflate, sdch, br'}}, function(error, response, body){
+      response.statusCode.should.eql(200);
+      response.headers['content-encoding'].should.equal('gzip');
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'br, deflate, gzip'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('deflate'); //br is not a currently supported encoding
+        request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip'}}, function(error, response, body){
+          response.statusCode.should.eql(200);
+          response.headers['content-encoding'].should.equal('gzip');
+          api.config.servers.web.compress = serverCompressionState; //reset compression configuration to initial value for further tests
+          done();
+        });
+      });
+    });
+  });
+
 });
