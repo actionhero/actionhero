@@ -130,25 +130,63 @@ describe('Core: Static File', function(){
     });
   });
 
-  it('should respect accept-encoding header priority', function(done){
-    var serverCompressionState = api.config.servers.web.compress;
-    serverCompressionState.should.be.a.Boolean();
-    api.config.servers.web.compress = true; //activate compression, default is likely to be false
+  describe('Core: Static File -> Compression Tests', function() {
+    var serverCompressionState;
+    before(function(done) {
+      serverCompressionState = api.config.servers.web.compress
+      api.config.servers.web.compress = true; //activate compression, default is likely to be false
+      done();
+    })
 
-    request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip, deflate, sdch, br'}}, function(error, response, body){
-      response.statusCode.should.eql(200);
-      response.headers['content-encoding'].should.equal('gzip');
+    after(function(done) {
+      api.config.servers.web.compress = serverCompressionState;
+      done();
+    });
+
+    it('should find the compression configuration in servers web config', function(done){
+      serverCompressionState.should.be.a.Boolean();
+      done();
+    });
+
+    it('should respect accept-encoding header priority with gzip as first in a list of encodings', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip, deflate, sdch, br'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('gzip');
+        done();
+      });
+    });
+
+    it('should respect accept-encoding header priority with deflate as second in a list of encodings', function(done){
       request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'br, deflate, gzip'}}, function(error, response, body){
         response.statusCode.should.eql(200);
         response.headers['content-encoding'].should.equal('deflate'); //br is not a currently supported encoding
-        request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip'}}, function(error, response, body){
-          response.statusCode.should.eql(200);
-          response.headers['content-encoding'].should.equal('gzip');
-          api.config.servers.web.compress = serverCompressionState; //reset compression configuration to initial value for further tests
-          done();
-        });
+        done();
       });
     });
-  });
 
+    it('should respect accept-encoding header priority with gzip as only option', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('gzip');
+        done();
+      });
+    });
+
+    it('should\'nt encode content without a valid a supported value in accept-encoding header', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'sdch, br'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        should.not.exist(response.headers['content-encoding']);
+        done();
+      });
+    });
+
+    it('should\'nt encode content without accept-encoding header', function(done){
+      request.get({url:url + '/simple.html'}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        should.not.exist(response.headers['content-encoding']);
+        done();
+      });
+    });
+
+  });
 });
