@@ -139,7 +139,7 @@ const initialize = function(api, options, next){
       return sendRequestResult();
     }
 
-    if(api.config.servers.web.enableEtag && fileStream){
+    if(api.config.servers.web.enableEtag && fileStream && fileStream.path){
       fs.stat(fileStream.path, (error, filestats) => {
         if (error){
           server.log('Error receving file statistics: ' + String(error), 'error');
