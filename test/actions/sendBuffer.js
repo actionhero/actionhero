@@ -1,8 +1,11 @@
+'use strict';
 var should  = require('should');
 var request = require('request');
 var fs      = require('fs');
 var os      = require('os');
 var path    = require('path');
+var stream  = require('stream');
+
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
 var api;
@@ -24,10 +27,41 @@ describe('Server: sendBuffer', function() {
     });
   });
 
-  it('Server should sendBuffer', function (done) {
-    request.get(url + '/api/sendBufferTest', function (error, response, body) {
-      body.should.equal('Example of data buffer');
+  describe('errors', function(){
+
+    before(function(done) {
+      api.actions.versions.sendBufferTest = [1];
+      api.actions.actions.sendBufferTest = {
+        '1': {
+          name: 'sendBufferTest',
+          description: 'sendBufferTest',
+          version: 1,
+          run: function (api, data, next) {
+            const buffer = 'Example of data buffer';
+            let bufferStream = new stream.PassThrough();
+            bufferStream.end(buffer);
+            data.connection.rawConnection.responseHeaders.push(['Content-Disposition', 'attachment; filename=test.csv']);
+            api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/csv', buffer.length, new Date());
+            data.toRender = false;
+            next();
+          }
+        }
+      };
+      api.routes.loadRoutes();
       done();
     });
-  });
+
+    after(function(done){
+      delete api.actions.actions.sendBufferTest;
+      delete api.actions.versions.sendBufferTest;
+      done();
+    });
+
+    it('Server should sendBuffer', function (done) {
+        request.get(url + '/api/sendBufferTest', function (error, response, body) {
+          body.should.equal('Example of data buffer');
+          done();
+        });
+      });
+    });
 });
