@@ -15,13 +15,8 @@ os:
   # - osx
   # - windows
 
-script: npm run-script test:travis
-
 services:
   - redis-server
-
-after_script:
-  - npm run-script coverage
 
 after_failure:
   - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
