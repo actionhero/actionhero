@@ -49,12 +49,13 @@
     "ws": "^1.1.1"
   },
   "devDependencies": {
-    "mocha": "^3.1.0",
-    "should": "^11.0.0",
-    "request": "^2.75.0",
     "coveralls": "^2.11.13",
+    "eslint": "^3.6.0",
+    "glob": "^7.1.0",
     "istanbul": "^0.4.0",
-    "eslint": "^3.6.0"
+    "mocha": "^3.1.0",
+    "request": "^2.75.0",
+    "should": "^11.0.0"
   },
   "optionalDependencies": {},
   "bin": {

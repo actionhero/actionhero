@@ -7,6 +7,7 @@ I mainly exist so windows can run tests and set the NODE_ENV:/
 */
 
 const path = require('path');
+const glob = require('glob');
 const spawn = require('child_process').spawn;
 
 let testEnv = {};
@@ -22,8 +23,17 @@ if(process.platform === 'win32'){
   execeutable = 'mocha';
 }
 
+// shuffle the test files so we have a random test order
+let testFiles = glob.sync(__dirname + '/test/**/*.js');
+testFiles.sort(function(){ return 0.5 - Math.random(); });
+
+console.log('\r\nTest Order:')
+testFiles.forEach((file) => {
+  console.log('  ' + file.replace(__dirname, ''));
+});
+
 let mocha = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + execeutable;
-let child = spawn(mocha, ['test', '--reporter', 'dot'], {
+let child = spawn(mocha, ['--reporter', 'dot'].concat(testFiles), {
   cwd: __dirname,
   env: testEnv
 });
