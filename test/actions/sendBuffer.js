@@ -1,9 +1,6 @@
 'use strict';
 var should  = require('should');
 var request = require('request');
-var fs      = require('fs');
-var os      = require('os');
-var path    = require('path');
 var stream  = require('stream');
 
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
@@ -11,32 +8,32 @@ var actionhero = new actionheroPrototype();
 var api;
 var url;
 
-describe('Server: sendBuffer', function() {
+describe('Server: sendBuffer', function(){
 
-  before(function (done) {
-    actionhero.start(function (error, a) {
+  before(function(done){
+    actionhero.start(function(error, a){
       api = a;
       url = 'http://localhost:' + api.config.servers.web.port;
       done();
     });
   });
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after(function(done){
+    actionhero.stop(function(){
       done();
     });
   });
 
   describe('errors', function(){
 
-    before(function(done) {
+    before(function(){
       api.actions.versions.sendBufferTest = [1];
       api.actions.actions.sendBufferTest = {
         '1': {
           name: 'sendBufferTest',
           description: 'sendBufferTest',
           version: 1,
-          run: function (api, data, next) {
+          run: function(api, data, next){
             const buffer = 'Example of data buffer';
             let bufferStream = new stream.PassThrough();
             bufferStream.end(buffer);
@@ -47,21 +44,20 @@ describe('Server: sendBuffer', function() {
           }
         }
       };
+
       api.routes.loadRoutes();
-      done();
     });
 
-    after(function(done){
+    after(function(){
       delete api.actions.actions.sendBufferTest;
       delete api.actions.versions.sendBufferTest;
-      done();
     });
 
-    it('Server should sendBuffer', function (done) {
-        request.get(url + '/api/sendBufferTest', function (error, response, body) {
-          body.should.equal('Example of data buffer');
-          done();
-        });
+    it('Server should sendBuffer', function(done){
+      request.get(url + '/api/sendBufferTest', function(error, response, body){
+        body.should.equal('Example of data buffer');
+        done();
       });
     });
+  });
 });
