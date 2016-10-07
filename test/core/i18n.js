@@ -15,6 +15,11 @@ var readLocaleFile = function(locale){
 };
 
 describe('Core: i18n', function(){
+  before((done) => {
+    // sleep to ensure normal local files are saved to disk
+    setTimeout(done, 500);
+  });
+
   before(function(done){
 
     var spanish = {
