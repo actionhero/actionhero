@@ -4,7 +4,7 @@ const path = require('path');
 const packageJSON = require(path.normalize(__dirname + path.sep + '..' + path.sep  + 'package.json'));
 
 // These values are probably good starting points, but you should expect to tweak them for your application
-const maxEventLoopDelay    = process.env.eventLoopDelay || 5;
+const maxEventLoopDelay    = process.env.eventLoopDelay || 10;
 const maxMemoryAlloted     = process.env.maxMemoryAlloted || 200;
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
 
