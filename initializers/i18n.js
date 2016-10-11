@@ -29,7 +29,7 @@ module.exports = {
       localize: function(message, options){
         if(!Array.isArray(message)){ message = [message]; }
         if(!options){ options = api.i18n; }
-        return api.i18n.__.apply(options, message) || message.join(' ');
+        return api.i18n.__.apply(options, message);
       }
     }, i18n);
 
