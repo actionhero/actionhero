@@ -17,6 +17,7 @@ var api = {
 
   // DEVELOPER MODE //
   watchedFiles: [],
+  watchedFolders: [],
   watchFileAndAct: [Function],
   unWatchAllFiles: [Function],
   loadConfigDirectory: [Function],

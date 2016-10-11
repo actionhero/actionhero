@@ -34,7 +34,7 @@ api.watchFileAndAct(path_to_file, function(){
 });
 ```
 
-You can use ActionHero's `watchFileAndAct()` method to watch additional files your application may have:
+You can use ActionHero's `watchFileAndAct(path_to_file, callback)` method to watch additional files your application may have. Alternatively, use `watchFolderAndAct(path_to_folder, extension, callback)` to add files in a folder. Setting `extension = '*'` adds all files, else you can specify one extension, ex: `extenstion = 'js'`, to add all matching files in the folder.
 
 ## Debugging
 

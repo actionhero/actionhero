@@ -119,7 +119,7 @@ module.exports = {
               let fileParts = file.split('.');
               let ext = fileParts[(fileParts.length - 1)];
               // real file match
-              if(ext === extension){ results.push(fullFilePath); }
+              if(extension === '*' || ext === extension){ results.push(fullFilePath); }
               // linkfile traversal
               if(ext === 'link' && followLinkFiles === true){
                 let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin);

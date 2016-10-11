@@ -26,6 +26,7 @@ module.exports = {
     // reloading in development mode
 
     api.watchedFiles = [];
+    api.watchedFolders = [];
 
     api.watchFileAndAct = function(file, callback){
       file = path.normalize(file);
@@ -53,11 +54,27 @@ module.exports = {
       }
     };
 
+    api.watchFolderAndAct = function(folder, extension, callback) {
+      folder = path.normalize(folder);
+
+      if(!fs.statSync(folder) {
+        throw new Error(folder + ' does not exist and cannot be watched';)
+      }
+
+      if(api.config.general.developmentMode === true && api.watchedFolders.indexOf(folder) < 0) {
+        api.watchedFolders.push(folder);
+        api.utils.recursiveDirectoryGlob(folder,extension).forEach(function(f) {
+          api.watchFileAndAct(f,callback);
+        });
+      }
+    };
+
     api.unWatchAllFiles = function(){
       for(let i in api.watchedFiles){
         fs.unwatchFile(api.watchedFiles[i]);
       }
       api.watchedFiles = [];
+      api.watchedFolders = [];
     };
 
     // We support multiple configuration paths as follows:
