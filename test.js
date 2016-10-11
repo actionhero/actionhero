@@ -23,14 +23,14 @@ if(process.platform === 'win32'){
   execeutable = 'mocha';
 }
 
-// shuffle the test files so we have a random test order
 let testFiles = glob.sync(__dirname + '/test/**/*.js');
-testFiles.sort(function(){ return 0.5 - Math.random(); });
 
-console.log('\r\nTest Order:')
-testFiles.forEach((file) => {
-  console.log('  ' + file.replace(__dirname, ''));
-});
+// shuffle the test files so we have a random test order
+// testFiles.sort(function(){ return 0.5 - Math.random(); });
+// console.log('\r\nTest Order:')
+// testFiles.forEach((file) => {
+//   console.log('  ' + file.replace(__dirname, ''));
+// });
 
 let mocha = __dirname + path.sep + 'node_modules' + path.sep + '.bin' + path.sep + execeutable;
 let child = spawn(mocha, ['--reporter', 'dot'].concat(testFiles), {
