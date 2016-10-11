@@ -154,6 +154,10 @@ describe('Core: Action Cluster', function(){
 
     describe('RPC', function(){
 
+      before((done) => {
+        setTimeout(done, 1000);
+      });
+
       afterEach(function(done){
         delete apiA.rpcTestMethod;
         delete apiB.rpcTestMethod;
@@ -176,7 +180,7 @@ describe('Core: Action Cluster', function(){
 
         process.nextTick(function(){
           apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, function(error){
-            process.nextTick(() => {
+            setTimeout(() => {
               should.not.exist(error);
               // callback should work too!
               data[1][0].should.equal('arg1');
@@ -186,7 +190,7 @@ describe('Core: Action Cluster', function(){
               data[3][0].should.equal('arg1');
               data[3][1].should.equal('arg2');
               done();
-            });
+            }, 100);
           });
         });
       });
