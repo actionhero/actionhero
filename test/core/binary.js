@@ -7,6 +7,7 @@ var path    = require('path');
 var exec    = require('child_process').exec;
 var testDir = os.tmpdir() + path.sep + 'actionheroTestProject';
 var binary  = './node_modules/.bin/actionhero';
+var pacakgeJSON = require(__dirname + '/../../package.json');
 
 var doBash = function(commands, callback){
   var fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\'';
@@ -114,6 +115,16 @@ describe('Core: Binary', function(){
         data.should.containEql('actionhero start cluster');
         data.should.containEql('Binary options:');
         data.should.containEql('actionhero generate server');
+        done();
+      });
+    });
+
+    it('can call the version command', function(done){
+      doBash([
+        'cd ' + testDir, binary + ' version'
+      ], function(error, data){
+        should.not.exist(error);
+        data.trim().should.equal(pacakgeJSON.version);
         done();
       });
     });
