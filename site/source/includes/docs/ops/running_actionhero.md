@@ -26,6 +26,9 @@ Descriptions:
 * actionhero help
   will display this document
 
+* actionhero version
+  will display the version of ActionHero in use
+
 * actionhero start --config=[/path/to/config] --title=[processTitle]
     --daemon
   [config] (optional) path to config.js, defaults to "process.cwd() + '/'
@@ -42,7 +45,7 @@ Descriptions:
   will launch a ActionHero cluster (using node-s cluster module)
   [workers] (optional) number of workers (defaults to # CPUs - 2)
   [title] (optional) worker title prefix (default 'actionhero-worker-')
-    set `--workerTitlePrefix=hostname`, your app.id would be like 
+    set `--workerTitlePrefix=hostname`, your app.id would be like
     `your_host_name-#`
   [daemon] (optional) to fork and run as a new background process defaults
     to false
