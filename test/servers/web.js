@@ -1039,19 +1039,17 @@ describe('Server: Web', function(){
       var source = __dirname + '/../../public/logo/sky.jpg';
 
       before(function(done){
-        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'sky with space.jpg'));
-        api.staticFile.searchLoactions.push(os.tmpdir());
-        process.nextTick(function(){
-          done();
-        });
+        var tmpDir = os.tmpdir();
+        var readStream = fs.createReadStream(source);
+        readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'sky with space.jpg'));
+        api.staticFile.searchLoactions.push(tmpDir);
+        readStream.on('close', done);
       });
 
       after(function(done){
-        fs.unlink(os.tmpdir() + path.sep + 'sky with space.jpg');
+        fs.unlinkSync(os.tmpdir() + path.sep + 'sky with space.jpg');
         api.staticFile.searchLoactions.pop();
-        process.nextTick(function(){
-          done();
-        });
+        done();
       });
 
       it('will decode %20 or plus sign to a space so that file system can read', function(done){
