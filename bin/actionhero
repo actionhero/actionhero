@@ -29,7 +29,7 @@ let commands = [];
 if(!optimist.argv._ || optimist.argv._.length === 0){ commands.push('start'); }
 optimist.argv._.forEach(function(arg){ commands.push(arg); });
 
-if(commands.length === 1 && commands[0] === 'generate'){
+if(commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0){
 
   // when generating the project from scratch, we cannot rely on the normal initilizers
   const runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
