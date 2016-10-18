@@ -9,6 +9,6 @@ exports.task = {
 
   run: function(api, params, next){
     // your logic here
-    next();
+    next(error, resultLogMessage);
   }
 };
