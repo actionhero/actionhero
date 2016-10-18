@@ -157,7 +157,7 @@ describe('Core: Binary', function(){
         data.should.containEql('description:   \'my_description\'');
         data.should.containEql('queue:         \'my_queue\'');
         data.should.containEql('frequency:     12345');
-        data.should.containEql('next();');
+        data.should.containEql('next(error, resultLogMessage)');
         done();
       });
     });
