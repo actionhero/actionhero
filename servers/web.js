@@ -125,17 +125,17 @@ const initialize = function(api, options, next){
         connection.rawConnection.res.end();
         connection.destroy();
       }
+    };
+
+    if (error) {
+      connection.rawConnection.responseHttpCode = 404;
+      return sendRequestResult();
     }
 
     if(reqHeaders['if-modified-since']){
       ifModifiedSince = new Date(reqHeaders['if-modified-since']);
       lastModified.setMilliseconds(0);
       if(lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304; }
-      return sendRequestResult();
-    }
-
-    if(error){
-      connection.rawConnection.responseHttpCode = 404;
       return sendRequestResult();
     }
 
