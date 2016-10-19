@@ -25,14 +25,14 @@ describe('Server: Web', function(){
   });
 
   it('file: 404 pages from POST with if-modified-since header', function(done) {
-    let file = Math.random().toString(36);
-    let options = {
+    var file = Math.random().toString(36);
+    var options = {
       url: url + '/' + file,
       headers: {
         'if-modified-since': 'Thu, 19 Apr 2012 09:51:20 GMT'
       }
     };
-    request.post(options, function(error, response, body) {
+    request.get(options, function(error, response, body) {
       should.not.exist(error);
       response.statusCode.should.equal(404);
       response.body.should.equal('That file is not found (' + file + ')');
