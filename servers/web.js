@@ -114,7 +114,7 @@ const initialize = function(api, options, next){
     const headers = connection.rawConnection.responseHeaders;
     reqHeaders = connection.rawConnection.req.headers;
 
-    let sendRequestResult = function() {
+    let sendRequestResult = function(){
       let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode, 10);
       if(error){
         server.sendWithCompression(connection, responseHttpCode, headers, String(error));
@@ -125,7 +125,7 @@ const initialize = function(api, options, next){
         connection.rawConnection.res.end();
         connection.destroy();
       }
-    }
+    };
 
     if(reqHeaders['if-modified-since']){
       ifModifiedSince = new Date(reqHeaders['if-modified-since']);
@@ -141,7 +141,7 @@ const initialize = function(api, options, next){
 
     if(api.config.servers.web.enableEtag && fileStream && fileStream.path){
       fs.stat(fileStream.path, (error, filestats) => {
-        if (error){
+        if(error){
           server.log('Error receving file statistics: ' + String(error), 'error');
           return sendRequestResult();
         }
