@@ -76,7 +76,7 @@ module.exports = {
 
       sendFileNotFound: function(connection, errorMessage, callback){
         connection.error = new Error(errorMessage);
-        this.logRequest('{404: not found}', connection, null, null, false);
+        this.logRequest('{not found}', connection, null, null, false);
         callback(connection, api.config.errors.fileNotFound(connection), null, 'text/html', api.config.errors.fileNotFound(connection).length);
       },
 
@@ -107,9 +107,10 @@ module.exports = {
       },
 
       logRequest: function(file, connection, length, duration, success){
-        api.log(['[ file @ %s ]', connection.type], 'debug', {
+        api.log(['[ file @ %s ]', connection.type], api.config.general.fileRequestLogLevel, {
           to: connection.remoteIP,
           file: file,
+          requestedFile: connection.params.file,
           size: length,
           duration: duration,
           success: success
