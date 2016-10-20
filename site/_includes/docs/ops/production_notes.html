@@ -62,7 +62,7 @@ exports.default = {
   <p>Notes:</p>
 
   <ul>
-    <li>It’s best to seperate the "workers" from the web "servers"
+    <li>It's best to seperate the "workers" from the web "servers"
       <ul>
         <li>be sure to modify the config files for each type of server acordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)</li>
       </ul>
@@ -90,19 +90,19 @@ exports.default = {
     <li>Start the cluster with 2 workers: <code>./node_modules/.bin/actionhero start cluster --workers=2</code></li>
   </ul>
 
-  <p>When deploying new code, you can gracefully restart your workers by sending the <code>USR2</code> signal to the cluster manager to signal a reload to all workers.  You don’t need to start and stop the cluster-master.  This allows for 0-downtime deployments.</p>
+  <p>When deploying new code, you can gracefully restart your workers by sending the <code>USR2</code> signal to the cluster manager to signal a reload to all workers.  You don't need to start and stop the cluster-master.  This allows for 0-downtime deployments.</p>
   <p>You may want to set some of the ENV variables above to help with your deployment.</p>
 
   <h2 id="production-notes-number-of-workers">Number of workers</h2>
 
-  <p>When choosing the number of workers (<code>--workers=n</code>) for your ActionHero cluster, choose at least 1 less than the number of CPUs available.  If you have a "burstable" architecture (like a Joyent smart machine), opt for the highest number of ‘consistent’ CPUs you can have, meaning a number of CPUs that you will always have available to you.</p>
+  <p>When choosing the number of workers (<code>--workers=n</code>) for your ActionHero cluster, choose at least 1 less than the number of CPUs available.  If you have a "burstable" architecture (like a Joyent smart machine), opt for the highest number of ‘consistent' CPUs you can have, meaning a number of CPUs that you will always have available to you.</p>
   <p>You never want more workers than you can run at a time, or else you will actually be slowing down the execution of all processes.</p>
   <p>Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers!</p>
 
   <h2 id="production-notes-pidfiles">Pidfiles</h2>
 
   <p>ActionHero will write its pid to a pidfile in the normal unix way.  The path for the pidfile is set in <code>config/api.js</code> with <code>config.general.paths.pid</code>.</p>
-  <p>Individual ActionHero servers will name their pidfiles by <code>api.id</code>, which is determined by the logic <a href="https://github.com/evantahler/actionhero/blob/master/initializers/pids.js">here</a> and <a href="https://github.com/evantahler/actionhero/blob/master/initializers/id.js">here</a>.  For example, on my laptop with the IP address of <code>192.168.0.1</code>, running <code>npm start</code> would run one ActionHero server and generate a pidfile of <code>./pids/actionhero-192.168.0.1</code> in which would be a single line containg the process’ pid.</p>
+  <p>Individual ActionHero servers will name their pidfiles by <code>api.id</code>, which is determined by the logic <a href="https://github.com/evantahler/actionhero/blob/master/initializers/pids.js">here</a> and <a href="https://github.com/evantahler/actionhero/blob/master/initializers/id.js">here</a>.  For example, on my laptop with the IP address of <code>192.168.0.1</code>, running <code>npm start</code> would run one ActionHero server and generate a pidfile of <code>./pids/actionhero-192.168.0.1</code> in which would be a single line containg the process' pid.</p>
   <p>When running the cluster, the cluster process first writes his own pidfile to <code>process.cwd() + './pids/cluster_pidfile'</code>.  Then, every worker the cluster master creates will have a pid like <code>actionhero-worker-1</code> in the location defined by <code>config/api.js</code>.</p>
 
   <h2 id="production-notes-git-based-deployment">Git-Based Deployment</h2>
@@ -124,7 +124,7 @@ cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
 
   <h2 id="production-notes-global-packages">Global Packages</h2>
 
-  <p>It’s probably best to avoid installing any global packages.  This way, you won’t have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package’s binaries are always copied into <code>./node_modules/.bin</code>.</p>
+  <p>It's probably best to avoid installing any global packages.  This way, you won't have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package's binaries are always copied into <code>./node_modules/.bin</code>.</p>
   <p>You can add local references to your $PATH like so to use these local binaries:</p>
   <p><code>export PATH=$PATH:node_modules/.bin</code></p>
 
@@ -224,17 +224,17 @@ http {
   {% endhighlight %}
 
 
-  <p>While ActionHero can be the font-line server your users hit, it’s probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.</p>
+  <p>While ActionHero can be the font-line server your users hit, it's probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.</p>
   <p>Here is an example nginx config for interfacing with ActionHero, including using sockets (not http) and handing the websocket upgrade path.</p>
 
   <ul>
-    <li>Note the proxy-pass format to the socket: proxy_pass <a href="http://unix">http://unix</a>:/path/to/socket</li>
+    <li>Note the proxy-pass format to the socket: proxy_pass http://unix:/path/to/socket</li>
     <li>Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)</li>
   </ul>
 
   <h2 id="production-notes-redis-ha">Redis High-Availability</h2>
 
-  <p><a href="http://redis.io/">Redis</a> is technically optional in ActionHero environments, but you will need it if you want to coordinates tasks across a cluster of workers, handle group chat mechanics between WebSocket clients, or do other cross-cluster operations.  In those cases, you’ll want your Redis setup to be reliable.  There are 2 methods to achieving HA redis: Sentinels and Cluster.  A simple architectural wireframe of how to deploy the various options is below  The <a href="https://github.com/luin/ioredis"><code>ioredis</code></a> node package supports both of these connection schemes, and all you need to change is your connection options.</p>
+  <p><a href="http://redis.io/">Redis</a> is technically optional in ActionHero environments, but you will need it if you want to coordinates tasks across a cluster of workers, handle group chat mechanics between WebSocket clients, or do other cross-cluster operations.  In those cases, you'll want your Redis setup to be reliable.  There are 2 methods to achieving HA redis: Sentinels and Cluster.  A simple architectural wireframe of how to deploy the various options is below  The <a href="https://github.com/luin/ioredis"><code>ioredis</code></a> node package supports both of these connection schemes, and all you need to change is your connection options.</p>
   <p><img src="/assets/images/redis.png"></p>
 
   <h3>Sentinel Mode</h3>
@@ -275,7 +275,7 @@ exports.production = {
 
   <p>In Cluster mode, Redis shards all the keys in data into "slots" which are evenly allocated though all the masters in the cluster. The client can connect to any node in the cluster, and if the requested key belongs on another node, it will proxy the request for you (just like the Sentinel would). The cluster can also take care of master re-election for each shard in the event of a master node failure.</p>
   <p>Cluster mode provides similar high-availability to Sentinel mode, but the sharding allows more data to be stored in the cluster overall. However, where Sentinel mode requires a minimum of 3 servers, Cluster mode requires a minimum of 6 to reach a quorom and provide full redundancy.</p>
-  <p>Also an important note:  while you may opt to run "sentinel processes", it’s the same codebase as regular redis, just running in "sentinel mode".  The same goes if you run redis in "cluster mode".</p>
+  <p>Also an important note:  while you may opt to run "sentinel processes", it's the same codebase as regular redis, just running in "sentinel mode".  The same goes if you run redis in "cluster mode".</p>
   <p>An example of a <code>redis.js</code> config file for redis cluster would be:</p>
 
 {% highlight javascript %}
@@ -289,8 +289,8 @@ exports.production = {
   <h3>General Configuration</h3>
   <ul>
     <li>Be sure to change <code>api.config.general.serverToken</code> to something unique for your application</li>
-    <li>Turn off <a href="/docs/#development-mode">developer mode</a> in production.</li>
-    <li>Use <code>api.config.general.filteredParams</code> to hide sensitive information from the logs.  You probably don’t want to log out <code>password</code>, <code>credit_card</code>, and other things of that nature.</li>
+    <li>Turn off <a href="/docs/core/#development-mode">developer mode</a> in production.</li>
+    <li>Use <code>api.config.general.filteredParams</code> to hide sensitive information from the logs.  You probably don't want to log out <code>password</code>, <code>credit_card</code>, and other things of that nature.</li>
   </ul>
 
   <h3>Topology</h3>
@@ -298,7 +298,7 @@ exports.production = {
     <li>Run a cluster via <code>start cluster</code>.  This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
       <ul>
         <li>You can run 1 ActionHero instance per core (assuming the server is dedicated to ActionHero), and that is the default behavior of <code>start cluster</code>.</li>
-        <li>You don’t need a tool like PM2 to manage ActionHero cluster process, but you can.</li>
+        <li>You don't need a tool like PM2 to manage ActionHero cluster process, but you can.</li>
         <li>You can use an init script to <code>start cluster</code> at boot, or use a tool like <a href="https://mmonit.com/monit/">monit</a> to do it for you.</li>
       </ul>
     </li>
@@ -310,7 +310,7 @@ exports.production = {
     </li>
     <li>Use a centralized logging tool like Splunk, ELK, SumoLogic, etc.  ActionHero is <em>built for the cloud</em>, which means that it expects pids, application names, etc to change, and as such, will create many log files.  Use a centralized tool to inspect the state of your application.
       <ul>
-        <li>Log everything.  You never know what you might want to check up on.  ActionHero’s logger has various levels you can use for this.</li>
+        <li>Log everything.  You never know what you might want to check up on.  ActionHero's logger has various levels you can use for this.</li>
       </ul>
     </li>
     <li>Split out the redis instance you use for cache from the one you use for tasks.  If your cache fills up, do you want task processing to fail?</li>
@@ -367,7 +367,7 @@ exports.production = {
 
   <h3>Actions</h3>
   <ul>
-    <li>Remember that all params which come in via the <code>web</code> and <code>socket</code> servers are <code>String</code>s.  If you want to typeCast them (perhaps you always know that the param <code>user_id</code> will be an integer), you can do so in a middleware or within an action’s <a href="/docs/#inputs"><code>params.formatter</code></a> step.</li>
+    <li>Remember that all params which come in via the <code>web</code> and <code>socket</code> servers are <code>String</code>s.  If you want to typeCast them (perhaps you always know that the param <code>user_id</code> will be an integer), you can do so in a middleware or within an action's <a href="/docs/core/#actions-inputs"><code>params.formatter</code></a> step.</li>
     <li>Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is "never pass a query to your database which can be directly modified via user input"!</li>
     <li>Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.</li>
     <li>Crafting <a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>
@@ -379,7 +379,7 @@ exports.production = {
     <li>You can chain tasks together to create workflows.</li>
     <li>ActionHero uses the <a href="https://github.com/taskrabbit/node-resque#multi-worker"><code>multiWorker</code></a> from node-resque.  When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can.  This will also fluctuate depending on the CPU difficulty of the job.  Plan accordingly.</li>
     <li>Create a way to view the state of your redis cluster.  Are you running out of RAM?  Are your Queues growing faster than they can be worked?  Checking this information is the key to having a healthy ecosystem.  <a href="/docs/#queue-inspection">The methods for doing so</a> are available.</li>
-    <li>Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain ‘claimed’ in redis, and never make it to the failed queue.</li>
+    <li>Be extra-save within your actions, and do not allow an uncaught exception.  This will cause the worker to crash and the job to be remain ‘claimed' in redis, and never make it to the failed queue.</li>
   </ul>
 
 </section>

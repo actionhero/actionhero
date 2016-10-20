@@ -31,13 +31,13 @@ $ say defaultRoom hooray!
 {"status":"OK","context":"response","data":null,"messageCount":8}
   {% endhighlight %}
 
-  <p>You can access actionhero’s methods via a persistent socket connection.  The default port for this type of communication is 5000.  As this is a persistent connection, socket connections have actionhero’s verbs available to them.  These verbs are:</p>
+  <p>You can access actionhero's methods via a persistent socket connection.  The default port for this type of communication is 5000.  As this is a persistent connection, socket connections have actionhero's verbs available to them.  These verbs are:</p>
 
   <ul>
     <li><code>quit</code> disconnect from the session</li>
-    <li><code>paramAdd</code> - save a singe variable to your connection.  IE: ‘addParam screenName=evan’</li>
-    <li><code>paramView</code> - returns the details of a single param. IE: ‘viewParam screenName’</li>
-    <li><code>paramDelete</code> - deletes a single param.  IE: ‘deleteParam screenName’</li>
+    <li><code>paramAdd</code> - save a singe variable to your connection.  IE: ‘addParam screenName=evan'</li>
+    <li><code>paramView</code> - returns the details of a single param. IE: ‘viewParam screenName'</li>
+    <li><code>paramDelete</code> - deletes a single param.  IE: ‘deleteParam screenName'</li>
     <li><code>paramsView</code> - returns a JSON object of all the params set to this connection</li>
     <li><code>paramsDelete</code> - deletes all params set to this session</li>
     <li><code>roomAdd</code> - connect to a room.</li>
@@ -47,8 +47,8 @@ $ say defaultRoom hooray!
     <li><code>say</code> (room,) message</li>
   </ul>
 
-  <p>Please note that any verbs set using the above method will be ‘sticky’ to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.</p>
-  <p>To help sort out the potential stream of messages a socket user may receive, it is best to understand the "context" of the response.  For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like <code>say</code>).  Messages sent by a user via the ‘say’ command have the context of <code>user</code> indicating they came form a user.  Messages resulting from data sent to the api (like an action) will have the <code>response</code> context.</p>
+  <p>Please note that any verbs set using the above method will be ‘sticky' to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.</p>
+  <p>To help sort out the potential stream of messages a socket user may receive, it is best to understand the "context" of the response.  For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like <code>say</code>).  Messages sent by a user via the ‘say' command have the context of <code>user</code> indicating they came form a user.  Messages resulting from data sent to the api (like an action) will have the <code>response</code> context.</p>
   <p><code>connection.type</code> for a TCP/Socket client is "socket"</p>
 
   <h2 id="socket-tls">TLS</h2>
@@ -100,7 +100,7 @@ cleartextStream.on('data', function(data) {
 
   <h2 id="socket-files-and-routes">Files and Routes</h2>
 
-  <p>Connections over socket can also use the file action.  There is no ‘route’ for files.</p>
+  <p>Connections over socket can also use the file action.  There is no ‘route' for files.</p>
 
   <ul>
     <li>errors are returned in the normal way <code>{error: someError}</code> when they exist.</li>
@@ -172,8 +172,8 @@ client.connect({
 });
   {% endhighlight %}
 
-  <p>The main <code>trick</code> to working with TCP/wire connections directly is to remember that you can have many ‘pending’ requests at the same time.  Also, the order in which you receive responses back can be variable.  if you request <code>slowAction</code> and then <code>fastAction</code>, it’s fairly likely that you will get a response to <code>fastAction</code> first.</p>
+  <p>The main <code>trick</code> to working with TCP/wire connections directly is to remember that you can have many ‘pending' requests at the same time.  Also, the order in which you receive responses back can be variable.  if you request <code>slowAction</code> and then <code>fastAction</code>, it's fairly likely that you will get a response to <code>fastAction</code> first.</p>
   <p>Note that only requests the client makes increment the <code>messageCount</code>, but broadcasts do not (the <code>say</code> command, etc)</p>
-  <p><a href="https://github.com/evantahler/actionhero-client">The actionhero client library</a> uses TCP/TLS connections, and makes use of actionhero’s <code>messageCount</code> parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:</p>
+  <p><a href="https://github.com/evantahler/actionhero-client">The actionhero client library</a> uses TCP/TLS connections, and makes use of actionhero's <code>messageCount</code> parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:</p>
 
 </section>

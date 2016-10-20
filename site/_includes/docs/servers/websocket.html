@@ -48,7 +48,7 @@
   <p><code>connection.type</code> for a webSocket client is "webSocket".  This type will not change regardless of if the client has fallen back to another protocol.</p>
   <p>Data is always returned as JSON objects to the webSocket client.</p>
   <p>An example web socket session might be the following:</p>
-  <p>You can also inspect <code>client.state</code> (‘connected’, ‘disconnected’, etc).  The websocket client will attempt to re-connect automatically.</p>
+  <p>You can also inspect <code>client.state</code> (‘connected', ‘disconnected', etc).  The websocket client will attempt to re-connect automatically.</p>
   <p>If you want to communicate with a websocket client outside of an action, you can call <code>connection.send(message)</code> on the server. In the client lib, the event message will be fired. So, <code>client.on('message, function(m){ ... })</code>.  Be sure to add some descriptive content to the message you send from the sever (like perhaps <code>{&quot;type&quot;: 'message type'}</code>) so you can route message types on the client.</p>
 
   <h2 id="websocket-client-methods">Client Methods</h2>
@@ -125,54 +125,54 @@
 
   <h2 id="websocket-client-event">Client Events</h2>
 
-  <h3><code>client.on(‘connected’, callback)</code></h3>
+  <h3><code>client.on(‘connected', callback)</code></h3>
   <ul>
     <li>no event data</li>
   </ul>
 
-  <h3><code>client.on(‘disconnected’, callback)</code></h3>
+  <h3><code>client.on(‘disconnected', callback)</code></h3>
   <ul>
     <li>no event data</li>
   </ul>
 
-  <h3><code>client.on(‘error’, function(error){ console.log(‘error’, error.stack) })</code></h3>
+  <h3><code>client.on(‘error', function(error){ console.log(‘error', error.stack) })</code></h3>
   <ul>
     <li>this is fired when a general error is encountered (outside of an action or verb)</li>
     <li>this may fire when a general server error occurs</li>
   </ul>
 
-  <h3><code>client.on(‘reconnect’, function(){ console.log(‘reconnect’) })</code></h3>
+  <h3><code>client.on(‘reconnect', function(){ console.log(‘reconnect') })</code></h3>
   <ul>
     <li>fired when client has reconnected</li>
     <li>this will indicate that details, connection.id and other server-generated settings may have changed</li>
   </ul>
 
-  <h3><code>client.on(‘reconnecting’, callback })</code></h3>
+  <h3><code>client.on(‘reconnecting', callback })</code></h3>
   <ul>
     <li>client is attempting to reconnect to server</li>
   </ul>
 
-  <h3><code>client.on(‘message’, function(message){ console.log(message) })<code></h3>
+  <h3><code>client.on(‘message', function(message){ console.log(message) })<code></h3>
   <ul>
     <li>this is VERY noisy, and is fired on all messages from the server, regardless of context or callback</li>
   </ul>
 
-  <h3><code>client.on(‘alert’, function(message){ alert(message) })</code></h3>
+  <h3><code>client.on(‘alert', function(message){ alert(message) })</code></h3>
   <ul>
-    <li>fired when message recieved from the server’s context is specifically ‘alert’</li>
+    <li>fired when message recieved from the server's context is specifically ‘alert'</li>
   </ul>
 
-  <h3><code>client.on(‘api’, function(message){ alert(message) })</code></h3>
+  <h3><code>client.on(‘api', function(message){ alert(message) })</code></h3>
   <ul>
-    <li>fired when message recieved from the server’s context is unknown or from the server</li>
+    <li>fired when message recieved from the server's context is unknown or from the server</li>
   </ul>
 
-  <h3><code>client.on(‘welcome’, function(message){ console.log(message); })</code></h3>
+  <h3><code>client.on(‘welcome', function(message){ console.log(message); })</code></h3>
   <ul>
-    <li>server’s welcome message</li>
+    <li>server's welcome message</li>
   </ul>
 
-  <h3><code>client.on(‘say’, function(message){ console.log(message); })</code></h3>
+  <h3><code>client.on(‘say', function(message){ console.log(message); })</code></h3>
   <ul>
     <li>fired on all say messages from other clients in all rooms</li>
     <li>message.room can be inspected</li>
@@ -181,7 +181,7 @@
   <h2 id="websocket-linking-to-web-client">Linking websockets to Web Clients</h2>
 
   <p>ActionHero provides <code>connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code>connection.id</code>, we attempt to build <code>connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code>api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.</p>
-  <p>You can read more about using a value like <code>connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/#example-initializers">session information</a>.</p>
+  <p>You can read more about using a value like <code>connection.fingerprint</code> in an <a href="/docs/core/#middleware">authentication middleware</a> or using it as a key for <a href="/docs/overview/#examples">session information</a>.</p>
 
   <h2 id="websocket-options">Options</h2>
 
@@ -230,6 +230,6 @@ client: {
   },
   {% endhighlight %}
 
-  <p>You can create your client with options.  Options for both the server and client are stored in <code>/config/servers/websocket.js</code>.  Note there are 3 sections: ‘server’, ‘client’, and ‘generation’:</p>
+  <p>You can create your client with options.  Options for both the server and client are stored in <code>/config/servers/websocket.js</code>.  Note there are 3 sections: ‘server', ‘client', and ‘generation':</p>
 
 </section>

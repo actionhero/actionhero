@@ -2,8 +2,8 @@
   <h1 id="initializers" class="page-header">Initializers</h1>
   <h2 id="initializers-overview">Overview</h2>
 
-  <p>Initializers are the main way you expand your ActionHero server.  This is where you connect to databases, modify the global <code>api</code> object with new classes and helper methods, and set up your <a href="docs#middleware">middleware</a>.</p>
-  <p>Initializers run in 3 phases coinciding with the lifecycles of the application: <code>init</code>, <code>start</code>, and <code>stop</code>.  All <code>init</code> steps happen before all <code>start</code> steps.  Initializers can define both methods and priorities which will happen at each phase of the server’s lifecycle.</p>
+  <p>Initializers are the main way you expand your ActionHero server.  This is where you connect to databases, modify the global <code>api</code> object with new classes and helper methods, and set up your <a href="/docs/core/#middleware">middleware</a>.</p>
+  <p>Initializers run in 3 phases coinciding with the lifecycles of the application: <code>init</code>, <code>start</code>, and <code>stop</code>.  All <code>init</code> steps happen before all <code>start</code> steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle.</p>
   <p>System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priority level split is purely convention.</p>
   <p>In general, <code>initialize()</code> methods should create prototypes and new objects, and <code>start()</code> should boot things or connect to external resources.</p>
 

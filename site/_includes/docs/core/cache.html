@@ -3,7 +3,7 @@
 
 	<h2 id="cache-overview">Overview</h2>
 	<p>ActionHero ships with the functions needed for a distributed key-value cache.  You can cache strings, numbers, arrays and objects (anything that responds to <code>JSON.stringify</code>).</p>
-	<p>The cache’s redis server is defined by <code>api.config.redis</code>.  It is possible to use fakeredis.</p>
+	<p>The cache's redis server is defined by <code>api.config.redis</code>.  It is possible to use fakeredis.</p>
 
 	<h2 id="cache-methods">Cache Methods</h2>
 
@@ -17,20 +17,20 @@
 		</li>
 		<li>Callback: <code>next(error, newObject)</code>
 			<ul>
-				<li><code>error</code> will be null unless the object can’t be saved (perhaps out of ram or a bad object type).</li>
+				<li><code>error</code> will be null unless the object can't be saved (perhaps out of ram or a bad object type).</li>
 				<li>overwriting an existing object will return <code>newObject = true</code></li>
 			</ul>
 		</li>
 	</ul>
 
-	<p><code>api.cache.save</code> is used to both create new entires or update existing cache entires.  If you don’t define an expireTimeMS, <code>null</code> will be assumed, and using <code>null</code> will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)</p>
+	<p><code>api.cache.save</code> is used to both create new entires or update existing cache entires.  If you don't define an expireTimeMS, <code>null</code> will be assumed, and using <code>null</code> will cause this cached item to never expire.  Expired cache objects will be periodically swept away (but not necessarily exactly when they expire)</p>
 
 	<h3><code>api.cache.load</code></h3>
 
 	<ul>
 		<li>Invoke: <code>api.cache.load(key, next)</code> or <code>api.cache.load(key, options, next)</code>
 			<ul>
-				<li><code>options</code> can be <code>{expireTimeMS: 1234}</code> where the act of reading the key will reset the key’s expire time</li>
+				<li><code>options</code> can be <code>{expireTimeMS: 1234}</code> where the act of reading the key will reset the key's expire time</li>
 				<li>If the requested <code>key</code> is not found (or is expired), all values returned will be null.</li>
 			</ul>
 		</li>
@@ -160,6 +160,6 @@
 	<h2 id="cache-redis">Redis</h2>
 
 	<p>The timestamps regarding <code>api.cache.load</code> are to help clients understand if they are working with data which has been modified by another peer (when running in a cluster).</p>
-	<p>Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can <a href="/docs#general-cache-notes">learn more about the cache methods here</a>.  You can also <a href="/docs#redis-configurations">review recommendations about Production Redis configurations</a>.</p>
+	<p>Keep in mind that many clients/servers can access a cached value simultaneously, so build your actions carefully not to have conflicting state.  You can <a href="/docs/core/#cache-overview">learn more about the cache methods here</a>.  You can also <a href="/docs/deployment/#production-notes-redis-ha">review recommendations about Production Redis configurations</a>.</p>
 
 </section>

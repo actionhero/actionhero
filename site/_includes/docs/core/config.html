@@ -4,7 +4,7 @@
   <h2 id="config-overview">Overview</h2>
 
   <p>There are 2 ways to manage actionHero configuration: config files and overrides.  In both cases, ActionHero starts by reading the config in <code>./config/</code>.  <a href="https://github.com/evantahler/actionhero/blob/master/config/">Here is a documented example</a>.</p>
-  <p>The normal way to deal with configuration changes is to use the files in <code>/config/</code> and to have special options for each environment.  First we load in all settings from the <code>default</code> config block, and then we replace those with anything defined in the relevant <code>environment</code> section.  ActionHero uses the standard node environment variable <code>NODE_ENV</code> to determine environment, and defaults to ‘development’ when one isn’t found.  This pattern is very similar the Rails and Sails frameworks.  A good way to visualize this is to note that, by default, the web server will return metadata in response JSON, but we change that in the production NODE_ENV and disable it.</p>
+  <p>The normal way to deal with configuration changes is to use the files in <code>/config/</code> and to have special options for each environment.  First we load in all settings from the <code>default</code> config block, and then we replace those with anything defined in the relevant <code>environment</code> section.  ActionHero uses the standard node environment variable <code>NODE_ENV</code> to determine environment, and defaults to ‘development' when one isn't found.  This pattern is very similar the Rails and Sails frameworks.  A good way to visualize this is to note that, by default, the web server will return metadata in response JSON, but we change that in the production NODE_ENV and disable it.</p>
 
   {% highlight javascript %}
 exports.default = {
@@ -34,7 +34,7 @@ exports.production = {
     <li>environment-specific values in <code>/config</code></li>
     <li>default values in <code>/config</code></li>
     <li>default values of undifined settings from a plugin</li>
-    <li>default values of undifined settings from ActionHero’s core</li>
+    <li>default values of undifined settings from ActionHero's core</li>
   </ol>
 
   <p>When building config files of your own, note that an <code>exports.default</code> is always required, and any environment overrides are optional.  What is exported is a hash which eventually resolves a synchronous function which accepts the <code>api</code> variable.</p>
@@ -65,7 +65,7 @@ actionhero.start(params, function(error, api){
   <p>The priority of arguments is:</p>
 
   <ol>
-    <li>Use the project ‘config’ folder, if it exists.</li>
+    <li>Use the project ‘config' folder, if it exists.</li>
     <li><code>actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4<code></li>
     <li><code>ACTIONHERO_CONFIG=PATH1,PATH2 npm start</code></li>
   </ol>

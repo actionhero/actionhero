@@ -110,7 +110,7 @@ Descriptions:
 {% endhighlight %}
 
   <p>The suggested method to run your ActionHero server is to use the included <code>./node_modules/.bin/actionhero</code> binary.  Note that there is no <code>main.js</code> or specific start script your project needs.  ActionHero handles this for you.  Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.</p>
-  <p>At the time of this writing the ActionHero binary’s help contains:</p>
+  <p>At the time of this writing the ActionHero binary's help contains:</p>
 
   <h2 id="running-actionhero-linking">Linking the ActionHero binary</h2>
 
@@ -162,7 +162,7 @@ actionhero.start(params, function(error, api){
 });
 {% endhighlight %}
 
-  <p>While <strong>NOT</strong> encouraged, you can always instantiate an ActionHero server yourself.  Perhaps you wish to combine ActionHero with an existing project.  Here’s how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.</p>
+  <p>While <strong>NOT</strong> encouraged, you can always instantiate an ActionHero server yourself.  Perhaps you wish to combine ActionHero with an existing project.  Here's how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.</p>
   <p>Feel free to look at the source of <code>./node_modules/actionhero/bin/include/start</code> to see how the main ActionHero server is implemented for more information.</p>
   <p>You can programmatically control an ActionHero server with <code>actionhero.start(params, callback)</code>, <code>actionhero.stop(callback)</code> and <code>actionhero.restart(callback)</code></p>
   <p>From within ActionHero itself (actions, initilizers, etc), you can use <code>api.commands.start</code>, <code>api.commands.stop</code>, and <code>api.commands.restart</code> to control the server.</p>
@@ -231,7 +231,7 @@ notice: cluster complete, Bye!
 
   <h2 id="running-actionhero-shutting-down">Shutting Down</h2>
 
-  <p>When using <code>actionhero start</code> or <code>actionhero start cluster</code>, when you signal ActionHero to stop via the signals above (or from within your running application via <code>api.commands.stop()</code>), actionhero will attempt to gracefully shutdown.  This will include running any initializer’s <code>stop()</code> method.  This will close any open servers, and attempt to allow any running tasks to complete.</p>
+  <p>When using <code>actionhero start</code> or <code>actionhero start cluster</code>, when you signal ActionHero to stop via the signals above (or from within your running application via <code>api.commands.stop()</code>), actionhero will attempt to gracefully shutdown.  This will include running any initializer's <code>stop()</code> method.  This will close any open servers, and attempt to allow any running tasks to complete.</p>
   <p>Because things sometimes go wrong, <code>actionhero start</code> and <code>actionhero start cluster</code> also have a "emergency stop" timeout.  This defaults to 30 seconds, and is configurable via the <code>ACTIONHERO_SHUTDOWN_TIMEOUT</code> environment variable.  Be sure that your tasks and actions can complete within that window, or else raise that shutdown limit.</p>
 
   <h2 id="running-actionhero-windows">Windows-Specific Notes</h2>

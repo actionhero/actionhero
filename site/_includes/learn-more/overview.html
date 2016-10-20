@@ -10,7 +10,7 @@
   <h1 id="servers" class="page-header">Servers</h1>
 
   <h2 id="web">Web</h2>
-  <p><span class="label label-info"><a href="/docs/#web-server">Web Server Docs</a></span></p>
+  <p><span class="label label-info"><a href="/docs/servers/#web">Web Server Docs</a></span></p>
   <p>ActionHero can act as a HTTP or HTTPs API server. With integrated routing, it is easy to create RESTful resources. ActionHero can also serve static files.</p>
 
   {% highlight bash %}
@@ -18,7 +18,7 @@ curl "http://127.0.0.1:8080/api/" -d "action=actionsView"
   {% endhighlight %}
 
   <h2 id="web-socket">Web Socket</h2>
-  <p><span class="label label-info"><a href="/docs/#websocket-server">Websocket Server Docs</a></span></p>
+  <p><span class="label label-info"><a href="/docs/servers/#websocket">Websocket Server Docs</a></span></p>
   <p>ActionHero uses Primus to provided a robust and reliable nodejs websocket implementation. ActionHero web socket clients can fall back to long-polling and other transports to ensure they are connected. Primus allows you to choose the underlying websocket implementation of your choice.</p>
 
   {% highlight javascript %}
@@ -28,7 +28,7 @@ A.action("actionsView", function(data){ console.log(data); })
   {% endhighlight %}
 
   <h2 id="socket">Socket</h2>
-  <p><span class="label label-info"><a href="/docs/#socket-server">Socket Server Docs</a></span></p>
+  <p><span class="label label-info"><a href="/docs/servers/#socket">Socket Server Docs</a></span></p>
   <p>ActionHero ships with the ability to be a line TCP or TLS server. ActionHero clients can speak a wire protocol that sends lines of JSON. Actions can be processed asynchronously and in parallel. The API server and the built-in chat system provide all you need for a communication or game application.</p>
 
   {% highlight bash %}
@@ -41,6 +41,6 @@ Connected to localhost.
   {% endhighlight %}
 
   <h2>Your Own</h2>
-  <p><span class="label label-info"><a href="/docs/#server">Custom Server Docs</a></span></p>
+  <p><span class="label label-info"><a href="/docs/core/#servers">Custom Server Docs</a></span></p>
   <p>Most importantly, ActionHero's modular server architecture allows you to define your own servers and protocols. Learn how in <a href="/docs/">the ActionHero documentation</a>.</p>
 </section>

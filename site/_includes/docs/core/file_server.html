@@ -34,15 +34,15 @@
 <h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/simple.html<br />
   {% endhighlight %}
 
-  <p>ActionHero comes with a file server which clients can make use of to request files on the ActionHero server.  ActionHero is not meant to be a ‘rendering’ server (like express or rails), but can serve static files.</p>
+  <p>ActionHero comes with a file server which clients can make use of to request files on the ActionHero server.  ActionHero is not meant to be a ‘rendering' server (like express or rails), but can serve static files.</p>
   <p>If a directory is requested rather than a file, ActionHero will look for the file in that directory defined by <code>api.config.commonWeb.directoryFileType</code> (which defaults to <code>index.html</code>).  Failing to find this file, an error will be returned defined in <code>api.config.general.flatFileIndexPageNotFoundMessage</code></p>
-  <p>You can use the <code>api.staticFile.get(connection, next)</code> in your actions (where <code>next(connection, error, fileStream, mime, length)</code>).  Note that fileStream is a stream which can be pipe’d to a client.  You can use this in actions if you wish,</p>
-  <p>On .nix operating system’s symlinks for both files and folders will be followed.</p>
+  <p>You can use the <code>api.staticFile.get(connection, next)</code> in your actions (where <code>next(connection, error, fileStream, mime, length)</code>).  Note that fileStream is a stream which can be pipe'd to a client.  You can use this in actions if you wish,</p>
+  <p>On .nix operating system's symlinks for both files and folders will be followed.</p>
 
   <h2 id="file-server-web-clients">Web Clients</h2>
 
   <ul>
-    <li><code>Cache-Control</code> and <code>Expires</code> or respectively <code>ETag</code> headers (depending on configuration) will be sent with it’s caching or revalidation time defined by <code>api.config.servers.web.flatFileCacheDuration</code></li>
+    <li><code>Cache-Control</code> and <code>Expires</code> or respectively <code>ETag</code> headers (depending on configuration) will be sent with it's caching or revalidation time defined by <code>api.config.servers.web.flatFileCacheDuration</code></li>
     <li>Content-Types for files will attempt to be determined using the <a href="https://npmjs.org/package/mime">mime package</a></li>
     <li>web clients may request <code>connection.params.file</code> directly within an action which makes use of  <code>api.sendFile</code>, or if they are  under the <code>api.config.servers.web.urlPathForFiles</code> route, the file will be looked up as if the route matches the directory structure under <code>flatFileDirectory</code>.</li>
     <li>if your action wants to send content down to a client directly, you will do so like this <code>server.sendFile(connection, null, stream, 'text/html', length);</code></li>
@@ -70,8 +70,8 @@ data.toRender = false;
 next();
   {% endhighlight %}
 
-  <p>You can send files from within actions using <code>connection.sendFile()</code>.  Here’s an example:</p>
-  <p>Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set <code>toRender = false</code> in the callback, as you have already sent data to the client, and probably don’t want to do so again on a file request.  If you try to <code>sendFile</code> on a path that doesn’t exist (within your public directory), the 404 header will be handled automatically for you.</p>
+  <p>You can send files from within actions using <code>connection.sendFile()</code>.  Here's an example:</p>
+  <p>Note that you can optionally modify responseCodes (for HTTP clients only).  Be sure to set <code>toRender = false</code> in the callback, as you have already sent data to the client, and probably don't want to do so again on a file request.  If you try to <code>sendFile</code> on a path that doesn't exist (within your public directory), the 404 header will be handled automatically for you.</p>
 
   <h2 id="file-server-customization">Customizing the File Server</h2>
 
@@ -87,7 +87,7 @@ api.staticFile.path = function(connection){
 }
   {% endhighlight %}
 
-  <p>By default, we want ActionHero’s file server to be very locked-down, and only serve files from directories defined in <code>api.config.general.paths.public</code>.  This is the safest default for beginners. However, you can customize things by changing the behavior of <code>api.staticFile.path()</code>.</p>
+  <p>By default, we want ActionHero's file server to be very locked-down, and only serve files from directories defined in <code>api.config.general.paths.public</code>.  This is the safest default for beginners. However, you can customize things by changing the behavior of <code>api.staticFile.path()</code>.</p>
   <p>This would serve files from <code>/public</code> for all requests except the <code>sendFile</code> action, which will serve files from <code>/tmp</code></p>
 
 </section>

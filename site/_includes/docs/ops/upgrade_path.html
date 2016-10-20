@@ -2,8 +2,8 @@
   <h1 id="upgrading-actionhero" class="page-header">Upgrading ActionHero</h1>
   <h2 id="upgrading-actionhero-overview">Overview</h2>
 
-  <p>Upgrading big ActionHero projects to a new major might require some effort. Every ActionHero version has it’s own specific project files which you generate using <code>actionhero generate</code> command. One of the ways to upgrade your project is to generate a new project using the latest ActionHero framework (<code>npm install actionhero &amp;&amp; ./node_modules/.bin/actionhero generate</code>). Using that as your starting point you can then carefully copy all your <code>configs</code>, <code>initializers</code>, <code>servers</code>, links and other custom code from your old project, making sure that you are at the same working state as before. It’s a good practice to make tests for your actions (or any other component) before you plan to upgrade your ActionHero project.</p>
-  <p>With good <a href="/docs/#testing">test coverage</a> you can make sure that you have successfully upgraded your project.</p>
+  <p>Upgrading big ActionHero projects to a new major might require some effort. Every ActionHero version has it's own specific project files which you generate using <code>actionhero generate</code> command. One of the ways to upgrade your project is to generate a new project using the latest ActionHero framework (<code>npm install actionhero &amp;&amp; ./node_modules/.bin/actionhero generate</code>). Using that as your starting point you can then carefully copy all your <code>configs</code>, <code>initializers</code>, <code>servers</code>, links and other custom code from your old project, making sure that you are at the same working state as before. It's a good practice to make tests for your actions (or any other component) before you plan to upgrade your ActionHero project.</p>
+  <p>With good <a href="/docs/deployment/#testing">test coverage</a> you can make sure that you have successfully upgraded your project.</p>
   <p>ActionHero follows <a href="http://semver.org/">semantic versioning</a>.  This means that a minor change is a right-most number.  A new feature added is the middle number, and a breaking change is the left number.  You should expect something in your application to need to be changed if you upgrade a major version.</p>
 
   <h2 id="upgrading-actionhero-to-v15">Upgrading from v14.x.x to v15.x.x</h2>
@@ -19,7 +19,7 @@
   {% endhighlight %}
 
   <ul>
-    <li>The ActionHero binary has had it’s commands changed.
+    <li>The ActionHero binary has had it's commands changed.
       <ul>
         <li>Any deployment or automation tools you use will need to be updated accordingly.</li>
       </ul>
@@ -136,7 +136,7 @@ data = {
         <li>You will need to change all of your actions to use <code>data.response</code> rather than <code>connection.response</code> directly.</li>
       </ul>
     </li>
-    <li>Middleware syntax has changed to match action’s <code>data</code> pattern.  You will need to change your middleware accordingly.</li>
+    <li>Middleware syntax has changed to match action's <code>data</code> pattern.  You will need to change your middleware accordingly.</li>
     <li>Removed <code>connection._originalConnection</code>.</li>
     <li>Websockets:
       <ul>

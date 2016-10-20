@@ -31,7 +31,7 @@
 #     task middleware, `postProcessor` hook
   {% endhighlight %}
 
-  <p>Each type of middleware is distinct from the others, and operates on distinct parts of a client’s lifecycle.  For a logical example, please inspect the following connection lifecycle:</p>
+  <p>Each type of middleware is distinct from the others, and operates on distinct parts of a client's lifecycle.  For a logical example, please inspect the following connection lifecycle:</p>
 
   <h2 id="middleware-action-request-flow">Action Request Flow</h2>
   <img width="300px" src="/assets/images/connection_flow_actions.png" />
@@ -62,7 +62,7 @@ api.actions.addMiddleware(middleware);
   {% endhighlight %}
 
   <p>ActionHero provides hooks for you to execute custom code both before and after the execution of all or some actions.  This is a great place to write authentication logic or custom loggers.</p>
-  <p>Action middleware requires a <code>name</code> and at least one of <code>preProcessor</code> or <code>postProcessor</code>.  Middleware can be <code>global</code>, or you can choose to apply each middleware to an action specifically via <code>action.middleware = []</code> in the action’s definition.  You supply a list of middleware names, like <code>action.middleware = ['userId checker']</code> in the example above.</p>
+  <p>Action middleware requires a <code>name</code> and at least one of <code>preProcessor</code> or <code>postProcessor</code>.  Middleware can be <code>global</code>, or you can choose to apply each middleware to an action specifically via <code>action.middleware = []</code> in the action's definition.  You supply a list of middleware names, like <code>action.middleware = ['userId checker']</code> in the example above.</p>
   <p>Each processor is passed <code>data</code> and the callback <code>next</code>.  Just like within actions, you can modify the <code>data</code> object to add to <code>data.response</code> to create a response to the client.  If you pass <code>error</code> to the callback <code>next</code>, that error will be returned to the client.  If a <code>preProcessor</code> has an error, the action will never be called.</p>
   <p>The priority of a middleware orders it with all other middleware which might fire for an action.  Lower numbers happen first.  If you do not provide a priority, the default from <code>api.config.general.defaultProcessorPriority</code> will be used</p>
 
@@ -146,12 +146,12 @@ api.chatRoom.addMiddleware(chatMiddleware);
 
   <p>The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 4 types of middleware for each step: <code>say</code>, <code>onSayReceive</code>, <code>join</code>, and <code>leave</code>.</p>
   <p>Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb/message will not be sent.</p>
-  <p>More detail and nuance on chat middleware can be found in the <a href="/docs#chat">chat section</a></p>
+  <p>More detail and nuance on chat middleware can be found in the <a href="/docs/core/#chat">chat section</a></p>
 
   <h3><a id="middleware-chat-middleware-notes"></a>Chat Midleware Notes</h3>
 
   <ul>
-    <li>In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty <code>{}</code> connection is used to proxy the message coming from the ‘system’</li>
+    <li>In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the callback chain is still firing.  If the connection itself were to make the broadcast, it would fail because the connection is not in the room.  Instead, an empty <code>{}</code> connection is used to proxy the message coming from the ‘system'</li>
     <li>Only the <code>sayCallbacks</code> have a second return value on the callback, <code>messagePayload</code>.  This allows you to modify the message being sent to your clients.</li>
     <li><code>messagePayload</code> will be modified and and passed on to all <code>addSayCallback</code> middlewares inline, so you can append and modify it as you go</li>
     <li>If you have a number of callbacks (<code>say</code>, <code>onSayReceive</code>, <code>join</code> or  <code>leave</code>), the priority maters, and you can block subsequent methods from firing by returning an error to the callback.</li>

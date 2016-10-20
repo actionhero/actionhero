@@ -41,9 +41,9 @@ githubButton:
 
 # twitter buttons
 twitter:
-  enabled: true
+  enabled: false
   via:
-  hash:
+  hash: #actionherojs #nodejs
   account: actionherojs
 
 # facebook buttons

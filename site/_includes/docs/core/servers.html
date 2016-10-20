@@ -59,7 +59,7 @@ exports.initialize = initialize;
 
   <p>In ActionHero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic <code>connection</code> object which can be operated on by the rest of ActionHero.  To help with this, all servers extend <code>api.genericServer</code> and fill in the required methods.</p>
   <p>To get started, you can use the <code>generateServer action</code> (name is required).  This will generate a template server which looks like the above.</p>
-  <p>Like initializers, the <code>start()</code> and <code>stop()</code> methods will be called when the server is to boot up in ActionHero’s lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: <code>https.createServer.listen</code>, etc).</p>
+  <p>Like initializers, the <code>start()</code> and <code>stop()</code> methods will be called when the server is to boot up in ActionHero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: <code>https.createServer.listen</code>, etc).</p>
 
   <h2 id="servers-designing-servers">Designing Servers</h2>
 
@@ -92,11 +92,11 @@ server.sendMessage = function(connection, message){
  }
   {% endhighlight %}
 
-  <p>Your job, as a server designer, is to coerce every client’s connection into a connection object.  This is done with the <code>sever.buildConnection</code> helper.  Here is an example from the <code>web</code> server:</p>
+  <p>Your job, as a server designer, is to coerce every client's connection into a connection object.  This is done with the <code>sever.buildConnection</code> helper.  Here is an example from the <code>web</code> server:</p>
 
   <h2 id="servers-options-and-attributes">Options and Attributes</h2>
 
-  <p>A server defines <code>attributes</code> which define it’s behavior.  Variables like <code>canChat</code> are defined here.  <code>options</code> are passed in, and come from <code>api.config.servers[serverName]</code>.  These can be new variables (like https?) or they can also overwrite the set <code>attributes</code>.</p>
+  <p>A server defines <code>attributes</code> which define it's behavior.  Variables like <code>canChat</code> are defined here.  <code>options</code> are passed in, and come from <code>api.config.servers[serverName]</code>.  These can be new variables (like https?) or they can also overwrite the set <code>attributes</code>.</p>
   <p>The required attributes are provided in a generated server.</p>
 
   <h2 id="servers-verbs">Verbs</h2>
@@ -119,7 +119,7 @@ allowedVerbs: [
     ]
   {% endhighlight %}
 
-  <p>When an incoming message is detected, it is the server’s job to build <code>connection.params</code>.  In the <code>web</code> server, this is accomplished by reading GET, POST, and form data.  For <code>websocket</code> clients, that information is expected to be emitted as part of the action’s request.  For other clients, like <code>socket</code>, ActionHero provides helpers for long-lasting clients to operate on themselves.  These are called connection <code>verbs</code>.</p>
+  <p>When an incoming message is detected, it is the server's job to build <code>connection.params</code>.  In the <code>web</code> server, this is accomplished by reading GET, POST, and form data.  For <code>websocket</code> clients, that information is expected to be emitted as part of the action's request.  For other clients, like <code>socket</code>, ActionHero provides helpers for long-lasting clients to operate on themselves.  These are called connection <code>verbs</code>.</p>
   <p>Clients use verbs to add params to themselves, update the chat room they are in, and more.   The list of verbs currently supported is listed above.</p>
   <p>Your server should be smart enough to tell when a client is trying to run an action, request a file, or use a verb.  One of the attributes of each server is <code>allowedVerbs</code>, which defines what verbs a client is allowed to preform.  A simplified example of how the <code>socket</code> server does this:</p>
 

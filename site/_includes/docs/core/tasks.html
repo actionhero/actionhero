@@ -1,12 +1,12 @@
 <section class="bs-docs-section">
   <h1 id="tasks" class="page-header">Tasks</h1>
   <h2 id="tasks-general">General</h2>
-  <p>Tasks are background jobs meant to be run separately from a client’s request.  They can be started by an action or by the server itself.  With ActionHero, there is no need to run a separate daemon to process these jobs.  ActionHero uses the <a href="https://github.com/taskrabbit/node-resque">node-resque</a> package to store and process tasks in a way compatible with the <a href="https://github.com/resque/resque">resque</a> ecosystem.</p>
+  <p>Tasks are background jobs meant to be run separately from a client's request.  They can be started by an action or by the server itself.  With ActionHero, there is no need to run a separate daemon to process these jobs.  ActionHero uses the <a href="https://github.com/taskrabbit/node-resque">node-resque</a> package to store and process tasks in a way compatible with the <a href="https://github.com/resque/resque">resque</a> ecosystem.</p>
   <p>There are 3 types of tasks ActionHero can process: <code>normal</code>, <code>delayed</code>, and <code>periodic</code>.</p>
 
   <ul>
     <li><code>normal</code> tasks are enqueued and processed one-by-one by the task TaskProcessors</li>
-    <li><code>delayed</code> tasks are enqueued in a special ‘delayed’ queue to only be processed at some time in the future (defined either by a timestamp in ms or miliseconds-from-now)</li>
+    <li><code>delayed</code> tasks are enqueued in a special ‘delayed' queue to only be processed at some time in the future (defined either by a timestamp in ms or miliseconds-from-now)</li>
     <li><code>periodic</code> tasks are like delayed tasks, but they run on a set frequency (e.g. every 5 minutes).
       <ul>
         <li>Periodic tasks can take no input parameters.</li>
@@ -38,7 +38,7 @@ api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'def
 
 
   <p>Here are examples of the 3 ways to programmatically enqueue a task.</p>
-  <p>"sendWelcomeEmail" should be a task defined in the project, and <code>{to: 'evan@evantahler.com'}</code> are arguments to that task.  This task will be processed by TaskProcessors assigned to the ‘default queue’.</p>
+  <p>"sendWelcomeEmail" should be a task defined in the project, and <code>{to: 'evan@evantahler.com'}</code> are arguments to that task.  This task will be processed by TaskProcessors assigned to the ‘default queue'.</p>
   <p>You can also enqueue tasks to be run at some time in the future (timestamp is in ms):</p>
   <p><code>enqueueAt</code> asks for a timestamp (in ms) to run at, and <code>enqueueIn</code> asks for the number of ms from now to run.</p>
   <p>The final type of task, periodic tasks, are defined with a <code>task.frequency</code> of greater than 0, and are loaded in by ActionHero when it boots.  You cannot modify these tasks once the server is running.</p>
@@ -378,8 +378,8 @@ module.exports = {
 };
   {% endhighlight %}
 
-  <p>You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like <a href="https://github.com/tejasmanohar/node-schedule">node-schedule</a> and <a href="https://github.com/ncb000gt/node-cron">node-cron</a>.  ActionHero exposes <a href="https://github.com/taskrabbit/node-resque">node-resque’s</a> scheduler to you so you can use the scheduler package of your choice.</p>
-  <p>Assuming you are running ActionHero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An <a href="/docs#initializers">initializer for this</a> would look like:</p>
+  <p>You may want to schedule jobs every minute/hour/day, like a distributed CRON job.  There are a number of excellent node packages to help you with this, like <a href="https://github.com/tejasmanohar/node-schedule">node-schedule</a> and <a href="https://github.com/ncb000gt/node-cron">node-cron</a>.  ActionHero exposes <a href="https://github.com/taskrabbit/node-resque">node-resque's</a> scheduler to you so you can use the scheduler package of your choice.</p>
+  <p>Assuming you are running ActionHero across multiple machines, you will need to ensure that only one of your processes is actually scheduling the jobs.  To help you with this, you can inspect which of the scheduler processes is correctly acting as master, and flag only the master scheduler process to run the schedule.  An <a href="/docs/core/#initializers">initializer for this</a> would look like:</p>
   <p>Be sure to have the scheduler enabled on at least one of your ActionHero servers!</p>
 
   <h2 id="tasks-failed-job-management">Failed Job Management</h2>
@@ -398,8 +398,8 @@ api.tasks.cleanOldWorkers(removeStuckWorkersOlderThan, function(error, result){
 });
   {% endhighlight %}
 
-  <p>Sometimes a worker crashes is a severe way, and it doesn’t get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker’s "working on" status, but also remove the stuck worker. To aid you in these edge cases, <code>api.tasks.cleanOldWorkers(age, callback)</code> is available.</p>
-  <p>Because there are no ‘heartbeats’ in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use <code>api.tasks.retryAndRemoveFailed</code>) to re-enqueue the job.</p>
+  <p>Sometimes a worker crashes is a severe way, and it doesn't get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker's "working on" status, but also remove the stuck worker. To aid you in these edge cases, <code>api.tasks.cleanOldWorkers(age, callback)</code> is available.</p>
+  <p>Because there are no ‘heartbeats' in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use <code>api.tasks.retryAndRemoveFailed</code>) to re-enqueue the job.</p>
   <p>You can handle this with an own initializer and the following logic =&gt;</p>
 
 <h2 id="tasks-extending-resque">Extending Resque</h2>
