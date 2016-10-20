@@ -26,7 +26,7 @@ exports.production = {
 }
   {% endhighlight %}
 
-  <p>The other way to modify the config is to pass a “changes” hash to the server directly at boot.  You can do things like: <code>actionhero.start({configChanges: configChanges}, callback)</code>.</p>
+  <p>The other way to modify the config is to pass a "changes" hash to the server directly at boot.  You can do things like: <code>actionhero.start({configChanges: configChanges}, callback)</code>.</p>
   <p>The priority order of configs is:</p>
 
   <ol>
@@ -70,5 +70,5 @@ actionhero.start(params, function(error, api){
     <li><code>ACTIONHERO_CONFIG=PATH1,PATH2 npm start</code></li>
   </ol>
 
-  <p>Note that if <code>--config</code> or <code>ACTIONHERO_CONFIG</code> are used, they <em>overwrite</em> the use of the default <code>/config</code> folder. If you wish to use both, you need to re-specify “config”, e.g. <code>--config=config,local-config</code>. Also, note that specifying multiple <code>--config</code> options on the command line does exactly the same thing as using one parameter with comma separators, however the environment variable method only supports the comma-delimited syntax.</p>
+  <p>Note that if <code>--config</code> or <code>ACTIONHERO_CONFIG</code> are used, they <em>overwrite</em> the use of the default <code>/config</code> folder. If you wish to use both, you need to re-specify "config", e.g. <code>--config=config,local-config</code>. Also, note that specifying multiple <code>--config</code> options on the command line does exactly the same thing as using one parameter with comma separators, however the environment variable method only supports the comma-delimited syntax.</p>
 </section>

@@ -19,7 +19,7 @@
 
   <h2 id="localization-determine-connection-locale">Determining connection locales</h2>
 
-  <p>Since every ActionHero implementation is unique, we cannot ship with a “guess” about how to determine a given connection’s locale. Perhaps you have an HTTP server and you can trust your client’s <code>accept-language</code> headers.  Or perhaps you run your API under a number of different host names and you can presume locale based on them.   Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.</p>
+  <p>Since every ActionHero implementation is unique, we cannot ship with a "guess" about how to determine a given connection’s locale. Perhaps you have an HTTP server and you can trust your client’s <code>accept-language</code> headers.  Or perhaps you run your API under a number of different host names and you can presume locale based on them.   Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.</p>
   <p>For example, I may have an initializer in my project like this:</p>
 
   {% highlight javascript %}

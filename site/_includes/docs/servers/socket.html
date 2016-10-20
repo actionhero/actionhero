@@ -48,8 +48,8 @@ $ say defaultRoom hooray!
   </ul>
 
   <p>Please note that any verbs set using the above method will be ‘sticky’ to the connection and sent for all subsequent requests.  Be sure to delete or update your params before your next request.</p>
-  <p>To help sort out the potential stream of messages a socket user may receive, it is best to understand the “context” of the response.  For example, by default all actions set a context of “response” indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like <code>say</code>).  Messages sent by a user via the ‘say’ command have the context of <code>user</code> indicating they came form a user.  Messages resulting from data sent to the api (like an action) will have the <code>response</code> context.</p>
-  <p><code>connection.type</code> for a TCP/Socket client is “socket”</p>
+  <p>To help sort out the potential stream of messages a socket user may receive, it is best to understand the "context" of the response.  For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like <code>say</code>).  Messages sent by a user via the ‘say’ command have the context of <code>user</code> indicating they came form a user.  Messages resulting from data sent to the api (like an action) will have the <code>response</code> context.</p>
+  <p><code>connection.type</code> for a TCP/Socket client is "socket"</p>
 
   <h2 id="socket-tls">TLS</h2>
 

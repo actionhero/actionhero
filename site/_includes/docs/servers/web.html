@@ -96,7 +96,7 @@
   <ul>
     <li>you can provide the <code>?callback=myFunc</code> param to initiate a JSONp response which will wrap the returned JSON in your callback function.  The mime type of the response will change from JSON to Javascript.</li>
     <li>If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
-    <li>to build the response for “hello” above, the action would have set <code>connection.response.hello = &quot;world&quot;;</code></li>
+    <li>to build the response for "hello" above, the action would have set <code>connection.response.hello = &quot;world&quot;;</code></li>
   </ul>
 
   <h2 id="web-config-settings">Config Settings</h2>
@@ -110,7 +110,7 @@ config.servers = {
     serverOptions: {},                   // Passed to https.createServer if secure=ture. Should contain SSL certificates
     port: 8080,                          // Port or Socket
     bindIP: "0.0.0.0",                   // Which IP to listen on (use 0.0.0.0 for all)
-    httpHeaders : {                      // Any additional headers you want actionhero to respond with
+    httpHeaders : {                      // Any additional headers you want ActionHero to respond with
       'Access-Control-Allow-Origin' : '*',
       'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
@@ -138,7 +138,7 @@ config.servers = {
     // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
     returnErrorCodes: true,
     // should this node server attempt to gzip responses if the client can accept them?
-    // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
+    // this will slow down the performance of ActionHero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
     compress: false,
     // options to pass to the query parser
     // learn more about the options @ https://github.com/hapijs/qs
@@ -197,7 +197,7 @@ config.server.web.serverOptions: {
     <li><code>connection.rawConnection.method</code>: A string, GET, POST, etc</li>
     <li><code>connection.rawConnection.cookies</code>: Hash representation of the connection’s cookies</li>
     <li><code>connection.rawConnection.responseHttpCode</code>: the status code to be rendered to the user.  Defaults to 200</li>
-    <li><code>connection.type</code> for a HTTP client is “web”</li>
+    <li><code>connection.type</code> for a HTTP client is "web"</li>
     <li><code>connection.rawConnection.params.body</code> will contain un-filtered form data</li>
     <li><code>connection.rawConnection.params.files</code> will contain un-filtered form data</li>
     <li><code>connection.extension</code>.  If are using a route to access an action, and the request path ends in a file extension (IE: <code>server.com/action/option.jpg</code>), the extension will be available.  Depending on the server’s options, this extension may also be used to modify the response mime-type by configuring <code>matchExtensionMimeType</code> within each action.</li>
@@ -214,12 +214,12 @@ next();
   {% endhighlight %}
 
 
-  <p>actionhero can also serve up flat files.  actionhero will not cache these files and each request to <code>file</code> will re-read the file from disk (like the nginx web server).</p>
+  <p>ActionHero can also serve up flat files.  ActionHero will not cache these files and each request to <code>file</code> will re-read the file from disk (like the nginx web server).</p>
 
   <ul>
     <li>/public and /api are  routes which expose the ‘directories’ of those types.  These top level path can be configured in <code>/config/servers/web.js</code> with <code>api.config.servers.web.urlPathForActions</code> and <code>api.config.servers.web.urlPathForFiles</code>.</li>
-    <li>the root of the web server “/” can be toggled to serve the content between /file or /api actions per your needs <code>api.config.servers.web.rootEndpointType</code>. The default is <code>api</code>.</li>
-    <li>actionhero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the ‘file’ route as described above. <code>http://{baseUrl}/public/{pathToFile}</code> is equivalent to <code>http://{baseUrl}?action=file&amp;fileName={pathToFile}</code> and <code>http://{baseUrl}/file/{pathToFile}</code>.</li>
+    <li>the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs <code>api.config.servers.web.rootEndpointType</code>. The default is <code>api</code>.</li>
+    <li>ActionHero will serve up flat files (html, images, etc) as well from your ./public folder.  This is accomplished via the ‘file’ route as described above. <code>http://{baseUrl}/public/{pathToFile}</code> is equivalent to <code>http://{baseUrl}?action=file&amp;fileName={pathToFile}</code> and <code>http://{baseUrl}/file/{pathToFile}</code>.</li>
     <li>Errors will result in a 404 (file not found) with a message you can customize.</li>
     <li>Proper mime-type headers will be set when possible via the <code>mime</code> package.</li>
   </ul>
@@ -239,7 +239,7 @@ next();
     <li>and of course the content of <code>config/routes.js</code></li>
   </ul>
 
-  <p>Say you have an action called ‘status’ (like in a freshly generated actionhero project).  Lets start with actionhero’s default config:</p>
+  <p>Say you have an action called ‘status’ (like in a freshly generated ActionHero project).  Lets start with ActionHero's default config:</p>
 
   {% highlight javascript %}
 api.config.servers.web.urlPathForActions = ‘api’;
@@ -272,8 +272,8 @@ exports.default = function(api) {
 exports.default = function(api) {
   return {
     all: [
-      { path: “/cache/:key/:value”,             action:  “cacheTest” },
-      { path: “/:apiVersion/cache/:key/:value”, action:  “cacheTest” },
+      { path: "/cache/:key/:value",             action:  "cacheTest" },
+      { path: "/:apiVersion/cache/:key/:value", action:  "cacheTest" },
     ]
   };
 }
@@ -286,8 +286,8 @@ exports.default = function(api) {
 exports.default = function(api) {
   return {
     get: [
-      { path: “/myAction/old”, action:  “myAction”, apiVersion: 1 },
-      { path: “/myAction/new”, action:  “myAction”, apiVersion: 2 },
+      { path: "/myAction/old", action:  "myAction", apiVersion: 1 },
+      { path: "/myAction/new", action:  "myAction", apiVersion: 2 },
     ]
   };
 }
@@ -311,7 +311,7 @@ post: [
 ],
   {% endhighlight %}
 
-  <p>This also enables “catch all” routes, like:</p>
+  <p>This also enables "catch all" routes, like:</p>
 
   {% highlight javascript %}
 get: [
@@ -328,11 +328,11 @@ get: [
 ],
   {% endhighlight %}
 
-  <p><strong>Note</strong>: In regular expressions used for routing, you cannot use the “/” character.</p>
+  <p><strong>Note</strong>: In regular expressions used for routing, you cannot use the "/" character.</p>
 
   <h4>Handling Static Folders with Routes</h4>
 
-  <p>If you want map a special public folder to a given route you can use the “dir” parameter in your “get” routes in the routes.js file:</p>
+  <p>If you want map a special public folder to a given route you can use the "dir" parameter in your "get" routes in the routes.js file:</p>
 
   {% highlight javascript %}
 get: [
@@ -341,7 +341,7 @@ get: [
   {% endhighlight %}
 
   <p>After mapping this route all files/folders within the mapped folder will be accessible on the route.</p>
-  <p>You have to map the specified public folder within the “dir” parameter, relative to the routes.js file or absolute. Make sure to set “matchTrailingPathParts” to “true”, because when it is set to false, the route will never match when you request a file. (e.g.: site.com/my/special/folder/testfile.txt).</p>
+  <p>You have to map the specified public folder within the "dir" parameter, relative to the routes.js file or absolute. Make sure to set "matchTrailingPathParts" to "true", because when it is set to false, the route will never match when you request a file. (e.g.: site.com/my/special/folder/testfile.txt).</p>
 
   <h4>Route Notes</h4>
 
@@ -352,12 +352,12 @@ get: [
         <li>IE: /api/user/123?userId=456 =&gt; <code>connection.userId = 123</code></li>
       </ul>
     </li>
-    <li>routes defined with the “all” method will be duplicated to “get”, “put”, “post”, and “delete”</li>
-    <li>use “:variable” to define “variable”</li>
-    <li>an undefined “:variable” will not match
+    <li>routes defined with the "all" method will be duplicated to "get", "put", "post", and "delete"</li>
+    <li>use ":variable" to define "variable"</li>
+    <li>an undefined ":variable" will not match
       <ul>
-        <li>IE: “/api/user/” will not match “/api/user/:userId”</li>
-        <li>You would need a second route in this case to match “/api/user”</li>
+        <li>IE: "/api/user/" will not match "/api/user/:userId"</li>
+        <li>You would need a second route in this case to match "/api/user"</li>
       </ul>
     </li>
     <li>routes are matched as defined top-down in <code>routes.js</code></li>
@@ -404,7 +404,7 @@ exports.default = function(api) {
   {% endhighlight %}
 
   <p>Params are loaded in this order GET -&gt; POST (normal) -&gt; POST (multipart).  This means that if you have <code>{url}?key=getValue</code> and you post a variable <code>key=postValue</code> as well, the <code>postValue</code> will be the one used.  The only exception to this is if you use the URL method of defining your action.  You can add arbitrary params to the whitelist by adding them to the <code>api.postVariables</code> array in your initializers.</p>
-  <p>File uploads from forms will also appear in <code>connection.params</code>, but will be an object with more information.  That is, if you uploaded a file called “image”, you would have <code>connection.params.image.path</code>, <code>connection.params.image.name</code> (original file name), and <code>connection.params.image.type</code> available to you.</p>
+  <p>File uploads from forms will also appear in <code>connection.params</code>, but will be an object with more information.  That is, if you uploaded a file called "image", you would have <code>connection.params.image.path</code>, <code>connection.params.image.name</code> (original file name), and <code>connection.params.image.type</code> available to you.</p>
   <p>A note on JSON payloads:</p>
   <p>You can post BODY json paylaods to actionHero in the form of a hash or array.</p>
   <p>Hash: <code>curl -X POST -d '{&quot;key&quot;:&quot;something&quot;, &quot;value&quot;:{&quot;a&quot;:1, &quot;b&quot;:2}}' http://localhost:8080/api/cacheTest</code>.  This will result in:</p>

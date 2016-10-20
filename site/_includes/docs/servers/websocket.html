@@ -45,7 +45,7 @@
 </script>
   {% endhighlight %}
 
-  <p><code>connection.type</code> for a webSocket client is “webSocket”.  This type will not change regardless of if the client has fallen back to another protocol.</p>
+  <p><code>connection.type</code> for a webSocket client is "webSocket".  This type will not change regardless of if the client has fallen back to another protocol.</p>
   <p>Data is always returned as JSON objects to the webSocket client.</p>
   <p>An example web socket session might be the following:</p>
   <p>You can also inspect <code>client.state</code> (‘connected’, ‘disconnected’, etc).  The websocket client will attempt to re-connect automatically.</p>
@@ -63,7 +63,7 @@
 
   <h3><code>client.action(action, params, callback)</code></h3>
   <ul>
-    <li><code>action</code> is a string, like “login”</li>
+    <li><code>action</code> is a string, like "login"</li>
     <li><code>params</code> is an object</li>
     <li><code>callback</code> will be passed <code>response</code> (and you can inspect <code>response.error</code>)</li>
   </ul>
@@ -180,7 +180,7 @@
 
   <h2 id="websocket-linking-to-web-client">Linking websockets to Web Clients</h2>
 
-  <p>actionhero provides <code>connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code>connection.id</code>, we attempt to build <code>connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code>api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.</p>
+  <p>ActionHero provides <code>connection.fingerprint</code> where available to help you link websocket connections to related web connections. While every connection will always have a unique <code>connection.id</code>, we attempt to build <code>connection.fingerprint</code> by checking the headers the websocket connection began with.  If the cookie defined by <code>api.config.servers.web.fingerprint.cookieKey</code> is present, we will store its value on the websocket connection.</p>
   <p>You can read more about using a value like <code>connection.fingerprint</code> in an <a href="/docs#middleware">authentication middleware</a> or using it as a key for <a href="/docs/#example-initializers">session information</a>.</p>
 
   <h2 id="websocket-options">Options</h2>

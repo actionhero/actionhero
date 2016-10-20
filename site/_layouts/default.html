@@ -53,14 +53,13 @@
       </div>
       <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
         <ul class="nav navbar-nav">
-        {% assign sorted_pages = site.pages | sort:"name" | reverse %}
-        {% for p in sorted_pages %}
-          {% if p.isHome != true and p.hide != true and p.title != '' %}
-          <li {% if page.title == p.title %}class="active"{% endif %}>
-            <a href="{{p.url}}">{{p.title}}</a>
-          </li>
-          {% endif %}
-        {% endfor %}
+
+        <li {% if page.title == "Learn More" %}class="active"{% endif %}><a href="/learn-more">Learn More</a></li>
+        <li {% if page.title == "Overview" %}class="active"{% endif %}><a href="/docs/overview">Overview</a></li>
+        <li {% if page.title == "Core" %}class="active"{% endif %}><a href="/docs/core">Core</a></li>
+        <li {% if page.title == "Servers" %}class="active"{% endif %}><a href="/docs/servers">Servers</a></li>
+        <li {% if page.title == "Deployment" %}class="active"{% endif %}><a href="/docs/deployment">Deployment</a></li>
+
         </ul>
         <ul class="nav navbar-nav navbar-right">
         {% for p in site.headerLinks %}

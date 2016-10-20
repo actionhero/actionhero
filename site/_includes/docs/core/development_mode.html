@@ -11,7 +11,7 @@ config.general = {
 
   <p>ActionHero’s development mode is a little different than tools like <a href="https://github.com/remy/nodemon">nodemon</a> in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to <code>api.config</code> or initializers are more severe, and will restart the whole application (much like nodemon).</p>
   <p>To enable development mode simply set <code>developmentMode: true</code> in your <code>config/api.js</code>.</p>
-  <p>Note that <code>api.config.general.developmentMode</code> is different from <code>NODE_ENV</code>, which by default is “development” (and is logged out when ActionHero boots).  <code>NODE_ENV</code> is used to determine which config settings to use, and has no effect on developmentMode.</p>
+  <p>Note that <code>api.config.general.developmentMode</code> is different from <code>NODE_ENV</code>, which by default is "development" (and is logged out when ActionHero boots).  <code>NODE_ENV</code> is used to determine which config settings to use, and has no effect on developmentMode.</p>
 
   <h2 id="development-mode-effects">Effects of Development Mode</h2>
 
@@ -22,7 +22,7 @@ config.general = {
     <li>new files won’t be loaded in, only existing files when the app was booted will be monitored</li>
     <li>as deleting a file might crash your application, we will not attempt to re-load deleted files</li>
     <li>if you have changed the <code>task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change</li>
-    <li>changing <code>api.config</code>, initializers, or servers, will attempt to do a “full” reboot the server rather than just reload that component.</li>
+    <li>changing <code>api.config</code>, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.</li>
   </ul>
 
   <h2 id="development-mode-watching-custom-files">Watching custom files</h2>
@@ -43,9 +43,9 @@ api.watchFileAndAct(path_to_file, function(){
 
   {% highlight javascript %}
 // in package.json
-“dependencies”: {
-  “actionhero”: “x”,
-  “node-inspector”: “x”
+"dependencies": {
+  "actionhero": "x",
+  "node-inspector": "x"
 },
   {% endhighlight %}
 
@@ -57,7 +57,7 @@ api.watchFileAndAct(path_to_file, function(){
 {% highlight bash %}
 actionhero console
 
-Running “console” task
+Running "console" task
 2015-11-14 17:48:01 - notice: *** starting actionhero ***
 2015-11-14 17:48:01 - warning: running with fakeredis
 2015-11-14 17:48:01 - info: actionhero member 10.0.1.15 has joined the cluster

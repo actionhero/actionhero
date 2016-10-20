@@ -38,7 +38,7 @@ api.tasks.enqueueIn(10000, "sendWelcomeEmail", {to: 'evan@evantahler.com'}, 'def
 
 
   <p>Here are examples of the 3 ways to programmatically enqueue a task.</p>
-  <p>“sendWelcomeEmail” should be a task defined in the project, and <code>{to: 'evan@evantahler.com'}</code> are arguments to that task.  This task will be processed by TaskProcessors assigned to the ‘default queue’.</p>
+  <p>"sendWelcomeEmail" should be a task defined in the project, and <code>{to: 'evan@evantahler.com'}</code> are arguments to that task.  This task will be processed by TaskProcessors assigned to the ‘default queue’.</p>
   <p>You can also enqueue tasks to be run at some time in the future (timestamp is in ms):</p>
   <p><code>enqueueAt</code> asks for a timestamp (in ms) to run at, and <code>enqueueIn</code> asks for the number of ms from now to run.</p>
   <p>The final type of task, periodic tasks, are defined with a <code>task.frequency</code> of greater than 0, and are loaded in by ActionHero when it boots.  You cannot modify these tasks once the server is running.</p>
@@ -106,7 +106,7 @@ exports.default = {
   <p>If you are enqueuing delayed or periodic tasks, you also need to enable the scheduler.  This is a part of ActionHero that will periodically check the delayed queues for jobs that are ready to work now, and move them to the normal queues when the time comes.</p>
   <p>Because node and ActionHero are asynchronous, we can process more than one job at a time.  However, if the jobs we are processing are CPU-intensive, we want to limit how many we are working on at one time.  To do this, we tell ActionHero to run somewhere between <code>minTaskProcessors</code> and <code>maxTaskProcessors</code> and check every so often if the server could be working more or less jobs at a time.  Depending on the response characteristics you want for your server, you can modify these values.</p>
   <p>In production, it is best to set up some ActionHero servers that only handle requests from clients (that is, servers with no TaskProcessors) and others that handle no requests, and only process jobs (that is, no servers, many <code>TaskProcessor</code>s).</p>
-  <p>As you noticed above, when you enqueue a task, you tell it which queue to be enqueued within.  This is so you can separate load or priority.  For example, you might have a <code>high</code> priority queue which does jobs like “sendPushMessage” and a <code>low</code> priority queue which does a task like “cleanupCache”.  You tell the <code>taskProcessor</code>s which jobs to work, and in which priority. For the example above, you would ensure that all <code>high</code> jobs happen before all <code>low</code> jobs by setting: <code>api.config.tasks.queues = ['high', 'low']</code>.
+  <p>As you noticed above, when you enqueue a task, you tell it which queue to be enqueued within.  This is so you can separate load or priority.  For example, you might have a <code>high</code> priority queue which does jobs like "sendPushMessage" and a <code>low</code> priority queue which does a task like "cleanupCache".  You tell the <code>taskProcessor</code>s which jobs to work, and in which priority. For the example above, you would ensure that all <code>high</code> jobs happen before all <code>low</code> jobs by setting: <code>api.config.tasks.queues = ['high', 'low']</code>.
   You could also configure more nodes to work on the <code>high</code> queue than the <code>low</code> queue, thus further ensuring that <code>high</code> priority jobs are processed faster and sooner than <code>low</code> priority jobs.</p>
 
   <h2 id="tasks-creating-a-task">Creating a Task</h2>
@@ -398,8 +398,8 @@ api.tasks.cleanOldWorkers(removeStuckWorkersOlderThan, function(error, result){
 });
   {% endhighlight %}
 
-  <p>Sometimes a worker crashes is a severe way, and it doesn’t get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker’s “working on” status, but also remove the stuck worker. To aid you in these edge cases, <code>api.tasks.cleanOldWorkers(age, callback)</code> is available.</p>
-  <p>Because there are no ‘heartbeats’ in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an “age” for how long a worker has been “working”, and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use <code>api.tasks.retryAndRemoveFailed</code>) to re-enqueue the job.</p>
+  <p>Sometimes a worker crashes is a severe way, and it doesn’t get the time/chance to notify redis that it is leaving the pool (this happens all the time on PAAS providers like Heroku). When this happens, you will not only need to extract the job from the now-zombie worker’s "working on" status, but also remove the stuck worker. To aid you in these edge cases, <code>api.tasks.cleanOldWorkers(age, callback)</code> is available.</p>
+  <p>Because there are no ‘heartbeats’ in resque, it is impossible for the application to know if a worker has been working on a long job or it is dead. You are required to provide an "age" for how long a worker has been "working", and all those older than that age will be removed, and the job they are working on moved to the error queue (where you can then use <code>api.tasks.retryAndRemoveFailed</code>) to re-enqueue the job.</p>
   <p>You can handle this with an own initializer and the following logic =&gt;</p>
 
 <h2 id="tasks-extending-resque">Extending Resque</h2>
