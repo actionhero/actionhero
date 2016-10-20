@@ -127,15 +127,15 @@ const initialize = function(api, options, next){
       }
     };
 
-    if(reqHeaders['if-modified-since']){
-      ifModifiedSince = new Date(reqHeaders['if-modified-since']);
-      lastModified.setMilliseconds(0);
-      if(lastModified <= ifModifiedSince){connection.rawConnection.responseHttpCode = 304; }
+    if(error){
+      connection.rawConnection.responseHttpCode = 404;
       return sendRequestResult();
     }
 
-    if(error){
-      connection.rawConnection.responseHttpCode = 404;
+    if(reqHeaders['if-modified-since']){
+      ifModifiedSince = new Date(reqHeaders['if-modified-since']);
+      lastModified.setMilliseconds(0);
+      if(lastModified <= ifModifiedSince){ connection.rawConnection.responseHttpCode = 304; }
       return sendRequestResult();
     }
 
