@@ -2,7 +2,7 @@
 
 ## Topology Example
 
-```javascript
+{% highlight javascript %}
 
 // Assume we use the flag `process.env.ACTIONHERO_ROLE` to denote the type of server
 // You can set this variable in the ENV of your server or launch each process with the flag:
@@ -54,7 +54,7 @@ exports.default = {
     }
 };
 
-```
+{% endhighlight %}
 
 Here is a common ActionHero production topology:
 
@@ -104,7 +104,7 @@ When running the cluster, the cluster process first writes his own pidfile to `p
 
 ## Git-based Deployment
 
-```bash
+{% endhighlight %}bash
 #!/usr/bin/env bash
 # assuming the ActionHero cluster master process is already running
 
@@ -114,7 +114,7 @@ cd $DEPLOY_PATH && git pull
 cd $DEPLOY_PATH && npm install
 # run any build tasks here, like perhaps an asset compile step or a database migration
 cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
-```
+{% endhighlight %}
 
 To send a signal to the cluster master process to reboot all its workers (`USR2`), you can cat the pidfile (bash):
 ` kill -s USR2 "cat /path/to/pids/cluster_pidfile"`
@@ -131,7 +131,7 @@ You can add local references to your $PATH like so to use these local binaries:
 
 ## Nginx Example
 
-```javascript
+{% highlight javascript %}
 // From `config/servers/web.js`
 
 exports.production = {
@@ -148,9 +148,9 @@ exports.production = {
     }
   }
 }
-```
+{% endhighlight %}
 
-```bash
+{% endhighlight %}bash
 # The nginx.conf:
 
 #user  nobody;
@@ -222,7 +222,7 @@ http {
     }
 
 }
-```
+{% endhighlight %}
 
 While ActionHero can be the font-line server your users hit, it's probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc.  This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.  
 
@@ -249,7 +249,7 @@ To run this configuration, configure ioredis with a list of the Sentinel nodes a
 
 An example of a `redis.js` config file for sentinels would be:
 
-```js
+{% endhighlight %}js
 exports.production = {
   redis: function(api){
     return {
@@ -273,7 +273,7 @@ exports.production = {
     }
   }
 }
-```
+{% endhighlight %}
 
 ### Cluster Mode
 
@@ -285,9 +285,9 @@ Also an important note:  while you may opt to run “sentinel processes”, it�
 
 An example of a `redis.js` config file for redis cluster would be:
 
-```js
+{% endhighlight %}js
 // TODO
-```
+{% endhighlight %}
 
 
 ## Best Practices
@@ -320,7 +320,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 ### Crashing and Safety
 
-```bash
+{% endhighlight %}bash
 > ./node_modules./bin/actionhero start cluster --workers 1
 2016-04-11T18:51:32.891Z - info: actionhero >> start cluster
 2016-04-11T18:51:32.904Z - notice:  - STARTING CLUSTER -
@@ -347,7 +347,7 @@ As ActionHero is a framework, much of the work for keeping your application secu
 2016-04-11T18:51:44.960Z - info: [worker #1 (43323)]: starting
 2016-04-11T18:51:45.827Z - info: [worker #1 (43323)]: started
 2016-04-11T18:51:45.827Z - notice: cluster equilibrium state reached with 1 workers
-```
+{% endhighlight %}
 
 - Let the app crash rather than being defensive prematurely.  ActionHero has a good logger, and if you are running within `start cluster` mode, your server will be restarted.  It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.  
 - We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`start cluster`) to handle error logging.  Domains are deprecated in node.js now for the same reasons we discuss here.

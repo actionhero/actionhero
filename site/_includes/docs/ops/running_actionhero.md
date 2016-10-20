@@ -2,7 +2,7 @@
 
 ## The actionhero Binary
 
-```bash
+{% endhighlight %}bash
 ActionHero - A multi-transport node.js API Server with integrated cluster
   capabilities and delayed tasks
 
@@ -106,7 +106,7 @@ Descriptions:
 ## More Help & the ActionHero documentation can be found @ ##
 ##             http://www.actionherojs.com                 ##
 #############################################################
-```
+{% endhighlight %}
 
 The suggested method to run your ActionHero server is to use the included `./node_modules/.bin/actionhero` binary.  Note that there is no `main.js` or specific start script your project needs.  ActionHero handles this for you.  Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.
 
@@ -129,7 +129,7 @@ The load order of configs is:
 
 ## Programatic Use of ActionHero
 
-```javascript
+{% highlight javascript %}
 var actionheroPrototype = require("actionhero").actionheroPrototype;
 var actionhero = new actionheroPrototype();
 
@@ -156,7 +156,7 @@ actionhero.start(params, function(error, api){
     })
   }, timer);
 });
-```
+{% endhighlight %}
 
 While **NOT** encouraged, you can always instantiate an ActionHero server yourself.  Perhaps you wish to combine ActionHero with an existing project.  Here's how!  Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.  
 
@@ -168,7 +168,7 @@ From within ActionHero itself (actions, initilizers, etc), you can use `api.comm
 
 ## Signals
 
-```bash
+{% endhighlight %}bash
 > ./node_modules/.bin/actionhero start cluster --workers=2
 info: actionhero >> start cluster
 notice:  - STARTING CLUSTER -
@@ -205,7 +205,7 @@ alert: worker 41904 (#2) has exited
 alert: worker 41906 (#3) has exited
 info: all workers gone
 notice: cluster complete, Bye!
-```
+{% endhighlight %}
 
 ActionHero is intended to be run on `*nix` operating systems.  The `start` and `start cluster` commands provide support for signaling. (There is limited support for some of these commands in windows).
 

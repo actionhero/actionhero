@@ -11,12 +11,12 @@ ActionHero follows [semantic versioning](http://semver.org/).  This means that a
 
 **Breaking Changes and How to Overcome Them:**
 
-```bash
+{% endhighlight %}bash
 `actionhero generateAction --name=[name]`      -> `actionhero generate action --name=[name]`
 `actionhero generateInitializer --name=[name]` -> `actionhero generate initializer --name=[name]`
 `actionhero generateServer --name=[name]`      -> `actionhero generate server --name=[name]`
 `actionhero generateTask --name=[name]`        -> `actionhero generate task --name=[name]`
-```
+{% endhighlight %}
 
 - The ActionHero binary has had it's commands changed.  
   - Any deployment or automation tools you use will need to be updated accordingly.
@@ -73,14 +73,14 @@ ActionHero follows [semantic versioning](http://semver.org/).  This means that a
 
 - Action Syntax changed
   - Actions now look like
-```javascript
+{% highlight javascript %}
 run: function(api, data, next){
   data.response.randomNumber = Math.random();
   next(error);
 }
-```
+{% endhighlight %}
   - Where data contains:
-```javascript
+{% highlight javascript %}
 data = {
   connection: connection,
   action: 'randomNumber',
@@ -91,7 +91,7 @@ data = {
   actionStartTime: 123,
   response: {},
 }
-```
+{% endhighlight %}
   - You will need to change all of your actions to use `data.connection` rather than `connection` directly.
   - You will need to change all of your actions to use `data.response` rather than `connection.response` directly.
 - Middleware syntax has changed to match action's `data` pattern.  You will need to change your middleware accordingly.

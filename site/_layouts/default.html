@@ -30,16 +30,10 @@
       background:{{site.header.color1}};
       background:linear-gradient(135deg, {{site.header.color1}}, {{site.header.color2}});
     }
-
-    .merch-container{
-      background:{{site.header.color1}};
-      background:linear-gradient(135deg, {{site.header.color1}}, {{site.header.color2}});
-    }
   </style>
 
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"></script>
   <script src="/assets/js/docs.min.js"></script>
 </head>
 
@@ -59,7 +53,7 @@
       </div>
       <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
         <ul class="nav navbar-nav">
-        {% assign sorted_pages = site.pages | sort:"name" %}
+        {% assign sorted_pages = site.pages | sort:"name" | reverse %}
         {% for p in sorted_pages %}
           {% if p.isHome != true and p.hide != true and p.title != '' %}
           <li {% if page.title == p.title %}class="active"{% endif %}>
@@ -88,9 +82,6 @@
       <h1 class="home-title">{{site.name}}</h1>
       <img src="{{site.logo}}" style="width:300px; height:254px" />
       <p class="lead">{{page.description}} <br /> <em>{{page.sub_description}}</em></p>
-      <p class="lead">
-        <a href="{{site.downloadUrl}}" class="btn btn-outline-inverse btn-lg">Download</a>
-      </p>
     </div>
   </div>
 
@@ -132,7 +123,7 @@
     </div>
   </div>
 
-  <div class="container merch-container">
+  <div id="merch-container" class="container">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
@@ -150,10 +141,10 @@ npm start
           <h1>Get ActionHero Stuff</h1>
           <div class="row">
             <div class="col-md-6">
-              <a href="https://teespring.com/actionhero-t-shirts" target="_blank"><img width="90%" src="/assets/images/swag/shirt.png"/></a>
+              <a href="https://teespring.com/actionhero-t-shirts" target="_blank"><img width="250" height="300" src="/assets/images/swag/shirt.png"/></a>
             </div>
             <div class="col-md-6">
-              <a href="https://www.stickermule.com/marketplace/8033-actionherojs" target="_blank"><img width="90%" src="/assets/images/swag/sticker.png"/></a>
+              <a href="https://www.stickermule.com/marketplace/8033-actionherojs" target="_blank"><img width="250" height="250" src="/assets/images/swag/sticker.png"/></a>
             </div>
           </div>
         </div>
@@ -222,7 +213,8 @@ npm start
   {% if site.header.trianglify %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.2/trianglify.min.js"></script>
-  <script>trianglify('{{site.header.color1}}', '{{site.header.color2}}');</script>
+  <script>trianglify('#content', '{{site.header.color1}}', '{{site.header.color2}}');</script>
+  <script>trianglify('#merch-container', '{{site.header.color1}}', '{{site.header.color2}}');</script>
   {% endif %}
 
   {% if site.twitter.enabled or site.twitter.account %}

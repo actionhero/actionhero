@@ -8,7 +8,7 @@ You also don't need to use these test helpers, and you may want to make a 'real'
 
 ## Getting Started
 
-```javascript
+{% highlight javascript %}
 // package.json from a new actionhero project with `mocha` and `should` included
 {
   "author"      : "YOU <YOU@example.com>",
@@ -34,7 +34,7 @@ You also don't need to use these test helpers, and you may want to make a 'real'
     "test"         : "NODE_ENV=test mocha"
   }
 }
-```
+{% endhighlight %}
 
 To run a mocha test suite, you invoke the mocha binary, `./node_modules/.bin/mocha`.  This will tell mocha to look in your `./test` folder and run any tests that it can find.  There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on [Mocha's website](http://mochajs.org/).  We asume that you have `mocha` (and `should`) installed to your project by listing it in your `package.json`.  If you used `actionhero generate` to create your project, this should already be configured for your.
 
@@ -44,7 +44,7 @@ ActionHero comes with a `specHelper` to make it easier to test tasks and actions
 
 ## Example Test
 
-```javascript
+{% highlight javascript %}
 // ./test/integartion/actions/randomNumber.js
 
 var should = require('should');
@@ -85,7 +85,7 @@ describe('Action: RandomNumber', function(){
   });
 
 });
-```
+{% endhighlight %}
 
 Say you had an action that was supposed to respond with a `randomNumber`, and you wanted to write a test for it.  
 
@@ -106,35 +106,35 @@ If you want to see fuller example of how to create an integration test within ac
 - the callback returns `message` and `connection`.
 - example use:
 
-```javascript
+{% highlight javascript %}
 api.specHelper.runAction('cacheTest', {key: 'key', value: 'value'}, function(message, connection){
   // message is the normal API response;
   // connection is a new connection object
 })
-```
+{% endhighlight %}
 
 ### api.specHelper.getStaticFile(file, callback)
 - request a file in `/public` from the server
 - the callback returns `message` and `connection` where `message` is a hash:
 
-```javascript
+{% highlight javascript %}
 var message = {
   error    : error,  // null if everything is OK
   content  : (string),  // string representation of the file's body
   mime     : mime,  // file mime
   length   : length  // bytes
 }
-```
+{% endhighlight %}
 
 ### api.specHelper.runTask(taskName, params, callback)
 - callback may or may not return anything depending on your task's makeup
 
-```javascript
+{% highlight javascript %}
 api.specHelper.runTask('sendEmailTask', {message: 'hello' to: 'evan@test.com'}, function(response){
   // test it!
   // remember that the task really will be run, so be sure that the test environment is set properly
 })
-```
+{% endhighlight %}
 
 ## Notes
 

@@ -1,5 +1,4 @@
-name: ActionHero.JS
-downloadUrl: https://github.com/evantahler/actionhero
+name: ActionHero.js
 license: Apache 2 License
 licenseUrl: https://github.com/evantahler/actionhero/blob/master/LICENSE.txt
 logo: /assets/images/logo.png
@@ -7,6 +6,8 @@ logo: /assets/images/logo.png
 headerLinks:
   - title: GitHub
     url: https://github.com/evantahler/actionhero
+  - title: Slack Team
+    url: http://slack.actionherojs.com
 
 footerLinks:
   - title: GitHub
