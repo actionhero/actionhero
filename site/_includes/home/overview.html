@@ -1,0 +1,139 @@
+<section class="bs-docs-section">
+  <h1 id="overview" class="page-header">Who is the ActionHero?</h1>
+
+  <blockquote>
+    ActionHero is a multi-transport Node.JS API Server with integrated cluster capabilities and delayed tasks.
+  </blockquote>
+
+  <div align="center" >
+      <a href="https://www.npmjs.com/package/actionhero" ><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" /></a>
+      <a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square"></a>
+      <a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/npm/dm/actionhero.svg?style=flat-square"></a>
+      <a href="http://travis-ci.org/evantahler/actionhero"><img src="https://img.shields.io/travis/evantahler/actionhero/master.svg?style=flat-square"></a>
+      <a href="https://david-dm.org/evantahler/actionhero"><img src="https://david-dm.org/evantahler/actionhero.svg?style=flat-square"></a>
+      <a href="http://slack.actionherojs.com"><img src="http://slack.actionherojs.com/badge.svg"></a>
+      <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg"></a>
+      <!-- <a href="https://coveralls.io/r/evantahler/actionhero?branch=master"><img src="https://coveralls.io/repos/evantahler/actionhero/badge.svg?branch=master"></a> -->
+  </div>
+
+  <hr />
+
+  <h2 id="actions">Actions</h2>
+  <p>In ActionHero, you make actions which respond to client requests.</p>
+
+  {% highlight javascript %}
+// actionhero generate action --name=randomNumber
+// File: actions/randomNumber.js
+
+exports.randomNumber = {
+  name: 'randomNumber',
+  description: 'I am an API method which will generate a random number',
+  outputExample: {
+    randomNumber: 0.123
+  },
+
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next();
+  }
+
+};
+  {% endhighlight %}
+
+  <p>These actions don't just work for the web, they work for all sorts of clients!</p>
+
+  <div class="alert alert-success" role="alert">HTTP</div>
+  {% highlight bash %}
+> curl localhost:8080/api/randomNumber
+
+{
+  "randomNumber": 0.8158452461939305
+}
+  {% endhighlight %}
+
+  <div class="alert alert-success" role="alert">TCP Socket</div>
+  {% highlight bash %}
+> telnet localhost 5000
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+{"welcome":"Hello! Welcome to the actionhero api","context":"api"}
+randomNumber
+{"randomNumber":0.7903316407464445,"context":"response","messageCount":1}
+  {% endhighlight %}
+
+  <div class="alert alert-success" role="alert">Web Socket</div>
+  {% highlight javascript %}
+var client = new ActionheroClient;
+client.connect(function(error, details){
+    client.action("randomNumber", function(data){
+        alert(data.randomNumber);
+    });
+});
+  {% endhighlight %}
+
+  <h2 id="tasks">Tasks</h2>
+
+  <p>ActionHero also lets you perform tasks in the background...</p>
+
+  {% highlight javascript %}
+// actionhero generate action --name=sendEmail
+// File: tasks/sendEmail.js
+exports.task = {
+    name:        'sendEmail',
+    description: 'send an email to users after they sign up'
+    queue:       'default',
+    frequency:    0,
+    run: function(api, params, next){
+        // email sending stub
+        api.users.sendEmail(params.userId, function(error, done){
+            next(error);
+        });
+    });
+};
+  {% endhighlight %}
+
+  <p>... and you can invoke the task from anywhere in the framework, including actions.</p>
+
+  {% highlight javascript %}
+// api.tasks.enqueue(nameOfTask, args, queue, callback)
+api.tasks.enqueue("sendEmail", {to: 'evan@evantahler.com'}, 'default', function(error, toRun){
+  // enqueued!
+});
+  {% endhighlight %}
+
+  <h2 id="chat">Chat</h2>
+
+  <p>ActionHero enables clients to talk to each other.</p>
+
+  {% highlight javascript %}
+// client 1
+var client1 = new ActionheroClient;
+client1.connect(function(error, details){
+    client1.roomAdd("myChatRoom", function(error){
+        client1.say('myChatRoom', 'hello from client 1');
+    });
+});
+
+// client 2
+var client2 = new ActionheroClient;
+client2.connect(function(error, details){
+    client2.roomAdd("myChatRoom", function(error){
+        client2.on('say', function(message){
+            console.log(message);
+        });
+    });
+});
+  {% endhighlight %}
+
+  <h2 id="cluster">Cluster-Aware</h2>
+
+  <p>ActionHero can do all of this, and it can work on one server or hundreds (ActionHero is cluster-ready from the get-go).</p>
+
+{% highlight bash %}
+# start 1 instance
+./node_modules/.bin/actionhero start
+# start a cluster
+./node_modules/.bin/actionhero start cluster
+{% endhighlight %}
+</section>
