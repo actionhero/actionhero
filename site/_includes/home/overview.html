@@ -40,9 +40,9 @@ exports.randomNumber = {
 };
   {% endhighlight %}
 
-  <p>These actions don't just work for the web, they work for all sorts of clients.</p>
+  <p>These actions don't just work for the web, they work for all sorts of clients!</p>
 
-  <h3>HTTP</h3>
+  <div class="alert alert-success" role="alert">HTTP</div>
   {% highlight bash %}
 > curl localhost:8080/api/randomNumber
 
@@ -51,7 +51,7 @@ exports.randomNumber = {
 }
   {% endhighlight %}
 
-  <h3>TCP Socket</h3>
+  <div class="alert alert-success" role="alert">TCP Socket</div>
   {% highlight bash %}
 > telnet localhost 5000
 Trying 127.0.0.1...
@@ -62,7 +62,7 @@ randomNumber
 {"randomNumber":0.7903316407464445,"context":"response","messageCount":1}
   {% endhighlight %}
 
-  <h3>WebSocket</h3>
+  <div class="alert alert-success" role="alert">Web Socket</div>
   {% highlight javascript %}
 var client = new ActionheroClient;
 client.connect(function(error, details){
