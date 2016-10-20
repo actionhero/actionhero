@@ -64,7 +64,6 @@
     "help": "node ./bin/actionhero help",
     "test": "node test.js",
     "start": "node ./bin/actionhero",
-    "site": "cd site && EXECJS_RUNTIME=Node bundle exec middleman",
     "lint": "eslint ."
   }
 }
