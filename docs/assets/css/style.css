@@ -12,6 +12,15 @@ body{
   margin-right:0px;
 }
 
+.bs-docs-nav {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.bs-docs-sidebar {
+  padding-top: 50px;
+  z-index: -1;
+}
+
 .bs-docs-sidebar .nav > li > a {
   font-size:15px;
 }
