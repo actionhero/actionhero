@@ -84,6 +84,7 @@ exports.test = {
 exports.production = {
   general: function(api){
     return {
+      fileRequestLogLevel: 'debug',
       developmentMode: false
     };
   }
