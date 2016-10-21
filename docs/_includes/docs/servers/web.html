@@ -21,7 +21,7 @@
 }
   {% endhighlight %}
 
-  <p>The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. <code>{url}?action=actioName</code> or <code>{url}/api/{actioName}</code> is how you would access an action.  For example, using the default ports in <code>/config/servers/web.js</code> you could reach the status action with both <code>http://127.0.0.1:8080/status</code> or <code>http://127.0.0.1:8080/?action=status</code></p>
+  <p>The web server exposes actions and files over http or https.  You can visit the API in a browser, Curl, etc. <code>{url}?action=actionName</code> or <code>{url}/api/{actionName}</code> is how you would access an action.  For example, using the default ports in <code>/config/servers/web.js</code> you could reach the status action with both <code>http://127.0.0.1:8080/status</code> or <code>http://127.0.0.1:8080/?action=status</code></p>
   <p>HTTP responses are always JSON and follow the format below.</p>
 
   <h2 id="web-http-example">HTTP Example</h2>

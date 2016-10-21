@@ -147,7 +147,7 @@ exports.action = {
   logLevel: "warning",
   // (HTTP only) if the route for this action includes an extension (like .jpg), should the response MIME be adjusted to match?
   matchExtensionMimeType: true,
-  // should this action appear wthin `api.documentation.documentation`
+  // should this action appear within `api.documentation.documentation`
   toDocument: true,
 
   run: function(api, data, next){
@@ -258,7 +258,7 @@ moneyInCents: {
 
   <p>Formatters and Validators can also be named method names. For example, you might have an action like:</p>
 
-  {% highlight javactipt %}
+  {% highlight javascript %}
 exports.cacheTest = {
   name: 'cacheTest',
   description: 'I will test the internal cache functions of the API',
@@ -292,7 +292,7 @@ exports.cacheTest = {
 
   <p>You can define <code>api.formatter.uniqueKeyName</code> elsewhere in your project, like this initializer:</p>
 
-  {% highlight javactipt %}
+  {% highlight javascript %}
 module.exports = {
   initialize: function(api, next){
     api.formatter = {
@@ -309,7 +309,7 @@ module.exports = {
 
   <h2 id="actions-the-data-object">The Data Object</h2>
 
-  {% highlight javactipt %}
+  {% highlight javascript %}
 data = {
   connection: connection,
   action: 'randomNumber',
@@ -322,14 +322,14 @@ data = {
 }
   {% endhighlight %}
 
-  <p>The <code>data</code> object passed into your action captures the state of the connection at the time the action was started.  Midleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the <code>data</code> object:</p>
+  <p>The <code>data</code> object passed into your action captures the state of the connection at the time the action was started.  Middleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the <code>data</code> object:</p>
   <p>The goal of most actions is to do work and then modify the value of <code>data.response</code>, which will eventually be sent down to the client.</p>
   <p>You can also modify properties of the connection by accessing <code>data.connection</code>, IE changing the response header for a HTTP request.</p>
   <p>If you don't want your action to respond to the client, or you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set <code>data.toRender = false;</code></p>
 
   <h2 id="actions-using-middleware">Using Middleware in Actions</h2>
 
-  <p>You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, speficied in each action via <code>action.middleware = []</code>.  Supply the <code>names</code> of any middleware you want to use.</p>
+  <p>You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, specified in each action via <code>action.middleware = []</code>.  Supply the <code>names</code> of any middleware you want to use.</p>
   <p>You can <a href="/docs/core/#middleware">learn more about middleware here</a>.</p>
 
   <h2 id="actions-notes">Notes</h2>
@@ -337,10 +337,10 @@ data = {
   <ul>
     <li>Actions are asynchronous, and require in the API object, the <code>data</code> object, and the callback function.  Completing an action is as simple as calling <code>next(error)</code>.  If you have an error, be sure that it is a <code>new Error()</code> object, and not a string.</li>
     <li>The metadata <code>outputExample</code> is used in reflexive and self-documenting actions in the API, available via the <code>documentation</code> verb (and /api/ showDocumenation action).</li>
-    <li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code>api.config.general.simultaniousActions</code></li>
+    <li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code>api.config.general.simultaneousActions</code></li>
     <li><code>actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code>api.config.general.disableParamScrubbing</code>. Note that <a href="/docs#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
-    <li><code>matchExtensionMimeType</code> is curently only used by the <code>web</code> server, and it indicates that if this action is successfully called by a client with <code>connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
-    <li>ActionHero strives to keep the <code>data.connection</code> object uniform among various client types, and more importantly, present <code>data.params</code> in a homogenous way.  You can inspect <code>data.connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code>data.connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code>data.connection.rawConnection = {req: req, res: res}</code> for example.
+    <li><code>matchExtensionMimeType</code> is currently only used by the <code>web</code> server, and it indicates that if this action is successfully called by a client with <code>connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
+    <li>ActionHero strives to keep the <code>data.connection</code> object uniform among various client types, and more importantly, present <code>data.params</code> in a homogeneous way.  You can inspect <code>data.connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code>data.connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code>data.connection.rawConnection = {req: req, res: res}</code> for example.
       <ul>
         <li>You can learn more about some of the <code>rawConnection</code> options by learning how to <a href="/docs/core/#file-server-sending-files-from-actions">send files from actions</a>.</li>
       </ul>
