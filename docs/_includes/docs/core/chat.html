@@ -25,7 +25,7 @@
 
   <ul>
     <li>tell a message to all members in a room.</li>
-    <li>connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form <code>{room: &quot;someOtherRoom}</code>.  mockConnections without an id will be assigned the id of 0</li>
+    <li>connection can either be a real connection (A message coming from a client), or a mockConnection.  A mockConnection at the very least has the form <code>{room: &quot;someOtherRoom"}</code>.  mockConnections without an id will be assigned the id of 0</li>
     <li>The <code>context</code> of messages sent with <code>api.chatRoom.broadcast</code> always be <code>user</code> to differentiate these responses from a <code>response</code> to a request</li>
   </ul>
 
@@ -113,7 +113,7 @@
 
   <h2 id="chat-middleware">Middleware</h2>
 
-  <p>There are 4 types of middelware you can install for the chat system: <code>say</code>, <code>onSayReceive</code>, <code>join</code>, and <code>leave</code>.  You can learn more about <a href="/docs/core/#middleware-chat-middleware">chat middleware in the middleware section of this document</a></p>
+  <p>There are 4 types of middleware you can install for the chat system: <code>say</code>, <code>onSayReceive</code>, <code>join</code>, and <code>leave</code>.  You can learn more about <a href="/docs/core/#middleware-chat-middleware">chat middleware in the middleware section of this document</a></p>
 
   <h2 id="chat-to-clients">Chatting to specific clients</h2>
 

@@ -145,7 +145,7 @@ api.chatRoom.addMiddleware(chatMiddleware);
   {% endhighlight %}
 
   <p>The last type of middleware is used to act when a connection joins, leaves, or communicates within a chat room. We have 4 types of middleware for each step: <code>say</code>, <code>onSayReceive</code>, <code>join</code>, and <code>leave</code>.</p>
-  <p>Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returend to the user, and the action/verb/message will not be sent.</p>
+  <p>Priority is optional in all cases, but can be used to order your middleware.  If an error is returned in any of these methods, it will be returned to the user, and the action/verb/message will not be sent.</p>
   <p>More detail and nuance on chat middleware can be found in the <a href="/docs/core/#chat">chat section</a></p>
 
   <h3><a id="middleware-chat-middleware-notes"></a>Chat Midleware Notes</h3>
@@ -194,7 +194,7 @@ api.chatRoom.addMiddleware({
   Because the task middleware is executed by Resque <code>this</code> is an instance of a Resque Worker and contains a number of
   other elements which may be useful in a middleware.</p>
 
-  <h3 id="middleware-task-middleware-example">Task Middlware Example</h3>
+  <h3 id="middleware-task-middleware-example">Task Middleware Example</h3>
 
   <p>The following example is a simplistic implementation of a task execution timer middleware.</p>
 
