@@ -37,8 +37,7 @@ module.exports = function(api, next){
       publicIndex         : '/public/index.html',
       publicChat          : '/public/chat.html',
       publicLogo          : '/public/logo/actionhero.png',
-      publicSky           : '/public/logo/sky.jpg',
-      publicCss           : '/public/css/actionhero.css',
+      publicCss           : '/public/css/cosmo.css',
       exampleTest         : '/test/template.js.example'
     };
 
@@ -93,9 +92,8 @@ module.exports = function(api, next){
       '/actions/showDocumentation.js'                 : 'actionDocumentation',
       '/public/index.html'                            : 'publicIndex',
       '/public/chat.html'                             : 'publicChat',
-      '/public/css/actionhero.css'                    : 'publicCss',
+      '/public/css/cosmo.css'                         : 'publicCss',
       '/public/logo/actionhero.png'                   : 'publicLogo',
-      '/public/logo/sky.jpg'                          : 'publicSky',
       '/README.md'                                    : 'readmeMd',
       '/test/example.js'                              : 'exampleTest'
     };

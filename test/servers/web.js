@@ -24,7 +24,7 @@ describe('Server: Web', function(){
     });
   });
 
-  it('file: 404 pages from POST with if-modified-since header', function(done) {
+  it('file: 404 pages from POST with if-modified-since header', function(done){
     var file = Math.random().toString(36);
     var options = {
       url: url + '/' + file,
@@ -32,7 +32,8 @@ describe('Server: Web', function(){
         'if-modified-since': 'Thu, 19 Apr 2012 09:51:20 GMT'
       }
     };
-    request.get(options, function(error, response, body) {
+
+    request.get(options, function(error, response, body){
       should.not.exist(error);
       response.statusCode.should.equal(404);
       response.body.should.equal('That file is not found (' + file + ')');
@@ -750,7 +751,7 @@ describe('Server: Web', function(){
       });
 
       it('can ask for nested URL files with depth', function(done){
-        request.get(url + '/a/b/c/css/actionhero.css', function(error, response){
+        request.get(url + '/a/b/c/css/cosmo.css', function(error, response){
           should.not.exist(error);
           response.statusCode.should.equal(200);
           done();
@@ -1052,34 +1053,34 @@ describe('Server: Web', function(){
 
     describe('spaces in URL with public files', function(){
 
-      var source = __dirname + '/../../public/logo/sky.jpg';
+      var source = __dirname + '/../../public/logo/actionhero.png';
 
       before(function(done){
         var tmpDir = os.tmpdir();
         var readStream = fs.createReadStream(source);
-        readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'sky with space.jpg'));
+        readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'));
         api.staticFile.searchLoactions.push(tmpDir);
         readStream.on('close', done);
       });
 
       after(function(done){
-        fs.unlinkSync(os.tmpdir() + path.sep + 'sky with space.jpg');
+        fs.unlinkSync(os.tmpdir() + path.sep + 'actionhero with space.png');
         api.staticFile.searchLoactions.pop();
         done();
       });
 
       it('will decode %20 or plus sign to a space so that file system can read', function(done){
-        request.get(url + '/sky%20with%20space.jpg', function(error, response){
+        request.get(url + '/actionhero%20with%20space.png', function(error, response){
           should.not.exist(error);
           response.statusCode.should.equal(200);
           response.body.should.be.an.instanceOf(Object);
-          response.headers['content-type'].should.equal('image/jpeg');
+          response.headers['content-type'].should.equal('image/png');
           done();
         });
       });
 
       it('will capture bad encoding in URL and return NOT FOUND', function(done){
-        request.get(url + '/sky%20%%%%%%%%%%with+space.jpg', function(error, response){
+        request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', function(error, response){
           should.not.exist(error);
           response.statusCode.should.equal(404);
           response.body.should.be.an.instanceOf(String);
