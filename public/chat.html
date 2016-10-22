@@ -3,7 +3,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="content-language" content="en" />
     <meta name="description" content="actionhero.js" />
-    <link href='/public/css/actionhero.css' rel='stylesheet' type='text/css'>
+    <link href='/public/css/cosmo.css' rel='stylesheet' type='text/css'>
     <link rel="icon" href="/public/favicon.ico">
     <title>actionhero.js</title>
 
@@ -51,14 +51,14 @@
         s += "<div align=\"center\">*** " + message.welcome + " ***</div>";
         s += "<div align=\"center\"><img src=\"/public/logo/actionhero.png\" width=\"100\" /></div>";
       }else{
-        s += " " + formatTime(message.sentAt);
-        s += "<span style=\"color:#" + intToARGB(hashCode(message.from)) + "\">"
-        s += " [";
+        s += "<span style=\" font-size:10px; color:#" + intToARGB(hashCode(message.from)) + "\">"
         if(message.me === true){ s += "<strong>"; }
         s += message.from;
         if(message.me === true){ s += "</strong>"; }
-        s += "] ";
+        s += "</span>";
+        s += "<span style=\"font-size:10px;\"> @ " + formatTime(message.sentAt);
         s += "</span>"
+        s += "<br />"
         s += message.message;
       }
       s += "</pre>"
@@ -100,80 +100,41 @@
 
   <body onload="boot()">
 
-<!--   <section class="content-section text-center">
-    <div class="features-section">
-      <div class="container">
-        <h2>Real-Time Chat with Actionhero</h2>
-      </div>
-    </div>
-  </section> -->
-
-  <section class="intro">
-    <div class="thin-intro-body">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8 col-md-offset-2">
-            <br />
-            <h1>Real-Time Chat with Actionhero</h1>
-        </div>
-      </div>
-    </div>
-
     <div class="container">
       <div class="row">
-        <div class="col-4 col-sm-4 col-lg-4">
 
-          Hello, <strong><span id="name"></span></strong>
-
-          <form id="messageForm" class="form-inline">
-            <div class="form-group">
-              <label class="sr-only">Chat Message</label>
-              <div class="input-group">
-                <div class="input-group-addon"></div>
-                <input type="text" class="form-control" id="message" placeholder="Your Message">
-                <div class="input-group-addon"></div>
-              </div>
-            </div>
-            <br>
-            <br>
-            <button type="submit" class="btn btn-primary">Send Message</button>
-          </form>
-
+        <div class="col-md-12">
+          <h1>Real-Time Chat with Actionhero</h1>
+          <a href="/" class="btn btn-warning btn-xs">Back Home</a>
+          <hr />
         </div>
-        <div class="col-8 col-sm-8 col-lg-8">
-          <div class="server_info" id="actions">
-            <br>
-            <div class="chatBox" id="chatBox">
+
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Hello,<br /><strong><span id="name"></span></strong></h3>
+            </div>
+            <div class="panel-body">
+              <form id="messageForm" class="form-inline">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="message" placeholder="Your Message">
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+              </form>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-  </section>
-
-<!--     <div class="body_container">
-      <div class="server_info">
-        <div class="box"><div class="left">Name:</div><span id="name"></span></div>
-        <div class="box"><div class="left">Message:</div>
-            <form id="messageForm" name="messageForm" action="#">
-              <input type="text" name="message" size="90" id="message"> <a href="javascript:sendMessage()">[ send ]</a>
-            </form>
+        <div class="col-md-8">
+          <div class="chatBox" id="chatBox"></div>
         </div>
+
       </div>
     </div>
-
-    <div class="body_container">
-      <h2>Chat:</h2>
-      <div class="server_info" id="actions">
-        <div class="chatBox" id="chatBox">...</div>
-      </div>
-    </div> -->
-
   </body>
 
   <script>
-  document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault(); sendMessage(); }, false);
+    document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault(); sendMessage(); }, false);
   </script>
 
 </html>
