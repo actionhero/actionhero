@@ -338,7 +338,7 @@ data = {
     <li>Actions are asynchronous, and require in the API object, the <code>data</code> object, and the callback function.  Completing an action is as simple as calling <code>next(error)</code>.  If you have an error, be sure that it is a <code>new Error()</code> object, and not a string.</li>
     <li>The metadata <code>outputExample</code> is used in reflexive and self-documenting actions in the API, available via the <code>documentation</code> verb (and /api/ showDocumenation action).</li>
     <li>You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with <code>api.config.general.simultaneousActions</code></li>
-    <li><code>actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code>api.config.general.disableParamScrubbing</code>. Note that <a href="/docs#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
+    <li><code>actions.inputs</code> are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at <code>api.config.general.disableParamScrubbing</code>. Note that <a href="/docs/core/#middleware">Middleware</a> preProcessors will always have access to all params pre-scrubbing.</li>
     <li><code>matchExtensionMimeType</code> is currently only used by the <code>web</code> server, and it indicates that if this action is successfully called by a client with <code>connection.extension</code> set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.</li>
     <li>ActionHero strives to keep the <code>data.connection</code> object uniform among various client types, and more importantly, present <code>data.params</code> in a homogeneous way.  You can inspect <code>data.connection.type</code> to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in <code>data.connection.rawConnection</code> which will contain the websocket, tcp connection, etc.  For web clients, <code>data.connection.rawConnection = {req: req, res: res}</code> for example.
       <ul>
@@ -347,6 +347,6 @@ data = {
     </li>
   </ul>
 
-  <p><a href="/docs/servers/#web-uploading-files">You can learn more about handling HTTP verbs and file uploads here</a> and <a href="/docs/servers/#web-routes">TCP Clients</a> and <a href="/docs#websocket-server">Web-Socket Clients</a></p>
+  <p><a href="/docs/servers/#web-uploading-files">You can learn more about handling HTTP verbs and file uploads here</a> and <a href="/docs/servers/#socket">TCP Clients</a> and <a href="/docs/servers/#websocket">Web-Socket Clients</a></p>
 
 </section>
