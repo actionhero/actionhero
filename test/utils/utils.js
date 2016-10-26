@@ -72,7 +72,7 @@ describe('Utils', function(){
     done();
   });
 
-  describe('#parseIPv6URI', function(){
+  describe('utils.parseIPv6URI', function(){
 
     it('address and port', function(){
       var uri = '[2604:4480::5]:8080';
