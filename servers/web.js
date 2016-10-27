@@ -383,7 +383,7 @@ const initialize = function(api, options, next){
         stringResponse = JSON.stringify(data.response, null, api.config.servers.web.padding);
         if(data.params.callback){
           data.connection.rawConnection.responseHeaders.push(['Content-Type', 'application/javascript']);
-          stringResponse = data.connection.params.callback + '(' + stringResponse + ');';
+          stringResponse = callbackHtmlEscape(data.connection.params.callback) + '(' + stringResponse + ');';
         }
       }else{
         stringResponse = data.response;
@@ -586,6 +586,17 @@ const initialize = function(api, options, next){
 
   next(server);
 };
+
+function callbackHtmlEscape(str){
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\)/g, '')
+    .replace(/\(/g, '');
+}
 
 /////////////////////////////////////////////////////////////////////
 // exports
