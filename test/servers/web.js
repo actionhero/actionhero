@@ -36,7 +36,7 @@ describe('Server: Web', function(){
     request.get(options, function(error, response, body){
       should.not.exist(error);
       response.statusCode.should.equal(404);
-      response.body.should.equal('That file is not found (' + file + ')');
+      response.body.should.equal('That file is not found');
       done();
     });
   });
@@ -211,6 +211,25 @@ describe('Server: Web', function(){
       });
     });
 
+  });
+
+  describe('JSONp', function(){
+    it('can ask for JSONp responses', function(done){
+      request.get(url + '/api/randomNumber?callback=myCallback', function(error, response, body){
+        should.not.exist(error);
+        body.indexOf('myCallback({').should.equal(0);
+        done();
+      });
+    });
+
+    it('JSONp responses cannot be used for XSS', function(done){
+      request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo', function(error, response, body){
+        should.not.exist(error);
+        body.should.not.containEql('alert({');
+        body.indexOf('alert&#39;hi&#39;;foo(').should.equal(0);
+        done();
+      });
+    });
   });
 
   it('gibberish actions have the right response', function(done){
@@ -600,6 +619,7 @@ describe('Server: Web', function(){
       request.get(url + '/public/notARealFile', function(error, response){
         should.not.exist(error);
         response.statusCode.should.equal(404);
+        response.body.should.not.containEql('notARealFile');
         done();
       });
     });
@@ -608,7 +628,7 @@ describe('Server: Web', function(){
       request.get(url + '/public/../config.json', function(error, response){
         should.not.exist(error);
         response.statusCode.should.equal(404);
-        response.body.should.equal('That file is not found (..' + path.sep + 'config.json)');
+        response.body.should.equal('That file is not found');
         done();
       });
     });

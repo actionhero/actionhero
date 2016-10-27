@@ -92,7 +92,7 @@ exports['default'] = {
       // The body message to accompany 404 (file not found) errors regarding flat files
       // You may want to load in the contnet of 404.html or similar
       fileNotFound: function(connection){
-        return connection.localize(['That file is not found (%s)', connection.params.file]);
+        return connection.localize(['That file is not found']);
       },
 
       // user didn't request a file
