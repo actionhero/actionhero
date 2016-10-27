@@ -97,27 +97,27 @@ module.exports = {
     const rLt = /</g;
     const rGt = />/g;
     const rQuot = /\"/g;
-    const rApos =/\'/g;
-    const rFSlash =/\//g;
+    const rApos = /\'/g;
+    const rFSlash = /\//g;
     ////////////////////////////////////////////////////////////////////////////
     // Sanitize a string that will be (potentially) rendered as HTML
     // Inspired by https://github.com/parshap/html-escape/blob/master/index.js
     // and https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
-    api.utils.sanitizeHtml = function(str) {
-      if (typeof str !== "string") {
+    api.utils.sanitizeHtml = function(str){
+      if(typeof str !== 'string'){
         str = String(str);
       }
 
-      if (badChars.test(str)) {
+      if(badChars.test(str)){
         return str
-          .replace(rAmp,'&amp;')
-          .replace(rLt,'&lt;')
-          .replace(rGt,'&gt;')
+          .replace(rAmp, '&amp;')
+          .replace(rLt, '&lt;')
+          .replace(rGt, '&gt;')
           .replace(rQuot, '&quot;')
-          .replace(rApos,'&#x27;')
-          .replace(rFSlash,'&#x2F;');
+          .replace(rApos, '&#x27;')
+          .replace(rFSlash, '&#x2F;');
       }
-      else {
+      else{
         return str;
       }
     };

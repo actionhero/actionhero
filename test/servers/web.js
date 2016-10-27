@@ -631,9 +631,9 @@ describe('Server: Web', function(){
       });
     });
 
-    describe('XSS Vulnerabilities', function() {
-      it('will prevent XSS vulnerabilities in the file not found error', function(done) {
-        request.get(url + "/public/fakeFile.html%3Ca%20href=%22javascript:alert('xss')%22%3E%3Cp%3Eclick%20here%3C/p%3E%3C/a%3E", function(error, response) {
+    describe('XSS Vulnerabilities', function(){
+      it('will prevent XSS vulnerabilities in the file not found error', function(done){
+        request.get(url + "/public/fakeFile.html%3Ca%20href=%22javascript:alert('xss')%22%3E%3Cp%3Eclick%20here%3C/p%3E%3C/a%3E", function(error, response){
           should.not.exist(error);
           response.statusCode.should.equal(404);
           response.body.should.be.an.instanceOf(String);
