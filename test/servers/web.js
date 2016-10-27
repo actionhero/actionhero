@@ -214,6 +214,10 @@ describe('Server: Web', function(){
   });
 
   describe('JSONp', function(){
+
+    before(function(){ api.config.servers.web.metadataOptions.requesterInformation = false; });
+    after(function(){ api.config.servers.web.metadataOptions.requesterInformation = true; });
+
     it('can ask for JSONp responses', function(done){
       request.get(url + '/api/randomNumber?callback=myCallback', function(error, response, body){
         should.not.exist(error);
@@ -225,7 +229,7 @@ describe('Server: Web', function(){
     it('JSONp responses cannot be used for XSS', function(done){
       request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo', function(error, response, body){
         should.not.exist(error);
-        body.should.not.containEql('alert({');
+        body.should.not.containEql('alert(');
         body.indexOf('alert&#39;hi&#39;;foo(').should.equal(0);
         done();
       });
