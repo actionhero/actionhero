@@ -19,7 +19,7 @@ describe('Core: i18n', function(){
 
     var spanish = {
       'Your random number is %s': 'Su número aleatorio es %s',
-      'That file is not found (%s)': 'Ese archivo no se encuentra (%s)',
+      'That file is not found': 'Ese archivo no se encuentra',
       '%s is a required parameter for this action': '%s es un parámetro requerido para esta acción',
     };
     fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish));
