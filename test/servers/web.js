@@ -619,6 +619,7 @@ describe('Server: Web', function(){
       request.get(url + '/public/notARealFile', function(error, response){
         should.not.exist(error);
         response.statusCode.should.equal(404);
+        response.statusCode.should.not.containEql('notARealFile');
         done();
       });
     });
