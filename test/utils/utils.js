@@ -72,7 +72,7 @@ describe('Utils', function(){
     done();
   });
 
-  describe('#parseIPv6URI', function(){
+  describe('utils.parseIPv6URI', function(){
 
     it('address and port', function(){
       var uri = '[2604:4480::5]:8080';
@@ -107,4 +107,10 @@ describe('Utils', function(){
 
   });
 
+  describe('utils.sanitizeHtml', function(){
+    it('sanitizes a string for inclusion as HTML', function(){
+      var result = api.utils.sanitizeHtml('This is an <a href="http://www.actionherojs.com">html</a> file with some evil & \'naughty\' characters!');
+      result.should.equal('This is an &lt;a href=&quot;http:&#x2F;&#x2F;www.actionherojs.com&quot;&gt;html&lt;&#x2F;a&gt; file with some evil &amp; &#x27;naughty&#x27; characters!');
+    });
+  });
 });
