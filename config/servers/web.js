@@ -12,6 +12,7 @@ exports['default'] = {
         // Passed to https.createServer if secure=true. Should contain SSL certificates
         serverOptions: {},
         // Should we redirect all traffic to the first host in this array if hte request header doesn't match?
+        // i.e.: [ 'https://www.site.com' ]
         allowedRequestHosts: process.env.ALLOWED_HOSTS ? process.env.ALLOWED_HOSTS.split(',') : [],
         // Port or Socket Path
         port: process.env.PORT || 8080,
