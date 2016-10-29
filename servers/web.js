@@ -314,7 +314,9 @@ const initialize = function(api, options, next){
       }
 
       if(api.config.servers.web.allowedRequestHosts && api.config.servers.web.allowedRequestHosts.length > 0){
-        let fullRequestHost = (req.uri.protocol ? (req.uri.protocol + ':') : '') + req.headers.host;
+        let guess = 'http://';
+        if(options.secure){ guess = 'https://'; }
+        let fullRequestHost = (req.headers['x-forwarded-proto'] ? req.headers['x-forwarded-proto'] + '://' : guess) + req.headers.host;
         if(api.config.servers.web.allowedRequestHosts.indexOf(fullRequestHost) < 0){
           let newHost = api.config.servers.web.allowedRequestHosts[0];
           res.statusCode = 302;

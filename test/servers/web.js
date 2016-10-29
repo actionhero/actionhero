@@ -244,7 +244,7 @@ describe('Server: Web', function(){
       request.get({
         followRedirect: false,
         url: url + '/api/randomNumber',
-        headers: {'Host': 'http://www.site.com'}
+        headers: {'Host': 'lalala.site.com'}
       }, function(error, response, body){
         should.not.exist(error);
         response.headers.location.should.equal('https://www.site.com');
@@ -257,7 +257,10 @@ describe('Server: Web', function(){
       request.get({
         followRedirect: false,
         url: url + '/api/randomNumber',
-        headers: {'Host': 'https://www.site.com'}
+        headers: {
+          'Host': 'www.site.com',
+          'x-forwarded-proto': 'https',
+        }
       }, function(error, response, body){
         should.not.exist(error);
         should.not.exist(response.headers.location);
