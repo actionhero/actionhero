@@ -236,6 +236,37 @@ describe('Server: Web', function(){
     });
   });
 
+  describe('request redirecton (allowedRequestHosts)', function(){
+    before(function(){ api.config.servers.web.allowedRequestHosts = ['https://www.site.com']; });
+    after(function(){ api.config.servers.web.allowedRequestHosts = []; });
+
+    it('will redirect clients if they do not request the proper host', function(done){
+      request.get({
+        followRedirect: false,
+        url: url + '/api/randomNumber',
+        headers: {'Host': 'http://www.site.com'}
+      }, function(error, response, body){
+        should.not.exist(error);
+        response.headers.location.should.equal('https://www.site.com');
+        body.should.containEql('You are being redirected to https://www.site.com');
+        done();
+      });
+    });
+
+    it('will allow API access from the proper hosts', function(done){
+      request.get({
+        followRedirect: false,
+        url: url + '/api/randomNumber',
+        headers: {'Host': 'https://www.site.com'}
+      }, function(error, response, body){
+        should.not.exist(error);
+        should.not.exist(response.headers.location);
+        body.should.containEql('randomNumber');
+        done();
+      });
+    });
+  });
+
   it('gibberish actions have the right response', function(done){
     request.get(url + '/api/IAMNOTANACTION', function(error, response, body){
       should.not.exist(error);

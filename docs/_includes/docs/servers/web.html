@@ -343,6 +343,12 @@ get: [
   <p>After mapping this route all files/folders within the mapped folder will be accessible on the route.</p>
   <p>You have to map the specified public folder within the "dir" parameter, relative to the routes.js file or absolute. Make sure to set "matchTrailingPathParts" to "true", because when it is set to false, the route will never match when you request a file. (e.g.: site.com/my/special/folder/testfile.txt).</p>
 
+  <h4>Hosts</h4>
+
+  <p>ActionHero allows you to define a collection of host headers which this API server will allow access from.  You can set these via `api.config.servers.web.allowedRequestHosts`.  If the `Host` header of a client does not match one of those listed (protocol counts!), they will be redirected to the first one present.</p>
+  <p>You can also set `process.env.ALLOWED_HOSTS` which will be parsed as a comma-separated list of Hosts which will set `api.config.servers.web.allowedRequestHosts`</p>
+
+
   <h4>Route Notes</h4>
 
   <ul>
