@@ -313,6 +313,16 @@ const initialize = function(api, options, next){
         }
       }
 
+      if(api.config.servers.web.allowedRequestHosts && api.config.servers.web.allowedRequestHosts.length > 0){
+        let fullRequestHost = (req.uri.protocol ? (req.uri.protocol + ':') : '') + req.headers.host;
+        if(api.config.servers.web.allowedRequestHosts.indexOf(fullRequestHost) < 0){
+          let newHost = api.config.servers.web.allowedRequestHosts[0];
+          res.statusCode = 302;
+          res.setHeader('Location', newHost);
+          return res.end('You are being redirected to ' + newHost + '\r\n');
+        }
+      }
+
       server.buildConnection({
         // will emit 'connection'
         rawConnection: {
