@@ -18,7 +18,7 @@ module.exports = {
         if(!reload){ reload = false; }
 
         const loadMessage = function(loadedTaskName){
-          api.log(['task %sloaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
+          api.log(['task %s loaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
         };
 
         api.watchFileAndAct(fullFilePath, () => {

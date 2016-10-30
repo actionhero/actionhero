@@ -18,7 +18,7 @@ module.exports = function(api, next){
     if(cluster.isWorker){ process.send({state: state}); }
     api._context.start(function(error, apiFromCallback){
       if(error){
-        api.log(error);
+        api.log(['%s', error]);
         process.exit(1);
       }else{
         state = 'started';

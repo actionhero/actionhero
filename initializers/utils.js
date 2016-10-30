@@ -305,21 +305,21 @@ module.exports = {
 
     api.utils.createDirSafely = function(dir){
       if(api.utils.dirExists(dir)){
-        api.log(' - directory \'' + path.normalize(dir) + '\' already exists, skipping', 'alert');
+        api.log([' - directory \'%s\' already exists, skipping', path.normalize(dir)], 'alert');
       }else{
-        api.log(' - creating directory \'' + path.normalize(dir) + '\'');
+        api.log([' - creating directory \'%s\'', path.normalize(dir)]);
         fs.mkdirSync(path.normalize(dir), '0766');
       }
     };
 
     api.utils.createFileSafely = function(file, data, overwrite){
       if(api.utils.fileExists(file) && !overwrite){
-        api.log(' - file \'' + path.normalize(file) + '\' already exists, skipping', 'alert');
+        api.log([' - file \'%s\' already exists, skipping', path.normalize(file)], 'alert');
       }else{
         if(overwrite && api.utils.fileExists(file)){
-          api.log(' - overwritten file \'' + path.normalize(file) + '\'');
+          api.log([' - overwritten file \'%s\'', path.normalize(file)]);
         }else{
-          api.log(' - wrote file \'' + path.normalize(file) + '\'');
+          api.log([' - wrote file \'%s\'', path.normalize(file)]);
         }
         fs.writeFileSync(path.normalize(file), data);
       }
@@ -327,27 +327,27 @@ module.exports = {
 
     api.utils.createLinkfileSafely = function(filePath, type, refrence){
       if(api.utils.fileExists(filePath)){
-        api.log(' - link file \'' + filePath + '\' already exists, skipping', 'alert');
+        api.log([' - link file \'%s\' already exists, skipping', filePath], 'alert');
       }else{
-        api.log(' - creating linkfile \'' + filePath + '\'');
+        api.log([' - creating linkfile \'%s\'', filePath]);
         fs.writeFileSync(filePath, type);
       }
     };
 
     api.utils.removeLinkfileSafely = function(filePath, type, refrence){
       if(!api.utils.fileExists(filePath)){
-        api.log(' - link file \'' + filePath + '\' doesn\'t exist, skipping', 'alert');
+        api.log([' - link file \'%s\' doesn\'t exist, skipping', filePath], 'alert');
       }else{
-        api.log(' - removing linkfile \'' + filePath + '\'');
+        api.log([' - removing linkfile \'%s\'', filePath]);
         fs.unlinkSync(filePath);
       }
     };
 
     api.utils.createSymlinkSafely = function(destination, source){
       if(api.utils.dirExists(destination)){
-        api.log(' - symbolic link \'' + destination + '\' already exists, skipping', 'alert');
+        api.log([' - symbolic link \'%s\' already exists, skipping', destination], 'alert');
       }else{
-        api.log(' - creating symbolic link \'' + destination + '\' => \'' + source + '\'');
+        api.log([' - creating symbolic link \'%s\' => \'%s\'', destination, source]);
         fs.symlinkSync(source, destination, 'dir');
       }
     };
