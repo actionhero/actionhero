@@ -46,15 +46,11 @@ describe('Core: i18n', function(){
     });
   });
 
-  it('should create localization files by default, and strings from actions and the server should be included automatically', function(done){
+  it('should create localization files by default, and strings from actions should be included', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.within(0, 1);
       var content = readLocaleFile();
       [
-        '*** Starting ActionHero ***',
-        'Loaded initializer: %s',
-        '*** ActionHero Started ***',
-        '[ action @ %s ]',
         'Your random number is %s',
       ].forEach(function(s){
         should.exist(content[s]);
