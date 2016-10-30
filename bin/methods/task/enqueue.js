@@ -17,9 +17,9 @@ module.exports = function(api, next){
   api.resque.startQueue(function(){
     api.tasks.enqueue(argv.name, args, function(error, toRun){
       if(error){
-        api.log(error, 'alert');
+        api.log(['%s', error], 'alert');
       }else{
-        api.log(toRun);
+        api.log('response', 'info', toRun);
       }
       next(null, true);
     });

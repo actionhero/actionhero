@@ -24,12 +24,12 @@ module.exports = function(api, next){
   });
 
   if(!pluginRoot){
-    api.log('plugin `' + argv.name + '` not found in plugin paths', 'warning', api.config.general.paths.plugin);
+    api.log(['plugin `%s` not found in plugin paths', argv.name], 'warning', api.config.general.paths.plugin);
     return next(null, true);
   }
 
   let pluginRootRelative = pluginRoot.replace(linkRelativeBase, '');
-  api.log('linking the plugin found at ' + pluginRootRelative);
+  api.log(['linking the plugin found at %s', pluginRootRelative]);
 
   // link actionable files
   [
