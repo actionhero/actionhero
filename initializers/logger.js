@@ -1,5 +1,6 @@
 'use strict';
 
+const util = require('util');
 const winston = require('winston');
 
 module.exports = {
@@ -30,7 +31,16 @@ module.exports = {
     }
 
     api.log = function(message, severity, data){
-      let localizedMessage = api.i18n.localize(message);
+
+      let localizedMessage;
+      if(api.config.logger.localizeLogMessages === true){
+        localizedMessage = api.i18n.localize(message);
+      }else if(typeof message === 'string'){
+        localizedMessage = message;
+      }else{
+        localizedMessage = util.format.apply(this, message);
+      }
+
       if(severity === undefined || severity === null || api.logger.levels[severity] === undefined){ severity = 'info'; }
       let args = [severity, localizedMessage];
       if(data !== null && data !== undefined){ args.push(data); }
