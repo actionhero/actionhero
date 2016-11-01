@@ -122,6 +122,29 @@ cd $DEPLOY_PATH && kill -s USR2 `cat pids/cluster_pidfile`
   <p>To send a signal to the cluster master process to reboot all its workers (<code>USR2</code>), you can cat the pidfile (bash): <code>kill -s USR2 &quot;cat /path/to/pids/cluster_pidfile&quot;</code></p>
   <p>If you want to setup a git-based deployment, the simplest steps would be something like =&gt;</p>
 
+  <h2 id="production-paas-deployment">PAAS and Procfile Deployment</h2>
+  <p>When deploying to a Platform as a Service (PAAS) cluster (like <a href="https://heroku.com">Heroku</a>, <a href="https://flynn.io">Flynn</a>, and even some <a https://www.docker.com>Docker</a> deployments), we can offer a few pieces of advice:</p>
+  <p>If you are deploying a seperate WEB and WORKER process type, you can define them in a <a href="https://devcenter.heroku.com/articles/procfile"><code>Procfile</code></a> and make use of environment variable overrides in addition to those defined from the environemnt.  You can modify your config files to use these options:<p>
+  {% highlight bash %}
+# ./Procfile
+web:    SCHEDULER=false \
+        MIN_TASK_PROCESSORS=0 \
+        MAX_TASK_PROCESSORS=0 \
+        ENABLE_WEB_SERVER=true  \
+        ENABLE_SOCKET_SERVER=true  \
+        ENABLE_WEBSOCKET_SERVER=true  \
+        ./node_modules/.bin/actionhero start
+
+worker: SCHEDULER=true  \
+        MIN_TASK_PROCESSORS=5 \
+        MAX_TASK_PROCESSORS=5 \
+        ENABLE_WEB_SERVER=false \
+        ENABLE_SOCKET_SERVER=false \
+        ENABLE_WEBSOCKET_SERVER=false \
+        ./node_modules/.bin/actionhero start
+  {% endhighlight %}
+  <p>Be sure <strong>not</strong> to use NPM in your <code>Procfile</code> defintions.  In many deployment scenarios, NPM will not properly pass signals to the ActionHero process and it will be impossible to signal a graceful shutdown.  Examples of this behavior can be found <a href="https://github.com/flynn/flynn/issues/3601">here</a> and <a href="https://github.com/npm/npm/issues/4603">here</a></p>
+
   <h2 id="production-notes-global-packages">Global Packages</h2>
 
   <p>It's probably best to avoid installing any global packages.  This way, you won't have to worry about conflicts, and your project can be kept up to date more easily.  When using npm to install a local package the package's binaries are always copied into <code>./node_modules/.bin</code>.</p>
