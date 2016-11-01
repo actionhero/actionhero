@@ -247,8 +247,8 @@ describe('Server: Web', function(){
         headers: {'Host': 'lalala.site.com'}
       }, function(error, response, body){
         should.not.exist(error);
-        response.headers.location.should.equal('https://www.site.com');
-        body.should.containEql('You are being redirected to https://www.site.com');
+        response.headers.location.should.equal('https://www.site.com/api/randomNumber');
+        body.should.containEql('You are being redirected to https://www.site.com/api/randomNumber');
         done();
       });
     });
