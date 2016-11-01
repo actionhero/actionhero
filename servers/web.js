@@ -320,8 +320,8 @@ const initialize = function(api, options, next){
         if(api.config.servers.web.allowedRequestHosts.indexOf(fullRequestHost) < 0){
           let newHost = api.config.servers.web.allowedRequestHosts[0];
           res.statusCode = 302;
-          res.setHeader('Location', newHost);
-          return res.end('You are being redirected to ' + newHost + '\r\n');
+          res.setHeader('Location', newHost + req.url);
+          return res.end(`You are being redirected to ${newHost + req.url}\r\n`);
         }
       }
 
