@@ -136,6 +136,22 @@ describe('Core: specHelper', function(){
       });
     });
 
+    describe('disabling metadata', function(){
+      before(function(){ api.specHelper.returnMetadata = false; });
+      after(function(){ api.specHelper.returnMetadata = true; });
+
+      it('if the response payload is an object, it should not append metadata', function(done){
+        api.specHelper.runAction('randomNumber', function(response){
+          should.not.exist(response.error);
+          should.exist(response.randomNumber);
+          should.not.exist(response.messageCount);
+          should.not.exist(response.serverInformation);
+          should.not.exist(response.requesterInformation);
+          done();
+        });
+      });
+    });
+
     describe('errors', function(){
 
       it('if the response payload is an object and there is an error, it appends metadata', function(done){

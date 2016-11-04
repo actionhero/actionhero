@@ -10,7 +10,9 @@ module.exports = {
 
     if(api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true){
 
-      api.specHelper = {};
+      api.specHelper = {
+        returnMetadata: true,
+      };
 
       // create a test 'server' to run actions
       api.specHelper.initialize = function(api, options, next){
@@ -36,10 +38,6 @@ module.exports = {
 
         server.sendMessage = function(connection, message, messageCount){
           process.nextTick(() => {
-            if(typeof message !== 'string' && !Array.isArray(message)){
-              message.messageCount = messageCount;
-            }
-
             connection.messages.push(message);
             if(typeof connection.actionCallbacks[messageCount] === 'function'){
               connection.actionCallbacks[messageCount](message, connection);
@@ -92,21 +90,23 @@ module.exports = {
               data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
             }
 
-            data.response.messageCount = data.messageCount;
+            if(api.specHelper.returnMetadata){
+              data.response.messageCount = data.messageCount;
 
-            data.response.serverInformation = {
-              serverName: api.config.general.serverName,
-              apiVersion: api.config.general.apiVersion,
-            };
+              data.response.serverInformation = {
+                serverName: api.config.general.serverName,
+                apiVersion: api.config.general.apiVersion,
+              };
 
-            data.response.requesterInformation = {
-              id: data.connection.id,
-              remoteIP: data.connection.remoteIP,
-              receivedParams: {}
-            };
+              data.response.requesterInformation = {
+                id: data.connection.id,
+                remoteIP: data.connection.remoteIP,
+                receivedParams: {}
+              };
 
-            for(let k in data.params){
-              data.response.requesterInformation.receivedParams[k] = data.params[k];
+              for(let k in data.params){
+                data.response.requesterInformation.receivedParams[k] = data.params[k];
+              }
             }
           }
 

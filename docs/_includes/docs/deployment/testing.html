@@ -141,5 +141,6 @@ api.specHelper.runTask(‘sendEmailTask', {message: ‘hello' to: ‘evan@test.c
 
   <h2 id="testing-notes">Notes</h2>
   <p>Be sure to run your tests in the <code>test</code> environment, setting the shell's env with <code>NODE_ENV=test</code>.  You can alternatively set this explicitly in your tests with <code>process.env.NODE_ENV = 'test'</code></p>
+  <p>If you do not want the <code>specHelper</code> actions to include metadata (<code>data.response.serverInformation</code>, <code>data.response.requesterInformation</code>, and <code>data.response.messageCount</code>) from the server, you can configure <code>api.specHelper.returnMetadata = false</code> in your tests.</p>
 
 </section>
