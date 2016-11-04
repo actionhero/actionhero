@@ -36,7 +36,10 @@ module.exports = {
 
         server.sendMessage = function(connection, message, messageCount){
           process.nextTick(() => {
-            message.messageCount = messageCount;
+            if(typeof message !== 'string' && !Array.isArray(message)){
+              message.messageCount = messageCount;
+            }
+
             connection.messages.push(message);
             if(typeof connection.actionCallbacks[messageCount] === 'function'){
               connection.actionCallbacks[messageCount](message, connection);
@@ -80,23 +83,31 @@ module.exports = {
         });
 
         server.on('actionComplete', function(data){
-          data.response.messageCount = data.messageCount;
-          data.response.serverInformation = {
-            serverName:      api.config.general.serverName,
-            apiVersion:      api.config.general.apiVersion,
-          };
-          data.response.requesterInformation = {
-            id: data.connection.id,
-            remoteIP: data.connection.remoteIP,
-            receivedParams: {}
-          };
+          if(typeof data.response === 'string' || Array.isArray(data.response)){
+            if(data.response.error){
+              data.response = api.config.errors.serializers.servers.specHelper(data.response.error);
+            }
+          }else{
+            if(data.response.error){
+              data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
+            }
 
-          if(data.response.error){
-            data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
-          }
+            data.response.messageCount = data.messageCount;
 
-          for(let k in data.params){
-            data.response.requesterInformation.receivedParams[k] = data.params[k];
+            data.response.serverInformation = {
+              serverName: api.config.general.serverName,
+              apiVersion: api.config.general.apiVersion,
+            };
+
+            data.response.requesterInformation = {
+              id: data.connection.id,
+              remoteIP: data.connection.remoteIP,
+              receivedParams: {}
+            };
+
+            for(let k in data.params){
+              data.response.requesterInformation.receivedParams[k] = data.params[k];
+            }
           }
 
           if(data.toRender === true){
