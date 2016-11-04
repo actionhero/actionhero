@@ -26,16 +26,6 @@ describe('Core: specHelper', function(){
     });
   });
 
-  it('will return metadata like the web server', function(done){
-    api.specHelper.runAction('x', {thing: 'stuff'}, function(response){
-      response.error.should.equal('Error: unknown action or invalid apiVersion');
-      response.messageCount.should.equal(1);
-      response.serverInformation.serverName.should.equal('actionhero');
-      response.requesterInformation.remoteIP.should.equal('testServer');
-      done();
-    });
-  });
-
   it('will stack up messages recieved', function(done){
     api.specHelper.runAction('x', {thing: 'stuff'}, function(response, connection){
       connection.messages.length.should.equal(2);
@@ -43,6 +33,73 @@ describe('Core: specHelper', function(){
       connection.messages[1].error.should.equal('Error: unknown action or invalid apiVersion');
       done();
     });
+  });
+
+  describe('metadata and errors', function(){
+    before(function(){
+      api.actions.versions.stringErrorTestAction = [1];
+      api.actions.actions.stringErrorTestAction = {
+        '1': {
+          name: 'stringErrorTestAction',
+          description: 'stringErrorTestAction',
+          version: 1,
+          run:function(api, data, next){
+            data.response = 'something here';
+            next('some error');
+          }
+        }
+      };
+
+      api.actions.versions.arrayErrorTestAction = [1];
+      api.actions.actions.arrayErrorTestAction = {
+        '1': {
+          name: 'arrayErrorTestAction',
+          description: 'arrayErrorTestAction',
+          version: 1,
+          run:function(api, data, next){
+            data.response = [1, 2, 3];
+            next('some error');
+          }
+        }
+      };
+    });
+
+    after(function(){
+      delete api.actions.actions.stringErrorTestAction;
+      delete api.actions.versions.stringErrorTestAction;
+      delete api.actions.actions.arrayErrorTestAction;
+      delete api.actions.versions.arrayErrorTestAction;
+    });
+
+    it('if the response payload is an object, it will append serverInformation, requesterInformation, and messageCount', function(done){
+      api.specHelper.runAction('x', function(response){
+        response.error.should.equal('Error: unknown action or invalid apiVersion');
+        response.messageCount.should.equal(1);
+        response.serverInformation.serverName.should.equal('actionhero');
+        response.requesterInformation.remoteIP.should.equal('testServer');
+        done();
+      });
+    });
+
+    it('if the response payload is a string, just the error will be returned', function(done){
+      api.specHelper.runAction('stringErrorTestAction', function(response){
+        response.should.equal('Error: some error');
+        should.not.exist(response.messageCount);
+        should.not.exist(response.serverInformation);
+        should.not.exist(response.requesterInformation);
+        done();
+      });
+    });
+
+    // it('if the response payload is a array, just the error will be returned', function(done){
+    //   api.specHelper.runAction('arrayErrorTestAction', function(response){
+    //     response.should.equal('Error: some error');
+    //     should.not.exist(response.messageCount);
+    //     should.not.exist(response.serverInformation);
+    //     should.not.exist(response.requesterInformation);
+    //     done();
+    //   });
+    // });
   });
 
   describe('test callbacks', function(){

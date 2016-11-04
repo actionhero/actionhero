@@ -74,8 +74,13 @@ module.exports = {
       if(error && typeof error === 'string'){
         error = new Error(error);
       }
+
       if(error && !this.response.error){
-        this.response.error = error;
+        if(typeof this.response === 'string' || Array.isArray(this.response)){
+          this.response = error.toString();
+        }else{
+          this.response.error = error;
+        }
       }
 
       this.incrementPendingActions(-1);
