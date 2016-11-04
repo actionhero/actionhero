@@ -347,7 +347,7 @@ const initialize = function(api, options, next){
 
   const completeResponse = function(data){
     if(data.toRender === true){
-      if(api.config.servers.web.metadataOptions.serverInformation){
+      if(api.config.servers.web.metadataOptions.serverInformation && typeof data.response !== 'string'){
         const stopTime = new Date().getTime();
         data.response.serverInformation = {
           serverName:      api.config.general.serverName,
@@ -357,7 +357,7 @@ const initialize = function(api, options, next){
         };
       }
 
-      if(api.config.servers.web.metadataOptions.requesterInformation){
+      if(api.config.servers.web.metadataOptions.requesterInformation && typeof data.response !== 'string'){
         data.response.requesterInformation = buildRequesterInformation(data.connection);
       }
 
