@@ -91,15 +91,15 @@ describe('Core: specHelper', function(){
       });
     });
 
-    // it('if the response payload is a array, just the error will be returned', function(done){
-    //   api.specHelper.runAction('arrayErrorTestAction', function(response){
-    //     response.should.equal('Error: some error');
-    //     should.not.exist(response.messageCount);
-    //     should.not.exist(response.serverInformation);
-    //     should.not.exist(response.requesterInformation);
-    //     done();
-    //   });
-    // });
+    it('if the response payload is a array, just the error will be returned', function(done){
+      api.specHelper.runAction('arrayErrorTestAction', function(response){
+        response.should.equal('Error: some error');
+        should.not.exist(response.messageCount);
+        should.not.exist(response.serverInformation);
+        should.not.exist(response.requesterInformation);
+        done();
+      });
+    });
   });
 
   describe('test callbacks', function(){
