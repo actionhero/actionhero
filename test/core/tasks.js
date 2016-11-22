@@ -20,7 +20,7 @@ describe('Core: Tasks', function () {
 
       api.tasks.tasks.regularTask = {
         name: 'regular',
-        description: 'task: ' + this.name,
+        description: 'task: regular',
         queue: queue,
         frequency: 0,
         plugins: [],
@@ -33,7 +33,7 @@ describe('Core: Tasks', function () {
 
       api.tasks.tasks.periodicTask = {
         name: 'periodicTask',
-        description: 'task: ' + this.name,
+        description: 'task: periodicTask',
         queue: queue,
         frequency: 100,
         plugins: [],
@@ -46,7 +46,7 @@ describe('Core: Tasks', function () {
 
       api.tasks.tasks.slowTask = {
         name: 'slowTask',
-        description: 'task: ' + this.name,
+        description: 'task: slowTask',
         queue: queue,
         frequency: 0,
         plugins: [],

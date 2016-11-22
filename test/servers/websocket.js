@@ -1,7 +1,5 @@
-'use strict'
-
 var should = require('should')
-let path = require('path')
+var path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
