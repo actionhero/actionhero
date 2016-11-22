@@ -10,6 +10,7 @@ var queue = 'testQueue'
 describe('Core: Tasks', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
 
       api.resque.multiWorker.options.minTaskProcessors = 1
@@ -195,6 +196,7 @@ describe('Core: Tasks', function () {
     var time = new Date().getTime() + 1000
     var roundedTime = Math.round(time / 1000) * 1000
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, function (error) {
+      should.not.exist(error)
       api.tasks.timestamps(function (error, timestamps) {
         should.not.exist(error)
         timestamps.length.should.equal(1)
@@ -221,10 +223,13 @@ describe('Core: Tasks', function () {
     api.tasks.enqueue('regularTask', {word: 'first'}, function (error) {
       should.not.exist(error)
       api.resque.queue.length(queue, function (error, length) {
+        should.not.exist(error)
         length.should.equal(1)
         api.tasks.del(queue, 'regularTask', {word: 'first'}, function (error, count) {
+          should.not.exist(error)
           count.should.equal(1)
           api.resque.queue.length(queue, function (error, length) {
+            should.not.exist(error)
             length.should.equal(0)
             done()
           })
@@ -237,10 +242,13 @@ describe('Core: Tasks', function () {
     api.tasks.enqueueIn(1000, 'regularTask', {word: 'first'}, function (error) {
       should.not.exist(error)
       api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, function (error, timestamps) {
+        should.not.exist(error)
         timestamps.length.should.equal(1)
         api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, function (error, timestamps) {
+          should.not.exist(error)
           timestamps.length.should.equal(1)
           api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, function (error, timestamps) {
+            should.not.exist(error)
             timestamps.length.should.equal(0)
             done()
           })
@@ -256,6 +264,7 @@ describe('Core: Tasks', function () {
       api.tasks.enqueueIn(1000, 'periodicTask', {}, function (error) {
         should.not.exist(error)
         api.tasks.stopRecurrentJob('periodicTask', function (error, count) {
+          should.not.exist(error)
           count.should.equal(2)
           done()
         })
@@ -270,6 +279,7 @@ describe('Core: Tasks', function () {
       api.config.tasks.queues = ['*']
 
       api.tasks.enqueue('slowTask', {a: 1}, function (error) {
+        should.not.exist(error)
         api.resque.multiWorker.start(function () {
           setTimeout(function () {
             api.tasks.details(function (error, details) {

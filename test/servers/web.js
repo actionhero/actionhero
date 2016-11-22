@@ -11,7 +11,7 @@ var url
 describe('Server: Web', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
-      if (error) { throw error }
+      should.not.exist(error)
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       done()
@@ -1066,7 +1066,7 @@ describe('Server: Web', function () {
     describe('file extensions + routes', function () {
       it('will change header information based on extension (when active)', function (done) {
         request.get(url + '/api/mimeTestAction/val.png', function (error, response) {
-          if (error) { throw error }
+          should.not.exist(error)
           response.headers['content-type'].should.equal('image/png')
           done()
         })

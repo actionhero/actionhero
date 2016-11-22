@@ -34,7 +34,7 @@ var connectClients = function (callback) {
 describe('Integration: Web Server + Websocket Socket', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
-      if (error) { throw error }
+      should.not.exist(error)
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
@@ -84,12 +84,12 @@ describe('Integration: Web Server + Websocket Socket', function () {
 
     it('should exist when web server been called', function (done) {
       request.get(url + '/api/', function (error, response, body) {
-        if (error) { throw error }
+        should.not.exist(error)
         body = JSON.parse(body)
         var fingerprint = body.requesterInformation.fingerprint
         cookieHeader = response.headers['set-cookie'][0]
         clientA.connect(function (error, response) {
-          if (error) { throw error }
+          should.not.exist(error)
           response.status.should.equal('OK')
           should(response.data).have.property('id')
           var id = response.data.id
@@ -101,7 +101,7 @@ describe('Integration: Web Server + Websocket Socket', function () {
 
     it('should not exist when web server has not been called', function (done) {
       clientA.connect(function (error, response) {
-        if (error) { throw error }
+        should.not.exist(error)
         response.status.should.equal('OK')
         should(response.data).have.property('id')
         var id = response.data.id
@@ -113,7 +113,7 @@ describe('Integration: Web Server + Websocket Socket', function () {
     it('should exist as long as cookie is passed', function (done) {
       cookieHeader = api.config.servers.web.fingerprintOptions.cookieKey + '=dummyValue'
       clientA.connect(function (error, response) {
-        if (error) { throw error }
+        should.not.exist(error)
         response.status.should.equal('OK')
         should(response.data).have.property('id')
         var id = response.data.id

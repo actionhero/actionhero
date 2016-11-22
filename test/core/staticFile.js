@@ -9,6 +9,7 @@ var url
 describe('Core: Static File', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       url = 'http://localhost:' + api.config.servers.web.port + '/' + api.config.servers.web.urlPathForFiles
       done()
@@ -56,6 +57,7 @@ describe('Core: Static File', function () {
 
   it('should send back the cache-control header', function (done) {
     request.get(url + '/simple.html', function (error, response, body) {
+      should.not.exist(error)
       response.statusCode.should.eql(200)
       response.headers['cache-control'].should.be.ok
       done()
@@ -64,6 +66,7 @@ describe('Core: Static File', function () {
 
   it('should send back the etag header', function (done) {
     request.get(url + '/simple.html', function (error, response, body) {
+      should.not.exist(error)
       response.statusCode.should.eql(200)
       response.headers['etag'].should.be.ok
       done()
@@ -72,6 +75,7 @@ describe('Core: Static File', function () {
 
   it('should send back a 304 if the header "if-modified-since" is present and condition matches', function (done) {
     request.get(url + '/simple.html', function (error, response, body) {
+      should.not.exist(error)
       response.statusCode.should.eql(200)
       request({url: url + '/simple.html', headers: {'If-Modified-Since': new Date().toUTCString()}}, function (errBis, responseBis, body) {
         responseBis.statusCode.should.eql(304)
@@ -82,6 +86,7 @@ describe('Core: Static File', function () {
 
   it('should send back a 304 if the ETAG header is present', function (done) {
     request.get(url + '/simple.html', function (error, response) {
+      should.not.exist(error)
       response.statusCode.should.equal(200)
       response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       should.exist(response.headers['etag'])
@@ -94,6 +99,7 @@ describe('Core: Static File', function () {
         method: 'get'
       }
       request(options, function (error, response) {
+        should.not.exist(error)
         response.statusCode.should.equal(304)
         response.body.should.equal('')
         done()
@@ -103,10 +109,12 @@ describe('Core: Static File', function () {
 
   it('should send a different etag for other files', function (done) {
     request.get(url + '/simple.html', function (error, response) {
+      should.not.exist(error)
       response.statusCode.should.equal(200)
       should.exist(response.headers['etag'])
       var etagSimple = response.headers['etag']
       request.get(url + '/index.html', function (error, response) {
+        should.not.exist(error)
         response.statusCode.should.equal(200)
         should.exist(response.headers['etag'])
         var etagIndex = response.headers['etag']
@@ -118,6 +126,7 @@ describe('Core: Static File', function () {
 
   it('should send back the file if the header "if-modified-since" is present but condition does not match', function (done) {
     request.get(url + '/simple.html', function (error, response, body) {
+      should.not.exist(error)
       response.statusCode.should.eql(200)
       var lastModified = new Date(response.headers['last-modified'])
       request({url: url + '/simple.html', headers: {'If-Modified-Since': new Date(lastModified.getTime() - 24 * 1000 * 3600).toUTCString()}}, function (errBis, responseBis, body) {
@@ -147,6 +156,7 @@ describe('Core: Static File', function () {
 
     it('should respect accept-encoding header priority with gzip as first in a list of encodings', function (done) {
       request.get({url: url + '/simple.html', headers: {'Accept-Encoding': 'gzip, deflate, sdch, br'}}, function (error, response, body) {
+        should.not.exist(error)
         response.statusCode.should.eql(200)
         response.headers['content-encoding'].should.equal('gzip')
         done()
@@ -155,6 +165,7 @@ describe('Core: Static File', function () {
 
     it('should respect accept-encoding header priority with deflate as second in a list of encodings', function (done) {
       request.get({url: url + '/simple.html', headers: {'Accept-Encoding': 'br, deflate, gzip'}}, function (error, response, body) {
+        should.not.exist(error)
         response.statusCode.should.eql(200)
         response.headers['content-encoding'].should.equal('deflate') // br is not a currently supported encoding
         done()
@@ -163,6 +174,7 @@ describe('Core: Static File', function () {
 
     it('should respect accept-encoding header priority with gzip as only option', function (done) {
       request.get({url: url + '/simple.html', headers: {'Accept-Encoding': 'gzip'}}, function (error, response, body) {
+        should.not.exist(error)
         response.statusCode.should.eql(200)
         response.headers['content-encoding'].should.equal('gzip')
         done()
@@ -171,6 +183,7 @@ describe('Core: Static File', function () {
 
     it('should\'nt encode content without a valid a supported value in accept-encoding header', function (done) {
       request.get({url: url + '/simple.html', headers: {'Accept-Encoding': 'sdch, br'}}, function (error, response, body) {
+        should.not.exist(error)
         response.statusCode.should.eql(200)
         should.not.exist(response.headers['content-encoding'])
         done()
@@ -179,6 +192,7 @@ describe('Core: Static File', function () {
 
     it('should\'nt encode content without accept-encoding header', function (done) {
       request.get({url: url + '/simple.html'}, function (error, response, body) {
+        should.not.exist(error)
         response.statusCode.should.eql(200)
         should.not.exist(response.headers['content-encoding'])
         done()

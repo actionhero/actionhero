@@ -10,6 +10,7 @@ var api
 describe('Core: Cache', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       done()
     })
@@ -39,6 +40,7 @@ describe('Core: Cache', function () {
 
   it('cache.load', function (done) {
     api.cache.load('testKey', function (error, resp) {
+      should.not.exist(error)
       resp.should.equal('abc123')
       done()
     })
@@ -54,6 +56,7 @@ describe('Core: Cache', function () {
 
   it('cache.destroy', function (done) {
     api.cache.destroy('testKey', function (error, resp) {
+      should.not.exist(error)
       resp.should.equal(true)
       done()
     })
@@ -61,6 +64,7 @@ describe('Core: Cache', function () {
 
   it('cache.destroy failure', function (done) {
     api.cache.destroy('testKey', function (error, resp) {
+      should.not.exist(error)
       resp.should.equal(false)
       done()
     })
@@ -68,6 +72,7 @@ describe('Core: Cache', function () {
 
   it('cache.save with expire time', function (done) {
     api.cache.save('testKey', 'abc123', 10, function (error, resp) {
+      should.not.exist(error)
       resp.should.equal(true)
       done()
     })
@@ -75,6 +80,7 @@ describe('Core: Cache', function () {
 
   it('cache.load with expired items should not return them', function (done) {
     api.cache.save('testKey_slow', 'abc123', 10, function (error, saveResp) {
+      should.not.exist(error)
       saveResp.should.equal(true)
       setTimeout(function () {
         api.cache.load('testKey_slow', function (error, loadResp) {
@@ -88,6 +94,7 @@ describe('Core: Cache', function () {
 
   it('cache.load with negative expire times will never load', function (done) {
     api.cache.save('testKeyInThePast', 'abc123', -1, function (error, saveResp) {
+      should.not.exist(error)
       saveResp.should.equal(true)
       api.cache.load('testKeyInThePast', function (error, loadResp) {
         (String(error).indexOf('Error: Object') >= 0).should.equal(true)
@@ -99,8 +106,10 @@ describe('Core: Cache', function () {
 
   it('cache.save does not need to pass expireTime', function (done) {
     api.cache.save('testKeyForNullExpireTime', 'abc123', function (error, saveResp) {
+      should.not.exist(error)
       saveResp.should.equal(true)
       api.cache.load('testKeyForNullExpireTime', function (error, loadResp) {
+        should.not.exist(error)
         loadResp.should.equal('abc123')
         done()
       })
@@ -111,6 +120,7 @@ describe('Core: Cache', function () {
     var key = 'testKey'
     api.cache.save(key, 'val', 1000, function () {
       api.cache.load(key, function (error, loadResp) {
+        should.not.exist(error)
         loadResp.should.equal('val')
         setTimeout(function () {
           api.cache.load(key, function (error, loadResp) {
@@ -157,8 +167,10 @@ describe('Core: Cache', function () {
 
   it('cache.save works with arrays', function (done) {
     api.cache.save('array_key', [1, 2, 3], function (error, saveResp) {
+      should.not.exist(error)
       saveResp.should.equal(true)
       api.cache.load('array_key', function (error, loadResp) {
+        should.not.exist(error)
         loadResp[0].should.equal(1)
         loadResp[1].should.equal(2)
         loadResp[2].should.equal(3)
@@ -172,8 +184,10 @@ describe('Core: Cache', function () {
     data.thing = 'stuff'
     data.otherThing = [1, 2, 3]
     api.cache.save('obj_key', data, function (error, saveResp) {
+      should.not.exist(error)
       saveResp.should.equal(true)
       api.cache.load('obj_key', function (error, loadResp) {
+        should.not.exist(error)
         loadResp.thing.should.equal('stuff')
         loadResp.otherThing[0].should.equal(1)
         loadResp.otherThing[1].should.equal(2)
@@ -186,9 +200,11 @@ describe('Core: Cache', function () {
   it('can clear the cache entirely', function (done) {
     api.cache.save('thingA', 123, function () {
       api.cache.size(function (error, count) {
+        should.not.exist(error);
         (count > 0).should.equal(true)
         api.cache.clear(function () {
           api.cache.size(function (error, count) {
+            should.not.exist(error)
             count.should.equal(0)
             done()
           })
@@ -210,18 +226,21 @@ describe('Core: Cache', function () {
 
         jobs.push(function (next) {
           api.cache.pop('testListKey', function (error, data) {
+            should.not.exist(error)
             data.should.equal('a string')
             next()
           })
         })
         jobs.push(function (next) {
           api.cache.pop('testListKey', function (error, data) {
+            should.not.exist(error)
             data.should.deepEqual(['an array'])
             next()
           })
         })
         jobs.push(function (next) {
           api.cache.pop('testListKey', function (error, data) {
+            should.not.exist(error)
             data.should.deepEqual({what: 'an aobject'})
             next()
           })
@@ -272,10 +291,13 @@ describe('Core: Cache', function () {
 
     it('things can be locked, checked, and unlocked aribitrarily', function (done) {
       api.cache.lock(key, 100, function (error, lockOk) {
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.cache.checkLock(key, null, function (error, lockOk) {
+          should.not.exist(error)
           lockOk.should.equal(true)
           api.cache.unlock(key, function (error, lockOk) {
+            should.not.exist(error)
             lockOk.should.equal(true)
             done()
           })
@@ -285,8 +307,10 @@ describe('Core: Cache', function () {
 
     it('locks have a TTL and the default will be assumed from config', function (done) {
       api.cache.lock(key, null, function (error, lockOk) {
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.redis.clients.client.ttl(api.cache.lockPrefix + key, function (error, ttl) {
+          should.not.exist(error);
           (ttl >= 9).should.equal(true);
           (ttl <= 10).should.equal(true)
           done()
@@ -296,8 +320,10 @@ describe('Core: Cache', function () {
 
     it('you can save an item if you do hold the lock', function (done) {
       api.cache.lock(key, null, function (error, lockOk) {
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.cache.save(key, 'value', function (error, success) {
+          should.not.exist(error)
           success.should.equal(true)
           done()
         })
@@ -306,6 +332,7 @@ describe('Core: Cache', function () {
 
     it('you cannot save a locked item if you do not hold the lock', function (done) {
       api.cache.lock(key, null, function (error, lockOk) {
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.cache.lockName = 'otherId'
         api.cache.save(key, 'value', function (error) {
@@ -317,6 +344,7 @@ describe('Core: Cache', function () {
 
     it('you cannot destroy a locked item if you do not hold the lock', function (done) {
       api.cache.lock(key, null, function (error, lockOk) {
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.cache.lockName = 'otherId'
         api.cache.destroy(key, function (error) {
@@ -328,16 +356,20 @@ describe('Core: Cache', function () {
 
     it('you can opt to retry to obtain a lock if a lock is held (READ)', function (done) {
       api.cache.lock(key, 1, function (error, lockOk) { // will be rounded up to 1s
+        should.not.exist(error)
         lockOk.should.equal(true)
         api.cache.save(key, 'value', function (error, success) {
+          should.not.exist(error)
           success.should.equal(true)
 
           api.cache.lockName = 'otherId'
           api.cache.checkLock(key, null, function (error, lockOk) {
+            should.not.exist(error)
             lockOk.should.equal(false)
 
             var start = new Date().getTime()
             api.cache.load(key, {retry: 2000}, function (error, data) {
+              should.not.exist(error)
               data.should.equal('value')
               var delta = new Date().getTime() - start;
               (delta >= 1000).should.equal(true)
@@ -405,6 +437,7 @@ describe('Core: Cache', function () {
       api.cache.clear(function () {
         api.cache.save('thingA', 123, function () {
           api.cache.dumpWrite(file, function (error, count) {
+            should.not.exist(error)
             count.should.equal(1)
             var body = JSON.parse(String(fs.readFileSync(file)))
             var content = JSON.parse(body['actionhero:cache:thingA'])
@@ -418,8 +451,10 @@ describe('Core: Cache', function () {
     it('can laod the cache from a dump file', function (done) {
       api.cache.clear(function () {
         api.cache.dumpRead(file, function (error, count) {
+          should.not.exist(error)
           count.should.equal(1)
           api.cache.load('thingA', function (error, value) {
+            should.not.exist(error)
             value.should.equal(123)
             done()
           })

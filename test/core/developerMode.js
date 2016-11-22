@@ -22,6 +22,7 @@ newFileContent += '};'
 describe('Core: Developer Mode', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       setTimeout(function () {
         done()

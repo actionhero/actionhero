@@ -7,7 +7,7 @@ var api
 describe('Test: RunAction', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
-      if (error) { throw error }
+      should.not.exist(error)
       api = a
       done()
     })

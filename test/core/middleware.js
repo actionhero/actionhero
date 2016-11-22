@@ -7,6 +7,7 @@ var api
 describe('Core: Middleware', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       done()
     })

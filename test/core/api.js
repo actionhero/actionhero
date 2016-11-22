@@ -7,6 +7,7 @@ var api
 describe('Core: API', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       done()
     })
@@ -165,8 +166,7 @@ describe('Core: API', function () {
               required: false,
               default: function () { return 'abc123' },
               validator: function (s) {
-                if (s === 'abc123') { return true }
-                else { return 'fancyParam should be "abc123".  so says ' + this.id }
+                if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
               },
               formatter: function (s) {
                 return String(s)

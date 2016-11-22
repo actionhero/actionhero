@@ -21,8 +21,8 @@ if(process.env.projectRoot){
   projectRoot = path.normalize(process.cwd());
 }
 
-const actionheroPrototype = require(actionheroRoot + '/actionhero.js').actionheroPrototype;
-const actionhero = new actionheroPrototype();
+const ActionheroPrototype = require(actionheroRoot + '/actionhero.js');
+const actionhero = new ActionheroPrototype();
 const configChanges = {};
 
 let commands = [];

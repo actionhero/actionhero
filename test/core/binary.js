@@ -7,7 +7,7 @@ var path = require('path')
 var exec = require('child_process').exec
 var testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
 var binary = './node_modules/.bin/actionhero'
-var pacakgeJSON = require(__dirname + '/../../package.json')
+var pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 
 var doBash = function (commands, callback) {
   var fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\''
@@ -22,15 +22,16 @@ describe('Core: Binary', function () {
     console.log('*** CANNOT RUN BINARY TESTS ON WINDOWS.  Sorry. ***')
   } else {
     before(function (done) {
-      var sourcePackage = path.normalize(__dirname + '/../../bin/templates/package.json')
+      var sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
       var commands = [
         'rm -rf ' + testDir,
         'mkdir ' + testDir,
         'cp ' + sourcePackage + ' ' + testDir + '/package.json'
       ]
       doBash(commands, function () {
-        var AHPath = path.normalize(__dirname + '/../..')
+        var AHPath = path.normalize(path.join(__dirname, '/../..'))
         fs.readFile(testDir + '/package.json', 'utf8', function (error, data) {
+          should.not.exist(error)
           var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath)
           fs.writeFile(testDir + '/package.json', result, 'utf8', function () {
             done()
@@ -136,9 +137,9 @@ describe('Core: Binary', function () {
       ], function (error) {
         should.not.exist(error)
         var data = String(fs.readFileSync(testDir + '/actions/myAction.js'))
-        data.should.containEql('name:                   \'myAction\'')
-        data.should.containEql('description:            \'my_description\'')
-        data.should.containEql('next(error);')
+        data.should.containEql('name: \'myAction\'')
+        data.should.containEql('description: \'my_description\'')
+        data.should.containEql('next(error)')
         done()
       })
     })
@@ -150,10 +151,10 @@ describe('Core: Binary', function () {
       ], function (error) {
         should.not.exist(error)
         var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'))
-        data.should.containEql('name:          \'myTask\'')
-        data.should.containEql('description:   \'my_description\'')
-        data.should.containEql('queue:         \'my_queue\'')
-        data.should.containEql('frequency:     12345')
+        data.should.containEql('name: \'myTask\'')
+        data.should.containEql('description: \'my_description\'')
+        data.should.containEql('queue: \'my_queue\'')
+        data.should.containEql('frequency: 12345')
         data.should.containEql('next(error, resultLogMessage)')
         done()
       })

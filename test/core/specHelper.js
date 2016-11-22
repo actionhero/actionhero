@@ -7,6 +7,7 @@ var api
 describe('Core: specHelper', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       done()
     })
@@ -235,7 +236,7 @@ describe('Core: specHelper', function () {
     var connId
 
     it('can make a requset with a spec\'d connection', function (done) {
-      conn = new api.specHelper.connection()
+      conn = new api.specHelper.Connection()
       conn.params = {
         key: 'someKey',
         value: 'someValue'

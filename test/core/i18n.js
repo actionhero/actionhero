@@ -30,6 +30,7 @@ describe('Core: i18n', function () {
     fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish))
 
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       var options = api.config.i18n
       options.directory = api.config.general.paths.locale[0]
