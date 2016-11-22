@@ -30,7 +30,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "async": "^2.0.1",
+    "async": "^2.1.4",
     "browser_fingerprint": "^0.0.6",
     "etag": "^1.7.0",
     "fakeredis": "^1.0.0",
