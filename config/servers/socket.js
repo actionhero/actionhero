@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
 exports['default'] = {
   servers: {
-    socket: function(api){
+    socket: function (api) {
       return {
         enabled: (process.env.ENABLE_TCP_SERVER === undefined) ? false : true,
         // TCP or TLS?
@@ -21,19 +21,19 @@ exports['default'] = {
         maxDataLength: 0,
         // What message to send down to a client who requests a `quit`
         goodbyeMessage: 'Bye!'
-      };
+      }
     }
   }
-};
+}
 
 exports.test = {
   servers: {
-    socket: function(api){
+    socket: function (api) {
       return {
         enabled: true,
         port: 5001,
         secure: false
-      };
+      }
     }
   }
-};
+}

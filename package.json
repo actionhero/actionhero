@@ -49,20 +49,30 @@
     "ws": "^1.1.1"
   },
   "devDependencies": {
-    "eslint": "^3.6.0",
     "glob": "^7.1.1",
     "mocha": "^3.1.2",
     "request": "^2.75.0",
-    "should": "^11.0.0"
+    "should": "^11.0.0",
+    "standard": "^8.5.0"
   },
   "optionalDependencies": {},
   "bin": {
     "actionhero": "./bin/actionhero"
   },
+  "standard": {
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it"
+    ]
+  },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "node test.js",
+    "test": "standard && node test.js",
     "start": "node ./bin/actionhero",
     "lint": "eslint ."
   }

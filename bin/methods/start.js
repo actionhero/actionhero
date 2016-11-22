@@ -1,126 +1,126 @@
-'use strict';
+'use strict'
 
-const cluster = require('cluster');
-const readline = require('readline');
-const os = require('os');
+const cluster = require('cluster')
+const readline = require('readline')
+const os = require('os')
 
-module.exports = function(api, next){
-  let state;
+module.exports = function (api, next) {
+  let state
 
   // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
-  let shutdownTimeout = 1000 * 30;
-  if(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT){
-    shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT);
+  let shutdownTimeout = 1000 * 30
+  if (process.env.ACTIONHERO_SHUTDOWN_TIMEOUT) {
+    shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
   }
 
-  const startServer = function(callback){
-    state = 'starting';
-    if(cluster.isWorker){ process.send({state: state}); }
-    api._context.start(function(error, apiFromCallback){
-      if(error){
-        api.log(['%s', error]);
-        process.exit(1);
-      }else{
-        state = 'started';
-        if(cluster.isWorker){ process.send({state: state}); }
-        api = apiFromCallback;
-        checkForInernalStop();
-        if(typeof callback === 'function'){ callback(null, api); }
+  const startServer = function (callback) {
+    state = 'starting'
+    if (cluster.isWorker) { process.send({state: state}) }
+    api._context.start(function (error, apiFromCallback) {
+      if (error) {
+        api.log(['%s', error])
+        process.exit(1)
+      } else {
+        state = 'started'
+        if (cluster.isWorker) { process.send({state: state}) }
+        api = apiFromCallback
+        checkForInernalStop()
+        if (typeof callback === 'function') { callback(null, api) }
       }
-    });
-  };
+    })
+  }
 
-  const stopServer = function(callback){
-    state = 'stopping';
-    if(cluster.isWorker){ process.send({state: state}); }
-    api._context.stop(function(){
-      state = 'stopped';
-      if(cluster.isWorker){ process.send({state: state}); }
-      api = null;
-      if(typeof callback === 'function'){ callback(null, api); }
-    });
-  };
+  const stopServer = function (callback) {
+    state = 'stopping'
+    if (cluster.isWorker) { process.send({state: state}) }
+    api._context.stop(function () {
+      state = 'stopped'
+      if (cluster.isWorker) { process.send({state: state}) }
+      api = null
+      if (typeof callback === 'function') { callback(null, api) }
+    })
+  }
 
-  const restartServer = function(callback){
-    state = 'restarting';
-    if(cluster.isWorker){ process.send({state: state}); }
-    api._context.restart(function(error, apiFromCallback){
-      if(error){ throw(error); }
+  const restartServer = function (callback) {
+    state = 'restarting'
+    if (cluster.isWorker) { process.send({state: state}) }
+    api._context.restart(function (error, apiFromCallback) {
+      if (error) { throw (error) }
 
-      state = 'started';
-      if(cluster.isWorker){ process.send({state: state}); }
-      api = apiFromCallback;
-      if(typeof callback === 'function'){ callback(null, api); }
-    });
-  };
+      state = 'started'
+      if (cluster.isWorker) { process.send({state: state}) }
+      api = apiFromCallback
+      if (typeof callback === 'function') { callback(null, api) }
+    })
+  }
 
-  const stopProcess = function(){
-    setTimeout(function(){
-      throw new Error('process stop timeout reached.  terminating now.');
-    }, shutdownTimeout);
+  const stopProcess = function () {
+    setTimeout(function () {
+      throw new Error('process stop timeout reached.  terminating now.')
+    }, shutdownTimeout)
     // finalTimer.unref();
-    stopServer(function(){
-      process.nextTick(function(){
-        process.exit();
-      });
-    });
-  };
+    stopServer(function () {
+      process.nextTick(function () {
+        process.exit()
+      })
+    })
+  }
 
-  let checkForInernalStopTimer;
-  const checkForInernalStop = function(){
-    clearTimeout(checkForInernalStopTimer);
-    if(api.running !== true && state === 'started'){
-      process.exit(0);
+  let checkForInernalStopTimer
+  const checkForInernalStop = function () {
+    clearTimeout(checkForInernalStopTimer)
+    if (api.running !== true && state === 'started') {
+      process.exit(0)
     }
-    checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout);
-  };
+    checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout)
+  }
 
-  if(cluster.isWorker){
-    process.on('message', function(msg){
-      if(msg === 'start'){ startServer(); }
-      else if(msg === 'stop'){ stopServer(); }
-      else if(msg === 'stopProcess'){ stopProcess(); }
+  if (cluster.isWorker) {
+    process.on('message', function (msg) {
+      if (msg === 'start') { startServer() }
+      else if (msg === 'stop') { stopServer() }
+      else if (msg === 'stopProcess') { stopProcess() }
       // in cluster, we cannot re-bind the port
       // so kill this worker, and then let the cluster start a new worker
-      else if(msg === 'restart'){ stopProcess(); }
-    });
+      else if (msg === 'restart') { stopProcess() }
+    })
 
-    process.on('uncaughtException', function(error){
-      let stack;
-      try{
-        stack = error.stack.split(os.EOL);
-      }catch(e){
-        stack = [error];
+    process.on('uncaughtException', function (error) {
+      let stack
+      try {
+        stack = error.stack.split(os.EOL)
+      } catch (e) {
+        stack = [error]
       }
       process.send({uncaughtException: {
         message: error.message,
         stack: stack
-      }});
-      process.nextTick(process.exit);
-    });
+      }})
+      process.nextTick(process.exit)
+    })
 
-    process.on('unhandledRejection', function(reason, p){
-      process.send({unhandledRejection: {reason:reason, p:p}});
-      process.nextTick(process.exit);
-    });
+    process.on('unhandledRejection', function (reason, p) {
+      process.send({unhandledRejection: {reason: reason, p: p}})
+      process.nextTick(process.exit)
+    })
   }
 
-  process.on('SIGINT', function(){ stopProcess(); });
-  process.on('SIGTERM', function(){ stopProcess(); });
-  process.on('SIGUSR2', function(){ restartServer(); });
+  process.on('SIGINT', function () { stopProcess() })
+  process.on('SIGTERM', function () { stopProcess() })
+  process.on('SIGUSR2', function () { restartServer() })
 
-  if(process.platform === 'win32' && !process.env.IISNODE_VERSION){
+  if (process.platform === 'win32' && !process.env.IISNODE_VERSION) {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
-    });
-    rl.on('SIGINT', function(){
-      process.emit('SIGINT');
-    });
+    })
+    rl.on('SIGINT', function () {
+      process.emit('SIGINT')
+    })
   }
 
   // start the server!
-  startServer(function(){
-    next(false);
-  });
-};
+  startServer(function () {
+    next(false)
+  })
+}

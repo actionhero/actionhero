@@ -1,36 +1,36 @@
 const task = {
-  name:          'runAction',
-  description:   'I will run an action and return the connection object',
-  queue:         'default',
-  plugins:       [],
+  name: 'runAction',
+  description: 'I will run an action and return the connection object',
+  queue: 'default',
+  plugins: [],
   pluginOptions: [],
-  frequency:     0,
-  run: function(api, params, next){
-    if(!params){ params = {}; }
+  frequency: 0,
+  run: function (api, params, next) {
+    if (!params) { params = {} }
 
     const connection = new api.connection({
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
       rawConnection: {}
-    });
+    })
 
-    connection.params = params;
+    connection.params = params
 
-    const actionProcessor = new api.actionProcessor(connection, function(data){
-      if(data.response.error){
-        api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)});
-      }else{
-        api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)});
+    const actionProcessor = new api.actionProcessor(connection, function (data) {
+      if (data.response.error) {
+        api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)})
+      } else {
+        api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
       }
 
-      connection.destroy(function(){
-        next(data.response.error, data.response);
-      });
-    });
+      connection.destroy(function () {
+        next(data.response.error, data.response)
+      })
+    })
 
-    actionProcessor.processAction();
+    actionProcessor.processAction()
   }
-};
+}
 
-exports.task = task;
+exports.task = task

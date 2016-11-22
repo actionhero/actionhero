@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 exports.cacheTest = {
   name: 'cacheTest',
@@ -22,43 +22,43 @@ exports.cacheTest = {
   inputs: {
     key: {
       required: true,
-      formatter: function(s){ return String(s); }
+      formatter: function (s) { return String(s) }
     },
     value: {
       required: true,
-      formatter: function(s){ return String(s); },
-      validator: function(s){
-        if(s.length < 3){ return '`value` should be at least 3 letters long'; }
-        else{ return true; }
+      formatter: function (s) { return String(s) },
+      validator: function (s) {
+        if (s.length < 3) { return '`value` should be at least 3 letters long' }
+        else { return true }
       }
-    },
+    }
   },
 
-  run: function(api, data, next){
-    const key = 'cacheTest_' + data.params.key;
-    const value = data.params.value;
+  run: function (api, data, next) {
+    const key = 'cacheTest_' + data.params.key
+    const value = data.params.value
 
-    data.response.cacheTestResults = {};
+    data.response.cacheTestResults = {}
 
-    api.cache.save(key, value, 5000, function(error, resp){
-      data.response.cacheTestResults.saveResp = resp;
-      api.cache.size(function(error, numberOfCacheObjects){
-        data.response.cacheTestResults.sizeResp = numberOfCacheObjects;
-        api.cache.load(key, function(error, resp, expireTimestamp, createdAt, readAt){
+    api.cache.save(key, value, 5000, function (error, resp) {
+      data.response.cacheTestResults.saveResp = resp
+      api.cache.size(function (error, numberOfCacheObjects) {
+        data.response.cacheTestResults.sizeResp = numberOfCacheObjects
+        api.cache.load(key, function (error, resp, expireTimestamp, createdAt, readAt) {
           data.response.cacheTestResults.loadResp = {
             key: key,
             value: resp,
             expireTimestamp: expireTimestamp,
             createdAt: createdAt,
             readAt: readAt
-          };
-          api.cache.destroy(key, function(error, resp){
-            data.response.cacheTestResults.deleteResp = resp;
-            next(error);
-          });
-        });
-      });
-    });
+          }
+          api.cache.destroy(key, function (error, resp) {
+            data.response.cacheTestResults.deleteResp = resp
+            next(error)
+          })
+        })
+      })
+    })
   }
 
-};
+}
