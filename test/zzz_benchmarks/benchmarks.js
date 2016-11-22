@@ -1,3 +1,5 @@
+'use strict'
+
 let path = require('path')
 let should = require('should')
 var ActionheroPrototype = require(path.resolve(__dirname, '..', '..', 'actionhero.js'))

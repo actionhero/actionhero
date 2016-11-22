@@ -1,3 +1,5 @@
+'use strict'
+
 var uuid = require('node-uuid')
 var should = require('should')
 let path = require('path')

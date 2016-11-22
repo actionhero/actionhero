@@ -1,3 +1,5 @@
+'use strict'
+
 var request = require('request')
 var fs = require('fs')
 var os = require('os')

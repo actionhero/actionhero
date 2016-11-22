@@ -1,5 +1,7 @@
+'use strict'
+
 let path = require('path')
-let should = require('should') // eslint-disable-line 
+let should = require('should')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api

@@ -1,3 +1,5 @@
+'use strict'
+
 var fs = require('fs')
 var should = require('should')
 let path = require('path')

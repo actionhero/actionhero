@@ -1,3 +1,5 @@
+'use strict'
+
 // These tests will only run on *nix operating systems
 
 var should = require('should')
