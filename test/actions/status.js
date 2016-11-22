@@ -7,6 +7,7 @@ var api
 describe('Action: status', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       done()
     })
@@ -18,7 +19,6 @@ describe('Action: status', function () {
     })
   })
 
-  var firstNumber = null
   it('returns node status', function (done) {
     api.specHelper.runAction('status', function (response) {
       // response.nodeStatus.should.equal('Node Healthy');

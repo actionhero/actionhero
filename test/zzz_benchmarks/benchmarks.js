@@ -1,6 +1,6 @@
 let path = require('path')
-
-var ActionheroPrototype = require(path.resolve(__dirname, '/../../actionhero.js'))
+let should = require('should')
+var ActionheroPrototype = require(path.resolve(__dirname, '..', '..', 'actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var uuid = require('node-uuid')
 var api

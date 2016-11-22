@@ -12,6 +12,7 @@ var url
 describe('Server: sendBuffer', function () {
   before(function (done) {
     actionhero.start(function (error, a) {
+      should.not.exist(error)
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       done()
