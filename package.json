@@ -60,6 +60,10 @@
     "actionhero": "./bin/actionhero"
   },
   "standard": {
+    "ignore": [
+      "bin/templates",
+      "client"
+    ],
     "globals": [
       "describe",
       "before",

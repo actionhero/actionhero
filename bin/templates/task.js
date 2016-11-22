@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 exports.task = {
   name: '%%name%%',
@@ -7,8 +7,8 @@ exports.task = {
   queue: '%%queue%%',
   middleware: [],
 
-  run: function(api, params, next){
+  run: function (api, params, next) {
     // your logic here
-    next(error, resultLogMessage);
+    next (error, resultLogMessage)
   }
 };

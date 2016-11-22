@@ -2,7 +2,6 @@
 
 // use me to exclude the files from a plugin within this project
 const path = require('path')
-const fs = require('fs')
 const optimist = require('optimist')
 const argv = optimist
   .demand('name')

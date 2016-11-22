@@ -46,15 +46,15 @@ exports['default'] = {
       rpcTimeout: 5000,
       // configuration for your actionhero project structure
       paths: {
-        'action': [__dirname + '/../actions'],
-        'task': [__dirname + '/../tasks'],
-        'public': [__dirname + '/../public'],
-        'pid': [__dirname + '/../pids'],
-        'log': [__dirname + '/../log'],
-        'server': [__dirname + '/../servers'],
-        'initializer': [__dirname + '/../initializers'],
-        'plugin': [__dirname + '/../node_modules'],
-        'locale': [__dirname + '/../locales']
+        'action': [path.join(__dirname, '/../actions')],
+        'task': [path.join(__dirname, '/../tasks')],
+        'public': [path.join(__dirname, '/../public')],
+        'pid': [path.join(__dirname, '/../pids')],
+        'log': [path.join(__dirname, '/../log')],
+        'server': [path.join(__dirname, '/../servers')],
+        'initializer': [path.join(__dirname, '/../initializers')],
+        'plugin': [path.join(__dirname, '/../node_modules')],
+        'locale': [path.join(__dirname, '/../locales')]
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {

@@ -60,7 +60,7 @@ module.exports = function (api, next) {
         } else {
           const content = fs.readFileSync(file)
           const fileParts = pluginConfigFile.split(path.sep)
-          const localConfigFile = linkRelativeBase + 'config' + path.sep + prepend + fileParts[(fileParts.length - 1)]
+          let localConfigFile = linkRelativeBase + 'config' + path.sep + prepend + fileParts[(fileParts.length - 1)]
           if (process.env.ACTIONHERO_CONFIG) {
             localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + prepend + fileParts[(fileParts.length - 1)]
           }

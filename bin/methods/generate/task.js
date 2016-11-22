@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 const optimist = require('optimist')
 const argv = optimist
   .demand('name')
@@ -14,7 +15,7 @@ const argv = optimist
   .argv
 
 module.exports = function (api, next) {
-  let data = fs.readFileSync(__dirname + '/../../templates/task.js')
+  let data = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
   data = String(data);
 
   [

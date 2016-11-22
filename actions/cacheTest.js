@@ -28,8 +28,9 @@ exports.cacheTest = {
       required: true,
       formatter: function (s) { return String(s) },
       validator: function (s) {
-        if (s.length < 3) { return '`value` should be at least 3 letters long' }
-        else { return true }
+        if (s.length < 3) {
+          return '`value` should be at least 3 letters long'
+        } else { return true }
       }
     }
   },
@@ -41,10 +42,13 @@ exports.cacheTest = {
     data.response.cacheTestResults = {}
 
     api.cache.save(key, value, 5000, function (error, resp) {
+      if (error) { return next(error) }
       data.response.cacheTestResults.saveResp = resp
       api.cache.size(function (error, numberOfCacheObjects) {
+        if (error) { return next(error) }
         data.response.cacheTestResults.sizeResp = numberOfCacheObjects
         api.cache.load(key, function (error, resp, expireTimestamp, createdAt, readAt) {
+          if (error) { return next(error) }
           data.response.cacheTestResults.loadResp = {
             key: key,
             value: resp,

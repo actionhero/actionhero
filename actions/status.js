@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const packageJSON = require(path.normalize(__dirname + path.sep + '..' + path.sep + 'package.json'))
+const packageJSON = require(path.normalize(path.join(__dirname, '..', 'package.json')))
 
 // These values are probably good starting points, but you should expect to tweak them for your application
 const maxEventLoopDelay = process.env.eventLoopDelay || 10
@@ -34,6 +34,7 @@ exports.status = {
 
     const checkEventLoop = function (callback) {
       api.utils.eventLoopDelay(10000, function (error, eventLoopDelay) {
+        if (error) { return callback(error) }
         data.response.eventLoopDelay = eventLoopDelay
         if (eventLoopDelay > maxEventLoopDelay) {
           data.response.nodeStatus = data.connection.localize('Node Unhealthy')

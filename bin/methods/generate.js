@@ -10,14 +10,14 @@ module.exports = function (api, next) {
   }
 
   // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(__dirname + '/../../initializers/utils.js')).initialize(api, function (error) {
+  api.utils = require(path.normalize(path.join(__dirname, '/../../initializers/utils.js'))).initialize(api, function (error) {
     if (error) { return next(error) }
 
     // ////// DOCUMENTS ////////
 
     let documents = {}
 
-    documents.projectMap = fs.readFileSync(__dirname + '/../templates/projectMap.txt')
+    documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
 
     const oldFileMap = {
       configApiJs: '/config/api.js',
@@ -42,14 +42,14 @@ module.exports = function (api, next) {
     }
 
     for (let name in oldFileMap) {
-      documents[name] = fs.readFileSync(__dirname + '/../../' + oldFileMap[name])
+      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name]))
     }
 
     const AHversionNumber = JSON.parse(documents.packageJson).version
 
-    documents.packageJson = String(fs.readFileSync(__dirname + '/../templates/package.json'))
+    documents.packageJson = String(fs.readFileSync(path.join(__dirname, '/../templates/package.json')))
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
-    documents.readmeMd = String(fs.readFileSync(__dirname + '/../templates/README.md'))
+    documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
 
     // ////// LOGIC ////////
 

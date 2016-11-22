@@ -33,7 +33,7 @@ const winston = require('winston')
 const isrunning = require('is-running')
 const optimist = require('optimist')
 
-const argv = optimist
+optimist
   .describe('workers', 'How many worker node processes')
   .default('workers', os.cpus().length)
   .describe('workerTitlePrefix', 'Set worker title prefix')
@@ -288,8 +288,7 @@ ActionHeroCluster.prototype.start = function (callback) {
     if (error) {
       this.log(error, 'error')
       process.exit(1)
-    }
-    else {
+    } else {
       this.work()
       if (typeof callback === 'function') { callback() }
     }
@@ -335,9 +334,7 @@ ActionHeroCluster.prototype.work = function () {
     worker = this.workers[(this.workers.length - 1)]
     this.log('signaling worker #' + worker.id + ' to stop', 'info')
     worker.stop()
-  }
-
-  else if (
+  } else if (
       (this.options.expectedWorkers > this.workers.length) &&
       !stateCounts.starting &&
       !stateCounts.restarting
@@ -352,9 +349,7 @@ ActionHeroCluster.prototype.work = function () {
     worker = new Worker(this, workerId, env)
     worker.start()
     this.workers.push(worker)
-  }
-
-  else if (
+  } else if (
     this.workersToRestart.length > 0 &&
     !stateCounts.starting &&
     !stateCounts.stopping &&
@@ -365,9 +360,7 @@ ActionHeroCluster.prototype.work = function () {
     this.workers.forEach((w) => {
       if (w.id === workerId) { w.stop() }
     })
-  }
-
-  else {
+  } else {
     if (stateCounts.started === this.workers.length) {
       this.log('cluster equilibrium state reached with ' + this.workers.length + ' workers', 'notice')
     }
@@ -378,9 +371,9 @@ ActionHeroCluster.prototype.work = function () {
 
 module.exports = function (api) {
   let options = {
-    execPath: path.normalize(__dirname + '/../../actionhero'),
+    execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
     args: 'start',
-    silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true) ? true : false,
+    silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true),
     expectedWorkers: optimist.argv.workers,
     id: api.id,
     buildEnv: (workerId) => {

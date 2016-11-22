@@ -55,6 +55,7 @@ describe('Server: sendBuffer', function () {
 
     it('Server should sendBuffer', function (done) {
       request.get(url + '/api/sendBufferTest', function (error, response, body) {
+        should.not.exist(error)
         body.should.equal('Example of data buffer')
         done()
       })

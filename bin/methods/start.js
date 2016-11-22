@@ -77,12 +77,15 @@ module.exports = function (api, next) {
 
   if (cluster.isWorker) {
     process.on('message', function (msg) {
-      if (msg === 'start') { startServer() }
-      else if (msg === 'stop') { stopServer() }
-      else if (msg === 'stopProcess') { stopProcess() }
+      if (msg === 'start') {
+        startServer()
+      } else if (msg === 'stop') {
+        stopServer()
+      } else if (msg === 'stopProcess') {
+        stopProcess()
       // in cluster, we cannot re-bind the port
       // so kill this worker, and then let the cluster start a new worker
-      else if (msg === 'restart') { stopProcess() }
+      } else if (msg === 'restart') { stopProcess() }
     })
 
     process.on('uncaughtException', function (error) {
