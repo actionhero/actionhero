@@ -17,9 +17,9 @@ module.exports = {
       connectionDetails: {redis: api.redis.clients.tasks},
 
       startQueue: function (callback) {
-        let queue = NR.queue
-        if (resqueOverrides && resqueOverrides.queue) { queue = resqueOverrides.queue }
-        this.queue = new queue({connection: this.connectionDetails}, api.tasks.jobs)
+        let Queue = NR.queue
+        if (resqueOverrides && resqueOverrides.queue) { Queue = resqueOverrides.queue }
+        this.queue = new Queue({connection: this.connectionDetails}, api.tasks.jobs)
 
         this.queue.on('error', (error) => {
           api.log(error, 'error', '[api.resque.queue]')
@@ -29,16 +29,15 @@ module.exports = {
       },
 
       stopQueue: function (callback) {
-        if (api.resque.queue) { api.resque.queue.end(callback) }
-        else { callback() }
+        if (api.resque.queue) { api.resque.queue.end(callback) } else { callback() }
       },
 
       startScheduler: function (callback) {
-        let scheduler = NR.scheduler
-        if (resqueOverrides && resqueOverrides.scheduler) { scheduler = resqueOverrides.scheduler }
+        let Scheduler = NR.scheduler
+        if (resqueOverrides && resqueOverrides.scheduler) { Scheduler = resqueOverrides.scheduler }
         if (api.config.tasks.scheduler === true) {
           this.schedulerLogging = api.config.tasks.schedulerLogging
-          this.scheduler = new scheduler({connection: this.connectionDetails, timeout: api.config.tasks.timeout})
+          this.scheduler = new Scheduler({connection: this.connectionDetails, timeout: api.config.tasks.timeout})
 
           this.scheduler.on('error', (error) => {
             api.log(error, 'error', '[api.resque.scheduler]')
@@ -72,12 +71,12 @@ module.exports = {
       },
 
       startMultiWorker: function (callback) {
-        let multiWorker = NR.multiWorker
-        if (resqueOverrides && resqueOverrides.multiWorker) { multiWorker = resqueOverrides.multiWorker }
+        let MultiWorker = NR.multiWorker
+        if (resqueOverrides && resqueOverrides.multiWorker) { MultiWorker = resqueOverrides.multiWorker }
         this.workerLogging = api.config.tasks.workerLogging
         this.schedulerLogging = api.config.tasks.schedulerLogging
 
-        this.multiWorker = new multiWorker({
+        this.multiWorker = new MultiWorker({
           connection: api.resque.connectionDetails,
           queues: api.config.tasks.queues,
           timeout: api.config.tasks.timeout,

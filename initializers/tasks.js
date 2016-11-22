@@ -136,20 +136,29 @@ module.exports = {
       },
 
       enqueue: function (taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) { callback = queue; queue = this.tasks[taskName].queue }
-        else if (typeof params === 'function' && callback === undefined && queue === undefined) { callback = params; queue = this.tasks[taskName].queue; params = {} }
+        if (typeof queue === 'function' && callback === undefined) {
+          callback = queue; queue = this.tasks[taskName].queue
+        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
+          callback = params; queue = this.tasks[taskName].queue; params = {}
+        }
         api.resque.queue.enqueue(queue, taskName, params, callback)
       },
 
       enqueueAt: function (timestamp, taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) { callback = queue; queue = this.tasks[taskName].queue }
-        else if (typeof params === 'function' && callback === undefined && queue === undefined) { callback = params; queue = this.tasks[taskName].queue; params = {} }
+        if (typeof queue === 'function' && callback === undefined) {
+          callback = queue; queue = this.tasks[taskName].queue
+        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
+          callback = params; queue = this.tasks[taskName].queue; params = {}
+        }
         api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback)
       },
 
       enqueueIn: function (time, taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) { callback = queue; queue = this.tasks[taskName].queue }
-        else if (typeof params === 'function' && callback === undefined && queue === undefined) { callback = params; queue = this.tasks[taskName].queue; params = {} }
+        if (typeof queue === 'function' && callback === undefined) {
+          callback = queue; queue = this.tasks[taskName].queue
+        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
+          callback = params; queue = this.tasks[taskName].queue; params = {}
+        }
         api.resque.queue.enqueueIn(time, queue, taskName, params, callback)
       },
 
@@ -280,6 +289,7 @@ module.exports = {
         } else {
           let removedCount = 0
           this.del(task.queue, task.name, {}, 1, (error, count) => {
+            if (error) { return callback(error) }
             removedCount = removedCount + count
             this.delDelayed(task.queue, task.name, {}, (error, timestamps) => {
               removedCount = removedCount + timestamps.length

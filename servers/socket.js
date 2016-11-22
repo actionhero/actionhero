@@ -32,7 +32,7 @@ const initialize = function (api, options, next) {
     ]
   }
 
-  const server = new api.genericServer(type, options, attributes)
+  const server = new api.GenericServer(type, options, attributes)
 
   // ////////////////////
   // REQUIRED METHODS //
@@ -116,7 +116,7 @@ const initialize = function (api, options, next) {
       }
       if (line.length > 0) {
         // increment at the start of the request so that responses can be caught in order on the client
-        // this is not handled by the genericServer
+        // this is not handled by the GenericServer
         connection.messageCount++
         parseRequest(connection, line)
       }

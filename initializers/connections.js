@@ -80,7 +80,7 @@ module.exports = {
 
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
-    api.connection = function (data) {
+    api.Connection = function (data) {
       this.setup(data)
       api.connections.connections[this.id] = this
 
@@ -91,7 +91,7 @@ module.exports = {
       })
     }
 
-    api.connection.prototype.setup = function (data) {
+    api.Connection.prototype.setup = function (data) {
       if (data.id) {
         this.id = data.id
       } else {
@@ -134,16 +134,16 @@ module.exports = {
       api.i18n.invokeConnectionLocale(this)
     }
 
-    api.connection.prototype.localize = function (message) {
+    api.Connection.prototype.localize = function (message) {
       // this.locale will be sourced automatically
       return api.i18n.localize(message, this)
     }
 
-    api.connection.prototype.generateID = function () {
+    api.Connection.prototype.generateID = function () {
       return uuid.v4()
     }
 
-    api.connection.prototype.destroy = function (callback) {
+    api.Connection.prototype.destroy = function (callback) {
       this.destroyed = true
 
       api.connections.globalMiddleware.forEach((middlewareName) => {
@@ -172,11 +172,11 @@ module.exports = {
       if (typeof callback === 'function') { callback() }
     }
 
-    api.connection.prototype.set = function (key, value) {
+    api.Connection.prototype.set = function (key, value) {
       this[key] = value
     }
 
-    api.connection.prototype.verbs = function (verb, words, callback) {
+    api.Connection.prototype.verbs = function (verb, words, callback) {
       let key
       let value
       let room
@@ -264,8 +264,6 @@ module.exports = {
         if (typeof callback === 'function') { callback(api.config.errors.verbNotAllowed(this, verb), null) }
       }
     }
-
-    api.Connection = api.connection
 
     next()
   }

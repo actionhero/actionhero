@@ -109,6 +109,7 @@ module.exports = {
 
     api.chatRoom.add = function (room, callback) {
       api.chatRoom.exists(room, function (error, found) {
+        if (error) { return callback(error) }
         if (found === false) {
           api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room, (error, count) => {
             if (typeof callback === 'function') { callback(error, count) }
@@ -121,9 +122,12 @@ module.exports = {
 
     api.chatRoom.destroy = function (room, callback) {
       api.chatRoom.exists(room, (error, found) => {
+        if (error) { return callback(error) }
         if (found === true) {
           api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room), () => {
             api.redis.clients.client.hgetall(api.chatRoom.keys.members + room, (error, membersHash) => {
+              if (error) { return callback(error) }
+
               for (let id in membersHash) {
                 api.chatRoom.removeMember(id, room)
               }
@@ -161,9 +165,12 @@ module.exports = {
     api.chatRoom.roomStatus = function (room, callback) {
       if (room) {
         api.chatRoom.exists(room, (error, found) => {
+          if (error) { return callback(error) }
           if (found === true) {
             const key = api.chatRoom.keys.members + room
             api.redis.clients.client.hgetall(key, (error, members) => {
+              if (error) { return callback(error) }
+
               let cleanedMembers = {}
               let count = 0
               for (let id in members) {
@@ -199,6 +206,8 @@ module.exports = {
         const connection = api.connections.connections[connectionId]
         if (connection.rooms.indexOf(room) < 0) {
           api.chatRoom.exists(room, (error, found) => {
+            if (error) { return callback(error) }
+
             if (found === true) {
               api.chatRoom.handleCallbacks(connection, room, 'join', null, (error) => {
                 if (error) {
@@ -228,6 +237,8 @@ module.exports = {
         const connection = api.connections.connections[connectionId]
         if (connection.rooms.indexOf(room) > -1) {
           api.chatRoom.exists(room, (error, found) => {
+            if (error) { return callback(error) }
+
             if (found) {
               api.chatRoom.handleCallbacks(connection, room, 'leave', null, (error) => {
                 if (error) {

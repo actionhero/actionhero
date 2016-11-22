@@ -51,7 +51,6 @@ module.exports = {
       if (reload === null) { reload = false }
 
       const loadMessage = (action) => {
-        let msgString = ''
         if (reload) {
           api.log(['action reloaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug')
         } else {

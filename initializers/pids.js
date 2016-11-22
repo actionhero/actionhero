@@ -15,8 +15,8 @@ module.exports = {
       let pidfile = api.id
       pidfile = pidfile.replace(new RegExp(':', 'g'), '-')
       pidfile = pidfile.replace(new RegExp(' ', 'g'), '_')
-      pidfile = pidfile.replace(new RegExp('\r', 'g'), '')
-      pidfile = pidfile.replace(new RegExp('\n', 'g'), '')
+      pidfile = pidfile.replace(new RegExp('\r', 'g'), '') // eslint-disable-line
+      pidfile = pidfile.replace(new RegExp('\n', 'g'), '') // eslint-disable-line 
 
       return pidfile
     }

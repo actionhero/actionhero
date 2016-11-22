@@ -129,7 +129,7 @@ module.exports = {
                   try {
                     api.log(['cannot find linked refrence to `%s`', file], 'warning')
                   } catch (e) {
-                    throw ('cannot find linked refrence to ' + file)
+                    throw new Error('cannot find linked refrence to ' + file)
                   }
                 }
               }
@@ -184,8 +184,7 @@ module.exports = {
         let arr = []
         for (let i in keys) {
           let key = keys[i]
-          if (String(parseInt(key)) !== key) { return false }
-          else { arr.push(obj[key]) }
+          if (String(parseInt(key)) !== key) { return false } else { arr.push(obj[key]) }
         }
 
         return arr
@@ -300,7 +299,7 @@ module.exports = {
         let stats = fs.lstatSync(file)
         return (stats.isFile() || stats.isSymbolicLink())
       } catch (e) { return false }
-    },
+    }
 
     api.utils.createDirSafely = function (dir) {
       if (api.utils.dirExists(dir)) {

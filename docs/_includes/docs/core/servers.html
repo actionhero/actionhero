@@ -19,7 +19,7 @@ var initialize = function(api, options, next){
     verbs: [],
   }
 
-  var server = new api.genericServer(type, options, attributes);
+  var server = new api.GenericServer(type, options, attributes);
 
   //////////////////////
   // REQUIRED METHODS //
@@ -57,7 +57,7 @@ var initialize = function(api, options, next){
 exports.initialize = initialize;
   {% endhighlight %}
 
-  <p>In ActionHero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic <code>connection</code> object which can be operated on by the rest of ActionHero.  To help with this, all servers extend <code>api.genericServer</code> and fill in the required methods.</p>
+  <p>In ActionHero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic <code>connection</code> object which can be operated on by the rest of ActionHero.  To help with this, all servers extend <code>api.GenericServer</code> and fill in the required methods.</p>
   <p>To get started, you can use the <code>generateServer action</code> (name is required).  This will generate a template server which looks like the above.</p>
   <p>Like initializers, the <code>start()</code> and <code>stop()</code> methods will be called when the server is to boot up in ActionHero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: <code>https.createServer.listen</code>, etc).</p>
 

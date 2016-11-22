@@ -8,7 +8,7 @@ const task = {
   run: function (api, params, next) {
     if (!params) { params = {} }
 
-    const connection = new api.connection({
+    const connection = new api.Connection({
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
@@ -17,7 +17,7 @@ const task = {
 
     connection.params = params
 
-    const actionProcessor = new api.actionProcessor(connection, function (data) {
+    const ActionProcessor = new api.ActionProcessor(connection, function (data) {
       if (data.response.error) {
         api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)})
       } else {
@@ -29,7 +29,7 @@ const task = {
       })
     })
 
-    actionProcessor.processAction()
+    ActionProcessor.processAction()
   }
 }
 

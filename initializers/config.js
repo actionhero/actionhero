@@ -159,7 +159,7 @@ module.exports = {
     api.config = {}
 
     // load the default config of actionhero
-    api.loadConfigDirectory(__dirname + '/../config', false)
+    api.loadConfigDirectory(path.join(__dirname, '/../config'), false)
 
     // load the project specific config
     configPaths.map(api.loadConfigDirectory)

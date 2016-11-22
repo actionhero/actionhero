@@ -24,7 +24,7 @@ module.exports = {
         jobs.push((done) => {
           if (api.config.redis[r].buildNew === true) {
             const args = api.config.redis[r].args
-            api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2])
+            api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
             api.redis.clients[r].on('error', (error) => { api.log(['Redis connection `%s` error', r], 'error', error) })
             api.redis.clients[r].on('connect', () => { api.log(['Redis connection `%s` connected', r], 'debug') })
             api.redis.clients[r].once('connect', done)
@@ -67,18 +67,17 @@ module.exports = {
 
     api.redis.subscriptionHandlers['do'] = function (message) {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
-        let cmdParts = message.method.split('.')
-        let cmd = cmdParts.shift()
-        if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-        let method = api.utils.stringToHash(cmdParts.join('.'))
-
-        function callback () {
+        function callback () { // eslint-disable-line 
           let responseArgs = Array.apply(null, arguments).sort()
           process.nextTick(() => {
             api.redis.respondCluster(message.requestId, responseArgs)
           })
         };
 
+        let cmdParts = message.method.split('.')
+        let cmd = cmdParts.shift()
+        if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
+        let method = api.utils.stringToHash(cmdParts.join('.'))
         let args = message.args
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }

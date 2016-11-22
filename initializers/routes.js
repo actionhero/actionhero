@@ -13,7 +13,7 @@ module.exports = {
     // route processing for web clients
     api.routes.processRoute = function (connection, pathParts) {
       if (connection.params.action === undefined || api.actions.actions[connection.params.action] === undefined) {
-        const method = connection.rawConnection.method.toLowerCase()
+        let method = connection.rawConnection.method.toLowerCase()
         if (method === 'head' && !api.routes.routes.head) { method = 'get' }
         for (let i in api.routes.routes[method]) {
           const route = api.routes.routes[method][i]

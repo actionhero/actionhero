@@ -23,7 +23,7 @@ module.exports = {
           verbs: api.connections.allowedVerbs
         }
 
-        const server = new api.genericServer(type, options, attributes)
+        const server = new api.GenericServer(type, options, attributes)
 
         server.start = function (next) {
           api.log('loading the testServer', 'warning')
@@ -158,7 +158,7 @@ module.exports = {
 
       // helpers to get files
       api.specHelper.getStaticFile = function (file, next) {
-        let connection = new api.specHelper.connection()
+        let connection = new api.specHelper.Connection()
         connection.params.file = file
 
         connection.messageCount++
@@ -180,7 +180,7 @@ module.exports = {
           queues: api.config.tasks.queues || ['default']
         }
 
-        let worker = new NR.worker(options, api.tasks.jobs)
+        let worker = new NR.worker(options, api.tasks.jobs) // eslint-disable-line
         worker.connect((error) => {
           if (error) {
             return next(error)
@@ -198,7 +198,7 @@ module.exports = {
 
   start: function (api, next) {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
-      new api.specHelper.initialize(api, {}, (serverObject) => {
+      api.specHelper.initialize(api, {}, (serverObject) => {
         api.servers.servers.testServer = serverObject
         api.servers.servers.testServer.start(() => {
           next()

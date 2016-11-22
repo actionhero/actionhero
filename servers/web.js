@@ -6,7 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const zlib = require('zlib')
 const formidable = require('formidable')
-const browser_fingerprint = require('browser_fingerprint')
+const browserFingerprint = require('browser_fingerprint')
 const Mime = require('mime')
 const uuid = require('node-uuid')
 const etag = require('etag')
@@ -27,7 +27,7 @@ const initialize = function (api, options, next) {
     ]
   }
 
-  const server = new api.genericServer(type, options, attributes)
+  const server = new api.GenericServer(type, options, attributes)
 
   if (['api', 'file'].indexOf(api.config.servers.web.rootEndpointType) < 0) {
     throw new Error('api.config.servers.web.rootEndpointType can only be \'api\' or \'file\'')
@@ -90,13 +90,11 @@ const initialize = function (api, options, next) {
   }
 
   server.sendFile = function (connection, error, fileStream, mime, length, lastModified) {
-    let foundExpires = false
     let foundCacheControl = false
     let ifModifiedSince
     let reqHeaders
 
     connection.rawConnection.responseHeaders.forEach((pair) => {
-      if (pair[0].toLowerCase() === 'expires') { foundExpires = true }
       if (pair[0].toLowerCase() === 'cache-control') { foundCacheControl = true }
     })
 
@@ -218,6 +216,7 @@ const initialize = function (api, options, next) {
     } else {
       if (stringEncoder) {
         stringEncoder(stringResponse, (error, zippedString) => {
+          if (error) { console.error(error) }
           headers.push(['Content-Length', zippedString.length])
           connection.rawConnection.res.writeHead(responseHttpCode, headers)
           connection.rawConnection.res.end(zippedString)
@@ -261,7 +260,7 @@ const initialize = function (api, options, next) {
   // ///////////
 
   const handleRequest = function (req, res) {
-    browser_fingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, (fingerprint, elementHash, cookieHash) => {
+    browserFingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, (fingerprint, elementHash, cookieHash) => {
       let responseHeaders = []
       let cookies = api.utils.parseCookies(req)
       let responseHttpCode = 200
@@ -467,10 +466,9 @@ const initialize = function (api, options, next) {
     if (connection.rawConnection.method === 'OPTIONS') {
       requestMode = 'options'
       callback(requestMode)
-    }
 
     // API
-    else if (requestMode === 'api') {
+    } else if (requestMode === 'api') {
       if (connection.rawConnection.method === 'TRACE') { requestMode = 'trace' }
       let search = connection.rawConnection.parsedURL.search.slice(1)
       fillParamsFromWebRequest(connection, qs.parse(search, api.config.servers.web.queryParseOptions))
@@ -506,11 +504,9 @@ const initialize = function (api, options, next) {
         api.routes.processRoute(connection, pathParts)
         callback(requestMode)
       }
-    }
 
     // FILE
-
-    else if (requestMode === 'file') {
+    } else if (requestMode === 'file') {
       api.routes.processRoute(connection, pathParts)
       if (!connection.params.file) {
         connection.params.file = pathParts.join(path.sep)

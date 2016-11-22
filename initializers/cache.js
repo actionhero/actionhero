@@ -102,8 +102,7 @@ module.exports = {
       } catch (error) { return callback(error) }
 
       redis.set(key, content, (error) => {
-        if (error) { return callback(error) }
-        else if (parsedContent.expireTimestamp) {
+        if (error) { return callback(error) } else if (parsedContent.expireTimestamp) {
           const expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000)
           redis.expire(key, expireTimeSeconds, () => {
             return callback(error)
@@ -241,7 +240,7 @@ module.exports = {
 
     api.cache.lock = function (key, expireTimeMS, callback) {
       if (typeof expireTimeMS === 'function' && callback === null) {
-        expireTimeMS = expireTimeMS
+        callback = expireTimeMS
         expireTimeMS = null
       }
       if (expireTimeMS === null) {

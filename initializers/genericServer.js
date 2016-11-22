@@ -28,7 +28,7 @@ module.exports = {
 
     */
 
-    api.genericServer = function (name, options, attributes) {
+    api.GenericServer = function (name, options, attributes) {
       this.type = name
       this.options = options
       this.attributes = attributes
@@ -42,9 +42,9 @@ module.exports = {
       }
     }
 
-    util.inherits(api.genericServer, EventEmitter)
+    util.inherits(api.GenericServer, EventEmitter)
 
-    api.genericServer.prototype.buildConnection = function (data) {
+    api.GenericServer.prototype.buildConnection = function (data) {
       const details = {
         type: this.type,
         id: data.id,
@@ -54,7 +54,7 @@ module.exports = {
       }
       if (this.attributes.canChat === true) { details.canChat = true }
       if (data.fingerprint) { details.fingerprint = data.fingerprint }
-      let connection = new api.connection(details)
+      let connection = new api.Connection(details)
 
       connection.sendMessage = (message) => {
         this.sendMessage(connection, message)
@@ -86,21 +86,21 @@ module.exports = {
       }
     }
 
-    api.genericServer.prototype.processAction = function (connection) {
-      const actionProcessor = new api.actionProcessor(connection, (data) => {
+    api.GenericServer.prototype.processAction = function (connection) {
+      const ActionProcessor = new api.ActionProcessor(connection, (data) => {
         this.emit('actionComplete', data)
       })
 
-      actionProcessor.processAction()
+      ActionProcessor.processAction()
     }
 
-    api.genericServer.prototype.processFile = function (connection) {
+    api.GenericServer.prototype.processFile = function (connection) {
       api.staticFile.get(connection, (connection, error, fileStream, mime, length, lastModified) => {
         this.sendFile(connection, error, fileStream, mime, length, lastModified)
       })
     }
 
-    api.genericServer.prototype.connections = function () {
+    api.GenericServer.prototype.connections = function () {
       let connections = []
 
       for (let i in api.connections.connections) {
@@ -111,7 +111,7 @@ module.exports = {
       return connections
     }
 
-    api.genericServer.prototype.log = function (message, severity, data) {
+    api.GenericServer.prototype.log = function (message, severity, data) {
       api.log(['[server: %s] %s', this.type, message], severity, data)
     }
 
@@ -124,16 +124,16 @@ module.exports = {
     // /////////////////////////////////////
 
     // I am invoked as part of boot
-    api.genericServer.prototype.start = function (next) { methodNotDefined() }
+    api.GenericServer.prototype.start = function (next) { methodNotDefined() }
 
     // I am invoked as part of shutdown
-    api.genericServer.prototype.stop = function (next) { methodNotDefined() }
+    api.GenericServer.prototype.stop = function (next) { methodNotDefined() }
 
     // This method will be appended to the connection as 'connection.sendMessage'
-    api.genericServer.prototype.sendMessage = function (connection, message) { methodNotDefined() }
+    api.GenericServer.prototype.sendMessage = function (connection, message) { methodNotDefined() }
 
     // This method will be used to gracefully disconnect the client
-    api.genericServer.prototype.goodbye = function (connection, reason) { methodNotDefined() }
+    api.GenericServer.prototype.goodbye = function (connection, reason) { methodNotDefined() }
 
     next()
   }

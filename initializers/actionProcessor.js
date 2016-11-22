@@ -12,7 +12,7 @@ module.exports = {
       return api.utils.stringToHash(cmdParts.join('.'))
     }
 
-    api.actionProcessor = function (connection, callback) {
+    api.ActionProcessor = function (connection, callback) {
       if (!connection) {
         throw new Error('data.connection is required')
       }
@@ -34,21 +34,21 @@ module.exports = {
       this.actionStatus = null
     }
 
-    api.actionProcessor.prototype.incrementTotalActions = function (count) {
+    api.ActionProcessor.prototype.incrementTotalActions = function (count) {
       if (!count) { count = 1 }
       this.connection.totalActions = this.connection.totalActions + count
     }
 
-    api.actionProcessor.prototype.incrementPendingActions = function (count) {
+    api.ActionProcessor.prototype.incrementPendingActions = function (count) {
       if (!count) { count = 1 }
       this.connection.pendingActions = this.connection.pendingActions + count
     }
 
-    api.actionProcessor.prototype.getPendingActionCount = function () {
+    api.ActionProcessor.prototype.getPendingActionCount = function () {
       return this.connection.pendingActions
     }
 
-    api.actionProcessor.prototype.completeAction = function (status) {
+    api.ActionProcessor.prototype.completeAction = function (status) {
       let error = null
       this.actionStatus = String(status)
 
@@ -95,7 +95,7 @@ module.exports = {
       this.logAction(error)
     }
 
-    api.actionProcessor.prototype.logAction = function (error) {
+    api.ActionProcessor.prototype.logAction = function (error) {
       // logging
       let logLevel = 'info'
       if (this.actionTemplate && this.actionTemplate.logLevel) {
@@ -135,7 +135,7 @@ module.exports = {
       api.log(['[ action @ %s ]', this.connection.type], logLevel, logLine)
     }
 
-    api.actionProcessor.prototype.preProcessAction = function (callback) {
+    api.ActionProcessor.prototype.preProcessAction = function (callback) {
       let processors = []
       let processorNames = api.actions.globalMiddleware.slice(0)
 
@@ -152,7 +152,7 @@ module.exports = {
       async.series(processors, callback)
     }
 
-    api.actionProcessor.prototype.postProcessAction = function (callback) {
+    api.ActionProcessor.prototype.postProcessAction = function (callback) {
       let processors = []
       let processorNames = api.actions.globalMiddleware.slice(0)
 
@@ -169,7 +169,7 @@ module.exports = {
       async.series(processors, callback)
     }
 
-    api.actionProcessor.prototype.reduceParams = function () {
+    api.ActionProcessor.prototype.reduceParams = function () {
       let inputNames = []
       if (this.actionTemplate.inputs) {
         inputNames = Object.keys(this.actionTemplate.inputs)
@@ -184,7 +184,7 @@ module.exports = {
       }
     }
 
-    api.actionProcessor.prototype.validateParams = function () {
+    api.ActionProcessor.prototype.validateParams = function () {
       for (let key in this.actionTemplate.inputs) {
         const props = this.actionTemplate.inputs[key]
 
@@ -236,7 +236,7 @@ module.exports = {
       }
     }
 
-    api.actionProcessor.prototype.processAction = function () {
+    api.ActionProcessor.prototype.processAction = function () {
       this.actionStartTime = new Date().getTime()
       this.working = true
       this.incrementTotalActions()
@@ -263,7 +263,7 @@ module.exports = {
       }
     }
 
-    api.actionProcessor.prototype.runAction = function () {
+    api.ActionProcessor.prototype.runAction = function () {
       this.preProcessAction((error) => {
         this.reduceParams()
         this.validateParams()

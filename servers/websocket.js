@@ -5,7 +5,7 @@ const UglifyJS = require('uglify-js')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
-const browser_fingerprint = require('browser_fingerprint')
+const browserFingerprint = require('browser_fingerprint')
 
 const initialize = function (api, options, next) {
   // ////////
@@ -30,7 +30,7 @@ const initialize = function (api, options, next) {
     ]
   }
 
-  const server = new api.genericServer(type, options, attributes)
+  const server = new api.GenericServer(type, options, attributes)
 
   // ////////////////////
   // REQUIRED METHODS //
@@ -129,7 +129,7 @@ const initialize = function (api, options, next) {
   // //////////
 
   server.compileActionheroClientJS = function () {
-    let ahClientSource = fs.readFileSync(__dirname + '/../client/actionheroClient.js').toString()
+    let ahClientSource = fs.readFileSync(path.join(__dirname, '/../client/actionheroClient.js')).toString()
     let url = api.config.servers.websocket.clientUrl
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url)
     let defaults = {}
@@ -197,7 +197,7 @@ const initialize = function (api, options, next) {
   // ///////////
 
   const handleConnection = function (rawConnection) {
-    const parsedCookies = browser_fingerprint.parseCookies(rawConnection)
+    const parsedCookies = browserFingerprint.parseCookies(rawConnection)
     const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
     server.buildConnection({
       rawConnection: rawConnection,

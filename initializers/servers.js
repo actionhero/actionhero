@@ -14,7 +14,7 @@ module.exports = {
     // Load the servers
 
     let serverFolders = [
-      path.resolve(__dirname + '/../servers')
+      path.resolve(path.join(__dirname, '/../servers'))
     ]
 
     api.config.general.paths.server.forEach((p) => {

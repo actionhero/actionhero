@@ -15,7 +15,7 @@ const initialize = function (api, options, next) {
     verbs: []
   }
 
-  const server = new api.genericServer(type, options, attributes)
+  const server = new api.GenericServer(type, options, attributes)
 
   // ////////////////////
   // REQUIRED METHODS //
