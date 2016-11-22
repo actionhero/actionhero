@@ -1,5 +1,5 @@
 exports['default'] = {
-  routes: function(api){
+  routes: function (api) {
     return {
 
       /* ---------------------
@@ -27,6 +27,6 @@ exports['default'] = {
 
       ---------------------- */
 
-    };
+    }
   }
-};
+}

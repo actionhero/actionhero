@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
 exports.task = {
-  name:          '%%name%%',
-  description:   '%%description%%',
-  frequency:     %%frequency%%,
-  queue:         '%%queue%%',
-  middleware:    [],
+  name: '%%name%%',
+  description: '%%description%%',
+  frequency: %%frequency%%,
+  queue: '%%queue%%',
+  middleware: [],
 
-  run: function(api, params, next){
+  run: function (api, params, next) {
     // your logic here
-    next(error, resultLogMessage);
+    next (error, resultLogMessage)
   }
 };

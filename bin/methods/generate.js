@@ -1,57 +1,57 @@
-'use strict';
+'use strict'
 
-const fs   = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-module.exports = function(api, next){
+module.exports = function (api, next) {
   // proxy the logger, as we can't use the real one yet
-  api.log = function(message){
-    console.log(message);
-  };
+  api.log = function (message) {
+    console.log(message)
+  }
 
   // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(__dirname + '/../../initializers/utils.js')).initialize(api, function(error){
-    if(error){ return next(error); }
+  api.utils = require(path.normalize(path.join(__dirname, '/../../initializers/utils.js'))).initialize(api, function (error) {
+    if (error) { return next(error) }
 
-    //////// DOCUMENTS ////////
+    // ////// DOCUMENTS ////////
 
-    let documents = {};
+    let documents = {}
 
-    documents.projectMap = fs.readFileSync(__dirname + '/../templates/projectMap.txt');
+    documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
 
     const oldFileMap = {
-      configApiJs         : '/config/api.js',
-      configLoggerJs      : '/config/logger.js',
-      configRedisJs       : '/config/redis.js',
-      configTasksJs       : '/config/tasks.js',
-      configErrorsJs      : '/config/errors.js',
-      configI18nJs        : '/config/i18n.js',
-      configRoutesJs      : '/config/routes.js',
-      configSocketJs      : '/config/servers/socket.js',
-      configWebJs         : '/config/servers/web.js',
-      configWebsocketJs   : '/config/servers/websocket.js',
-      packageJson         : '/package.json',
-      actionStatus        : '/actions/status.js',
-      actionChatRoom      : '/actions/createChatRoom.js',
-      actionDocumentation : '/actions/showDocumentation.js',
-      publicIndex         : '/public/index.html',
-      publicChat          : '/public/chat.html',
-      publicLogo          : '/public/logo/actionhero.png',
-      publicCss           : '/public/css/cosmo.css',
-      exampleTest         : '/test/template.js.example'
-    };
-
-    for(let name in oldFileMap){
-      documents[name] = fs.readFileSync(__dirname + '/../../' + oldFileMap[name]);
+      configApiJs: '/config/api.js',
+      configLoggerJs: '/config/logger.js',
+      configRedisJs: '/config/redis.js',
+      configTasksJs: '/config/tasks.js',
+      configErrorsJs: '/config/errors.js',
+      configI18nJs: '/config/i18n.js',
+      configRoutesJs: '/config/routes.js',
+      configSocketJs: '/config/servers/socket.js',
+      configWebJs: '/config/servers/web.js',
+      configWebsocketJs: '/config/servers/websocket.js',
+      packageJson: '/package.json',
+      actionStatus: '/actions/status.js',
+      actionChatRoom: '/actions/createChatRoom.js',
+      actionDocumentation: '/actions/showDocumentation.js',
+      publicIndex: '/public/index.html',
+      publicChat: '/public/chat.html',
+      publicLogo: '/public/logo/actionhero.png',
+      publicCss: '/public/css/cosmo.css',
+      exampleTest: '/test/template.js.example'
     }
 
-    const AHversionNumber = JSON.parse(documents.packageJson).version;
+    for (let name in oldFileMap) {
+      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name]))
+    }
 
-    documents.packageJson = String(fs.readFileSync(__dirname + '/../templates/package.json'));
-    documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber);
-    documents.readmeMd    = String(fs.readFileSync(__dirname + '/../templates/README.md'));
+    const AHversionNumber = JSON.parse(documents.packageJson).version
 
-    //////// LOGIC ////////
+    documents.packageJson = String(fs.readFileSync(path.join(__dirname, '/../templates/package.json')))
+    documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
+    documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
+
+    // ////// LOGIC ////////
 
     api.log('Generating a new actionhero project...');
 
@@ -70,49 +70,49 @@ module.exports = function(api, next){
       '/public/logo',
       '/tasks',
       '/test'
-    ].forEach(function(dir){
-      api.utils.createDirSafely(api.projectRoot + dir);
-    });
+    ].forEach(function (dir) {
+      api.utils.createDirSafely(api.projectRoot + dir)
+    })
 
     // make files
     const newFileMap = {
-      '/config/api.js'                                : 'configApiJs',
-      '/config/logger.js'                             : 'configLoggerJs',
-      '/config/redis.js'                              : 'configRedisJs',
-      '/config/tasks.js'                              : 'configTasksJs',
-      '/config/errors.js'                             : 'configErrorsJs',
-      '/config/i18n.js'                               : 'configI18nJs',
-      '/config/routes.js'                             : 'configRoutesJs',
-      '/config/servers/socket.js'                     : 'configSocketJs',
-      '/config/servers/web.js'                        : 'configWebJs',
-      '/config/servers/websocket.js'                  : 'configWebsocketJs',
-      '/package.json'                                 : 'packageJson',
-      '/actions/status.js'                            : 'actionStatus',
-      '/actions/createChatRoom.js'                    : 'actionChatRoom',
-      '/actions/showDocumentation.js'                 : 'actionDocumentation',
-      '/public/index.html'                            : 'publicIndex',
-      '/public/chat.html'                             : 'publicChat',
-      '/public/css/cosmo.css'                         : 'publicCss',
-      '/public/logo/actionhero.png'                   : 'publicLogo',
-      '/README.md'                                    : 'readmeMd',
-      '/test/example.js'                              : 'exampleTest'
-    };
-
-    for(let file in newFileMap){
-      api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]]);
+      '/config/api.js': 'configApiJs',
+      '/config/logger.js': 'configLoggerJs',
+      '/config/redis.js': 'configRedisJs',
+      '/config/tasks.js': 'configTasksJs',
+      '/config/errors.js': 'configErrorsJs',
+      '/config/i18n.js': 'configI18nJs',
+      '/config/routes.js': 'configRoutesJs',
+      '/config/servers/socket.js': 'configSocketJs',
+      '/config/servers/web.js': 'configWebJs',
+      '/config/servers/websocket.js': 'configWebsocketJs',
+      '/package.json': 'packageJson',
+      '/actions/status.js': 'actionStatus',
+      '/actions/createChatRoom.js': 'actionChatRoom',
+      '/actions/showDocumentation.js': 'actionDocumentation',
+      '/public/index.html': 'publicIndex',
+      '/public/chat.html': 'publicChat',
+      '/public/css/cosmo.css': 'publicCss',
+      '/public/logo/actionhero.png': 'publicLogo',
+      '/README.md': 'readmeMd',
+      '/test/example.js': 'exampleTest'
     }
 
-    api.log('');
-    api.log('Generation Complete.  Your project directory should look like this:');
+    for (let file in newFileMap) {
+      api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+    }
 
-    api.log('');
-    documents.projectMap.toString().split('\n').forEach(function(line){
-      api.log(line);
-    });
+    api.log('')
+    api.log('Generation Complete.  Your project directory should look like this:')
 
-    api.log('You may need to run `npm install` to install some dependancies', 'alert');
-    api.log('Run \'npm start\' to start your server');
+    api.log('')
+    documents.projectMap.toString().split('\n').forEach(function (line) {
+      api.log(line)
+    })
 
-    next(null, true);
-  });
-};
+    api.log('You may need to run `npm install` to install some dependancies', 'alert')
+    api.log('Run \'npm start\' to start your server')
+
+    next(null, true)
+  })
+}
