@@ -64,7 +64,7 @@ actionhero.prototype.initialize = function (params, callback) {
     initialize: (params, callback) => { this.initialize(params, callback) },
     start: (params, callback) => { this.start(params, callback) },
     stop: (callback) => { this.stop(callback) },
-    restart: (callback) => { this.restartt(callback) }
+    restart: (callback) => { this.restart(callback) }
   }
 
   this.api.projectRoot = process.cwd()
