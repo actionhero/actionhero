@@ -28,7 +28,7 @@ module.exports = {
 
     serverFolders.forEach((p) => {
       api.utils.recursiveDirectoryGlob(p).forEach((f) => {
-        let parts = f.split(/[\/\\]+/)
+        let parts = f.split(/[/\\]+/)
         let serverName = parts[(parts.length - 1)].split('.')[0]
         if (api.config.servers[serverName] && api.config.servers[serverName].enabled === true) {
           let init = require(f).initialize

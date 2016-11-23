@@ -104,7 +104,7 @@ actionhero.prototype.initialize = function (params, callback) {
     path.resolve(__dirname, 'initializers', 'utils.js'),
     path.resolve(__dirname, 'initializers', 'config.js')
   ].forEach((file) => {
-    let filename = file.replace(/^.*[\\\/]/, '')
+    let filename = file.replace(/^.*[\\/]/, '')
     let initializer = filename.split('.')[0]
     delete require.cache[require.resolve(file)]
     this.initializers[initializer] = require(file)
