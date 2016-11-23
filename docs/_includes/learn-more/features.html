@@ -1,0 +1,82 @@
+<section class="bs-docs-section">
+  <h1 id="servers" class="page-header">Features</h1>
+
+  <h2 id="actions">Easy-To-Use Actions</h2>
+  <p><span class="label label-info"><a href="/docs/core/#actions">Action Docs</a></span></p>
+  <p>With ActionHero, you create 'actions' which can respond to any type of connection. They process incoming parameters and offer a response to the client. ActionHero takes care of routing and responding to each connection type for you.</p>
+
+  {% highlight javascript %}
+exports.action = {
+  name: 'randomNumber',
+  description: 'I generate a random number',
+  action.inputs: {
+    'required' : [],
+    'optional' : []
+  },
+  outputExample: {randomNumber: 123}
+  run: function(api, data, next){
+    data.response.randomNumber = Math.random();
+    next();
+  }
+}
+  {% endhighlight %}
+
+  <h2 id="tasks">Built-In Tasks</h2>
+  <p><span class="label label-info"><a href="/docs/core/#tasks">Task Docs</a></span></p>
+  <p>Background tasks are first-class citizens in ActionHero. You can enqueue a task from anywhere in the application. Tasks can be recurring or single-run. ActionHero's task system is powered by Resque, so it is compatible with a number of other applications and frameworks.</p>
+
+  {% highlight javascript %}
+api.tasks.enqueue(
+    "sendWelcomeEmail",
+    {to: 'evan@evantahler.com'},
+    'default',
+function(error, toRun){
+  // done!
+});
+
+var task = {
+  name:          "sendWelcomeEmail",
+  description:   "I will send a new user a welcome email",
+  queue:         "default",
+  frequency:     0,
+  run: function(api, params, next){
+    api.sendEmail(params.email, function(error){
+      if(error){ api.log(error, 'error'); }
+      next();
+    })
+  }
+};
+  {% endhighlight %}
+
+  <h2 id="cluster-ready">Cluster-Ready</h2>
+  <p><span class="label label-info"><a href="/docs/core/#action-cluster">Action Cluster Docs</a></span></p>
+  <p>ActionHero uses Redis to store and share data. With first-class cache functions, decentralized communications, and distributed workers, you can be sure that your application is able to scale from 1 worker on one server, to as big of a cluster as you need.</p>
+
+  <h2 id="introduction">Multiple Servers and Transports</h2>
+  <p><span class="label label-info"><a href="/docs/overview/">Introduction Docs</a></span></p>
+  <p>The ActionHero API makes it simple to create a traditional HTTP(S) API, but it also lets you easily extend your API to TCP and websocket clients (all included). ActionHero also easily lets you write your own servers to handle custom transports.</p>
+
+  <h2 id="routing">Routing</h2>
+  <p><span class="label label-info"><a href="/docs/servers/#web-routes">Route Docs</a></span></p>
+  <p>ActionHero ships with a router to make mapping HTTP requests to your actions a breeze.</p>
+
+  <h2 id="api-first">API First Development</h2>
+  <p><span class="label label-info"><a href="http://api-first.com">www.api-first.com</a></span></p>
+  <p>ActionHero makes API-First development very easy by enforcing a strict separation of views and application logic. ActionHero also makes modularizing your application easy with simple clustering and easy-to-use background tasks.</p>
+
+  <h2 id="chat">Chat</h2>
+  <p><span class="label label-info"><a href="/docs/core/#chat">Chat Docs</a></span></p>
+  <p>ActionHero (optionally) facilitates real-time communication not only from server-to-client, but also client-to-client! ActionHero's chat sub-system allows for streaming of both public and private messages between clients. Complete with middleware and extensions, you can create chat services, multi-player games, and more!</p>
+
+  <h2 id="clustered-deployment">Clustered Deployment</h2>
+  <p><span class="label label-info"><a href="/docs/deployment/">Deployment Docs</a></span></p>
+  <p>It is simple to deploy ActionHero with our included binaries. You can launch your server as a single instance or as part of a node.js cluster.</p>
+
+  <h2 id="file-server">File Server</h2>
+  <p><span class="label label-info"><a href="/docs/core/#file-server">File Server Docs</a></span></p>
+  <p>Every respectable framework needs to serve files to its clients (even those that don't speak HTTP), and ActionHero is no exception. Configured to asynchronously stream file contents, ActionHero provides an excellent file server which can live in parallel with your API routes allowing for a fully featured server. No nginx required!</p>
+
+  <h2 id="localization">Localization</h2>
+  <p><span class="label label-info"><a href="/docs/core/#localization">Localization Docs</a></span></p>
+  <p>ActionHero is integrateed with `i18n` to allow you to customize every string in the server, from action responses to logging to fit your (and your user's) needs.</p>
+</section>

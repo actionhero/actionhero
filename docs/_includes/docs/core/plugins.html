@@ -1,0 +1,58 @@
+<section class="bs-docs-section">
+  <h1 id="plugins" class="page-header">Plugins</h1>
+
+  <h2 id="plugins-overview">Overview</h2>
+
+  <p>As of ActionHero version <code>v8.0.0</code>, you can create and include plugins for you ActionHero project.  Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, and <code>initializers</code> that are collected as a module.  You can install plugins via NPM or keep them in a local path.</p>
+  <p>Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.</p>
+
+  <h2 id="plugins-including-plugins">Including Plugins</h2>
+
+  <p><code>api.config.general.paths.plugin</code> (loaded from <code>/config/api.js</code>) is an array which contains the search path for your plugins.  This will default to <code>./node_modules</code>, but you can add a local path to your project.  Once you have the plugin search paths set up, you use <code>npm run actionhero link -- --name nameOfPlugin</code> (or <code>./node_modules/.bin/actionhero link --name nameOfPlugin</code>, which is equivalent) to create links in your top-level project to the plugin.  This will also copy over any config files from the plugin into your project so you can modify them.  The act of "linking" simply creates a <code>myPlugin.link</code> file in each component of your top-level project (actions, tasks, etc) which tells ActionHero to load up files at boot from that plugin.</p>
+  <p>When you want to overwrite the config files when the plugin is linked, add the parameter <code>overwriteConfig</code> to the <code>link</code> call (e.g. <code>npm run actionhero link --name nameOfPlugin --overwriteConfig</code>)</p>
+  <p>You can delete the linked files with the "unlink" method using  <code>npm run actionhero unlink --name nameOfPlugin</code>.
+  Remember that you have to delete the config files of unlinked plugins manually!
+  If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with <code>npm uninstall --save</code></p>
+
+  <h2 id="plugins-creating-plugins">Creating Plugins</h2>
+
+  {% highlight bash %}
+/
+| - actions
+| - tasks
+| - servers
+| - initializers
+| - scripts
+| - config
+|
+| - package.json
+  {% endhighlight %}
+
+  <p>To create a plugin, create a project with the following structure:</p>
+  <p>This structure will allow elements to be loaded into ActionHero (we search <code>/actions</code> for actions, <code>/tasks</code> for tasks, etc)</p>
+  <p>When developing your plugin locally, you can load it into an existing ActionHero project to test it out.</p>
+  <p>First, add the path your plugin is in to <code>api.config.general.paths.plugin</code>.  If your ActionHero app is in <code>/var/ah/actionhero</code> and your plugin is in <code>/var/ah/my_plugin</code>, add <code>/var/ah</code> to <code>api.config.general.paths.plugin</code></p>
+  <p><strong>Please use the npm naming convention <code>ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+
+  <h2 id="plugins-plugin-methods">Plugin methods</h2>
+
+  <p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" ActionHero project, but might be difficult from within the <code>node_modules</code> folder.  Here are some helpers:</p>
+
+  <h3 id="plugins-routes">Routes:</h3>
+
+  <ul>
+    <li><code>api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)</code>
+      <ul>
+        <li>Add a route to the system.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2 id="plugins-example">Example Plugin</h2>
+
+  <p><a href="https://github.com/evantahler/ah-sample-plugin">You can view a sample plugin here</a></p>
+
+  <h2 id="plugins-published">Published Plugins</h2>
+
+  <p>You can view a list of plugins maintained by <a href="https://github.com/l0oky">@l0oky</a> via <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Awesome"></a></p>
+</section>

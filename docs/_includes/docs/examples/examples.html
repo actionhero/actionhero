@@ -1,0 +1,42 @@
+<section class="bs-docs-section">
+  <h1 id="examples" class="page-header">Examples</h1>
+
+  <h2 id="examples-projects">Example Projects</h2>
+
+  <ul>
+    <li><a href="https://github.com/evantahler/actionhero-tutorial">https://github.com/evantahler/actionhero-tutorial</a></li>
+    <li><a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf">https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf</a></li>
+  </ul>
+
+  <h2 id="examples-actions">Example Actions</h2>
+
+  <p><strong><a href="https://github.com/evantahler/actionhero/blob/master/actions/cacheTest.js">cachetest</a></strong>: This action demonstrates how to handle parameter checking for an action, and how to use the internal cache methods of actionhero to save and recall data provided from a client.</p>
+  <p><strong><a href="https://github.com/evantahler/actionhero/blob/master/actions/randomNumber.js">randomNumber</a></strong>: This example shows how to craft a simple action with no input, but to respond differently to clients based on their HTTP method (if it exists)</p>
+  <p><strong><a href="https://github.com/evantahler/actionhero/blob/master/actions/status.js">status</a></strong>: This action will render some statistics about this ActionHero node, and all nodes in the cluster.  Useful for health checks.</p>
+  <p><strong><a href="https://gist.github.com/evantahler/9541992">SimpleFileResponder</a></strong>: This action demonstrates how you can can manually send files from within actions.</p>
+  <p><strong><a href="https://gist.github.com/connanp/6169574">JadefileResponder</a></strong>: This snippet is for rendering Jade templates on the server for pushState single page apps in ActionHero. Useful when you need to bootstrap model data on initial page load. It also pre-compiles the templates on server start and will recompile if they change.</p>
+  <p><strong><a href="https://gist.github.com/4326070">oauth</a></strong>: This file is actually 2 actions which are needed to authenticate a user against twitter's API.  Note the use of <code>api.cache</code> to save and load the temporary secret tokens, and how to send custom (redirect) headers with ActionHero</p>
+  <p><strong><a href="https://blog.evantahler.com/authentication-with-actionhero-again-b197f406532f">Authentication Example</a></strong>: This example contains a working user system (auth, login, user creation, sessions, etc) using redis.</p>
+  <p><strong><em><a href="https://gist.github.com/evantahler/5898472">Tic-Tac-Toe API</a></em></strong> This advanced example demonstrates how to create actions (and initializers) which will enable you to play tic-tac-toe against an AI Player.</p>
+
+  <h2 id="examples-clients">Example Clients</h2>
+
+  <p><strong><a href="https://github.com/evantahler/actionhero-client">node via TCP</a></strong>: You can talk to an ActionHero server from another node project over TCP directly using this package.</p>
+  <p><strong><a href="https://github.com/evantahler/actionhero/blob/master/test/servers/web.js">node via HTTP/connect</a></strong>: ActionHero has a robust test suite for the web server which users connect.</p>
+  <p><strong><a href="https://github.com/evantahler/actionhero-angular-bootstrap-cors-csrf/blob/master/public/js/app/app.js#L43-L89">Angular</a></strong>: You can connect to ActionHero via angular and connect via HTTP or WebSocket (actionheroWebSocket).</p>
+
+  <h2 id="examples-initializers">Example Initializers</h2>
+
+  <p><strong><a href="https://gist.github.com/evantahler/801a07085f230fa7f55d">mysql</a></strong>: Use <a href="http://sequelizejs.com/">sequilize.js</a> within an initializer</p>
+  <p><strong><a href="https://gist.github.com/evantahler/59ba68a5ef5990574b7d">session</a></strong>: use the cache methods and <code>connection.id</code> to easily make some session management helpers.</p>
+  <p><strong><a href="https://gist.github.com/juancgarcia/e4caf5dc7474769f5137">passport</a></strong>: Use the <a href="http://passportjs.org/">passport</a> package for authentication in ActionHero.</p>
+  <p><strong><a href="https://gist.github.com/evantahler/0c59aa8680259aee3e01">mongo</a></strong>: a MongoDB initializer</p>
+
+  <h2 id="examples-tasks">Example Tasks</h2>
+
+  <p><strong><a href="https://github.com/evantahler/actionhero/blob/master/tasks/runAction.js">runAction</a></strong>: This (non periodic) task is used to call an action in the background.  For example, you might have an action to <code>sendEmail</code> which can be called synchronously by a client, but you also might want to call it in a delayed manner.  This is the task for you!</p>
+  <p><strong><a href="https://gist.github.com/evantahler/5aea80c04f14e8a88c91">sayHi</a></strong> A very simple example which will just log ‘HELLO' to the command line every 5 seconds.</p>
+  <p><strong><a href="https://gist.github.com/evantahler/5f427cde60f2f88ad61b">cleanLogFiles</a></strong>: This periodic task will run on all servers and inspect ActionHero's <code>log</code> directly for large log files, and delete them</p>
+  <p><strong><a href="https://gist.github.com/evantahler/b2f6e90e800916d3d26d">pingSocketClients</a></strong>: This periodic task will run on all servers and send a ‘ping' to any connected TCP clients to help them keep their</p>
+
+</section>

@@ -15,7 +15,7 @@
 */.DS_Store
 
 # Site
-*/site
+*/docs
 
 # Redis
 */dump.rdb

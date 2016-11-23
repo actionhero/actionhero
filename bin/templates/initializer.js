@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
 module.exports = {
-  loadPriority:  1000,
-  startPriority: 1000,
-  stopPriority:  1000,
-  initialize: function(api, next){
+  loadPriority:  %%loadPriority%%,
+  startPriority: %%startPriority%%,
+  stopPriority:  %%stopPriority%%,
+  initialize: function (api, next) {
     api.%%name%% = {};
 
-    next();
+    next()
   },
-  start: function(api, next){
-    next();
+  start: function (api, next) {
+    next()
   },
-  stop: function(api, next){
-    next();
+  stop: function (api, next) {
+    next()
   }
-};
+}

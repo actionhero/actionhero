@@ -1,9 +1,10 @@
-'use strict';
+'use strict'
 
-var fs = require('fs');
+const fs = require('fs')
+const path = require('path')
 
-exports.help = function(binary, next){
-  var help = fs.readFileSync(binary.actionheroRoot + '/bin/templates/help.txt');
-  binary.log(help.toString());
-  next(true);
-};
+module.exports = function (api, next) {
+  const help = fs.readFileSync(path.join(__dirname, '/../templates/help.txt')).toString()
+  help.split('\n').forEach(function (line) { console.log(line) })
+  next(null, true)
+}

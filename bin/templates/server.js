@@ -1,64 +1,63 @@
-'use strict';
+'use strict'
 
-var initialize = function(api, options, next){
-
-  //////////
+const initialize = function (api, options, next) {
+  // ////////
   // INIT //
-  //////////
+  // ////////
 
-  var type = '%%name%%';
+  const type = '%%name%%'
 
-  var attributes = {
+  const attributes = {
     canChat: true,
     logConnections: true,
     logExits: true,
     sendWelcomeMessage: true,
     verbs: []
-  };
+  }
 
-  var server = new api.genericServer(type, options, attributes);
+  const server = new api.GenericServer(type, options, attributes)
 
-  //////////////////////
+  // ////////////////////
   // REQUIRED METHODS //
-  //////////////////////
+  // ////////////////////
 
-  server.start = function(next){
-    next();
-  };
+  server.start = function (next) {
+    next()
+  }
 
-  server.stop = function(next){
-    next();
-  };
+  server.stop = function (next) {
+    next()
+  }
 
-  server.sendMessage = function(connection, message, messageCount){
+  server.sendMessage = function (connection, message, messageCount) {
 
-  };
+  }
 
-  server.sendFile = function(connection, error, fileStream, mime, length){
+  server.sendFile = function (connection, error, fileStream, mime, length) {
 
-  };
+  }
 
-  server.goodbye = function(connection, reason){
+  server.goodbye = function (connection, reason) {
 
-  };
+  }
 
-  ////////////
+  // //////////
   // EVENTS //
-  ////////////
+  // //////////
 
-  server.on('connection', function(connection){
+  server.on('connection', function (connection) {
 
-  });
+  })
 
-  server.on('actionComplete', function(data){
+  server.on('actionComplete', function (data) {
 
-  });
+  })
 
-  /////////////
+  // ///////////
   // HELPERS //
-  /////////////
+  // ///////////
 
-  next(server);
-};
+  next(server)
+}
 
-exports.initialize = initialize;
+exports.initialize = initialize

@@ -5,6 +5,7 @@ language: node_js
 node_js:
   - "4"
   - "6"
+  - "7"
 
 env:
   - "FAKEREDIS=true"
@@ -15,13 +16,8 @@ os:
   # - osx
   # - windows
 
-script: npm run-script test:travis
-
 services:
   - redis-server
-
-after_script:
-  - npm run-script coverage
 
 after_failure:
   - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
