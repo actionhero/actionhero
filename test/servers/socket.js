@@ -1,6 +1,6 @@
 'use strict'
 
-var uuid = require('node-uuid')
+var uuid = require('uuid')
 var should = require('should')
 let path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))

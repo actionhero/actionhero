@@ -4,7 +4,7 @@ let path = require('path')
 let should = require('should')
 var ActionheroPrototype = require(path.resolve(__dirname, '..', '..', 'actionhero.js'))
 var actionhero = new ActionheroPrototype()
-var uuid = require('node-uuid')
+var uuid = require('uuid')
 var api
 var messages = []
 
