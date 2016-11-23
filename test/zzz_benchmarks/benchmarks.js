@@ -1,6 +1,6 @@
 var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
 var actionhero = new actionheroPrototype();
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var api;
 var messages = [];
 

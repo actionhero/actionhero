@@ -8,7 +8,7 @@ const zlib                = require('zlib');
 const formidable          = require('formidable');
 const browser_fingerprint = require('browser_fingerprint');
 const Mime                = require('mime');
-const uuid                = require('node-uuid');
+const uuid                = require('uuid');
 const etag                = require('etag');
 
 const initialize = function(api, options, next){
