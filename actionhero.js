@@ -305,6 +305,4 @@ actionhero.prototype.restart = function (callback) {
   }
 }
 
-exports.actionheroPrototype = actionhero
-exports.ActionheroPrototype = actionhero
 module.exports = actionhero
