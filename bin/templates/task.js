@@ -11,4 +11,4 @@ exports.task = {
     // your logic here
     next (error, resultLogMessage)
   }
-};
+}
