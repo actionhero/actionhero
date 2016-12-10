@@ -82,7 +82,11 @@ module.exports = {
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }
         args.push(callback)
-        method.apply(null, args)
+        if (method) {
+          method.apply(null, args)
+        } else {
+          api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
+        }
       }
     }
 
