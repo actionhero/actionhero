@@ -1,4 +1,3 @@
-var should = require('should')
 var path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
@@ -51,64 +50,64 @@ describe('Server: Web Socket', () => {
   })
 
   it('socket client connections should work: client 1', (done) => {
-    clientA.connect(function (error, data) {
+    clientA.connect((error, data) => {
       expect(error).toBeNull()
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+      expect(data.context).toBe('response')
+      expect(data.data.totalActions).toBe(0)
+      expect(clientA.welcomeMessage).toBe('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
   it('socket client connections should work: client 2', (done) => {
-    clientB.connect(function (error, data) {
+    clientB.connect((error, data) => {
       expect(error).toBeNull()
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+      expect(data.context).toBe('response')
+      expect(data.data.totalActions).toBe(0)
+      expect(clientA.welcomeMessage).toBe('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
   it('socket client connections should work: client 3', (done) => {
-    clientC.connect(function (error, data) {
+    clientC.connect((error, data) => {
       expect(error).toBeNull()
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+      expect(data.context).toBe('response')
+      expect(data.data.totalActions).toBe(0)
+      expect(clientA.welcomeMessage).toBe('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
   it('I can get my connection details', (done) => {
     clientA.detailsView((response) => {
-      response.data.connectedAt.should.be.within(0, new Date().getTime())
-      response.data.remoteIP.should.equal('127.0.0.1')
+      expect(response.data.connectedAt).toBeLessThan(new Date().getTime())
+      expect(response.data.remoteIP).toBe('127.0.0.1')
       done()
     })
   })
 
   it('can run actions with errors', (done) => {
     clientA.action('cacheTest', (response) => {
-      response.error.should.equal('key is a required parameter for this action')
+      expect(response.error).toBe('key is a required parameter for this action')
       done()
     })
   })
 
   it('can run actions properly', (done) => {
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
-      should.not.exist(response.error)
+      expect(response.error).toBeUndefined()
       done()
     })
   })
 
   it('does not have sticky params', (done) => {
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
-      should.not.exist(response.error)
-      response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key')
-      response.cacheTestResults.loadResp.value.should.equal('test value')
+      expect(response.error).toBeUndefined()
+      expect(response.cacheTestResults.loadResp.key).toBe('cacheTest_test key')
+      expect(response.cacheTestResults.loadResp.value).toBe('test value')
       clientA.action('cacheTest', (response) => {
-        response.error.should.equal('key is a required parameter for this action')
+        expect(response.error).toBe('key is a required parameter for this action')
         done()
       })
     })
@@ -124,13 +123,13 @@ describe('Server: Web Socket', () => {
     clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
 
     setTimeout(() => {
-      responses.length.should.equal(6)
+      expect(responses).toHaveLength(6)
       for (var i in responses) {
         var response = responses[i]
         if (i === 0 || i === '0') {
-          response.error.should.eql('you have too many pending requests')
+          expect(response.error).toBe('you have too many pending requests')
         } else {
-          should.not.exist(response.error)
+          expect(response.error).toBeUndefined()
         }
       }
       done()
@@ -139,20 +138,20 @@ describe('Server: Web Socket', () => {
 
   describe('files', () => {
     it('can request file data', (done) => {
-      clientA.file('simple.html', function (data) {
-        should.not.exist(data.error)
-        data.content.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-        data.mime.should.equal('text/html')
-        data.length.should.equal(101)
+      clientA.file('simple.html', (data) => {
+        expect(data.error).toBeNull()
+        expect(data.content).toBe('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        expect(data.mime).toBe('text/html')
+        expect(data.length).toBe(101)
         done()
       })
     })
 
     it('missing files', (done) => {
-      clientA.file('missing.html', function (data) {
-        data.error.should.equal('That file is not found')
-        data.mime.should.equal('text/html')
-        should.not.exist(data.content)
+      clientA.file('missing.html', (data) => {
+        expect(data.error).toBe('That file is not found')
+        expect(data.mime).toBe('text/html')
+        expect(data.content).toBeNull()
         done()
       })
     })
@@ -163,7 +162,7 @@ describe('Server: Web Socket', () => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
         join: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -172,7 +171,7 @@ describe('Server: Web Socket', () => {
       api.chatRoom.addMiddleware({
         name: 'leave chat middleware',
         leave: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -219,11 +218,11 @@ describe('Server: Web Socket', () => {
     it('can change rooms and get room details', (done) => {
       clientA.roomAdd('otherRoom', () => {
         clientA.detailsView((response) => {
-          should.not.exist(response.error)
-          response.data.rooms[0].should.equal('defaultRoom')
-          response.data.rooms[1].should.equal('otherRoom')
+          expect(response.error).toBeUndefined()
+          expect(response.data.rooms[0]).toBe('defaultRoom')
+          expect(response.data.rooms[1]).toBe('otherRoom')
           clientA.roomView('otherRoom', (response) => {
-            response.data.membersCount.should.equal(1)
+            expect(response.data.membersCount).toBe(1)
             done()
           })
         })
@@ -231,16 +230,16 @@ describe('Server: Web Socket', () => {
     })
 
     it('will update client room info when they change rooms', (done) => {
-      clientA.rooms[0].should.equal('defaultRoom')
-      should.not.exist(clientA.rooms[1])
+      expect(clientA.rooms[0]).toBe('defaultRoom')
+      expect(clientA.rooms[1]).toBeUndefined()
       clientA.roomAdd('otherRoom', (response) => {
-        should.not.exist(response.error)
-        clientA.rooms[0].should.equal('defaultRoom')
-        clientA.rooms[1].should.equal('otherRoom')
+        expect(response.error).toBeUndefined()
+        expect(clientA.rooms[0]).toBe('defaultRoom')
+        expect(clientA.rooms[1]).toBe('otherRoom')
         clientA.roomLeave('defaultRoom', (response) => {
-          should.not.exist(response.error)
-          clientA.rooms[0].should.equal('otherRoom')
-          should.not.exist(clientA.rooms[1])
+          expect(response.error).toBeUndefined()
+          expect(clientA.rooms[0]).toBe('otherRoom')
+          expect(clientA.rooms[1]).toBeUndefined()
           done()
         })
       })
@@ -249,8 +248,8 @@ describe('Server: Web Socket', () => {
     it('Clients can talk to each other', (done) => {
       var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('hello from client 2')
+        expect(response.context).toBe('user')
+        expect(response.message).toBe('hello from client 2')
         done()
       }
 
@@ -261,8 +260,8 @@ describe('Server: Web Socket', () => {
     it('The client say method does not rely on order', (done) => {
       var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('hello from client 2')
+        expect(response.context).toBe('user')
+        expect(response.message).toBe('hello from client 2')
         done()
       }
 
@@ -277,8 +276,8 @@ describe('Server: Web Socket', () => {
     it('connections are notified when I join a room', (done) => {
       var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('I have entered the room: ' + clientB.id)
+        expect(response.context).toBe('user')
+        expect(response.message).toBe('I have entered the room: ' + clientB.id)
         done()
       }
 
@@ -291,8 +290,8 @@ describe('Server: Web Socket', () => {
     it('connections are notified when I leave a room', (done) => {
       var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('I have left the room: ' + clientB.id)
+        expect(response.context).toBe('user')
+        expect(response.message).toBe('I have left the room: ' + clientB.id)
         done()
       }
 
@@ -302,15 +301,15 @@ describe('Server: Web Socket', () => {
 
     it('will not get messages for rooms I am not in', (done) => {
       clientB.roomAdd('otherRoom', (response) => {
-        should.not.exist(response.error)
-        clientB.rooms.length.should.equal(2)
+        expect(response.error).toBeUndefined()
+        expect(clientB.rooms.length).toBe(2)
 
         var listener = (response) => {
           clientC.removeListener('say', listener)
-          should.not.exist(response)
+          expect(response).toBeUndefined()
         }
 
-        clientC.rooms.length.should.equal(1)
+        expect(clientC.rooms.length).toBe(1)
         clientC.on('say', listener)
 
         setTimeout(() => {
@@ -324,10 +323,10 @@ describe('Server: Web Socket', () => {
 
     it('connections can see member counts changing within rooms as folks join and leave', (done) => {
       clientA.roomView('defaultRoom', (response) => {
-        response.data.membersCount.should.equal(3)
+        expect(response.data.membersCount).toBe(3)
         clientB.roomLeave('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
-            response.data.membersCount.should.equal(2)
+            expect(response.data.membersCount).toBe(2)
             done()
           })
         })
@@ -375,17 +374,17 @@ describe('Server: Web Socket', () => {
 
         var listenerA = (response) => {
           clientA.removeListener('say', listenerA)
-          response.message.should.equal('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
+          expect(response.message).toBe('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
         }
 
         var listenerB = (response) => {
           clientB.removeListener('say', listenerB)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
+          expect(response.message).toBe('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
         }
 
         var listenerC = (response) => {
           clientC.removeListener('say', listenerC)
-          response.message.should.equal('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
+          expect(response.message).toBe('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
         }
 
         clientA.on('say', listenerA)
@@ -439,7 +438,7 @@ describe('Server: Web Socket', () => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
-          messagesReceived.should.equal(7)
+          expect(messagesReceived).toBe(7)
           done()
         }, 1000)
       })
@@ -455,17 +454,17 @@ describe('Server: Web Socket', () => {
 
         var listenerA = (response) => {
           clientA.removeListener('say', listenerA)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).toBe('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
         var listenerB = (response) => {
           clientB.removeListener('say', listenerB)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).toBe('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
         var listenerC = (response) => {
           clientC.removeListener('say', listenerC)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).toBe('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
         clientA.on('say', listenerA)
@@ -490,10 +489,10 @@ describe('Server: Web Socket', () => {
         // Ensure that default behavior works
         clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
 
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).toBeUndefined()
             }
 
             // save off current functions
@@ -534,9 +533,9 @@ describe('Server: Web Socket', () => {
         // Check that everything is back to normal
         clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).toBeUndefined()
             }
             setTimeout(() => {
               clientA.roomLeave('defaultRoom', () => {
@@ -550,9 +549,9 @@ describe('Server: Web Socket', () => {
       it('should view non-default member data', (done) => {
         clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
             for (var key in response.data.members) {
-              response.data.members[key].type.should.eql('websocket')
+              expect(response.data.members[key].type).toBe('websocket')
             }
             clientA.roomLeave('defaultRoom')
             done()
@@ -580,14 +579,14 @@ describe('Server: Web Socket', () => {
       var sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
 
       var toComplete = function (sleep, response) {
-        sleep.should.equal(response.sleepDuration)
+        expect(sleep).toBe(response.sleepDuration)
         completed++
         if (completed === started) {
           done()
         }
       }
 
-      sleeps.forEach(function (sleep) {
+      sleeps.forEach((sleep) => {
         started++
         clientA.action('sleepTest', {sleepDuration: sleep}, (response) => { toComplete(sleep, response) })
       })
@@ -611,26 +610,26 @@ describe('Server: Web Socket', () => {
     })
 
     it('client can disconnect', (done) => {
-      api.servers.servers.websocket.connections().length.should.equal(3)
+      expect(api.servers.servers.websocket.connections().length).toBe(3)
       clientA.disconnect()
       clientB.disconnect()
       clientC.disconnect()
       setTimeout(() => {
-        api.servers.servers.websocket.connections().length.should.equal(0)
+        expect(api.servers.servers.websocket.connections().length).toBe(0)
         done()
       }, 500)
     })
 
     it('can be sent disconnect events from the server', (done) => {
       clientA.detailsView((response) => {
-        response.data.remoteIP.should.equal('127.0.0.1')
+        expect(response.data.remoteIP).toBe('127.0.0.1')
 
         var count = 0
         for (var id in api.connections.connections) {
           count++
           api.connections.connections[id].destroy()
         }
-        count.should.equal(3)
+        expect(count).toBe(3)
 
         clientA.detailsView(() => {
           throw new Error('should not get response')
