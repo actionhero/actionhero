@@ -365,9 +365,7 @@ describe('Server: Socket', () => {
         done()
       })
 
-      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n', (response) => {
-        console.log(response)
-      })
+      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
     })
 
     it('folks NOT in my room DON\'T hear what I say', (done) => {

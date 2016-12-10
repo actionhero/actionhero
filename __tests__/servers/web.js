@@ -3,7 +3,6 @@
 var request = require('request')
 var fs = require('fs')
 var os = require('os')
-var should = require('should')
 let path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
@@ -37,8 +36,8 @@ describe('Server: Web', () => {
 
     request.get(options, (error, response, body) => {
       expect(error).toBeNull()
-      response.statusCode.should.equal(404)
-      response.body.should.equal('That file is not found')
+      expect(response.statusCode).toBe(404)
+      expect(response.body).toBe('That file is not found')
       done()
     })
   })
@@ -47,7 +46,7 @@ describe('Server: Web', () => {
     request.get(url + '/api/', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.should.be.an.instanceOf(Object)
+      expect(body).toBeInstanceOf(Object)
       done()
     })
   })
@@ -56,8 +55,8 @@ describe('Server: Web', () => {
     request.get(url + '/api/', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.should.be.an.instanceOf(Object)
-      body.requesterInformation.should.be.an.instanceOf(Object)
+      expect(body).toBeInstanceOf(Object)
+      expect(body.requesterInformation).toBeInstanceOf(Object)
       done()
     })
   })
@@ -66,7 +65,7 @@ describe('Server: Web', () => {
     request.get(url + '/api?key=value', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.requesterInformation.receivedParams.key.should.equal('value')
+      expect(body.requesterInformation.receivedParams.key).toBe('value')
       done()
     })
   })
@@ -75,31 +74,31 @@ describe('Server: Web', () => {
     request.get(url + '/api?crazyParam123=something', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      should.not.exist(body.requesterInformation.receivedParams.crazyParam123)
+      expect(body.requesterInformation.receivedParams.crazyParam123).toBeUndefined()
       done()
     })
   })
 
   describe('will properly destroy connections', () => {
     it('works for the API', (done) => {
-      Object.keys(api.connections.connections).length.should.equal(0)
-      request.get(url + '/api/sleepTest', function (error) {
+      expect(Object.keys(api.connections.connections)).toHaveLength(0)
+      request.get(url + '/api/sleepTest', (error) => {
         expect(error).toBeNull()
-        Object.keys(api.connections.connections).length.should.equal(0)
+        expect(Object.keys(api.connections.connections)).toHaveLength(0)
         setTimeout(done, 100)
       })
 
       setTimeout(() => {
-        Object.keys(api.connections.connections).length.should.equal(1)
+        expect(Object.keys(api.connections.connections)).toHaveLength(1)
       }, 100)
     })
 
     it('works for files', (done) => {
-      Object.keys(api.connections.connections).length.should.equal(0)
-      request.get(url + '/simple.html', function (error) {
+      expect(Object.keys(api.connections.connections)).toHaveLength(0)
+      request.get(url + '/simple.html', (error) => {
         expect(error).toBeNull()
         setTimeout(() => {
-          Object.keys(api.connections.connections).length.should.equal(0)
+          expect(Object.keys(api.connections.connections)).toHaveLength(0)
           done()
         }, 100)
       })
@@ -162,7 +161,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/stringErrorTestAction/', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.should.equal('broken')
+        expect(body.error).toBe('broken')
         done()
       })
     })
@@ -171,7 +170,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/errorErrorTestAction/', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.should.equal('broken')
+        expect(body.error).toBe('broken')
         done()
       })
     })
@@ -180,8 +179,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/complexErrorTestAction/', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.error.should.equal('broken')
-        body.error.reason.should.equal('stuff')
+        expect(body.error.error).toBe('broken')
+        expect(body.error.reason).toBe('stuff')
         done()
       })
     })
@@ -205,7 +204,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/testAction/?crazyParam123=something', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.crazyParam123.should.equal('something')
+        expect(body.requesterInformation.receivedParams.crazyParam123).toBe('something')
         done()
       })
     })
@@ -218,7 +217,7 @@ describe('Server: Web', () => {
     it('can ask for JSONp responses', (done) => {
       request.get(url + '/api/randomNumber?callback=myCallback', (error, response, body) => {
         expect(error).toBeNull()
-        body.indexOf('myCallback({').should.equal(0)
+        expect(body.indexOf('myCallback({')).toBe(0)
         done()
       })
     })
@@ -226,8 +225,8 @@ describe('Server: Web', () => {
     it('JSONp responses cannot be used for XSS', (done) => {
       request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo', (error, response, body) => {
         expect(error).toBeNull()
-        body.should.not.containEql('alert(')
-        body.indexOf('alert&#39;hi&#39;;foo(').should.equal(0)
+        expect(body).not.toMatch(/alert\(/)
+        expect(body.indexOf('alert&#39;hi&#39;;foo(')).toBe(0)
         done()
       })
     })
@@ -244,8 +243,8 @@ describe('Server: Web', () => {
         headers: {'Host': 'lalala.site.com'}
       }, (error, response, body) => {
         expect(error).toBeNull()
-        response.headers.location.should.equal('https://www.site.com/api/randomNumber')
-        body.should.containEql('You are being redirected to https://www.site.com/api/randomNumber')
+        expect(response.headers.location).toBe('https://www.site.com/api/randomNumber')
+        expect(body).toMatch(/You are being redirected to https:\/\/www.site.com\/api\/randomNumber/)
         done()
       })
     })
@@ -260,8 +259,8 @@ describe('Server: Web', () => {
         }
       }, (error, response, body) => {
         expect(error).toBeNull()
-        should.not.exist(response.headers.location)
-        body.should.containEql('randomNumber')
+        expect(response.headers.location).toBeUndefined()
+        expect(body).toMatch(/randomNumber/)
         done()
       })
     })
@@ -271,7 +270,7 @@ describe('Server: Web', () => {
     request.get(url + '/api/IAMNOTANACTION', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.error.should.equal('unknown action or invalid apiVersion')
+      expect(body.error).toBe('unknown action or invalid apiVersion')
       done()
     })
   })
@@ -280,7 +279,7 @@ describe('Server: Web', () => {
     request.get(url + '/api/status', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      should.not.exist(body.error)
+      expect(body.error).toBeUndefined()
       done()
     })
   })
@@ -289,7 +288,8 @@ describe('Server: Web', () => {
     request.get(url + '/api/randomNumber', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.randomNumber.should.be.within(0, 1)
+      expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+      expect(body.randomNumber).toBeLessThanOrEqual(1)
       done()
     })
   })
@@ -298,7 +298,8 @@ describe('Server: Web', () => {
     request.put(url + '/api/randomNumber', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.randomNumber.should.be.within(0, 10)
+      expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+      expect(body.randomNumber).toBeLessThanOrEqual(1)
       done()
     })
   })
@@ -307,7 +308,8 @@ describe('Server: Web', () => {
     request.post(url + '/api/randomNumber', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.randomNumber.should.be.within(0, 100)
+      expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+      expect(body.randomNumber).toBeLessThanOrEqual(100)
       done()
     })
   })
@@ -316,7 +318,8 @@ describe('Server: Web', () => {
     request.del(url + '/api/randomNumber', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.randomNumber.should.be.within(0, 1000)
+      expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+      expect(body.randomNumber).toBeLessThanOrEqual(1000)
       done()
     })
   })
@@ -325,7 +328,7 @@ describe('Server: Web', () => {
     request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}, (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.cacheTestResults.saveResp.should.eql(true)
+      expect(body.cacheTestResults.saveResp).toBe(true)
       done()
     })
   })
@@ -335,7 +338,7 @@ describe('Server: Web', () => {
     request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      body.cacheTestResults.saveResp.should.eql(true)
+      expect(body.cacheTestResults.saveResp).toBe(true)
       done()
     })
   })
@@ -369,7 +372,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/paramTestAction/?crazyParam123=something', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.query.crazyParam123.should.equal('something')
+        expect(body.query.crazyParam123).toBe('something')
         done()
       })
     })
@@ -379,7 +382,7 @@ describe('Server: Web', () => {
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.body.key.should.eql('value')
+        expect(body.body.key).toBe('value')
         done()
       })
     })
@@ -390,7 +393,7 @@ describe('Server: Web', () => {
     request.del(url + '/api/', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      response.statusCode.should.eql(200)
+      expect(response.statusCode).toBe(200)
       done()
     })
   })
@@ -400,7 +403,7 @@ describe('Server: Web', () => {
     request.del(url + '/api/', (error, response, body) => {
       expect(error).toBeNull()
       body = JSON.parse(body)
-      response.statusCode.should.eql(404)
+      expect(response.statusCode).toBe(404)
       done()
     })
   })
@@ -440,8 +443,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/headerTestAction', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        response.statusCode.should.eql(200)
-        response.headers.thing.should.eql('C')
+        expect(response.statusCode).toBe(200)
+        expect(response.headers.thing).toBe('C')
         done()
       })
     })
@@ -450,21 +453,21 @@ describe('Server: Web', () => {
       request.get(url + '/api/headerTestAction', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        response.statusCode.should.eql(200)
-        response.headers['set-cookie'].length.should.eql(3) // 2 + session
-        response.headers['set-cookie'][1].should.eql('value_1=1')
-        response.headers['set-cookie'][0].should.eql('value_2=2')
+        expect(response.statusCode).toBe(200)
+        expect(response.headers['set-cookie']).toHaveLength(3) // 2 + session
+        expect(response.headers['set-cookie'][1]).toBe('value_1=1')
+        expect(response.headers['set-cookie'][0]).toBe('value_2=2')
         done()
       })
     })
 
     it('should respond to OPTIONS with only HTTP headers', (done) => {
-      request({method: 'options', url: url + '/api/cacheTest'}, function (error, response) {
+      request({method: 'options', url: url + '/api/cacheTest'}, (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.eql(200)
-        response.headers['access-control-allow-methods'].should.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE')
-        response.headers['access-control-allow-origin'].should.equal('*')
-        response.headers['content-length'].should.equal('0')
+        expect(response.statusCode).toBe(200)
+        expect(response.headers['access-control-allow-methods']).toBe('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE')
+        expect(response.headers['access-control-allow-origin']).toBe('*')
+        expect(response.headers['content-length']).toBe('0')
         done()
       })
     })
@@ -473,9 +476,9 @@ describe('Server: Web', () => {
       request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        response.statusCode.should.eql(200)
-        body.receivedParams.key.should.equal('someKey')
-        body.receivedParams.value.should.equal('someValue')
+        expect(response.statusCode).toBe(200)
+        expect(body.receivedParams.key).toBe('someKey')
+        expect(body.receivedParams.value).toBe('someValue')
         done()
       })
     })
@@ -483,21 +486,21 @@ describe('Server: Web', () => {
     it('should respond to HEAD requests just like GET, but with no body', (done) => {
       request({method: 'head', url: url + '/api/headerTestAction'}, (error, response, body) => {
         expect(error).toBeNull()
-        response.statusCode.should.eql(200)
-        body.should.equal('')
+        expect(response.statusCode).toBe(200)
+        expect(body).toBe('')
         done()
       })
     })
 
     it('keeps sessions with browser_fingerprint', (done) => {
       var j = request.jar()
-      request.post({url: url + '/api', jar: j}, function (error, response1, body1) {
+      request.post({url: url + '/api', jar: j}, (error, response1, body1) => {
         expect(error).toBeNull()
-        request.get({url: url + '/api', jar: j}, function (error, response2, body2) {
+        request.get({url: url + '/api', jar: j}, (error, response2, body2) => {
           expect(error).toBeNull()
-          request.put({url: url + '/api', jar: j}, function (error, response3, body3) {
+          request.put({url: url + '/api', jar: j}, (error, response3, body3) => {
             expect(error).toBeNull()
-            request.del({url: url + '/api', jar: j}, function (error, response4, body4) {
+            request.del({url: url + '/api', jar: j}, (error, response4, body4) => {
               expect(error).toBeNull()
 
               body1 = JSON.parse(body1)
@@ -505,24 +508,24 @@ describe('Server: Web', () => {
               body3 = JSON.parse(body3)
               body4 = JSON.parse(body4)
 
-              response1.headers['set-cookie'].should.exist
-              should.not.exist(response2.headers['set-cookie'])
-              should.not.exist(response3.headers['set-cookie'])
-              should.not.exist(response4.headers['set-cookie'])
+              expect(response1.headers['set-cookie']).toBeTruthy()
+              expect(response2.headers['set-cookie']).toBeUndefined()
+              expect(response3.headers['set-cookie']).toBeUndefined()
+              expect(response4.headers['set-cookie']).toBeUndefined()
 
               var fingerprint1 = body1.requesterInformation.id.split('-')[0]
               var fingerprint2 = body2.requesterInformation.id.split('-')[0]
               var fingerprint3 = body3.requesterInformation.id.split('-')[0]
               var fingerprint4 = body4.requesterInformation.id.split('-')[0]
 
-              fingerprint1.should.equal(fingerprint2)
-              fingerprint1.should.equal(fingerprint3)
-              fingerprint1.should.equal(fingerprint4)
+              expect(fingerprint1).toBe(fingerprint2)
+              expect(fingerprint1).toBe(fingerprint3)
+              expect(fingerprint1).toBe(fingerprint4)
 
-              fingerprint1.should.equal(body1.requesterInformation.fingerprint)
-              fingerprint2.should.equal(body2.requesterInformation.fingerprint)
-              fingerprint3.should.equal(body3.requesterInformation.fingerprint)
-              fingerprint4.should.equal(body4.requesterInformation.fingerprint)
+              expect(fingerprint1).toBe(body1.requesterInformation.fingerprint)
+              expect(fingerprint2).toBe(body2.requesterInformation.fingerprint)
+              expect(fingerprint3).toBe(body3.requesterInformation.fingerprint)
+              expect(fingerprint4).toBe(body4.requesterInformation.fingerprint)
               done()
             })
           })
@@ -571,7 +574,7 @@ describe('Server: Web', () => {
       request.post(url + '/api/aFakeAction', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        response.statusCode.should.eql(404)
+        expect(response.statusCode).toBe(404)
         done()
       })
     })
@@ -580,7 +583,7 @@ describe('Server: Web', () => {
       request.post(url + '/api/statusTestAction', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        response.statusCode.should.eql(422)
+        expect(response.statusCode).toBe(422)
         done()
       })
     })
@@ -589,8 +592,8 @@ describe('Server: Web', () => {
       request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.should.eql('key != value')
-        response.statusCode.should.eql(402)
+        expect(body.error).toBe('key != value')
+        expect(response.statusCode).toBe(402)
         done()
       })
     })
@@ -599,8 +602,8 @@ describe('Server: Web', () => {
       request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.good.should.eql(true)
-        response.statusCode.should.eql(200)
+        expect(body.good).toBe(true)
+        expect(response.statusCode).toBe(200)
         done()
       })
     })
@@ -611,7 +614,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/showDocumentation', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.documentation.should.be.an.instanceOf(Object)
+        expect(body.documentation).toBeInstanceOf(Object)
         done()
       })
     })
@@ -623,9 +626,9 @@ describe('Server: Web', () => {
         for (var actionName in body.documentation) {
           for (var version in body.documentation[actionName]) {
             var action = body.documentation[actionName][version]
-            action.name.should.be.a.String
-            action.description.should.be.a.String
-            action.inputs.should.be.an.instanceOf(Object)
+            expect(typeof action.name).toBe('string')
+            expect(typeof action.description).toBe('string')
+            expect(action.inputs).toBeInstanceOf(Object)
           }
         }
         done()
@@ -635,46 +638,46 @@ describe('Server: Web', () => {
 
   describe('files', () => {
     it('file: an HTML file', (done) => {
-      request.get(url + '/public/simple.html', function (error, response) {
+      request.get(url + '/public/simple.html', (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.equal(200)
-        response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toBe('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         done()
       })
     })
 
     it('file: 404 pages', (done) => {
-      request.get(url + '/public/notARealFile', function (error, response) {
+      request.get(url + '/public/notARealFile', (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.equal(404)
-        response.body.should.not.containEql('notARealFile')
+        expect(response.statusCode).toBe(404)
+        expect(response.body).not.toMatch(/notARealFile/)
         done()
       })
     })
 
     it('I should not see files outside of the public dir', (done) => {
-      request.get(url + '/public/../config.json', function (error, response) {
+      request.get(url + '/public/../config.json', (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.equal(404)
-        response.body.should.equal('That file is not found')
+        expect(response.statusCode).toBe(404)
+        expect(response.body).toBe('That file is not found')
         done()
       })
     })
 
     it('file: index page should be served when requesting a path (trailing slash)', (done) => {
-      request.get(url + '/public/', function (error, response) {
+      request.get(url + '/public/', (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.equal(200)
-        response.body.should.be.a.String
+        expect(response.statusCode).toBe(200)
+        expect(typeof response.body).toBe('string')
         done()
       })
     })
 
     it('file: index page should be served when requesting a path (no trailing slash)', (done) => {
-      request.get(url + '/public', function (error, response) {
+      request.get(url + '/public', (error, response) => {
         expect(error).toBeNull()
-        response.statusCode.should.equal(200)
-        response.body.should.be.a.String
+        expect(response.statusCode).toBe(200)
+        expect(typeof response.body).toBe('string')
         done()
       })
     })
@@ -700,26 +703,26 @@ describe('Server: Web', () => {
       })
 
       it('works for routes mapped paths', (done) => {
-        request.get(url + '/my/public/route/testFile.html', function (error, response) {
+        request.get(url + '/my/public/route/testFile.html', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
-          response.body.should.equal('ActionHero Route Test File')
+          expect(response.statusCode).toBe(200)
+          expect(response.body).toBe('ActionHero Route Test File')
           done()
         })
       })
 
       it('returns 404 for files not available in route mapped paths', (done) => {
-        request.get(url + '/my/public/route/fileNotFound.html', function (error, response) {
+        request.get(url + '/my/public/route/fileNotFound.html', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(404)
+          expect(response.statusCode).toBe(404)
           done()
         })
       })
 
       it('I should not see files outside of the mapped dir', (done) => {
-        request.get(url + '/my/public/route/../../config/servers/web.js', function (error, response) {
+        request.get(url + '/my/public/route/../../config/servers/web.js', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(404)
+          expect(response.statusCode).toBe(404)
           done()
         })
       })
@@ -745,10 +748,10 @@ describe('Server: Web', () => {
       })
 
       it('works for secondary paths', (done) => {
-        request.get(url + '/public/testFile.html', function (error, response) {
+        request.get(url + '/public/testFile.html', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
-          response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+          expect(response.statusCode).toBe(200)
+          expect(response.body).toBe('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
           done()
         })
       })
@@ -766,42 +769,42 @@ describe('Server: Web', () => {
       })
 
       it('old action routes stop working', (done) => {
-        request.get(url + '/api/randomNumber', function (error, response) {
+        request.get(url + '/api/randomNumber', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(404)
+          expect(response.statusCode).toBe(404)
           done()
         })
       })
 
       it('can ask for nested URL actions', (done) => {
-        request.get(url + '/craz/y/action/path/randomNumber', function (error, response) {
+        request.get(url + '/craz/y/action/path/randomNumber', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
+          expect(response.statusCode).toBe(200)
           done()
         })
       })
 
       it('old file routes stop working', (done) => {
-        request.get(url + '/public/simple.html', function (error, response) {
+        request.get(url + '/public/simple.html', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(404)
+          expect(response.statusCode).toBe(404)
           done()
         })
       })
 
       it('can ask for nested URL files', (done) => {
-        request.get(url + '/a/b/c/simple.html', function (error, response) {
+        request.get(url + '/a/b/c/simple.html', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
-          response.body.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+          expect(response.statusCode).toBe(200)
+          expect(response.body).toBe('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
           done()
         })
       })
 
       it('can ask for nested URL files with depth', (done) => {
-        request.get(url + '/a/b/c/css/cosmo.css', function (error, response) {
+        request.get(url + '/a/b/c/css/cosmo.css', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
+          expect(response.statusCode).toBe(200)
           done()
         })
       })
@@ -892,14 +895,14 @@ describe('Server: Web', () => {
     })
 
     it('new params will not be allowed in route definitions (an action should do it)', (done) => {
-      (api.params.postVariables.indexOf('bogusID') < 0).should.equal(true)
+      expect(api.params.postVariables).not.toContain('bogusID')
       done()
     })
 
     it('\'all\' routes are duplicated properly', (done) => {
-      ['get', 'post', 'put', 'delete'].forEach(function (verb) {
-        api.routes.routes[verb][0].action.should.equal('user')
-        api.routes.routes[verb][0].path.should.equal('/user/:userID')
+      ['get', 'post', 'put', 'delete'].forEach((verb) => {
+        expect(api.routes.routes[verb][0].action).toBe('user')
+        expect(api.routes.routes[verb][0].path).toBe('/user/:userID')
       })
       done()
     })
@@ -908,7 +911,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/a_crazy_action', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.should.equal('unknown action or invalid apiVersion')
+        expect(body.error).toBe('unknown action or invalid apiVersion')
         done()
       })
     })
@@ -917,7 +920,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/user/123?action=randomNumber', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('randomNumber')
+        expect(body.requesterInformation.receivedParams.action).toBe('randomNumber')
         done()
       })
     })
@@ -926,7 +929,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/user/123?action=someFakeAction', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
         done()
       })
     })
@@ -935,8 +938,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/mimeTestAction/thing.json', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.matchedRoute.path.should.equal('/mimeTestAction/:key')
-        body.matchedRoute.action.should.equal('mimeTestAction')
+        expect(body.matchedRoute.path).toBe('/mimeTestAction/:key')
+        expect(body.matchedRoute.action).toBe('mimeTestAction')
         done()
       })
     })
@@ -945,8 +948,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/old_login?user_id=7', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.user_id.should.equal('7')
-        body.requesterInformation.receivedParams.action.should.equal('login')
+        expect(body.user_id).toBe('7')
+        expect(body.requesterInformation.receivedParams.action).toBe('login')
         done()
       })
     })
@@ -955,7 +958,7 @@ describe('Server: Web', () => {
       request.get(url + '/api/users', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('usersList')
+        expect(body.requesterInformation.receivedParams.action).toBe('usersList')
         done()
       })
     })
@@ -964,8 +967,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/user/1234', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
+        expect(body.requesterInformation.receivedParams.userID).toBe('1234')
         done()
       })
     })
@@ -974,9 +977,9 @@ describe('Server: Web', () => {
       request.post(url + '/api/user/1234?key=value', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
+        expect(body.requesterInformation.receivedParams.userID).toBe('1234')
+        expect(body.requesterInformation.receivedParams.key).toBe('value')
         done()
       })
     })
@@ -985,9 +988,9 @@ describe('Server: Web', () => {
       request.put(url + '/api/user/1234?key=value', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
+        expect(body.requesterInformation.receivedParams.userID).toBe('1234')
+        expect(body.requesterInformation.receivedParams.key).toBe('value')
         done()
       })
     })
@@ -996,9 +999,9 @@ describe('Server: Web', () => {
       request.del(url + '/api/user/1234?key=value', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1234')
-        body.requesterInformation.receivedParams.key.should.equal('value')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
+        expect(body.requesterInformation.receivedParams.userID).toBe('1234')
+        expect(body.requesterInformation.receivedParams.key).toBe('value')
         done()
       })
     })
@@ -1007,8 +1010,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/user/1?userID=2', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('user')
-        body.requesterInformation.receivedParams.userID.should.equal('1')
+        expect(body.requesterInformation.receivedParams.action).toBe('user')
+        expect(body.requesterInformation.receivedParams.userID).toBe('1')
         done()
       })
     })
@@ -1017,12 +1020,12 @@ describe('Server: Web', () => {
       request.get(url + '/api/thing', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('thing')
+        expect(body.requesterInformation.receivedParams.action).toBe('thing')
 
         request.get(url + '/api/thing/stuff', (error, response, body) => {
           expect(error).toBeNull()
           body = JSON.parse(body)
-          body.requesterInformation.receivedParams.action.should.equal('thingStuff')
+          expect(body.requesterInformation.receivedParams.action).toBe('thingStuff')
           done()
         })
       })
@@ -1032,14 +1035,14 @@ describe('Server: Web', () => {
       request.post(url + '/api/login/123', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('login')
-        body.requesterInformation.receivedParams.userID.should.equal('123')
+        expect(body.requesterInformation.receivedParams.action).toBe('login')
+        expect(body.requesterInformation.receivedParams.userID).toBe('123')
 
         request.post(url + '/api/login/admin', (error, response, body) => {
           expect(error).toBeNull()
           body = JSON.parse(body)
-          body.requesterInformation.receivedParams.action.should.equal('login')
-          body.requesterInformation.receivedParams.userID.should.equal('admin')
+          expect(body.requesterInformation.receivedParams.action).toBe('login')
+          expect(body.requesterInformation.receivedParams.userID).toBe('admin')
           done()
         })
       })
@@ -1049,8 +1052,8 @@ describe('Server: Web', () => {
       request.get(url + '/api/c/key/log_me-in.com$123.jpg', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.requesterInformation.receivedParams.action.should.equal('cacheTest')
-        body.requesterInformation.receivedParams.value.should.equal('log_me-in.com$123.jpg')
+        expect(body.requesterInformation.receivedParams.action).toBe('cacheTest')
+        expect(body.requesterInformation.receivedParams.value).toBe('log_me-in.com$123.jpg')
         done()
       })
     })
@@ -1059,17 +1062,17 @@ describe('Server: Web', () => {
       request.post(url + '/api/login/1234', (error, response, body) => {
         expect(error).toBeNull()
         body = JSON.parse(body)
-        body.error.should.equal('unknown action or invalid apiVersion')
-        should.not.exist(body.requesterInformation.receivedParams.userID)
+        expect(body.error).toBe('unknown action or invalid apiVersion')
+        expect(body.requesterInformation.receivedParams.userID).toBeUndefined()
         done()
       })
     })
 
     describe('file extensions + routes', () => {
       it('will change header information based on extension (when active)', (done) => {
-        request.get(url + '/api/mimeTestAction/val.png', function (error, response) {
+        request.get(url + '/api/mimeTestAction/val.png', (error, response) => {
           expect(error).toBeNull()
-          response.headers['content-type'].should.equal('image/png')
+          expect(response.headers['content-type']).toBe('image/png')
           done()
         })
       })
@@ -1078,8 +1081,8 @@ describe('Server: Web', () => {
         request.get(url + '/api/mimeTestAction', (error, response, body) => {
           expect(error).toBeNull()
           body = JSON.parse(body)
-          response.headers['content-type'].should.equal('application/json; charset=utf-8')
-          body.error.should.equal('key is a required parameter for this action')
+          expect(response.headers['content-type']).toBe('application/json; charset=utf-8')
+          expect(body.error).toBe('key is a required parameter for this action')
           done()
         })
       })
@@ -1088,9 +1091,9 @@ describe('Server: Web', () => {
         request.get(url + '/api/a/wild/theKey/and/some/more/path', (error, response, body) => {
           expect(error).toBeNull()
           body = JSON.parse(body)
-          body.requesterInformation.receivedParams.action.should.equal('mimeTestAction')
-          body.requesterInformation.receivedParams.path.should.equal('and/some/more/path')
-          body.requesterInformation.receivedParams.key.should.equal('theKey')
+          expect(body.requesterInformation.receivedParams.action).toBe('mimeTestAction')
+          expect(body.requesterInformation.receivedParams.path).toBe('and/some/more/path')
+          expect(body.requesterInformation.receivedParams.key).toBe('theKey')
           done()
         })
       })
@@ -1114,21 +1117,21 @@ describe('Server: Web', () => {
       })
 
       it('will decode %20 or plus sign to a space so that file system can read', (done) => {
-        request.get(url + '/actionhero%20with%20space.png', function (error, response) {
+        request.get(url + '/actionhero%20with%20space.png', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(200)
-          response.body.should.be.an.instanceOf(Object)
-          response.headers['content-type'].should.equal('image/png')
+          expect(response.statusCode).toBe(200)
+          expect(response.body).toMatch('PNG')
+          expect(response.headers['content-type']).toBe('image/png')
           done()
         })
       })
 
       it('will capture bad encoding in URL and return NOT FOUND', (done) => {
-        request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', function (error, response) {
+        request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', (error, response) => {
           expect(error).toBeNull()
-          response.statusCode.should.equal(404)
-          response.body.should.be.an.instanceOf(String)
-          response.body.should.startWith('That file is not found')
+          expect(response.statusCode).toBe(404)
+          expect(typeof response.body).toBe('string')
+          expect(response.body).toMatch(/^That file is not found/)
           done()
         })
       })

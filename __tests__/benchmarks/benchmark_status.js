@@ -4,7 +4,6 @@ let path = require('path')
 var ActionheroPrototype = require(path.resolve(__dirname, '..', '..', 'actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var multiAction = require('./multiAction.js.helper')
-var uuid = require('uuid')
 var api
 
 describe('Benchmarks', () => {
