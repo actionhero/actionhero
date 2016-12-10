@@ -21,7 +21,7 @@ var multiAction = function (action, count, params, next) {
         theseParams[x] = theseParams[x]()
       }
     }
-    api.specHelper.runAction(action, theseParams, function () {
+    api.specHelper.runAction(action, theseParams, () => {
       inFlight--
       if (inFlight === 0) {
         var durationSeconds = ((new Date().getTime()) - start) / 1000
@@ -33,7 +33,7 @@ var multiAction = function (action, count, params, next) {
   }
 }
 
-describe('Benchmarks', function () {
+describe('Benchmarks', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -59,14 +59,14 @@ describe('Benchmarks', function () {
 
   it('randomNumber', (done) => {
     this.timeout(20 * 1000)
-    multiAction('randomNumber', 1000, {}, function () {
+    multiAction('randomNumber', 1000, {}, () => {
       done()
     })
   })
 
   it('status', (done) => {
     this.timeout(45 * 1000)
-    multiAction('status', 100, {}, function () {
+    multiAction('status', 100, {}, () => {
       done()
     })
   })
@@ -74,23 +74,23 @@ describe('Benchmarks', function () {
   it('cacheTest', (done) => {
     this.timeout(20 * 1000)
     multiAction('cacheTest', 1000, {
-      key: function () { return uuid.v4() },
-      value: function () { return uuid.v4() }
-    }, function () {
+      key: () => { return uuid.v4() },
+      value: () => { return uuid.v4() }
+    }, () => {
       done()
     })
   })
 
   it('sleepTest', (done) => {
     this.timeout(20 * 1000)
-    multiAction('sleepTest', 1000, {}, function () {
+    multiAction('sleepTest', 1000, {}, () => {
       done()
     })
   })
 
   it('debug', (done) => {
     this.timeout(20 * 1000)
-    multiAction('debug', 1000, {}, function () {
+    multiAction('debug', 1000, {}, () => {
       done()
     })
   })

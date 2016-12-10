@@ -6,7 +6,7 @@ var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Utils', function () {
+describe('Utils', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -27,7 +27,7 @@ describe('Utils', function () {
     done()
   })
 
-  describe('utils.hashMerge', function () {
+  describe('utils.hashMerge', () => {
     var A = {a: 1, b: 2}
     var B = {b: -2, c: 3}
     var C = {a: 1, b: {m: 10, n: 11}}
@@ -75,29 +75,29 @@ describe('Utils', function () {
     done()
   })
 
-  describe('#parseIPv6URI', function () {
-    it('address and port', function () {
+  describe('#parseIPv6URI', () => {
+    it('address and port', () => {
       var uri = '[2604:4480::5]:8080'
       var parts = api.utils.parseIPv6URI(uri)
       parts.host.should.equal('2604:4480::5')
       parts.port.should.equal(8080)
     })
 
-    it('address without port', function () {
+    it('address without port', () => {
       var uri = '2604:4480::5'
       var parts = api.utils.parseIPv6URI(uri)
       parts.host.should.equal('2604:4480::5')
       parts.port.should.equal(80)
     })
 
-    it('full uri', function () {
+    it('full uri', () => {
       var uri = 'http://[2604:4480::5]:8080/foo/bar'
       var parts = api.utils.parseIPv6URI(uri)
       parts.host.should.equal('2604:4480::5')
       parts.port.should.equal(8080)
     })
 
-    it('failing address', function () {
+    it('failing address', () => {
       var uri = '[2604:4480:z:5]:80'
       try {
         var parts = api.utils.parseIPv6URI(uri)

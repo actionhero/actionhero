@@ -47,7 +47,7 @@ var middleware = {
   }
 }
 
-describe('Test: Task Middleware', function () {
+describe('Test: Task Middleware', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       api = a

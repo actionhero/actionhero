@@ -1,12 +1,11 @@
 'use strict'
 
-var should = require('should')
 let path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Core: Errors', function () {
+describe('Core: Errors', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -23,27 +22,28 @@ describe('Core: Errors', function () {
 
   it('returns string errors properly', (done) => {
     api.specHelper.runAction('notARealAction', {}, (response) => {
-      response.error.should.equal('Error: unknown action or invalid apiVersion')
+      expect(response.error).toBe('Error: unknown action or invalid apiVersion')
       done()
     })
   })
 
   it('returns Error object properly', (done) => {
-    api.config.errors.unknownAction = function () {
+    api.config.errors.unknownAction = () => {
       return new Error('error test')
     }
     api.specHelper.runAction('notARealAction', {}, (response) => {
-      response.error.should.equal('Error: error test')
+      expect(response.error).toBe('Error: error test')
       done()
     })
   })
 
   it('returns generic object properly', (done) => {
-    api.config.errors.unknownAction = function () {
-      return {code: 'error111'}
+    api.config.errors.unknownAction = () => {
+      return {code: 'error111', reason: 'busted'}
     }
     api.specHelper.runAction('notARealAction', {}, (response) => {
-      response.error.should.have.property('code').equal('error111')
+      expect(response.error.code).toBe('error111')
+      expect(response.error.reason).toBe('busted')
       done()
     })
   })

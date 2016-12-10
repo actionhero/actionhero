@@ -1,12 +1,11 @@
 'use strict'
 
-var should = require('should')
 let path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Core: Middleware', function () {
+describe('Core: Middleware', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -27,7 +26,7 @@ describe('Core: Middleware', function () {
     done()
   })
 
-  describe('action preProcessors', function () {
+  describe('action preProcessors', () => {
     it('I can define a global preProcessor and it can append the connection', (done) => {
       api.actions.addMiddleware({
         name: 'test middleware',
@@ -39,7 +38,7 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._preProcessorNote.should.equal('note')
+        expect(response._preProcessorNote).toBe('note')
         done()
       })
     })
@@ -55,7 +54,7 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        should.not.exist(response._preProcessorNote)
+        expect(response._preProcessorNote).toBeUndefined()
         done()
       })
     })
@@ -111,10 +110,10 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._processorNoteFirst.should.equal('first')
-        response._processorNoteEarly.should.equal('early')
-        response._processorNoteDefault.should.equal('default')
-        response._processorNoteLate.should.equal('late')
+        expect(response._processorNoteFirst).toBe('first')
+        expect(response._processorNoteEarly).toBe('early')
+        expect(response._processorNoteDefault).toBe('default')
+        expect(response._processorNoteLate).toBe('late')
         done()
       })
     })
@@ -141,8 +140,8 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._processorNoteFirst.should.equal('first')
-        response._processorNoteSecond.should.equal('second')
+        expect(response._processorNoteFirst).toBe('first')
+        expect(response._processorNoteSecond).toBe('second')
         done()
       })
     })
@@ -158,7 +157,7 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._postProcessorNote.should.equal('note')
+        expect(response._postProcessorNote).toBe('note')
         done()
       })
     })
@@ -214,10 +213,10 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._processorNoteFirst.should.equal('first')
-        response._processorNoteEarly.should.equal('early')
-        response._processorNoteDefault.should.equal('default')
-        response._processorNoteLate.should.equal('late')
+        expect(response._processorNoteFirst).toBe('first')
+        expect(response._processorNoteEarly).toBe('early')
+        expect(response._processorNoteDefault).toBe('default')
+        expect(response._processorNoteLate).toBe('late')
         done()
       })
     })
@@ -244,8 +243,8 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response._processorNoteFirst.should.equal('first')
-        response._processorNoteSecond.should.equal('second')
+        expect(response._processorNoteFirst).toBe('first')
+        expect(response._processorNoteSecond).toBe('second')
         done()
       })
     })
@@ -260,8 +259,8 @@ describe('Core: Middleware', function () {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        response.error.should.equal('Error: BLOCKED')
-        should.not.exist(response.randomNumber)
+        expect(response.error).toBe('Error: BLOCKED')
+        expect(response.randomNumber).toBeUndefined()
         done()
       })
     })
@@ -276,16 +275,16 @@ describe('Core: Middleware', function () {
         }
       })
 
-      api.specHelper.runAction('randomNumber', function () {
+      api.specHelper.runAction('randomNumber', () => {
         throw new Error('should not get a response')
       })
-      setTimeout(function () {
+      setTimeout(() => {
         done()
       }, 1000)
     })
   })
 
-  describe('connection create/destroy callbacks', function () {
+  describe('connection create/destroy callbacks', () => {
     beforeEach((done) => {
       api.connections.middleware = {}
       api.connections.globalMiddleware = []
@@ -301,11 +300,11 @@ describe('Core: Middleware', function () {
     it('can create callbacks on connection creation', (done) => {
       api.connections.addMiddleware({
         name: 'connection middleware',
-        create: function () {
+        create: () => {
           done()
         }
       })
-      api.specHelper.runAction('randomNumber', function () {
+      api.specHelper.runAction('randomNumber', () => {
         //
       })
     })
@@ -313,12 +312,12 @@ describe('Core: Middleware', function () {
     it('can create callbacks on connection destroy', (done) => {
       api.connections.addMiddleware({
         name: 'connection middleware',
-        destroy: function () {
+        destroy: () => {
           done()
         }
       })
 
-      api.specHelper.runAction('randomNumber', function (response, connection) {
+      api.specHelper.runAction('randomNumber', (response, connection) => {
         connection.destroy()
       })
     })

@@ -107,7 +107,7 @@ exports.test = {
     web: function (api) {
       return {
         secure: false,
-        port: 18080,
+        port: 1000 + process.pid,
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

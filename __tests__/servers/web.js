@@ -10,7 +10,7 @@ var actionhero = new ActionheroPrototype()
 var api
 var url
 
-describe('Server: Web', function () {
+describe('Server: Web', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -80,7 +80,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('will properly destroy connections', function () {
+  describe('will properly destroy connections', () => {
     it('works for the API', (done) => {
       Object.keys(api.connections.connections).length.should.equal(0)
       request.get(url + '/api/sleepTest', function (error) {
@@ -89,7 +89,7 @@ describe('Server: Web', function () {
         setTimeout(done, 100)
       })
 
-      setTimeout(function () {
+      setTimeout(() => {
         Object.keys(api.connections.connections).length.should.equal(1)
       }, 100)
     })
@@ -98,7 +98,7 @@ describe('Server: Web', function () {
       Object.keys(api.connections.connections).length.should.equal(0)
       request.get(url + '/simple.html', function (error) {
         expect(error).toBeNull()
-        setTimeout(function () {
+        setTimeout(() => {
           Object.keys(api.connections.connections).length.should.equal(0)
           done()
         }, 100)
@@ -106,7 +106,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('errors', function () {
+  describe('errors', () => {
     beforeAll((done) => {
       api.actions.versions.stringErrorTestAction = [1]
       api.actions.actions.stringErrorTestAction = {
@@ -187,7 +187,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('if disableParamScrubbing is set ', function () {
+  describe('if disableParamScrubbing is set ', () => {
     var orig
 
     beforeAll((done) => {
@@ -211,9 +211,9 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('JSONp', function () {
-    beforeAll(function () { api.config.servers.web.metadataOptions.requesterInformation = false })
-    afterAll(function () { api.config.servers.web.metadataOptions.requesterInformation = true })
+  describe('JSONp', () => {
+    beforeAll(() => { api.config.servers.web.metadataOptions.requesterInformation = false })
+    afterAll(() => { api.config.servers.web.metadataOptions.requesterInformation = true })
 
     it('can ask for JSONp responses', (done) => {
       request.get(url + '/api/randomNumber?callback=myCallback', (error, response, body) => {
@@ -233,9 +233,9 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('request redirecton (allowedRequestHosts)', function () {
-    beforeAll(function () { api.config.servers.web.allowedRequestHosts = ['https://www.site.com'] })
-    afterAll(function () { api.config.servers.web.allowedRequestHosts = [] })
+  describe('request redirecton (allowedRequestHosts)', () => {
+    beforeAll(() => { api.config.servers.web.allowedRequestHosts = ['https://www.site.com'] })
+    afterAll(() => { api.config.servers.web.allowedRequestHosts = [] })
 
     it('will redirect clients if they do not request the proper host', (done) => {
       request.get({
@@ -340,7 +340,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('connection.rawConnection.params', function () {
+  describe('connection.rawConnection.params', () => {
     beforeAll((done) => {
       api.actions.versions.paramTestAction = [1]
       api.actions.actions.paramTestAction = {
@@ -405,7 +405,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('http header', function () {
+  describe('http header', () => {
     beforeAll((done) => {
       api.config.servers.web.returnErrorCodes = true
       api.actions.versions.headerTestAction = [1]
@@ -531,7 +531,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('http returnErrorCodes true', function () {
+  describe('http returnErrorCodes true', () => {
     beforeAll((done) => {
       api.config.servers.web.returnErrorCodes = true
 
@@ -606,7 +606,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('documentation', function () {
+  describe('documentation', () => {
     it('documentation can be returned via a documentation action', (done) => {
       request.get(url + '/api/showDocumentation', (error, response, body) => {
         expect(error).toBeNull()
@@ -633,7 +633,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('files', function () {
+  describe('files', () => {
     it('file: an HTML file', (done) => {
       request.get(url + '/public/simple.html', function (error, response) {
         expect(error).toBeNull()
@@ -679,13 +679,13 @@ describe('Server: Web', function () {
       })
     })
 
-    describe('can serve files from a specific mapped route', function () {
+    describe('can serve files from a specific mapped route', () => {
       beforeAll((done) => {
         var testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.mkdirSync(testFolderPublicPath)
         fs.writeFileSync(testFolderPublicPath + '/testFile.html', 'ActionHero Route Test File')
         api.routes.registerRoute('get', '/my/public/route', null, null, true, testFolderPublicPath)
-        process.nextTick(function () {
+        process.nextTick(() => {
           done()
         })
       })
@@ -694,7 +694,7 @@ describe('Server: Web', function () {
         var testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.unlinkSync(testFolderPublicPath + path.sep + 'testFile.html')
         fs.rmdirSync(testFolderPublicPath)
-        process.nextTick(function () {
+        process.nextTick(() => {
           done()
         })
       })
@@ -725,13 +725,13 @@ describe('Server: Web', function () {
       })
     })
 
-    describe('can serve files from more than one directory', function () {
+    describe('can serve files from more than one directory', () => {
       var source = path.join(__dirname, '/../../public/simple.html')
 
       beforeAll((done) => {
         fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'))
         api.staticFile.searchLoactions.push(os.tmpdir())
-        process.nextTick(function () {
+        process.nextTick(() => {
           done()
         })
       })
@@ -739,7 +739,7 @@ describe('Server: Web', function () {
       afterAll((done) => {
         fs.unlink(os.tmpdir() + path.sep + 'testFile.html')
         api.staticFile.searchLoactions.pop()
-        process.nextTick(function () {
+        process.nextTick(() => {
           done()
         })
       })
@@ -754,13 +754,13 @@ describe('Server: Web', function () {
       })
     })
 
-    describe('depth routes', function () {
-      beforeAll(function () {
+    describe('depth routes', () => {
+      beforeAll(() => {
         api.config.servers.web.urlPathForActions = '/craz/y/action/path'
         api.config.servers.web.urlPathForFiles = '/a/b/c'
       })
 
-      afterAll(function () {
+      afterAll(() => {
         api.config.servers.web.urlPathForActions = 'api'
         api.config.servers.web.urlPathForFiles = 'public'
       })
@@ -808,7 +808,7 @@ describe('Server: Web', function () {
     })
   })
 
-  describe('routes', function () {
+  describe('routes', () => {
     beforeAll((done) => {
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
@@ -1065,7 +1065,7 @@ describe('Server: Web', function () {
       })
     })
 
-    describe('file extensions + routes', function () {
+    describe('file extensions + routes', () => {
       it('will change header information based on extension (when active)', (done) => {
         request.get(url + '/api/mimeTestAction/val.png', function (error, response) {
           expect(error).toBeNull()
@@ -1096,7 +1096,7 @@ describe('Server: Web', function () {
       })
     })
 
-    describe('spaces in URL with public files', function () {
+    describe('spaces in URL with public files', () => {
       var source = path.join(__dirname, '/../../public/logo/actionhero.png')
 
       beforeAll((done) => {

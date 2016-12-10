@@ -2,7 +2,7 @@ var ActionheroPrototype = require('actionhero')
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('actionhero Tests', function () {
+describe('actionhero Tests', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -18,7 +18,7 @@ describe('actionhero Tests', function () {
     })
   })
 
-  it('should have booted into the test env', function () {
+  it('should have booted into the test env', () => {
     process.env.NODE_ENV.should.equal('test')
     expect(api.env).toBe('test')
     expect(api.id).toBeTruthy()

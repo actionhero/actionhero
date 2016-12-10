@@ -26,12 +26,12 @@ var connectClients = function (callback) {
   clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
   clientC = new ActionheroClient({}, clientCsocket) // eslint-disable-line
 
-  setTimeout(function () {
+  setTimeout(() => {
     callback()
   }, 100)
 }
 
-describe('Integration: Web Server + Websocket Socket', function () {
+describe('Integration: Web Server + Websocket Socket', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -39,7 +39,7 @@ describe('Integration: Web Server + Websocket Socket', function () {
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
 
-      connectClients(function () {
+      connectClients(() => {
         done()
       })
     })
@@ -51,7 +51,7 @@ describe('Integration: Web Server + Websocket Socket', function () {
     })
   })
 
-  describe('fingerprint', function () {
+  describe('fingerprint', () => {
     var cookieHeader
     var oldRequest
 

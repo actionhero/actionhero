@@ -29,7 +29,7 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
     lines.push()
   }
 
-  var respoder = function () {
+  var respoder = () => {
     if (lines.length === 0 && counter < 20) {
       counter++
       return setTimeout(respoder, 10)
@@ -49,22 +49,22 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
 }
 
 var connectClients = function (callback) {
-  setTimeout(function () {
+  setTimeout(() => {
     callback()
   }, 1000)
 
-  client = net.connect(api.config.servers.socket.port, function () {
+  client = net.connect(api.config.servers.socket.port, () => {
     client.setEncoding('utf8')
   })
-  client2 = net.connect(api.config.servers.socket.port, function () {
+  client2 = net.connect(api.config.servers.socket.port, () => {
     client2.setEncoding('utf8')
   })
-  client3 = net.connect(api.config.servers.socket.port, function () {
+  client3 = net.connect(api.config.servers.socket.port, () => {
     client3.setEncoding('utf8')
   })
 }
 
-describe('Server: Socket', function () {
+describe('Server: Socket', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -144,7 +144,7 @@ describe('Server: Socket', function () {
   })
 
   it('actions will fail without proper params set to the connection', (done) => {
-    makeSocketRequest(client, 'paramDelete key', function () {
+    makeSocketRequest(client, 'paramDelete key', () => {
       makeSocketRequest(client, 'cacheTest', (response) => {
         response.error.should.equal('key is a required parameter for this action')
         done()
@@ -250,7 +250,7 @@ describe('Server: Socket', function () {
     })
   })
 
-  describe('custom data delimiter', function () {
+  describe('custom data delimiter', () => {
     afterAll((done) => {
       // Return the config back to normal so we don't error other tests
       api.config.servers.socket.delimiter = '\n'
@@ -274,7 +274,7 @@ describe('Server: Socket', function () {
     })
   })
 
-  describe('chat', function () {
+  describe('chat', () => {
     beforeAll((done) => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
@@ -308,7 +308,7 @@ describe('Server: Socket', function () {
       makeSocketRequest(client, 'roomAdd defaultRoom')
       makeSocketRequest(client2, 'roomAdd defaultRoom')
       makeSocketRequest(client3, 'roomAdd defaultRoom')
-      setTimeout(function () {
+      setTimeout(() => {
         done()
       }, 250)
     })
@@ -319,7 +319,7 @@ describe('Server: Socket', function () {
         makeSocketRequest(client2, 'roomLeave ' + room)
         makeSocketRequest(client3, 'roomLeave ' + room)
       })
-      setTimeout(function () {
+      setTimeout(() => {
         done()
       }, 250)
     })
@@ -339,7 +339,7 @@ describe('Server: Socket', function () {
     })
 
     it('rooms can be changed', (done) => {
-      makeSocketRequest(client, 'roomAdd otherRoom', function () {
+      makeSocketRequest(client, 'roomAdd otherRoom', () => {
         makeSocketRequest(client, 'roomLeave defaultRoom', (response) => {
           response.status.should.equal('OK')
           makeSocketRequest(client, 'roomView otherRoom', (response) => {
@@ -351,8 +351,8 @@ describe('Server: Socket', function () {
     })
 
     it('connections in the first room see the count go down', (done) => {
-      makeSocketRequest(client, 'roomAdd   otherRoom', function () {
-        makeSocketRequest(client, 'roomLeave defaultRoom', function () {
+      makeSocketRequest(client, 'roomAdd   otherRoom', () => {
+        makeSocketRequest(client, 'roomLeave defaultRoom', () => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             response.data.room.should.equal('defaultRoom')
             response.data.membersCount.should.equal(2)
@@ -362,7 +362,7 @@ describe('Server: Socket', function () {
       })
     })
 
-    describe('custom room member data', function () {
+    describe('custom room member data', () => {
       var currentSanitize
       var currentGenerate
 
@@ -446,7 +446,7 @@ describe('Server: Socket', function () {
     })
 
     it('folks NOT in my room DON\'T hear what I say', (done) => {
-      makeSocketRequest(client, 'roomLeave defaultRoom', function () {
+      makeSocketRequest(client, 'roomLeave defaultRoom', () => {
         makeSocketRequest(client, '', (response) => {
           should.not.exist(response)
           done()
@@ -456,7 +456,7 @@ describe('Server: Socket', function () {
     })
 
     it('Folks are notified when I join a room', (done) => {
-      makeSocketRequest(client, 'roomAdd otherRoom', function () {
+      makeSocketRequest(client, 'roomAdd otherRoom', () => {
         makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n')
         makeSocketRequest(client, '', (response) => {
           response.message.should.equal('I have entered the room: ' + client2Details.id)
@@ -483,7 +483,7 @@ describe('Server: Socket', function () {
     })
   })
 
-  describe('disconnect', function () {
+  describe('disconnect', () => {
     afterAll((done) => {
       connectClients(done)
     })
@@ -498,7 +498,7 @@ describe('Server: Socket', function () {
           api.connections.connections[id].destroy()
         }
 
-        setTimeout(function () {
+        setTimeout(() => {
           client.readable.should.equal(false)
           client.writable.should.equal(false)
           done()

@@ -70,7 +70,8 @@
       "afterAll",
       "afterEach",
       "it",
-      "expect"
+      "expect",
+      "jest"
     ]
   },
   "scripts": {

@@ -165,7 +165,7 @@ describe('Core: API', () => {
             optionalParam: {required: false},
             fancyParam: {
               required: false,
-              default: function () { return 'abc123' },
+              default: () => { return 'abc123' },
               validator: function (s) {
                 if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
               },
@@ -258,7 +258,7 @@ describe('Core: API', () => {
     })
   })
 
-  describe('named action validations', function () {
+  describe('named action validations', () => {
     beforeAll((done) => {
       api.validators = {
         validator1: function (param) {

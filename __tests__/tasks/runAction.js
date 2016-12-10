@@ -6,7 +6,7 @@ var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Test: RunAction', function () {
+describe('Test: RunAction', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()

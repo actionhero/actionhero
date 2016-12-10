@@ -25,12 +25,12 @@ var connectClients = function (callback) {
   clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
   clientC = new ActionheroClient({}, clientCsocket) // eslint-disable-line
 
-  setTimeout(function () {
+  setTimeout(() => {
     callback()
   }, 100)
 }
 
-describe('Server: Web Socket', function () {
+describe('Server: Web Socket', () => {
   beforeAll((done) => {
     actionhero.start((error, a) => {
       expect(error).toBeNull()
@@ -38,7 +38,7 @@ describe('Server: Web Socket', function () {
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
 
-      connectClients(function () {
+      connectClients(() => {
         done()
       })
     })
@@ -123,7 +123,7 @@ describe('Server: Web Socket', function () {
     clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
     clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
 
-    setTimeout(function () {
+    setTimeout(() => {
       responses.length.should.equal(6)
       for (var i in responses) {
         var response = responses[i]
@@ -137,7 +137,7 @@ describe('Server: Web Socket', function () {
     }, 1000)
   })
 
-  describe('files', function () {
+  describe('files', () => {
     it('can request file data', (done) => {
       clientA.file('simple.html', function (data) {
         should.not.exist(data.error)
@@ -158,7 +158,7 @@ describe('Server: Web Socket', function () {
     })
   })
 
-  describe('chat', function () {
+  describe('chat', () => {
     beforeAll((done) => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
@@ -189,10 +189,10 @@ describe('Server: Web Socket', function () {
     })
 
     beforeEach((done) => {
-      clientA.roomAdd('defaultRoom', function () {
-        clientB.roomAdd('defaultRoom', function () {
-          clientC.roomAdd('defaultRoom', function () {
-            setTimeout(function () { // timeout to skip welcome messages as clients join rooms
+      clientA.roomAdd('defaultRoom', () => {
+        clientB.roomAdd('defaultRoom', () => {
+          clientC.roomAdd('defaultRoom', () => {
+            setTimeout(() => { // timeout to skip welcome messages as clients join rooms
               done()
             }, 100)
           })
@@ -201,12 +201,12 @@ describe('Server: Web Socket', function () {
     })
 
     afterEach((done) => {
-      clientA.roomLeave('defaultRoom', function () {
-        clientB.roomLeave('defaultRoom', function () {
-          clientC.roomLeave('defaultRoom', function () {
-            clientA.roomLeave('otherRoom', function () {
-              clientB.roomLeave('otherRoom', function () {
-                clientC.roomLeave('otherRoom', function () {
+      clientA.roomLeave('defaultRoom', () => {
+        clientB.roomLeave('defaultRoom', () => {
+          clientC.roomLeave('defaultRoom', () => {
+            clientA.roomLeave('otherRoom', () => {
+              clientB.roomLeave('otherRoom', () => {
+                clientC.roomLeave('otherRoom', () => {
                   done()
                 })
               })
@@ -217,7 +217,7 @@ describe('Server: Web Socket', function () {
     })
 
     it('can change rooms and get room details', (done) => {
-      clientA.roomAdd('otherRoom', function () {
+      clientA.roomAdd('otherRoom', () => {
         clientA.detailsView((response) => {
           should.not.exist(response.error)
           response.data.rooms[0].should.equal('defaultRoom')
@@ -282,7 +282,7 @@ describe('Server: Web Socket', function () {
         done()
       }
 
-      clientA.roomAdd('otherRoom', function () {
+      clientA.roomAdd('otherRoom', () => {
         clientA.on('say', listener)
         clientB.roomAdd('otherRoom')
       })
@@ -313,7 +313,7 @@ describe('Server: Web Socket', function () {
         clientC.rooms.length.should.equal(1)
         clientC.on('say', listener)
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientC.removeListener('say', listener)
           done()
         }, 1000)
@@ -325,7 +325,7 @@ describe('Server: Web Socket', function () {
     it('connections can see member counts changing within rooms as folks join and leave', (done) => {
       clientA.roomView('defaultRoom', (response) => {
         response.data.membersCount.should.equal(3)
-        clientB.roomLeave('defaultRoom', function () {
+        clientB.roomLeave('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             response.data.membersCount.should.equal(2)
             done()
@@ -334,12 +334,12 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    describe('middleware - say and onSayReceive', function () {
+    describe('middleware - say and onSayReceive', () => {
       beforeAll((done) => {
-        clientA.roomAdd('defaultRoom', function () {
-          clientB.roomAdd('defaultRoom', function () {
-            clientC.roomAdd('defaultRoom', function () {
-              setTimeout(function () { // timeout to skip welcome messages as clients join rooms
+        clientA.roomAdd('defaultRoom', () => {
+          clientB.roomAdd('defaultRoom', () => {
+            clientC.roomAdd('defaultRoom', () => {
+              setTimeout(() => { // timeout to skip welcome messages as clients join rooms
                 done()
               }, 100)
             })
@@ -348,9 +348,9 @@ describe('Server: Web Socket', function () {
       })
 
       afterAll((done) => {
-        clientA.roomLeave('defaultRoom', function () {
-          clientB.roomLeave('defaultRoom', function () {
-            clientC.roomLeave('defaultRoom', function () {
+        clientA.roomLeave('defaultRoom', () => {
+          clientB.roomLeave('defaultRoom', () => {
+            clientC.roomLeave('defaultRoom', () => {
               done()
             })
           })
@@ -393,7 +393,7 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
@@ -408,7 +408,7 @@ describe('Server: Web Socket', function () {
           say: function (connection, room, messagePayload, callback) {
             if (firstSayCall) {
               firstSayCall = false
-              setTimeout(function () {
+              setTimeout(() => {
                 callback()
               }, 200)
             } else {
@@ -435,7 +435,7 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
@@ -473,7 +473,7 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
@@ -482,13 +482,13 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    describe('custom room member data', function () {
+    describe('custom room member data', () => {
       var currentSanitize
       var currentGenerate
 
       beforeAll((done) => {
         // Ensure that default behavior works
-        clientA.roomAdd('defaultRoom', function () {
+        clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             response.data.room.should.equal('defaultRoom')
 
@@ -517,7 +517,7 @@ describe('Server: Web Socket', function () {
               }
             }
 
-            clientA.roomLeave('defaultRoom', function () {
+            clientA.roomLeave('defaultRoom', () => {
               done()
             })
           })
@@ -532,14 +532,14 @@ describe('Server: Web Socket', function () {
         api.chatRoom.generateMemberDetails = currentGenerate
 
         // Check that everything is back to normal
-        clientA.roomAdd('defaultRoom', function () {
+        clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             response.data.room.should.equal('defaultRoom')
             for (var key in response.data.members) {
               (response.data.members[key].type === undefined).should.eql(true)
             }
-            setTimeout(function () {
-              clientA.roomLeave('defaultRoom', function () {
+            setTimeout(() => {
+              clientA.roomLeave('defaultRoom', () => {
                 done()
               })
             }, 100)
@@ -548,7 +548,7 @@ describe('Server: Web Socket', function () {
       })
 
       it('should view non-default member data', (done) => {
-        clientA.roomAdd('defaultRoom', function () {
+        clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             response.data.room.should.equal('defaultRoom')
             for (var key in response.data.members) {
@@ -562,15 +562,15 @@ describe('Server: Web Socket', function () {
     })
   })
 
-  describe('param collisions', function () {
+  describe('param collisions', () => {
     var originalSimultaneousActions
 
-    beforeAll(function () {
+    beforeAll(() => {
       originalSimultaneousActions = api.config.general.simultaneousActions
       api.config.general.simultaneousActions = 99999999
     })
 
-    afterAll(function () {
+    afterAll(() => {
       api.config.general.simultaneousActions = originalSimultaneousActions
     })
 
@@ -594,7 +594,7 @@ describe('Server: Web Socket', function () {
     })
   })
 
-  describe('disconnect', function () {
+  describe('disconnect', () => {
     beforeEach((done) => {
       try {
         clientA.disconnect()
@@ -602,7 +602,7 @@ describe('Server: Web Socket', function () {
         clientC.disconnect()
       } catch (e) {}
 
-      connectClients(function () {
+      connectClients(() => {
         clientA.connect()
         clientB.connect()
         clientC.connect()
@@ -615,7 +615,7 @@ describe('Server: Web Socket', function () {
       clientA.disconnect()
       clientB.disconnect()
       clientC.disconnect()
-      setTimeout(function () {
+      setTimeout(() => {
         api.servers.servers.websocket.connections().length.should.equal(0)
         done()
       }, 500)
@@ -632,7 +632,7 @@ describe('Server: Web Socket', function () {
         }
         count.should.equal(3)
 
-        clientA.detailsView(function () {
+        clientA.detailsView(() => {
           throw new Error('should not get response')
         })
 
