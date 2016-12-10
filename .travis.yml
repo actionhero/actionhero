@@ -25,4 +25,4 @@ after_failure:
 notifications:
   slack: actionherojs:vj5i1wkPqEx0iKf6qXwQSnuX
 
-script: npm run standard && npm run jest -- -runInBand
+script: ./node_modules/.bin/standard && ./node_modules/.bin/jest --runInBand
