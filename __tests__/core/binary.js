@@ -55,7 +55,7 @@ describe('Core: Binary', () => {
         expect(error).toBeNull()
         done()
       })
-    }, (1000 * 30))
+    }, 60000)
 
     it('can generate a new project', (done) => {
       doBash([
@@ -98,7 +98,7 @@ describe('Core: Binary', () => {
 
         done()
       })
-    })
+    }, 10000)
 
     it('can call the help command', (done) => {
       doBash([
