@@ -50,7 +50,6 @@
   },
   "devDependencies": {
     "jest": "^17.0.3",
-    "mocha": "^3.1.2",
     "request": "^2.75.0",
     "standard": "^8.6.0"
   },

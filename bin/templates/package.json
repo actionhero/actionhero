@@ -18,6 +18,6 @@
   "scripts" : {
     "start"        : "actionhero start",
     "actionhero"   : "actionhero",
-    "test"         : "NODE_ENV=test mocha"
+    "test"         : "jest"
   }
 }
