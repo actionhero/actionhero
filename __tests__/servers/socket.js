@@ -1,7 +1,6 @@
 'use strict'
 
 var uuid = require('uuid')
-var should = require('should')
 let path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
@@ -14,7 +13,7 @@ var client3 = {}
 
 var client2Details = {}
 
-function makeSocketRequest (thisClient, message, cb, delimiter) {
+var makeSocketRequest = function (thisClient, message, cb, delimiter) {
   var lines = []
   var counter = 0
 
@@ -22,8 +21,8 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
     delimiter = '\r\n'
   }
 
-  var rsp = function (d) {
-    d.split(delimiter).forEach(function (l) {
+  var rsp = (d) => {
+    d.split(delimiter).forEach((l) => {
       lines.push(l)
     })
     lines.push()
@@ -49,10 +48,7 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
 }
 
 var connectClients = function (callback) {
-  setTimeout(() => {
-    callback()
-  }, 1000)
-
+  setTimeout(callback, 1000)
   client = net.connect(api.config.servers.socket.port, () => {
     client.setEncoding('utf8')
   })
@@ -84,24 +80,24 @@ describe('Server: Socket', () => {
 
   it('socket connections should be able to connect and get JSON', (done) => {
     makeSocketRequest(client, 'hello', (response) => {
-      response.should.be.an.instanceOf(Object)
-      response.error.should.equal('unknown action or invalid apiVersion')
+      expect(response).toBeInstanceOf(Object)
+      expect(response.error).toBe('unknown action or invalid apiVersion')
       done()
     })
   })
 
   it('single string message are treated as actions', (done) => {
     makeSocketRequest(client, 'status', (response) => {
-      response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server')
+      expect(response).toBeInstanceOf(Object)
+      expect(response.id).toBe('test-server')
       done()
     })
   })
 
   it('stringified JSON can also be sent as actions', (done) => {
     makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), (response) => {
-      response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server')
+      expect(response).toBeInstanceOf(Object)
+      expect(response.id).toBe('test-server')
       done()
     })
   })
@@ -115,19 +111,21 @@ describe('Server: Socket', () => {
       }
     }
     makeSocketRequest(client, JSON.stringify(msg), (response) => {
-      response.cacheTestResults.loadResp.key.should.eql('cacheTest_' + msg.params.key)
-      response.cacheTestResults.loadResp.value.should.eql(msg.params.value)
+      expect(response.cacheTestResults.loadResp.key).toBe('cacheTest_' + msg.params.key)
+      expect(response.cacheTestResults.loadResp.value).toBe(msg.params.value)
       done()
     })
   })
 
   it('I can get my details', (done) => {
     makeSocketRequest(client2, 'detailsView', (response) => {
-      response.status.should.equal('OK')
-      response.data.should.be.an.instanceOf(Object)
-      response.data.params.should.be.an.instanceOf(Object)
-      response.data.connectedAt.should.be.within(10, new Date().getTime())
-      response.data.id.should.equal(response.data.fingerprint)
+      var now = new Date().getTime()
+      expect(response.status).toBe('OK')
+      expect(response.data).toBeInstanceOf(Object)
+      expect(response.data.params).toBeInstanceOf(Object)
+      expect(response.data.connectedAt).toBeGreaterThanOrEqual(now - 5000)
+      expect(response.data.connectedAt).toBeLessThanOrEqual(now)
+      expect(response.data.id).toBe(response.data.fingerprint)
       client2Details = response.data // save for later!
       done()
     })
@@ -135,9 +133,9 @@ describe('Server: Socket', () => {
 
   it('params can be updated', (done) => {
     makeSocketRequest(client, 'paramAdd key=otherKey', (response) => {
-      response.status.should.equal('OK')
+      expect(response.status).toBe('OK')
       makeSocketRequest(client, 'paramsView', (response) => {
-        response.data.key.should.equal('otherKey')
+        expect(response.data.key).toBe('otherKey')
         done()
       })
     })
@@ -146,7 +144,7 @@ describe('Server: Socket', () => {
   it('actions will fail without proper params set to the connection', (done) => {
     makeSocketRequest(client, 'paramDelete key', () => {
       makeSocketRequest(client, 'cacheTest', (response) => {
-        response.error.should.equal('key is a required parameter for this action')
+        expect(response.error).toBe('key is a required parameter for this action')
         done()
       })
     })
@@ -154,40 +152,40 @@ describe('Server: Socket', () => {
 
   it('a new param can be added', (done) => {
     makeSocketRequest(client, 'paramAdd key=socketTestKey', (response) => {
-      response.status.should.equal('OK')
+      expect(response.status).toBe('OK')
       done()
     })
   })
 
   it('a new param can be viewed once added', (done) => {
     makeSocketRequest(client, 'paramView key', (response) => {
-      response.data.should.equal('socketTestKey')
+      expect(response.data).toBe('socketTestKey')
       done()
     })
   })
 
   it('another new param can be added', (done) => {
     makeSocketRequest(client, 'paramAdd value=abc123', (response) => {
-      response.status.should.equal('OK')
+      expect(response.status).toBe('OK')
       done()
     })
   })
 
   it('actions will work once all the needed params are added', (done) => {
     makeSocketRequest(client, 'cacheTest', (response) => {
-      response.cacheTestResults.saveResp.should.equal(true)
+      expect(response.cacheTestResults.saveResp).toBe(true)
       done()
     })
   })
 
   it('params are sticky between actions', (done) => {
     makeSocketRequest(client, 'cacheTest', (response) => {
-      should.not.exist(response.error)
-      response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey')
-      response.cacheTestResults.loadResp.value.should.equal('abc123')
+      expect(response.error).toBeUndefined()
+      expect(response.cacheTestResults.loadResp.key).toBe('cacheTest_socketTestKey')
+      expect(response.cacheTestResults.loadResp.value).toBe('abc123')
       makeSocketRequest(client, 'cacheTest', (response) => {
-        response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey')
-        response.cacheTestResults.loadResp.value.should.equal('abc123')
+        expect(response.cacheTestResults.loadResp.key).toBe('cacheTest_socketTestKey')
+        expect(response.cacheTestResults.loadResp.value).toBe('abc123')
         done()
       })
     })
@@ -195,7 +193,7 @@ describe('Server: Socket', () => {
 
   it('only params sent in a JSON block are used', (done) => {
     makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), (response) => {
-      response.error.should.equal('value is a required parameter for this action')
+      expect(response.error).toBe('value is a required parameter for this action')
       done()
     })
   })
@@ -210,7 +208,7 @@ describe('Server: Socket', () => {
 
     var responses = []
     var checkResponses = function (data) {
-      data.split('\n').forEach(function (line) {
+      data.split('\n').forEach((line) => {
         if (line.length > 0) {
           responses.push(JSON.parse(line))
         }
@@ -220,9 +218,9 @@ describe('Server: Socket', () => {
         for (var i in responses) {
           var response = responses[i]
           if (i === '0') {
-            response.error.should.eql('you have too many pending requests')
+            expect(response.error).toBe('you have too many pending requests')
           } else {
-            should.not.exist(response.error)
+            expect(response.error).toBeUndefined()
           }
         }
         done()
@@ -242,8 +240,10 @@ describe('Server: Socket', () => {
         value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
       }
     }
+
     makeSocketRequest(client, JSON.stringify(msg), (response) => {
-      response.should.containEql({status: 'error', error: 'data length is too big (64 received/449 max)'})
+      expect(response.status).toBe('error')
+      expect(response.error).toBe('data length is too big (64 received/449 max)')
       // Return maxDataLength back to normal
       api.config.servers.socket.maxDataLength = 0
       done()
@@ -260,7 +260,7 @@ describe('Server: Socket', () => {
     it('will parse /newline data delimiter', (done) => {
       api.config.servers.socket.delimiter = '\n'
       makeSocketRequest(client, JSON.stringify({action: 'status'}), (response) => {
-        response.context.should.equal('response')
+        expect(response.context).toBe('response')
         done()
       }, '\n')
     })
@@ -268,7 +268,7 @@ describe('Server: Socket', () => {
     it('will parse custom `^]` data delimiter', (done) => {
       api.config.servers.socket.delimiter = '^]'
       makeSocketRequest(client, JSON.stringify({action: 'status'}), (response) => {
-        response.context.should.equal('response')
+        expect(response.context).toBe('response')
         done()
       }, '^]')
     })
@@ -279,7 +279,7 @@ describe('Server: Socket', () => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
         join: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -288,7 +288,7 @@ describe('Server: Socket', () => {
       api.chatRoom.addMiddleware({
         name: 'leave chat middleware',
         leave: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -308,32 +308,28 @@ describe('Server: Socket', () => {
       makeSocketRequest(client, 'roomAdd defaultRoom')
       makeSocketRequest(client2, 'roomAdd defaultRoom')
       makeSocketRequest(client3, 'roomAdd defaultRoom')
-      setTimeout(() => {
-        done()
-      }, 250)
+      setTimeout(done, 250)
     })
 
     afterEach((done) => {
-      ['defaultRoom', 'otherRoom'].forEach(function (room) {
+      ['defaultRoom', 'otherRoom'].forEach((room) => {
         makeSocketRequest(client, 'roomLeave ' + room)
         makeSocketRequest(client2, 'roomLeave ' + room)
         makeSocketRequest(client3, 'roomLeave ' + room)
       })
-      setTimeout(() => {
-        done()
-      }, 250)
+      setTimeout(done, 250)
     })
 
     it('clients are in the default room', (done) => {
       makeSocketRequest(client, 'roomView defaultRoom', (response) => {
-        response.data.room.should.equal('defaultRoom')
+        expect(response.data.room).toBe('defaultRoom')
         done()
       })
     })
 
     it('clients can view additional info about rooms they are in', (done) => {
       makeSocketRequest(client, 'roomView defaultRoom', (response) => {
-        response.data.membersCount.should.equal(3)
+        expect(response.data.membersCount).toBe(3)
         done()
       })
     })
@@ -341,9 +337,10 @@ describe('Server: Socket', () => {
     it('rooms can be changed', (done) => {
       makeSocketRequest(client, 'roomAdd otherRoom', () => {
         makeSocketRequest(client, 'roomLeave defaultRoom', (response) => {
-          response.status.should.equal('OK')
+          expect(response.status).toBe('OK')
           makeSocketRequest(client, 'roomView otherRoom', (response) => {
-            response.data.room.should.equal('otherRoom')
+            expect(response.data.room).toBe('otherRoom')
+            expect(response.data.membersCount).toBe(1)
             done()
           })
         })
@@ -354,11 +351,38 @@ describe('Server: Socket', () => {
       makeSocketRequest(client, 'roomAdd   otherRoom', () => {
         makeSocketRequest(client, 'roomLeave defaultRoom', () => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
-            response.data.membersCount.should.equal(2)
+            expect(response.data.room).toBe('defaultRoom')
+            expect(response.data.membersCount).toBe(2)
             done()
           })
         })
+      })
+    })
+
+    it('folks in my room hear what I say (and say works)', (done) => {
+      makeSocketRequest(client3, '', (response) => {
+        expect(response.message).toBe('hello?')
+        done()
+      })
+
+      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n', (response) => {
+        console.log(response)
+      })
+    })
+
+    it('folks NOT in my room DON\'T hear what I say', (done) => {
+      makeSocketRequest(client, 'roomLeave defaultRoom', () => {
+        makeSocketRequest(client, '', (response) => {
+          expect(response).toBeNull()
+          done()
+        })
+        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
+      })
+    })
+
+    it('I can get my id', (done) => {
+      makeSocketRequest(client, 'detailsView' + '\r\n', (response) => {
+        done()
       })
     })
 
@@ -370,9 +394,9 @@ describe('Server: Socket', () => {
         // Ensure that default behavior works
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).toBeUndefined()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 
@@ -411,9 +435,9 @@ describe('Server: Socket', () => {
         // Check that everything is back to normal
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).toBeUndefined()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 
@@ -425,9 +449,9 @@ describe('Server: Socket', () => {
       it('should view non-default member data', (done) => {
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
-            response.data.room.should.equal('defaultRoom')
+            expect(response.data.room).toBe('defaultRoom')
             for (var key in response.data.members) {
-              response.data.members[key].type.should.eql('socket')
+              expect(response.data.members[key].type).toBe('socket')
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
             done()
@@ -436,31 +460,12 @@ describe('Server: Socket', () => {
       })
     })
 
-    it('folks in my room hear what I say (and say works)', (done) => {
-      makeSocketRequest(client3, '', (response) => {
-        response.message.should.equal('hello?')
-        done()
-      })
-
-      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
-    })
-
-    it('folks NOT in my room DON\'T hear what I say', (done) => {
-      makeSocketRequest(client, 'roomLeave defaultRoom', () => {
-        makeSocketRequest(client, '', (response) => {
-          should.not.exist(response)
-          done()
-        })
-        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
-      })
-    })
-
     it('Folks are notified when I join a room', (done) => {
       makeSocketRequest(client, 'roomAdd otherRoom', () => {
         makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n')
         makeSocketRequest(client, '', (response) => {
-          response.message.should.equal('I have entered the room: ' + client2Details.id)
-          response.from.should.equal(0)
+          expect(response.message).toBe('I have entered the room: ' + client2Details.id)
+          expect(response.from).toBe(0)
           done()
         })
       })
@@ -468,18 +473,12 @@ describe('Server: Socket', () => {
 
     it('Folks are notified when I leave a room', (done) => {
       makeSocketRequest(client, '', (response) => {
-        response.message.should.equal('I have left the room: ' + client2Details.id)
-        response.from.should.equal(0)
+        expect(response.message).toBe('I have left the room: ' + client2Details.id)
+        expect(response.from).toBe(0)
         done()
       })
 
       makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
-    })
-
-    it('I can get my id', (done) => {
-      makeSocketRequest(client, 'detailsView' + '\r\n', (response) => {
-        done()
-      })
     })
   })
 
@@ -490,17 +489,17 @@ describe('Server: Socket', () => {
 
     it('server can disconnect a client', (done) => {
       makeSocketRequest(client, 'status', (response) => {
-        response.id.should.equal('test-server')
-        client.readable.should.equal(true)
-        client.writable.should.equal(true)
+        expect(response.id).toBe('test-server')
+        expect(client.readable).toBe(true)
+        expect(client.writable).toBe(true)
 
         for (var id in api.connections.connections) {
           api.connections.connections[id].destroy()
         }
 
         setTimeout(() => {
-          client.readable.should.equal(false)
-          client.writable.should.equal(false)
+          expect(client.readable).toBe(false)
+          expect(client.writable).toBe(false)
           done()
         }, 100)
       })

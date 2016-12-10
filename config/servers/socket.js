@@ -31,7 +31,7 @@ exports.test = {
     socket: function (api) {
       return {
         enabled: true,
-        port: 1001 + process.pid,
+        port: 1001 + (process.pid % 64535),
         secure: false
       }
     }

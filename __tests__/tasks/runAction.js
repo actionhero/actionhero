@@ -1,6 +1,5 @@
 'use strict'
 
-var should = require('should')
 var path = require('path')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
@@ -22,10 +21,10 @@ describe('Test: RunAction', () => {
   })
 
   it('can run the task manually', (done) => {
-    api.specHelper.runTask('runAction', {action: 'randomNumber'}, function (error, response) {
-      expect(error).toBeNull()
-      response.randomNumber.should.be.greaterThan(0)
-      response.randomNumber.should.be.lessThan(1)
+    api.specHelper.runTask('runAction', {action: 'randomNumber'}, (error, response) => {
+      expect(error).toBeUndefined()
+      expect(response.randomNumber).toBeGreaterThanOrEqual(0)
+      expect(response.randomNumber).toBeLessThanOrEqual(1)
       done()
     })
   })

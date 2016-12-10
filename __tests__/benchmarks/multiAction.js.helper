@@ -1,0 +1,26 @@
+var multiAction = (api, action, count, params, next) => {  
+  var inFlight = 0
+  var i = 0
+  var start = new Date().getTime()
+  while (i < count) {
+    inFlight++
+    var theseParams = {}
+    for (var x in params) {
+      theseParams[x] = params[x]
+      if (typeof theseParams[x] === 'function') {
+        theseParams[x] = theseParams[x]()
+      }
+    }
+    api.specHelper.runAction(action, theseParams, () => {
+      inFlight--
+      if (inFlight === 0) {
+        var durationSeconds = ((new Date().getTime()) - start) / 1000
+        var response = 'benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + 's'
+        next(durationSeconds, response)
+      }
+    })
+    i++
+  }
+}
+
+module.exports = multiAction

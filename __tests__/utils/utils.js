@@ -1,7 +1,6 @@
 'use strict'
 
 let path = require('path')
-let should = require('should')
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -23,7 +22,7 @@ describe('Utils', () => {
 
   it('utils.arrayUniqueify', (done) => {
     var a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
-    api.utils.arrayUniqueify(a).should.eql([1, 2, 3, 4, 5])
+    expect(api.utils.arrayUniqueify(a)).toEqual([1, 2, 3, 4, 5])
     done()
   })
 
@@ -35,26 +34,26 @@ describe('Utils', () => {
 
     it('simple', (done) => {
       var Z = api.utils.hashMerge(A, B)
-      Z.a.should.equal(1)
-      Z.b.should.equal(-2)
-      Z.c.should.equal(3)
+      expect(Z.a).toBe(1)
+      expect(Z.b).toBe(-2)
+      expect(Z.c).toBe(3)
       done()
     })
 
     it('directional', (done) => {
       var Z = api.utils.hashMerge(B, A)
-      Z.a.should.equal(1)
-      Z.b.should.equal(2)
-      Z.c.should.equal(3)
+      expect(Z.a).toBe(1)
+      expect(Z.b).toBe(2)
+      expect(Z.c).toBe(3)
       done()
     })
 
     it('nested', (done) => {
       var Z = api.utils.hashMerge(C, D)
-      Z.a.should.equal(1)
-      Z.b.m.should.equal(10)
-      Z.b.n.should.equal(111)
-      Z.b.o.should.equal(22)
+      expect(Z.a).toBe(1)
+      expect(Z.b.m).toBe(10)
+      expect(Z.b.n).toBe(111)
+      expect(Z.b.o).toBe(22)
       done()
     })
   })
@@ -69,9 +68,9 @@ describe('Utils', () => {
       }
     }
     var b = api.utils.objClone(a)
-    a.should.eql(b)
+    expect(a).toEqual(b)
     delete a.a
-    a.should.not.eql(b)
+    expect(a).not.toEqual(b)
     done()
   })
 
@@ -79,22 +78,22 @@ describe('Utils', () => {
     it('address and port', () => {
       var uri = '[2604:4480::5]:8080'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+      expect(parts.host).toBe('2604:4480::5')
+      expect(parts.port).toBe(8080)
     })
 
     it('address without port', () => {
       var uri = '2604:4480::5'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(80)
+      expect(parts.host).toBe('2604:4480::5')
+      expect(parts.port).toBe(80)
     })
 
     it('full uri', () => {
       var uri = 'http://[2604:4480::5]:8080/foo/bar'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+      expect(parts.host).toBe('2604:4480::5')
+      expect(parts.port).toBe(8080)
     })
 
     it('failing address', () => {
@@ -103,7 +102,7 @@ describe('Utils', () => {
         var parts = api.utils.parseIPv6URI(uri)
         console.log(parts)
       } catch (e) {
-        e.message.should.equal('failed to parse address')
+        expect(e.message).toBe('failed to parse address')
       }
     })
   })

@@ -186,7 +186,10 @@ module.exports = {
             return next(error)
           }
 
-          worker.performInline(taskName, params, next)
+          worker.performInline(taskName, params, (error, result) => {
+            worker.end()
+            next(error, result)
+          })
         })
       }
 
