@@ -1,9 +1,9 @@
 'use strict'
 
 module.exports = {
-  loadPriority:  %%loadPriority%%,
+  loadPriority: %%loadPriority%%,
   startPriority: %%startPriority%%,
-  stopPriority:  %%stopPriority%%,
+  stopPriority: %%stopPriority%%,
   initialize: function (api, next) {
     api.%%name%% = {};
 

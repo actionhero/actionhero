@@ -13,8 +13,7 @@
     "ioredis"    : "latest"
   },
   "devDependencies" : {
-    "mocha"  : "latest",
-    "should" : "latest"
+    "jest"       : "latest"
   },
   "scripts" : {
     "start"        : "actionhero start",

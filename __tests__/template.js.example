@@ -1,0 +1,34 @@
+var ActionheroPrototype = require('actionhero')
+var actionhero = new ActionheroPrototype()
+var api
+
+describe('actionhero Tests', function () {
+  beforeAll((done) => {
+    actionhero.start((error, a) => {
+      expect(error).toBeNull()
+      api = a
+      done()
+    })
+  })
+
+  afterAll((done) => {
+    actionhero.stop(function (error) {
+      expect(error).toBeNull()
+      done()
+    })
+  })
+
+  it('should have booted into the test env', function () {
+    process.env.NODE_ENV.should.equal('test')
+    expect(api.env).toBe('test')
+    expect(api.id).toBeTruthy()
+  })
+
+  it('can retrieve server uptime via the status action', (done) => {
+    api.specHelper.runAction('status', (response) => {
+      expect(response.error).toBeNull()
+      expect(response.uptime).toBeGreaterThan(0)
+      done()
+    })
+  })
+})

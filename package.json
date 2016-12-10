@@ -40,19 +40,18 @@
     "is-running": "^2.0.1",
     "mime": "^1.3.4",
     "node-resque": "^4.0.1",
-    "uuid": "^3.0.0",
     "optimist": "^0.6.1",
     "primus": "^6.0.2",
     "qs": "^6.0.1",
     "uglify-js": "^2.7.5",
+    "uuid": "^3.0.0",
     "winston": "^2.0.0",
     "ws": "^1.1.1"
   },
   "devDependencies": {
-    "glob": "^7.1.1",
+    "jest": "^17.0.3",
     "mocha": "^3.1.2",
     "request": "^2.75.0",
-    "should": "^11.0.0",
     "standard": "^8.6.0"
   },
   "optionalDependencies": {},
@@ -66,17 +65,19 @@
     ],
     "globals": [
       "describe",
-      "before",
+      "beforeAll",
       "beforeEach",
-      "after",
+      "afterAll",
       "afterEach",
-      "it"
+      "it",
+      "expect"
     ]
   },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "standard && node test.js",
+    "test": "jest",
+    "pretest": "standard",
     "start": "node ./bin/actionhero"
   }
 }

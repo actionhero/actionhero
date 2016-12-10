@@ -76,7 +76,8 @@ exports.test = {
       },
       paths: {
         'locale': [require('os').tmpdir() + require('path').sep + 'locale']
-      }
+      },
+      rpcTimeout: 3000
     }
   }
 }

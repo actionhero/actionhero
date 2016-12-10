@@ -67,7 +67,7 @@ module.exports = {
 
     api.redis.subscriptionHandlers['do'] = function (message) {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
-        function callback () { // eslint-disable-line 
+        function callback () { // eslint-disable-line
           let responseArgs = Array.apply(null, arguments).sort()
           process.nextTick(() => {
             api.redis.respondCluster(message.requestId, responseArgs)
