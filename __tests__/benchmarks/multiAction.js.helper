@@ -1,4 +1,4 @@
-var multiAction = (api, action, count, params, next) => {  
+var multiAction = (api, action, count, params, next) => {
   var inFlight = 0
   var i = 0
   var start = new Date().getTime()
@@ -16,7 +16,10 @@ var multiAction = (api, action, count, params, next) => {
       if (inFlight === 0) {
         var durationSeconds = ((new Date().getTime()) - start) / 1000
         var response = 'benchmark: action: ' + action + ' x ' + count + ' >>> ' + durationSeconds + 's'
-        next(durationSeconds, response)
+
+        setTimeout(() => {
+          next(durationSeconds, response)
+        }, 5000) // let node cool off and GC
       }
     })
     i++

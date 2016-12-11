@@ -69,6 +69,7 @@ exports.test = {
   general: function (api) {
     return {
       id: 'test-server',
+      serverToken: 'serverToken-' + process.pid,
       developmentMode: true,
       startingChatRooms: {
         'defaultRoom': {},

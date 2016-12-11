@@ -162,7 +162,19 @@ module.exports = {
 
     process.nextTick(function () {
       api.redis.clients.subscriber.unsubscribe()
-      api.redis.status.subscribed = false
+      api.redis.status.subscribed = false;
+
+      ['client', 'subscriber', 'tasks'].forEach((r) => {
+        let client = api.redis.clients[r]
+        if (typeof client.quit === 'function') {
+          client.quit()
+        } else if (typeof client.end === 'function') {
+          client.end()
+        } else if (typeof client.disconnect === 'function') {
+          client.disconnect()
+        }
+      })
+
       next()
     })
   }
