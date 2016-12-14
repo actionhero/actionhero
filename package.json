@@ -77,7 +77,7 @@
     "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
     "help": "node ./bin/actionhero help",
     "test": "node test.js",
-    "pretest": "standard"
+    "pretest": "standard",
     "start": "node ./bin/actionhero"
   }
 }
