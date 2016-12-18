@@ -24,5 +24,3 @@ after_failure:
 
 notifications:
   slack: actionherojs:vj5i1wkPqEx0iKf6qXwQSnuX
-
-script: ./node_modules/.bin/standard && ./node_modules/.bin/jest --runInBand
