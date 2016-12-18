@@ -68,7 +68,8 @@ exports['default'] = {
 exports.test = {
   general: function (api) {
     return {
-      id: 'test-server',
+      id: 'test-server-' + process.pid,
+      serverToken: 'serverToken-' + process.pid,
       developmentMode: true,
       startingChatRooms: {
         'defaultRoom': {},
@@ -76,7 +77,8 @@ exports.test = {
       },
       paths: {
         'locale': [require('os').tmpdir() + require('path').sep + 'locale']
-      }
+      },
+      rpcTimeout: 3000
     }
   }
 }

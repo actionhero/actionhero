@@ -67,7 +67,7 @@ module.exports = {
 
     api.redis.subscriptionHandlers['do'] = function (message) {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
-        function callback () { // eslint-disable-line 
+        function callback () { // eslint-disable-line
           let responseArgs = Array.apply(null, arguments).sort()
           process.nextTick(() => {
             api.redis.respondCluster(message.requestId, responseArgs)
@@ -82,7 +82,11 @@ module.exports = {
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }
         args.push(callback)
-        method.apply(null, args)
+        if (method) {
+          method.apply(null, args)
+        } else {
+          api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
+        }
       }
     }
 
@@ -158,7 +162,19 @@ module.exports = {
 
     process.nextTick(function () {
       api.redis.clients.subscriber.unsubscribe()
-      api.redis.status.subscribed = false
+      api.redis.status.subscribed = false;
+
+      ['client', 'subscriber', 'tasks'].forEach((r) => {
+        let client = api.redis.clients[r]
+        if (typeof client.quit === 'function') {
+          client.quit()
+        } else if (typeof client.end === 'function') {
+          client.end()
+        } else if (typeof client.disconnect === 'function') {
+          client.disconnect()
+        }
+      })
+
       next()
     })
   }

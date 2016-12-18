@@ -13,12 +13,13 @@
     "ioredis"    : "latest"
   },
   "devDependencies" : {
-    "mocha"  : "latest",
-    "should" : "latest"
+    "cross-env"  : "latest",
+    "chai"       : "latest",
+    "mocha"      : "latest"
   },
   "scripts" : {
-    "start"        : "actionhero start",
-    "actionhero"   : "actionhero",
-    "test"         : "NODE_ENV=test mocha"
+    "start"      : "actionhero start",
+    "actionhero" : "actionhero",
+    "test"       : "cross-env NODE_ENV=test mocha"
   }
 }
