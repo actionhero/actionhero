@@ -73,6 +73,8 @@ describe('Core: Tasks', () => {
     delete api.tasks.jobs.periodicTask
     delete api.tasks.jobs.slowTask
 
+    api.config.tasks.queues = []
+
     api.resque.multiWorker.options.minTaskProcessors = 0
     api.resque.multiWorker.options.maxTaskProcessors = 0
 
@@ -292,7 +294,7 @@ describe('Core: Tasks', () => {
               expect(details.workers[workerName].queue).to.equal('testQueue')
               expect(details.workers[workerName].payload.args).to.deep.equal([{a: 1}])
               expect(details.workers[workerName].payload['class']).to.equal('slowTask')
-              setTimeout(done, 5000)
+              api.resque.multiWorker.stop(done)
             })
           }, 2000)
         })
@@ -308,7 +310,7 @@ describe('Core: Tasks', () => {
         api.resque.multiWorker.start(() => {
           setTimeout(() => {
             expect(taskOutput[0]).to.equal('first')
-            done()
+            api.resque.multiWorker.stop(done)
           }, 500)
         })
       })
@@ -323,7 +325,7 @@ describe('Core: Tasks', () => {
           api.resque.multiWorker.start(() => {
             setTimeout(() => {
               expect(taskOutput[0]).to.equal('delayed')
-              done()
+              api.resque.multiWorker.stop(done)
             }, 1500)
           })
         })
@@ -341,7 +343,7 @@ describe('Core: Tasks', () => {
               expect(taskOutput[1]).to.equal('periodicTask')
               expect(taskOutput[2]).to.equal('periodicTask')
               // the task may have run more than 3 times, we just want to ensure that it happened more than once
-              done()
+              api.resque.multiWorker.stop(done)
             }, 1500)
           })
         })
@@ -357,7 +359,7 @@ describe('Core: Tasks', () => {
         expect(job.queue).to.equal('testQueue')
         expect(String(f)).to.equal('Error: No job defined for class "someCrazyTask"')
         api.resque.multiWorker.removeListener('failure', listener)
-        done()
+        api.resque.multiWorker.stop(done)
       }
 
       api.resque.multiWorker.on('failure', listener)
