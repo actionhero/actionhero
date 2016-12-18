@@ -1,65 +1,65 @@
 'use strict'
 
 let path = require('path')
-let should = require('should')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Utils', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Utils', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       done()
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after((done) => {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  it('utils.arrayUniqueify', function (done) {
+  it('utils.arrayUniqueify', (done) => {
     var a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
-    api.utils.arrayUniqueify(a).should.eql([1, 2, 3, 4, 5])
+    expect(api.utils.arrayUniqueify(a)).to.deep.equal([1, 2, 3, 4, 5])
     done()
   })
 
-  describe('utils.hashMerge', function () {
+  describe('utils.hashMerge', () => {
     var A = {a: 1, b: 2}
     var B = {b: -2, c: 3}
     var C = {a: 1, b: {m: 10, n: 11}}
     var D = {a: 1, b: {n: 111, o: 22}}
 
-    it('simple', function (done) {
+    it('simple', (done) => {
       var Z = api.utils.hashMerge(A, B)
-      Z.a.should.equal(1)
-      Z.b.should.equal(-2)
-      Z.c.should.equal(3)
+      expect(Z.a).to.equal(1)
+      expect(Z.b).to.equal(-2)
+      expect(Z.c).to.equal(3)
       done()
     })
 
-    it('directional', function (done) {
+    it('directional', (done) => {
       var Z = api.utils.hashMerge(B, A)
-      Z.a.should.equal(1)
-      Z.b.should.equal(2)
-      Z.c.should.equal(3)
+      expect(Z.a).to.equal(1)
+      expect(Z.b).to.equal(2)
+      expect(Z.c).to.equal(3)
       done()
     })
 
-    it('nested', function (done) {
+    it('nested', (done) => {
       var Z = api.utils.hashMerge(C, D)
-      Z.a.should.equal(1)
-      Z.b.m.should.equal(10)
-      Z.b.n.should.equal(111)
-      Z.b.o.should.equal(22)
+      expect(Z.a).to.equal(1)
+      expect(Z.b.m).to.equal(10)
+      expect(Z.b.n).to.equal(111)
+      expect(Z.b.o).to.equal(22)
       done()
     })
   })
 
-  it('utils.objClone', function (done) {
+  it('utils.objClone', (done) => {
     var a = {
       a: 1,
       b: 2,
@@ -69,41 +69,41 @@ describe('Utils', function () {
       }
     }
     var b = api.utils.objClone(a)
-    a.should.eql(b)
+    expect(a).to.deep.equal(b)
     delete a.a
-    a.should.not.eql(b)
+    expect(a).not.to.equal(b)
     done()
   })
 
-  describe('#parseIPv6URI', function () {
-    it('address and port', function () {
+  describe('#parseIPv6URI', () => {
+    it('address and port', () => {
       var uri = '[2604:4480::5]:8080'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(8080)
     })
 
-    it('address without port', function () {
+    it('address without port', () => {
       var uri = '2604:4480::5'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(80)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(80)
     })
 
-    it('full uri', function () {
+    it('full uri', () => {
       var uri = 'http://[2604:4480::5]:8080/foo/bar'
       var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(8080)
     })
 
-    it('failing address', function () {
+    it('failing address', () => {
       var uri = '[2604:4480:z:5]:80'
       try {
         var parts = api.utils.parseIPv6URI(uri)
         console.log(parts)
       } catch (e) {
-        e.message.should.equal('failed to parse address')
+        expect(e.message).to.equal('failed to parse address')
       }
     })
   })

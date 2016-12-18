@@ -1,36 +1,34 @@
-// process.env.NODE_ENV = 'test'
-
-var should = require('should')
 var ActionheroPrototype = require('actionhero')
 var actionhero = new ActionheroPrototype()
+var expect = require('chai').expect
 var api
 
-describe('actionhero Tests', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('actionhero Tests', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       done()
     })
   })
 
-  after(function (done) {
+  after((done) => {
     actionhero.stop(function (error) {
-      should.not.exist(error)
+      expect(error).to.be.null
       done()
     })
   })
 
-  it('should have booted into the test env', function () {
+  it('should have booted into the test env', () => {
     process.env.NODE_ENV.should.equal('test')
-    api.env.should.equal('test')
-    should.exist(api.id)
+    expect(api.env).to.equal('test')
+    expect(api.id).to.be.ok
   })
 
-  it('can retrieve server uptime via the status action', function (done) {
-    api.specHelper.runAction('status', function (response) {
-      should.not.exist(response.error)
-      response.uptime.should.be.above(0)
+  it('can retrieve server uptime via the status action', (done) => {
+    api.specHelper.runAction('status', (response) => {
+      expect(response.error).to.be.null
+      expect(response.uptime).toBeGreaterThan(0)
       done()
     })
   })

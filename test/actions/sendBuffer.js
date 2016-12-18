@@ -1,39 +1,39 @@
 'use strict'
 
-var should = require('should')
 var request = require('request')
 var stream = require('stream')
 let path = require('path')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 var url
 
-describe('Server: sendBuffer', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Server: sendBuffer', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       done()
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after((done) => {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  describe('errors', function () {
-    before(function () {
+  describe('errors', () => {
+    before(() => {
       api.actions.versions.sendBufferTest = [1]
       api.actions.actions.sendBufferTest = {
         '1': {
           name: 'sendBufferTest',
           description: 'sendBufferTest',
           version: 1,
-          run: function (api, data, next) {
+          run: (api, data, next) => {
             const buffer = 'Example of data buffer'
             let bufferStream = new stream.PassThrough()
             bufferStream.end(buffer)
@@ -48,15 +48,15 @@ describe('Server: sendBuffer', function () {
       api.routes.loadRoutes()
     })
 
-    after(function () {
+    after(() => {
       delete api.actions.actions.sendBufferTest
       delete api.actions.versions.sendBufferTest
     })
 
-    it('Server should sendBuffer', function (done) {
-      request.get(url + '/api/sendBufferTest', function (error, response, body) {
-        should.not.exist(error)
-        body.should.equal('Example of data buffer')
+    it('Server should sendBuffer', (done) => {
+      request.get(url + '/api/sendBufferTest', (error, response, body) => {
+        expect(error).to.be.null
+        expect(body).to.equal('Example of data buffer')
         done()
       })
     })

@@ -1,5 +1,5 @@
-var should = require('should')
 var path = require('path')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -25,145 +25,145 @@ var connectClients = function (callback) {
   clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
   clientC = new ActionheroClient({}, clientCsocket) // eslint-disable-line
 
-  setTimeout(function () {
+  setTimeout(() => {
     callback()
   }, 100)
 }
 
-describe('Server: Web Socket', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Server: Web Socket', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
 
-      connectClients(function () {
+      connectClients(() => {
         done()
       })
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after((done) => {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  it('socket client connections should work: client 1', function (done) {
-    clientA.connect(function (error, data) {
-      should.not.exist(error)
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+  it('socket client connections should work: client 1', (done) => {
+    clientA.connect((error, data) => {
+      expect(error).to.be.null
+      expect(data.context).to.equal('response')
+      expect(data.data.totalActions).to.equal(0)
+      expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
-  it('socket client connections should work: client 2', function (done) {
-    clientB.connect(function (error, data) {
-      should.not.exist(error)
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+  it('socket client connections should work: client 2', (done) => {
+    clientB.connect((error, data) => {
+      expect(error).to.be.null
+      expect(data.context).to.equal('response')
+      expect(data.data.totalActions).to.equal(0)
+      expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
-  it('socket client connections should work: client 3', function (done) {
-    clientC.connect(function (error, data) {
-      should.not.exist(error)
-      data.context.should.equal('response')
-      data.data.totalActions.should.equal(0)
-      clientA.welcomeMessage.should.equal('Hello! Welcome to the actionhero api')
+  it('socket client connections should work: client 3', (done) => {
+    clientC.connect((error, data) => {
+      expect(error).to.be.null
+      expect(data.context).to.equal('response')
+      expect(data.data.totalActions).to.equal(0)
+      expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
       done()
     })
   })
 
-  it('I can get my connection details', function (done) {
-    clientA.detailsView(function (response) {
-      response.data.connectedAt.should.be.within(0, new Date().getTime())
-      response.data.remoteIP.should.equal('127.0.0.1')
+  it('I can get my connection details', (done) => {
+    clientA.detailsView((response) => {
+      expect(response.data.connectedAt).to.be.below(new Date().getTime())
+      expect(response.data.remoteIP).to.equal('127.0.0.1')
       done()
     })
   })
 
-  it('can run actions with errors', function (done) {
-    clientA.action('cacheTest', function (response) {
-      response.error.should.equal('key is a required parameter for this action')
+  it('can run actions with errors', (done) => {
+    clientA.action('cacheTest', (response) => {
+      expect(response.error).to.equal('key is a required parameter for this action')
       done()
     })
   })
 
-  it('can run actions properly', function (done) {
-    clientA.action('cacheTest', {key: 'test key', value: 'test value'}, function (response) {
-      should.not.exist(response.error)
+  it('can run actions properly', (done) => {
+    clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
+      expect(response.error).to.not.exist
       done()
     })
   })
 
-  it('does not have sticky params', function (done) {
-    clientA.action('cacheTest', {key: 'test key', value: 'test value'}, function (response) {
-      should.not.exist(response.error)
-      response.cacheTestResults.loadResp.key.should.equal('cacheTest_test key')
-      response.cacheTestResults.loadResp.value.should.equal('test value')
-      clientA.action('cacheTest', function (response) {
-        response.error.should.equal('key is a required parameter for this action')
+  it('does not have sticky params', (done) => {
+    clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
+      expect(response.error).to.not.exist
+      expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_test key')
+      expect(response.cacheTestResults.loadResp.value).to.equal('test value')
+      clientA.action('cacheTest', (response) => {
+        expect(response.error).to.equal('key is a required parameter for this action')
         done()
       })
     })
   })
 
-  it('will limit how many simultaneous connections I can have', function (done) {
+  it('will limit how many simultaneous connections I can have', (done) => {
     var responses = []
-    clientA.action('sleepTest', {sleepDuration: 100}, function (response) { responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 200}, function (response) { responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 300}, function (response) { responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 400}, function (response) { responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 500}, function (response) { responses.push(response) })
-    clientA.action('sleepTest', {sleepDuration: 600}, function (response) { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 100}, (response) => { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 200}, (response) => { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 300}, (response) => { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 400}, (response) => { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
+    clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
 
-    setTimeout(function () {
-      responses.length.should.equal(6)
+    setTimeout(() => {
+      expect(responses).to.have.length(6)
       for (var i in responses) {
         var response = responses[i]
         if (i === 0 || i === '0') {
-          response.error.should.eql('you have too many pending requests')
+          expect(response.error).to.equal('you have too many pending requests')
         } else {
-          should.not.exist(response.error)
+          expect(response.error).to.not.exist
         }
       }
       done()
     }, 1000)
   })
 
-  describe('files', function () {
-    it('can request file data', function (done) {
-      clientA.file('simple.html', function (data) {
-        should.not.exist(data.error)
-        data.content.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-        data.mime.should.equal('text/html')
-        data.length.should.equal(101)
+  describe('files', () => {
+    it('can request file data', (done) => {
+      clientA.file('simple.html', (data) => {
+        expect(data.error).to.be.null
+        expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        expect(data.mime).to.equal('text/html')
+        expect(data.length).to.equal(101)
         done()
       })
     })
 
-    it('missing files', function (done) {
-      clientA.file('missing.html', function (data) {
-        data.error.should.equal('That file is not found')
-        data.mime.should.equal('text/html')
-        should.not.exist(data.content)
+    it('missing files', (done) => {
+      clientA.file('missing.html', (data) => {
+        expect(data.error).to.equal('That file is not found')
+        expect(data.mime).to.equal('text/html')
+        expect(data.content).to.be.null
         done()
       })
     })
   })
 
-  describe('chat', function () {
-    before(function (done) {
+  describe('chat', () => {
+    before((done) => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
         join: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -172,7 +172,7 @@ describe('Server: Web Socket', function () {
       api.chatRoom.addMiddleware({
         name: 'leave chat middleware',
         leave: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -181,18 +181,18 @@ describe('Server: Web Socket', function () {
       done()
     })
 
-    after(function (done) {
+    after((done) => {
       api.chatRoom.middleware = {}
       api.chatRoom.globalMiddleware = []
 
       done()
     })
 
-    beforeEach(function (done) {
-      clientA.roomAdd('defaultRoom', function () {
-        clientB.roomAdd('defaultRoom', function () {
-          clientC.roomAdd('defaultRoom', function () {
-            setTimeout(function () { // timeout to skip welcome messages as clients join rooms
+    beforeEach((done) => {
+      clientA.roomAdd('defaultRoom', () => {
+        clientB.roomAdd('defaultRoom', () => {
+          clientC.roomAdd('defaultRoom', () => {
+            setTimeout(() => { // timeout to skip welcome messages as clients join rooms
               done()
             }, 100)
           })
@@ -200,13 +200,13 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    afterEach(function (done) {
-      clientA.roomLeave('defaultRoom', function () {
-        clientB.roomLeave('defaultRoom', function () {
-          clientC.roomLeave('defaultRoom', function () {
-            clientA.roomLeave('otherRoom', function () {
-              clientB.roomLeave('otherRoom', function () {
-                clientC.roomLeave('otherRoom', function () {
+    afterEach((done) => {
+      clientA.roomLeave('defaultRoom', () => {
+        clientB.roomLeave('defaultRoom', () => {
+          clientC.roomLeave('defaultRoom', () => {
+            clientA.roomLeave('otherRoom', () => {
+              clientB.roomLeave('otherRoom', () => {
+                clientC.roomLeave('otherRoom', () => {
                   done()
                 })
               })
@@ -216,41 +216,41 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    it('can change rooms and get room details', function (done) {
-      clientA.roomAdd('otherRoom', function () {
-        clientA.detailsView(function (response) {
-          should.not.exist(response.error)
-          response.data.rooms[0].should.equal('defaultRoom')
-          response.data.rooms[1].should.equal('otherRoom')
-          clientA.roomView('otherRoom', function (response) {
-            response.data.membersCount.should.equal(1)
+    it('can change rooms and get room details', (done) => {
+      clientA.roomAdd('otherRoom', () => {
+        clientA.detailsView((response) => {
+          expect(response.error).to.not.exist
+          expect(response.data.rooms[0]).to.equal('defaultRoom')
+          expect(response.data.rooms[1]).to.equal('otherRoom')
+          clientA.roomView('otherRoom', (response) => {
+            expect(response.data.membersCount).to.equal(1)
             done()
           })
         })
       })
     })
 
-    it('will update client room info when they change rooms', function (done) {
-      clientA.rooms[0].should.equal('defaultRoom')
-      should.not.exist(clientA.rooms[1])
-      clientA.roomAdd('otherRoom', function (response) {
-        should.not.exist(response.error)
-        clientA.rooms[0].should.equal('defaultRoom')
-        clientA.rooms[1].should.equal('otherRoom')
-        clientA.roomLeave('defaultRoom', function (response) {
-          should.not.exist(response.error)
-          clientA.rooms[0].should.equal('otherRoom')
-          should.not.exist(clientA.rooms[1])
+    it('will update client room info when they change rooms', (done) => {
+      expect(clientA.rooms[0]).to.equal('defaultRoom')
+      expect(clientA.rooms[1]).to.not.exist
+      clientA.roomAdd('otherRoom', (response) => {
+        expect(response.error).to.not.exist
+        expect(clientA.rooms[0]).to.equal('defaultRoom')
+        expect(clientA.rooms[1]).to.equal('otherRoom')
+        clientA.roomLeave('defaultRoom', (response) => {
+          expect(response.error).to.not.exist
+          expect(clientA.rooms[0]).to.equal('otherRoom')
+          expect(clientA.rooms[1]).to.not.exist
           done()
         })
       })
     })
 
-    it('Clients can talk to each other', function (done) {
-      var listener = function (response) {
+    it('Clients can talk to each other', (done) => {
+      var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('hello from client 2')
+        expect(response.context).to.equal('user')
+        expect(response.message).to.equal('hello from client 2')
         done()
       }
 
@@ -258,11 +258,11 @@ describe('Server: Web Socket', function () {
       clientB.say('defaultRoom', 'hello from client 2')
     })
 
-    it('The client say method does not rely on order', function (done) {
-      var listener = function (response) {
+    it('The client say method does not rely on order', (done) => {
+      var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('hello from client 2')
+        expect(response.context).to.equal('user')
+        expect(response.message).to.equal('hello from client 2')
         done()
       }
 
@@ -274,25 +274,25 @@ describe('Server: Web Socket', function () {
       clientB.say('defaultRoom', 'hello from client 2')
     })
 
-    it('connections are notified when I join a room', function (done) {
-      var listener = function (response) {
+    it('connections are notified when I join a room', (done) => {
+      var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('I have entered the room: ' + clientB.id)
+        expect(response.context).to.equal('user')
+        expect(response.message).to.equal('I have entered the room: ' + clientB.id)
         done()
       }
 
-      clientA.roomAdd('otherRoom', function () {
+      clientA.roomAdd('otherRoom', () => {
         clientA.on('say', listener)
         clientB.roomAdd('otherRoom')
       })
     })
 
-    it('connections are notified when I leave a room', function (done) {
-      var listener = function (response) {
+    it('connections are notified when I leave a room', (done) => {
+      var listener = (response) => {
         clientA.removeListener('say', listener)
-        response.context.should.equal('user')
-        response.message.should.equal('I have left the room: ' + clientB.id)
+        expect(response.context).to.equal('user')
+        expect(response.message).to.equal('I have left the room: ' + clientB.id)
         done()
       }
 
@@ -300,20 +300,20 @@ describe('Server: Web Socket', function () {
       clientB.roomLeave('defaultRoom')
     })
 
-    it('will not get messages for rooms I am not in', function (done) {
-      clientB.roomAdd('otherRoom', function (response) {
-        should.not.exist(response.error)
-        clientB.rooms.length.should.equal(2)
+    it('will not get messages for rooms I am not in', (done) => {
+      clientB.roomAdd('otherRoom', (response) => {
+        expect(response.error).to.not.exist
+        expect(clientB.rooms.length).to.equal(2)
 
-        var listener = function (response) {
+        var listener = (response) => {
           clientC.removeListener('say', listener)
-          should.not.exist(response)
+          expect(response).to.not.exist
         }
 
-        clientC.rooms.length.should.equal(1)
+        expect(clientC.rooms.length).to.equal(1)
         clientC.on('say', listener)
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientC.removeListener('say', listener)
           done()
         }, 1000)
@@ -322,24 +322,24 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    it('connections can see member counts changing within rooms as folks join and leave', function (done) {
-      clientA.roomView('defaultRoom', function (response) {
-        response.data.membersCount.should.equal(3)
-        clientB.roomLeave('defaultRoom', function () {
-          clientA.roomView('defaultRoom', function (response) {
-            response.data.membersCount.should.equal(2)
+    it('connections can see member counts changing within rooms as folks join and leave', (done) => {
+      clientA.roomView('defaultRoom', (response) => {
+        expect(response.data.membersCount).to.equal(3)
+        clientB.roomLeave('defaultRoom', () => {
+          clientA.roomView('defaultRoom', (response) => {
+            expect(response.data.membersCount).to.equal(2)
             done()
           })
         })
       })
     })
 
-    describe('middleware - say and onSayReceive', function () {
-      before(function (done) {
-        clientA.roomAdd('defaultRoom', function () {
-          clientB.roomAdd('defaultRoom', function () {
-            clientC.roomAdd('defaultRoom', function () {
-              setTimeout(function () { // timeout to skip welcome messages as clients join rooms
+    describe('middleware - say and onSayReceive', () => {
+      before((done) => {
+        clientA.roomAdd('defaultRoom', () => {
+          clientB.roomAdd('defaultRoom', () => {
+            clientC.roomAdd('defaultRoom', () => {
+              setTimeout(() => { // timeout to skip welcome messages as clients join rooms
                 done()
               }, 100)
             })
@@ -347,24 +347,24 @@ describe('Server: Web Socket', function () {
         })
       })
 
-      after(function (done) {
-        clientA.roomLeave('defaultRoom', function () {
-          clientB.roomLeave('defaultRoom', function () {
-            clientC.roomLeave('defaultRoom', function () {
+      after((done) => {
+        clientA.roomLeave('defaultRoom', () => {
+          clientB.roomLeave('defaultRoom', () => {
+            clientC.roomLeave('defaultRoom', () => {
               done()
             })
           })
         })
       })
 
-      afterEach(function (done) {
+      afterEach((done) => {
         api.chatRoom.middleware = {}
         api.chatRoom.globalMiddleware = []
 
         done()
       })
 
-      it('each listener receive custom message', function (done) {
+      it('each listener receive custom message', (done) => {
         api.chatRoom.addMiddleware({
           name: 'say for each',
           say: function (connection, room, messagePayload, callback) {
@@ -373,19 +373,19 @@ describe('Server: Web Socket', function () {
           }
         })
 
-        var listenerA = function (response) {
+        var listenerA = (response) => {
           clientA.removeListener('say', listenerA)
-          response.message.should.equal('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
+          expect(response.message).to.equal('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
         }
 
-        var listenerB = function (response) {
+        var listenerB = (response) => {
           clientB.removeListener('say', listenerB)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
+          expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
         }
 
-        var listenerC = function (response) {
+        var listenerC = (response) => {
           clientC.removeListener('say', listenerC)
-          response.message.should.equal('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
+          expect(response.message).to.equal('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
         }
 
         clientA.on('say', listenerA)
@@ -393,7 +393,7 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
@@ -401,14 +401,14 @@ describe('Server: Web Socket', function () {
         }, 1000)
       })
 
-      it('only one message should be received per connection', function (done) {
+      it('only one message should be received per connection', (done) => {
         var firstSayCall = true
         api.chatRoom.addMiddleware({
           name: 'first say middleware',
           say: function (connection, room, messagePayload, callback) {
             if (firstSayCall) {
               firstSayCall = false
-              setTimeout(function () {
+              setTimeout(() => {
                 callback()
               }, 200)
             } else {
@@ -418,15 +418,15 @@ describe('Server: Web Socket', function () {
         })
 
         var messagesReceived = 0
-        var listenerA = function (response) {
+        var listenerA = (response) => {
           messagesReceived += 1
         }
 
-        var listenerB = function (response) {
+        var listenerB = (response) => {
           messagesReceived += 2
         }
 
-        var listenerC = function (response) {
+        var listenerC = (response) => {
           messagesReceived += 4
         }
 
@@ -435,16 +435,16 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
-          messagesReceived.should.equal(7)
+          expect(messagesReceived).to.equal(7)
           done()
         }, 1000)
       })
 
-      it('each listener receive same custom message', function (done) {
+      it('each listener receive same custom message', (done) => {
         api.chatRoom.addMiddleware({
           name: 'say for each',
           onSayReceive: function (connection, room, messagePayload, callback) {
@@ -453,19 +453,19 @@ describe('Server: Web Socket', function () {
           }
         })
 
-        var listenerA = function (response) {
+        var listenerA = (response) => {
           clientA.removeListener('say', listenerA)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
-        var listenerB = function (response) {
+        var listenerB = (response) => {
           clientB.removeListener('say', listenerB)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
-        var listenerC = function (response) {
+        var listenerC = (response) => {
           clientC.removeListener('say', listenerC)
-          response.message.should.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
+          expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
         clientA.on('say', listenerA)
@@ -473,7 +473,7 @@ describe('Server: Web Socket', function () {
         clientC.on('say', listenerC)
         clientB.say('defaultRoom', 'Test Message')
 
-        setTimeout(function () {
+        setTimeout(() => {
           clientA.removeListener('say', listenerA)
           clientB.removeListener('say', listenerB)
           clientC.removeListener('say', listenerC)
@@ -482,18 +482,18 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    describe('custom room member data', function () {
+    describe('custom room member data', () => {
       var currentSanitize
       var currentGenerate
 
-      before(function (done) {
+      before((done) => {
         // Ensure that default behavior works
-        clientA.roomAdd('defaultRoom', function () {
-          clientA.roomView('defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+        clientA.roomAdd('defaultRoom', () => {
+          clientA.roomView('defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
 
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).to.not.exist
             }
 
             // save off current functions
@@ -517,14 +517,14 @@ describe('Server: Web Socket', function () {
               }
             }
 
-            clientA.roomLeave('defaultRoom', function () {
+            clientA.roomLeave('defaultRoom', () => {
               done()
             })
           })
         })
       })
 
-      after(function (done) {
+      after((done) => {
         api.chatRoom.joinCallbacks = {}
         api.chatRoom.leaveCallbacks = {}
 
@@ -532,14 +532,14 @@ describe('Server: Web Socket', function () {
         api.chatRoom.generateMemberDetails = currentGenerate
 
         // Check that everything is back to normal
-        clientA.roomAdd('defaultRoom', function () {
-          clientA.roomView('defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+        clientA.roomAdd('defaultRoom', () => {
+          clientA.roomView('defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).to.not.exist
             }
-            setTimeout(function () {
-              clientA.roomLeave('defaultRoom', function () {
+            setTimeout(() => {
+              clientA.roomLeave('defaultRoom', () => {
                 done()
               })
             }, 100)
@@ -547,12 +547,12 @@ describe('Server: Web Socket', function () {
         })
       })
 
-      it('should view non-default member data', function (done) {
-        clientA.roomAdd('defaultRoom', function () {
-          clientA.roomView('defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+      it('should view non-default member data', (done) => {
+        clientA.roomAdd('defaultRoom', () => {
+          clientA.roomView('defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              response.data.members[key].type.should.eql('websocket')
+              expect(response.data.members[key].type).to.equal('websocket')
             }
             clientA.roomLeave('defaultRoom')
             done()
@@ -562,47 +562,47 @@ describe('Server: Web Socket', function () {
     })
   })
 
-  describe('param collisions', function () {
+  describe('param collisions', () => {
     var originalSimultaneousActions
 
-    before(function () {
+    before(() => {
       originalSimultaneousActions = api.config.general.simultaneousActions
       api.config.general.simultaneousActions = 99999999
     })
 
-    after(function () {
+    after(() => {
       api.config.general.simultaneousActions = originalSimultaneousActions
     })
 
-    it('will not have param colisions', function (done) {
+    it('will not have param colisions', (done) => {
       var completed = 0
       var started = 0
       var sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
 
       var toComplete = function (sleep, response) {
-        sleep.should.equal(response.sleepDuration)
+        expect(sleep).to.equal(response.sleepDuration)
         completed++
         if (completed === started) {
           done()
         }
       }
 
-      sleeps.forEach(function (sleep) {
+      sleeps.forEach((sleep) => {
         started++
-        clientA.action('sleepTest', {sleepDuration: sleep}, function (response) { toComplete(sleep, response) })
+        clientA.action('sleepTest', {sleepDuration: sleep}, (response) => { toComplete(sleep, response) })
       })
     })
   })
 
-  describe('disconnect', function () {
-    beforeEach(function (done) {
+  describe('disconnect', () => {
+    beforeEach((done) => {
       try {
         clientA.disconnect()
         clientB.disconnect()
         clientC.disconnect()
       } catch (e) {}
 
-      connectClients(function () {
+      connectClients(() => {
         clientA.connect()
         clientB.connect()
         clientC.connect()
@@ -610,29 +610,29 @@ describe('Server: Web Socket', function () {
       })
     })
 
-    it('client can disconnect', function (done) {
-      api.servers.servers.websocket.connections().length.should.equal(3)
+    it('client can disconnect', (done) => {
+      expect(api.servers.servers.websocket.connections().length).to.equal(3)
       clientA.disconnect()
       clientB.disconnect()
       clientC.disconnect()
-      setTimeout(function () {
-        api.servers.servers.websocket.connections().length.should.equal(0)
+      setTimeout(() => {
+        expect(api.servers.servers.websocket.connections().length).to.equal(0)
         done()
       }, 500)
     })
 
-    it('can be sent disconnect events from the server', function (done) {
-      clientA.detailsView(function (response) {
-        response.data.remoteIP.should.equal('127.0.0.1')
+    it('can be sent disconnect events from the server', (done) => {
+      clientA.detailsView((response) => {
+        expect(response.data.remoteIP).to.equal('127.0.0.1')
 
         var count = 0
         for (var id in api.connections.connections) {
           count++
           api.connections.connections[id].destroy()
         }
-        count.should.equal(3)
+        expect(count).to.equal(3)
 
-        clientA.detailsView(function () {
+        clientA.detailsView(() => {
           throw new Error('should not get response')
         })
 

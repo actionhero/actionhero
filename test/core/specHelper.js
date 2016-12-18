@@ -1,52 +1,52 @@
 'use strict'
 
-var should = require('should')
 let path = require('path')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Core: specHelper', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Core: specHelper', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       done()
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after((done) => {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  it('can make a requset with just params', function (done) {
-    api.specHelper.runAction('randomNumber', function (response) {
-      response.randomNumber.should.be.a.Number
-      response.randomNumber.should.be.within(0, 1)
+  it('can make a requset with just params', (done) => {
+    api.specHelper.runAction('randomNumber', (response) => {
+      expect(response.randomNumber).to.be.at.least(0)
+      expect(response.randomNumber).to.be.at.most(1)
       done()
     })
   })
 
-  it('will stack up messages recieved', function (done) {
-    api.specHelper.runAction('x', {thing: 'stuff'}, function (response, connection) {
-      connection.messages.length.should.equal(2)
-      connection.messages[0].welcome.should.equal('Hello! Welcome to the actionhero api')
-      connection.messages[1].error.should.equal('Error: unknown action or invalid apiVersion')
+  it('will stack up messages recieved', (done) => {
+    api.specHelper.runAction('x', {thing: 'stuff'}, (response, connection) => {
+      expect(connection.messages).to.have.length(2)
+      expect(connection.messages[0].welcome).to.equal('Hello! Welcome to the actionhero api')
+      expect(connection.messages[1].error).to.equal('Error: unknown action or invalid apiVersion')
       done()
     })
   })
 
-  describe('metadata, type-saftey, and errors', function () {
-    before(function () {
+  describe('metadata, type-saftey, and errors', () => {
+    before(() => {
       api.actions.versions.stringResponseTestAction = [1]
       api.actions.actions.stringResponseTestAction = {
         '1': {
           name: 'stringResponseTestAction',
           description: 'stringResponseTestAction',
           version: 1,
-          run: function (api, data, next) {
+          run: (api, data, next) => {
             data.response = 'something response'
             next()
           }
@@ -59,7 +59,7 @@ describe('Core: specHelper', function () {
           name: 'stringErrorTestAction',
           description: 'stringErrorTestAction',
           version: 1,
-          run: function (api, data, next) {
+          run: (api, data, next) => {
             data.response = 'something response'
             next('some error')
           }
@@ -72,7 +72,7 @@ describe('Core: specHelper', function () {
           name: 'arrayResponseTestAction',
           description: 'arrayResponseTestAction',
           version: 1,
-          run: function (api, data, next) {
+          run: (api, data, next) => {
             data.response = [1, 2, 3]
             next()
           }
@@ -85,7 +85,7 @@ describe('Core: specHelper', function () {
           name: 'arrayErrorTestAction',
           description: 'arrayErrorTestAction',
           version: 1,
-          run: function (api, data, next) {
+          run: (api, data, next) => {
             data.response = [1, 2, 3]
             next('some error')
           }
@@ -93,7 +93,7 @@ describe('Core: specHelper', function () {
       }
     })
 
-    after(function () {
+    after(() => {
       delete api.actions.actions.stringResponseTestAction
       delete api.actions.versions.stringResponseTestAction
       delete api.actions.actions.stringErrorTestAction
@@ -104,177 +104,177 @@ describe('Core: specHelper', function () {
       delete api.actions.versions.arrayErrorTestAction
     })
 
-    describe('happy-path', function () {
-      it('if the response payload is an object, it appends metadata', function (done) {
-        api.specHelper.runAction('randomNumber', function (response) {
-          should.not.exist(response.error)
-          should.exist(response.randomNumber)
-          response.messageCount.should.equal(1)
-          response.serverInformation.serverName.should.equal('actionhero')
-          response.requesterInformation.remoteIP.should.equal('testServer')
+    describe('happy-path', () => {
+      it('if the response payload is an object, it appends metadata', (done) => {
+        api.specHelper.runAction('randomNumber', (response) => {
+          expect(response.error).to.not.exist
+          expect(response.randomNumber).to.exist
+          expect(response.messageCount).to.equal(1)
+          expect(response.serverInformation.serverName).to.equal('actionhero')
+          expect(response.requesterInformation.remoteIP).to.equal('testServer')
           done()
         })
       })
 
-      it('if the response payload is a string, it maintains type', function (done) {
-        api.specHelper.runAction('stringResponseTestAction', function (response) {
-          response.should.deepEqual('something response')
-          should.not.exist(response.error)
-          should.not.exist(response.messageCount)
-          should.not.exist(response.serverInformation)
-          should.not.exist(response.requesterInformation)
+      it('if the response payload is a string, it maintains type', (done) => {
+        api.specHelper.runAction('stringResponseTestAction', (response) => {
+          expect(response).to.equal('something response')
+          expect(response.error).to.not.exist
+          expect(response.messageCount).to.not.exist
+          expect(response.serverInformation).to.not.exist
+          expect(response.requesterInformation).to.not.exist
           done()
         })
       })
 
-      it('if the response payload is a array, it maintains type', function (done) {
-        api.specHelper.runAction('arrayResponseTestAction', function (response) {
-          response.should.deepEqual([1, 2, 3])
-          should.not.exist(response.error)
-          should.not.exist(response.messageCount)
-          should.not.exist(response.serverInformation)
-          should.not.exist(response.requesterInformation)
-          done()
-        })
-      })
-    })
-
-    describe('disabling metadata', function () {
-      before(function () { api.specHelper.returnMetadata = false })
-      after(function () { api.specHelper.returnMetadata = true })
-
-      it('if the response payload is an object, it should not append metadata', function (done) {
-        api.specHelper.runAction('randomNumber', function (response) {
-          should.not.exist(response.error)
-          should.exist(response.randomNumber)
-          should.not.exist(response.messageCount)
-          should.not.exist(response.serverInformation)
-          should.not.exist(response.requesterInformation)
+      it('if the response payload is a array, it maintains type', (done) => {
+        api.specHelper.runAction('arrayResponseTestAction', (response) => {
+          expect(response).to.deep.equal([1, 2, 3])
+          expect(response.error).to.not.exist
+          expect(response.messageCount).to.not.exist
+          expect(response.serverInformation).to.not.exist
+          expect(response.requesterInformation).to.not.exist
           done()
         })
       })
     })
 
-    describe('errors', function () {
-      it('if the response payload is an object and there is an error, it appends metadata', function (done) {
-        api.specHelper.runAction('x', function (response) {
-          response.error.should.equal('Error: unknown action or invalid apiVersion')
-          response.messageCount.should.equal(1)
-          response.serverInformation.serverName.should.equal('actionhero')
-          response.requesterInformation.remoteIP.should.equal('testServer')
+    describe('disabling metadata', () => {
+      before(() => { api.specHelper.returnMetadata = false })
+      after(() => { api.specHelper.returnMetadata = true })
+
+      it('if the response payload is an object, it should not append metadata', (done) => {
+        api.specHelper.runAction('randomNumber', (response) => {
+          expect(response.error).to.not.exist
+          expect(response.randomNumber).to.exist
+          expect(response.messageCount).to.not.exist
+          expect(response.serverInformation).to.not.exist
+          expect(response.requesterInformation).to.not.exist
+          done()
+        })
+      })
+    })
+
+    describe('errors', () => {
+      it('if the response payload is an object and there is an error, it appends metadata', (done) => {
+        api.specHelper.runAction('x', (response) => {
+          expect(response.error).to.equal('Error: unknown action or invalid apiVersion')
+          expect(response.messageCount).to.equal(1)
+          expect(response.serverInformation.serverName).to.equal('actionhero')
+          expect(response.requesterInformation.remoteIP).to.equal('testServer')
           done()
         })
       })
 
-      it('if the response payload is a string, just the error will be returned', function (done) {
-        api.specHelper.runAction('stringErrorTestAction', function (response) {
-          response.should.equal('Error: some error')
-          should.not.exist(response.messageCount)
-          should.not.exist(response.serverInformation)
-          should.not.exist(response.requesterInformation)
+      it('if the response payload is a string, just the error will be returned', (done) => {
+        api.specHelper.runAction('stringErrorTestAction', (response) => {
+          expect(response).to.equal('Error: some error')
+          expect(response.messageCount).to.not.exist
+          expect(response.serverInformation).to.not.exist
+          expect(response.requesterInformation).to.not.exist
           done()
         })
       })
 
-      it('if the response payload is a array, just the error will be returned', function (done) {
-        api.specHelper.runAction('arrayErrorTestAction', function (response) {
-          response.should.equal('Error: some error')
-          should.not.exist(response.messageCount)
-          should.not.exist(response.serverInformation)
-          should.not.exist(response.requesterInformation)
+      it('if the response payload is a array, just the error will be returned', (done) => {
+        api.specHelper.runAction('arrayErrorTestAction', (response) => {
+          expect(response).to.equal('Error: some error')
+          expect(response.messageCount).to.not.exist
+          expect(response.serverInformation).to.not.exist
+          expect(response.requesterInformation).to.not.exist
           done()
         })
       })
     })
   })
 
-  describe('test callbacks', function () {
-    it('will not report a broken test as a broken action (sync)', function (done) {
-      api.specHelper.runAction('randomNumber', function (response) {
+  describe('test callbacks', () => {
+    it('will not report a broken test as a broken action (sync)', (done) => {
+      api.specHelper.runAction('randomNumber', (response) => {
         try {
           response.not.a.real.thing
         } catch (e) {
-          String(e).should.equal('TypeError: Cannot read property \'a\' of undefined')
+          expect(String(e)).to.equal('TypeError: Cannot read property \'a\' of undefined')
           done()
         }
       })
     })
 
-    it('will not report a broken test as a broken action (async)', function (done) {
-      api.specHelper.runAction('sleepTest', function (response) {
+    it('will not report a broken test as a broken action (async)', (done) => {
+      api.specHelper.runAction('sleepTest', (response) => {
         try {
-          response.thing.should.equal('this will break')
+          response.not.a.real.thing
         } catch (e) {
-          String(e).should.equal('TypeError: Cannot read property \'should\' of undefined')
+          expect(String(e)).to.equal('TypeError: Cannot read property \'a\' of undefined')
           done()
         }
       })
     })
   })
 
-  describe('files', function () {
-    it('can request file data', function (done) {
-      api.specHelper.getStaticFile('simple.html', function (data) {
-        should.not.exist(data.error)
-        data.content.should.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-        data.mime.should.equal('text/html')
-        data.length.should.equal(101)
+  describe('files', () => {
+    it('can request file data', (done) => {
+      api.specHelper.getStaticFile('simple.html', (data) => {
+        expect(data.error).to.be.null
+        expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        expect(data.mime).to.equal('text/html')
+        expect(data.length).to.equal(101)
         done()
       })
     })
 
-    it('missing files', function (done) {
-      api.specHelper.getStaticFile('missing.html', function (data) {
-        data.error.should.equal('That file is not found')
-        data.mime.should.equal('text/html')
-        should.not.exist(data.content)
+    it('missing files', (done) => {
+      api.specHelper.getStaticFile('missing.html', (data) => {
+        expect(data.error).to.equal('That file is not found')
+        expect(data.mime).to.equal('text/html')
+        expect(data.content).to.be.null
         done()
       })
     })
   })
 
-  describe('persistent test connections', function () {
+  describe('persistent test connections', () => {
     var conn
     var connId
 
-    it('can make a requset with a spec\'d connection', function (done) {
+    it('can make a requset with a spec\'d connection', (done) => {
       conn = new api.specHelper.Connection()
       conn.params = {
         key: 'someKey',
         value: 'someValue'
       }
       connId = conn.id
-      api.specHelper.runAction('cacheTest', conn, function (response, connection) {
-        response.messageCount.should.equal(1)
-        connection.messages.length.should.equal(2)
-        connId.should.equal(connection.id)
-        conn.fingerprint.should.equal(connId)
+      api.specHelper.runAction('cacheTest', conn, (response, connection) => {
+        expect(response.messageCount).to.equal(1)
+        expect(connection.messages).to.have.length(2)
+        expect(connId).to.equal(connection.id)
+        expect(conn.fingerprint).to.equal(connId)
         done()
       })
     })
 
-    it('can make second request', function (done) {
-      api.specHelper.runAction('randomNumber', conn, function (response, connection) {
-        response.messageCount.should.equal(2)
-        connection.messages.length.should.equal(3)
-        connId.should.equal(connection.id)
-        conn.fingerprint.should.equal(connId)
+    it('can make second request', (done) => {
+      api.specHelper.runAction('randomNumber', conn, (response, connection) => {
+        expect(response.messageCount).to.equal(2)
+        expect(connection.messages).to.have.length(3)
+        expect(connId).to.equal(connection.id)
+        expect(conn.fingerprint).to.equal(connId)
         done()
       })
     })
 
-    it('will generate new ids and fingerprints for a new connection', function (done) {
-      api.specHelper.runAction('randomNumber', {}, function (response, connection) {
-        response.messageCount.should.equal(1)
-        connection.id.should.not.equal(connId)
-        connection.fingerprint.should.not.equal(connId)
+    it('will generate new ids and fingerprints for a new connection', (done) => {
+      api.specHelper.runAction('randomNumber', {}, (response, connection) => {
+        expect(response.messageCount).to.equal(1)
+        expect(connection.id).not.to.equal(connId)
+        expect(connection.fingerprint).not.to.equal(connId)
         done()
       })
     })
   })
 
-  describe('tasks', function () {
-    before(function (done) {
+  describe('tasks', () => {
+    before((done) => {
       api.tasks.tasks.testTask = {
         name: 'testTask',
         description: 'task: ' + this.name,
@@ -282,7 +282,7 @@ describe('Core: specHelper', function () {
         frequency: 0,
         plugins: [],
         pluginOptions: {},
-        run: function (api, params, next) {
+        run: (api, params, next) => {
           api.testOutput = 'OK' // test modifying the api pbject
           next('OK')
         }
@@ -292,16 +292,16 @@ describe('Core: specHelper', function () {
       done()
     })
 
-    after(function (done) {
+    after((done) => {
       delete api.testOutput
       delete api.tasks.tasks.testTask
       done()
     })
 
-    it('can run tasks', function (done) {
-      api.specHelper.runTask('testTask', {}, function (response) {
-        response.should.equal('OK')
-        api.testOutput.should.equal('OK')
+    it('can run tasks', (done) => {
+      api.specHelper.runTask('testTask', {}, (response) => {
+        expect(response).to.equal('OK')
+        expect(api.testOutput).to.equal('OK')
         done()
       })
     })

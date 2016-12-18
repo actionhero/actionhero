@@ -4,130 +4,130 @@ var fs = require('fs')
 var os = require('os')
 var path = require('path')
 var async = require('async')
-var should = require('should')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-describe('Core: Cache', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Core: Cache', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       done()
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
+  after((done) => {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  it('cache methods should exist', function (done) {
-    api.cache.should.be.an.instanceOf(Object)
-    api.cache.save.should.be.an.instanceOf(Function)
-    api.cache.load.should.be.an.instanceOf(Function)
-    api.cache.destroy.should.be.an.instanceOf(Function)
+  it('cache methods should exist', (done) => {
+    expect(api.cache).to.be.instanceof(Object)
+    expect(api.cache.save).to.be.instanceof(Function)
+    expect(api.cache.load).to.be.instanceof(Function)
+    expect(api.cache.destroy).to.be.instanceof(Function)
     done()
   })
 
-  it('cache.save', function (done) {
-    api.cache.save('testKey', 'abc123', null, function (error, resp) {
-      should.not.exist(error)
-      resp.should.equal(true)
+  it('cache.save', (done) => {
+    api.cache.save('testKey', 'abc123', null, (error, resp) => {
+      expect(error).to.be.null
+      expect(resp).to.equal(true)
       done()
     })
   })
 
-  it('cache.load', function (done) {
-    api.cache.load('testKey', function (error, resp) {
-      should.not.exist(error)
-      resp.should.equal('abc123')
+  it('cache.load', (done) => {
+    api.cache.load('testKey', (error, resp) => {
+      expect(error).to.be.null
+      expect(resp).to.equal('abc123')
       done()
     })
   })
 
-  it('cache.load failures', function (done) {
-    api.cache.load('something else', function (error, resp) {
-      String(error).should.equal('Error: Object not found')
-      should.equal(null, resp)
+  it('cache.load failures', (done) => {
+    api.cache.load('something else', (error, resp) => {
+      expect(String(error)).to.equal('Error: Object not found')
+      expect(resp).to.be.null
       done()
     })
   })
 
-  it('cache.destroy', function (done) {
-    api.cache.destroy('testKey', function (error, resp) {
-      should.not.exist(error)
-      resp.should.equal(true)
+  it('cache.destroy', (done) => {
+    api.cache.destroy('testKey', (error, resp) => {
+      expect(error).to.be.null
+      expect(resp).to.equal(true)
       done()
     })
   })
 
-  it('cache.destroy failure', function (done) {
-    api.cache.destroy('testKey', function (error, resp) {
-      should.not.exist(error)
-      resp.should.equal(false)
+  it('cache.destroy failure', (done) => {
+    api.cache.destroy('testKey', (error, resp) => {
+      expect(error).to.be.null
+      expect(resp).to.equal(false)
       done()
     })
   })
 
-  it('cache.save with expire time', function (done) {
-    api.cache.save('testKey', 'abc123', 10, function (error, resp) {
-      should.not.exist(error)
-      resp.should.equal(true)
+  it('cache.save with expire time', (done) => {
+    api.cache.save('testKey', 'abc123', 10, (error, resp) => {
+      expect(error).to.be.null
+      expect(resp).to.equal(true)
       done()
     })
   })
 
-  it('cache.load with expired items should not return them', function (done) {
-    api.cache.save('testKey_slow', 'abc123', 10, function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
-      setTimeout(function () {
-        api.cache.load('testKey_slow', function (error, loadResp) {
-          String(error).should.equal('Error: Object Expired')
-          should.equal(null, loadResp)
+  it('cache.load with expired items should not return them', (done) => {
+    api.cache.save('testKey_slow', 'abc123', 10, (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
+      setTimeout(() => {
+        api.cache.load('testKey_slow', (error, loadResp) => {
+          expect(String(error)).to.equal('Error: Object Expired')
+          expect(loadResp).to.not.exist
           done()
         })
       }, 20)
     })
   })
 
-  it('cache.load with negative expire times will never load', function (done) {
-    api.cache.save('testKeyInThePast', 'abc123', -1, function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
-      api.cache.load('testKeyInThePast', function (error, loadResp) {
-        (String(error).indexOf('Error: Object') >= 0).should.equal(true)
-        should.equal(null, loadResp)
+  it('cache.load with negative expire times will never load', (done) => {
+    api.cache.save('testKeyInThePast', 'abc123', -1, (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
+      api.cache.load('testKeyInThePast', (error, loadResp) => {
+        expect(String(error)).to.match(/Error: Object/)
+        expect(loadResp).to.not.exist
         done()
       })
     })
   })
 
-  it('cache.save does not need to pass expireTime', function (done) {
-    api.cache.save('testKeyForNullExpireTime', 'abc123', function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
-      api.cache.load('testKeyForNullExpireTime', function (error, loadResp) {
-        should.not.exist(error)
-        loadResp.should.equal('abc123')
+  it('cache.save does not need to pass expireTime', (done) => {
+    api.cache.save('testKeyForNullExpireTime', 'abc123', (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
+      api.cache.load('testKeyForNullExpireTime', (error, loadResp) => {
+        expect(error).to.be.null
+        expect(loadResp).to.equal('abc123')
         done()
       })
     })
   })
 
-  it('cache.load without changing the expireTime will re-apply the redis expire', function (done) {
+  it('cache.load without changing the expireTime will re-apply the redis expire', (done) => {
     var key = 'testKey'
-    api.cache.save(key, 'val', 1000, function () {
-      api.cache.load(key, function (error, loadResp) {
-        should.not.exist(error)
-        loadResp.should.equal('val')
-        setTimeout(function () {
-          api.cache.load(key, function (error, loadResp) {
-            String(error).should.equal('Error: Object not found')
-            should.equal(null, loadResp)
+    api.cache.save(key, 'val', 1000, () => {
+      api.cache.load(key, (error, loadResp) => {
+        expect(error).to.be.null
+        expect(loadResp).to.equal('val')
+        setTimeout(() => {
+          api.cache.load(key, (error, loadResp) => {
+            expect(String(error)).to.match(/Error: Object not found/)
+            expect(loadResp).to.be.null
             done()
           })
         }, 1001)
@@ -135,28 +135,28 @@ describe('Core: Cache', function () {
     })
   })
 
-  it('cache.load with options that extending expireTime should return cached item', function (done) {
+  it('cache.load with options that extending expireTime should return cached item', (done) => {
     var expireTime = 400
     var timeout = 200
     // save the initial key
-    api.cache.save('testKey_slow', 'abc123', expireTime, function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
+    api.cache.save('testKey_slow', 'abc123', expireTime, (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
       // wait for `timeout` and try to load the key
-      setTimeout(function () {
-        api.cache.load('testKey_slow', {expireTimeMS: expireTime}, function (error, loadResp) {
-          should.not.exist(error)
-          loadResp.should.equal('abc123')
+      setTimeout(() => {
+        api.cache.load('testKey_slow', {expireTimeMS: expireTime}, (error, loadResp) => {
+          expect(error).to.be.null
+          expect(loadResp).to.equal('abc123')
           // wait another `timeout` and load the key again within the extended expire time
-          setTimeout(function () {
-            api.cache.load('testKey_slow', function (error, loadResp) {
-              should.not.exist(error)
-              loadResp.should.equal('abc123')
+          setTimeout(() => {
+            api.cache.load('testKey_slow', (error, loadResp) => {
+              expect(error).to.be.null
+              expect(loadResp).to.equal('abc123')
               // wait another `timeout` and the key load should fail without the extension
-              setTimeout(function () {
-                api.cache.load('testKey_slow', function (error, loadResp) {
-                  String(error).should.equal('Error: Object not found')
-                  should.equal(null, loadResp)
+              setTimeout(() => {
+                api.cache.load('testKey_slow', (error, loadResp) => {
+                  expect(String(error)).to.equal('Error: Object not found')
+                  expect(loadResp).to.be.null
                   done()
                 })
               }, timeout)
@@ -167,47 +167,47 @@ describe('Core: Cache', function () {
     })
   })
 
-  it('cache.save works with arrays', function (done) {
-    api.cache.save('array_key', [1, 2, 3], function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
-      api.cache.load('array_key', function (error, loadResp) {
-        should.not.exist(error)
-        loadResp[0].should.equal(1)
-        loadResp[1].should.equal(2)
-        loadResp[2].should.equal(3)
+  it('cache.save works with arrays', (done) => {
+    api.cache.save('array_key', [1, 2, 3], (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
+      api.cache.load('array_key', (error, loadResp) => {
+        expect(error).to.be.null
+        expect(loadResp[0]).to.equal(1)
+        expect(loadResp[1]).to.equal(2)
+        expect(loadResp[2]).to.equal(3)
         done()
       })
     })
   })
 
-  it('cache.save works with objects', function (done) {
+  it('cache.save works with objects', (done) => {
     var data = {}
     data.thing = 'stuff'
     data.otherThing = [1, 2, 3]
-    api.cache.save('obj_key', data, function (error, saveResp) {
-      should.not.exist(error)
-      saveResp.should.equal(true)
-      api.cache.load('obj_key', function (error, loadResp) {
-        should.not.exist(error)
-        loadResp.thing.should.equal('stuff')
-        loadResp.otherThing[0].should.equal(1)
-        loadResp.otherThing[1].should.equal(2)
-        loadResp.otherThing[2].should.equal(3)
+    api.cache.save('obj_key', data, (error, saveResp) => {
+      expect(error).to.be.null
+      expect(saveResp).to.equal(true)
+      api.cache.load('obj_key', (error, loadResp) => {
+        expect(error).to.be.null
+        expect(loadResp.thing).to.equal('stuff')
+        expect(loadResp.otherThing[0]).to.equal(1)
+        expect(loadResp.otherThing[1]).to.equal(2)
+        expect(loadResp.otherThing[2]).to.equal(3)
         done()
       })
     })
   })
 
-  it('can clear the cache entirely', function (done) {
-    api.cache.save('thingA', 123, function () {
-      api.cache.size(function (error, count) {
-        should.not.exist(error);
-        (count > 0).should.equal(true)
-        api.cache.clear(function () {
-          api.cache.size(function (error, count) {
-            should.not.exist(error)
-            count.should.equal(0)
+  it('can clear the cache entirely', (done) => {
+    api.cache.save('thingA', 123, () => {
+      api.cache.size((error, count) => {
+        expect(error).to.be.null
+        expect(count > 0).to.equal(true)
+        api.cache.clear(() => {
+          api.cache.size((error, count) => {
+            expect(error).to.be.null
+            expect(count).to.equal(0)
             done()
           })
         })
@@ -215,166 +215,164 @@ describe('Core: Cache', function () {
     })
   })
 
-  describe('lists', function () {
-    it('can push and pop from an array', function (done) {
+  describe('lists', () => {
+    it('can push and pop from an array', (done) => {
       var jobs = []
 
-      jobs.push(function (next) { api.cache.push('testListKey', 'a string', next) })
-      jobs.push(function (next) { api.cache.push('testListKey', ['an array'], next) })
-      jobs.push(function (next) { api.cache.push('testListKey', {what: 'an aobject'}, next) })
-      async.parallel(jobs, function (error) {
-        should.not.exist(error)
+      jobs.push((next) => { api.cache.push('testListKey', 'a string', next) })
+      jobs.push((next) => { api.cache.push('testListKey', ['an array'], next) })
+      jobs.push((next) => { api.cache.push('testListKey', {what: 'an aobject'}, next) })
+      async.parallel(jobs, (error) => {
+        expect(error).to.be.null
         jobs = []
 
-        jobs.push(function (next) {
-          api.cache.pop('testListKey', function (error, data) {
-            should.not.exist(error)
-            data.should.equal('a string')
+        jobs.push((next) => {
+          api.cache.pop('testListKey', (error, data) => {
+            expect(error).to.be.null
+            expect(data).to.equal('a string')
             next()
           })
         })
-        jobs.push(function (next) {
-          api.cache.pop('testListKey', function (error, data) {
-            should.not.exist(error)
-            data.should.deepEqual(['an array'])
+        jobs.push((next) => {
+          api.cache.pop('testListKey', (error, data) => {
+            expect(error).to.be.null
+            expect(data).to.deep.equal(['an array'])
             next()
           })
         })
-        jobs.push(function (next) {
-          api.cache.pop('testListKey', function (error, data) {
-            should.not.exist(error)
-            data.should.deepEqual({what: 'an aobject'})
+        jobs.push((next) => {
+          api.cache.pop('testListKey', (error, data) => {
+            expect(error).to.be.null
+            expect(data).to.deep.equal({what: 'an aobject'})
             next()
           })
         })
 
-        async.series(jobs, function (error) {
-          should.not.exist(error)
+        async.series(jobs, (error) => {
+          expect(error).to.be.null
           done()
         })
       })
     })
 
-    it('will return null if the list is empty', function (done) {
-      api.cache.pop('emptyListKey', function (error, data) {
-        should.not.exist(error)
-        should.not.exist(data)
+    it('will return undefined if the list is empty', (done) => {
+      api.cache.pop('emptyListKey', (error, data) => {
+        expect(error).to.not.exist
+        expect(data).to.not.exist
         done()
       })
     })
 
-    it('can get the length of an array when full', function (done) {
-      api.cache.push('testListKey2', 'a string', function () {
-        api.cache.listLength('testListKey2', function (error, l) {
-          should.not.exist(error)
-          l.should.equal(1)
+    it('can get the length of an array when full', (done) => {
+      api.cache.push('testListKey2', 'a string', () => {
+        api.cache.listLength('testListKey2', (error, l) => {
+          expect(error).to.be.null
+          expect(l).to.equal(1)
           done()
         })
       })
     })
 
-    it('will return 0 length when the key does not exist', function (done) {
-      api.cache.listLength('testListKey3', function (error, l) {
-        should.not.exist(error)
-        l.should.equal(0)
+    it('will return 0 length when the key does not exist', (done) => {
+      api.cache.listLength('testListKey3', (error, l) => {
+        expect(error).to.be.null
+        expect(l).to.equal(0)
         done()
       })
     })
   })
 
-  describe('locks', function () {
+  describe('locks', () => {
     var key = 'testKey'
-    afterEach(function (done) {
+    afterEach((done) => {
       api.cache.lockName = api.id
-      api.cache.unlock(key, function () {
-        done()
-      })
+      api.cache.unlock(key, done)
     })
 
-    it('things can be locked, checked, and unlocked aribitrarily', function (done) {
-      api.cache.lock(key, 100, function (error, lockOk) {
-        should.not.exist(error)
-        lockOk.should.equal(true)
-        api.cache.checkLock(key, null, function (error, lockOk) {
-          should.not.exist(error)
-          lockOk.should.equal(true)
-          api.cache.unlock(key, function (error, lockOk) {
-            should.not.exist(error)
-            lockOk.should.equal(true)
+    it('things can be locked, checked, and unlocked aribitrarily', (done) => {
+      api.cache.lock(key, 100, (error, lockOk) => {
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
+        api.cache.checkLock(key, null, (error, lockOk) => {
+          expect(error).to.be.null
+          expect(lockOk).to.equal(true)
+          api.cache.unlock(key, (error, lockOk) => {
+            expect(error).to.be.null
+            expect(lockOk).to.equal(true)
             done()
           })
         })
       })
     })
 
-    it('locks have a TTL and the default will be assumed from config', function (done) {
-      api.cache.lock(key, null, function (error, lockOk) {
-        should.not.exist(error)
-        lockOk.should.equal(true)
-        api.redis.clients.client.ttl(api.cache.lockPrefix + key, function (error, ttl) {
-          should.not.exist(error);
-          (ttl >= 9).should.equal(true);
-          (ttl <= 10).should.equal(true)
+    it('locks have a TTL and the default will be assumed from config', (done) => {
+      api.cache.lock(key, null, (error, lockOk) => {
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
+        api.redis.clients.client.ttl(api.cache.lockPrefix + key, (error, ttl) => {
+          expect(error).to.be.null
+          expect(ttl >= 9).to.equal(true)
+          expect(ttl <= 10).to.equal(true)
           done()
         })
       })
     })
 
-    it('you can save an item if you do hold the lock', function (done) {
-      api.cache.lock(key, null, function (error, lockOk) {
-        should.not.exist(error)
-        lockOk.should.equal(true)
-        api.cache.save(key, 'value', function (error, success) {
-          should.not.exist(error)
-          success.should.equal(true)
+    it('you can save an item if you do hold the lock', (done) => {
+      api.cache.lock(key, null, (error, lockOk) => {
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
+        api.cache.save(key, 'value', (error, success) => {
+          expect(error).to.be.null
+          expect(success).to.equal(true)
           done()
         })
       })
     })
 
-    it('you cannot save a locked item if you do not hold the lock', function (done) {
-      api.cache.lock(key, null, function (error, lockOk) {
-        should.not.exist(error)
-        lockOk.should.equal(true)
+    it('you cannot save a locked item if you do not hold the lock', (done) => {
+      api.cache.lock(key, null, (error, lockOk) => {
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
         api.cache.lockName = 'otherId'
-        api.cache.save(key, 'value', function (error) {
-          String(error).should.equal('Error: Object Locked')
+        api.cache.save(key, 'value', (error) => {
+          expect(String(error)).to.equal('Error: Object Locked')
           done()
         })
       })
     })
 
-    it('you cannot destroy a locked item if you do not hold the lock', function (done) {
-      api.cache.lock(key, null, function (error, lockOk) {
-        should.not.exist(error)
-        lockOk.should.equal(true)
+    it('you cannot destroy a locked item if you do not hold the lock', (done) => {
+      api.cache.lock(key, null, (error, lockOk) => {
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
         api.cache.lockName = 'otherId'
-        api.cache.destroy(key, function (error) {
-          String(error).should.equal('Error: Object Locked')
+        api.cache.destroy(key, (error) => {
+          expect(String(error)).to.equal('Error: Object Locked')
           done()
         })
       })
     })
 
-    it('you can opt to retry to obtain a lock if a lock is held (READ)', function (done) {
-      api.cache.lock(key, 1, function (error, lockOk) { // will be rounded up to 1s
-        should.not.exist(error)
-        lockOk.should.equal(true)
-        api.cache.save(key, 'value', function (error, success) {
-          should.not.exist(error)
-          success.should.equal(true)
+    it('you can opt to retry to obtain a lock if a lock is held (READ)', (done) => {
+      api.cache.lock(key, 1, (error, lockOk) => { // will be rounded up to 1s
+        expect(error).to.be.null
+        expect(lockOk).to.equal(true)
+        api.cache.save(key, 'value', (error, success) => {
+          expect(error).to.be.null
+          expect(success).to.equal(true)
 
           api.cache.lockName = 'otherId'
-          api.cache.checkLock(key, null, function (error, lockOk) {
-            should.not.exist(error)
-            lockOk.should.equal(false)
+          api.cache.checkLock(key, null, (error, lockOk) => {
+            expect(error).to.be.null
+            expect(lockOk).to.equal(false)
 
             var start = new Date().getTime()
-            api.cache.load(key, {retry: 2000}, function (error, data) {
-              should.not.exist(error)
-              data.should.equal('value')
-              var delta = new Date().getTime() - start;
-              (delta >= 1000).should.equal(true)
+            api.cache.load(key, {retry: 2000}, (error, data) => {
+              expect(error).to.be.null
+              expect(data).to.equal('value')
+              var delta = new Date().getTime() - start
+              expect(delta >= 1000).to.equal(true)
               done()
             })
           })
@@ -382,29 +380,29 @@ describe('Core: Cache', function () {
       })
     })
 
-    describe('locks are actually blocking', function () {
+    describe('locks are actually blocking', () => {
       var originalLockName
 
-      before(function () {
+      before(() => {
         originalLockName = api.cache.lockName
       })
 
-      after(function () {
+      after(() => {
         api.cache.lockName = originalLockName
       })
 
-      it('locks are actually blocking', function (done) {
+      it('locks are actually blocking', (done) => {
         var key = 'test'
         var locksRetrieved = 0
         var locksRejected = 0
         var concurentLocksCount = 100
         var jobs = []
 
-        var go = function (next) {
+        var go = (next) => {
           // proxy for another actionhero instance accessing the same locked object
           api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected)
 
-          api.cache.checkLock(key, null, function (error, lockOk) {
+          api.cache.checkLock(key, null, (error, lockOk) => {
             if (error) { return next(error) }
 
             if (lockOk) {
@@ -421,43 +419,43 @@ describe('Core: Cache', function () {
           jobs.push(go)
         }
 
-        async.series(jobs, function (error) {
-          should.not.exist(error)
-          locksRetrieved.should.be.equal(1) // Only first atempt
-          locksRejected.should.be.equal(concurentLocksCount - 1) // Everything else
+        async.series(jobs, (error) => {
+          expect(error).to.be.null
+          expect(locksRetrieved).to.equal(1) // Only first atempt
+          expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
           done()
         })
       })
     })
   })
 
-  describe('cache dump files', function () {
+  describe('cache dump files', () => {
     if (typeof os.tmpdir !== 'function') { os.tmpdir = os.tmpDir } // resolution for node v0.8.x
     var file = os.tmpdir() + path.sep + 'cacheDump'
 
-    it('can read write the cache to a dump file', function (done) {
-      api.cache.clear(function () {
-        api.cache.save('thingA', 123, function () {
-          api.cache.dumpWrite(file, function (error, count) {
-            should.not.exist(error)
-            count.should.equal(1)
+    it('can read write the cache to a dump file', (done) => {
+      api.cache.clear(() => {
+        api.cache.save('thingA', 123, () => {
+          api.cache.dumpWrite(file, (error, count) => {
+            expect(error).to.be.null
+            expect(count).to.equal(1)
             var body = JSON.parse(String(fs.readFileSync(file)))
             var content = JSON.parse(body['actionhero:cache:thingA'])
-            content.value.should.equal(123)
+            expect(content.value).to.equal(123)
             done()
           })
         })
       })
     })
 
-    it('can laod the cache from a dump file', function (done) {
-      api.cache.clear(function () {
-        api.cache.dumpRead(file, function (error, count) {
-          should.not.exist(error)
-          count.should.equal(1)
-          api.cache.load('thingA', function (error, value) {
-            should.not.exist(error)
-            value.should.equal(123)
+    it('can laod the cache from a dump file', (done) => {
+      api.cache.clear(() => {
+        api.cache.dumpRead(file, (error, count) => {
+          expect(error).to.be.null
+          expect(count).to.equal(1)
+          api.cache.load('thingA', (error, value) => {
+            expect(error).to.be.null
+            expect(value).to.equal(123)
             done()
           })
         })

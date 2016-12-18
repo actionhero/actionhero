@@ -112,7 +112,7 @@ module.exports = {
 
       validateTask: function (task) {
         const fail = (msg) => {
-          api.log(msg + '; exiting.', 'emerg')
+          api.log(msg, 'emerg')
         }
 
         if (typeof task.name !== 'string' || task.name.length < 1) {

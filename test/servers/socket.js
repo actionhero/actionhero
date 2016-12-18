@@ -1,8 +1,8 @@
 'use strict'
 
 var uuid = require('uuid')
-var should = require('should')
 let path = require('path')
+var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -14,7 +14,7 @@ var client3 = {}
 
 var client2Details = {}
 
-function makeSocketRequest (thisClient, message, cb, delimiter) {
+var makeSocketRequest = function (thisClient, message, cb, delimiter) {
   var lines = []
   var counter = 0
 
@@ -22,14 +22,14 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
     delimiter = '\r\n'
   }
 
-  var rsp = function (d) {
-    d.split(delimiter).forEach(function (l) {
+  var rsp = (d) => {
+    d.split(delimiter).forEach((l) => {
       lines.push(l)
     })
     lines.push()
   }
 
-  var respoder = function () {
+  var respoder = () => {
     if (lines.length === 0 && counter < 20) {
       counter++
       return setTimeout(respoder, 10)
@@ -49,64 +49,61 @@ function makeSocketRequest (thisClient, message, cb, delimiter) {
 }
 
 var connectClients = function (callback) {
-  setTimeout(function () {
-    callback()
-  }, 1000)
-
-  client = net.connect(api.config.servers.socket.port, function () {
+  setTimeout(callback, 1000)
+  client = net.connect(api.config.servers.socket.port, () => {
     client.setEncoding('utf8')
   })
-  client2 = net.connect(api.config.servers.socket.port, function () {
+  client2 = net.connect(api.config.servers.socket.port, () => {
     client2.setEncoding('utf8')
   })
-  client3 = net.connect(api.config.servers.socket.port, function () {
+  client3 = net.connect(api.config.servers.socket.port, () => {
     client3.setEncoding('utf8')
   })
 }
 
-describe('Server: Socket', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
+describe('Server: Socket', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
       api = a
       connectClients(done)
     })
   })
 
-  after(function (done) {
+  after((done) => {
     client.write('quit\r\n')
     client2.write('quit\r\n')
     client3.write('quit\r\n')
-    actionhero.stop(function () {
+    actionhero.stop(() => {
       done()
     })
   })
 
-  it('socket connections should be able to connect and get JSON', function (done) {
-    makeSocketRequest(client, 'hello', function (response) {
-      response.should.be.an.instanceOf(Object)
-      response.error.should.equal('unknown action or invalid apiVersion')
+  it('socket connections should be able to connect and get JSON', (done) => {
+    makeSocketRequest(client, 'hello', (response) => {
+      expect(response).to.be.instanceof(Object)
+      expect(response.error).to.equal('unknown action or invalid apiVersion')
       done()
     })
   })
 
-  it('single string message are treated as actions', function (done) {
-    makeSocketRequest(client, 'status', function (response) {
-      response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server')
+  it('single string message are treated as actions', (done) => {
+    makeSocketRequest(client, 'status', (response) => {
+      expect(response).to.be.instanceof(Object)
+      expect(response.id).to.equal('test-server-' + process.pid)
       done()
     })
   })
 
-  it('stringified JSON can also be sent as actions', function (done) {
-    makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), function (response) {
-      response.should.be.an.instanceOf(Object)
-      response.id.should.equal('test-server')
+  it('stringified JSON can also be sent as actions', (done) => {
+    makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}), (response) => {
+      expect(response).to.be.instanceof(Object)
+      expect(response.id).to.equal('test-server-' + process.pid)
       done()
     })
   })
 
-  it('really long messages are OK', function (done) {
+  it('really long messages are OK', (done) => {
     var msg = {
       action: 'cacheTest',
       params: {
@@ -114,93 +111,95 @@ describe('Server: Socket', function () {
         value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
       }
     }
-    makeSocketRequest(client, JSON.stringify(msg), function (response) {
-      response.cacheTestResults.loadResp.key.should.eql('cacheTest_' + msg.params.key)
-      response.cacheTestResults.loadResp.value.should.eql(msg.params.value)
+    makeSocketRequest(client, JSON.stringify(msg), (response) => {
+      expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_' + msg.params.key)
+      expect(response.cacheTestResults.loadResp.value).to.equal(msg.params.value)
       done()
     })
   })
 
-  it('I can get my details', function (done) {
-    makeSocketRequest(client2, 'detailsView', function (response) {
-      response.status.should.equal('OK')
-      response.data.should.be.an.instanceOf(Object)
-      response.data.params.should.be.an.instanceOf(Object)
-      response.data.connectedAt.should.be.within(10, new Date().getTime())
-      response.data.id.should.equal(response.data.fingerprint)
+  it('I can get my details', (done) => {
+    makeSocketRequest(client2, 'detailsView', (response) => {
+      var now = new Date().getTime()
+      expect(response.status).to.equal('OK')
+      expect(response.data).to.be.instanceof(Object)
+      expect(response.data.params).to.be.instanceof(Object)
+      expect(response.data.connectedAt).to.be.at.least(now - 5000)
+      expect(response.data.connectedAt).to.be.at.most(now)
+      expect(response.data.id).to.equal(response.data.fingerprint)
       client2Details = response.data // save for later!
       done()
     })
   })
 
-  it('params can be updated', function (done) {
-    makeSocketRequest(client, 'paramAdd key=otherKey', function (response) {
-      response.status.should.equal('OK')
-      makeSocketRequest(client, 'paramsView', function (response) {
-        response.data.key.should.equal('otherKey')
+  it('params can be updated', (done) => {
+    makeSocketRequest(client, 'paramAdd key=otherKey', (response) => {
+      expect(response.status).to.equal('OK')
+      makeSocketRequest(client, 'paramsView', (response) => {
+        expect(response.data.key).to.equal('otherKey')
         done()
       })
     })
   })
 
-  it('actions will fail without proper params set to the connection', function (done) {
-    makeSocketRequest(client, 'paramDelete key', function () {
-      makeSocketRequest(client, 'cacheTest', function (response) {
-        response.error.should.equal('key is a required parameter for this action')
+  it('actions will fail without proper params set to the connection', (done) => {
+    makeSocketRequest(client, 'paramDelete key', () => {
+      makeSocketRequest(client, 'cacheTest', (response) => {
+        expect(response.error).to.equal('key is a required parameter for this action')
         done()
       })
     })
   })
 
-  it('a new param can be added', function (done) {
-    makeSocketRequest(client, 'paramAdd key=socketTestKey', function (response) {
-      response.status.should.equal('OK')
+  it('a new param can be added', (done) => {
+    makeSocketRequest(client, 'paramAdd key=socketTestKey', (response) => {
+      expect(response.status).to.equal('OK')
       done()
     })
   })
 
-  it('a new param can be viewed once added', function (done) {
-    makeSocketRequest(client, 'paramView key', function (response) {
-      response.data.should.equal('socketTestKey')
+  it('a new param can be viewed once added', (done) => {
+    makeSocketRequest(client, 'paramView key', (response) => {
+      expect(response.data).to.equal('socketTestKey')
       done()
     })
   })
 
-  it('another new param can be added', function (done) {
-    makeSocketRequest(client, 'paramAdd value=abc123', function (response) {
-      response.status.should.equal('OK')
+  it('another new param can be added', (done) => {
+    makeSocketRequest(client, 'paramAdd value=abc123', (response) => {
+      expect(response.status).to.equal('OK')
       done()
     })
   })
 
-  it('actions will work once all the needed params are added', function (done) {
-    makeSocketRequest(client, 'cacheTest', function (response) {
-      response.cacheTestResults.saveResp.should.equal(true)
+  it('actions will work once all the needed params are added', (done) => {
+    makeSocketRequest(client, 'cacheTest', (response) => {
+      expect(response.cacheTestResults.saveResp).to.equal(true)
       done()
     })
   })
 
-  it('params are sticky between actions', function (done) {
-    makeSocketRequest(client, 'cacheTest', function (response) {
-      should.not.exist(response.error)
-      response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey')
-      response.cacheTestResults.loadResp.value.should.equal('abc123')
-      makeSocketRequest(client, 'cacheTest', function (response) {
-        response.cacheTestResults.loadResp.key.should.equal('cacheTest_socketTestKey')
-        response.cacheTestResults.loadResp.value.should.equal('abc123')
+  it('params are sticky between actions', (done) => {
+    makeSocketRequest(client, 'cacheTest', (response) => {
+      expect(response.error).to.not.exist
+      expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_socketTestKey')
+      expect(response.cacheTestResults.loadResp.value).to.equal('abc123')
+      makeSocketRequest(client, 'cacheTest', (response) => {
+        expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_socketTestKey')
+        expect(response.cacheTestResults.loadResp.value).to.equal('abc123')
         done()
       })
     })
   })
 
-  it('only params sent in a JSON block are used', function (done) {
-    makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), function (response) {
-      response.error.should.equal('value is a required parameter for this action')
+  it('only params sent in a JSON block are used', (done) => {
+    makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}), (response) => {
+      expect(response.error).to.equal('value is a required parameter for this action')
       done()
     })
   })
 
-  it('will limit how many simultaneous connections I can have', function (done) {
+  it('will limit how many simultaneous connections I can have', (done) => {
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 500}}) + '\r\n')
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 600}}) + '\r\n')
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 700}}) + '\r\n')
@@ -210,7 +209,7 @@ describe('Server: Socket', function () {
 
     var responses = []
     var checkResponses = function (data) {
-      data.split('\n').forEach(function (line) {
+      data.split('\n').forEach((line) => {
         if (line.length > 0) {
           responses.push(JSON.parse(line))
         }
@@ -220,9 +219,9 @@ describe('Server: Socket', function () {
         for (var i in responses) {
           var response = responses[i]
           if (i === '0') {
-            response.error.should.eql('you have too many pending requests')
+            expect(response.error).to.equal('you have too many pending requests')
           } else {
-            should.not.exist(response.error)
+            expect(response.error).to.not.exist
           }
         }
         done()
@@ -232,7 +231,7 @@ describe('Server: Socket', function () {
     client.on('data', checkResponses)
   })
 
-  it('will error If received data length is bigger then maxDataLength', function (done) {
+  it('will error If received data length is bigger then maxDataLength', (done) => {
     api.config.servers.socket.maxDataLength = 64
 
     var msg = {
@@ -242,44 +241,46 @@ describe('Server: Socket', function () {
         value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
       }
     }
-    makeSocketRequest(client, JSON.stringify(msg), function (response) {
-      response.should.containEql({status: 'error', error: 'data length is too big (64 received/449 max)'})
+
+    makeSocketRequest(client, JSON.stringify(msg), (response) => {
+      expect(response.status).to.equal('error')
+      expect(response.error).to.equal('data length is too big (64 received/449 max)')
       // Return maxDataLength back to normal
       api.config.servers.socket.maxDataLength = 0
       done()
     })
   })
 
-  describe('custom data delimiter', function () {
-    after(function (done) {
+  describe('custom data delimiter', () => {
+    after((done) => {
       // Return the config back to normal so we don't error other tests
       api.config.servers.socket.delimiter = '\n'
       done()
     })
 
-    it('will parse /newline data delimiter', function (done) {
+    it('will parse /newline data delimiter', (done) => {
       api.config.servers.socket.delimiter = '\n'
-      makeSocketRequest(client, JSON.stringify({action: 'status'}), function (response) {
-        response.context.should.equal('response')
+      makeSocketRequest(client, JSON.stringify({action: 'status'}), (response) => {
+        expect(response.context).to.equal('response')
         done()
       }, '\n')
     })
 
-    it('will parse custom `^]` data delimiter', function (done) {
+    it('will parse custom `^]` data delimiter', (done) => {
       api.config.servers.socket.delimiter = '^]'
-      makeSocketRequest(client, JSON.stringify({action: 'status'}), function (response) {
-        response.context.should.equal('response')
+      makeSocketRequest(client, JSON.stringify({action: 'status'}), (response) => {
+        expect(response.context).to.equal('response')
         done()
       }, '^]')
     })
   })
 
-  describe('chat', function () {
-    before(function (done) {
+  describe('chat', () => {
+    before((done) => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
         join: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -288,7 +289,7 @@ describe('Server: Socket', function () {
       api.chatRoom.addMiddleware({
         name: 'leave chat middleware',
         leave: function (connection, room, callback) {
-          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, function (e) {
+          api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, (e) => {
             callback()
           })
         }
@@ -297,82 +298,104 @@ describe('Server: Socket', function () {
       done()
     })
 
-    after(function (done) {
+    after((done) => {
       api.chatRoom.middleware = {}
       api.chatRoom.globalMiddleware = []
 
       done()
     })
 
-    beforeEach(function (done) {
+    beforeEach((done) => {
       makeSocketRequest(client, 'roomAdd defaultRoom')
       makeSocketRequest(client2, 'roomAdd defaultRoom')
       makeSocketRequest(client3, 'roomAdd defaultRoom')
-      setTimeout(function () {
-        done()
-      }, 250)
+      setTimeout(done, 250)
     })
 
-    afterEach(function (done) {
-      ['defaultRoom', 'otherRoom'].forEach(function (room) {
+    afterEach((done) => {
+      ['defaultRoom', 'otherRoom'].forEach((room) => {
         makeSocketRequest(client, 'roomLeave ' + room)
         makeSocketRequest(client2, 'roomLeave ' + room)
         makeSocketRequest(client3, 'roomLeave ' + room)
       })
-      setTimeout(function () {
-        done()
-      }, 250)
+      setTimeout(done, 250)
     })
 
-    it('clients are in the default room', function (done) {
-      makeSocketRequest(client, 'roomView defaultRoom', function (response) {
-        response.data.room.should.equal('defaultRoom')
+    it('clients are in the default room', (done) => {
+      makeSocketRequest(client, 'roomView defaultRoom', (response) => {
+        expect(response.data.room).to.equal('defaultRoom')
         done()
       })
     })
 
-    it('clients can view additional info about rooms they are in', function (done) {
-      makeSocketRequest(client, 'roomView defaultRoom', function (response) {
-        response.data.membersCount.should.equal(3)
+    it('clients can view additional info about rooms they are in', (done) => {
+      makeSocketRequest(client, 'roomView defaultRoom', (response) => {
+        expect(response.data.membersCount).to.equal(3)
         done()
       })
     })
 
-    it('rooms can be changed', function (done) {
-      makeSocketRequest(client, 'roomAdd otherRoom', function () {
-        makeSocketRequest(client, 'roomLeave defaultRoom', function (response) {
-          response.status.should.equal('OK')
-          makeSocketRequest(client, 'roomView otherRoom', function (response) {
-            response.data.room.should.equal('otherRoom')
+    it('rooms can be changed', (done) => {
+      makeSocketRequest(client, 'roomAdd otherRoom', () => {
+        makeSocketRequest(client, 'roomLeave defaultRoom', (response) => {
+          expect(response.status).to.equal('OK')
+          makeSocketRequest(client, 'roomView otherRoom', (response) => {
+            expect(response.data.room).to.equal('otherRoom')
+            expect(response.data.membersCount).to.equal(1)
             done()
           })
         })
       })
     })
 
-    it('connections in the first room see the count go down', function (done) {
-      makeSocketRequest(client, 'roomAdd   otherRoom', function () {
-        makeSocketRequest(client, 'roomLeave defaultRoom', function () {
-          makeSocketRequest(client2, 'roomView defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
-            response.data.membersCount.should.equal(2)
+    it('connections in the first room see the count go down', (done) => {
+      makeSocketRequest(client, 'roomAdd   otherRoom', () => {
+        makeSocketRequest(client, 'roomLeave defaultRoom', () => {
+          makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
+            expect(response.data.membersCount).to.equal(2)
             done()
           })
         })
       })
     })
 
-    describe('custom room member data', function () {
+    it('folks in my room hear what I say (and say works)', (done) => {
+      makeSocketRequest(client3, '', (response) => {
+        expect(response.message).to.equal('hello?')
+        done()
+      })
+
+      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
+    })
+
+    it('folks NOT in my room DON\'T hear what I say', (done) => {
+      makeSocketRequest(client, 'roomLeave defaultRoom', () => {
+        makeSocketRequest(client, '', (response) => {
+          expect(response).to.be.null
+          done()
+        })
+        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
+      })
+    })
+
+    it('I can get my id', (done) => {
+      makeSocketRequest(client, 'detailsView' + '\r\n', (response) => {
+        done()
+      })
+    })
+
+    describe('custom room member data', () => {
       var currentSanitize
       var currentGenerate
 
-      before(function (done) {
+      before((done) => {
         // Ensure that default behavior works
-        makeSocketRequest(client2, 'roomAdd defaultRoom', function (response) {
-          makeSocketRequest(client2, 'roomView defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+        makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
+          makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).to.not.exist
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 
@@ -401,7 +424,7 @@ describe('Server: Socket', function () {
         })
       })
 
-      after(function (done) {
+      after((done) => {
         api.chatRoom.joinCallbacks = {}
         api.chatRoom.leaveCallbacks = {}
 
@@ -409,11 +432,11 @@ describe('Server: Socket', function () {
         api.chatRoom.generateMemberDetails = currentGenerate
 
         // Check that everything is back to normal
-        makeSocketRequest(client2, 'roomAdd defaultRoom', function (response) {
-          makeSocketRequest(client2, 'roomView defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+        makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
+          makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              (response.data.members[key].type === undefined).should.eql(true)
+              expect(response.data.members[key].type).to.not.exist
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 
@@ -422,12 +445,12 @@ describe('Server: Socket', function () {
         })
       })
 
-      it('should view non-default member data', function (done) {
-        makeSocketRequest(client2, 'roomAdd defaultRoom', function (response) {
-          makeSocketRequest(client2, 'roomView defaultRoom', function (response) {
-            response.data.room.should.equal('defaultRoom')
+      it('should view non-default member data', (done) => {
+        makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
+          makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
+            expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              response.data.members[key].type.should.eql('socket')
+              expect(response.data.members[key].type).to.equal('socket')
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
             done()
@@ -436,71 +459,46 @@ describe('Server: Socket', function () {
       })
     })
 
-    it('folks in my room hear what I say (and say works)', function (done) {
-      makeSocketRequest(client3, '', function (response) {
-        response.message.should.equal('hello?')
-        done()
-      })
-
-      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
-    })
-
-    it('folks NOT in my room DON\'T hear what I say', function (done) {
-      makeSocketRequest(client, 'roomLeave defaultRoom', function () {
-        makeSocketRequest(client, '', function (response) {
-          should.not.exist(response)
-          done()
-        })
-        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
-      })
-    })
-
-    it('Folks are notified when I join a room', function (done) {
-      makeSocketRequest(client, 'roomAdd otherRoom', function () {
+    it('Folks are notified when I join a room', (done) => {
+      makeSocketRequest(client, 'roomAdd otherRoom', () => {
         makeSocketRequest(client2, 'roomAdd otherRoom' + '\r\n')
-        makeSocketRequest(client, '', function (response) {
-          response.message.should.equal('I have entered the room: ' + client2Details.id)
-          response.from.should.equal(0)
+        makeSocketRequest(client, '', (response) => {
+          expect(response.message).to.equal('I have entered the room: ' + client2Details.id)
+          expect(response.from).to.equal(0)
           done()
         })
       })
     })
 
-    it('Folks are notified when I leave a room', function (done) {
-      makeSocketRequest(client, '', function (response) {
-        response.message.should.equal('I have left the room: ' + client2Details.id)
-        response.from.should.equal(0)
+    it('Folks are notified when I leave a room', (done) => {
+      makeSocketRequest(client, '', (response) => {
+        expect(response.message).to.equal('I have left the room: ' + client2Details.id)
+        expect(response.from).to.equal(0)
         done()
       })
 
       makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
     })
-
-    it('I can get my id', function (done) {
-      makeSocketRequest(client, 'detailsView' + '\r\n', function (response) {
-        done()
-      })
-    })
   })
 
-  describe('disconnect', function () {
-    after(function (done) {
+  describe('disconnect', () => {
+    after((done) => {
       connectClients(done)
     })
 
-    it('server can disconnect a client', function (done) {
-      makeSocketRequest(client, 'status', function (response) {
-        response.id.should.equal('test-server')
-        client.readable.should.equal(true)
-        client.writable.should.equal(true)
+    it('server can disconnect a client', (done) => {
+      makeSocketRequest(client, 'status', (response) => {
+        expect(response.id).to.equal('test-server-' + process.pid)
+        expect(client.readable).to.equal(true)
+        expect(client.writable).to.equal(true)
 
         for (var id in api.connections.connections) {
           api.connections.connections[id].destroy()
         }
 
-        setTimeout(function () {
-          client.readable.should.equal(false)
-          client.writable.should.equal(false)
+        setTimeout(() => {
+          expect(client.readable).to.equal(false)
+          expect(client.writable).to.equal(false)
           done()
         }, 100)
       })

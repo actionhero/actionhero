@@ -72,7 +72,7 @@ const initialize = function (api, options, next) {
   }
 
   server.stop = function (next) {
-    server.server.close()
+    if (server.server) { server.server.close() }
     process.nextTick(next)
   }
 
