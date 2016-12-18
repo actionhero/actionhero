@@ -38,7 +38,7 @@ module.exports = function (api, next) {
       publicChat: '/public/chat.html',
       publicLogo: '/public/logo/actionhero.png',
       publicCss: '/public/css/cosmo.css',
-      exampleTest: '/__tests__/template.js.example'
+      exampleTest: '/test/template.js.example'
     }
 
     for (let name in oldFileMap) {
@@ -69,7 +69,7 @@ module.exports = function (api, next) {
       '/public/css',
       '/public/logo',
       '/tasks',
-      '/__tests__'
+      '/test'
     ].forEach(function (dir) {
       api.utils.createDirSafely(api.projectRoot + dir)
     })
@@ -95,7 +95,7 @@ module.exports = function (api, next) {
       '/public/css/cosmo.css': 'publicCss',
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
-      '/__tests__/example.js': 'exampleTest'
+      '/test/example.js': 'exampleTest'
     }
 
     for (let file in newFileMap) {
