@@ -584,7 +584,7 @@ const initialize = function (api, options, next) {
   }
 
   const chmodSocket = function (bindIP, port) {
-    if (!options.bindIP && options.port.indexOf('/') >= 0) {
+    if (!bindIP && port.indexOf('/') >= 0) {
       fs.chmodSync(port, '0777')
     }
   }
