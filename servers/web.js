@@ -572,7 +572,7 @@ const initialize = function (api, options, next) {
   }
 
   const cleanSocket = function (bindIP, port) {
-    if (!bindIP && port.indexOf('/') >= 0) {
+    if (!bindIP && typeof port === 'string' && port.indexOf('/') >= 0) {
       fs.unlink(port, (error) => {
         if (error) {
           server.log('cannot remove stale socket @' + port + ' : ' + error)
@@ -584,7 +584,7 @@ const initialize = function (api, options, next) {
   }
 
   const chmodSocket = function (bindIP, port) {
-    if (!options.bindIP && options.port.indexOf('/') >= 0) {
+    if (!bindIP && typeof port === 'string' && port.indexOf('/') >= 0) {
       fs.chmodSync(port, '0777')
     }
   }
