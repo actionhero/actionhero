@@ -128,7 +128,7 @@ actionhero.prototype.initialize = function (params, callback) {
       )
     ).forEach((f) => {
       let file = path.normalize(f)
-      let initializer = path.basename(f).split('.')[0]
+      let initializer = file
       let fileParts = file.split('.')
       let ext = fileParts[(fileParts.length - 1)]
       if (ext === 'js') {
