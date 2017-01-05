@@ -1,0 +1,83 @@
+<section class="bs-docs-section">
+  <h1 id="localization" class="page-header">Localization</h1>
+
+  <h2 id="localization-overview">Overview</h2>
+
+  <p>Starting in ActionHero <code>v13.0.0</code>, you can now use the <a href="https://github.com/mashpie/i18n-node">i18n</a> module to customize all aspects of ActionHero.</p>
+
+  <h2 id="locale-files">Locale files</h2>
+
+  <ul>
+    <li>When running ActionHero with <code>api.config.i18n.updateFiles = true</code>, you will see ActionHero generate a ‘locales' folder at the top level of your project which will contain translations of all strings in your project with are passed though the new localization system.  This includes all uses of <code>api.i18n.localize</code>, <code>connection.localize</code> and <code>api.log</code>.
+      <ul>
+        <li>be sure to use sprintf-style string interpolation for variables!</li>
+      </ul>
+    </li>
+    <li>From here, it is an easy matter to change the strings, per locale, to how you would like them presented back in your application.  The next time you restart the server, the values you've updated in your locale strings file will be used.</li>
+    <li>disable <code>api.config.i18n.updateFiles</code> if you do not want this behavior.</li>
+  </ul>
+
+  <h2 id="localization-determine-connection-locale">Determining connection locales</h2>
+
+  <p>Since every ActionHero implementation is unique, we cannot ship with a "guess" about how to determine a given connection's locale. Perhaps you have an HTTP server and you can trust your client's <code>accept-language</code> headers.  Or perhaps you run your API under a number of different host names and you can presume locale based on them.   Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.</p>
+  <p>For example, I may have an initializer in my project like this:</p>
+
+  {% highlight javascript %}
+module.exports = {
+  initialize: function(api, next){
+    api.customLocalization = {
+      lookup: function(connection){
+        var locale = 'en';
+        if(connection.type === 'web'){
+          if(connection.rawConnection.req.headers.host === 'usa.site.com'){ locale = 'en-US'; }
+          if(connection.rawConnection.req.headers.host === 'uk.site.com'){  locale = 'en-GB'; }
+          if(connection.rawConnection.req.headers.host === 'es.site.com'){  locale = 'es-ES'; }
+          if(connection.rawConnection.req.headers.host === 'mx.site.com'){  locale = 'es-MX'; }
+        }
+
+        return locale;
+      }
+    }
+
+
+    next();
+  }
+}
+  {% endhighlight %}
+
+  <p>To tell the i18n to use this method with a new connection, set <code>api.config.i18n.determineConnectionLocale = 'api.customLocalization.lookup'</code></p>
+
+  <h2 id="localization-connection-methods">Connection Methods</h2>
+
+  <ul>
+    <li><code>connection.localize(string)</code> or <code>connection.localize([string-with-interpolation, value])</code>
+      <ul>
+        <li>Allows you to interpolate a string based on the connection's current locale.  For example, say in an action you wanted to respond with <code>data.response.message = connection.localize('the count was %s', 4);</code> In your locale files, you would define <code>the count was %s</code> in every language you cared about, and not need to modify the action itself at all.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2 id="localization-localizing-the-logger">Localizing the Logger</h2>
+
+  <ul>
+    <li>Just like connections, the ActionHero logger itself now has localization interpolation built in.  Note how in the new settings you set which locale you want the server's logs to be expressed in.  Using that, you can now use sprintf-style string interpolation as the first argument of <code>api.log()</code>
+      <ul>
+        <li>You might want to log the message <code>api.log(['The time is %s', new Date()], 'alert')</code>.</li>
+        <li>Changing the translation of the string <code>The time is %s</code> in your locale files would apply to the logger as well!</li>
+        <li>You can of course continue to log plain strings as we have been with the logger as well.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2 id="localization-localizing-other-strings">Localizing other strings</h2>
+
+  <ul>
+    <li>To localize strings that are not used in methods mentioned above you can use <code>api.i18n.localize(string, options)</code> or <code>api.i18n.localize([string-with-interpolation, value], options)</code>.
+      <ul>
+        <li>Allows you to interpolate a string.</li>
+        <li>Just as the other localize methods above, the input string will be in your locale files for you to change it anytime you want.</li>
+        <li>The second <code>options</code> optional argument (default value is <code>api.i18n</code>) allows you to <a href="https://github.com/mashpie/i18n-node#list-of-all-configuration-options">configure</a> i18n. Note that you will use this argument only in very few special cases, It is recommended to edit the global <code>api.config.i18n</code> settings to suit your localization needs.</li>
+      </ul>
+    </li>
+  </ul>
+</section>

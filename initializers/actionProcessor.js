@@ -1,14 +1,14 @@
 'use strict';
 
-var async = require('async');
+const async = require('async');
 
 module.exports = {
   loadPriority:  430,
   initialize: function(api, next){
 
-    var prepareStringMethod = function(method){
-      var cmdParts = method.split('.');
-      var cmd = cmdParts.shift();
+    const prepareStringMethod = function(method){
+      const cmdParts = method.split('.');
+      const cmd = cmdParts.shift();
       if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
       return api.utils.stringToHash(cmdParts.join('.'));
     };
@@ -36,41 +36,37 @@ module.exports = {
     };
 
     api.actionProcessor.prototype.incrementTotalActions = function(count){
-      var self = this;
       if(!count){ count = 1; }
-      self.connection.totalActions = self.connection.totalActions + count;
+      this.connection.totalActions = this.connection.totalActions + count;
     };
 
     api.actionProcessor.prototype.incrementPendingActions = function(count){
-      var self = this;
       if(!count){ count = 1; }
-      self.connection.pendingActions = self.connection.pendingActions + count;
+      this.connection.pendingActions = this.connection.pendingActions + count;
     };
 
     api.actionProcessor.prototype.getPendingActionCount = function(){
-      var self = this;
-      return self.connection.pendingActions;
+      return this.connection.pendingActions;
     };
 
     api.actionProcessor.prototype.completeAction = function(status){
-      var self = this;
-      var error = null;
-      self.actionStatus = String(status);
+      let error = null;
+      this.actionStatus = String(status);
 
       if(status instanceof Error){
         error = status;
       }else if(status === 'server_shutting_down'){
-        error = api.config.errors.serverShuttingDown(self);
+        error = api.config.errors.serverShuttingDown(this);
       }else if(status === 'too_many_requests'){
-        error = api.config.errors.tooManyPendingActions(self);
+        error = api.config.errors.tooManyPendingActions(this);
       }else if(status === 'unknown_action'){
-        error = api.config.errors.unknownAction(self);
+        error = api.config.errors.unknownAction(this);
       }else if(status === 'unsupported_server_type'){
-        error = api.config.errors.unsupportedServerType(self);
+        error = api.config.errors.unsupportedServerType(this);
       }else if(status === 'missing_params'){
-        error = api.config.errors.missingParams(self, self.missingParams);
+        error = api.config.errors.missingParams(this, this.missingParams);
       }else if(status === 'validator_errors'){
-        error = api.config.errors.invalidParams(self, self.validatorErrors);
+        error = api.config.errors.invalidParams(this, this.validatorErrors);
       }else if(status){
         error = status;
       }
@@ -78,48 +74,51 @@ module.exports = {
       if(error && typeof error === 'string'){
         error = new Error(error);
       }
-      if(error && !self.response.error){
-        self.response.error = error;
+
+      if(error && !this.response.error){
+        if(typeof this.response === 'string' || Array.isArray(this.response)){
+          this.response = error.toString();
+        }else{
+          this.response.error = error;
+        }
       }
 
-      self.incrementPendingActions(-1);
-      self.duration = new Date().getTime() - self.actionStartTime;
+      this.incrementPendingActions(-1);
+      this.duration = new Date().getTime() - this.actionStartTime;
 
-      process.nextTick(function(){
-        if(typeof self.callback === 'function'){
-          self.callback(self);
+      process.nextTick(() => {
+        if(typeof this.callback === 'function'){
+          this.callback(this);
         }
       });
 
-      self.working = false;
-      self.logAction(error);
+      this.working = false;
+      this.logAction(error);
     };
 
     api.actionProcessor.prototype.logAction = function(error){
-      var self = this;
-
       // logging
-      var logLevel = 'info';
-      if(self.actionTemplate && self.actionTemplate.logLevel){
-        logLevel = self.actionTemplate.logLevel;
+      let logLevel = 'info';
+      if(this.actionTemplate && this.actionTemplate.logLevel){
+        logLevel = this.actionTemplate.logLevel;
       }
 
-      var filteredParams = {};
-      for(var i in self.params){
+      let filteredParams = {};
+      for(let i in this.params){
         if(api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0){
           filteredParams[i] = '[FILTERED]';
-        }else if(typeof self.params[i] === 'string'){
-          filteredParams[i] = self.params[i].substring(0, api.config.logger.maxLogStringLength);
+        }else if(typeof this.params[i] === 'string'){
+          filteredParams[i] = this.params[i].substring(0, api.config.logger.maxLogStringLength);
         }else{
-          filteredParams[i] = self.params[i];
+          filteredParams[i] = this.params[i];
         }
       }
 
-      var logLine = {
-        to: self.connection.remoteIP,
-        action: self.action,
+      const logLine = {
+        to: this.connection.remoteIP,
+        action: this.action,
         params: JSON.stringify(filteredParams),
-        duration: self.duration,
+        duration: this.duration,
       };
 
       if(error){
@@ -134,21 +133,20 @@ module.exports = {
         }
       }
 
-      api.log(['[ action @ %s ]', self.connection.type], logLevel, logLine);
+      api.log(['[ action @ %s ]', this.connection.type], logLevel, logLine);
     };
 
     api.actionProcessor.prototype.preProcessAction = function(callback){
-      var self = this;
-      var processors     = [];
-      var processorNames = api.actions.globalMiddleware.slice(0);
+      let processors     = [];
+      let processorNames = api.actions.globalMiddleware.slice(0);
 
-      if(self.actionTemplate.middleware){
-        self.actionTemplate.middleware.forEach(function(m){ processorNames.push(m); });
+      if(this.actionTemplate.middleware){
+        this.actionTemplate.middleware.forEach(function(m){ processorNames.push(m); });
       }
 
-      processorNames.forEach(function(name){
+      processorNames.forEach((name) => {
         if(typeof api.actions.middleware[name].preProcessor === 'function'){
-          processors.push(function(next){ api.actions.middleware[name].preProcessor(self, next); });
+          processors.push((next) => { api.actions.middleware[name].preProcessor(this, next); });
         }
       });
 
@@ -156,17 +154,16 @@ module.exports = {
     };
 
     api.actionProcessor.prototype.postProcessAction = function(callback){
-      var self = this;
-      var processors     = [];
-      var processorNames = api.actions.globalMiddleware.slice(0);
+      let processors     = [];
+      let processorNames = api.actions.globalMiddleware.slice(0);
 
-      if(self.actionTemplate.middleware){
-        self.actionTemplate.middleware.forEach(function(m){ processorNames.push(m); });
+      if(this.actionTemplate.middleware){
+        this.actionTemplate.middleware.forEach((m) => { processorNames.push(m); });
       }
 
-      processorNames.forEach(function(name){
+      processorNames.forEach((name) => {
         if(typeof api.actions.middleware[name].postProcessor === 'function'){
-          processors.push(function(next){ api.actions.middleware[name].postProcessor(self, next); });
+          processors.push((next) => { api.actions.middleware[name].postProcessor(this, next); });
         }
       });
 
@@ -174,128 +171,122 @@ module.exports = {
     };
 
     api.actionProcessor.prototype.reduceParams = function(){
-      var self = this;
-      var inputNames = [];
-      if(self.actionTemplate.inputs){
-        inputNames = Object.keys(self.actionTemplate.inputs);
+      let inputNames = [];
+      if(this.actionTemplate.inputs){
+        inputNames = Object.keys(this.actionTemplate.inputs);
       }
 
       if(api.config.general.disableParamScrubbing !== true){
-        for(var p in self.params){
+        for(let p in this.params){
           if(api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0){
-            delete self.params[p];
+            delete this.params[p];
           }
         }
       }
     };
 
     api.actionProcessor.prototype.validateParams = function(){
-      var self = this;
-
-      for(var key in self.actionTemplate.inputs){
-        var props = self.actionTemplate.inputs[key];
+      for(let key in this.actionTemplate.inputs){
+        const props = this.actionTemplate.inputs[key];
 
         // default
-        if(self.params[key] === undefined && props['default'] !== undefined){
+        if(this.params[key] === undefined && props['default'] !== undefined){
           if(typeof props['default'] === 'function'){
-            self.params[key] = props['default'].call(api, self.params[key], self);
+            this.params[key] = props['default'].call(api, this.params[key], this);
           }else{
-            self.params[key] = props['default'];
+            this.params[key] = props['default'];
           }
         }
 
         // formatter
-        if(self.params[key] !== undefined && props.formatter !== undefined){
+        if(this.params[key] !== undefined && props.formatter !== undefined){
           if(!Array.isArray(props.formatter)){ props.formatter = [props.formatter]; }
 
-          props.formatter.forEach(function(formatter){
+          props.formatter.forEach((formatter) => {
             if(typeof formatter === 'function'){
-              self.params[key] = formatter.call(api, self.params[key], self);
+              this.params[key] = formatter.call(api, this.params[key], this);
             }else{
-              var method = prepareStringMethod(formatter);
-              self.params[key] = method.call(api, self.params[key], self);
+              const method = prepareStringMethod(formatter);
+              this.params[key] = method.call(api, this.params[key], this);
             }
           });
         }
 
         // validator
-        if(self.params[key] !== undefined && props.validator !== undefined){
+        if(this.params[key] !== undefined && props.validator !== undefined){
           if(!Array.isArray(props.validator)){ props.validator = [props.validator]; }
 
-          props.validator.forEach(function(validator){
-            var validatorResponse;
+          props.validator.forEach((validator) => {
+            let validatorResponse;
             if(typeof validator === 'function'){
-              validatorResponse = validator.call(api, self.params[key], self);
+              validatorResponse = validator.call(api, this.params[key], this);
             }else{
-              var method = prepareStringMethod(validator);
-              validatorResponse = method.call(api, self.params[key], self);
+              const method = prepareStringMethod(validator);
+              validatorResponse = method.call(api, this.params[key], this);
             }
-            if(validatorResponse !== true){ self.validatorErrors.push(validatorResponse); }
+            if(validatorResponse !== true){ this.validatorErrors.push(validatorResponse); }
           });
         }
 
         // required
         if(props.required === true){
-          if(api.config.general.missingParamChecks.indexOf(self.params[key]) >= 0){
-            self.missingParams.push(key);
+          if(api.config.general.missingParamChecks.indexOf(this.params[key]) >= 0){
+            this.missingParams.push(key);
           }
         }
       }
     };
 
     api.actionProcessor.prototype.processAction = function(){
-      var self = this;
-      self.actionStartTime = new Date().getTime();
-      self.working = true;
-      self.incrementTotalActions();
-      self.incrementPendingActions();
-      self.action = self.params.action;
+      this.actionStartTime = new Date().getTime();
+      this.working = true;
+      this.incrementTotalActions();
+      this.incrementPendingActions();
+      this.action = this.params.action;
 
-      if(api.actions.versions[self.action]){
-        if(!self.params.apiVersion){
-          self.params.apiVersion = api.actions.versions[self.action][api.actions.versions[self.action].length - 1];
+      if(api.actions.versions[this.action]){
+        if(!this.params.apiVersion){
+          this.params.apiVersion = api.actions.versions[this.action][api.actions.versions[this.action].length - 1];
         }
-        self.actionTemplate = api.actions.actions[self.action][self.params.apiVersion];
+        this.actionTemplate = api.actions.actions[this.action][this.params.apiVersion];
       }
 
       if(api.running !== true){
-        self.completeAction('server_shutting_down');
-      }else if(self.getPendingActionCount(self.connection) > api.config.general.simultaneousActions){
-        self.completeAction('too_many_requests');
-      }else if(!self.action || !self.actionTemplate){
-        self.completeAction('unknown_action');
-      }else if(self.actionTemplate.blockedConnectionTypes && self.actionTemplate.blockedConnectionTypes.indexOf(self.connection.type) >= 0){
-        self.completeAction('unsupported_server_type');
+        this.completeAction('server_shutting_down');
+      }else if(this.getPendingActionCount(this.connection) > api.config.general.simultaneousActions){
+        this.completeAction('too_many_requests');
+      }else if(!this.action || !this.actionTemplate){
+        this.completeAction('unknown_action');
+      }else if(this.actionTemplate.blockedConnectionTypes && this.actionTemplate.blockedConnectionTypes.indexOf(this.connection.type) >= 0){
+        this.completeAction('unsupported_server_type');
       }else{
-        self.runAction();
+        this.runAction();
       }
     };
 
     api.actionProcessor.prototype.runAction = function(){
-      var self = this;
-
-      self.preProcessAction(function(error){
-        self.reduceParams();
-        self.validateParams();
+      this.preProcessAction((error) => {
+        this.reduceParams();
+        this.validateParams();
 
         if(error){
-          self.completeAction(error);
-        }else if(self.missingParams.length > 0){
-          self.completeAction('missing_params');
-        }else if(self.validatorErrors.length > 0){
-          self.completeAction('validator_errors');
-        }else if(self.toProcess === true && !error){
-          self.actionTemplate.run(api, self, function(error){
+          this.completeAction(error);
+        }else if(this.missingParams.length > 0){
+          this.completeAction('missing_params');
+        }else if(this.validatorErrors.length > 0){
+          this.completeAction('validator_errors');
+        }else if(this.toProcess === true && !error){
+          this.actionTemplate.run(api, this, (error) => {
             if(error){
-              self.completeAction(error);
+              this.completeAction(error);
             }else{
-              self.postProcessAction(function(error){
-                self.completeAction(error);
+              this.postProcessAction((error) => {
+                this.completeAction(error);
               });
             }
           });
         }else{
-          self.completeAction();
+          this.completeAction();
         }
       });
     };

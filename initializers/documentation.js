@@ -6,10 +6,11 @@ module.exports = {
 
     api.documentation = {
       documentation: {},
-      build: function(){
-        for(var i in api.actions.actions){
-          for(var j in api.actions.actions[i]){
-            var action = api.actions.actions[i][j];
+      build: () => {
+        let action;
+        for(let i in api.actions.actions){
+          for(let j in api.actions.actions[i]){
+            action = api.actions.actions[i][j];
             if(action.toDocument !== false){
               if(!api.documentation.documentation[action.name]){ api.documentation.documentation[action.name] = {}; }
               api.documentation.documentation[action.name][action.version] = {

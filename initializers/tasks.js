@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+const async = require('async');
 
 module.exports = {
   startPriority: 900,
@@ -11,27 +11,28 @@ module.exports = {
 
       tasks: {},
       jobs: {},
+      middleware: {},
+      globalMiddleware: [],
 
       loadFile: function(fullFilePath, reload){
-        var self = this;
         if(!reload){ reload = false; }
 
-        var loadMessage = function(loadedTaskName){
-          api.log(['task %sloaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
+        const loadMessage = function(loadedTaskName){
+          api.log(['task %s loaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug');
         };
 
-        api.watchFileAndAct(fullFilePath, function(){
-          self.loadFile(fullFilePath, true);
+        api.watchFileAndAct(fullFilePath, () => {
+          this.loadFile(fullFilePath, true);
         });
 
-        var task;
+        let task;
         try{
-          var collection = require(fullFilePath);
-          for(var i in collection){
+          const collection = require(fullFilePath);
+          for(let i in collection){
             task = collection[i];
             api.tasks.tasks[task.name] = task;
-            self.validateTask(api.tasks.tasks[task.name]);
-            api.tasks.jobs[task.name] = self.jobWrapper(task.name);
+            this.validateTask(api.tasks.tasks[task.name]);
+            api.tasks.jobs[task.name] = this.jobWrapper(task.name);
             loadMessage(task.name);
           }
         }catch(error){
@@ -42,15 +43,52 @@ module.exports = {
       },
 
       jobWrapper: function(taskName){
-        var self = this;
-        var task = api.tasks.tasks[taskName];
-        var plugins = task.plugins || [];
-        var pluginOptions = task.pluginOptions || [];
+        const task = api.tasks.tasks[taskName];
+
+        let middleware = task.middleware || [];
+        let plugins = task.plugins || [];
+        let pluginOptions = task.pluginOptions || [];
+
         if(task.frequency > 0){
           if(plugins.indexOf('jobLock') < 0){ plugins.push('jobLock'); }
           if(plugins.indexOf('queueLock') < 0){ plugins.push('queueLock'); }
           if(plugins.indexOf('delayQueueLock') < 0){ plugins.push('delayQueueLock'); }
         }
+
+        //load middleware into plugins
+        const processMiddleware = (m) => {
+          if(api.tasks.middleware[m]){ //Ignore middleware until it has been loaded.
+            const plugin = function(worker, func, queue, job, args, options){
+              this.name = m;
+              this.worker = worker;
+              this.queue = queue;
+              this.func = func;
+              this.job = job;
+              this.args = args;
+              this.options = options;
+              this.api = api;
+
+              if(this.worker.queueObject){
+                this.queueObject = this.worker.queueObject;
+              }else{
+                this.queueObject = this.worker;
+              }
+            };
+
+            if(api.tasks.middleware[m].preProcessor){ plugin.prototype.before_perform = api.tasks.middleware[m].preProcessor; }
+            if(api.tasks.middleware[m].postProcessor){ plugin.prototype.after_perform = api.tasks.middleware[m].postProcessor; }
+            if(api.tasks.middleware[m].preEnqueue){ plugin.prototype.before_enqueue = api.tasks.middleware[m].preEnqueue; }
+            if(api.tasks.middleware[m].postEnqueue){ plugin.prototype.after_enqueue = api.tasks.middleware[m].postEnqueue; }
+
+            plugins.push(plugin);
+          }
+        };
+
+        api.tasks.globalMiddleware.forEach(processMiddleware);
+        middleware.forEach(processMiddleware);
+
+        // TODO: solve scope issues here
+        var self = this;
         return {
           'plugins': plugins,
           'pluginOptions': pluginOptions,
@@ -74,9 +112,10 @@ module.exports = {
       },
 
       validateTask: function(task){
-        var fail = function(msg){
+        const fail = (msg) => {
           api.log(msg + '; exiting.', 'emerg');
         };
+
         if(typeof task.name !== 'string' || task.name.length < 1){
           fail('a task is missing \'task.name\'');
           return false;
@@ -127,6 +166,26 @@ module.exports = {
         api.resque.queue.scheduledAt(q, taskName, args, callback);
       },
 
+      stats: function(callback){
+        api.resque.queue.stats(callback);
+      },
+
+      queued: function(q, start, stop, callback){
+        api.resque.queue.queued(q, start, stop, callback);
+      },
+
+      delQueue: function(q, callback){
+        api.resque.queue.delQueue(q, callback);
+      },
+
+      locks: function(callback){
+        api.resque.queue.locks(callback);
+      },
+
+      delLock: function(lock, callback){
+        api.resque.queue.delLock(lock, callback);
+      },
+
       timestamps: function(callback){
         api.resque.queue.timestamps(callback);
       },
@@ -172,14 +231,14 @@ module.exports = {
       },
 
       enqueueRecurrentJob: function(taskName, callback){
-        var self = this;
-        var task = self.tasks[taskName];
+        const task = this.tasks[taskName];
+
         if(task.frequency <= 0){
           callback();
         }else{
-          self.del(task.queue, taskName, {}, function(){
-            self.delDelayed(task.queue, taskName, {}, function(){
-              self.enqueueIn(task.frequency, taskName, function(){
+          this.del(task.queue, taskName, {}, () => {
+            this.delDelayed(task.queue, taskName, {}, () => {
+              this.enqueueIn(task.frequency, taskName, () => {
                 api.log(['re-enqueued recurrent job %s', taskName], api.config.tasks.schedulerLogging.reEnqueue);
                 callback();
               });
@@ -189,14 +248,14 @@ module.exports = {
       },
 
       enqueueAllRecurrentJobs: function(callback){
-        var self = this;
-        var jobs = [];
-        var loadedTasks = [];
-        Object.keys(self.tasks).forEach(function(taskName){
-          var task = self.tasks[taskName];
+        let jobs = [];
+        let loadedTasks = [];
+
+        Object.keys(this.tasks).forEach((taskName) => {
+          const task = this.tasks[taskName];
           if(task.frequency > 0){
-            jobs.push(function(done){
-              self.enqueue(taskName, function(error, toRun){
+            jobs.push((done) => {
+              this.enqueue(taskName, (error, toRun) => {
                 if(error){ return done(error); }
                 if(toRun === true){
                   api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue);
@@ -216,15 +275,14 @@ module.exports = {
 
       stopRecurrentJob: function(taskName, callback){
         // find the jobs in either the normal queue or delayed queues
-        var self = this;
-        var task = self.tasks[taskName];
+        const task = this.tasks[taskName];
         if(task.frequency <= 0){
           callback();
         }else{
-          var removedCount = 0;
-          self.del(task.queue, task.name, {}, 1, function(error, count){
+          let removedCount = 0;
+          this.del(task.queue, task.name, {}, 1, (error, count) => {
             removedCount = removedCount + count;
-            self.delDelayed(task.queue, task.name, {}, function(error, timestamps){
+            this.delDelayed(task.queue, task.name, {}, (error, timestamps) => {
               removedCount = removedCount + timestamps.length;
               callback(error, removedCount);
             });
@@ -233,25 +291,33 @@ module.exports = {
       },
 
       details: function(callback){
-        var details = {'queues': {}, 'workers': {}};
-        var jobs = [];
+        let details = {'queues': {}, 'workers': {}};
+        let jobs = [];
 
-        jobs.push(function(done){
-          api.tasks.allWorkingOn(function(error, workers){
+        jobs.push((done) => {
+          api.tasks.allWorkingOn((error, workers) => {
             if(error){ return done(error); }
             details.workers = workers;
             return done();
           });
         });
 
-        jobs.push(function(done){
-          api.resque.queue.queues(function(error, queues){
+        jobs.push((done) => {
+          api.tasks.stats((error, stats) => {
             if(error){ return done(error); }
-            var queueJobs = [];
+            details.stats = stats;
+            return done();
+          });
+        });
 
-            queues.forEach(function(queue){
-              queueJobs.push(function(qdone){
-                api.resque.queue.length(queue, function(error, length){
+        jobs.push((done) => {
+          api.resque.queue.queues((error, queues) => {
+            if(error){ return done(error); }
+            let queueJobs = [];
+
+            queues.forEach((queue) => {
+              queueJobs.push((qdone) => {
+                api.resque.queue.length(queue, (error, length) => {
                   if(error){ return qdone(error); }
                   details.queues[queue] = { length: length };
                   return qdone();
@@ -263,17 +329,33 @@ module.exports = {
           });
         });
 
-        async.parallel(jobs, function(error){
+        async.parallel(jobs, (error) => {
           return callback(error, details);
         });
       }
     };
 
-    api.config.general.paths.task.forEach(function(p){
-      api.utils.recursiveDirectoryGlob(p).forEach(function(f){
-        api.tasks.loadFile(f);
+    function loadTasks(reload){
+      api.config.general.paths.task.forEach((p) => {
+        api.utils.recursiveDirectoryGlob(p).forEach((f) => {
+          api.tasks.loadFile(f, reload);
+        });
       });
-    });
+    }
+
+    api.tasks.addMiddleware = function(middleware){
+      if(!middleware.name){ throw new Error('middleware.name is required'); }
+      if(!middleware.priority){ middleware.priority = api.config.general.defaultMiddlewarePriority; }
+      middleware.priority = Number(middleware.priority);
+      api.tasks.middleware[middleware.name] = middleware;
+      if(middleware.global === true){
+        api.tasks.globalMiddleware.push(middleware.name);
+        api.utils.sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
+      }
+      loadTasks(true);
+    };
+
+    loadTasks(false);
 
     next();
 
@@ -281,7 +363,7 @@ module.exports = {
 
   start: function(api, next){
     if(api.config.tasks.scheduler === true){
-      api.tasks.enqueueAllRecurrentJobs(function(error){
+      api.tasks.enqueueAllRecurrentJobs((error) => {
         next(error);
       });
     }else{

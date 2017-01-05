@@ -1,0 +1,61 @@
+name: ActionHero.js
+license: Apache 2 License
+licenseUrl: https://github.com/evantahler/actionhero/blob/master/LICENSE.txt
+logo: /assets/images/logo.png
+
+headerLinks:
+  - title: GitHub
+    url: https://github.com/evantahler/actionhero
+  - title: Slack Team
+    url: http://slack.actionherojs.com
+
+footerLinks:
+  - title: GitHub
+    url: https://github.com/evantahler/actionhero
+  - title: Issues
+    url: https://github.com/evantahler/actionhero/issues?state=open
+  - title: Releases
+    url: https://github.com/evantahler/actionhero/releases
+  - title: NPM
+    url: https://www.npmjs.org/package/actionhero
+  - title: Slack
+    url: http://slack.actionherojs.com/
+  - title: Twitter
+    url: https://twitter.com/actionherojs
+
+# header
+header:
+  color1: "#080331"
+  color2: "#0000A0"
+  trianglify: true
+
+# google analytics
+analytics:
+  account: UA-29132597-1
+  domain: actionherojs.com
+
+# github buttons
+githubButton:
+  user: evantahler
+  repo: actionhero
+
+# twitter buttons
+twitter:
+  enabled: false
+  via:
+  hash: #actionherojs #nodejs
+  account: actionherojs
+
+# facebook buttons
+facebook:
+  enabled: false
+  profileUrl:
+
+
+exclude: ['README.md', 'LICENSE', 'bower.json', 'Gemfile.lock', 'Gemfile', 'source_old']
+
+gems:
+  - jekyll-mentions
+  - jemoji
+  - jekyll-redirect-from
+  - jekyll-sitemap

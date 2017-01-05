@@ -1,7 +1,7 @@
 'use strict';
 
-var uuid  = require('node-uuid');
-var async = require('async');
+const uuid  = require('node-uuid');
+const async = require('async');
 
 module.exports = {
   startPriority: 101,
@@ -19,33 +19,31 @@ module.exports = {
     };
 
     api.redis.initialize = function(callback){
-      var jobs = [];
+      let jobs = [];
 
-      ['client', 'subscriber', 'tasks'].forEach(function(r){
-        jobs.push(function(done){
+      ['client', 'subscriber', 'tasks'].forEach((r) => {
+        jobs.push((done) => {
           if(api.config.redis[r].buildNew === true){
-            var args = api.config.redis[r].args;
+            const args = api.config.redis[r].args;
             api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]);
-            api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
-            api.redis.clients[r].on('connect', function(){
-              api.log(['Redis connection `%s` connected', r], 'info');
-              done();
-            });
+            api.redis.clients[r].on('error', (error) => { api.log(['Redis connection `%s` error', r], 'error', error); });
+            api.redis.clients[r].on('connect', () => { api.log(['Redis connection `%s` connected', r], 'debug'); });
+            api.redis.clients[r].once('connect', done);
           }else{
             api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args);
-            api.redis.clients[r].on('error', function(error){ api.log(['Redis connection `%s` error', r], 'error', error); });
-            api.log(['Redis connection `%s` connected', r], 'info');
+            api.redis.clients[r].on('error', (error) => { api.log(['Redis connection `%s` error', r], 'error', error); });
+            api.log(['Redis connection `%s` connected', r], 'debug');
             done();
           }
         });
       });
 
       if(!api.redis.status.subscribed){
-        jobs.push(function(done){
+        jobs.push((done) => {
           api.redis.clients.subscriber.subscribe(api.config.general.channel);
           api.redis.status.subscribed = true;
 
-          api.redis.clients.subscriber.on('message', function(messageChannel, message){
+          api.redis.clients.subscriber.on('message', (messageChannel, message) => {
             try{ message = JSON.parse(message); }catch(e){ message = {}; }
             if(messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken){
               if(api.redis.subscriptionHandlers[message.messageType]){
@@ -59,29 +57,10 @@ module.exports = {
       }
 
       async.series(jobs, callback);
-
-      // var ready = true;
-      // ['client', 'subscriber', 'tasks'].forEach(function(r){
-      //   if(
-      //     api.redis.clients[r].status && // This check is for fakeredis
-      //     (api.redis.clients[r].status !== 'connected' && api.redis.clients[r].status !== 'ready')
-      //   ){
-      //     ready = false;
-      //     api.log(['Redis connection `%s` not connected', r], 'warning');
-      //   }else{
-      //     api.log(['Redis connection `%s` connected', r], 'info');
-      //   }
-      // });
-      //
-      // if(ready === true){
-      //   callback();
-      // }else{
-      //   setTimeout(api.redis.initialize, 5000, callback);
-      // }
     };
 
     api.redis.publish = function(payload){
-      var channel = api.config.general.channel;
+      const channel = api.config.general.channel;
       api.redis.clients.client.publish(channel, JSON.stringify(payload));
     };
 
@@ -89,18 +68,19 @@ module.exports = {
 
     api.redis.subscriptionHandlers['do'] = function(message){
       if(!message.connectionId || (api.connections && api.connections.connections[message.connectionId])){
-        var cmdParts = message.method.split('.');
-        var cmd = cmdParts.shift();
+        let cmdParts = message.method.split('.');
+        let cmd = cmdParts.shift();
         if(cmd !== 'api'){ throw new Error('cannot operate on a method outside of the api object'); }
-        var method = api.utils.stringToHash(cmdParts.join('.'));
+        let method = api.utils.stringToHash(cmdParts.join('.'));
 
-        var callback = function(){
-          var responseArgs = Array.apply(null, arguments).sort();
-          process.nextTick(function(){
+        function callback(){
+          let responseArgs = Array.apply(null, arguments).sort();
+          process.nextTick(() => {
             api.redis.respondCluster(message.requestId, responseArgs);
           });
         };
-        var args = message.args;
+
+        let args = message.args;
         if(args === null){ args = []; }
         if(!Array.isArray(args)){ args = [args]; }
         args.push(callback);
@@ -120,8 +100,8 @@ module.exports = {
     // RPC
 
     api.redis.doCluster = function(method, args, connectionId, callback){
-      var requestId = uuid.v4();
-      var payload = {
+      const requestId = uuid.v4();
+      const payload = {
         messageType  : 'do',
         serverId     : api.id,
         serverToken  : api.config.general.serverToken,
@@ -135,7 +115,7 @@ module.exports = {
 
       if(typeof callback === 'function'){
         api.redis.clusterCallbaks[requestId] = callback;
-        api.redis.clusterCallbakTimeouts[requestId] = setTimeout(function(requestId){
+        api.redis.clusterCallbakTimeouts[requestId] = setTimeout((requestId) => {
           if(typeof api.redis.clusterCallbaks[requestId] === 'function'){
             api.redis.clusterCallbaks[requestId](new Error('RPC Timeout'));
           }
@@ -146,7 +126,7 @@ module.exports = {
     };
 
     api.redis.respondCluster = function(requestId, response){
-      var payload = {
+      const payload = {
         messageType  : 'doResponse',
         serverId     : api.id,
         serverToken  : api.config.general.serverToken,
@@ -161,18 +141,18 @@ module.exports = {
 
     api.redis.initialize(function(error){
       if(error){ return next(error); }
-      api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
       process.nextTick(next);
     });
 
   },
 
   start: function(api, next){
+    api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null);
     next();
   },
 
   stop: function(api, next){
-    for(var i in api.redis.clusterCallbakTimeouts){
+    for(let i in api.redis.clusterCallbakTimeouts){
       clearTimeout(api.redis.clusterCallbakTimeouts[i]);
       delete api.redis.clusterCallbakTimeouts[i];
       delete api.redis.clusterCallbaks[i];

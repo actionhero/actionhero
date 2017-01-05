@@ -1,9 +1,11 @@
-var fs = require('fs');
-var cluster = require('cluster');
+'use strict';
+
+const fs = require('fs');
+const cluster = require('cluster');
 
 exports['default'] = {
   logger: function(api){
-    var logger = {transports: []};
+    let logger = {transports: []};
 
     // console logger
     if(cluster.isMaster){
@@ -11,7 +13,7 @@ exports['default'] = {
         return new (winston.transports.Console)({
           colorize: true,
           level: 'info',
-          timestamp: true,
+          timestamp: function(){ return api.id + ' @ ' + new Date().toISOString(); },
         });
       });
     }
@@ -19,7 +21,7 @@ exports['default'] = {
     // file logger
     logger.transports.push(function(api, winston){
       if(api.config.general.paths.log.length === 1){
-        var logDirectory = api.config.general.paths.log[0];
+        const logDirectory = api.config.general.paths.log[0];
         try{
           fs.mkdirSync(logDirectory);
         }catch(e){
@@ -32,12 +34,15 @@ exports['default'] = {
       return new (winston.transports.File)({
         filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
         level: 'info',
-        timestamp: true
+        timestamp: function(){ return api.id + ' @ ' + new Date().toISOString(); },
       });
     });
 
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100;
+
+    // should system logs (api.log) be localized?
+    logger.localizeLogMessages = false;
 
     // you can optionally set custom log levels
     // logger.levels = {good: 0, bad: 1};

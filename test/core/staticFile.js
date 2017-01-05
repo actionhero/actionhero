@@ -31,7 +31,7 @@ describe('Core: Static File', function(){
 
   it('file: 404 pages', function(done){
     api.specHelper.getStaticFile('someRandomFile', function(response){
-      response.error.should.equal('That file is not found (someRandomFile)');
+      response.error.should.equal('That file is not found');
       should.not.exist(response.content);
       done();
     });
@@ -39,7 +39,7 @@ describe('Core: Static File', function(){
 
   it('I should not see files outside of the public dir', function(done){
     api.specHelper.getStaticFile('../config/config.json', function(response){
-      response.error.should.equal('That file is not found (../config/config.json)');
+      response.error.should.equal('That file is not found');
       should.not.exist(response.content);
       done();
     });
@@ -54,10 +54,18 @@ describe('Core: Static File', function(){
     });
   });
 
-  it('should send back the last modified time', function(done){
+  it('should send back the cache-control header', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
-      response.headers['last-modified'].should.be.ok;
+      response.headers['cache-control'].should.be.ok;
+      done();
+    });
+  });
+
+  it('should send back the etag header', function(done){
+    request.get(url + '/simple.html', function(error, response, body){
+      response.statusCode.should.eql(200);
+      response.headers['etag'].should.be.ok;
       done();
     });
   });
@@ -65,7 +73,7 @@ describe('Core: Static File', function(){
   it('should send back a 304 if the header "if-modified-since" is present and condition matches', function(done){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
-      request({url:url + '/simple.html', headers: {'If-Modified-Since':new Date(Date.now())}}, function(errBis, responseBis, body){
+      request({url:url + '/simple.html', headers: {'If-Modified-Since':new Date().toUTCString()}}, function(errBis, responseBis, body){
         responseBis.statusCode.should.eql(304);
         done();
       });
@@ -115,11 +123,70 @@ describe('Core: Static File', function(){
     request.get(url + '/simple.html', function(error, response, body){
       response.statusCode.should.eql(200);
       var lastModified = new Date(response.headers['last-modified']);
-      request({url:url + '/simple.html', headers:{'If-Modified-Since':new Date(lastModified.getTime() - 24 * 1000 * 3600)}}, function(errBis, responseBis, body){
+      request({url:url + '/simple.html', headers:{'If-Modified-Since':new Date(lastModified.getTime() - 24 * 1000 * 3600).toUTCString()}}, function(errBis, responseBis, body){
         responseBis.statusCode.should.eql(200);
         done();
       });
     });
   });
 
+  describe('Core: Static File -> Compression Tests', function() {
+    var serverCompressionState;
+    before(function(done) {
+      serverCompressionState = api.config.servers.web.compress
+      api.config.servers.web.compress = true; //activate compression, default is likely to be false
+      done();
+    })
+
+    after(function(done) {
+      api.config.servers.web.compress = serverCompressionState;
+      done();
+    });
+
+    it('should find the compression configuration in servers web config', function(done){
+      serverCompressionState.should.be.a.Boolean();
+      done();
+    });
+
+    it('should respect accept-encoding header priority with gzip as first in a list of encodings', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip, deflate, sdch, br'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('gzip');
+        done();
+      });
+    });
+
+    it('should respect accept-encoding header priority with deflate as second in a list of encodings', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'br, deflate, gzip'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('deflate'); //br is not a currently supported encoding
+        done();
+      });
+    });
+
+    it('should respect accept-encoding header priority with gzip as only option', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'gzip'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        response.headers['content-encoding'].should.equal('gzip');
+        done();
+      });
+    });
+
+    it('should\'nt encode content without a valid a supported value in accept-encoding header', function(done){
+      request.get({url:url + '/simple.html', headers:{'Accept-Encoding':'sdch, br'}}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        should.not.exist(response.headers['content-encoding']);
+        done();
+      });
+    });
+
+    it('should\'nt encode content without accept-encoding header', function(done){
+      request.get({url:url + '/simple.html'}, function(error, response, body){
+        response.statusCode.should.eql(200);
+        should.not.exist(response.headers['content-encoding']);
+        done();
+      });
+    });
+
+  });
 });

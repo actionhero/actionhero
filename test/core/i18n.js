@@ -15,11 +15,16 @@ var readLocaleFile = function(locale){
 };
 
 describe('Core: i18n', function(){
+  before((done) => {
+    // sleep to ensure normal local files are saved to disk
+    setTimeout(done, 500);
+  });
+
   before(function(done){
 
     var spanish = {
       'Your random number is %s': 'Su número aleatorio es %s',
-      'That file is not found (%s)': 'Ese archivo no se encuentra (%s)',
+      'That file is not found': 'Ese archivo no se encuentra',
       '%s is a required parameter for this action': '%s es un parámetro requerido para esta acción',
     };
     fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish));
@@ -41,15 +46,11 @@ describe('Core: i18n', function(){
     });
   });
 
-  it('should create localization files by default, and strings from actions and the server should be included automatically', function(done){
+  it('should create localization files by default, and strings from actions should be included', function(done){
     api.specHelper.runAction('randomNumber', function(response){
       response.randomNumber.should.be.within(0, 1);
       var content = readLocaleFile();
       [
-        '*** starting actionhero ***',
-        'Loaded initializer: %s',
-        '*** Server Started ***',
-        '[ action @ %s ]',
         'Your random number is %s',
       ].forEach(function(s){
         should.exist(content[s]);

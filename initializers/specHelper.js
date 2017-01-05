@@ -1,6 +1,7 @@
 'use strict';
 
-var uuid = require('node-uuid');
+const uuid = require('node-uuid');
+const NR = require('node-resque');
 
 module.exports = {
   startPriority: 901,
@@ -9,12 +10,14 @@ module.exports = {
 
     if(api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true){
 
-      api.specHelper = {};
+      api.specHelper = {
+        returnMetadata: true,
+      };
 
       // create a test 'server' to run actions
       api.specHelper.initialize = function(api, options, next){
-        var type = 'testServer';
-        var attributes = {
+        const type = 'testServer';
+        const attributes = {
           canChat: true,
           logConnections: false,
           logExits: false,
@@ -22,7 +25,7 @@ module.exports = {
           verbs: api.connections.allowedVerbs,
         };
 
-        var server = new api.genericServer(type, options, attributes);
+        const server = new api.genericServer(type, options, attributes);
 
         server.start = function(next){
           api.log('loading the testServer', 'warning');
@@ -34,8 +37,7 @@ module.exports = {
         };
 
         server.sendMessage = function(connection, message, messageCount){
-          process.nextTick(function(){
-            message.messageCount = messageCount;
+          process.nextTick(() => {
             connection.messages.push(message);
             if(typeof connection.actionCallbacks[messageCount] === 'function'){
               connection.actionCallbacks[messageCount](message, connection);
@@ -45,8 +47,8 @@ module.exports = {
         };
 
         server.sendFile = function(connection, error, fileStream, mime, length){
-          var content = '';
-          var response = {
+          let content = '';
+          let response = {
             error   : error,
             content : null,
             mime    : mime,
@@ -55,8 +57,8 @@ module.exports = {
 
           try{
             if(!error){
-              fileStream.on('data', function(d){ content += d; });
-              fileStream.on('end', function(){
+              fileStream.on('data', (d) => { content += d; });
+              fileStream.on('end', () => {
                 response.content = content;
                 server.sendMessage(connection, response, connection.messageCount);
               });
@@ -79,24 +81,35 @@ module.exports = {
         });
 
         server.on('actionComplete', function(data){
-          data.response.messageCount = data.messageCount;
-          data.response.serverInformation = {
-            serverName:      api.config.general.serverName,
-            apiVersion:      api.config.general.apiVersion,
-          };
-          data.response.requesterInformation = {
-            id: data.connection.id,
-            remoteIP: data.connection.remoteIP,
-            receivedParams: {}
-          };
+          if(typeof data.response === 'string' || Array.isArray(data.response)){
+            if(data.response.error){
+              data.response = api.config.errors.serializers.servers.specHelper(data.response.error);
+            }
+          }else{
+            if(data.response.error){
+              data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
+            }
 
-          if(data.response.error){
-            data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error);
+            if(api.specHelper.returnMetadata){
+              data.response.messageCount = data.messageCount;
+
+              data.response.serverInformation = {
+                serverName: api.config.general.serverName,
+                apiVersion: api.config.general.apiVersion,
+              };
+
+              data.response.requesterInformation = {
+                id: data.connection.id,
+                remoteIP: data.connection.remoteIP,
+                receivedParams: {}
+              };
+
+              for(let k in data.params){
+                data.response.requesterInformation.receivedParams[k] = data.params[k];
+              }
+            }
           }
 
-          for(var k in data.params){
-            data.response.requesterInformation.receivedParams[k] = data.params[k];
-          }
           if(data.toRender === true){
             server.sendMessage(data.connection, data.response, data.messageCount);
           }
@@ -106,7 +119,7 @@ module.exports = {
       };
 
       api.specHelper.connection = function(){
-        var id = uuid.v4();
+        let id = uuid.v4();
         api.servers.servers.testServer.buildConnection({
           id             : id,
           rawConnection  : {},
@@ -120,7 +133,7 @@ module.exports = {
       // create helpers to run an action
       // data can be a params hash or a connection
       api.specHelper.runAction = function(actionName, input, next){
-        var connection;
+        let connection;
         if(typeof input === 'function' && !next){
           next = input;
           input = {};
@@ -138,14 +151,14 @@ module.exports = {
           connection.actionCallbacks[(connection.messageCount)] = next;
         }
 
-        process.nextTick(function(){
+        process.nextTick(() => {
           api.servers.servers.testServer.processAction(connection);
         });
       };
 
       // helpers to get files
       api.specHelper.getStaticFile = function(file, next){
-        var connection = new api.specHelper.connection();
+        let connection = new api.specHelper.connection();
         connection.params.file = file;
 
         connection.messageCount++;
@@ -161,6 +174,22 @@ module.exports = {
         api.tasks.tasks[taskName].run(api, params, next);
       };
 
+      api.specHelper.runFullTask = function(taskName, params, next){
+        let options = {
+          connection: api.redis.clients.tasks,
+          queues: api.config.tasks.queues || ['default']
+        };
+
+        let worker = new NR.worker(options, api.tasks.jobs);
+        worker.connect((error) => {
+          if(error){
+            return next(error);
+          }
+
+          worker.performInline(taskName, params, next);
+        });
+      };
+
       next();
     }else{
       next();
@@ -169,9 +198,9 @@ module.exports = {
 
   start: function(api, next){
     if(api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true){
-      new api.specHelper.initialize(api, {}, function(serverObject){
+      new api.specHelper.initialize(api, {}, (serverObject) => {
         api.servers.servers.testServer = serverObject;
-        api.servers.servers.testServer.start(function(){
+        api.servers.servers.testServer.start(() => {
           next();
         });
       });

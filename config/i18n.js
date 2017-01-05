@@ -30,11 +30,3 @@ exports.staging = {
     };
   }
 };
-
-exports.production = {
-  i18n: function(){
-    return {
-      updateFiles: false
-    };
-  }
-};

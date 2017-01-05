@@ -39,13 +39,17 @@ describe('Benchmarks', function(){
   });
 
   after(function(done){
+    this.timeout(10 * 1000);
+
     actionhero.stop(function(){
       console.log('');
       console.log('');
       messages.forEach(function(message){
         console.log(message);
       });
-      done();
+
+      // let the load-avg cool off
+      setTimeout(done, 5001);
     });
   });
 
@@ -57,8 +61,8 @@ describe('Benchmarks', function(){
   });
 
   it('status', function(done){
-    this.timeout(20 * 1000);
-    multiAction('status', 1000, {}, function(){
+    this.timeout(45 * 1000);
+    multiAction('status', 100, {}, function(){
       done();
     });
   });

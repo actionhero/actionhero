@@ -1,6 +1,6 @@
 'use strict';
 
-var uuid = require('node-uuid');
+const uuid = require('node-uuid');
 
 module.exports = {
   loadPriority:  400,
@@ -37,7 +37,7 @@ module.exports = {
       },
 
       applyCatch: function(connectionId, method, args, callback){
-        var connection = api.connections.connections[connectionId];
+        const connection = api.connections.connections[connectionId];
         if(method && args){
           if(method === 'sendMessage' || method === 'sendFile'){
             connection[method](args);
@@ -46,7 +46,7 @@ module.exports = {
           }
         }
         if(typeof callback === 'function'){
-          process.nextTick(function(){
+          process.nextTick(() => {
             callback(cleanConnection(connection));
           });
         }
@@ -59,7 +59,7 @@ module.exports = {
         api.connections.middleware[data.name] = data;
 
         this.globalMiddleware.push(data.name);
-        this.globalMiddleware.sort(function(a, b){
+        this.globalMiddleware.sort((a, b) => {
           if(api.connections.middleware[a].priority > api.connections.middleware[b].priority){
             return 1;
           }else{
@@ -69,9 +69,9 @@ module.exports = {
       }
     };
 
-    var cleanConnection = function(connection){
-      var clean = {};
-      for(var i in connection){
+    const cleanConnection = function(connection){
+      let clean = {};
+      for(let i in connection){
         if(i !== 'rawConnection'){
           clean[i] = connection[i];
         }
@@ -82,32 +82,30 @@ module.exports = {
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
     api.connection = function(data){
-      var self = this;
-      self.setup(data);
-      api.connections.connections[self.id] = self;
+      this.setup(data);
+      api.connections.connections[this.id] = this;
 
-      api.connections.globalMiddleware.forEach(function(middlewareName){
+      api.connections.globalMiddleware.forEach((middlewareName) => {
         if(typeof api.connections.middleware[middlewareName].create === 'function'){
-          api.connections.middleware[middlewareName].create(self);
+          api.connections.middleware[middlewareName].create(this);
         }
       });
     };
 
     api.connection.prototype.setup = function(data){
-      var self = this;
       if(data.id){
-        self.id = data.id;
+        this.id = data.id;
       }else{
-        self.id = self.generateID();
+        this.id = this.generateID();
       }
-      self.connectedAt = new Date().getTime();
+      this.connectedAt = new Date().getTime();
 
-      ['type', 'rawConnection'].forEach(function(req){
+      ['type', 'rawConnection'].forEach((req) => {
         if(data[req] === null || data[req] === undefined){ throw new Error(req + ' is required to create a new connection object'); }
-        self[req] = data[req];
+        this[req] = data[req];
       });
 
-      ['remotePort', 'remoteIP'].forEach(function(req){
+      ['remotePort', 'remoteIP'].forEach((req) => {
         if(data[req] === null || data[req] === undefined){
           if(api.config.general.enforceConnectionProperties === true){
             throw new Error(req + ' is required to create a new connection object');
@@ -115,12 +113,12 @@ module.exports = {
             data[req] = 0; // could be a random uuid as well?
           }
         }
-        self[req] = data[req];
+        this[req] = data[req];
       });
 
-      var connectionDefaults = {
+      const connectionDefaults = {
         error: null,
-        fingerprint: null,
+        fingerprint: this.id,
         rooms: [],
         params: {},
         pendingActions: 0,
@@ -129,12 +127,12 @@ module.exports = {
         canChat: false
       };
 
-      for(var i in connectionDefaults){
-        if(self[i] === undefined && data[i] !== undefined){ self[i] = data[i]; }
-        if(self[i] === undefined){ self[i] = connectionDefaults[i]; }
+      for(let i in connectionDefaults){
+        if(this[i] === undefined && data[i] !== undefined){ this[i] = data[i]; }
+        if(this[i] === undefined){ this[i] = connectionDefaults[i]; }
       }
 
-      api.i18n.invokeConnectionLocale(self);
+      api.i18n.invokeConnectionLocale(this);
     };
 
     api.connection.prototype.localize = function(message){
@@ -147,45 +145,44 @@ module.exports = {
     };
 
     api.connection.prototype.destroy = function(callback){
-      var self = this;
-      self.destroyed = true;
+      this.destroyed = true;
 
-      api.connections.globalMiddleware.forEach(function(middlewareName){
+      api.connections.globalMiddleware.forEach((middlewareName) => {
         if(typeof api.connections.middleware[middlewareName].destroy === 'function'){
-          api.connections.middleware[middlewareName].destroy(self);
+          api.connections.middleware[middlewareName].destroy(this);
         }
       });
 
-      if(self.canChat === true){
-        self.rooms.forEach(function(room){
-          api.chatRoom.removeMember(self.id, room);
+      if(this.canChat === true){
+        this.rooms.forEach((room) => {
+          api.chatRoom.removeMember(this.id, room);
         });
       }
-      var server = api.servers.servers[self.type];
+
+      const server = api.servers.servers[this.type];
+
       if(server){
         if(server.attributes.logExits === true){
-          server.log('connection closed', 'info', {to: self.remoteIP});
+          server.log('connection closed', 'info', {to: this.remoteIP});
         }
-        if(typeof server.goodbye === 'function'){ server.goodbye(self); }
+        if(typeof server.goodbye === 'function'){ server.goodbye(this); }
       }
 
-      delete api.connections.connections[self.id];
+      delete api.connections.connections[this.id];
 
       if(typeof callback === 'function'){ callback(); }
     };
 
     api.connection.prototype.set = function(key, value){
-      var self = this;
-      self[key] = value;
+      this[key] = value;
     };
 
     api.connection.prototype.verbs = function(verb, words, callback){
-      var self = this;
-      var key;
-      var value;
-      var room;
-      var server = api.servers.servers[self.type];
-      var allowedVerbs = server.attributes.verbs;
+      let key;
+      let value;
+      let room;
+      const server = api.servers.servers[this.type];
+      const allowedVerbs = server.attributes.verbs;
       if(typeof words === 'function' && !callback){
         callback = words;
         words = [];
@@ -194,56 +191,56 @@ module.exports = {
         words = [words];
       }
       if(server && allowedVerbs.indexOf(verb) >= 0){
-        server.log('verb', 'debug', {verb: verb, to: self.remoteIP, params: JSON.stringify(words)});
+        server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)});
         if(verb === 'quit' || verb === 'exit'){
-          server.goodbye(self);
+          server.goodbye(this);
 
         }else if(verb === 'paramAdd'){
           key = words[0];
           value = words[1];
           if((words[0]) && (words[0].indexOf('=') >= 0)){
-            var parts = words[0].split('=');
+            let parts = words[0].split('=');
             key = parts[0];
             value = parts[1];
           }
           if(api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) > 0){
-            self.params[key] = value;
+            this.params[key] = value;
           }
           if(typeof callback === 'function'){ callback(null, null); }
         }else if(verb === 'paramDelete'){
           key = words[0];
-          delete self.params[key];
+          delete this.params[key];
           if(typeof callback === 'function'){ callback(null, null); }
 
         }else if(verb === 'paramView'){
           key = words[0];
-          if(typeof callback === 'function'){ callback(null, self.params[key]); }
+          if(typeof callback === 'function'){ callback(null, this.params[key]); }
 
         }else if(verb === 'paramsView'){
-          if(typeof callback === 'function'){ callback(null, self.params); }
+          if(typeof callback === 'function'){ callback(null, this.params); }
 
         }else if(verb === 'paramsDelete'){
-          for(var i in self.params){
-            delete self.params[i];
+          for(let i in this.params){
+            delete this.params[i];
           }
           if(typeof callback === 'function'){ callback(null, null); }
 
         }else if(verb === 'roomAdd'){
           room = words[0];
-          api.chatRoom.addMember(self.id, room, function(error, didHappen){
+          api.chatRoom.addMember(this.id, room, (error, didHappen) => {
             if(typeof callback === 'function'){ callback(error, didHappen); }
           });
 
         }else if(verb === 'roomLeave'){
           room = words[0];
-          api.chatRoom.removeMember(self.id, room, function(error, didHappen){
+          api.chatRoom.removeMember(this.id, room, (error, didHappen) => {
             if(typeof callback === 'function'){ callback(error, didHappen); }
           });
 
         }else if(verb === 'roomView'){
           room = words[0];
-          if(self.rooms.indexOf(room) > -1){
-            api.chatRoom.roomStatus(room, function(error, roomStatus){
+          if(this.rooms.indexOf(room) > -1){
+            api.chatRoom.roomStatus(room, (error, roomStatus) => {
               if(typeof callback === 'function'){ callback(error, roomStatus); }
             });
           }else{
@@ -251,16 +248,16 @@ module.exports = {
           }
 
         }else if(verb === 'detailsView'){
-          var details            = {};
-          details.id             = self.id;
-          details.fingerprint    = self.fingerprint;
-          details.remoteIP       = self.remoteIP;
-          details.remotePort     = self.remotePort;
-          details.params         = self.params;
-          details.connectedAt    = self.connectedAt;
-          details.rooms          = self.rooms;
-          details.totalActions   = self.totalActions;
-          details.pendingActions = self.pendingActions;
+          let details            = {};
+          details.id             = this.id;
+          details.fingerprint    = this.fingerprint;
+          details.remoteIP       = this.remoteIP;
+          details.remotePort     = this.remotePort;
+          details.params         = this.params;
+          details.connectedAt    = this.connectedAt;
+          details.rooms          = this.rooms;
+          details.totalActions   = this.totalActions;
+          details.pendingActions = this.pendingActions;
           if(typeof callback === 'function'){ callback(null, details); }
 
         }else if(verb === 'documentation'){
@@ -268,15 +265,15 @@ module.exports = {
 
         }else if(verb === 'say'){
           room = words.shift();
-          api.chatRoom.broadcast(self, room, words.join(' '), function(error){
+          api.chatRoom.broadcast(this, room, words.join(' '), (error) => {
             if(typeof callback === 'function'){ callback(error); }
           });
 
         }else{
-          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(self, verb), null); }
+          if(typeof callback === 'function'){ callback(api.config.errors.verbNotFound(this, verb), null); }
         }
       }else{
-        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(self, verb), null); }
+        if(typeof callback === 'function'){ callback(api.config.errors.verbNotAllowed(this, verb), null); }
       }
     };
 

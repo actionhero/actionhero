@@ -1,3 +1,5 @@
+'use strict';
+
 exports['default'] = {
   servers: {
     socket: function(api){

@@ -1,0 +1,42 @@
+<section class="bs-docs-section">
+  <h1 id="utils" class="page-header">Utilities</h1>
+
+  <p>ActionHero ships with a few utility methods exposed for your convince:</p>
+
+  <h3><code>api.utils.hashMerge(a, b)</code></h3>
+  <ul>
+    <li>create a new hash which looks like b merged into a</li>
+    <li><code>{a:1, b:2}</code> merged with <code>{b:3, c:4}</code> looks like <code>{a: 1, b:3, c:4}</code></li>
+  </ul>
+
+  <h3><code>api.utils.isPlainObject(object)</code></h3>
+  <ul>
+    <li>determines if <code>object</code> is a plain js ‘Object' or something more complex, like a stream</li>
+  </ul>
+
+  <h3><code>api.utils.arrayUniqueify(arr)</code></h3>
+  <ul>
+    <li>removes duplicate entries from an array</li>
+  </ul>
+
+  <h3><code>api.utils.objClone(obj)</code></h3>
+  <ul>
+    <li>creates a new object with the same keys and values of the original object</li>
+  </ul>
+
+  <h3><code>api.utils.getExternalIPAddress()</code></h3>
+  <ul>
+    <li>attempts to determine this server's external IP address out of all plausible addressees this host is listening on</li>
+  </ul>
+
+  <h3><code>api.utils.parseCookies(req)</code></h3>
+  <ul>
+    <li>a helper to parse the request object's headers and returns a hash of the client's cookies</li>
+  </ul>
+
+  <h3><code>api.utils.parseIPv6URI(address)</code></h3>
+  <ul>
+    <li>will return <code>{host: host, port: port}</code> for an IPv6 address</li>
+  </ul>
+
+</section>

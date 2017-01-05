@@ -1,8 +1,10 @@
-var path = require('path');
+'use strict';
+
+const path = require('path');
 
 exports['default'] = {
   general: function(api){
-    var packageJSON = require(api.projectRoot + path.sep + 'package.json');
+    const packageJSON = require(api.projectRoot + path.sep + 'package.json');
 
     return {
       apiVersion: packageJSON.version,
@@ -34,7 +36,9 @@ exports['default'] = {
       missingParamChecks: [null, '', undefined],
       // The default filetype to server when a user requests a directory
       directoryFileType : 'index.html',
-      // The default priority level given to middleware of all types (action, connection, and say)
+      // What log-level should we use for file requests?
+      fileRequestLogLevel: 'info',
+      // The default priority level given to middleware of all types (action, connection, say, and task)
       defaultMiddlewarePriority : 100,
       // Which channel to use on redis pub/sub for RPC communication
       channel: 'actionhero',

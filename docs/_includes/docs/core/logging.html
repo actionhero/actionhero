@@ -1,0 +1,93 @@
+<section class="bs-docs-section">
+  <h1 id="logging" class="page-header">Logging</h1>
+
+  <h2 id="logging-winston">Winston</h2>
+
+  <p>ActionHero uses the <a href="https://github.com/flatiron/winston">Winston logger</a>.  This allows for better, more customizable logging.</p>
+
+<h2 id="logging-default">Defaults</h2>
+
+  {% highlight javascript %}
+config.logger = {
+  transports: [
+    function(api){
+      return new (winston.transports.Console)({
+        colorize: true,
+        level: "debug",
+      });
+    },
+    function(api){
+      return new (winston.transports.File)({
+        filename: './log/' + api.pids.title + '.log',
+        level: "info",
+        timestamp: true,
+      });
+    }
+  ]
+};
+  {% endhighlight %}
+
+  <p>In your <code>config/logger.js</code>, you can customize which <code>transports</code> you would like the logger to use. If none are provided, a default logger which only will print to stdout will be used.  See winston's documentation for all the logger types, but know that they include console, file, s3, riak, and more.</p>
+  <p>You can set a transport directly, IE <code>new (winston.transports.Console)()</code> or in a function which will be passed the <code>api</code> object like the examples above.  The benefit of using the function invocation is you will have access to other methods and configuration options (like the title of the process).</p>
+
+  <h2 id="logging-levels">Levels</h2>
+
+  {% highlight javascript %}
+api.log('hello'); // will use the default, 'info' level
+api.log('debug message', 'debug') // will not show up unless you have configured your logger in this NODE_ENV to be debug
+api.log('OH NO', 'emerg') // will show up in all logger levels
+api.log('the params were', 'info', data.params) // you can log objects too
+  {% endhighlight %}
+
+  <p>Note that you can set a <code>level</code> which indicates which level (and those above it) you wish to log per transport.  The log levels are:</p>
+
+  <ul>
+    <li>0=debug</li>
+    <li>1=info</li>
+    <li>2=notice</li>
+    <li>3=warning</li>
+    <li>4=error</li>
+    <li>5=crit</li>
+    <li>6=alert</li>
+    <li>7=emerg</li>
+  </ul>
+
+  <p>You can customize these via <code>api.config.logger.levels</code> and <code>api.config.logger.colors</code>.  See <a href="https://github.com/winstonjs/winston#using-custom-logging-levels">Winston's documenation for more information</a></p>
+  <p>For example, if you set the logger's level to "notice", you would also see "crit" messages, but not "debug" messages.</p>
+  <p>To invoke the logger from your code, use: <code>api.log(message, severity, metadata)</code></p>
+
+  <h2 id="logging-methods">Methods</h2>
+
+  <p><code>api.logger.log</code> and <code>api.logger[severity]</code> also exist which allow you to call and modify the Winston instance directly.</p>
+  <p><code>api.log</code> will pass your message to all transports.</p>
+
+  <h3><code>api.log(message, severity, metadata)</code></h3>
+
+  {% highlight javascript %}
+// the most basic use.  Will assume 'info' as the severity
+api.log('hello');
+
+// custom severity
+api.log('OH NO!', 'warning');
+
+// custom severity with a metadata object
+api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });
+
+// using sprintf-style interpolations
+var message = ['Hello there, the time is now %s', new Date()];
+api.log(message, 'debug');
+  {% endhighlight %}
+
+  <ul>
+    <li>message is a string or an array containing a <code>sprintf</code> style string and replacements
+      <ul>
+        <li>an example of this would be: <code>api.log(['Hello %s', connection.params.firstName], 'info')</code></li>
+        <li>the message you pass will be used with the localization engines (<code>i18n</code>).  You can <a href="/docs/core/#localization-localizing-the-logger">learn more here</a></li>
+      </ul>
+    </li>
+    <li>severity is a string, and should match the log-level (IE: ‘info' or ‘warning')</li>
+    <li>the default severity level is ‘info'</li>
+    <li>(optional) metadata is anything that can be stringified with <code>JSON.stringify</code></li>
+  </ul>
+
+</section>

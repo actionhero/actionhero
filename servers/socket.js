@@ -1,14 +1,16 @@
-var net = require('net');
-var tls = require('tls');
+'use strict';
 
-var initialize = function(api, options, next){
+const net = require('net');
+const tls = require('tls');
+
+const initialize = function(api, options, next){
 
   //////////
   // INIT //
   //////////
 
-  var type = 'socket';
-  var attributes = {
+  const type = 'socket';
+  const attributes = {
     canChat: true,
     logConnections: true,
     logExits: true,
@@ -31,7 +33,7 @@ var initialize = function(api, options, next){
     ]
   };
 
-  var server = new api.genericServer(type, options, attributes);
+  const server = new api.genericServer(type, options, attributes);
 
   //////////////////////
   // REQUIRED METHODS //
@@ -39,23 +41,21 @@ var initialize = function(api, options, next){
 
   server.start = function(next){
     if(options.secure === false){
-      server.server = net.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
+      server.server = net.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
         handleConnection(rawConnection);
       });
     }else{
-      server.server = tls.createServer(api.config.servers.socket.serverOptions, function(rawConnection){
+      server.server = tls.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
         handleConnection(rawConnection);
       });
     }
 
-    server.server.on('error', function(e){
+    server.server.on('error', (e) => {
       return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message));
     });
 
-    server.server.listen(options.port, options.bindIP, function(){
-      process.nextTick(function(){
-        next();
-      });
+    server.server.listen(options.port, options.bindIP, () => {
+      process.nextTick(next);
     });
   };
 
@@ -106,11 +106,11 @@ var initialize = function(api, options, next){
   server.on('connection', function(connection){
     connection.params = {};
 
-    var parseLine = function(line){
+    const parseLine = function(line){
       if(api.config.servers.socket.maxDataLength > 0){
-        var blen = Buffer.byteLength(line, 'utf8');
+        let blen = Buffer.byteLength(line, 'utf8');
         if(blen > api.config.servers.socket.maxDataLength){
-          var error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen);
+          let error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen);
           server.log(error, 'error');
           return server.sendMessage(connection, {status:'error', error: error, context: 'response'});
         }
@@ -123,17 +123,17 @@ var initialize = function(api, options, next){
       }
     };
 
-    connection.rawConnection.on('data', function(chunk){
+    connection.rawConnection.on('data', (chunk) => {
       if(checkBreakChars(chunk)){
         connection.destroy();
       }else{
         // Replace all carriage returns with newlines.
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n');
-        var index;
-        var d = String(api.config.servers.socket.delimiter);
+        let index;
+        let d = String(api.config.servers.socket.delimiter);
 
         while((index = connection.rawConnection.socketDataString.indexOf(d)) > -1){
-          var data = connection.rawConnection.socketDataString.slice(0, index);
+          let data = connection.rawConnection.socketDataString.slice(0, index);
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + d.length);
           data.split(d).forEach(parseLine);
         }
@@ -141,14 +141,14 @@ var initialize = function(api, options, next){
       }
     });
 
-    connection.rawConnection.on('end', function(){
+    connection.rawConnection.on('end', () => {
       if(connection.destroyed !== true){
         try{ connection.rawConnection.end(); }catch(e){}
         connection.destroy();
       }
     });
 
-    connection.rawConnection.on('error', function(e){
+    connection.rawConnection.on('error', (e) => {
       if(connection.destroyed !== true){
         server.log('socket error: ' + e, 'error');
         try{ connection.rawConnection.end(); }catch(e){}
@@ -157,7 +157,7 @@ var initialize = function(api, options, next){
     });
   });
 
-  server.on('actionComplete', function(data){
+  server.on('actionComplete', (data) => {
     if(data.toRender === true){
       data.response.context = 'response';
       server.sendMessage(data.connection, data.response, data.messageCount);
@@ -168,25 +168,25 @@ var initialize = function(api, options, next){
   // HELPERS //
   /////////////
 
-  var parseRequest = function(connection, line){
-    var words = line.split(' ');
-    var verb = words.shift();
+  const parseRequest = function(connection, line){
+    let words = line.split(' ');
+    let verb = words.shift();
     if(verb === 'file'){
       if(words.length > 0){
         connection.params.file = words[0];
       }
       server.processFile(connection);
     }else{
-      connection.verbs(verb, words, function(error, data){
+      connection.verbs(verb, words, (error, data) => {
         if(!error){
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data});
         }else if(error.match('verb not found or not allowed')){
           // check for and attempt to check single-use params
           try{
-            var requestHash = JSON.parse(line);
+            let requestHash = JSON.parse(line);
             if(requestHash.params !== undefined){
               connection.params = {};
-              for(var v in requestHash.params){
+              for(let v in requestHash.params){
                 connection.params[v] = requestHash.params[v];
               }
             }
@@ -206,7 +206,7 @@ var initialize = function(api, options, next){
     }
   };
 
-  var handleConnection = function(rawConnection){
+  const handleConnection = function(rawConnection){
     if(api.config.servers.socket.setKeepAlive === true){
       rawConnection.setKeepAlive(true);
     }
@@ -219,9 +219,9 @@ var initialize = function(api, options, next){
   };
 
   // I check for ctrl+c in the stream
-  var checkBreakChars = function(chunk){
-    var found = false;
-    var hexChunk = chunk.toString('hex', 0, chunk.length);
+  const checkBreakChars = function(chunk){
+    let found = false;
+    let hexChunk = chunk.toString('hex', 0, chunk.length);
     if(hexChunk === 'fff4fffd06'){
       found = true; // CTRL + C
     }else if(hexChunk === '04'){
@@ -230,18 +230,18 @@ var initialize = function(api, options, next){
     return found;
   };
 
-  var gracefulShutdown = function(next, alreadyShutdown){
+  const gracefulShutdown = function(next, alreadyShutdown){
     if(!alreadyShutdown || alreadyShutdown === false){
-      server.server.close();
+      if(server.server){ server.server.close(); }
     }
-    var pendingConnections = 0;
-    server.connections().forEach(function(connection){
+    let pendingConnections = 0;
+    server.connections().forEach((connection) => {
       if(connection.pendingActions === 0){
         connection.destroy();
       }else{
         pendingConnections++;
         if(!connection.rawConnection.shutDownTimer){
-          connection.rawConnection.shutDownTimer = setTimeout(function(){
+          connection.rawConnection.shutDownTimer = setTimeout(() => {
             connection.destroy();
           }, attributes.pendingShutdownWaitLimit);
         }
@@ -249,7 +249,7 @@ var initialize = function(api, options, next){
     });
     if(pendingConnections > 0){
       server.log('waiting on shutdown, there are still ' + pendingConnections + ' connected clients waiting on a response', 'notice');
-      setTimeout(function(){
+      setTimeout(() => {
         gracefulShutdown(next, true);
       }, 1000);
     }else if(typeof next === 'function'){ next(); }

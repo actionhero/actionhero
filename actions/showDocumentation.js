@@ -1,3 +1,5 @@
+'use strict';
+
 exports.showDocumentation = {
   name: 'showDocumentation',
   description: 'return API documentation',

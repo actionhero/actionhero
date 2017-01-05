@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="actionhero.js is a multi-transport framework Node.JS API Server with integrated cluster capabilities and delayed tasks">
+  <meta name="keywords" content="actionhero, actionherojs, node, nodejs, node.js, framework, server, api, cluster, redis, task, job, background, middleware">
+  <meta name="author" content="Evan Tahler">
+  <meta property="twitter:account_id" content="997582154" />
+
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" />
+
+
+  <title>{{site.name}}</title>
+
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/docs.min.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+  <style>
+    #content {
+      background:{{site.header.color1}};
+      background:linear-gradient(135deg, {{site.header.color1}}, {{site.header.color2}});
+    }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="/assets/js/docs.min.js"></script>
+</head>
+
+<body>
+  <!-- Main navigation
+  =========================================== -->
+  <header class="navbar navbar-fixed-top bs-docs-nav" id="top">
+    <div class="container">
+      <div class="navbar-header" role="banner">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">{{site.name}}</a>
+      </div>
+      <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav">
+
+        <li {% if page.title == "Learn More" %}class="active"{% endif %}><a href="/learn-more">Learn More</a></li>
+        <li {% if page.title == "Overview" %}class="active"{% endif %}><a href="/docs/overview">Overview</a></li>
+        <li {% if page.title == "Core" %}class="active"{% endif %}><a href="/docs/core">Core</a></li>
+        <li {% if page.title == "Servers" %}class="active"{% endif %}><a href="/docs/servers">Servers</a></li>
+        <li {% if page.title == "Deployment" %}class="active"{% endif %}><a href="/docs/deployment">Deployment</a></li>
+
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+        {% for p in site.headerLinks %}
+          <li>
+            <a href="{{p.url}}">{{p.title}}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- Header
+  =========================================== -->
+  <div id="header-spacer" style="height: 50px;">&nbsp;</div>
+
+  {% if page.isHome %}
+  <div class="bs-docs-masthead" id="content">
+    <div class="container">
+      <h1 class="home-title">{{site.name}}</h1>
+      <img src="{{site.logo}}" style="width:300px; height:254px" />
+      <p class="lead">{{page.description}} <br /> <em>{{page.sub_description}}</em></p>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="bs-docs-header" id="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <img src="{{site.logo}}" style="width:150px; height:127px" />
+        </div>
+        <div class="col-md-10">
+          <h1>{{page.title}}</h1>
+          <p>{{page.description}} <br /> <em>{{page.sub_description}}</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="container bs-docs-container">
+    <div class="row">
+      <!-- Content
+      =========================================== -->
+      <div class="col-md-9" role="main">
+        {{content}}
+      </div>
+
+      <!-- Page navigation
+      =========================================== -->
+      <div class="col-md-3" role="complementary">
+        <div class="bs-docs-sidebar hidden-print">
+          <ul class="nav bs-docs-sidenav">
+          </ul>
+          <a class="back-to-top" href="#top">
+            <i class="glyphicon glyphicon-chevron-up"></i> Back to top
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="merch-container" class="container">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h1>Try ActionHero Now</h1>
+            <div align="left">
+            {% highlight bash %}
+npm install actionhero
+./node_modules/.bin/actionhero generate
+npm install
+npm start
+            {% endhighlight %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h1>Get ActionHero Stuff</h1>
+          <div class="row">
+            <div class="col-md-6">
+              <a href="https://teespring.com/actionhero-t-shirts" target="_blank"><img width="250" height="300" src="/assets/images/swag/shirt.png"/></a>
+            </div>
+            <div class="col-md-6">
+              <a href="https://www.stickermule.com/marketplace/8033-actionherojs" target="_blank"><img width="250" height="250" src="/assets/images/swag/sticker.png"/></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer
+  =========================================== -->
+  <footer class="bs-docs-footer" role="contentinfo" style="margin-top:0px;">
+    <div class="container">
+      <div class="bs-docs-social">
+        <ul class="bs-docs-social-buttons">
+        {% if site.githubButton.user and site.githubButton.repo %}
+          <li>
+            <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user={{site.githubButton.user}}&amp;repo={{site.githubButton.repo}}&amp;type=watch&amp;count=true" width="90" height="20" title="Star on GitHub"></iframe>
+          </li>
+          <li>
+            <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user={{site.githubButton.user}}&amp;repo={{site.githubButton.repo}}&amp;type=fork&amp;count=true" width="90" height="20" title="Fork on GitHub"></iframe>
+          </li>
+        {% endif %}
+        {% if site.twitter.enabled %}
+          <li>
+            <a href="https://twitter.com/share" class="twitter-share-button" data-url="{{site.github.url}}" data-count="horizontal" data-via="{{site.twitter.via}}" data-text="{{site.name}}" data-hashtags="{{site.twitter.hash}}">Tweet</a>
+          </li>
+        {% endif %}
+        {% if site.twitter.account %}
+          <li>
+            <a href="https://twitter.com/{{site.twitter.account}}" class="twitter-follow-button" data-show-count="true">Follow @{{site.twitter.account}}</a>
+          </li>
+        {% endif %}
+        {% if site.facebook.enabled %}
+          <li>
+            <div class="fb-like" data-href="{{site.github.url}}" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+          </li>
+        {% endif %}
+        {% if site.facebook.profileUrl %}
+          <li>
+            <div class="fb-follow" data-href="{{site.facebook.profileUrl}}" data-layout="button_count" data-show-faces="false"></div>
+          </li>
+        {% endif %}
+        </ul>
+      </div>
+
+      <p>
+        Licensed under <a href="{{site.licenseUrl}}" target="_blank">{{site.license}}</a>
+      </p>
+      <p>
+        Documentation template by <a href="http://getbootstrap.com">Bootstrap team</a>,
+        generated with <a href="https://github.com/mistic100/jekyll-bootstrap-doc">Jekyll Bootstrap Doc</a>
+      </p>
+
+      <ul class="bs-docs-footer-links muted">
+      {% for l in site.footerLinks %}
+        {% if forloop.index != 1 %}<li>&middot;</li>{% endif %}
+        <li><a href="{{l.url}}">{{l.title}}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+  </footer>
+
+
+  <!-- Async scripts
+  =========================================== -->
+  {% if site.header.trianglify %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.2/trianglify.min.js"></script>
+  <script>trianglify('#content', '{{site.header.color1}}', '{{site.header.color2}}');</script>
+  <script>trianglify('#merch-container', '{{site.header.color1}}', '{{site.header.color2}}');</script>
+  {% endif %}
+
+  {% if site.twitter.enabled or site.twitter.account %}
+  <script>
+    window.twttr = (function (d,s,id) {
+      var t, js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.async=1;
+      js.src="https://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs);
+      return window.twttr || (t = { _e: [], ready: function(f){ t._e.push(f) } });
+    }(document, "script", "twitter-wjs"));
+  </script>
+  {% endif %}
+
+  {% if site.facebook.enabled or site.facebook.profileUrl %}
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+  {% endif %}
+
+  {% if site.analytics.account and site.analytics.domain %}
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', '{{site.analytics.account}}', '{{site.analytics.domain}}');
+    ga('send', 'pageview');
+  </script>
+  {% endif %}
+
+</body>
+</html>

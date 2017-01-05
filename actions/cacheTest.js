@@ -1,3 +1,5 @@
+'use strict';
+
 exports.cacheTest = {
   name: 'cacheTest',
   description: 'I will test the internal cache functions of the API',
@@ -33,8 +35,8 @@ exports.cacheTest = {
   },
 
   run: function(api, data, next){
-    var key = 'cacheTest_' + data.params.key;
-    var value = data.params.value;
+    const key = 'cacheTest_' + data.params.key;
+    const value = data.params.value;
 
     data.response.cacheTestResults = {};
 

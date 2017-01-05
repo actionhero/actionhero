@@ -18,18 +18,12 @@ module.exports = {
       api.actions.middleware[data.name] = data;
       if(data.global === true){
         api.actions.globalMiddleware.push(data.name);
-        api.actions.globalMiddleware.sort(function(a, b){
-          if(api.actions.middleware[a].priority > api.actions.middleware[b].priority){
-            return 1;
-          }else{
-            return -1;
-          }
-        });
+        api.utils.sortGlobalMiddleware(api.actions.globalMiddleware, api.actions.middleware);
       }
     };
 
     api.actions.validateAction = function(action){
-      var fail = function(msg){
+      const fail = (msg) => {
         return next(new Error(msg));
       };
 
@@ -57,8 +51,8 @@ module.exports = {
     api.actions.loadFile = function(fullFilePath, reload){
       if(reload === null){ reload = false; }
 
-      var loadMessage = function(action){
-        var msgString = '';
+      const loadMessage = (action) => {
+        let msgString = '';
         if(reload){
           api.log(['action reloaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug');
         }else{
@@ -72,10 +66,11 @@ module.exports = {
         api.routes.loadRoutes();
       });
 
-      var action;
+      let action;
+
       try{
-        var collection = require(fullFilePath);
-        for(var i in collection){
+        const collection = require(fullFilePath);
+        for(let i in collection){
           action = collection[i];
           if(action.version === null || action.version === undefined){ action.version = 1.0; }
           if(api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined){

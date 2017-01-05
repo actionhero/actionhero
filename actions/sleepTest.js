@@ -1,3 +1,5 @@
+'use strict';
+
 exports.sleepTest = {
   name: 'sleepTest',
   description: 'I will sleep and then return',
@@ -18,12 +20,12 @@ exports.sleepTest = {
   },
 
   run: function(api, data, next){
-    var sleepDuration = data.params.sleepDuration;
-    var sleepStarted = new Date().getTime();
+    const sleepDuration = data.params.sleepDuration;
+    const sleepStarted = new Date().getTime();
 
     setTimeout(function(){
-      var sleepEnded = new Date().getTime();
-      var sleepDelta = sleepEnded - sleepStarted;
+      const sleepEnded = new Date().getTime();
+      const sleepDelta = sleepEnded - sleepStarted;
 
       data.response.sleepStarted  = sleepStarted;
       data.response.sleepEnded    = sleepEnded;
