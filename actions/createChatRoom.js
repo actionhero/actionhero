@@ -1,4 +1,4 @@
-
+'use strict'
 
 exports.createChatRoom = {
   name: 'createChatRoom',
@@ -10,8 +10,8 @@ exports.createChatRoom = {
     name: { required: true }
   },
 
-  run: function(api, data, next){
-    api.chatRoom.add(data.params.name, next);
+  run: function (api, data, next) {
+    api.chatRoom.add(data.params.name, next)
   }
 
-};
+}

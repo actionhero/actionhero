@@ -1,82 +1,76 @@
 #!/usr/bin/env node
-'use strict';
+'use strict'
 
-const cluster  = require('cluster');
-const fs       = require('fs');
-const winston  = require('winston');
-const path     = require('path');
-const optimist = require('optimist');
-const spawn    = require('child_process').spawn;
+const path = require('path')
+const optimist = require('optimist')
+const spawn = require('child_process').spawn
 
-const actionheroRoot = path.normalize(__dirname + '/..');
-let projectRoot;
+const actionheroRoot = path.normalize(path.join(__dirname, '..'))
+let projectRoot
 
-if(process.env.projectRoot){
-  projectRoot = process.env.projectRoot;
-}else if(process.env.project_root){
-  projectRoot = process.env.project_root;
-}else if(process.env.PROJECT_ROOT){
-  projectRoot = process.env.PROJECT_ROOT;
-}else{
-  projectRoot = path.normalize(process.cwd());
+if (process.env.projectRoot) {
+  projectRoot = process.env.projectRoot
+} else if (process.env.project_root) {
+  projectRoot = process.env.project_root
+} else if (process.env.PROJECT_ROOT) {
+  projectRoot = process.env.PROJECT_ROOT
+} else {
+  projectRoot = path.normalize(process.cwd())
 }
 
-const actionheroPrototype = require(actionheroRoot + '/actionhero.js').actionheroPrototype;
-const actionhero = new actionheroPrototype();
-const configChanges = {};
+const ActionheroPrototype = require(actionheroRoot + '/actionhero.js')
+const actionhero = new ActionheroPrototype()
+const configChanges = {}
 
-let commands = [];
-if(!optimist.argv._ || optimist.argv._.length === 0){ commands.push('start'); }
-optimist.argv._.forEach(function(arg){ commands.push(arg); });
-if(commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0){
-
+let commands = []
+if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
+optimist.argv._.forEach(function (arg) { commands.push(arg) })
+if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0) {
   // when generating the project from scratch, we cannot rely on the normal initilizers
-  const runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
-  runner({projectRoot: projectRoot}, function(error){
-    if(error){ throw error; }
-    setTimeout(process.exit, 500, 0);
-  });
+  const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+  runner({projectRoot: projectRoot}, function (error) {
+    if (error) { throw error }
+    setTimeout(process.exit, 500, 0)
+  })
+} else {
+  actionhero.initialize({configChanges: configChanges}, function (error, api) {
+    if (error) { throw error }
+    api._context = actionhero
 
-}else{
+    try {
+      const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
 
-  actionhero.initialize({configChanges: configChanges}, function(error, api){
-    if(error){ throw error; }
-    api._context = actionhero;
+      api.log('--------------------------------------')
+      api.log(['ACTIONHERO COMMAND >> %s', commands.join(' ')])
+      api.log(['projectRoot: %s', path.normalize(projectRoot)], 'debug')
+      api.log(['actionheroRoot: %s', path.normalize(actionheroRoot)], 'debug')
+      api.log('--------------------------------------')
 
-    try{
-      const runner = require(__dirname + path.sep + 'methods' + path.sep + commands.join(path.sep) + '.js');
-
-      api.log('--------------------------------------');
-      api.log(['ACTIONHERO COMMAND >> %s', commands.join(' ')]);
-      api.log(['projectRoot: %s', path.normalize(projectRoot)], 'debug');
-      api.log(['actionheroRoot: %s', path.normalize(actionheroRoot)], 'debug');
-      api.log('--------------------------------------');
-
-      if(optimist.argv.daemon){
-        let newArgs = process.argv.splice(2);
-        for(let i in newArgs){
-          if(newArgs[i].indexOf('--daemon') >= 0){ newArgs.splice(i, 1); }
+      if (optimist.argv.daemon) {
+        let newArgs = process.argv.splice(2)
+        for (let i in newArgs) {
+          if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
         }
-        newArgs.push('--isDaemon=true');
-        const command = path.normalize(actionheroRoot + '/bin/actionhero');
-        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'});
-        api.log(['%s %s', command, newArgs.join(' ')], 'debug');
-        api.log(['spawned child process with pid %s', child.pid], 'notice');
-        process.nextTick(process.exit);
-      }else{
-        runner(api, function(error, toStop){
-          if(error){ throw error; }
-          if(toStop){ setTimeout(process.exit, 500, 0); }
-        });
+        newArgs.push('--isDaemon=true')
+        const command = path.normalize(actionheroRoot + '/bin/actionhero')
+        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+        api.log(['%s %s', command, newArgs.join(' ')], 'debug')
+        api.log(['spawned child process with pid %s', child.pid], 'notice')
+        process.nextTick(process.exit)
+      } else {
+        runner(api, function (error, toStop) {
+          if (error) { throw error }
+          if (toStop) { setTimeout(process.exit, 500, 0) }
+        })
       }
-    }catch(e){
-      if(!e.message.match(/Cannot find module/)){
-        throw(e);
-      }else{
-        api.log(['Error: `%s` is not a method I can perform', commands.join(' ')], 'error');
-        api.log('run `actionhero help` to learn more', 'error');
-        setTimeout(process.exit, 500, 1);
+    } catch (e) {
+      if (!e.message.match(/Cannot find module/)) {
+        throw (e)
+      } else {
+        api.log(['Error: `%s` is not a method I can perform', commands.join(' ')], 'error')
+        api.log('run `actionhero help` to learn more', 'error')
+        setTimeout(process.exit, 500, 1)
       }
     }
-  });
+  })
 }

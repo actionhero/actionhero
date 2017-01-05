@@ -1,30 +1,32 @@
-var should = require('should');
-var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
-var actionhero = new actionheroPrototype();
-var api;
+'use strict'
 
-describe('Test: RunAction', function(){
+var path = require('path')
+var expect = require('chai').expect
+var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+var actionhero = new ActionheroPrototype()
+var api
 
-  before(function(done){
-    actionhero.start(function(error, a){
-      api = a;
-      done();
-    });
-  });
+describe('Test: RunAction', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
+      api = a
+      done()
+    })
+  })
 
-  after(function(done){
-    actionhero.stop(function(){
-      done();
-    });
-  });
+  after((done) => {
+    actionhero.stop(() => {
+      done()
+    })
+  })
 
-  it('can run the task manually', function(done){
-    api.specHelper.runTask('runAction', {action: 'randomNumber'}, function(error, response){
-      should.not.exist(error);
-      response.randomNumber.should.be.greaterThan(0);
-      response.randomNumber.should.be.lessThan(1);
-      done();
-    });
-  });
-
-});
+  it('can run the task manually', (done) => {
+    api.specHelper.runTask('runAction', {action: 'randomNumber'}, (error, response) => {
+      expect(error).to.not.exist
+      expect(response.randomNumber).to.be.at.least(0)
+      expect(response.randomNumber).to.be.at.most(1)
+      done()
+    })
+  })
+})

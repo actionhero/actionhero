@@ -1,55 +1,58 @@
-var should = require('should');
-var actionheroPrototype = require(__dirname + '/../../actionhero.js').actionheroPrototype;
-var actionhero = new actionheroPrototype();
-var api;
+'use strict'
 
-describe('Core: API', function(){
+let path = require('path')
+var expect = require('chai').expect
+var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+var actionhero = new ActionheroPrototype()
+var api
 
-  before(function(done){
-    actionhero.start(function(error, a){
-      api = a;
-      done();
-    });
-  });
+describe('Core: API', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null
+      api = a
+      done()
+    })
+  })
 
-  after(function(done){
-    actionhero.stop(function(){
-      done();
-    });
-  });
+  after((done) => {
+    actionhero.stop(() => {
+      done()
+    })
+  })
 
-  it('should have an api object with proper parts', function(done){
+  it('should have an api object with proper parts', (done) => {
     [
       api.actions.actions,
       api.actions.versions,
       api.actions.actions.cacheTest['1'],
       api.actions.actions.randomNumber['1'],
       api.actions.actions.status['1']
-    ].forEach(function(item){
-      item.should.be.a.Object;
+    ].forEach((item) => {
+      expect(item).to.be.instanceof(Object)
     });
 
     [
       api.actions.actions.cacheTest['1'].run,
       api.actions.actions.randomNumber['1'].run,
       api.actions.actions.status['1'].run
-    ].forEach(function(item){
-      item.should.be.an.instanceOf(Function);
+    ].forEach((item) => {
+      expect(item).to.be.instanceof(Function)
     });
 
     [
       api.actions.actions.randomNumber['1'].name,
       api.actions.actions.randomNumber['1'].description
-    ].forEach(function(item){
-      item.should.be.a.String;
-    });
+    ].forEach((item) => {
+      expect(typeof item).to.equal('string')
+    })
 
-    api.config.should.be.an.instanceOf(Object);
+    expect(api.config).to.be.instanceof(Object)
 
-    done();
-  });
+    done()
+  })
 
-  it('should have loaded postVariables properly', function(done){
+  it('should have loaded postVariables properly', (done) => {
     [
       'file',
       'callback',
@@ -57,26 +60,25 @@ describe('Core: API', function(){
       'apiVersion',
       'key',  // from cacheTest action
       'value' // from cacheTest action
-    ].forEach(function(item){
-      (api.params.postVariables.indexOf(item) >= 0).should.equal(true);
-    });
+    ].forEach((item) => {
+      expect(api.params.postVariables.indexOf(item) >= 0).to.equal(true)
+    })
 
-    done();
-  });
+    done()
+  })
 
-  describe('api versions', function(){
-
-    before(function(done){
-      api.actions.versions.versionedAction = [1, 2, 3];
+  describe('api versions', () => {
+    before((done) => {
+      api.actions.versions.versionedAction = [1, 2, 3]
       api.actions.actions.versionedAction = {
         '1': {
           name: 'versionedAction',
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run:function(api, connection, next){
-            connection.response.version = 1;
-            next(connection, true);
+          run: function (api, connection, next) {
+            connection.response.version = 1
+            next(connection, true)
           }
         },
         '2': {
@@ -84,9 +86,9 @@ describe('Core: API', function(){
           description: 'I am a test',
           version: 2,
           outputExample: {},
-          run:function(api, connection, next){
-            connection.response.version = 1;
-            next(connection, true);
+          run: function (api, connection, next) {
+            connection.response.version = 1
+            next(connection, true)
           }
         },
         '3': {
@@ -94,68 +96,66 @@ describe('Core: API', function(){
           description: 'I am a test',
           version: 3,
           outputExample: {},
-          run:function(api, data, next){
-            data.response.version = 1;
+          run: (api, data, next) => {
+            data.response.version = 1
             var error = {
-              'a' : {'complex': 'error'}
-            };
-            next(error);
+              'a': {'complex': 'error'}
+            }
+            next(error)
           }
         }
-      };
-      done();
-    });
+      }
+      done()
+    })
 
-    after(function(done){
-      delete api.actions.actions.versionedAction;
-      delete api.actions.versions.versionedAction;
-      done();
-    });
+    after((done) => {
+      delete api.actions.actions.versionedAction
+      delete api.actions.versions.versionedAction
+      done()
+    })
 
-    it('will default actions to version 1 when no version is provided by the defintion', function(done){
-      api.specHelper.runAction('randomNumber', function(response){
-        response.requesterInformation.receivedParams.apiVersion.should.equal(1);
-        done();
-      });
-    });
+    it('will default actions to version 1 when no version is provided by the defintion', (done) => {
+      api.specHelper.runAction('randomNumber', (response) => {
+        expect(response.requesterInformation.receivedParams.apiVersion).to.equal(1)
+        done()
+      })
+    })
 
-    it('can specify an apiVersion', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 1}, function(response){
-        response.requesterInformation.receivedParams.apiVersion.should.equal(1);
-        api.specHelper.runAction('versionedAction', {apiVersion: 2}, function(response){
-          response.requesterInformation.receivedParams.apiVersion.should.equal(2);
-          done();
-        });
-      });
-    });
+    it('can specify an apiVersion', (done) => {
+      api.specHelper.runAction('versionedAction', {apiVersion: 1}, (response) => {
+        expect(response.requesterInformation.receivedParams.apiVersion).to.equal(1)
+        api.specHelper.runAction('versionedAction', {apiVersion: 2}, (response) => {
+          expect(response.requesterInformation.receivedParams.apiVersion).to.equal(2)
+          done()
+        })
+      })
+    })
 
-    it('will default clients to the latest version of the action', function(done){
-      api.specHelper.runAction('versionedAction', function(response){
-        response.requesterInformation.receivedParams.apiVersion.should.equal(3);
-        done();
-      });
-    });
+    it('will default clients to the latest version of the action', (done) => {
+      api.specHelper.runAction('versionedAction', (response) => {
+        expect(response.requesterInformation.receivedParams.apiVersion).to.equal(3)
+        done()
+      })
+    })
 
-    it('will fail on a missing action + version', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 10}, function(response){
-        response.error.should.equal('Error: unknown action or invalid apiVersion');
-        done();
-      });
-    });
+    it('will fail on a missing action + version', (done) => {
+      api.specHelper.runAction('versionedAction', {apiVersion: 10}, (response) => {
+        expect(response.error).to.equal('Error: unknown action or invalid apiVersion')
+        done()
+      })
+    })
 
-    it('can return complex error responses', function(done){
-      api.specHelper.runAction('versionedAction', {apiVersion: 3}, function(response){
-        response.error.a.complex.should.equal('error');
-        done();
-      });
-    });
-  });
+    it('can return complex error responses', (done) => {
+      api.specHelper.runAction('versionedAction', {apiVersion: 3}, (response) => {
+        expect(response.error.a.complex).to.equal('error')
+        done()
+      })
+    })
+  })
 
-  describe('Action Params', function(){
-
-    before(function(done){
-
-      api.actions.versions.testAction = [1];
+  describe('Action Params', () => {
+    before((done) => {
+      api.actions.versions.testAction = [1]
       api.actions.actions.testAction = {
         '1': {
           name: 'testAction',
@@ -166,116 +166,113 @@ describe('Core: API', function(){
             optionalParam: {required: false},
             fancyParam: {
               required: false,
-              default: function(){ return 'abc123'; },
-              validator: function(s){
-                if(s === 'abc123'){ return true; }
-                else{ return 'fancyParam should be "abc123".  so says ' + this.id; }
+              default: () => { return 'abc123' },
+              validator: function (s) {
+                if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
               },
-              formatter: function(s){
-                return String(s);
+              formatter: function (s) {
+                return String(s)
               }
             }
           },
-          run:function(api, connection, next){
-            connection.response.params = connection.params;
-            next(connection, true);
+          run: function (api, connection, next) {
+            connection.response.params = connection.params
+            next(connection, true)
           }
         }
-      };
+      }
 
-      done();
-    });
+      done()
+    })
 
-    after(function(done){
-      delete api.actions.actions.testAction;
-      delete api.actions.versions.testAction;
-      done();
-    });
+    after((done) => {
+      delete api.actions.actions.testAction
+      delete api.actions.versions.testAction
+      done()
+    })
 
-    it('correct params that are falsey (false, []) should be allowed', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: false}, function(response){
-        response.params.requiredParam.should.equal(false);
-        api.specHelper.runAction('testAction', {requiredParam: []}, function(response){
-          response.params.requiredParam.should.eql([]);
-          done();
-        });
-      });
-    });
+    it('correct params that are falsey (false, []) should be allowed', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: false}, (response) => {
+        expect(response.params.requiredParam).to.equal(false)
+        api.specHelper.runAction('testAction', {requiredParam: []}, (response) => {
+          expect(response.params.requiredParam).to.have.length(0)
+          done()
+        })
+      })
+    })
 
-    it('will fail for missing or empty string params', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: ''}, function(response){
-        response.error.should.containEql('required parameter for this action');
-        api.specHelper.runAction('testAction', {}, function(response){
-          response.error.should.containEql('required parameter for this action');
-          done();
-        });
-      });
-    });
+    it('will fail for missing or empty string params', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: ''}, (response) => {
+        expect(response.error).to.contain('required parameter for this action')
+        api.specHelper.runAction('testAction', {}, (response) => {
+          expect(response.error).to.match(/requiredParam is a required parameter for this action/)
+          done()
+        })
+      })
+    })
 
-    it('correct params respect config options', function(done){
-      api.config.general.missingParamChecks = [undefined];
-      api.specHelper.runAction('testAction', {requiredParam: ''}, function(response){
-        response.params.requiredParam.should.equal('');
-        api.specHelper.runAction('testAction', {requiredParam: null}, function(response){
-          should(response.params.requiredParam).eql(null);
-          done();
-        });
-      });
-    });
+    it('correct params respect config options', (done) => {
+      api.config.general.missingParamChecks = [undefined]
+      api.specHelper.runAction('testAction', {requiredParam: ''}, (response) => {
+        expect(response.params.requiredParam).to.equal('')
+        api.specHelper.runAction('testAction', {requiredParam: null}, (response) => {
+          expect(response.params.requiredParam).to.be.null
+          done()
+        })
+      })
+    })
 
-    it('will set a default when params are not provided', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true}, function(response){
-        response.params.fancyParam.should.equal('abc123');
-        done();
-      });
-    });
+    it('will set a default when params are not provided', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: true}, (response) => {
+        expect(response.params.fancyParam).to.equal('abc123')
+        done()
+      })
+    })
 
-    it('will use validator if provided', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
-        response.error.should.match(/Error: fancyParam should be "abc123"/);
-        done();
-      });
-    });
+    it('will use validator if provided', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, (response) => {
+        expect(response.error).to.match(/Error: fancyParam should be "abc123"/)
+        done()
+      })
+    })
 
-    it('validator will have the API object in scope as this', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
-        response.error.should.match(new RegExp(api.id));
-        done();
-      });
-    });
+    it('validator will have the API object in scope as this', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, (response) => {
+        expect(response.error).to.match(new RegExp(api.id))
+        done()
+      })
+    })
 
-    it('will use formatter if provided (and still use validator)', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, function(response){
-        response.requesterInformation.receivedParams.fancyParam.should.equal('123');
-        done();
-      });
-    });
+    it('will use formatter if provided (and still use validator)', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123}, (response) => {
+        expect(response.requesterInformation.receivedParams.fancyParam).to.equal('123')
+        done()
+      })
+    })
 
-    it('will filter params not set in the target action or global safelist', function(done){
-      api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, function(response){
-        should.exist(response.requesterInformation.receivedParams.requiredParam);
-        should.not.exist(response.requesterInformation.receivedParams.sleepDuration);
-        done();
-      });
-    });
+    it('will filter params not set in the target action or global safelist', (done) => {
+      api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, (response) => {
+        expect(response.requesterInformation.receivedParams.requiredParam).to.be.ok
+        expect(response.requesterInformation.receivedParams.sleepDuration).to.not.exist
+        done()
+      })
+    })
+  })
 
-  });
-
-  describe('named action validations', function(){
-
-    before(function(done){
+  describe('named action validations', () => {
+    before((done) => {
       api.validators = {
-        validator1: function(param){
-          if(typeof param !== 'string'){ return new Error('only strings'); }
-          return true;
+        validator1: function (param) {
+          if (typeof param !== 'string') { return new Error('only strings') }
+          return true
         },
-        validator2: function(param){
-          if(param !== 'correct'){ return new Error('that is not correct'); }
-          return true;
+        validator2: function (param) {
+          if (param !== 'correct') { return new Error('that is not correct') }
+          return true
         }
-      };
+      }
 
-      api.actions.versions.testAction = [1];
+      api.actions.versions.testAction = [1]
       api.actions.actions.testAction = {
         '1': {
           name: 'testAction',
@@ -285,58 +282,56 @@ describe('Core: API', function(){
               validator: ['api.validators.validator1', 'api.validators.validator2']
             }
           },
-          run:function(api, data, next){
-            next();
+          run: (api, data, next) => {
+            next()
           }
         }
-      };
+      }
 
-      done();
-    });
+      done()
+    })
 
-    after(function(done){
-      delete api.actions.versions.testAction;
-      delete api.actions.actions.testAction;
-      delete api.validators;
-      done();
-    });
+    after((done) => {
+      delete api.actions.versions.testAction
+      delete api.actions.actions.testAction
+      delete api.validators
+      done()
+    })
 
-    it('runs validator arrays in the proper order', function(done){
-      api.specHelper.runAction('testAction', {a: 6}, function(response){
-        response.error.should.equal('Error: only strings');
-        done();
-      });
-    });
+    it('runs validator arrays in the proper order', (done) => {
+      api.specHelper.runAction('testAction', {a: 6}, (response) => {
+        expect(response.error).to.equal('Error: only strings')
+        done()
+      })
+    })
 
-    it('runs more than 1 validator', function(done){
-      api.specHelper.runAction('testAction', {a: 'hello'}, function(response){
-        response.error.should.equal('Error: that is not correct');
-        done();
-      });
-    });
+    it('runs more than 1 validator', (done) => {
+      api.specHelper.runAction('testAction', {a: 'hello'}, (response) => {
+        expect(response.error).to.equal('Error: that is not correct')
+        done()
+      })
+    })
 
-    it('succeeds multiple validators', function(done){
-      api.specHelper.runAction('testAction', {a: 'correct'}, function(response){
-        should.not.exist(response.error);
-        done();
-      });
-    });
+    it('succeeds multiple validators', (done) => {
+      api.specHelper.runAction('testAction', {a: 'correct'}, (response) => {
+        expect(response.error).to.not.exist
+        done()
+      })
+    })
+  })
 
-  });
-
-  describe('named action formatters', function(){
-
-    before(function(done){
+  describe('named action formatters', () => {
+    before((done) => {
       api.formatters = {
-        formatter1: function(param){
-          return '*' + param + '*';
+        formatter1: function (param) {
+          return '*' + param + '*'
         },
-        formatter2: function(param){
-          return '~' + param + '~';
+        formatter2: function (param) {
+          return '~' + param + '~'
         }
-      };
+      }
 
-      api.actions.versions.testAction = [1];
+      api.actions.versions.testAction = [1]
       api.actions.actions.testAction = {
         '1': {
           name: 'testAction',
@@ -346,30 +341,28 @@ describe('Core: API', function(){
               formatter: ['api.formatters.formatter1', 'api.formatters.formatter2']
             }
           },
-          run:function(api, data, next){
-            data.response.a = data.params.a;
-            next();
+          run: (api, data, next) => {
+            data.response.a = data.params.a
+            next()
           }
         }
-      };
+      }
 
-      done();
-    });
+      done()
+    })
 
-    after(function(done){
-      delete api.actions.versions.testAction;
-      delete api.actions.actions.testAction;
-      delete api.formatters;
-      done();
-    });
+    after((done) => {
+      delete api.actions.versions.testAction
+      delete api.actions.actions.testAction
+      delete api.formatters
+      done()
+    })
 
-    it('runs formatter arrays in the proper order', function(done){
-      api.specHelper.runAction('testAction', {a: 6}, function(response){
-        response.a.should.equal('~*6*~');
-        done();
-      });
-    });
-
-  });
-
-});
+    it('runs formatter arrays in the proper order', (done) => {
+      api.specHelper.runAction('testAction', {a: 6}, (response) => {
+        expect(response.a).to.equal('~*6*~')
+        done()
+      })
+    })
+  })
+})

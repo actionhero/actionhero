@@ -6,6 +6,20 @@
   <p>With good <a href="/docs/deployment/#testing">test coverage</a> you can make sure that you have successfully upgraded your project.</p>
   <p>ActionHero follows <a href="http://semver.org/">semantic versioning</a>.  This means that a minor change is a right-most number.  A new feature added is the middle number, and a breaking change is the left number.  You should expect something in your application to need to be changed if you upgrade a major version.</p>
 
+  <h2 id="upgrading-actionhero-to-v16">Upgrading from v15.x.x to v16.x.x</h2>
+
+  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v16.0.0">GitHub</a></strong></p>
+  <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
+
+  The only breaking changes are related to the capilization of internal methods:
+
+  <ul>
+    <li><code>api.Connecton()</code> rather than <code>api.connection()</code></li>
+    <li><code>api.GenericServer()</code> rather than <code>api.genericServer()</code></li>
+    <li><code>api.ActionProcessor()</code> rather than <code>api.actionProcessor()</code></li>
+    <li><code>require("actionhero")</code> not <code>require("actionhero").actionheroPrototype</code> should you be using ActionHero programatically.</li>
+  </ul>
+
   <h2 id="upgrading-actionhero-to-v15">Upgrading from v14.x.x to v15.x.x</h2>
 
   <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v15.0.0">GitHub</a></strong></p>
@@ -145,7 +159,7 @@ data = {
     </li>
     <li>Action Processor:
       <ul>
-        <li>Removed duplicate callback prevention in actionProcessor. This belongs on the user/implementer to handle.</li>
+        <li>Removed duplicate callback prevention in ActionProcessor. This belongs on the user/implementer to handle.</li>
       </ul>
     </li>
   </ul>

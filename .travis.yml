@@ -8,8 +8,8 @@ node_js:
   - "7"
 
 env:
-  - "FAKEREDIS=true"
-  - "FAKEREDIS=false"
+  - "FAKEREDIS=true maxMemoryAlloted=500"
+  - "FAKEREDIS=false maxMemoryAlloted=500"
 
 os:
   - linux
