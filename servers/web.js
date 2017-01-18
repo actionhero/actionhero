@@ -209,7 +209,10 @@ const initialize = function (api, options, next) {
         connection.rawConnection.res.writeHead(responseHttpCode, headers)
         fileStream.pipe(compressor).pipe(connection.rawConnection.res)
       } else {
-        headers.push(['Content-Length', fileLength])
+        // file length might be null if we don't know how long the stream is
+        if (fileLength) {
+          headers.push(['Content-Length', fileLength])
+        }
         connection.rawConnection.res.writeHead(responseHttpCode, headers)
         fileStream.pipe(connection.rawConnection.res)
       }
