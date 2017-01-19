@@ -134,10 +134,10 @@ actionhero.prototype.initialize = function (params, callback) {
       let ext = fileParts[(fileParts.length - 1)]
       if (ext === 'js') {
         // check if initializer already exists (exclude utils and config)
-        if(this.initializers[initializer] && 
-           file !== path.resolve(__dirname, 'initializers', 'utils.js') && 
+        if (this.initializers[initializer] &&
+           file !== path.resolve(__dirname, 'initializers', 'utils.js') &&
            file !== path.resolve(__dirname, 'initializers', 'config.js')) {
-          ignoredInitializers.push(file);
+          ignoredInitializers.push(file)
         } else {
           delete require.cache[require.resolve(file)]
           this.initializers[initializer] = require(file)
@@ -227,9 +227,9 @@ actionhero.prototype.initialize = function (params, callback) {
       process.nextTick(() => {
         this.api.initialized = true
 
-        if(ignoredInitializers.length > 0) {
+        if (ignoredInitializers.length > 0) {
           ignoredInitializers.forEach(initializer => this.api.log(['Ignored Initializer %s because the file already exists!', initializer], 'error'))
-          ignoredInitializers = [];
+          ignoredInitializers = []
         }
         callback(null, this.api)
       })
