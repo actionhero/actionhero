@@ -115,6 +115,7 @@ actionhero.prototype.initialize = function (params, callback) {
 
   this.configInitializers.push(() => {
     let customInitializers = []
+    let ignoredInitializers = []
     this.api.config.general.paths.initializer.forEach((startPath) => {
       customInitializers = customInitializers.concat(this.api.utils.recursiveDirectoryGlob(startPath))
     })
@@ -128,12 +129,19 @@ actionhero.prototype.initialize = function (params, callback) {
       )
     ).forEach((f) => {
       let file = path.normalize(f)
-      let initializer = file
+      let initializer = path.basename(f).split('.')[0]
       let fileParts = file.split('.')
       let ext = fileParts[(fileParts.length - 1)]
       if (ext === 'js') {
-        delete require.cache[require.resolve(file)]
-        this.initializers[initializer] = require(file)
+        // check if initializer already exists (exclude utils and config)
+        if(this.initializers[initializer] && 
+           file !== path.resolve(__dirname, 'initializers', 'utils.js') && 
+           file !== path.resolve(__dirname, 'initializers', 'config.js')) {
+          ignoredInitializers.push(file);
+        } else {
+          delete require.cache[require.resolve(file)]
+          this.initializers[initializer] = require(file)
+        }
 
         const loadFunction = (next) => {
           this.api.watchFileAndAct(file, () => {
@@ -218,6 +226,11 @@ actionhero.prototype.initialize = function (params, callback) {
     this.loadInitializers.push(() => {
       process.nextTick(() => {
         this.api.initialized = true
+
+        if(ignoredInitializers.length > 0) {
+          ignoredInitializers.forEach(initializer => this.api.log(['Ignored Initializer %s because the file already exists!', initializer], 'error'))
+          ignoredInitializers = [];
+        }
         callback(null, this.api)
       })
     })
