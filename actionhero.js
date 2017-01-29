@@ -228,8 +228,10 @@ actionhero.prototype.initialize = function (params, callback) {
         this.api.initialized = true
 
         if (ignoredInitializers.length > 0) {
-          ignoredInitializers.forEach(initializer => this.api.log(['Ignored Initializer %s because the file already exists!', initializer], 'error'))
-          ignoredInitializers = []
+          ignoredInitializers.forEach(initializer => this.api.log(['Initializer %s already exists!', initializer], 'error'))
+          this.api.commands.stop.call(this.api, () => {
+            process.exit(1)
+          })
         }
         callback(null, this.api)
       })
