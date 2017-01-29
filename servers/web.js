@@ -260,7 +260,9 @@ const initialize = function (api, options, next) {
   // ///////////
 
   const handleRequest = function (req, res) {
-    browserFingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, (fingerprint, elementHash, cookieHash) => {
+    browserFingerprint.fingerprint(req, api.config.servers.web.fingerprintOptions, (error, fingerprint, elementHash, cookieHash) => {
+      if (error) throw error
+
       let responseHeaders = []
       let cookies = api.utils.parseCookies(req)
       let responseHttpCode = 200
