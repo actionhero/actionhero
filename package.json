@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "async": "^2.1.4",
-    "browser_fingerprint": "^0.0.7",
+    "browser_fingerprint": "^0.1.0",
     "etag": "^1.7.0",
     "fakeredis": "^1.0.0",
     "formidable": "^1.0.17",
