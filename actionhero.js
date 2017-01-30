@@ -115,7 +115,7 @@ actionhero.prototype.initialize = function (params, callback) {
 
   this.configInitializers.push(() => {
     let customInitializers = []
-    let ignoredInitializers = []
+    let duplicatedInitializers = []
     this.api.config.general.paths.initializer.forEach((startPath) => {
       customInitializers = customInitializers.concat(this.api.utils.recursiveDirectoryGlob(startPath))
     })
@@ -137,7 +137,7 @@ actionhero.prototype.initialize = function (params, callback) {
         if (this.initializers[initializer] &&
            file !== path.resolve(__dirname, 'initializers', 'utils.js') &&
            file !== path.resolve(__dirname, 'initializers', 'config.js')) {
-          ignoredInitializers.push(file)
+          duplicatedInitializers.push(file)
         } else {
           delete require.cache[require.resolve(file)]
           this.initializers[initializer] = require(file)
@@ -227,8 +227,8 @@ actionhero.prototype.initialize = function (params, callback) {
       process.nextTick(() => {
         this.api.initialized = true
 
-        if (ignoredInitializers.length > 0) {
-          ignoredInitializers.forEach(initializer => this.api.log(['Initializer %s already exists!', initializer], 'error'))
+        if (duplicatedInitializers.length > 0) {
+          duplicatedInitializers.forEach(initializer => this.api.log(['Initializer %s already exists!', initializer], 'error'))
           this.api.commands.stop.call(this.api, () => {
             process.exit(1)
           })
