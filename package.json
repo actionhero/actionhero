@@ -33,7 +33,7 @@
     "async": "^2.1.4",
     "browser_fingerprint": "^0.1.0",
     "etag": "^1.7.0",
-    "fakeredis": "^1.0.0",
+    "fakeredis": "^2.0.0",
     "formidable": "^1.0.17",
     "i18n": "^0.8.3",
     "ioredis": "^2.4.1",
