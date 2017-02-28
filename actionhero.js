@@ -289,6 +289,8 @@ actionhero.prototype.stop = function (callback) {
       this.api.log('*** ActionHero Stopped ***', 'alert')
       this.api.log('***', 'debug')
       delete this.api.shuttingDown
+      // reset initializers to prevent duplicate check on restart
+      this.initializers = {}      
       process.nextTick(() => {
         if (typeof callback === 'function') { callback(null, this.api) }
       })
