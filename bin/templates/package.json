@@ -22,5 +22,19 @@
     "start" : "actionhero start",
     "actionhero" : "actionhero",
     "test" : "cross-env NODE_ENV=test mocha"
-  }
+  },
+  "standard": {
+    "ignore": [
+      "public/javascript/actionheroClient.*"
+    ],
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it",
+      "expect"
+    ]
+  },
 }
