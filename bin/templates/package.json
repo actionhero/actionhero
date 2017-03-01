@@ -16,11 +16,27 @@
     "cross-env" : "latest",
     "chai" : "latest",
     "dirty-chai" : "latest",
-    "mocha" : "latest"
+    "mocha" : "latest",
+    "standard" : "latest"
   },
   "scripts" : {
     "start" : "actionhero start",
     "actionhero" : "actionhero",
+    "pretest": "standard",
     "test" : "cross-env NODE_ENV=test mocha"
+  },
+  "standard": {
+    "ignore": [
+      "public/javascript/actionheroClient.*"
+    ],
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it",
+      "expect"
+    ]
   }
 }
