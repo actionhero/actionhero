@@ -54,7 +54,7 @@ var api
 describe('Action: RandomNumber', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       done()
     })

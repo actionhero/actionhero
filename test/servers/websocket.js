@@ -1,5 +1,9 @@
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -33,7 +37,7 @@ var connectClients = function (callback) {
 describe('Server: Web Socket', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
@@ -52,7 +56,7 @@ describe('Server: Web Socket', () => {
 
   it('socket client connections should work: client 1', (done) => {
     clientA.connect((error, data) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(data.context).to.equal('response')
       expect(data.data.totalActions).to.equal(0)
       expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
@@ -62,7 +66,7 @@ describe('Server: Web Socket', () => {
 
   it('socket client connections should work: client 2', (done) => {
     clientB.connect((error, data) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(data.context).to.equal('response')
       expect(data.data.totalActions).to.equal(0)
       expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
@@ -72,7 +76,7 @@ describe('Server: Web Socket', () => {
 
   it('socket client connections should work: client 3', (done) => {
     clientC.connect((error, data) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(data.context).to.equal('response')
       expect(data.data.totalActions).to.equal(0)
       expect(clientA.welcomeMessage).to.equal('Hello! Welcome to the actionhero api')
@@ -97,14 +101,14 @@ describe('Server: Web Socket', () => {
 
   it('can run actions properly', (done) => {
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
-      expect(response.error).to.not.exist
+      expect(response.error).to.not.exist()
       done()
     })
   })
 
   it('does not have sticky params', (done) => {
     clientA.action('cacheTest', {key: 'test key', value: 'test value'}, (response) => {
-      expect(response.error).to.not.exist
+      expect(response.error).to.not.exist()
       expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_test key')
       expect(response.cacheTestResults.loadResp.value).to.equal('test value')
       clientA.action('cacheTest', (response) => {
@@ -130,7 +134,7 @@ describe('Server: Web Socket', () => {
         if (i === 0 || i === '0') {
           expect(response.error).to.equal('you have too many pending requests')
         } else {
-          expect(response.error).to.not.exist
+          expect(response.error).to.not.exist()
         }
       }
       done()
@@ -140,7 +144,7 @@ describe('Server: Web Socket', () => {
   describe('files', () => {
     it('can request file data', (done) => {
       clientA.file('simple.html', (data) => {
-        expect(data.error).to.be.null
+        expect(data.error).to.be.null()
         expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         expect(data.mime).to.equal('text/html')
         expect(data.length).to.equal(101)
@@ -152,7 +156,7 @@ describe('Server: Web Socket', () => {
       clientA.file('missing.html', (data) => {
         expect(data.error).to.equal('That file is not found')
         expect(data.mime).to.equal('text/html')
-        expect(data.content).to.be.null
+        expect(data.content).to.be.null()
         done()
       })
     })
@@ -219,7 +223,7 @@ describe('Server: Web Socket', () => {
     it('can change rooms and get room details', (done) => {
       clientA.roomAdd('otherRoom', () => {
         clientA.detailsView((response) => {
-          expect(response.error).to.not.exist
+          expect(response.error).to.not.exist()
           expect(response.data.rooms[0]).to.equal('defaultRoom')
           expect(response.data.rooms[1]).to.equal('otherRoom')
           clientA.roomView('otherRoom', (response) => {
@@ -232,15 +236,15 @@ describe('Server: Web Socket', () => {
 
     it('will update client room info when they change rooms', (done) => {
       expect(clientA.rooms[0]).to.equal('defaultRoom')
-      expect(clientA.rooms[1]).to.not.exist
+      expect(clientA.rooms[1]).to.not.exist()
       clientA.roomAdd('otherRoom', (response) => {
-        expect(response.error).to.not.exist
+        expect(response.error).to.not.exist()
         expect(clientA.rooms[0]).to.equal('defaultRoom')
         expect(clientA.rooms[1]).to.equal('otherRoom')
         clientA.roomLeave('defaultRoom', (response) => {
-          expect(response.error).to.not.exist
+          expect(response.error).to.not.exist()
           expect(clientA.rooms[0]).to.equal('otherRoom')
-          expect(clientA.rooms[1]).to.not.exist
+          expect(clientA.rooms[1]).to.not.exist()
           done()
         })
       })
@@ -302,12 +306,12 @@ describe('Server: Web Socket', () => {
 
     it('will not get messages for rooms I am not in', (done) => {
       clientB.roomAdd('otherRoom', (response) => {
-        expect(response.error).to.not.exist
+        expect(response.error).to.not.exist()
         expect(clientB.rooms.length).to.equal(2)
 
         var listener = (response) => {
           clientC.removeListener('say', listener)
-          expect(response).to.not.exist
+          expect(response).to.not.exist()
         }
 
         expect(clientC.rooms.length).to.equal(1)
@@ -493,7 +497,7 @@ describe('Server: Web Socket', () => {
             expect(response.data.room).to.equal('defaultRoom')
 
             for (var key in response.data.members) {
-              expect(response.data.members[key].type).to.not.exist
+              expect(response.data.members[key].type).to.not.exist()
             }
 
             // save off current functions
@@ -536,7 +540,7 @@ describe('Server: Web Socket', () => {
           clientA.roomView('defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              expect(response.data.members[key].type).to.not.exist
+              expect(response.data.members[key].type).to.not.exist()
             }
             setTimeout(() => {
               clientA.roomLeave('defaultRoom', () => {

@@ -1,8 +1,12 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var fs = require('fs')
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -26,7 +30,7 @@ newFileContent += '};'
 describe('Core: Developer Mode', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       setTimeout(done, 1001) // allow the file to get stat-ed once in the original state
     })
@@ -41,7 +45,7 @@ describe('Core: Developer Mode', () => {
 
   it('random numbers work initially', (done) => {
     api.specHelper.runAction('randomNumber', (response) => {
-      expect(response.error).to.not.exist
+      expect(response.error).to.not.exist()
       expect(response.randomNumber).to.be.at.most(1)
       expect(response.randomNumber).to.be.at.least(0)
       done()
@@ -75,7 +79,7 @@ describe('Core: Developer Mode', () => {
 
     it('works as it did originally', (done) => {
       api.specHelper.runAction('randomNumber', (response) => {
-        expect(response.error).to.not.exist
+        expect(response.error).to.not.exist()
         expect(response.randomNumber).to.be.at.most(1)
         expect(response.randomNumber).to.be.at.least(0)
         done()

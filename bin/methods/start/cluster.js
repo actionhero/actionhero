@@ -33,7 +33,7 @@ const winston = require('winston')
 const isrunning = require('is-running')
 const optimist = require('optimist')
 
-optimist
+optimist // eslint-disable-line
   .describe('workers', 'How many worker node processes')
   .default('workers', os.cpus().length)
   .describe('workerTitlePrefix', 'Set worker title prefix')

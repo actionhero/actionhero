@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -9,7 +13,7 @@ var api
 describe('Core: specHelper', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       done()
     })
@@ -107,8 +111,8 @@ describe('Core: specHelper', () => {
     describe('happy-path', () => {
       it('if the response payload is an object, it appends metadata', (done) => {
         api.specHelper.runAction('randomNumber', (response) => {
-          expect(response.error).to.not.exist
-          expect(response.randomNumber).to.exist
+          expect(response.error).to.not.exist()
+          expect(response.randomNumber).to.exist()
           expect(response.messageCount).to.equal(1)
           expect(response.serverInformation.serverName).to.equal('actionhero')
           expect(response.requesterInformation.remoteIP).to.equal('testServer')
@@ -119,10 +123,10 @@ describe('Core: specHelper', () => {
       it('if the response payload is a string, it maintains type', (done) => {
         api.specHelper.runAction('stringResponseTestAction', (response) => {
           expect(response).to.equal('something response')
-          expect(response.error).to.not.exist
-          expect(response.messageCount).to.not.exist
-          expect(response.serverInformation).to.not.exist
-          expect(response.requesterInformation).to.not.exist
+          expect(response.error).to.not.exist()
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
           done()
         })
       })
@@ -130,10 +134,10 @@ describe('Core: specHelper', () => {
       it('if the response payload is a array, it maintains type', (done) => {
         api.specHelper.runAction('arrayResponseTestAction', (response) => {
           expect(response).to.deep.equal([1, 2, 3])
-          expect(response.error).to.not.exist
-          expect(response.messageCount).to.not.exist
-          expect(response.serverInformation).to.not.exist
-          expect(response.requesterInformation).to.not.exist
+          expect(response.error).to.not.exist()
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
           done()
         })
       })
@@ -145,11 +149,11 @@ describe('Core: specHelper', () => {
 
       it('if the response payload is an object, it should not append metadata', (done) => {
         api.specHelper.runAction('randomNumber', (response) => {
-          expect(response.error).to.not.exist
-          expect(response.randomNumber).to.exist
-          expect(response.messageCount).to.not.exist
-          expect(response.serverInformation).to.not.exist
-          expect(response.requesterInformation).to.not.exist
+          expect(response.error).to.not.exist()
+          expect(response.randomNumber).to.exist()
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
           done()
         })
       })
@@ -169,9 +173,9 @@ describe('Core: specHelper', () => {
       it('if the response payload is a string, just the error will be returned', (done) => {
         api.specHelper.runAction('stringErrorTestAction', (response) => {
           expect(response).to.equal('Error: some error')
-          expect(response.messageCount).to.not.exist
-          expect(response.serverInformation).to.not.exist
-          expect(response.requesterInformation).to.not.exist
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
           done()
         })
       })
@@ -179,9 +183,9 @@ describe('Core: specHelper', () => {
       it('if the response payload is a array, just the error will be returned', (done) => {
         api.specHelper.runAction('arrayErrorTestAction', (response) => {
           expect(response).to.equal('Error: some error')
-          expect(response.messageCount).to.not.exist
-          expect(response.serverInformation).to.not.exist
-          expect(response.requesterInformation).to.not.exist
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
           done()
         })
       })
@@ -192,7 +196,7 @@ describe('Core: specHelper', () => {
     it('will not report a broken test as a broken action (sync)', (done) => {
       api.specHelper.runAction('randomNumber', (response) => {
         try {
-          response.not.a.real.thing
+          response.not.a.real.thing()
         } catch (e) {
           expect(String(e)).to.equal('TypeError: Cannot read property \'a\' of undefined')
           done()
@@ -203,7 +207,7 @@ describe('Core: specHelper', () => {
     it('will not report a broken test as a broken action (async)', (done) => {
       api.specHelper.runAction('sleepTest', (response) => {
         try {
-          response.not.a.real.thing
+          response.not.a.real.thing()
         } catch (e) {
           expect(String(e)).to.equal('TypeError: Cannot read property \'a\' of undefined')
           done()
@@ -215,7 +219,7 @@ describe('Core: specHelper', () => {
   describe('files', () => {
     it('can request file data', (done) => {
       api.specHelper.getStaticFile('simple.html', (data) => {
-        expect(data.error).to.be.null
+        expect(data.error).to.be.null()
         expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         expect(data.mime).to.equal('text/html')
         expect(data.length).to.equal(101)
@@ -227,7 +231,7 @@ describe('Core: specHelper', () => {
       api.specHelper.getStaticFile('missing.html', (data) => {
         expect(data.error).to.equal('That file is not found')
         expect(data.mime).to.equal('text/html')
-        expect(data.content).to.be.null
+        expect(data.content).to.be.null()
         done()
       })
     })

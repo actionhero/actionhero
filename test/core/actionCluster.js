@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 
 var actionhero1 = new ActionheroPrototype()
@@ -29,11 +33,11 @@ var configChanges = {
 
 var startAllServers = (next) => {
   actionhero1.start({configChanges: configChanges[1]}, (error, a1) => {
-    expect(error).to.be.null
+    expect(error).to.be.null()
     actionhero2.start({configChanges: configChanges[2]}, (error, a2) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       actionhero3.start({configChanges: configChanges[3]}, (error, a3) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         apiA = a1
         apiB = a2
         apiC = a3
@@ -87,7 +91,7 @@ describe('Core: Action Cluster', () => {
 
       it('all connections can join the default room and client #1 can see them', (done) => {
         client1.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(data.room).to.equal('defaultRoom')
           expect(data.membersCount).to.equal(3)
           done()
@@ -96,7 +100,7 @@ describe('Core: Action Cluster', () => {
 
       it('all connections can join the default room and client #2 can see them', (done) => {
         client2.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(data.room).to.equal('defaultRoom')
           expect(data.membersCount).to.equal(3)
           done()
@@ -105,7 +109,7 @@ describe('Core: Action Cluster', () => {
 
       it('all connections can join the default room and client #3 can see them', (done) => {
         client3.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(data.room).to.equal('defaultRoom')
           expect(data.membersCount).to.equal(3)
           done()
@@ -129,7 +133,7 @@ describe('Core: Action Cluster', () => {
       it('peer 1 writes and peer 2 should read', (done) => {
         apiA.cache.save('test_key', 'yay', null, () => {
           apiB.cache.load('test_key', (error, value) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(value).to.equal('yay')
             done()
           })
@@ -140,7 +144,7 @@ describe('Core: Action Cluster', () => {
         apiC.cache.destroy('test_key', () => {
           apiA.cache.load('test_key', (error, value) => {
             expect(error.toString()).to.equal('Error: Object not found')
-            expect(value).to.be.null
+            expect(value).to.be.null()
             done()
           })
         })
@@ -175,7 +179,7 @@ describe('Core: Action Cluster', () => {
         process.nextTick(() => {
           apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, (error) => {
             setTimeout(() => {
-              expect(error).to.not.exist
+              expect(error).to.not.exist()
               // callback should work too!
               expect(data[1][0]).to.equal('arg1')
               expect(data[1][1]).to.equal('arg2')
@@ -204,7 +208,7 @@ describe('Core: Action Cluster', () => {
         }
 
         apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, (error) => {
-          expect(error).to.not.exist
+          expect(error).to.not.exist()
           expect(data[1][0]).to.equal('arg1')
           expect(data[1][1]).to.equal('arg2')
           client.destroy()
@@ -225,7 +229,7 @@ describe('Core: Action Cluster', () => {
 
       it('can call remote methods on/about connections connected to other servers', (done) => {
         var client = new apiA.specHelper.Connection()
-        expect(client.auth).to.not.exist
+        expect(client.auth).to.not.exist()
 
         apiB.connections.apply(client.id, 'set', ['auth', true], (connection) => {
           expect(connection.id).to.equal(client.id)
@@ -263,7 +267,7 @@ describe('Core: Action Cluster', () => {
 
       it('can check if rooms exist', (done) => {
         apiA.chatRoom.exists('defaultRoom', (error, found) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(found).to.equal(true)
           done()
         })
@@ -271,7 +275,7 @@ describe('Core: Action Cluster', () => {
 
       it('can check if a room does not exist', (done) => {
         apiA.chatRoom.exists('missingRoom', (error, found) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(found).to.equal(false)
           done()
         })
@@ -280,12 +284,12 @@ describe('Core: Action Cluster', () => {
       it('server can create new room', (done) => {
         var room = 'newRoom'
         apiA.chatRoom.exists(room, (error, found) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(found).to.equal(false)
           apiA.chatRoom.add(room, (error) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             apiA.chatRoom.exists(room, (error, found) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               expect(found).to.equal(true)
               done()
             })
@@ -304,7 +308,7 @@ describe('Core: Action Cluster', () => {
         apiA.chatRoom.add('defaultRoom', () => {
           apiA.chatRoom.add('newRoom', () => {
             apiA.chatRoom.list((error, rooms) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               expect(rooms).to.have.length(3);
               ['defaultRoom', 'newRoom', 'otherRoom'].forEach((r) => {
                 expect(rooms.indexOf(r)).to.be.above(-1)
@@ -319,7 +323,7 @@ describe('Core: Action Cluster', () => {
         var client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(didAdd).to.equal(true)
           expect(client.rooms[0]).to.equal('defaultRoom')
           client.destroy()
@@ -331,7 +335,7 @@ describe('Core: Action Cluster', () => {
         var client = new apiB.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(didAdd).to.equal(true)
           expect(client.rooms).to.have.length(1)
           expect(client.rooms[0]).to.equal('defaultRoom')
@@ -344,7 +348,7 @@ describe('Core: Action Cluster', () => {
         var client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(didAdd).to.equal(true)
           apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
             expect(error.toString()).to.equal('connection already in this room (defaultRoom)')
@@ -379,10 +383,10 @@ describe('Core: Action Cluster', () => {
       it('server can remove connections to a room (local)', (done) => {
         var client = new apiA.specHelper.Connection()
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(didAdd).to.equal(true)
           apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(didRemove).to.equal(true)
             client.destroy()
             done()
@@ -393,10 +397,10 @@ describe('Core: Action Cluster', () => {
       it('server can remove connections to a room (remote)', (done) => {
         var client = new apiB.specHelper.Connection()
         apiB.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(didAdd).to.equal(true)
           apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(didRemove).to.equal(true)
             client.destroy()
             done()
@@ -407,13 +411,13 @@ describe('Core: Action Cluster', () => {
       it('server can destroy a room and connections will be removed', (done) => {
         var client = new apiA.specHelper.Connection()
         apiA.chatRoom.add('newRoom', (error) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           apiA.chatRoom.addMember(client.id, 'newRoom', (error, didAdd) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(didAdd).to.equal(true)
             expect(client.rooms[0]).to.equal('newRoom')
             apiA.chatRoom.destroy('newRoom', (error) => {
-              expect(error).to.not.exist
+              expect(error).to.not.exist()
               expect(client.rooms).to.have.length(0)
               // TODO: testing for the recepit of this message is a race condition with room.destroy and boradcast in test
               // client.messages[1].message.should.equal('this room has been deleted');
@@ -429,9 +433,9 @@ describe('Core: Action Cluster', () => {
         var client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           apiA.chatRoom.roomStatus('defaultRoom', (error, data) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(data.room).to.equal('defaultRoom')
             expect(data.membersCount).to.equal(1)
             client.destroy()
@@ -476,15 +480,15 @@ describe('Core: Action Cluster', () => {
           }
 
           clientA.verbs('roomAdd', 'defaultRoom', (error, data) => {
-            expect(error).to.not.exist
+            expect(error).to.not.exist()
             clientB.verbs('roomAdd', 'defaultRoom', (error, data) => {
-              expect(error).to.not.exist
+              expect(error).to.not.exist()
               clientA.verbs('say', ['defaultRoom', 'hi there'], (error, data) => {
-                expect(error).to.not.exist
+                expect(error).to.not.exist()
                 setTimeout(() => {
                   var message = clientB.messages[(clientB.messages.length - 1)]
                   expect(message.thing).to.equal('stuff')
-                  expect(message.message).to.not.exist
+                  expect(message.message).to.not.exist()
                   done()
                 }, 100)
               })
@@ -512,11 +516,11 @@ describe('Core: Action Cluster', () => {
           })
 
           clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               clientB.verbs('roomLeave', 'defaultRoom', (error) => {
-                expect(error).to.be.null
+                expect(error).to.be.null()
 
                 setTimeout(() => {
                   expect(clientA.messages.pop().message).to.equal('I have left the room: ' + clientB.id)
@@ -541,11 +545,11 @@ describe('Core: Action Cluster', () => {
           })
 
           clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], (error) => {
-                expect(error).to.be.null
+                expect(error).to.be.null()
 
                 setTimeout(() => {
                   var lastMessage = clientA.messages[(clientA.messages.length - 1)]
@@ -578,11 +582,11 @@ describe('Core: Action Cluster', () => {
           })
 
           clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], (error) => {
-                expect(error).to.be.null
+                expect(error).to.be.null()
                 setTimeout(() => {
                   var lastMessage = clientA.messages[(clientA.messages.length - 1)]
                   expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
@@ -642,7 +646,7 @@ describe('Core: Action Cluster', () => {
           })
 
           clientA.verbs('roomAdd', 'defaultRoom', (error, didJoin) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(didJoin).to.equal(true)
             expect(clientA.rooms).to.have.length(1)
             expect(clientA.rooms[0]).to.equal('defaultRoom')

@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -9,7 +13,7 @@ var api
 describe('Core: API', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       done()
     })
@@ -216,7 +220,7 @@ describe('Core: API', () => {
       api.specHelper.runAction('testAction', {requiredParam: ''}, (response) => {
         expect(response.params.requiredParam).to.equal('')
         api.specHelper.runAction('testAction', {requiredParam: null}, (response) => {
-          expect(response.params.requiredParam).to.be.null
+          expect(response.params.requiredParam).to.be.null()
           done()
         })
       })
@@ -252,8 +256,8 @@ describe('Core: API', () => {
 
     it('will filter params not set in the target action or global safelist', (done) => {
       api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, (response) => {
-        expect(response.requesterInformation.receivedParams.requiredParam).to.be.ok
-        expect(response.requesterInformation.receivedParams.sleepDuration).to.not.exist
+        expect(response.requesterInformation.receivedParams.requiredParam).to.be.ok()
+        expect(response.requesterInformation.receivedParams.sleepDuration).to.not.exist()
         done()
       })
     })
@@ -314,7 +318,7 @@ describe('Core: API', () => {
 
     it('succeeds multiple validators', (done) => {
       api.specHelper.runAction('testAction', {a: 'correct'}, (response) => {
-        expect(response.error).to.not.exist
+        expect(response.error).to.not.exist()
         done()
       })
     })

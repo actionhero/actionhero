@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -50,7 +54,7 @@ var middleware = {
 describe('Test: Task Middleware', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
 
       api = a
 
@@ -63,7 +67,7 @@ describe('Test: Task Middleware', () => {
         frequency: 0,
         middleware: ['test-middleware'],
         run: function (api, params, next) {
-          expect(params.test).to.be.ok
+          expect(params.test).to.be.ok()
           next(null, {result: 'done'})
         }
       }
@@ -81,7 +85,7 @@ describe('Test: Task Middleware', () => {
 
   it('can modify parameters before a task and modify result after task completion', (done) => {
     api.specHelper.runFullTask('middlewareTask', taskParams, (error, response) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(response.result).to.equal('fin')
       done()
     })
@@ -89,10 +93,10 @@ describe('Test: Task Middleware', () => {
 
   // it('should reject task with improper params', (done) => {
   //   api.tasks.enqueue('middlewareTask', {invalid: true}, 'test', (error, toRun) => {
-  //     expect(error).to.be.ok
+  //     expect(error).to.be.ok()
   //     expect(error.message).to.equal('Invalid Parameter')
   //     api.tasks.queued('test', 0, 999, (error, tasks) => {
-  //       expect(error).to.be.null
+  //       expect(error).to.be.null()
   //       expect(tasks).to.have.length(0)
   //       done()
   //     })

@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -9,7 +13,7 @@ var api
 describe('Core: Middleware', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       done()
     })
@@ -55,7 +59,7 @@ describe('Core: Middleware', () => {
       })
 
       api.specHelper.runAction('randomNumber', (response) => {
-        expect(response._preProcessorNote).to.not.exist
+        expect(response._preProcessorNote).to.not.exist()
         done()
       })
     })
@@ -261,7 +265,7 @@ describe('Core: Middleware', () => {
 
       api.specHelper.runAction('randomNumber', (response) => {
         expect(response.error).to.equal('Error: BLOCKED')
-        expect(response.randomNumber).to.not.exist
+        expect(response.randomNumber).to.not.exist()
         done()
       })
     })

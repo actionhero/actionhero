@@ -1,12 +1,16 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 // These tests will only run on *nix operating systems
 
 var fs = require('fs')
 var os = require('os')
 var path = require('path')
 var exec = require('child_process').exec
-var expect = require('chai').expect
 var testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
 var binary = './node_modules/.bin/actionhero'
 var pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
@@ -33,7 +37,7 @@ describe('Core: Binary', () => {
       doBash(commands, () => {
         var AHPath = path.normalize(path.join(__dirname, '/../..'))
         fs.readFile(testDir + '/package.json', 'utf8', (error, data) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath)
           fs.writeFile(testDir + '/package.json', result, 'utf8', () => {
             done()
@@ -53,7 +57,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         'npm install'
       ], (error, data) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         done()
       })
     }).timeout(60000)
@@ -63,7 +67,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         binary + ' generate'
       ], (error) => {
-        expect(error).to.be.null;
+        expect(error).to.be.null();
 
         [
           'actions',
@@ -105,7 +109,7 @@ describe('Core: Binary', () => {
       doBash([
         'cd ' + testDir, binary + ' help'
       ], (error, data) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(data).to.match(/actionhero start cluster/)
         expect(data).to.match(/Binary options:/)
         expect(data).to.match(/actionhero generate server/)
@@ -117,7 +121,7 @@ describe('Core: Binary', () => {
       doBash([
         'cd ' + testDir, binary + ' version'
       ], (error, data) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(data.trim()).to.equal(pacakgeJSON.version)
         done()
       })
@@ -131,7 +135,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         binary + ' generate action --name=myAction --description=my_description'
       ], (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         var data = String(fs.readFileSync(testDir + '/actions/myAction.js'))
         expect(data).to.match(/name: 'myAction'/)
         expect(data).to.match(/description: 'my_description'/)
@@ -145,7 +149,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         binary + ' generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345'
       ], (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'))
         expect(data).to.match(/name: 'myTask'/)
         expect(data).to.match(/description: 'my_description'/)
@@ -161,7 +165,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         binary + ' generate server --name=myServer'
       ], (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         var data = String(fs.readFileSync(testDir + '/servers/myServer.js'))
         expect(data).to.match(/canChat: true/)
         expect(data).to.match(/logConnections: true/)
@@ -176,7 +180,7 @@ describe('Core: Binary', () => {
         'cd ' + testDir,
         binary + ' generate initializer --name=myInitializer --stopPriority=123'
       ], (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         var data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'))
         expect(data).to.match(/loadPriority: 1000/)
         expect(data).to.match(/startPriority: 1000/)

@@ -1,8 +1,12 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var fs = require('fs')
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -32,7 +36,7 @@ describe('Core: i18n', () => {
     fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish))
 
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       var options = api.config.i18n
       options.directory = api.config.general.paths.locale[0]

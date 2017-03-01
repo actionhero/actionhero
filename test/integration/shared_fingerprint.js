@@ -1,6 +1,10 @@
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var request = require('request')
 var path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -26,7 +30,7 @@ var connectClient = (callback) => {
 describe('Integration: Web Server + Websocket Socket shared fingerprint', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       api.config.servers.websocket.clientUrl = 'http://localhost:' + api.config.servers.web.port
@@ -69,14 +73,14 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
 
   it('should exist when web server been called', (done) => {
     request.get(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       fingerprint = body.requesterInformation.fingerprint
       cookieHeader = response.headers['set-cookie'][0]
       client.connect((error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.status).to.equal('OK')
-        expect(response.data.id).to.be.ok
+        expect(response.data.id).to.be.ok()
         var id = response.data.id
         expect(api.connections.connections[id].fingerprint).to.equal(fingerprint)
         done()
@@ -86,9 +90,9 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
 
   it('should not exist when web server has not been called', (done) => {
     client.connect((error, response) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(response.status).to.equal('OK')
-      expect(response.data.id).to.be.ok
+      expect(response.data.id).to.be.ok()
       var id = response.data.id
       expect(api.connections.connections[id].fingerprint).not.to.equal(fingerprint)
       done()
@@ -98,9 +102,9 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
   it('should exist as long as cookie is passed', (done) => {
     cookieHeader = api.config.servers.web.fingerprintOptions.cookieKey + '=dummyValue'
     client.connect((error, response) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(response.status).to.equal('OK')
-      expect(response.data.id).to.be.ok
+      expect(response.data.id).to.be.ok()
       var id = response.data.id
       expect(api.connections.connections[id].fingerprint).to.equal('dummyValue')
       done()

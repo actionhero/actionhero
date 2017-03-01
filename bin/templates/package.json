@@ -1,25 +1,26 @@
 {
-  "author"      : "YOU <YOU@example.com>",
-  "name"        : "my_actionhero_project",
+  "author" : "YOU <YOU@example.com>",
+  "name" : "my_actionhero_project",
   "description" : "my actionhero project",
-  "version"     : "0.0.1",
-  "engines"     : {
+  "version" : "0.0.1",
+  "engines" : {
     "node": ">=4.0.0"
   },
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
-    "ws"         : "latest",
-    "fakeredis"  : "latest",
-    "ioredis"    : "latest"
+    "ws" : "latest",
+    "fakeredis" : "latest",
+    "ioredis" : "latest"
   },
   "devDependencies" : {
-    "cross-env"  : "latest",
-    "chai"       : "latest",
-    "mocha"      : "latest"
+    "cross-env" : "latest",
+    "chai" : "latest",
+    "dirty-chai" : "latest",
+    "mocha" : "latest"
   },
   "scripts" : {
-    "start"      : "actionhero start",
+    "start" : "actionhero start",
     "actionhero" : "actionhero",
-    "test"       : "cross-env NODE_ENV=test mocha"
+    "test" : "cross-env NODE_ENV=test mocha"
   }
 }

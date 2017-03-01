@@ -1,7 +1,11 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -12,7 +16,7 @@ var queue = 'testQueue'
 describe('Core: Tasks', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
 
       api.resque.multiWorker.options.minTaskProcessors = 1
@@ -125,7 +129,7 @@ describe('Core: Tasks', () => {
 
   it('all queues should start empty', (done) => {
     api.resque.queue.length(queue, (error, length) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(length).to.equal(0)
       done()
     })
@@ -140,7 +144,7 @@ describe('Core: Tasks', () => {
 
   it('no delayed tasks should be scheduled', (done) => {
     api.resque.queue.scheduledAt(queue, 'periodicTask', {}, (error, timestamps) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(timestamps).to.have.length(0)
       done()
     })
@@ -148,9 +152,9 @@ describe('Core: Tasks', () => {
 
   it('all periodic tasks can be enqueued at boot', (done) => {
     api.tasks.enqueueAllRecurrentJobs((error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(length).to.equal(1)
         done()
       })
@@ -159,11 +163,11 @@ describe('Core: Tasks', () => {
 
   it('re-enqueuing a periodic task should not enqueue it again', (done) => {
     api.tasks.enqueue('periodicTask', (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.tasks.enqueue('periodicTask', (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         api.resque.queue.length(queue, (error, length) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(length).to.equal(1)
           done()
         })
@@ -173,9 +177,9 @@ describe('Core: Tasks', () => {
 
   it('can add a normal job', (done) => {
     api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(length).to.equal(1)
         done()
       })
@@ -185,9 +189,9 @@ describe('Core: Tasks', () => {
   it('can add a delayed job', (done) => {
     var time = new Date().getTime() + 1000
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(timestamps).to.have.length(1)
         var completeTime = Math.floor(time / 1000)
         expect(Number(timestamps[0])).to.be.at.least(completeTime)
@@ -201,20 +205,20 @@ describe('Core: Tasks', () => {
     var time = new Date().getTime() + 1000
     var roundedTime = Math.round(time / 1000) * 1000
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.tasks.timestamps((error, timestamps) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(timestamps).to.have.length(1)
         expect(timestamps[0]).to.equal(roundedTime)
 
         api.tasks.delayedAt(roundedTime, (error, tasks) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(tasks).to.have.length(1)
           expect(tasks[0]['class']).to.equal('regularTask')
         })
 
         api.tasks.allDelayed((error, allTasks) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(Object.keys(allTasks)).to.have.length(1)
           expect(Object.keys(allTasks)[0]).to.equal(String(roundedTime))
           expect(allTasks[roundedTime][0]['class']).to.equal('regularTask')
@@ -226,15 +230,15 @@ describe('Core: Tasks', () => {
 
   it('I can remove an enqueued job', (done) => {
     api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(length).to.equal(1)
         api.tasks.del(queue, 'regularTask', {word: 'first'}, (error, count) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(count).to.equal(1)
           api.resque.queue.length(queue, (error, length) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(length).to.equal(0)
             done()
           })
@@ -245,15 +249,15 @@ describe('Core: Tasks', () => {
 
   it('I can remove a delayed job', (done) => {
     api.tasks.enqueueIn(1000, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(timestamps).to.have.length(1)
         api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(timestamps).to.have.length(1)
           api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             expect(timestamps).to.have.length(0)
             done()
           })
@@ -265,11 +269,11 @@ describe('Core: Tasks', () => {
   it('I can remove and stop a recurring task', (done) => {
     // enqueue the delayed job 2x, one in each type of queue
     api.tasks.enqueue('periodicTask', {}, (error) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api.tasks.enqueueIn(1000, 'periodicTask', {}, (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         api.tasks.stopRecurrentJob('periodicTask', (error, count) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(count).to.equal(2)
           done()
         })
@@ -282,11 +286,11 @@ describe('Core: Tasks', () => {
       api.config.tasks.queues = ['*']
 
       api.tasks.enqueue('slowTask', {a: 1}, (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         api.resque.multiWorker.start(() => {
           setTimeout(() => {
             api.tasks.details((error, details) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
               expect(Object.keys(details.queues)).to.deep.equal(['testQueue'])
               expect(details.queues.testQueue).to.have.length(0)
               expect(Object.keys(details.workers)).to.have.length(1)
@@ -305,7 +309,7 @@ describe('Core: Tasks', () => {
   describe('full worker flow', () => {
     it('normal tasks work', (done) => {
       api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         api.config.tasks.queues = ['*']
         api.resque.multiWorker.start(() => {
           setTimeout(() => {
@@ -318,7 +322,7 @@ describe('Core: Tasks', () => {
 
     it('delayed tasks work', (done) => {
       api.tasks.enqueueIn(100, 'regularTask', {word: 'delayed'}, (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         api.config.tasks.queues = ['*']
         api.config.tasks.scheduler = true
         api.resque.startScheduler(() => {

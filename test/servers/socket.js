@@ -1,8 +1,12 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var uuid = require('uuid')
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -64,7 +68,7 @@ var connectClients = function (callback) {
 describe('Server: Socket', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       connectClients(done)
     })
@@ -181,7 +185,7 @@ describe('Server: Socket', () => {
 
   it('params are sticky between actions', (done) => {
     makeSocketRequest(client, 'cacheTest', (response) => {
-      expect(response.error).to.not.exist
+      expect(response.error).to.not.exist()
       expect(response.cacheTestResults.loadResp.key).to.equal('cacheTest_socketTestKey')
       expect(response.cacheTestResults.loadResp.value).to.equal('abc123')
       makeSocketRequest(client, 'cacheTest', (response) => {
@@ -221,7 +225,7 @@ describe('Server: Socket', () => {
           if (i === '0') {
             expect(response.error).to.equal('you have too many pending requests')
           } else {
-            expect(response.error).to.not.exist
+            expect(response.error).to.not.exist()
           }
         }
         done()
@@ -372,7 +376,7 @@ describe('Server: Socket', () => {
     it('folks NOT in my room DON\'T hear what I say', (done) => {
       makeSocketRequest(client, 'roomLeave defaultRoom', () => {
         makeSocketRequest(client, '', (response) => {
-          expect(response).to.be.null
+          expect(response).to.be.null()
           done()
         })
         makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
@@ -395,7 +399,7 @@ describe('Server: Socket', () => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              expect(response.data.members[key].type).to.not.exist
+              expect(response.data.members[key].type).to.not.exist()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 
@@ -436,7 +440,7 @@ describe('Server: Socket', () => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
             for (var key in response.data.members) {
-              expect(response.data.members[key].type).to.not.exist
+              expect(response.data.members[key].type).to.not.exist()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
 

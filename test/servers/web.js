@@ -1,10 +1,14 @@
 'use strict'
 
+var chai = require('chai')
+var dirtyChai = require('dirty-chai')
+var expect = chai.expect
+chai.use(dirtyChai)
+
 var request = require('request')
 var fs = require('fs')
 var os = require('os')
 let path = require('path')
-var expect = require('chai').expect
 var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
@@ -13,7 +17,7 @@ var url
 describe('Server: Web', () => {
   before((done) => {
     actionhero.start((error, a) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       api = a
       url = 'http://localhost:' + api.config.servers.web.port
       done()
@@ -36,7 +40,7 @@ describe('Server: Web', () => {
     }
 
     request.get(options, (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       expect(response.statusCode).to.equal(404)
       expect(response.body).to.equal('That file is not found')
       done()
@@ -45,7 +49,7 @@ describe('Server: Web', () => {
 
   it('Server should be up and return data', (done) => {
     request.get(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body).to.be.instanceof(Object)
       done()
@@ -54,7 +58,7 @@ describe('Server: Web', () => {
 
   it('Server basic response should be JSON and have basic data', (done) => {
     request.get(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body).to.be.instanceof(Object)
       expect(body.requesterInformation).to.be.instanceof(Object)
@@ -64,7 +68,7 @@ describe('Server: Web', () => {
 
   it('params work', (done) => {
     request.get(url + '/api?key=value', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.requesterInformation.receivedParams.key).to.equal('value')
       done()
@@ -73,9 +77,9 @@ describe('Server: Web', () => {
 
   it('params are ignored unless they are in the whitelist', (done) => {
     request.get(url + '/api?crazyParam123=something', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
-      expect(body.requesterInformation.receivedParams.crazyParam123).to.not.exist
+      expect(body.requesterInformation.receivedParams.crazyParam123).to.not.exist()
       done()
     })
   })
@@ -84,7 +88,7 @@ describe('Server: Web', () => {
     it('works for the API', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       request.get(url + '/api/sleepTest', (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(Object.keys(api.connections.connections)).to.have.length(0)
         setTimeout(done, 100)
       })
@@ -97,7 +101,7 @@ describe('Server: Web', () => {
     it('works for files', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       request.get(url + '/simple.html', (error) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         setTimeout(() => {
           expect(Object.keys(api.connections.connections)).to.have.length(0)
           done()
@@ -160,7 +164,7 @@ describe('Server: Web', () => {
 
     it('errors can be error strings', (done) => {
       request.get(url + '/api/stringErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error).to.equal('broken')
         done()
@@ -169,7 +173,7 @@ describe('Server: Web', () => {
 
     it('errors can be error objects and returned plainly', (done) => {
       request.get(url + '/api/errorErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error).to.equal('broken')
         done()
@@ -178,7 +182,7 @@ describe('Server: Web', () => {
 
     it('errors can be complex JSON payloads', (done) => {
       request.get(url + '/api/complexErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error.error).to.equal('broken')
         expect(body.error.reason).to.equal('stuff')
@@ -203,7 +207,7 @@ describe('Server: Web', () => {
 
     it('params are not ignored', (done) => {
       request.get(url + '/api/testAction/?crazyParam123=something', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.crazyParam123).to.equal('something')
         done()
@@ -217,7 +221,7 @@ describe('Server: Web', () => {
 
     it('can ask for JSONp responses', (done) => {
       request.get(url + '/api/randomNumber?callback=myCallback', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(body.indexOf('myCallback({')).to.equal(0)
         done()
       })
@@ -225,7 +229,7 @@ describe('Server: Web', () => {
 
     it('JSONp responses cannot be used for XSS', (done) => {
       request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(body).not.to.match(/alert\(/)
         expect(body.indexOf('alert&#39;hi&#39;;foo(')).to.equal(0)
         done()
@@ -243,7 +247,7 @@ describe('Server: Web', () => {
         url: url + '/api/randomNumber',
         headers: {'Host': 'lalala.site.com'}
       }, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.headers.location).to.equal('https://www.site.com/api/randomNumber')
         expect(body).to.match(/You are being redirected to https:\/\/www.site.com\/api\/randomNumber/)
         done()
@@ -259,8 +263,8 @@ describe('Server: Web', () => {
           'x-forwarded-proto': 'https'
         }
       }, (error, response, body) => {
-        expect(error).to.be.null
-        expect(response.headers.location).to.not.exist
+        expect(error).to.be.null()
+        expect(response.headers.location).to.not.exist()
         expect(body).to.match(/randomNumber/)
         done()
       })
@@ -269,7 +273,7 @@ describe('Server: Web', () => {
 
   it('gibberish actions have the right response', (done) => {
     request.get(url + '/api/IAMNOTANACTION', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.error).to.equal('unknown action or invalid apiVersion')
       done()
@@ -278,16 +282,16 @@ describe('Server: Web', () => {
 
   it('real actions do not have an error response', (done) => {
     request.get(url + '/api/status', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
-      expect(body.error).to.not.exist
+      expect(body.error).to.not.exist()
       done()
     })
   })
 
   it('HTTP Verbs should work: GET', (done) => {
     request.get(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.randomNumber).to.be.at.least(0)
       expect(body.randomNumber).to.be.at.most(1)
@@ -297,7 +301,7 @@ describe('Server: Web', () => {
 
   it('HTTP Verbs should work: PUT', (done) => {
     request.put(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.randomNumber).to.be.at.least(0)
       expect(body.randomNumber).to.be.at.most(1)
@@ -307,7 +311,7 @@ describe('Server: Web', () => {
 
   it('HTTP Verbs should work: POST', (done) => {
     request.post(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.randomNumber).to.be.at.least(0)
       expect(body.randomNumber).to.be.at.most(100)
@@ -317,7 +321,7 @@ describe('Server: Web', () => {
 
   it('HTTP Verbs should work: DELETE', (done) => {
     request.del(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.randomNumber).to.be.at.least(0)
       expect(body.randomNumber).to.be.at.most(1000)
@@ -327,7 +331,7 @@ describe('Server: Web', () => {
 
   it('HTTP Verbs should work: Post with Form', (done) => {
     request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}, (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.cacheTestResults.saveResp).to.equal(true)
       done()
@@ -337,7 +341,7 @@ describe('Server: Web', () => {
   it('HTTP Verbs should work: Post with JSON Payload as body', (done) => {
     var body = JSON.stringify({key: 'key', value: 'value'})
     request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(body.cacheTestResults.saveResp).to.equal(true)
       done()
@@ -371,7 +375,7 @@ describe('Server: Web', () => {
 
     it('.query should contain unfiltered query params', (done) => {
       request.get(url + '/api/paramTestAction/?crazyParam123=something', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.query.crazyParam123).to.equal('something')
         done()
@@ -381,7 +385,7 @@ describe('Server: Web', () => {
     it('.body should contain unfiltered request body params', (done) => {
       var requestBody = JSON.stringify({key: 'value'})
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.body.key).to.equal('value')
         done()
@@ -392,7 +396,7 @@ describe('Server: Web', () => {
   it('returnErrorCodes false should still have a status of 200', (done) => {
     api.config.servers.web.returnErrorCodes = false
     request.del(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(response.statusCode).to.equal(200)
       done()
@@ -402,7 +406,7 @@ describe('Server: Web', () => {
   it('returnErrorCodes can be opted to change http header codes', (done) => {
     api.config.servers.web.returnErrorCodes = true
     request.del(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null
+      expect(error).to.be.null()
       body = JSON.parse(body)
       expect(response.statusCode).to.equal(404)
       done()
@@ -442,7 +446,7 @@ describe('Server: Web', () => {
 
     it('duplicate headers should be removed (in favor of the last set)', (done) => {
       request.get(url + '/api/headerTestAction', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(response.statusCode).to.equal(200)
         expect(response.headers.thing).to.equal('C')
@@ -452,7 +456,7 @@ describe('Server: Web', () => {
 
     it('but duplicate set-cookie requests should be allowed', (done) => {
       request.get(url + '/api/headerTestAction', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(response.statusCode).to.equal(200)
         expect(response.headers['set-cookie']).to.have.length(3) // 2 + session
@@ -464,7 +468,7 @@ describe('Server: Web', () => {
 
     it('should respond to OPTIONS with only HTTP headers', (done) => {
       request({method: 'options', url: url + '/api/cacheTest'}, (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(response.headers['access-control-allow-methods']).to.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE')
         expect(response.headers['access-control-allow-origin']).to.equal('*')
@@ -475,7 +479,7 @@ describe('Server: Web', () => {
 
     it('should respond to TRACE with parsed params received', (done) => {
       request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(response.statusCode).to.equal(200)
         expect(body.receivedParams.key).to.equal('someKey')
@@ -486,7 +490,7 @@ describe('Server: Web', () => {
 
     it('should respond to HEAD requests just like GET, but with no body', (done) => {
       request({method: 'head', url: url + '/api/headerTestAction'}, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(body).to.equal('')
         done()
@@ -496,23 +500,23 @@ describe('Server: Web', () => {
     it('keeps sessions with browser_fingerprint', (done) => {
       var j = request.jar()
       request.post({url: url + '/api', jar: j}, (error, response1, body1) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         request.get({url: url + '/api', jar: j}, (error, response2, body2) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           request.put({url: url + '/api', jar: j}, (error, response3, body3) => {
-            expect(error).to.be.null
+            expect(error).to.be.null()
             request.del({url: url + '/api', jar: j}, (error, response4, body4) => {
-              expect(error).to.be.null
+              expect(error).to.be.null()
 
               body1 = JSON.parse(body1)
               body2 = JSON.parse(body2)
               body3 = JSON.parse(body3)
               body4 = JSON.parse(body4)
 
-              expect(response1.headers['set-cookie']).to.be.ok
-              expect(response2.headers['set-cookie']).to.not.exist
-              expect(response3.headers['set-cookie']).to.not.exist
-              expect(response4.headers['set-cookie']).to.not.exist
+              expect(response1.headers['set-cookie']).to.be.ok()
+              expect(response2.headers['set-cookie']).to.not.exist()
+              expect(response3.headers['set-cookie']).to.not.exist()
+              expect(response4.headers['set-cookie']).to.not.exist()
 
               var fingerprint1 = body1.requesterInformation.id.split('-')[0]
               var fingerprint2 = body2.requesterInformation.id.split('-')[0]
@@ -573,7 +577,7 @@ describe('Server: Web', () => {
 
     it('actions that do not exists should return 404', (done) => {
       request.post(url + '/api/aFakeAction', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(response.statusCode).to.equal(404)
         done()
@@ -582,7 +586,7 @@ describe('Server: Web', () => {
 
     it('missing params result in a 422', (done) => {
       request.post(url + '/api/statusTestAction', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(response.statusCode).to.equal(422)
         done()
@@ -591,7 +595,7 @@ describe('Server: Web', () => {
 
     it('status codes can be set for errors', (done) => {
       request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error).to.equal('key != value')
         expect(response.statusCode).to.equal(402)
@@ -601,7 +605,7 @@ describe('Server: Web', () => {
 
     it('status code should still be 200 if everything is OK', (done) => {
       request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.good).to.equal(true)
         expect(response.statusCode).to.equal(200)
@@ -613,7 +617,7 @@ describe('Server: Web', () => {
   describe('documentation', () => {
     it('documentation can be returned via a documentation action', (done) => {
       request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.documentation).to.be.instanceof(Object)
         done()
@@ -622,7 +626,7 @@ describe('Server: Web', () => {
 
     it('should have actions with all the right parts', (done) => {
       request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         for (var actionName in body.documentation) {
           for (var version in body.documentation[actionName]) {
@@ -640,7 +644,7 @@ describe('Server: Web', () => {
   describe('files', () => {
     it('file: an HTML file', (done) => {
       request.get(url + '/public/simple.html', (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         done()
@@ -649,7 +653,7 @@ describe('Server: Web', () => {
 
     it('file: 404 pages', (done) => {
       request.get(url + '/public/notARealFile', (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(404)
         expect(response.body).not.to.match(/notARealFile/)
         done()
@@ -658,7 +662,7 @@ describe('Server: Web', () => {
 
     it('I should not see files outside of the public dir', (done) => {
       request.get(url + '/public/../config.json', (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(404)
         expect(response.body).to.equal('That file is not found')
         done()
@@ -667,7 +671,7 @@ describe('Server: Web', () => {
 
     it('file: index page should be served when requesting a path (trailing slash)', (done) => {
       request.get(url + '/public/', (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(typeof response.body).to.equal('string')
         done()
@@ -676,7 +680,7 @@ describe('Server: Web', () => {
 
     it('file: index page should be served when requesting a path (no trailing slash)', (done) => {
       request.get(url + '/public', (error, response) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(typeof response.body).to.equal('string')
         done()
@@ -705,7 +709,7 @@ describe('Server: Web', () => {
 
       it('works for routes mapped paths', (done) => {
         request.get(url + '/my/public/route/testFile.html', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           expect(response.body).to.equal('ActionHero Route Test File')
           done()
@@ -714,7 +718,7 @@ describe('Server: Web', () => {
 
       it('returns 404 for files not available in route mapped paths', (done) => {
         request.get(url + '/my/public/route/fileNotFound.html', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(404)
           done()
         })
@@ -722,7 +726,7 @@ describe('Server: Web', () => {
 
       it('I should not see files outside of the mapped dir', (done) => {
         request.get(url + '/my/public/route/../../config/servers/web.js', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(404)
           done()
         })
@@ -750,7 +754,7 @@ describe('Server: Web', () => {
 
       it('works for secondary paths', (done) => {
         request.get(url + '/public/testFile.html', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
           done()
@@ -771,7 +775,7 @@ describe('Server: Web', () => {
 
       it('old action routes stop working', (done) => {
         request.get(url + '/api/randomNumber', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(404)
           done()
         })
@@ -779,7 +783,7 @@ describe('Server: Web', () => {
 
       it('can ask for nested URL actions', (done) => {
         request.get(url + '/craz/y/action/path/randomNumber', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           done()
         })
@@ -787,7 +791,7 @@ describe('Server: Web', () => {
 
       it('old file routes stop working', (done) => {
         request.get(url + '/public/simple.html', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(404)
           done()
         })
@@ -795,7 +799,7 @@ describe('Server: Web', () => {
 
       it('can ask for nested URL files', (done) => {
         request.get(url + '/a/b/c/simple.html', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
           done()
@@ -804,7 +808,7 @@ describe('Server: Web', () => {
 
       it('can ask for nested URL files with depth', (done) => {
         request.get(url + '/a/b/c/css/cosmo.css', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           done()
         })
@@ -910,7 +914,7 @@ describe('Server: Web', () => {
 
     it('unknown actions are still unknown', (done) => {
       request.get(url + '/api/a_crazy_action', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
         done()
@@ -919,7 +923,7 @@ describe('Server: Web', () => {
 
     it('explicit action declarations still override routed actions, if the defined action is real', (done) => {
       request.get(url + '/api/user/123?action=randomNumber', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('randomNumber')
         done()
@@ -928,7 +932,7 @@ describe('Server: Web', () => {
 
     it('route actions will override explicit actions, if the defined action is null', (done) => {
       request.get(url + '/api/user/123?action=someFakeAction', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         done()
@@ -937,7 +941,7 @@ describe('Server: Web', () => {
 
     it('route actions have the matched route availalbe to the action', (done) => {
       request.get(url + '/api/mimeTestAction/thing.json', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
         expect(body.matchedRoute.action).to.equal('mimeTestAction')
@@ -947,7 +951,7 @@ describe('Server: Web', () => {
 
     it('Routes should recognize apiVersion as default param', (done) => {
       request.get(url + '/api/old_login?user_id=7', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.user_id).to.equal('7')
         expect(body.requesterInformation.receivedParams.action).to.equal('login')
@@ -957,7 +961,7 @@ describe('Server: Web', () => {
 
     it('Routes should be mapped for GET (simple)', (done) => {
       request.get(url + '/api/users', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('usersList')
         done()
@@ -966,7 +970,7 @@ describe('Server: Web', () => {
 
     it('Routes should be mapped for GET (complex)', (done) => {
       request.get(url + '/api/user/1234', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
@@ -976,7 +980,7 @@ describe('Server: Web', () => {
 
     it('Routes should be mapped for POST', (done) => {
       request.post(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
@@ -987,7 +991,7 @@ describe('Server: Web', () => {
 
     it('Routes should be mapped for PUT', (done) => {
       request.put(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
@@ -998,7 +1002,7 @@ describe('Server: Web', () => {
 
     it('Routes should be mapped for DELETE', (done) => {
       request.del(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
@@ -1009,7 +1013,7 @@ describe('Server: Web', () => {
 
     it('route params trump explicit params', (done) => {
       request.get(url + '/api/user/1?userID=2', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1')
@@ -1019,12 +1023,12 @@ describe('Server: Web', () => {
 
     it('to match, a route much match all parts of the URL', (done) => {
       request.get(url + '/api/thing', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('thing')
 
         request.get(url + '/api/thing/stuff', (error, response, body) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           body = JSON.parse(body)
           expect(body.requesterInformation.receivedParams.action).to.equal('thingStuff')
           done()
@@ -1034,13 +1038,13 @@ describe('Server: Web', () => {
 
     it('regexp matches will provide proper variables', (done) => {
       request.post(url + '/api/login/123', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('login')
         expect(body.requesterInformation.receivedParams.userID).to.equal('123')
 
         request.post(url + '/api/login/admin', (error, response, body) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           body = JSON.parse(body)
           expect(body.requesterInformation.receivedParams.action).to.equal('login')
           expect(body.requesterInformation.receivedParams.userID).to.equal('admin')
@@ -1051,7 +1055,7 @@ describe('Server: Web', () => {
 
     it('regexp matches will still work with params with periods and other wacky chars', (done) => {
       request.get(url + '/api/c/key/log_me-in.com$123.jpg', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
         expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.jpg')
@@ -1061,10 +1065,10 @@ describe('Server: Web', () => {
 
     it('regexp match failures will be rejected', (done) => {
       request.post(url + '/api/login/1234', (error, response, body) => {
-        expect(error).to.be.null
+        expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
-        expect(body.requesterInformation.receivedParams.userID).to.not.exist
+        expect(body.requesterInformation.receivedParams.userID).to.not.exist()
         done()
       })
     })
@@ -1072,7 +1076,7 @@ describe('Server: Web', () => {
     describe('file extensions + routes', () => {
       it('will change header information based on extension (when active)', (done) => {
         request.get(url + '/api/mimeTestAction/val.png', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.headers['content-type']).to.equal('image/png')
           done()
         })
@@ -1080,7 +1084,7 @@ describe('Server: Web', () => {
 
       it('will not change header information if there is a connection.error', (done) => {
         request.get(url + '/api/mimeTestAction', (error, response, body) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           body = JSON.parse(body)
           expect(response.headers['content-type']).to.equal('application/json; charset=utf-8')
           expect(body.error).to.equal('key is a required parameter for this action')
@@ -1090,7 +1094,7 @@ describe('Server: Web', () => {
 
       it('works with with matchTrailingPathParts', (done) => {
         request.get(url + '/api/a/wild/theKey/and/some/more/path', (error, response, body) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           body = JSON.parse(body)
           expect(body.requesterInformation.receivedParams.action).to.equal('mimeTestAction')
           expect(body.requesterInformation.receivedParams.path).to.equal('and/some/more/path')
@@ -1119,7 +1123,7 @@ describe('Server: Web', () => {
 
       it('will decode %20 or plus sign to a space so that file system can read', (done) => {
         request.get(url + '/actionhero%20with%20space.png', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(200)
           expect(response.body).to.match(/PNG/)
           expect(response.headers['content-type']).to.equal('image/png')
@@ -1129,7 +1133,7 @@ describe('Server: Web', () => {
 
       it('will capture bad encoding in URL and return NOT FOUND', (done) => {
         request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', (error, response) => {
-          expect(error).to.be.null
+          expect(error).to.be.null()
           expect(response.statusCode).to.equal(404)
           expect(typeof response.body).to.equal('string')
           expect(response.body).to.match(/^That file is not found/)
