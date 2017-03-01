@@ -155,7 +155,7 @@ describe('Core: Binary', () => {
         expect(data).to.match(/description: 'my_description'/)
         expect(data).to.match(/queue: 'my_queue'/)
         expect(data).to.match(/frequency: 12345/)
-        expect(data).to.match(/next \(error, resultLogMessage\)/)
+        expect(data).to.match(/next\(error, resultLogMessage\)/)
         done()
       })
     })
@@ -191,6 +191,16 @@ describe('Core: Binary', () => {
         done()
       })
     })
+
+    it('can call npm test in the new project and not fail', (done) => {
+      doBash([
+        'cd ' + testDir,
+        'npm test'
+      ], (error, data) => {
+        expect(error).to.be.null()
+        done()
+      })
+    }).timeout(60000)
 
     describe('can run a single server', () => {
       it('can boot a single server')

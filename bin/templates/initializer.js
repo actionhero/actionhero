@@ -5,7 +5,7 @@ module.exports = {
   startPriority: %%startPriority%%,
   stopPriority: %%stopPriority%%,
   initialize: function (api, next) {
-    api.%%name%% = {};
+    api.%%name%% = {}
 
     next()
   },
