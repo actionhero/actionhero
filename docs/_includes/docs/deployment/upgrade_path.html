@@ -8,7 +8,7 @@
 
   <h2 id="upgrading-actionhero-to-v16">Upgrading from v15.x.x to v16.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v16.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v16.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   The only breaking changes are related to the capilization of internal methods:
@@ -22,7 +22,7 @@
 
   <h2 id="upgrading-actionhero-to-v15">Upgrading from v14.x.x to v15.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v15.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v15.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   {% highlight bash %}
@@ -47,13 +47,13 @@
 
   <h2 id="upgrading-actionhero-to-v14">Upgrading from v13.x.x to v14.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v14.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v14.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   <ul>
   <li>Redis Client Configurations have changed drastically.  This allows for greater configuration, but at a complexity cost.
     <ul>
-      <li>The easiest way to upgrade your <code>config/redis.js</code> is to take if from the <a href="https://github.com/evantahler/actionhero/blob/master/config/redis.js">master branch</a> directly and re-apply your configuration.</li>
+      <li>The easiest way to upgrade your <code>config/redis.js</code> is to take if from the <a href="https://github.com/actionherojs/actionhero/blob/master/config/redis.js">master branch</a> directly and re-apply your configuration.</li>
       <li>Move <code>api.config.redis.channel</code> to <code>api.config.general.channel</code></li>
       <li>Move <code>api.config.redis. rpcTimeout</code> to <code>api.config.general.rpcTimeout</code></li>
       <li>Throughout the code, use <code>api.config.redis.client</code> rather than <code>api.redis.client</code></li>
@@ -63,7 +63,7 @@
 
   <h2 id="upgrading-actionhero-to-v13">Upgrading from v12.x.x to v13.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v13.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v13.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   <ul>
@@ -76,13 +76,13 @@
     </li>
     <li>Locales
       <ul>
-        <li>This release introduced Locales. You will need the new locale config file.  The easiest way to upgrade your <code>config/i18n.js</code> is to take if from the <a href="https://github.com/evantahler/actionhero/blob/master/config/i18n.js">master branch</a>.</li>
+        <li>This release introduced Locales. You will need the new locale config file.  The easiest way to upgrade your <code>config/i18n.js</code> is to take if from the <a href="https://github.com/actionherojs/actionhero/blob/master/config/i18n.js">master branch</a>.</li>
         <li>Ensure that <code>api.config.i18n.updateFiles</code> is <code>true</code> so that your locale files can be generated for the first time.</li>
       </ul>
     </li>
     <li>Errors
       <ul>
-        <li><code>config/errors.js</code> has been completely redone to take advantage of <code>connection.localize</code>.  The easiest way to upgrade your <code>config/errors.js</code> is to take if from the <a href="https://github.com/evantahler/actionhero/blob/master/config/errors.js">master branch</a>.</li>
+        <li><code>config/errors.js</code> has been completely redone to take advantage of <code>connection.localize</code>.  The easiest way to upgrade your <code>config/errors.js</code> is to take if from the <a href="https://github.com/actionherojs/actionhero/blob/master/config/errors.js">master branch</a>.</li>
       </ul>
     </li>
     <li>Grunt Removed
@@ -99,7 +99,7 @@
 
   <h2 id="upgrading-actionhero-to-v12">Upgrading from v11.x.x to v12.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v12.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v12.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   <ul>
@@ -112,14 +112,14 @@
     <li>Stats Removed
       <ul>
         <li>The <code>api.stats</code> subsection has been removed from actionhero</li>
-        <li>If you need the stats subsection, you can get get it <a href="https://github.com/evantahler/ah-stats-plugin">via plugin</a></li>
+        <li>If you need the stats subsection, you can get get it <a href="https://github.com/actionherojs/ah-stats-plugin">via plugin</a></li>
       </ul>
     </li>
   </ul>
 
   <h2><a id="upgrading-actionhero-to-v11"></a>Upgrading from v10.x.x to v11.x.x</h2>
 
-  <p><strong>Full Release Notes: <a href="https://github.com/evantahler/actionhero/releases/tag/v11.0.0">GitHub</a></strong></p>
+  <p><strong>Full Release Notes: <a href="https://github.com/actionherojs/actionhero/releases/tag/v11.0.0">GitHub</a></strong></p>
   <p><strong>Breaking Changes and How to Overcome Them:</strong></p>
 
   <ul>

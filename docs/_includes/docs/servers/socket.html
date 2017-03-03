@@ -174,6 +174,6 @@ client.connect({
 
   <p>The main <code>trick</code> to working with TCP/wire connections directly is to remember that you can have many ‘pending' requests at the same time.  Also, the order in which you receive responses back can be variable.  if you request <code>slowAction</code> and then <code>fastAction</code>, it's fairly likely that you will get a response to <code>fastAction</code> first.</p>
   <p>Note that only requests the client makes increment the <code>messageCount</code>, but broadcasts do not (the <code>say</code> command, etc)</p>
-  <p><a href="https://github.com/evantahler/actionhero-client">The actionhero client library</a> uses TCP/TLS connections, and makes use of actionhero's <code>messageCount</code> parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:</p>
+  <p><a href="https://github.com/actionherojs/actionhero-client">The actionhero client library</a> uses TCP/TLS connections, and makes use of actionhero's <code>messageCount</code> parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:</p>
 
 </section>

@@ -3,7 +3,7 @@
 
   <h2 id="config-overview">Overview</h2>
 
-  <p>There are 2 ways to manage actionHero configuration: config files and overrides.  In both cases, ActionHero starts by reading the config in <code>./config/</code>.  <a href="https://github.com/evantahler/actionhero/blob/master/config/">Here is a documented example</a>.</p>
+  <p>There are 2 ways to manage actionHero configuration: config files and overrides.  In both cases, ActionHero starts by reading the config in <code>./config/</code>.  <a href="https://github.com/actionherojs/actionhero/blob/master/config/">Here is a documented example</a>.</p>
   <p>The normal way to deal with configuration changes is to use the files in <code>/config/</code> and to have special options for each environment.  First we load in all settings from the <code>default</code> config block, and then we replace those with anything defined in the relevant <code>environment</code> section.  ActionHero uses the standard node environment variable <code>NODE_ENV</code> to determine environment, and defaults to ‘development' when one isn't found.  This pattern is very similar the Rails and Sails frameworks.  A good way to visualize this is to note that, by default, the web server will return metadata in response JSON, but we change that in the production NODE_ENV and disable it.</p>
 
   {% highlight javascript %}
