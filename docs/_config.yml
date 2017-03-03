@@ -1,21 +1,21 @@
 name: ActionHero.js
 license: Apache 2 License
-licenseUrl: https://github.com/evantahler/actionhero/blob/master/LICENSE.txt
+licenseUrl: https://github.com/actionherojs/actionhero/blob/master/LICENSE.txt
 logo: /assets/images/logo.png
 
 headerLinks:
   - title: GitHub
-    url: https://github.com/evantahler/actionhero
+    url: https://github.com/actionherojs/actionhero
   - title: Slack Team
     url: http://slack.actionherojs.com
 
 footerLinks:
   - title: GitHub
-    url: https://github.com/evantahler/actionhero
+    url: https://github.com/actionherojs/actionhero
   - title: Issues
-    url: https://github.com/evantahler/actionhero/issues?state=open
+    url: https://github.com/actionherojs/actionhero/issues?state=open
   - title: Releases
-    url: https://github.com/evantahler/actionhero/releases
+    url: https://github.com/actionherojs/actionhero/releases
   - title: NPM
     url: https://www.npmjs.org/package/actionhero
   - title: Slack

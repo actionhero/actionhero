@@ -224,7 +224,7 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // parse an IPv6 address
-    // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
+    // https://github.com/actionherojs/actionhero/issues/275 && https://github.com/nullivex
     api.utils.parseIPv6URI = function (addr) {
       let host = '::1'
       let port = '80'

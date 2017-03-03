@@ -23,17 +23,17 @@ exports['default'] = {
         '_toExpand': false,
         client: {
           konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy, keyPrefix: '___' }],
           buildNew: true
         },
         subscriber: {
           konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy, keyPrefix: '___' }],
           buildNew: true
         },
         tasks: {
           konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy, keyPrefix: '___' }],
           buildNew: true
         }
       }
