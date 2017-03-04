@@ -2,7 +2,7 @@
 
 First, **THANK YOU**.  
 
-Actionhero would not be the success it is today without the contributions of [many people](https://github.com/actionherojs/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use.
+Actionhero would not be the success it is today without the contributions of [many people](https://github.com/actionhero/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use.
 
 ## Testing
 

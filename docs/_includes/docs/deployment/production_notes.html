@@ -102,7 +102,7 @@ exports.default = {
   <h2 id="production-notes-pidfiles">Pidfiles</h2>
 
   <p>ActionHero will write its pid to a pidfile in the normal unix way.  The path for the pidfile is set in <code>config/api.js</code> with <code>config.general.paths.pid</code>.</p>
-  <p>Individual ActionHero servers will name their pidfiles by <code>api.id</code>, which is determined by the logic <a href="https://github.com/actionherojs/actionhero/blob/master/initializers/pids.js">here</a> and <a href="https://github.com/actionherojs/actionhero/blob/master/initializers/id.js">here</a>.  For example, on my laptop with the IP address of <code>192.168.0.1</code>, running <code>npm start</code> would run one ActionHero server and generate a pidfile of <code>./pids/actionhero-192.168.0.1</code> in which would be a single line containg the process' pid.</p>
+  <p>Individual ActionHero servers will name their pidfiles by <code>api.id</code>, which is determined by the logic <a href="https://github.com/actionhero/actionhero/blob/master/initializers/pids.js">here</a> and <a href="https://github.com/actionhero/actionhero/blob/master/initializers/id.js">here</a>.  For example, on my laptop with the IP address of <code>192.168.0.1</code>, running <code>npm start</code> would run one ActionHero server and generate a pidfile of <code>./pids/actionhero-192.168.0.1</code> in which would be a single line containg the process' pid.</p>
   <p>When running the cluster, the cluster process first writes his own pidfile to <code>process.cwd() + './pids/cluster_pidfile'</code>.  Then, every worker the cluster master creates will have a pid like <code>actionhero-worker-1</code> in the location defined by <code>config/api.js</code>.</p>
 
   <h2 id="production-notes-git-based-deployment">Git-Based Deployment</h2>
@@ -393,7 +393,7 @@ exports.production = {
     <li>Remember that all params which come in via the <code>web</code> and <code>socket</code> servers are <code>String</code>s.  If you want to typeCast them (perhaps you always know that the param <code>user_id</code> will be an integer), you can do so in a middleware or within an action's <a href="/docs/core/#actions-inputs"><code>params.formatter</code></a> step.</li>
     <li>Always remember to sanitize any input for SQL injection, etc.  The best way to describe this is "never pass a query to your database which can be directly modified via user input"!</li>
     <li>Remember that you can restrict actions to specific server types.  Perhaps only a web POST request should be able to login, and not a websocket client.  You can control application flow this way.</li>
-    <li>Crafting <a href="https://github.com/actionherojs/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>
+    <li>Crafting <a href="https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf">authentication middleware is not that hard</a></li>
   </ul>
 
   <h3>Tasks</h3>

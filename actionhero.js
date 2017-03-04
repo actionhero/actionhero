@@ -3,7 +3,7 @@
 // //////////////////////////////////////////////////////////////////////////
 // actionhero framework in node.js
 // http://www.actionherojs.com
-// https://github.com/actionherojs/actionhero
+// https://github.com/actionhero/actionhero
 
 const path = require('path')
 const async = require('async')

@@ -276,7 +276,7 @@ const initialize = function (api, options, next) {
         responseHeaders.push([i, cookieHash[i]])
       }
 
-      // https://github.com/actionherojs/actionhero/issues/189
+      // https://github.com/actionhero/actionhero/issues/189
       responseHeaders.push(['Content-Type', 'application/json; charset=utf-8'])
 
       for (i in api.config.servers.web.httpHeaders) {
