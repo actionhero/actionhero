@@ -20,7 +20,7 @@ services:
   - redis-server
 
 after_failure:
-  - "cat /home/travis/builds/evantahler/actionhero/npm-debug.log"
+  - "cat /home/travis/builds/actionhero/actionhero/npm-debug.log"
 
 notifications:
   slack: actionherojs:vj5i1wkPqEx0iKf6qXwQSnuX
