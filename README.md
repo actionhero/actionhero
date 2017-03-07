@@ -1,5 +1,7 @@
 # actionhero.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/actionhero/actionhero.svg)](https://greenkeeper.io/)
+
 ## The Reusable, Scalable, and Quick node.js API Server
 
 ![https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png](https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png)
