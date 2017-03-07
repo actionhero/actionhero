@@ -11,7 +11,7 @@ var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-var tmpPath = require('os').tmpdir() + require('path').sep + 'locale' + require('path').sep
+var tmpPath = require('os').tmpdir() + require('path').sep + 'locales' + require('path').sep
 
 var readLocaleFile = (locale) => {
   if (!locale) { locale = api.config.i18n.defaultLocale }
