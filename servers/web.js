@@ -118,7 +118,7 @@ const initialize = function (api, options, next) {
       } else if (responseHttpCode !== 304) {
         server.sendWithCompression(connection, responseHttpCode, headers, null, fileStream, length)
       } else {
-        connection.rawConnection.res.writeHead(responseHttpCode, headers)
+        connection.rawConnection.res.writeHead(responseHttpCode, transformHeaders(headers))
         connection.rawConnection.res.end()
         connection.destroy()
       }
@@ -206,14 +206,14 @@ const initialize = function (api, options, next) {
     if (fileStream) {
       if (compressor) {
         // headers.push(['Content-Length', fileLength]); // TODO
-        connection.rawConnection.res.writeHead(responseHttpCode, headers)
+        connection.rawConnection.res.writeHead(responseHttpCode, transformHeaders(headers))
         fileStream.pipe(compressor).pipe(connection.rawConnection.res)
       } else {
         // file length might be null if we don't know how long the stream is
         if (fileLength) {
           headers.push(['Content-Length', fileLength])
         }
-        connection.rawConnection.res.writeHead(responseHttpCode, headers)
+        connection.rawConnection.res.writeHead(responseHttpCode, transformHeaders(headers))
         fileStream.pipe(connection.rawConnection.res)
       }
     } else {
@@ -221,12 +221,12 @@ const initialize = function (api, options, next) {
         stringEncoder(stringResponse, (error, zippedString) => {
           if (error) { console.error(error) }
           headers.push(['Content-Length', zippedString.length])
-          connection.rawConnection.res.writeHead(responseHttpCode, headers)
+          connection.rawConnection.res.writeHead(responseHttpCode, transformHeaders(headers))
           connection.rawConnection.res.end(zippedString)
         })
       } else {
         headers.push(['Content-Length', Buffer.byteLength(stringResponse)])
-        connection.rawConnection.res.writeHead(responseHttpCode, headers)
+        connection.rawConnection.res.writeHead(responseHttpCode, transformHeaders(headers))
         connection.rawConnection.res.end(stringResponse)
       }
     }
@@ -538,6 +538,24 @@ const initialize = function (api, options, next) {
     for (let v in varsHash) {
       connection.params[v] = varsHash[v]
     }
+  }
+
+  const transformHeaders = function (headersArray) {
+    return headersArray.reduce((headers, currentHeader) => {
+      let currentHeaderKey = currentHeader[0].toLowerCase()
+      // we have a set-cookie, let's see what we have to do
+      if (currentHeaderKey === 'set-cookie') {
+        if (headers[currentHeaderKey]) {
+          headers[currentHeaderKey].push(currentHeader[1])
+        } else {
+          headers[currentHeaderKey] = [currentHeader[1]]
+        }
+      } else {
+        headers[currentHeaderKey] = currentHeader[1]
+      }
+
+      return headers
+    }, {})
   }
 
   const buildRequesterInformation = function (connection) {
