@@ -1,5 +1,4 @@
 'use strict'
-
 const async = require('async')
 
 module.exports = {
@@ -13,7 +12,7 @@ module.exports = {
       middleware: {},
       globalMiddleware: [],
 
-      loadFile: function (fullFilePath, reload) {
+      loadFile: function (fullFilePath, reload, loader) {
         if (!reload) { reload = false }
 
         const loadMessage = function (loadedTaskName) {
@@ -26,7 +25,7 @@ module.exports = {
 
         let task
         try {
-          const collection = require(fullFilePath)
+          let collection = api.config.loaders.task(fullFilePath);
           for (let i in collection) {
             task = collection[i]
             api.tasks.tasks[task.name] = task

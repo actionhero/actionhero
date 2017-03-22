@@ -27,6 +27,10 @@ module.exports = {
 
         repl.context.api = api
 
+        if (api.config.loaders.console) {
+          api.config.loaders.console(repl)
+        }
+
         repl.on('exit', function () {
           next(null, true)
         })
