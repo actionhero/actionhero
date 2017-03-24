@@ -192,6 +192,7 @@ describe('Core: API', () => {
     after((done) => {
       delete api.actions.actions.testAction
       delete api.actions.versions.testAction
+      api.config.general.missingParamChecks = [null, '', undefined]
       done()
     })
 
@@ -258,6 +259,114 @@ describe('Core: API', () => {
       api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true}, (response) => {
         expect(response.requesterInformation.receivedParams.requiredParam).to.be.ok()
         expect(response.requesterInformation.receivedParams.sleepDuration).to.not.exist()
+        done()
+      })
+    })
+  })
+
+  describe('Action Params schema type', () => {
+    before(() => {
+      api.actions.versions.testAction = [1]
+      api.actions.actions.testAction = {
+        '1': {
+          name: 'testAction',
+          description: 'this action has some required params',
+          version: 1,
+          inputs: {
+            schemaParam: {
+              schema: {
+                requiredParam: {required: true},
+                optionalParam: {required: false},
+                fancyParam: {
+                  required: false,
+                  default: () => { return 'abc123' },
+                  validator: function (s) {
+                    if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
+                  },
+                  formatter: function (s) {
+                    return String(s)
+                  }
+                }
+              }
+            }
+          },
+          run: function (api, connection, next) {
+            connection.response.params = connection.params
+            next(connection, true)
+          }
+        }
+      }
+    })
+
+    after(() => {
+      delete api.actions.actions.testAction
+      delete api.actions.versions.testAction
+      api.config.general.missingParamChecks = [null, '', undefined]
+    })
+
+    it('correct params that are falsey (false, []) should be allowed', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: false}}, (response) => {
+        expect(response.params.schemaParam.requiredParam).to.equal(false)
+        api.specHelper.runAction('testAction', {schemaParam: {requiredParam: []}}, (response) => {
+          expect(response.params.schemaParam.requiredParam).to.have.length(0)
+          done()
+        })
+      })
+    })
+
+    it('will fail for missing or empty string params', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: ''}}, (response) => {
+        expect(response.error).to.contain('required parameter for this action')
+        api.specHelper.runAction('testAction', {schemaParam: {}}, (response) => {
+          expect(response.error).to.match(/requiredParam is a required parameter for this action/)
+          done()
+        })
+      })
+    })
+
+    it('correct params respect config options', (done) => {
+      api.config.general.missingParamChecks = [undefined]
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: ''}}, (response) => {
+        expect(response.params.schemaParam.requiredParam).to.equal('')
+        api.specHelper.runAction('testAction', {schemaParam: {requiredParam: null}}, (response) => {
+          expect(response.params.schemaParam.requiredParam).to.be.null()
+          done()
+        })
+      })
+    })
+
+    it('will set a default when params are not provided', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true}}, (response) => {
+        expect(response.params.schemaParam.fancyParam).to.equal('abc123')
+        done()
+      })
+    })
+
+    it('will use validator if provided', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}}, (response) => {
+        expect(response.error).to.match(/Error: fancyParam should be "abc123"/)
+        done()
+      })
+    })
+
+    it('validator will have the API object in scope as this', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}}, (response) => {
+        expect(response.error).to.match(new RegExp(api.id))
+        done()
+      })
+    })
+
+    it('will use formatter if provided (and still use validator)', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}}, (response) => {
+        expect(response.requesterInformation.receivedParams.schemaParam.fancyParam).to.equal('123')
+        done()
+      })
+    })
+
+    it('will filter params not set in the target action or global safelist', (done) => {
+      api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, sleepDuration: true}}, (response) => {
+        expect(response.requesterInformation.receivedParams.schemaParam.requiredParam).to.be.ok()
+        expect(response.requesterInformation.receivedParams.schemaParam.sleepDuration).to.not.exist()
         done()
       })
     })
