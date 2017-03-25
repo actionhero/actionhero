@@ -316,9 +316,9 @@ describe('Core: API', () => {
 
     it('will fail for missing or empty string params', (done) => {
       api.specHelper.runAction('testAction', {schemaParam: {requiredParam: ''}}, (response) => {
-        expect(response.error).to.contain('required parameter for this action')
+        expect(response.error).to.contain('schemaParam.requiredParam is a required parameter for this action')
         api.specHelper.runAction('testAction', {schemaParam: {}}, (response) => {
-          expect(response.error).to.match(/requiredParam is a required parameter for this action/)
+          expect(response.error).to.contain('schemaParam.requiredParam is a required parameter for this action')
           done()
         })
       })
