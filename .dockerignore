@@ -1,22 +1,2 @@
-*/pids/*
-*/tmp/*
-*/log/*
-*/cache/*
-*/coverage/*
-*/node_modules/*
-*/locales/*
-*/public/javascript/actionheroClient.js
-*/public/javascript/actionheroClient.min.js
-
-# Node / NPM
-*/npm-debug.log
-
-# OS-specific wierdness
-*/.DS_Store
-
-# Site
-*/docs
-
-# Redis
-*/dump.rdb
-*/cache.dump
+# Ignore it all!
+**

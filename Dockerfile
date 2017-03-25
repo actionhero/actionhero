@@ -1,10 +1,11 @@
-FROM alpine:3.3
+FROM alpine:3.5
 MAINTAINER admin@actionherojs.com
 
-RUN apk add --update nodejs
-RUN npm install actionhero
-RUN ./node_modules/.bin/actionhero generate
+WORKDIR /actionhero
+
+RUN apk add --update nodejs git
+RUN git clone https://github.com/actionhero/actionhero.git /actionhero
 RUN npm install
 
-CMD ["node", "./node_modules/.bin/actionhero", "start"]
+CMD ["node", "./bin/actionhero", "start"]
 EXPOSE 8080 5000
