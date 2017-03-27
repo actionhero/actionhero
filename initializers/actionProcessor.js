@@ -187,42 +187,41 @@ module.exports = {
       }
     }
 
-    api.ActionProcessor.prototype.validateParam = function (props, param, key, schemaKey) {
-      let result = param
+    api.ActionProcessor.prototype.validateParam = function (props, params, key, schemaKey) {
       // default
-      if (result === undefined && props['default'] !== undefined) {
+      if (params[key] === undefined && props['default'] !== undefined) {
         if (typeof props['default'] === 'function') {
-          result = props['default'].call(api, result, this)
+          params[key] = props['default'].call(api, params[key], this)
         } else {
-          result = props['default']
+          params[key] = props['default']
         }
       }
 
       // formatter
-      if (result !== undefined && props.formatter !== undefined) {
+      if (params[key] !== undefined && props.formatter !== undefined) {
         if (!Array.isArray(props.formatter)) { props.formatter = [props.formatter] }
 
         props.formatter.forEach((formatter) => {
           if (typeof formatter === 'function') {
-            result = formatter.call(api, result, this)
+            params[key] = formatter.call(api, params[key], this)
           } else {
             const method = prepareStringMethod(formatter)
-            result = method.call(api, result, this)
+            params[key] = method.call(api, params[key], this)
           }
         })
       }
 
       // validator
-      if (result !== undefined && props.validator !== undefined) {
+      if (params[key] !== undefined && props.validator !== undefined) {
         if (!Array.isArray(props.validator)) { props.validator = [props.validator] }
 
         props.validator.forEach((validator) => {
           let validatorResponse
           if (typeof validator === 'function') {
-            validatorResponse = validator.call(api, result, this)
+            validatorResponse = validator.call(api, params[key], this)
           } else {
             const method = prepareStringMethod(validator)
-            validatorResponse = method.call(api, result, this)
+            validatorResponse = method.call(api, params[key], this)
           }
           if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
         })
@@ -230,7 +229,7 @@ module.exports = {
 
       // required
       if (props.required === true) {
-        if (api.config.general.missingParamChecks.indexOf(result) >= 0) {
+        if (api.config.general.missingParamChecks.indexOf(params[key]) >= 0) {
           let missingKey = key
           if (schemaKey) {
             missingKey = `${schemaKey}.${missingKey}`
@@ -238,8 +237,6 @@ module.exports = {
           this.missingParams.push(missingKey)
         }
       }
-
-      return result
     }
 
     api.ActionProcessor.prototype.validateParams = function (schemaKey) {
@@ -252,7 +249,7 @@ module.exports = {
 
       Object.keys(inputs).forEach((key) => {
         const props = inputs[key]
-        params[key] = this.validateParam(props, params[key], key, schemaKey)
+        this.validateParam(props, params, key, schemaKey)
 
         if (props.schema && params[key]) {
           this.reduceParams(key)
