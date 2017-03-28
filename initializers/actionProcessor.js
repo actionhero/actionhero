@@ -169,71 +169,93 @@ module.exports = {
       async.series(processors, callback)
     }
 
-    api.ActionProcessor.prototype.reduceParams = function () {
-      let inputNames = []
-      if (this.actionTemplate.inputs) {
-        inputNames = Object.keys(this.actionTemplate.inputs)
+    api.ActionProcessor.prototype.reduceParams = function (schemaKey) {
+      let inputs = this.actionTemplate.inputs || {}
+      let params = this.params
+      if (schemaKey) {
+        inputs = this.actionTemplate.inputs[schemaKey].schema
+        params = this.params[schemaKey]
       }
 
+      const inputNames = Object.keys(inputs) || []
       if (api.config.general.disableParamScrubbing !== true) {
-        for (let p in this.params) {
+        for (let p in params) {
           if (api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0) {
-            delete this.params[p]
+            delete params[p]
           }
         }
       }
     }
 
-    api.ActionProcessor.prototype.validateParams = function () {
-      for (let key in this.actionTemplate.inputs) {
-        const props = this.actionTemplate.inputs[key]
-
-        // default
-        if (this.params[key] === undefined && props['default'] !== undefined) {
-          if (typeof props['default'] === 'function') {
-            this.params[key] = props['default'].call(api, this.params[key], this)
-          } else {
-            this.params[key] = props['default']
-          }
-        }
-
-        // formatter
-        if (this.params[key] !== undefined && props.formatter !== undefined) {
-          if (!Array.isArray(props.formatter)) { props.formatter = [props.formatter] }
-
-          props.formatter.forEach((formatter) => {
-            if (typeof formatter === 'function') {
-              this.params[key] = formatter.call(api, this.params[key], this)
-            } else {
-              const method = prepareStringMethod(formatter)
-              this.params[key] = method.call(api, this.params[key], this)
-            }
-          })
-        }
-
-        // validator
-        if (this.params[key] !== undefined && props.validator !== undefined) {
-          if (!Array.isArray(props.validator)) { props.validator = [props.validator] }
-
-          props.validator.forEach((validator) => {
-            let validatorResponse
-            if (typeof validator === 'function') {
-              validatorResponse = validator.call(api, this.params[key], this)
-            } else {
-              const method = prepareStringMethod(validator)
-              validatorResponse = method.call(api, this.params[key], this)
-            }
-            if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
-          })
-        }
-
-        // required
-        if (props.required === true) {
-          if (api.config.general.missingParamChecks.indexOf(this.params[key]) >= 0) {
-            this.missingParams.push(key)
-          }
+    api.ActionProcessor.prototype.validateParam = function (props, params, key, schemaKey) {
+      // default
+      if (params[key] === undefined && props['default'] !== undefined) {
+        if (typeof props['default'] === 'function') {
+          params[key] = props['default'].call(api, params[key], this)
+        } else {
+          params[key] = props['default']
         }
       }
+
+      // formatter
+      if (params[key] !== undefined && props.formatter !== undefined) {
+        if (!Array.isArray(props.formatter)) { props.formatter = [props.formatter] }
+
+        props.formatter.forEach((formatter) => {
+          if (typeof formatter === 'function') {
+            params[key] = formatter.call(api, params[key], this)
+          } else {
+            const method = prepareStringMethod(formatter)
+            params[key] = method.call(api, params[key], this)
+          }
+        })
+      }
+
+      // validator
+      if (params[key] !== undefined && props.validator !== undefined) {
+        if (!Array.isArray(props.validator)) { props.validator = [props.validator] }
+
+        props.validator.forEach((validator) => {
+          let validatorResponse
+          if (typeof validator === 'function') {
+            validatorResponse = validator.call(api, params[key], this)
+          } else {
+            const method = prepareStringMethod(validator)
+            validatorResponse = method.call(api, params[key], this)
+          }
+          if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
+        })
+      }
+
+      // required
+      if (props.required === true) {
+        if (api.config.general.missingParamChecks.indexOf(params[key]) >= 0) {
+          let missingKey = key
+          if (schemaKey) {
+            missingKey = `${schemaKey}.${missingKey}`
+          }
+          this.missingParams.push(missingKey)
+        }
+      }
+    }
+
+    api.ActionProcessor.prototype.validateParams = function (schemaKey) {
+      let inputs = this.actionTemplate.inputs || {}
+      let params = this.params
+      if (schemaKey) {
+        inputs = this.actionTemplate.inputs[schemaKey].schema
+        params = this.params[schemaKey]
+      }
+
+      Object.keys(inputs).forEach((key) => {
+        const props = inputs[key]
+        this.validateParam(props, params, key, schemaKey)
+
+        if (props.schema && params[key]) {
+          this.reduceParams(key)
+          this.validateParams(key)
+        }
+      })
     }
 
     api.ActionProcessor.prototype.processAction = function () {

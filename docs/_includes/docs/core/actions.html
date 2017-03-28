@@ -181,6 +181,24 @@ action.inputs = {
     default:   function(param, connection, actionTemplate){
       return 1;
     },
+  },
+  // a schema input
+  schemaInput: {
+    required: true,
+    default: {},
+    schema: {
+      nestedInput: {
+        required: true,
+        default: 1,
+        validator: function(param, connection, actionTemplate){
+          if(param < 0){ return 'must be > 0'; }else{ return true; }
+        },
+        formatter: function(param, connection, actionTemplate){
+          return parseInt(param);
+        },
+      },
+      otherInput: {},
+    }
   }
 };
   {% endhighlight %}
@@ -214,6 +232,14 @@ action.inputs = {
         <li>should return <code>true</code> if validation passed</li>
         <li>should return an error message if validation fails which will be returned to the client</li>
         <li>Default: Parameter is always valid</li>
+      </ul>
+    </li>
+    <li>
+      <code>schema</code> (object)
+      <ul>
+        <li>optional nested inputs definition</li>
+        <li>accept <code>object</code> similar to regular input</li>
+        <li>nested input also have properties: <code>required</code>, <code>formatter</code>, <code>default</code> and <code>validator</code></li>
       </ul>
     </li>
   </ul>
@@ -305,7 +331,35 @@ module.exports = {
   },
 };
   {% endhighlight %}
+  
+  <p>Example schema input:</p>
 
+  {% highlight javascript %}
+  exports.addUser = {
+    name: 'api/addUser',
+    description: 'I add user',
+    
+    firstName: { required: true },
+    lastName: { required: false },
+    username: { required: true },
+    address: {
+      required: false,
+      schema: {
+        country: {
+          required: true,
+          default: 'USA'
+        },
+        state: { required: false },
+        city: {
+          required: true,
+          formatter: (val) => `City:${val}`,
+          validator: (val) => val.length > 10,
+        }
+      }
+    }
+    run: () => {},
+  }
+  {% endhighlight %}
 
   <h2 id="actions-the-data-object">The Data Object</h2>
 
