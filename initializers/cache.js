@@ -251,10 +251,13 @@ module.exports = {
         if (error || lockOk !== true) {
           return callback(error, false)
         } else {
-          redis.setnx(api.cache.lockPrefix + key, api.cache.lockName, (error) => {
+          redis.setnx(api.cache.lockPrefix + key, api.cache.lockName, (error, result) => {
             if (error) {
               return callback(error)
             } else {
+              if (!result) { // value was already set, so we cannot obtain the lock
+                return callback(null, false)
+              }
               redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), (error) => {
                 lockOk = true
                 if (error) { lockOk = false }
