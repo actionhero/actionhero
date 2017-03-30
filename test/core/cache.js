@@ -430,6 +430,43 @@ describe('Core: Cache', () => {
           done()
         })
       })
+
+      it('locks are actually blocking (using setnx value)', (done) => {
+        var key = 'test-setnx'
+        var locksRetrieved = 0
+        var locksRejected = 0
+        var concurentLocksCount = 100
+        var jobs = []
+
+        var go = (next) => {
+          // proxy for another actionhero instance accessing the same locked object
+          api.cache.lockName = 'test-setnx-name-pass-' + (locksRetrieved + locksRejected)
+
+          api.cache.lock(key, (1000 * 60), (error, lockOk) => {
+            if (error) {
+              return next(error)
+            }
+
+            if (lockOk) {
+              locksRetrieved++
+            } else {
+              locksRejected++
+            }
+            next()
+          })
+        }
+
+        for (var i = 0; i < concurentLocksCount; i++) {
+          jobs.push(go)
+        }
+
+        async.parallel(jobs, (error) => {
+          expect(error).to.be.null()
+          expect(locksRetrieved).to.equal(1) // Only first atempt
+          expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
+          done()
+        })
+      })
     })
   })
 
