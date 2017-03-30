@@ -256,7 +256,7 @@ module.exports = {
               return callback(error)
             } else {
               if (!result) { // value was already set, so we cannot obtain the lock
-                return callback(null, false);
+                return callback(null, false)
               }
               redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), (error) => {
                 lockOk = true
