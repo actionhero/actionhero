@@ -236,7 +236,7 @@ module.exports = {
               if (typeof callback === 'function') { callback(error, roomStatus) }
             })
           } else {
-            if (typeof callback === 'function') { callback('not member of room ' + room) }
+            if (typeof callback === 'function') { callback(new Error('not member of room ' + room)) }
           }
         } else if (verb === 'detailsView') {
           let details = {}

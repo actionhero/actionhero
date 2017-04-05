@@ -471,7 +471,6 @@ describe('Core: Cache', () => {
   })
 
   describe('cache dump files', () => {
-    if (typeof os.tmpdir !== 'function') { os.tmpdir = os.tmpDir } // resolution for node v0.8.x
     var file = os.tmpdir() + path.sep + 'cacheDump'
 
     it('can read write the cache to a dump file', (done) => {

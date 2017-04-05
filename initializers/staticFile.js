@@ -37,7 +37,8 @@ module.exports = {
           if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
             api.staticFile.get(connection, callback, counter + 1)
           } else {
-            this.checkExistence(file, (exists, truePath) => {
+            this.checkExistence(file, (error, exists, truePath) => {
+              if (error) { throw error }
               if (exists) {
                 this.sendFile(truePath, connection, callback)
               } else {
@@ -82,7 +83,7 @@ module.exports = {
       checkExistence: function (file, callback) {
         fs.stat(file, (error, stats) => {
           if (error) {
-            callback(false, file)
+            callback(null, false, file)
           } else {
             if (stats.isDirectory()) {
               let indexPath = file + '/' + api.config.general.directoryFileType
@@ -90,16 +91,16 @@ module.exports = {
             } else if (stats.isSymbolicLink()) {
               fs.readLink(file, function (error, truePath) {
                 if (error) {
-                  callback(false, file)
+                  callback(null, false, file)
                 } else {
                   truePath = path.normalize(truePath)
                   api.staticFile.checkExistence(truePath, callback)
                 }
               })
             } else if (stats.isFile()) {
-              callback(true, file)
+              callback(null, true, file)
             } else {
-              callback(false, file)
+              callback(null, false, file)
             }
           }
         })

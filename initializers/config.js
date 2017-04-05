@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const path = require('path')
-const util = require('util')
 const argv = require('optimist').argv
 
 module.exports = {
@@ -83,7 +82,7 @@ module.exports = {
             configPaths.push(pathToCheck)
           }
         }
-      } else if (util.isArray(pathToCheck)) {
+      } else if (Array.isArray(pathToCheck)) {
         pathToCheck.map((entry) => { addConfigPath(entry, alreadySplit) })
       }
     }
