@@ -258,10 +258,10 @@ module.exports = {
             if (typeof callback === 'function') { callback(error) }
           })
         } else {
-          if (typeof callback === 'function') { callback(api.config.errors.verbNotFound(this, verb), null) }
+          if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotFound(this, verb)), null) }
         }
       } else {
-        if (typeof callback === 'function') { callback(api.config.errors.verbNotAllowed(this, verb), null) }
+        if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotAllowed(this, verb)), null) }
       }
     }
 

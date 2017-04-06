@@ -178,7 +178,7 @@ const initialize = function (api, options, next) {
       connection.verbs(verb, words, (error, data) => {
         if (!error) {
           server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
-        } else if (error.match('verb not found or not allowed')) {
+        } else if (error.toString().match('verb not found or not allowed')) {
           // check for and attempt to check single-use params
           try {
             let requestHash = JSON.parse(line)
@@ -198,7 +198,7 @@ const initialize = function (api, options, next) {
           connection.response = {}
           server.processAction(connection)
         } else {
-          server.sendMessage(connection, {status: error, context: 'response', data: data})
+          server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response', data: data})
         }
       })
     }
