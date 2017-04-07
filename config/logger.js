@@ -41,9 +41,6 @@ exports['default'] = {
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100
 
-    // should system logs (api.log) be localized?
-    logger.localizeLogMessages = false
-
     // you can optionally set custom log levels
     // logger.levels = {good: 0, bad: 1};
 

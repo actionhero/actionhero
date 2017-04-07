@@ -10,6 +10,9 @@ exports['default'] = {
         // 'es': 'en'
       },
 
+      // configure i18n to allow for object-style key lookup
+      objectNotation: true,
+
       updateFiles: true,
 
       // this will configure logging and error messages in the log(s)
