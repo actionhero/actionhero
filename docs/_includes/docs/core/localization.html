@@ -52,7 +52,7 @@ module.exports = {
   <ul>
     <li><code>connection.localize(string)</code> or <code>connection.localize([string-with-interpolation, value])</code>
       <ul>
-        <li>Allows you to interpolate a string based on the connection's current locale.  For example, say in an action you wanted to respond with <code>data.response.message = connection.localize('the count was %s', 4);</code> In your locale files, you would define <code>the count was %s</code> in every language you cared about, and not need to modify the action itself at all.</li>
+        <li>Allows you to interpolate a string based on the connection's current locale.  For example, say in an action you wanted to respond with <code>data.response.message = connection.localize('the count was {{count}}', {count: 4});</code> In your locale files, you would define <code>the count was %s</code> in every language you cared about, and not need to modify the action itself at all.</li>
       </ul>
     </li>
   </ul>

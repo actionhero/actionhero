@@ -55,7 +55,7 @@ exports['default'] = {
 
       // When a required param for an action is not provided
       missingParams: function (data, missingParams) {
-        return data.connection.localize(['%s is a required parameter for this action', missingParams[0]])
+        return data.connection.localize(['{{param}} is a required parameter for this action', {param: missingParams[0]}])
       },
 
       // user requested an unknown action
@@ -65,7 +65,7 @@ exports['default'] = {
 
       // action not useable by this client/server type
       unsupportedServerType: function (data) {
-        return data.connection.localize(['this action does not support the %s connection type', data.connection.type])
+        return data.connection.localize(['this action does not support the {{type}} connection type', {type: data.connection.type}])
       },
 
       // action failed because server is mid-shutdown
@@ -80,7 +80,7 @@ exports['default'] = {
       },
 
       dataLengthTooLarge: function (maxLength, receivedLength) {
-        return api.i18n.localize(['data length is too big (%u received/%u max)', maxLength, receivedLength])
+        return api.i18n.localize(['data length is too big ({{maxLength}} received/{{receivedLength}} max)', {maxLength: maxLength, receivedLength: receivedLength}])
       },
 
       // ///////////////
@@ -100,7 +100,7 @@ exports['default'] = {
 
       // something went wrong trying to read the file
       fileReadError: function (connection, error) {
-        return connection.localize(['error reading file: %s', String(error)])
+        return connection.localize(['error reading file: {{error}}', {error: String(error)}])
       },
 
       // ///////////////
@@ -108,11 +108,11 @@ exports['default'] = {
       // ///////////////
 
       verbNotFound: function (connection, verb) {
-        return connection.localize(['I do not know know to perform this verb (%s)', verb])
+        return connection.localize(['I do not know know to perform this verb ({{verb}})', {verb: verb}])
       },
 
       verbNotAllowed: function (connection, verb) {
-        return connection.localize(['verb not found or not allowed (%s)', verb])
+        return connection.localize(['verb not found or not allowed ({{verb}})', {verb: verb}])
       },
 
       connectionRoomAndMessage: function (connection) {
@@ -120,11 +120,11 @@ exports['default'] = {
       },
 
       connectionNotInRoom: function (connection, room) {
-        return connection.localize(['connection not in this room (%s)', room])
+        return connection.localize(['connection not in this room ({{room}})', {room: room}])
       },
 
       connectionAlreadyInRoom: function (connection, room) {
-        return connection.localize(['connection already in this room (%s)', room])
+        return connection.localize(['connection already in this room ({{room}})', {room: room}])
       },
 
       connectionRoomHasBeenDeleted: function (room) {

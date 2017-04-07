@@ -29,9 +29,9 @@ describe('Core: i18n', () => {
 
   before((done) => {
     var spanish = {
-      'Your random number is %s': 'Su número aleatorio es %s',
+      'Your random number is {{number}}': 'Su número aleatorio es {{number}}',
       'That file is not found': 'Ese archivo no se encuentra',
-      '%s is a required parameter for this action': '%s es un parámetro requerido para esta acción'
+      '{{param}} is a required parameter for this action': '{{param}} es un parámetro requerido para esta acción'
     }
     fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish))
 
