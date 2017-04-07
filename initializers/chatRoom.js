@@ -305,7 +305,7 @@ module.exports = {
 
     if (api.config.general.startingChatRooms) {
       for (let room in api.config.general.startingChatRooms) {
-        api.log(['ensuring the existence of the chatRoom: %s', room])
+        api.log(`ensuring the existence of the chatRoom: ${room}`)
         api.chatRoom.add(room)
       }
     }

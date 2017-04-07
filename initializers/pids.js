@@ -16,7 +16,7 @@ module.exports = {
       pidfile = pidfile.replace(new RegExp(':', 'g'), '-')
       pidfile = pidfile.replace(new RegExp(' ', 'g'), '_')
       pidfile = pidfile.replace(new RegExp('\r', 'g'), '') // eslint-disable-line
-      pidfile = pidfile.replace(new RegExp('\n', 'g'), '') // eslint-disable-line 
+      pidfile = pidfile.replace(new RegExp('\n', 'g'), '') // eslint-disable-line
 
       return pidfile
     }
@@ -46,7 +46,7 @@ module.exports = {
 
   start: function (api, next) {
     api.pids.writePidFile()
-    api.log(['pid: %s', process.pid], 'notice')
+    api.log(`pid: ${process.pid}`, 'notice')
     next()
   }
 }

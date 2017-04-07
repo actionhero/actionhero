@@ -107,7 +107,7 @@ module.exports = {
       },
 
       logRequest: function (file, connection, length, duration, success) {
-        api.log(['[ file @ %s ]', connection.type], api.config.general.fileRequestLogLevel, {
+        api.log(`[ file @ ${connection.type} ]`, api.config.general.fileRequestLogLevel, {
           to: connection.remoteIP,
           file: file,
           requestedFile: connection.params.file,

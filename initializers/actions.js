@@ -52,9 +52,9 @@ module.exports = {
 
       const loadMessage = (action) => {
         if (reload) {
-          api.log(['action reloaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug')
+          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
         } else {
-          api.log(['action loaded: %s @ v%s, %s', action.name, action.version, fullFilePath], 'debug')
+          api.log(`action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
         }
       }
 

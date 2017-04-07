@@ -20,12 +20,12 @@ module.exports = function (api, next) {
   })
 
   if (!pluginRoot) {
-    api.log(['plugin `%s` not found in plugin paths', argv.name], 'warning', api.config.general.paths.plugin)
+    api.log(`plugin \`${argv.name}\` not found in plugin paths`, 'warning', api.config.general.paths.plugin)
     return next(null, true)
   }
 
   const pluginRootRelative = pluginRoot.replace(linkRelativeBase, '')
-  api.log(['unlinking the plugin found at %s', pluginRootRelative]);
+  api.log(`unlinking the plugin found at ${pluginRootRelative}`);
 
   // unlink actionable files
   [

@@ -59,7 +59,7 @@ describe('Core: i18n', () => {
       expect(response.randomNumber).to.be.at.least(0)
       var content = readLocaleFile();
       [
-        'Your random number is %s'
+        'Your random number is {{number}}'
       ].forEach((s) => {
         expect(content[s]).to.equal(s)
       })

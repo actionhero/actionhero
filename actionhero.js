@@ -14,7 +14,7 @@ const fatalError = function (api, errors, type) {
   if (errors && !(errors instanceof Array)) { errors = [errors] }
   if (errors) {
     if (api.log) {
-      api.log(['Error with initializer step: %s', type], 'emerg')
+      api.log(`Error with initializer step: ${type}`, 'emerg')
       errors.forEach((error) => { api.log(error.stack, 'emerg') })
     } else {
       console.error('Error with initializer step: ' + type)
@@ -145,14 +145,14 @@ actionhero.prototype.initialize = function (params, callback) {
 
         const loadFunction = (next) => {
           this.api.watchFileAndAct(file, () => {
-            this.api.log(['*** Rebooting due to initializer change (%s) ***', file], 'info')
+            this.api.log(`*** Rebooting due to initializer change (${file}) ***`, 'info')
             this.api.commands.restart()
           })
 
           if (typeof this.initializers[initializer].initialize === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(['Loading initializer: %s', initializer], 'debug', file) }
+            if (typeof this.api.log === 'function') { this.api.log(`Loading initializer: ${initializer}`, 'debug', file) }
             this.initializers[initializer].initialize(this.api, (error) => {
-              try { this.api.log(['Loaded initializer: %s', initializer], 'debug', file) } catch (e) { }
+              try { this.api.log(`Loaded initializer: ${initializer}`, 'debug', file) } catch (e) { }
               next(error)
             })
           } else {
@@ -162,9 +162,9 @@ actionhero.prototype.initialize = function (params, callback) {
 
         const startFunction = (next) => {
           if (typeof this.initializers[initializer].start === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(['Starting initializer: %s', initializer], 'debug', file) }
+            if (typeof this.api.log === 'function') { this.api.log(`Starting initializer: ${initializer}`, 'debug', file) }
             this.initializers[initializer].start(this.api, (error) => {
-              this.api.log(['Started initializer: %s', initializer], 'debug', file)
+              this.api.log(`Started initializer: ${initializer}`, 'debug', file)
               next(error)
             })
           } else {
@@ -174,9 +174,9 @@ actionhero.prototype.initialize = function (params, callback) {
 
         const stopFunction = (next) => {
           if (typeof this.initializers[initializer].stop === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(['Stopping initializer: %s', initializer], 'debug', file) }
+            if (typeof this.api.log === 'function') { this.api.log(`Stopping initializer: ${initializer}`, 'debug', file) }
             this.initializers[initializer].stop(this.api, (error) => {
-              this.api.log(['Stopped initializer: %s', initializer], 'debug', file)
+              this.api.log(`Stopped initializer: ${initializer}`, 'debug', file)
               next(error)
             })
           } else {
@@ -228,7 +228,7 @@ actionhero.prototype.initialize = function (params, callback) {
         this.api.initialized = true
 
         if (duplicatedInitializers.length > 0) {
-          duplicatedInitializers.forEach(initializer => this.api.log(['Initializer %s already exists!', initializer], 'error'))
+          duplicatedInitializers.forEach(initializer => this.api.log(`Initializer ${initializer} already exists!`, 'error'))
           this.api.commands.stop.call(this.api, () => {
             process.exit(1)
           })
@@ -254,9 +254,9 @@ actionhero.prototype.start = function (params, callback) {
     this.startInitializers.push(() => {
       this.api.bootTime = new Date().getTime()
       if (startCount === 0) {
-        this.api.log(['*** ActionHero Started ***'], 'alert')
+        this.api.log('*** ActionHero Started ***', 'alert')
       } else {
-        this.api.log(['*** ActionHero Restarted ***'], 'alert')
+        this.api.log('*** ActionHero Restarted ***', 'alert')
       }
 
       startCount++

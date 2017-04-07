@@ -1,0 +1,7 @@
+{
+	"actionhero": {
+		"ActionHero": "ActionHero",
+		"welcomeMessage": "Hello! Welcome to the actionhero api"
+	},
+	"Your random number is {{number}}": "Your random number is {{number}}"
+}

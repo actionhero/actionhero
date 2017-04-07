@@ -142,7 +142,7 @@ module.exports = {
       }
 
       api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
-      api.log(['%s routes loaded from %s', counter, api.routes.routesFile], 'debug')
+      api.log(`${counter} routes loaded from ${api.routes.routesFile}`, 'debug')
 
       if (api.config.servers.web && api.config.servers.web.simpleRouting === true) {
         let simplePaths = []
@@ -154,7 +154,7 @@ module.exports = {
             api.routes.registerRoute(verb, '/' + action, action)
           }
         }
-        api.log(['%s simple routes loaded from action names', simplePaths.length], 'debug')
+        api.log(`${simplePaths.length} simple routes loaded from action names`, 'debug')
 
         api.log('routes:', 'debug', api.routes.routes)
       }
