@@ -2,6 +2,11 @@
 	"actionhero": {
 		"welcomeMessage": "Hello! Welcome to the actionhero api",
 		"goodbyeMessage": "Bye!",
+		"cache": {
+			"objectNotFound": "Object not found",
+			"objectLocked": "Object locked",
+			"objectExpired": "Object expired"
+		},
 		"errors": {
 			"invalidParams": "validation error",
 			"missingParams": "{{param}} is a required parameter for this action",
@@ -21,13 +26,7 @@
 			"connectionRoomHasBeenDeleted": "this room has been deleted",
 			"connectionRoomNotExist": "room does not exist",
 			"connectionRoomExists": "room exists",
-			"connectionRoomRequired": "a room is required",
-			"unknownActionAction": "actionhero.errors.unknownActionAction"
+			"connectionRoomRequired": "a room is required"
 		}
-	},
-	"Your random number is {{number}}": "Your random number is {{number}}",
-	"Node Healthy": "Node Healthy",
-	"Object not found": "Object not found",
-	"Object Expired": "Object Expired",
-	"Object Locked": "Object Locked"
+	}
 }

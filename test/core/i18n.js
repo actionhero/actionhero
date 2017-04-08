@@ -50,8 +50,8 @@ describe('Core: i18n', () => {
   })
 
   after((done) => {
-    // fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-en.json'))
-    // fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-es.json'))
+    fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-en.json'))
+    fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-es.json'))
     actionhero.stop(() => {
       done()
     })

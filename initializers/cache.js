@@ -125,7 +125,7 @@ module.exports = {
         try { cacheObj = JSON.parse(cacheObj) } catch (e) {}
         if (!cacheObj) {
           if (typeof callback === 'function') {
-            return callback(new Error(api.i18n.localize('Object not found')), null, null, null, null)
+            return callback(new Error(api.i18n.localize('actionhero.cache.objectNotFound')), null, null, null, null)
           }
         } else if (cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null) {
           const lastReadAt = cacheObj.readAt
@@ -142,7 +142,7 @@ module.exports = {
 
           api.cache.checkLock(key, options.retry, function (error, lockOk) {
             if (error || lockOk !== true) {
-              if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('Object Locked'))) }
+              if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('actionhero.cache.objectLocked'))) }
             } else {
               redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
                 if (typeof callback === 'function' && typeof expireTimeSeconds !== 'number') {
@@ -157,7 +157,7 @@ module.exports = {
           })
         } else {
           if (typeof callback === 'function') {
-            return callback(new Error(api.i18n.localize('Object Expired')))
+            return callback(new Error(api.i18n.localize('actionhero.cache.objectExpired')))
           }
         }
       })
@@ -166,7 +166,7 @@ module.exports = {
     api.cache.destroy = function (key, callback) {
       api.cache.checkLock(key, null, (error, lockOk) => {
         if (error || lockOk !== true) {
-          if (typeof callback === 'function') { callback(new Error(api.i18n.localize('Object Locked'))) }
+          if (typeof callback === 'function') { callback(new Error(api.i18n.localize('actionhero.cache.objectLocked'))) }
         } else {
           redis.del(api.cache.redisPrefix + key, (error, count) => {
             if (error) { api.log(error, 'error') }
@@ -200,7 +200,7 @@ module.exports = {
 
       api.cache.checkLock(key, null, function (error, lockOk) {
         if (error || lockOk !== true) {
-          if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('Object Locked'))) }
+          if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('actionhero.cache.objectLocked'))) }
         } else {
           redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
             if (!error && expireTimeSeconds) {

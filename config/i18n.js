@@ -13,7 +13,8 @@ exports['default'] = {
       // configure i18n to allow for object-style key lookup
       objectNotation: true,
 
-      updateFiles: false,
+      // should actionhero append any missing translations to the locale file?
+      updateFiles: true,
 
       // this will configure logging and error messages in the log(s)
       defaultLocale: 'en',
@@ -29,7 +30,7 @@ exports['default'] = {
 exports.test = {
   i18n: function (api) {
     return {
-      updateFiles: true
+      updateFiles: false
     }
   }
 }

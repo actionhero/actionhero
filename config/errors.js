@@ -60,7 +60,7 @@ exports['default'] = {
 
       // user requested an unknown action
       unknownAction: function (data) {
-        return data.connection.localize('actionhero.errors.unknownActionAction')
+        return data.connection.localize('actionhero.errors.unknownAction')
       },
 
       // action not useable by this client/server type

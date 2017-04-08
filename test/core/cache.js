@@ -90,7 +90,7 @@ describe('Core: Cache', () => {
       expect(saveResp).to.equal(true)
       setTimeout(() => {
         api.cache.load('testKey_slow', (error, loadResp) => {
-          expect(String(error)).to.equal('Error: Object Expired')
+          expect(String(error)).to.equal('Error: Object expired')
           expect(loadResp).to.not.exist()
           done()
         })
@@ -340,7 +340,7 @@ describe('Core: Cache', () => {
         expect(lockOk).to.equal(true)
         api.cache.lockName = 'otherId'
         api.cache.save(key, 'value', (error) => {
-          expect(String(error)).to.equal('Error: Object Locked')
+          expect(String(error)).to.equal('Error: Object locked')
           done()
         })
       })
@@ -352,7 +352,7 @@ describe('Core: Cache', () => {
         expect(lockOk).to.equal(true)
         api.cache.lockName = 'otherId'
         api.cache.destroy(key, (error) => {
-          expect(String(error)).to.equal('Error: Object Locked')
+          expect(String(error)).to.equal('Error: Object locked')
           done()
         })
       })
