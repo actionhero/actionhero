@@ -39,6 +39,7 @@ module.exports = function (api, next) {
       publicLogo: '/public/logo/actionhero.png',
       publicCss: '/public/css/cosmo.css',
       exampleTest: '/test/template.js.example'
+      enLocale: '/locales/en.json'
     }
 
     for (let name in oldFileMap) {
@@ -63,6 +64,7 @@ module.exports = function (api, next) {
       '/config/servers',
       '/initializers',
       '/log',
+      '/locales',
       '/servers',
       '/public',
       '/public/javascript',
@@ -96,6 +98,7 @@ module.exports = function (api, next) {
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
       '/test/example.js': 'exampleTest'
+      '/locales/en.json': 'enLocale'
     }
 
     for (let file in newFileMap) {
