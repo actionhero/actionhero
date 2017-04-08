@@ -1,6 +1,5 @@
 'use strict'
 
-const util = require('util')
 const winston = require('winston')
 
 module.exports = {
@@ -39,7 +38,6 @@ module.exports = {
     let logLevels = []
     for (i in api.logger.levels) { logLevels.push(i) }
 
-    api.log('*** Starting ActionHero ***', 'notice')
     api.log('Logger loaded.  Possible levels include:', 'debug', logLevels)
 
     next()

@@ -251,6 +251,8 @@ actionhero.prototype.start = function (params, callback) {
   const _start = () => {
     this.api.running = true
 
+    this.api.log('*** Starting ActionHero ***', 'notice')
+
     this.startInitializers.push(() => {
       this.api.bootTime = new Date().getTime()
       if (startCount === 0) {

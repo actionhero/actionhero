@@ -86,7 +86,7 @@ const initialize = function (api, options, next) {
 
   server.goodbye = function (connection) {
     try {
-      connection.rawConnection.end(JSON.stringify({status: connection.localize(api.config.servers.socket.goodbyeMessage), context: 'api'}) + '\r\n')
+      connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
     } catch (e) {}
   }
 
