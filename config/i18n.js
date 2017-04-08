@@ -25,3 +25,11 @@ exports['default'] = {
     }
   }
 }
+
+exports.test = {
+  i18n: function (api) {
+    return {
+      updateFiles: true
+    }
+  }
+}

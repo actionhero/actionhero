@@ -6,6 +6,7 @@ log/*
 cache/*
 coverage/*
 node_modules/*
+locales/test-env-*
 public/javascript/actionheroClient.js
 public/javascript/actionheroClient.min.js
 

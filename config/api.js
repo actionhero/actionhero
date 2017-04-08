@@ -74,7 +74,10 @@ exports.test = {
         'otherRoom': {}
       },
       paths: {
-        'locale': [require('os').tmpdir() + require('path').sep + 'locales']
+        'locale': [
+          // require('os').tmpdir() + require('path').sep + 'locales',
+          path.join(__dirname, '/../locales')
+        ]
       },
       rpcTimeout: 3000
     }
