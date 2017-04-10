@@ -1,6 +1,5 @@
 'use strict'
 
-const util = require('util')
 const winston = require('winston')
 
 module.exports = {
@@ -30,17 +29,8 @@ module.exports = {
     }
 
     api.log = function (message, severity, data) {
-      let localizedMessage
-      if (api.config.logger.localizeLogMessages === true) {
-        localizedMessage = api.i18n.localize(message)
-      } else if (typeof message === 'string') {
-        localizedMessage = message
-      } else {
-        localizedMessage = util.format.apply(this, message)
-      }
-
       if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }
-      let args = [severity, localizedMessage]
+      let args = [severity, message]
       if (data !== null && data !== undefined) { args.push(data) }
       api.logger.log.apply(api.logger, args)
     }
@@ -48,7 +38,6 @@ module.exports = {
     let logLevels = []
     for (i in api.logger.levels) { logLevels.push(i) }
 
-    api.log('*** Starting ActionHero ***', 'notice')
     api.log('Logger loaded.  Possible levels include:', 'debug', logLevels)
 
     next()

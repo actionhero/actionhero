@@ -18,9 +18,7 @@ exports['default'] = {
         // Delimiter string for incoming messages
         delimiter: '\n',
         // Maximum incoming message string length in Bytes (use 0 for Infinite)
-        maxDataLength: 0,
-        // What message to send down to a client who requests a `quit`
-        goodbyeMessage: 'Bye!'
+        maxDataLength: 0
       }
     }
   }

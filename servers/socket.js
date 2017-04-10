@@ -80,13 +80,13 @@ const initialize = function (api, options, next) {
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n')
     } catch (e) {
-      api.log(['socket write error: %s', e], 'error')
+      api.log(`socket write error: ${e}`, 'error')
     }
   }
 
   server.goodbye = function (connection) {
     try {
-      connection.rawConnection.end(JSON.stringify({status: connection.localize(api.config.servers.socket.goodbyeMessage), context: 'api'}) + '\r\n')
+      connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
     } catch (e) {}
   }
 

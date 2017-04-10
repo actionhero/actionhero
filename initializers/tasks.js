@@ -17,7 +17,7 @@ module.exports = {
         if (!reload) { reload = false }
 
         const loadMessage = function (loadedTaskName) {
-          api.log(['task %s loaded: %s, %s', (reload ? '(re)' : ''), loadedTaskName, fullFilePath], 'debug')
+          api.log(`task ${(reload ? '(re)' : '')} loaded: ${loadedTaskName}, ${fullFilePath}`, 'debug')
         }
 
         api.watchFileAndAct(fullFilePath, () => {
@@ -247,7 +247,7 @@ module.exports = {
           this.del(task.queue, taskName, {}, () => {
             this.delDelayed(task.queue, taskName, {}, () => {
               this.enqueueIn(task.frequency, taskName, () => {
-                api.log(['re-enqueued recurrent job %s', taskName], api.config.tasks.schedulerLogging.reEnqueue)
+                api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
                 callback()
               })
             })
@@ -266,7 +266,7 @@ module.exports = {
               this.enqueue(taskName, (error, toRun) => {
                 if (error) { return done(error) }
                 if (toRun === true) {
-                  api.log(['enqueuing periodic task: %s', taskName], api.config.tasks.schedulerLogging.enqueue)
+                  api.log(`enqueuing periodic task: ${taskName}`, api.config.tasks.schedulerLogging.enqueue)
                   loadedTasks.push(taskName)
                 }
                 return done()

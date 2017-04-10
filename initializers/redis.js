@@ -25,13 +25,13 @@ module.exports = {
           if (api.config.redis[r].buildNew === true) {
             const args = api.config.redis[r].args
             api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
-            api.redis.clients[r].on('error', (error) => { api.log(['Redis connection `%s` error', r], 'error', error) })
-            api.redis.clients[r].on('connect', () => { api.log(['Redis connection `%s` connected', r], 'debug') })
+            api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+            api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
             api.redis.clients[r].once('connect', done)
           } else {
             api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
-            api.redis.clients[r].on('error', (error) => { api.log(['Redis connection `%s` error', r], 'error', error) })
-            api.log(['Redis connection `%s` connected', r], 'debug')
+            api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+            api.log(`Redis connection \`${r}\` connected`, 'debug')
             done()
           }
         })
@@ -148,7 +148,7 @@ module.exports = {
   },
 
   start: function (api, next) {
-    api.redis.doCluster('api.log', [['actionhero member %s has joined the cluster', api.id]], null, null)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`], null, null)
     next()
   },
 
@@ -158,7 +158,7 @@ module.exports = {
       delete api.redis.clusterCallbakTimeouts[i]
       delete api.redis.clusterCallbaks[i]
     }
-    api.redis.doCluster('api.log', [['actionhero member %s has left the cluster', api.id]], null, null)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`], null, null)
 
     process.nextTick(function () {
       api.redis.clients.subscriber.unsubscribe()

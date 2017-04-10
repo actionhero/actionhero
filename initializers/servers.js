@@ -36,13 +36,13 @@ module.exports = {
           jobs.push((done) => {
             init(api, options, (serverObject) => {
               api.servers.servers[serverName] = serverObject
-              api.log(['Initialized server: %s', serverName], 'debug')
+              api.log(`Initialized server: ${serverName}`, 'debug')
               return done()
             })
           })
         }
         api.watchFileAndAct(f, () => {
-          api.log(['*** Rebooting due to server (%s) change ***', serverName], 'info')
+          api.log(`*** Rebooting due to server (${serverName}) change ***`, 'info')
           api.commands.restart()
         })
       })
@@ -57,23 +57,19 @@ module.exports = {
       let server = api.servers.servers[serverName]
       if (server && server.options.enabled === true) {
         let message = ''
-        let messageArgs = []
-        message += 'Starting server: `%s`'
-        messageArgs.push(serverName)
+        message += `Starting server: \`${serverName}\``
         if (api.config.servers[serverName].bindIP) {
-          message += ' @ %s'
-          messageArgs.push(api.config.servers[serverName].bindIP)
+          message += ` @ ${api.config.servers[serverName].bindIP}`
         }
         if (api.config.servers[serverName].port) {
-          message += ':%s'
-          messageArgs.push(api.config.servers[serverName].port)
+          message += `:${api.config.servers[serverName].port}`
         }
 
         jobs.push((done) => {
-          api.log([message].concat(messageArgs), 'notice')
+          api.log(message, 'notice')
           server.start((error) => {
             if (error) { return done(error) }
-            api.log(['Server started: %s', serverName], 'debug')
+            api.log(`Server started: ${serverName}`, 'debug')
             return done()
           })
         })
@@ -89,10 +85,10 @@ module.exports = {
       let server = api.servers.servers[serverName]
       if ((server && server.options.enabled === true) || !server) {
         jobs.push((done) => {
-          api.log(['Stopping server: %s', serverName], 'notice')
+          api.log(`Stopping server: ${serverName}`, 'notice')
           server.stop((error) => {
             if (error) { return done(error) }
-            api.log(['Server stopped: %s', serverName], 'debug')
+            api.log(`Server stopped: ${serverName}`, 'debug')
             return done()
           })
         })

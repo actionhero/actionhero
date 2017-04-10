@@ -41,9 +41,9 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
       const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
 
       api.log('--------------------------------------')
-      api.log(['ACTIONHERO COMMAND >> %s', commands.join(' ')])
-      api.log(['projectRoot: %s', path.normalize(projectRoot)], 'debug')
-      api.log(['actionheroRoot: %s', path.normalize(actionheroRoot)], 'debug')
+      api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
+      api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
+      api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
       api.log('--------------------------------------')
 
       if (optimist.argv.daemon) {
@@ -54,8 +54,8 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
         newArgs.push('--isDaemon=true')
         const command = path.normalize(actionheroRoot + '/bin/actionhero')
         const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
-        api.log(['%s %s', command, newArgs.join(' ')], 'debug')
-        api.log(['spawned child process with pid %s', child.pid], 'notice')
+        api.log(`${command} ${newArgs.join(' ')}`, 'debug')
+        api.log(`spawned child process with pid ${child.pid}`, 'notice')
         process.nextTick(process.exit)
       } else {
         runner(api, function (error, toStop) {
@@ -67,7 +67,7 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
       if (!e.message.match(/Cannot find module/)) {
         throw (e)
       } else {
-        api.log(['Error: `%s` is not a method I can perform', commands.join(' ')], 'error')
+        api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
         api.log('run `actionhero help` to learn more', 'error')
         setTimeout(process.exit, 500, 1)
       }

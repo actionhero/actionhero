@@ -72,22 +72,5 @@ api.log('OH NO!', 'warning');
 
 // custom severity with a metadata object
 api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });
-
-// using sprintf-style interpolations
-var message = ['Hello there, the time is now %s', new Date()];
-api.log(message, 'debug');
   {% endhighlight %}
-
-  <ul>
-    <li>message is a string or an array containing a <code>sprintf</code> style string and replacements
-      <ul>
-        <li>an example of this would be: <code>api.log(['Hello %s', connection.params.firstName], 'info')</code></li>
-        <li>the message you pass will be used with the localization engines (<code>i18n</code>).  You can <a href="/docs/core/#localization-localizing-the-logger">learn more here</a></li>
-      </ul>
-    </li>
-    <li>severity is a string, and should match the log-level (IE: ‘info' or ‘warning')</li>
-    <li>the default severity level is ‘info'</li>
-    <li>(optional) metadata is anything that can be stringified with <code>JSON.stringify</code></li>
-  </ul>
-
 </section>

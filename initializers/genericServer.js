@@ -72,13 +72,13 @@ module.exports = {
       }
 
       if (this.attributes.sendWelcomeMessage === true) {
-        connection.sendMessage({welcome: api.config.general.welcomeMessage, context: 'api'})
+        connection.sendMessage({welcome: connection.localize('actionhero.welcomeMessage'), context: 'api'})
       }
 
       if (typeof this.attributes.sendWelcomeMessage === 'number') {
         setTimeout(() => {
           try {
-            connection.sendMessage({welcome: api.config.general.welcomeMessage, context: 'api'})
+            connection.sendMessage({welcome: connection.localize('actionhero.welcomeMessage'), context: 'api'})
           } catch (e) {
             api.log(e, 'error')
           }
@@ -112,7 +112,7 @@ module.exports = {
     }
 
     api.GenericServer.prototype.log = function (message, severity, data) {
-      api.log(['[server: %s] %s', this.type, message], severity, data)
+      api.log(`[server: ${this.type}] ${message}`, severity, data)
     }
 
     const methodNotDefined = function () {

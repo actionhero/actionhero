@@ -132,7 +132,7 @@ module.exports = {
         }
       }
 
-      api.log(['[ action @ %s ]', this.connection.type], logLevel, logLine)
+      api.log(`[ action @ ${this.connection.type} ]`, logLevel, logLine)
     }
 
     api.ActionProcessor.prototype.preProcessAction = function (callback) {

@@ -11,15 +11,24 @@ var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 var actionhero = new ActionheroPrototype()
 var api
 
-var tmpPath = require('os').tmpdir() + require('path').sep + 'locales' + require('path').sep
-
 var readLocaleFile = (locale) => {
-  if (!locale) { locale = api.config.i18n.defaultLocale }
   var file = api.config.general.paths.locale[0] + '/' + locale + '.json'
   var contents = String(fs.readFileSync(file))
   var json = JSON.parse(contents)
   return json
 }
+
+var spanish = {
+  'Your random number is {{number}}': 'Su número aleatorio es {{number}}',
+  actionhero: {
+    errors: {
+      missingParams: '{{param}} es un parámetro requerido para esta acción',
+      fileNotFound: 'Ese archivo no se encuentra'
+    }
+  }
+}
+
+fs.writeFileSync(path.join(__dirname, '/../../locales/test-env-es.json'), JSON.stringify(spanish, null, 2))
 
 describe('Core: i18n', () => {
   before((done) => {
@@ -28,26 +37,21 @@ describe('Core: i18n', () => {
   })
 
   before((done) => {
-    var spanish = {
-      'Your random number is %s': 'Su número aleatorio es %s',
-      'That file is not found': 'Ese archivo no se encuentra',
-      '%s is a required parameter for this action': '%s es un parámetro requerido para esta acción'
-    }
-    fs.writeFileSync(tmpPath + 'es.json', JSON.stringify(spanish))
-
     actionhero.start((error, a) => {
       expect(error).to.be.null()
       api = a
       var options = api.config.i18n
       options.directory = api.config.general.paths.locale[0]
-      options.locales = ['en', 'es']
+      options.locales = ['test-env-en', 'test-env-es']
+      options.defaultLocale = 'test-env-en'
       api.i18n.configure(options)
       done()
     })
   })
 
   after((done) => {
-    // api.utils.deleteDirectorySync( api.config.general.paths.locale[0] );
+    fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-en.json'))
+    fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-es.json'))
     actionhero.stop(() => {
       done()
     })
@@ -57,9 +61,9 @@ describe('Core: i18n', () => {
     api.specHelper.runAction('randomNumber', (response) => {
       expect(response.randomNumber).to.be.at.most(1)
       expect(response.randomNumber).to.be.at.least(0)
-      var content = readLocaleFile();
+      var content = readLocaleFile('test-env-en');
       [
-        'Your random number is %s'
+        'Your random number is {{number}}'
       ].forEach((s) => {
         expect(content[s]).to.equal(s)
       })
@@ -67,15 +71,12 @@ describe('Core: i18n', () => {
     })
   })
 
-  // to test this we would need to temporarliy enable logging for the test ENV...
-  it('should respect the content of the localization files for the server logs')
-
   it('should respect the content of the localization files for generic messages to connections', (done) => {
-    api.i18n.determineConnectionLocale = () => { return 'en' }
+    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
     api.specHelper.runAction('randomNumber', (response) => {
       expect(response.stringRandomNumber).to.match(/Your random number is/)
 
-      api.i18n.determineConnectionLocale = () => { return 'es' }
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       api.specHelper.runAction('randomNumber', (response) => {
         expect(response.stringRandomNumber).to.match(/Su número aleatorio es/)
         done()
@@ -83,12 +84,12 @@ describe('Core: i18n', () => {
     })
   })
 
-  it('should respect the content of the localization files for api errors to connections', (done) => {
-    api.i18n.determineConnectionLocale = () => { return 'en' }
+  it('should respect the content of the localization files for api errors to connections or use defaults', (done) => {
+    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
     api.specHelper.runAction('cacheTest', (response) => {
-      expect(response.error).to.match(/key is a required parameter for this action/)
+      expect(response.error).to.equal('Error: actionhero.errors.missingParams')
 
-      api.i18n.determineConnectionLocale = () => { return 'es' }
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       api.specHelper.runAction('cacheTest', (response) => {
         expect(response.error).to.match(/key es un parámetro requerido para esta acción/)
         done()
@@ -96,12 +97,12 @@ describe('Core: i18n', () => {
     })
   })
 
-  it('should respect the content of the localization files for http errors to connections', (done) => {
-    api.i18n.determineConnectionLocale = () => { return 'en' }
+  it('should respect the content of the localization files for http errors to connections or use defaults', (done) => {
+    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
     api.specHelper.getStaticFile('missing-file.html', (data) => {
-      expect(data.error).to.match(/That file is not found/)
+      expect(data.error).to.equal('actionhero.errors.fileNotFound')
 
-      api.i18n.determineConnectionLocale = () => { return 'es' }
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       api.specHelper.getStaticFile('missing-file.html', (data) => {
         expect(data.error).to.match(/Ese archivo no se encuentra/)
         done()
