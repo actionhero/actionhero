@@ -13,6 +13,6 @@ exports.task = {
     // let resultLogMessage = {taskResult: 'ok'}
     // next(error, resultLogMessage)
 
-    next()
+    return next()
   }
 }

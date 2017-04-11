@@ -36,6 +36,9 @@
 |- tasks
 |-- (your tasks)
 |
+|- bin
+|-- (your custom CLI commands)
+|
 |- locales
 |-- (translation files)
 |

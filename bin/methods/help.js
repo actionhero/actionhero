@@ -21,7 +21,7 @@ module.exports = {
     files.forEach((f) => {
       try {
         let req = require(f)
-        if (req.name && req.description && typeof req.run === 'function') {
+        if (req.name && req.name !== '%%name%%' && req.description && typeof req.run === 'function') {
           if (methods[req.name]) { throw new Error(`${req.name} is already defined`) }
           methods[req.name] = req
         }
@@ -30,14 +30,16 @@ module.exports = {
       }
     })
 
+    let methodNames = Object.keys(methods).sort()
+
     console.log('ActionHero - A multi-transport node.js API Server with integrated cluster capabilities and delayed tasks\r\n')
     console.log('Binary options:\r\n')
-    Object.keys(methods).forEach((methodName) => {
+    methodNames.forEach((methodName) => {
       console.log(`* ${methodName}`)
     })
 
     console.log('\r\nDescriptions:')
-    Object.keys(methods).forEach((methodName) => {
+    methodNames.forEach((methodName) => {
       let m = methods[methodName]
       console.log(`\r\n* ${m.name}`)
       console.log(`  description: ${m.description}`)
@@ -58,8 +60,6 @@ module.exports = {
       }
     })
 
-    // const help = fs.readFileSync(path.join(__dirname, '/../templates/help.txt')).toString()
-    // help.split('\n').forEach(function (line) { console.log(line) })
     next(null, true)
   }
 }

@@ -64,6 +64,7 @@ module.exports = {
         '/initializers',
         '/log',
         '/locales',
+        '/bin',
         '/servers',
         '/public',
         '/public/javascript',

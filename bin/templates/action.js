@@ -15,6 +15,6 @@ exports.action = {
   run: function (api, data, next) {
     let error = null
     // your logic here
-    next(error)
+    return next(error)
   }
 }

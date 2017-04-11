@@ -22,11 +22,11 @@ const initialize = function (api, options, next) {
   // ////////////////////
 
   server.start = function (next) {
-    next()
+    return next()
   }
 
   server.stop = function (next) {
-    next()
+    return next()
   }
 
   server.sendMessage = function (connection, message, messageCount) {

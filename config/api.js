@@ -50,6 +50,7 @@ exports['default'] = {
         'pid': [path.join(__dirname, '/../pids')],
         'log': [path.join(__dirname, '/../log')],
         'server': [path.join(__dirname, '/../servers')],
+        'cli': [path.join(__dirname, '/../bin')],
         'initializer': [path.join(__dirname, '/../initializers')],
         'plugin': [path.join(__dirname, '/../node_modules')],
         'locale': [path.join(__dirname, '/../locales')]
