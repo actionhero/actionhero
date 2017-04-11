@@ -2,33 +2,36 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .demand('queue')
-  .describe('name', 'The name of athe task')
-  .describe('description', 'The description of the task')
-  .describe('queue', 'The default queue for this task')
-  .describe('frequency', 'is this task periodic, and if so, how often should it run?')
-  .default('description', 'My Task')
-  .default('frequency', 0)
-  .argv
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
-  data = String(data);
+module.exports = {
+  name: 'generate task',
+  description: 'generate a new task',
 
-  [
-    'name',
-    'description',
-    'queue',
-    'frequency'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  inputs: {
+    name: {required: true},
+    queue: {required: true},
+    description: {required: true, default: 'an actionhero task'},
+    frequency: {required: true, default: 0}
+  },
 
-  api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + argv.name + '.js', data)
+  run: {
+    function (api, data, next) {
+      let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
+      template = String(template);
 
-  next(null, true)
+      [
+        'name',
+        'description',
+        'queue',
+        'frequency'
+      ].forEach(function (v) {
+        let regex = new RegExp('%%' + v + '%%', 'g')
+        template = template.replace(regex, data.params[v])
+      })
+
+      api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + data.params.name + '.js', template)
+
+      next(null, true)
+    }
+  }
 }

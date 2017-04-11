@@ -2,30 +2,35 @@
 
 const REPL = require('repl')
 
-module.exports = function (api, next) {
-  for (let i in api.config.servers) { api.config.servers[i].enabled = false }
-  api.config.general.developmentMode = false
-  api.config.tasks.scheduler = false
-  api.config.tasks.queues = []
-  api.config.tasks.minTaskProcessors = 0
-  api.config.tasks.maxTaskProcessors = 0
+module.exports = {
+  name: 'console',
+  description: 'start an interactive REPL session with the api object in-scope',
 
-  api.commands.start.call(api._context, function (error) {
-    if (error) { return next(error) }
+  run: function (api, data, next) {
+    for (let i in api.config.servers) { api.config.servers[i].enabled = false }
+    api.config.general.developmentMode = false
+    api.config.tasks.scheduler = false
+    api.config.tasks.queues = []
+    api.config.tasks.minTaskProcessors = 0
+    api.config.tasks.maxTaskProcessors = 0
 
-    setTimeout(function () {
-      const repl = REPL.start({
-        prompt: '[ AH::' + api.env + ' ] >> ',
-        input: process.stdin,
-        output: process.stdout,
-        useGlobal: false
-      })
+    api.commands.start.call(api._context, function (error) {
+      if (error) { return next(error) }
 
-      repl.context.api = api
+      setTimeout(() => {
+        const repl = REPL.start({
+          prompt: '[ AH::' + api.env + ' ] >> ',
+          input: process.stdin,
+          output: process.stdout,
+          useGlobal: false
+        })
 
-      repl.on('exit', function () {
-        next(null, true)
-      })
-    }, 500)
-  })
+        repl.context.api = api
+
+        repl.on('exit', function () {
+          next(null, true)
+        })
+      }, 500)
+    })
+  }
 }

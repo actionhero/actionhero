@@ -31,14 +31,6 @@ const async = require('async')
 const readline = require('readline')
 const winston = require('winston')
 const isrunning = require('is-running')
-const optimist = require('optimist')
-
-optimist // eslint-disable-line
-  .describe('workers', 'How many worker node processes')
-  .default('workers', os.cpus().length)
-  .describe('workerTitlePrefix', 'Set worker title prefix')
-  .default('workerTitlePrefix', 'actionhero-worker-')
-  .argv
 
 // ///////////////////////////////////////
 
@@ -369,36 +361,53 @@ ActionHeroCluster.prototype.work = function () {
 
 // ///////////////////////////////////////
 
-module.exports = function (api) {
-  let options = {
-    execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
-    args: 'start',
-    silent: (optimist.argv.silent === 'true' || optimist.argv.silent === true),
-    expectedWorkers: optimist.argv.workers,
-    id: api.id,
-    buildEnv: (workerId) => {
-      let env = {}
+module.exports = {
+  name: 'start cluster',
+  description: 'start an actionhero cluster',
 
-      for (let k in process.env) {
-        env[k] = process.env[k]
+  inputs: {
+    workers: {
+      required: true,
+      default: os.cpus().length
+    },
+    workerTitlePrefix: {
+      required: true,
+      default: 'actionhero-worker-'
+    },
+    silent: {required: false}
+  },
+
+  run: function (api, data) {
+    let options = {
+      execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
+      args: 'start',
+      silent: (data.params.silent === 'true' || data.params.silent === true),
+      expectedWorkers: data.params.workers,
+      id: api.id,
+      buildEnv: (workerId) => {
+        let env = {}
+
+        for (let k in process.env) {
+          env[k] = process.env[k]
+        }
+
+        let title = data.params.workerTitlePrefix
+
+        if (!title || title === '') {
+          title = 'actionhero-worker-'
+        } else if (title === 'hostname') {
+          title = os.hostname() + '-'
+        }
+
+        title += workerId
+        env.title = title
+        env.ACTIONHERO_TITLE = title
+
+        return env
       }
-
-      let title = optimist.argv.workerTitlePrefix
-
-      if (!title || title === '') {
-        title = 'actionhero-worker-'
-      } else if (title === 'hostname') {
-        title = os.hostname() + '-'
-      }
-
-      title += workerId
-      env.title = title
-      env.ACTIONHERO_TITLE = title
-
-      return env
     }
-  }
 
-  const ahc = new ActionHeroCluster(options)
-  ahc.start()
+    const ahc = new ActionHeroCluster(options)
+    ahc.start()
+  }
 }
