@@ -94,6 +94,7 @@ describe('Core: Binary', () => {
           'public/javascript',
           'public/logo/actionhero.png',
           'servers',
+          'locales/en.json',
           'tasks',
           'test',
           'test/example.js'
@@ -156,6 +157,20 @@ describe('Core: Binary', () => {
         expect(data).to.match(/queue: 'my_queue'/)
         expect(data).to.match(/frequency: 12345/)
         expect(data).to.match(/next\(error, resultLogMessage\)/)
+        done()
+      })
+    })
+
+    it('can generate a cli command', (done) => {
+      doBash([
+        'cd ' + testDir,
+        binary + ' generate cli --name=myCommand --description=my_description --example=my_example'
+      ], (error) => {
+        expect(error).to.be.null()
+        var data = String(fs.readFileSync(testDir + '/bin/myCommand.js'))
+        expect(data).to.match(/name: 'myCommand'/)
+        expect(data).to.match(/description: 'my_description'/)
+        expect(data).to.match(/example: 'my_example'/)
         done()
       })
     })

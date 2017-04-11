@@ -15,24 +15,22 @@ module.exports = {
     frequency: {required: true, default: 0}
   },
 
-  run: {
-    function (api, data, next) {
-      let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
-      template = String(template);
+  run: function (api, data, next) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
+    template = String(template);
 
-      [
-        'name',
-        'description',
-        'queue',
-        'frequency'
-      ].forEach(function (v) {
-        let regex = new RegExp('%%' + v + '%%', 'g')
-        template = template.replace(regex, data.params[v])
-      })
+    [
+      'name',
+      'description',
+      'queue',
+      'frequency'
+    ].forEach(function (v) {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, data.params[v])
+    })
 
-      api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + data.params.name + '.js', template)
+    api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + data.params.name + '.js', template)
 
-      next(null, true)
-    }
+    next(null, true)
   }
 }
