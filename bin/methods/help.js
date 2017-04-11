@@ -1,7 +1,5 @@
 'use strict'
 
-const glob = require('glob')
-
 module.exports = {
   name: 'help',
   description: 'get actonhero CLI help; will display this document',
@@ -10,11 +8,11 @@ module.exports = {
     let files = []
     let methods = {}
 
-    glob.sync(api.actionheroRoot + '/bin/**/*.js').forEach((f) => {
+    api.utils.recursiveDirectoryGlob(api.actionheroRoot + '/bin').forEach(function (f) {
       files.push(f)
     })
 
-    glob.sync(api.projectRoot + '/bin/**/*.js').forEach((f) => {
+    api.utils.recursiveDirectoryGlob(api.projectRoot + '/bin').forEach(function (f) {
       files.push(f)
     })
 

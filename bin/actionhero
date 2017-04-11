@@ -64,12 +64,17 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
   // proxy the logger, as we can't use the real one yet
   api.log = function (message) { console.log(message) }
 
-  // when generating the project from scratch, we cannot rely on the normal initilizers
-  const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
-  let params = formatParams(api, runner)
-  runner.run(api, {params: params}, function (error) {
+  // reload utils, as they won't have been loaded yet
+  api.utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js'))).initialize(api, function (error) {
     if (error) { throw error }
-    setTimeout(process.exit, 500, 0)
+
+    // when generating the project from scratch, we cannot rely on the normal initilizers
+    const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+    let params = formatParams(api, runner)
+    runner.run(api, {params: params}, function (error) {
+      if (error) { throw error }
+      setTimeout(process.exit, 500, 0)
+    })
   })
 } else {
   actionhero.initialize({configChanges: configChanges}, function (error, api) {
