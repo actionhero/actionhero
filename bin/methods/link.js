@@ -6,6 +6,7 @@ const fs = require('fs')
 module.exports = {
   name: 'link',
   description: 'link a plugin to this actionhero project',
+  example: 'actionhero link --name=[pluginName] --overwriteConfig=[overwriteConfig]',
 
   inputs: {
     name: {required: true},

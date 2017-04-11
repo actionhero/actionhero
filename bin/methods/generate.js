@@ -4,6 +4,9 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
+  name: 'generate',
+  description: 'will prepare an empty directory with a template ActionHero project',
+
   run: function (api, data, next) {
     // reload utils, as they won't have been loaded yet
     api.utils = require(path.normalize(path.join(__dirname, '/../../initializers/utils.js'))).initialize(api, function (error) {

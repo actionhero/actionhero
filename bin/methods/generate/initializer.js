@@ -6,6 +6,7 @@ const path = require('path')
 module.exports = {
   name: 'generate initializer',
   description: 'generate a new initializer',
+  example: 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]',
 
   inputs: {
     name: {required: true},

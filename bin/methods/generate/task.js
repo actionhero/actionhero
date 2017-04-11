@@ -6,6 +6,7 @@ const path = require('path')
 module.exports = {
   name: 'generate task',
   description: 'generate a new task',
+  example: 'actionhero generate task --name=[name] --description=[description] --scope=[scope] --frequency=[frequency]',
 
   inputs: {
     name: {required: true},

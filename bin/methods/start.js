@@ -7,6 +7,22 @@ const os = require('os')
 module.exports = {
   name: 'start',
   description: 'start this ActionHero server',
+  example: 'actionhero start --config=[/path/to/config] --title=[processTitle] --daemon',
+
+  inputs: {
+    config: {
+      required: false,
+      note: 'path to config.js, defaults to "process.cwd() + \'/\' + config.js". You can also use ENV[ACTIONHERO_CONFIG]'
+    },
+    title: {
+      required: false,
+      note: 'process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows'
+    },
+    daemon: {
+      required: false,
+      note: 'to fork and run as a new background process defaults to false'
+    }
+  },
 
   run: function (api, data, next) {
     let state

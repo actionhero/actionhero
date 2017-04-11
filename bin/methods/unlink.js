@@ -5,6 +5,7 @@ const path = require('path')
 module.exports = {
   name: 'unlink',
   description: 'unlink a plugin from this actionhero project',
+  example: 'actionhero unlink --name=[pluginName]',
 
   inputs: {
     name: {required: true}

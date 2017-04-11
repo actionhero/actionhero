@@ -55,8 +55,12 @@ let commands = []
 if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
 optimist.argv._.forEach(function (arg) { commands.push(arg) })
 if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0) {
+  let api = {
+    projectRoot: projectRoot,
+    actionheroRoot: actionheroRoot
+  }
+
   // proxy the logger, as we can't use the real one yet
-  let api = {projectRoot: projectRoot}
   api.log = function (message) { console.log(message) }
 
   // when generating the project from scratch, we cannot rely on the normal initilizers

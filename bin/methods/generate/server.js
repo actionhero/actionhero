@@ -6,6 +6,7 @@ const path = require('path')
 module.exports = {
   name: 'generate server',
   description: 'generate a new server',
+  example: 'actionhero generate server --name=[name]',
 
   inputs: {
     name: {required: true}

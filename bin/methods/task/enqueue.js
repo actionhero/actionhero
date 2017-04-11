@@ -3,6 +3,7 @@
 module.exports = {
   name: 'task enqueue',
   description: 'enqueue a defined task into your actionhero cluster',
+  example: 'actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]',
 
   inputs: {
     name: {required: true},
