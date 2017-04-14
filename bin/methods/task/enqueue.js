@@ -1,26 +1,32 @@
 'use strict'
 
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('args', 'JSON-encoded arguments for the task')
-  .describe('name', 'The name of the task to run')
-  .argv
+module.exports = {
+  name: 'task enqueue',
+  description: 'enqueue a defined task into your actionhero cluster',
+  example: 'actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]',
 
-module.exports = function (api, next) {
-  if (!api.tasks.tasks[argv.name]) { throw new Error('Task "' + argv.name + '" not found') }
+  inputs: {
+    name: {required: true},
+    args: {required: false},
+    params: {required: false}
+  },
 
-  let args = {}
-  if (argv.args) { args = JSON.parse(argv.args) }
+  run: function (api, data, next) {
+    if (!api.tasks.tasks[data.params.name]) { throw new Error('Task "' + data.params.name + '" not found') }
 
-  api.resque.startQueue(function () {
-    api.tasks.enqueue(argv.name, args, function (error, toRun) {
-      if (error) {
-        api.log(error, 'alert')
-      } else {
-        api.log('response', 'info', toRun)
-      }
-      next(null, true)
+    let args = {}
+    if (data.params.args) { args = JSON.parse(data.params.args) }
+    if (data.params.params) { args = JSON.parse(data.params.params) }
+
+    api.resque.startQueue(function () {
+      api.tasks.enqueue(data.params.name, args, function (error, toRun) {
+        if (error) {
+          api.log(error, 'alert')
+        } else {
+          api.log('response', 'info', toRun)
+        }
+        next(null, true)
+      })
     })
-  })
+  }
 }

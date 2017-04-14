@@ -2,33 +2,35 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('name', 'The name of the initializer')
-  .describe('loadPriority', 'order of operations')
-  .describe('startPriority', 'order of operations')
-  .describe('stopPriority', 'order of operations')
-  .default('loadPriority', 1000)
-  .default('startPriority', 1000)
-  .default('stopPriority', 1000)
-  .argv
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
-  data = String(data);
+module.exports = {
+  name: 'generate initializer',
+  description: 'generate a new initializer',
+  example: 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]',
 
-  [
-    'name',
-    'loadPriority',
-    'startPriority',
-    'stopPriority'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  inputs: {
+    name: {required: true},
+    loadPriority: {required: true, default: 1000},
+    startPriority: {required: true, default: 1000},
+    stopPriority: {required: true, default: 1000}
+  },
 
-  api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + argv.name + '.js', data)
+  run: function (api, data, next) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
+    template = String(template);
 
-  next(null, true)
+    [
+      'name',
+      'loadPriority',
+      'startPriority',
+      'stopPriority'
+    ].forEach(function (v) {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, data.params[v])
+    })
+
+    api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + data.params.name + '.js', template)
+
+    next(null, true)
+  }
 }

@@ -2,27 +2,31 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('name', 'The name of the action')
-  .describe('description', 'The description of the action')
-  .default('description', 'My Action')
-  .argv
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
-  data = String(data);
+module.exports = {
+  name: 'generate action',
+  description: 'generate a new action',
+  example: 'actionhero generate action --name=[name] --description=[description]',
 
-  [
-    'name',
-    'description'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  inputs: {
+    name: {required: true},
+    description: {required: true, default: 'an actionhero action'}
+  },
 
-  api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + argv.name + '.js', data)
+  run: function (api, data, next) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
+    template = String(template);
 
-  next(null, true)
+    [
+      'name',
+      'description'
+    ].forEach(function (v) {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, data.params[v])
+    })
+
+    api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + data.params.name + '.js', template)
+
+    next(null, true)
+  }
 }

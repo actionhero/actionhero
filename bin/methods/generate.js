@@ -3,16 +3,11 @@
 const fs = require('fs')
 const path = require('path')
 
-module.exports = function (api, next) {
-  // proxy the logger, as we can't use the real one yet
-  api.log = function (message) {
-    console.log(message)
-  }
+module.exports = {
+  name: 'generate',
+  description: 'will prepare an empty directory with a template ActionHero project',
 
-  // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(path.join(__dirname, '/../../initializers/utils.js'))).initialize(api, function (error) {
-    if (error) { return next(error) }
-
+  run: function (api, data, next) {
     // ////// DOCUMENTS ////////
 
     let documents = {}
@@ -65,6 +60,7 @@ module.exports = function (api, next) {
       '/initializers',
       '/log',
       '/locales',
+      '/bin',
       '/servers',
       '/public',
       '/public/javascript',
@@ -117,5 +113,5 @@ module.exports = function (api, next) {
     api.log('Run \'npm start\' to start your server')
 
     next(null, true)
-  })
+  }
 }

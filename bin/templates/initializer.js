@@ -7,12 +7,12 @@ module.exports = {
   initialize: function (api, next) {
     api.%%name%% = {}
 
-    next()
+    return next()
   },
   start: function (api, next) {
-    next()
+    return next()
   },
   stop: function (api, next) {
-    next()
+    return next()
   }
 }

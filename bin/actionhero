@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 
+const fs = require('fs')
 const path = require('path')
 const optimist = require('optimist')
 const spawn = require('child_process').spawn
@@ -22,15 +23,58 @@ const ActionheroPrototype = require(actionheroRoot + '/actionhero.js')
 const actionhero = new ActionheroPrototype()
 const configChanges = {}
 
+function formatParams (api, runner) {
+  let params = {}
+  if (!runner.inputs) { runner.inputs = {} }
+
+  Object.keys(runner.inputs).forEach((inputName) => {
+    let collection = runner.inputs[inputName]
+    let value = optimist.argv[inputName]
+
+    if (collection.default && (value === undefined || value === null || value === '')) {
+      if (typeof collection.default === 'function') {
+        value = collection.default()
+      } else {
+        value = collection.default
+      }
+      api.log(`using default value of \`${value}\` for \`${inputName}\``)
+    }
+
+    if (collection.required === true && (value === undefined || value === null || value === '')) {
+      api.log(`Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``, 'crit')
+      // api.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
+      process.exit(1)
+    }
+
+    params[inputName] = value
+  })
+
+  return params
+}
+
 let commands = []
 if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
 optimist.argv._.forEach(function (arg) { commands.push(arg) })
 if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0) {
-  // when generating the project from scratch, we cannot rely on the normal initilizers
-  const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
-  runner({projectRoot: projectRoot}, function (error) {
+  let api = {
+    projectRoot: projectRoot,
+    actionheroRoot: actionheroRoot
+  }
+
+  // proxy the logger, as we can't use the real one yet
+  api.log = function (message) { console.log(message) }
+
+  // reload utils, as they won't have been loaded yet
+  api.utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js'))).initialize(api, function (error) {
     if (error) { throw error }
-    setTimeout(process.exit, 500, 0)
+
+    // when generating the project from scratch, we cannot rely on the normal initilizers
+    const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+    let params = formatParams(api, runner)
+    runner.run(api, {params: params}, function (error) {
+      if (error) { throw error }
+      setTimeout(process.exit, 500, 0)
+    })
   })
 } else {
   actionhero.initialize({configChanges: configChanges}, function (error, api) {
@@ -38,39 +82,49 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
     api._context = actionhero
 
     try {
-      const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
-
-      api.log('--------------------------------------')
-      api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
-      api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
-      api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
-      api.log('--------------------------------------')
-
-      if (optimist.argv.daemon) {
-        let newArgs = process.argv.splice(2)
-        for (let i in newArgs) {
-          if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
-        }
-        newArgs.push('--isDaemon=true')
-        const command = path.normalize(actionheroRoot + '/bin/actionhero')
-        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
-        api.log(`${command} ${newArgs.join(' ')}`, 'debug')
-        api.log(`spawned child process with pid ${child.pid}`, 'notice')
-        process.nextTick(process.exit)
+      let runner
+      let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
+      if (fs.existsSync(p)) {
+        runner = require(p)
       } else {
-        runner(api, function (error, toStop) {
-          if (error) { throw error }
-          if (toStop) { setTimeout(process.exit, 500, 0) }
+        api.config.general.paths.cli.forEach((cliPaths) => {
+          p = path.join(cliPaths, commands.join(path.sep) + '.js')
+          if (fs.existsSync(p)) { runner = require(p) }
         })
       }
-    } catch (e) {
-      if (!e.message.match(/Cannot find module/)) {
-        throw (e)
-      } else {
+
+      if (!runner) {
         api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
         api.log('run `actionhero help` to learn more', 'error')
         setTimeout(process.exit, 500, 1)
+      } else {
+        api.log('--------------------------------------')
+        api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
+        api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
+        api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
+        api.log('--------------------------------------')
+
+        if (optimist.argv.daemon) {
+          let newArgs = process.argv.splice(2)
+          for (let i in newArgs) {
+            if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
+          }
+          newArgs.push('--isDaemon=true')
+          const command = path.normalize(actionheroRoot + '/bin/actionhero')
+          const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+          api.log(`${command} ${newArgs.join(' ')}`, 'debug')
+          api.log(`spawned child process with pid ${child.pid}`, 'notice')
+          process.nextTick(process.exit)
+        } else {
+          let params = formatParams(api, runner)
+          runner.run(api, {params: params}, function (error, toStop) {
+            if (error) { throw error }
+            if (toStop || (arguments.length < 2 && !toStop)) { setTimeout(process.exit, 500, 0) }
+          })
+        }
       }
+    } catch (e) {
+      throw (e)
     }
   })
 }
