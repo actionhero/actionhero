@@ -97,7 +97,7 @@ module.exports = {
     }
 
     api.config.general.paths.action.forEach(function (p) {
-      glob.sync(path.join(p, '**', '*.js')).forEach(function (f) {
+      glob.sync(path.join(p, '**', '*.js'), {follow: true}).forEach(function (f) {
         api.actions.loadFile(f)
       })
     })

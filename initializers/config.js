@@ -105,7 +105,7 @@ module.exports = {
     }
 
     api.loadConfigDirectory = function (configPath, watch) {
-      const configFiles = glob.sync(path.join(configPath, '**', '*.js'))
+      const configFiles = glob.sync(path.join(configPath, '**', '*.js'), {follow: true})
 
       let loadRetries = 0
       let loadErrors = {}

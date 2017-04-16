@@ -348,7 +348,7 @@ module.exports = {
 
     function loadTasks (reload) {
       api.config.general.paths.task.forEach((p) => {
-        glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
+        glob.sync(path.join(p, '**', '*.js'), {follow: true}).forEach((f) => {
           api.tasks.loadFile(f, reload)
         })
       })

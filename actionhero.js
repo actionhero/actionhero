@@ -122,7 +122,7 @@ actionhero.prototype.initialize = function (params, callback) {
     })
     // load all other initializers
     this.api.utils.arrayUniqueify(
-      glob.sync(path.join(__dirname, 'initializers', '**', '*.js'))
+      glob.sync(path.join(__dirname, 'initializers', '**', '*.js'), {follow: true})
       .sort()
       .concat(
         customInitializers

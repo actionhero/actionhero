@@ -28,7 +28,7 @@ module.exports = {
     let jobs = []
 
     serverFolders.forEach((p) => {
-      glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
+      glob.sync(path.join(p, '**', '*.js'), {follow: true}).forEach((f) => {
         let parts = f.split(/[/\\]+/)
         let serverName = parts[(parts.length - 1)].split('.')[0]
         if (api.config.servers[serverName] && api.config.servers[serverName].enabled === true) {
