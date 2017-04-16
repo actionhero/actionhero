@@ -1,5 +1,6 @@
 'use strict'
 
+const glob = require('glob')
 const path = require('path')
 const async = require('async')
 
@@ -27,7 +28,7 @@ module.exports = {
     let jobs = []
 
     serverFolders.forEach((p) => {
-      api.utils.recursiveDirectoryGlob(p).forEach((f) => {
+      glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
         let parts = f.split(/[/\\]+/)
         let serverName = parts[(parts.length - 1)].split('.')[0]
         if (api.config.servers[serverName] && api.config.servers[serverName].enabled === true) {

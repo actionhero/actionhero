@@ -1,6 +1,8 @@
 'use strict'
 
 const async = require('async')
+const glob = require('glob')
+const path = require('path')
 
 module.exports = {
   startPriority: 900,
@@ -346,7 +348,7 @@ module.exports = {
 
     function loadTasks (reload) {
       api.config.general.paths.task.forEach((p) => {
-        api.utils.recursiveDirectoryGlob(p).forEach((f) => {
+        glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
           api.tasks.loadFile(f, reload)
         })
       })
