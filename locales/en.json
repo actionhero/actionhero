@@ -28,5 +28,7 @@
 			"connectionRoomExists": "room exists",
 			"connectionRoomRequired": "a room is required"
 		}
-	}
+	},
+	"Your random number is {{number}}": "Your random number is {{number}}",
+	"Node Healthy": "Node Healthy"
 }

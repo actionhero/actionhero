@@ -7,6 +7,7 @@
 
 const path = require('path')
 const async = require('async')
+const glob = require('glob')
 
 // HELPERS ///
 
@@ -117,11 +118,11 @@ actionhero.prototype.initialize = function (params, callback) {
     let customInitializers = []
     let duplicatedInitializers = []
     this.api.config.general.paths.initializer.forEach((startPath) => {
-      customInitializers = customInitializers.concat(this.api.utils.recursiveDirectoryGlob(startPath))
+      customInitializers = customInitializers.concat(glob.sync(path.join(startPath, '**', '*.js'), {follow: true}))
     })
     // load all other initializers
     this.api.utils.arrayUniqueify(
-      this.api.utils.recursiveDirectoryGlob(path.join(__dirname, 'initializers'))
+      glob.sync(path.join(__dirname, 'initializers', '**', '*.js'), {follow: true})
       .sort()
       .concat(
         customInitializers

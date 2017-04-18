@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const glob = require('glob')
 const argv = require('optimist').argv
 
 module.exports = {
@@ -104,7 +105,7 @@ module.exports = {
     }
 
     api.loadConfigDirectory = function (configPath, watch) {
-      const configFiles = api.utils.recursiveDirectoryGlob(configPath)
+      const configFiles = glob.sync(path.join(configPath, '**', '*.js'), {follow: true})
 
       let loadRetries = 0
       let loadErrors = {}
