@@ -152,10 +152,15 @@ actionhero.prototype.initialize = function (params, callback) {
 
           if (typeof this.initializers[initializer].initialize === 'function') {
             if (typeof this.api.log === 'function') { this.api.log(`Loading initializer: ${initializer}`, 'debug', file) }
-            this.initializers[initializer].initialize(this.api, (error) => {
-              try { this.api.log(`Loaded initializer: ${initializer}`, 'debug', file) } catch (e) { }
-              next(error)
-            })
+            try {
+              this.initializers[initializer].initialize(this.api, (error) => {
+                try { this.api.log(`Loaded initializer: ${initializer}`, 'debug', file) } catch (e) { }
+                next(error)
+              })
+            } catch (e) {
+              this.api.log(`Exception occured in initializer: ${initializer}  during load`, 'debug', e)
+              next(e)
+            }
           } else {
             next()
           }
@@ -164,10 +169,15 @@ actionhero.prototype.initialize = function (params, callback) {
         const startFunction = (next) => {
           if (typeof this.initializers[initializer].start === 'function') {
             if (typeof this.api.log === 'function') { this.api.log(`Starting initializer: ${initializer}`, 'debug', file) }
-            this.initializers[initializer].start(this.api, (error) => {
-              this.api.log(`Started initializer: ${initializer}`, 'debug', file)
-              next(error)
-            })
+            try {
+              this.initializers[initializer].start(this.api, (error) => {
+                this.api.log(`Started initializer: ${initializer}`, 'debug', file)
+                next(error)
+              })
+            } catch (e) {
+              this.api.log(`Exception occured in initializer: ${initializer} during start`, 'debug', e)
+              next(e)
+            }
           } else {
             next()
           }
@@ -176,10 +186,15 @@ actionhero.prototype.initialize = function (params, callback) {
         const stopFunction = (next) => {
           if (typeof this.initializers[initializer].stop === 'function') {
             if (typeof this.api.log === 'function') { this.api.log(`Stopping initializer: ${initializer}`, 'debug', file) }
-            this.initializers[initializer].stop(this.api, (error) => {
-              this.api.log(`Stopped initializer: ${initializer}`, 'debug', file)
-              next(error)
-            })
+            try {
+              this.initializers[initializer].stop(this.api, (error) => {
+                this.api.log(`Stopped initializer: ${initializer}`, 'debug', file)
+                next(error)
+              })
+            } catch (e) {
+              this.api.log(`Exception occured in initializer: ${initializer} during stop`, 'debug', e)
+              next(e)
+            }
           } else {
             next()
           }

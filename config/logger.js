@@ -12,7 +12,7 @@ exports['default'] = {
       logger.transports.push(function (api, winston) {
         return new (winston.transports.Console)({
           colorize: true,
-          level: 'info',
+          level: 'debug',
           timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
         })
       })
