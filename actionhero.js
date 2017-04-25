@@ -158,7 +158,7 @@ actionhero.prototype.initialize = function (params, callback) {
                 next(error)
               })
             } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer}  during load`, 'debug', e)
+              this.api.log(`Exception occured in initializer: ${initializer}  during load`, 'warning', e)
               next(e)
             }
           } else {
@@ -175,7 +175,7 @@ actionhero.prototype.initialize = function (params, callback) {
                 next(error)
               })
             } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer} during start`, 'debug', e)
+              this.api.log(`Exception occured in initializer: ${initializer} during start`, 'warning', e)
               next(e)
             }
           } else {
@@ -192,7 +192,7 @@ actionhero.prototype.initialize = function (params, callback) {
                 next(error)
               })
             } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer} during stop`, 'debug', e)
+              this.api.log(`Exception occured in initializer: ${initializer} during stop`, 'warning', e)
               next(e)
             }
           } else {
