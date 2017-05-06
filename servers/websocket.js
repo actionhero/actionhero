@@ -157,7 +157,7 @@ const initialize = function (api, options, next) {
       'exports.actionheroClient = actionheroClient; \r\n' +
       '})(typeof exports === \'undefined\' ? window : exports);'
     if (minimize) {
-      return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code
+      return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource).code
     } else {
       return (libSource + '\r\n\r\n\r\n' + ahClientSource)
     }
