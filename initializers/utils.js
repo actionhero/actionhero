@@ -92,6 +92,79 @@ module.exports = {
     }
 
     // //////////////////////////////////////////////////////////////////////////
+    // get all .js files in a directory
+    api.utils.recursiveDirectoryGlob = function (dir, extension, followLinkFiles) {
+      let results = []
+
+      if (!extension) { extension = '.js' }
+      if (!followLinkFiles) { followLinkFiles = true }
+
+      extension = extension.replace('.', '')
+
+      if (fs.existsSync(dir)) {
+        fs.readdirSync(dir).forEach((file) => {
+          let fullFilePath = path.join(dir, file)
+          if (file[0] !== '.') { // ignore 'system' files
+            let stats = fs.statSync(fullFilePath)
+            let child
+            if (stats.isDirectory()) {
+              child = api.utils.recursiveDirectoryGlob(fullFilePath, extension, followLinkFiles)
+              child.forEach((c) => { results.push(c) })
+            } else if (stats.isSymbolicLink()) {
+              let realPath = fs.readlinkSync(fullFilePath)
+              child = api.utils.recursiveDirectoryGlob(realPath, extension, followLinkFiles)
+              child.forEach((c) => { results.push(c) })
+            } else if (stats.isFile()) {
+              let fileParts = file.split('.')
+              let ext = fileParts[(fileParts.length - 1)]
+               // real file match
+              if (ext === extension) { results.push(fullFilePath) }
+               // linkfile traversal
+              if (ext === 'link' && followLinkFiles === true) {
+                let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin)
+                if (linkedPath) {
+                  child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles)
+                  child.forEach((c) => { results.push(c) })
+                } else {
+                  try {
+                    api.log(`cannot find linked refrence to \`${file}\``, 'warning')
+                  } catch (e) {
+                    throw new Error('cannot find linked refrence to ' + file)
+                  }
+                }
+              }
+            }
+          }
+        })
+      }
+
+      return results.sort()
+    }
+
+    api.utils.sourceRelativeLinkPath = function (linkfile, pluginPaths) {
+      const type = fs.readFileSync(linkfile).toString()
+      const pathParts = linkfile.split(path.sep)
+      const name = pathParts[(pathParts.length - 1)].split('.')[0]
+      const pathsToTry = pluginPaths.slice(0)
+      let pluginRoot
+
+       // TODO: always also try the local destination's `node_modules` to allow for nested plugins
+       // This might be a security risk without requiring explicit sourcing
+
+      pathsToTry.forEach((pluginPath) => {
+        let pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
+        try {
+          let stats = fs.lstatSync(pluginPathAttempt)
+          if (!pluginRoot && (stats.isDirectory() || stats.isSymbolicLink())) { pluginRoot = pluginPathAttempt }
+        } catch (e) { }
+      })
+
+      if (!pluginRoot) { return false }
+      let pluginSection = path.normalize(pluginRoot + path.sep + type)
+      return pluginSection
+    }
+
+    // //////////////////////////////////////////////////////////////////////////
     // object Clone
     api.utils.objClone = function (obj) {
       return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce((memo, name) => {

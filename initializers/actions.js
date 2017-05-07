@@ -1,8 +1,5 @@
 'use strict'
 
-const glob = require('glob')
-const path = require('path')
-
 module.exports = {
   loadPriority: 410,
   initialize: function (api, next) {
@@ -97,7 +94,7 @@ module.exports = {
     }
 
     api.config.general.paths.action.forEach(function (p) {
-      glob.sync(path.join(p, '**', '*.js'), {follow: true}).forEach(function (f) {
+      api.utils.recursiveDirectoryGlob(p).forEach(function (f) {
         api.actions.loadFile(f)
       })
     })
