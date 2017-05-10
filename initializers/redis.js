@@ -5,7 +5,7 @@ const async = require('async')
 
 module.exports = {
   startPriority: 101,
-  stopPriority: 999,
+  stopPriority: 99999,
   loadPriority: 200,
   initialize: function (api, next) {
     api.redis = {}
