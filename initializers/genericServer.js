@@ -65,6 +65,11 @@ module.exports = {
         this.processFile(connection)
       }
 
+      // https://github.com/actionhero/actionhero/issues/1025
+      if (this.type === 'web') {
+        connection.setHeader = connection.rawConnection.res.setHeader
+      }
+
       this.emit('connection', connection)
 
       if (this.attributes.logConnections === true) {
