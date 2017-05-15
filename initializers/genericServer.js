@@ -67,7 +67,7 @@ module.exports = {
 
       // https://github.com/actionhero/actionhero/issues/1025
       if (this.type === 'web') {
-        connection.setHeader = connection.rawConnection.res.setHeader
+        connection.setHeader = connection.rawConnection.res.setHeader.bind(connection.rawConnection.res)
       }
 
       this.emit('connection', connection)
