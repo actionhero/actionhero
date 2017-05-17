@@ -97,7 +97,9 @@ module.exports = {
       let results = []
 
       if (!extension) { extension = '.js' }
-      if (!followLinkFiles) { followLinkFiles = true }
+
+      // make sure arguement is really undefined
+      followLinkFiles = followLinkFiles || typeof followLinkFiles === 'undefined' || followLinkFiles == null;
 
       extension = extension.replace('.', '')
 
