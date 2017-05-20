@@ -50,7 +50,6 @@ ActionHero's documentation can be found @ [http://www.actionherojs.com/docs/over
 ## Who?
 
 * The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/actionhero/actionhero/graphs/contributors)
-* Logo by [Ali Spagnola](http://alispagnola.com/)
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero)
 
 ###
