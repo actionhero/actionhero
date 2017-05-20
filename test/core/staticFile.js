@@ -55,10 +55,10 @@ describe('Core: Static File', () => {
   it('file: sub paths should work', (done) => {
     api.specHelper.getStaticFile('logo/actionhero.png', (response) => {
       expect(response.mime).to.equal('image/png')
-      expect(response.length).to.equal(142141)
+      expect(response.length).to.equal(59273)
       // wacky per-OS encoding issues I guess?
-      expect(response.content.length).to.be.at.least(136836)
-      expect(response.content.length).to.be.at.most(137500)
+      expect(response.content.length).to.be.at.least(50000)
+      expect(response.content.length).to.be.at.most(60000)
       done()
     })
   })
