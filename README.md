@@ -37,7 +37,7 @@ Or deploy a web API server now:
 ## Want more?
 
 - [Getting Started](https://www.actionherojs.com/get-started)
-- [Running actionhero](hhttps://www.actionherojs.com/docs/ops/running-actionhero)
+- [Running actionhero](https://www.actionherojs.com/docs/ops/running-actionhero)
 - [Read the documentation](http://www.actionherojs.com/docs/)
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [See a Sample Project (simple)](https://github.com/actionhero/actionhero-tutorial)
