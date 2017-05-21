@@ -12,7 +12,7 @@
 
 
 ## Who is the ActionHero?
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](https://beta.actionherojs.com/docs/core/actions), [**consume static content**](https://beta.actionherojs.com/docs/core/file-server), and [**communicate with each other**](https://beta.actionherojs.com/docs/core/chat).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
+ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](https://www.actionherojs.com/docs/core/actions), [**consume static content**](https://www.actionherojs.com/docs/core/file-server), and [**communicate with each other**](https://www.actionherojs.com/docs/core/chat).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
 Currently actionhero supports the following out of the box...
 
@@ -20,7 +20,7 @@ Currently actionhero supports the following out of the box...
 - [Socket Clients](http://www.actionherojs.com/docs/servers/socket): TCP (telnet), TLS
 - [Web Socket Clients](http://www.actionherojs.com/docs/servers/websocket): HTTP, HTTPS
 
-[... and you can also make your own servers and transports.](https://beta.actionherojs.com/docs/core/servers)
+[... and you can also make your own servers and transports.](https://www.actionherojs.com/docs/core/servers)
 
 ## Quick Start
 ```bash
@@ -36,13 +36,13 @@ Or deploy a web API server now:
 
 ## Want more?
 
-- [Getting Started](https://beta.actionherojs.com/get-started)
-- [Running actionhero](hhttps://beta.actionherojs.com/docs/ops/running-actionhero)
+- [Getting Started](https://www.actionherojs.com/get-started)
+- [Running actionhero](hhttps://www.actionherojs.com/docs/ops/running-actionhero)
 - [Read the documentation](http://www.actionherojs.com/docs/)
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [See a Sample Project (simple)](https://github.com/actionhero/actionhero-tutorial)
 - [See a Sample Project (elaborate)](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
-- [Interact with the Community & View the Release History](https://beta.actionherojs.com/community)
+- [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 
 ## Documentation
 ActionHero's documentation can be found @ [http://www.actionherojs.com/docs](http://www.actionherojs.com/docs).  If you want to contribute to this documentation, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
