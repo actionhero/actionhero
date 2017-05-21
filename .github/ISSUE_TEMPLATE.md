@@ -7,8 +7,8 @@ Description of Issue
 
 # Steps to reproduce your error
 - Make a new actionhero project with `./node_modules/.bin/actionhero generate`
-- create an action with the follwing content... 
+- create an action with the following content...
 
 ---
 
-If your "issue" does not fit into this template, it might not be an issue!  Please join our [slack team](http://slack.actionherojs.com) and ask the question of the community there.
+If your "issue" does not fit into this template, it might not be an issue!  Please join our [slack team](http://slack.actionherojs.com) and ask the question of the community.  We can help!
