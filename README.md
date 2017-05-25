@@ -3,7 +3,7 @@
 ## The Reusable, Scalable, and Quick node.js API Server
 
 <div style="text-align: center;">
-![https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png](https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png)
+  <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </div>
 
 ***
