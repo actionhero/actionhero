@@ -2,9 +2,9 @@
 
 ## The Reusable, Scalable, and Quick node.js API Server
 
-<div style="text-align: center;">
+<p align="center"> 
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
-</div>
+</p>
 
 ***
 **[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Web Site](https://www.actionherojs.com) | [GitHub](https://github.com/actionhero/actionhero) | [Slack](http://slack.actionherojs.com) | [Client](https://github.com/actionhero/actionhero-client)**
