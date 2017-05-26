@@ -102,16 +102,7 @@ module.exports = {
         logLevel = this.actionTemplate.logLevel
       }
 
-      let filteredParams = {}
-      for (let i in this.params) {
-        if (api.config.general.filteredParams && api.config.general.filteredParams.indexOf(i) >= 0) {
-          filteredParams[i] = '[FILTERED]'
-        } else if (typeof this.params[i] === 'string') {
-          filteredParams[i] = this.params[i].substring(0, api.config.logger.maxLogStringLength)
-        } else {
-          filteredParams[i] = this.params[i]
-        }
-      }
+      let filteredParams = api.utils.filterObjectForLogging(this.params)
 
       const logLine = {
         to: this.connection.remoteIP,

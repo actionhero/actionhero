@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const async = require('async')
+const dotProp = require('dot-prop')
 
 module.exports = {
   loadPriority: 0,
@@ -348,6 +349,25 @@ module.exports = {
         api.log(` - creating symbolic link '${destination}' => '${source}'`)
         fs.symlinkSync(source, destination, 'dir')
       }
+    }
+
+    api.utils.filterObjectForLogging = function (params) {
+      let filteredParams = {}
+      for (let i in params) {
+        if (api.utils.isPlainObject(params[i])) {
+          filteredParams[i] = api.utils.objClone(params[i])
+        } else if (typeof params[i] === 'string') {
+          filteredParams[i] = params[i].substring(0, api.config.logger.maxLogStringLength)
+        } else {
+          filteredParams[i] = params[i]
+        }
+      }
+      api.config.general.filteredParams.forEach((param) => {
+        if (dotProp.get(params, param) !== undefined) {
+          dotProp.set(filteredParams, param, '[FILTERED]')
+        }
+      })
+      return filteredParams
     }
 
     next()

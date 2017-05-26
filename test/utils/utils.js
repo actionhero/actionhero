@@ -111,4 +111,75 @@ describe('Utils', () => {
       }
     })
   })
+  describe('utils.filterObjectForLogging', function () {
+    beforeEach(function () {
+      expect(api.config.general.filteredParams.length).to.equal(0)
+    })
+    afterEach(function () {
+      // after each test, empty the array
+      api.config.general.filteredParams.length = 0
+    })
+    var testInput = {
+      p1: 1,
+      p2: 's3cr3t',
+      o1: {
+        o1p1: 1,
+        o1p2: 'also-s3cr3t',
+        o2: {
+          o2p1: 'this is ok',
+          o2p2: 'extremely-s3cr3t'
+        }
+      },
+      o2: {
+        name: 'same as o1`s inner object!',
+        o2p1: 'nothing secret'
+      }
+    }
+
+    it('can filter top level params, no matter the type', function () {
+      var inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push(...['p1', 'p2', 'o2'])
+      var filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p1).to.equal('[FILTERED]')
+      expect(filteredParams.p2).to.equal('[FILTERED]')
+      expect(filteredParams.o2).to.equal('[FILTERED]') // entire object filtered
+      expect(filteredParams.o1).to.deep.equal(testInput.o1) // unchanged
+    })
+
+    it('will not filter things that do not exist', function () {
+      // Identity
+      var inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      var filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams).to.deep.equal(testInput)
+
+      api.config.general.filteredParams.push(...['p3', 'p4', 'o1.o3', 'o1.o2.p1']) // eslint-disable-line
+      var filteredParams2 = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams2).to.deep.equal(testInput)
+    })
+
+    it('can filter a single level dot notation', function () {
+      var inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push(...['p1', 'o1.o1p1', 'somethingNotExist']) // eslint-disable-line
+      var filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p1).to.equal('[FILTERED]')
+      expect(filteredParams.o1.o1p1).to.equal('[FILTERED]')
+      // Unchanged things
+      expect(filteredParams.p2).to.equal(testInput.p2)
+      expect(filteredParams.o1.o1p2).to.equal(testInput.o1.o1p2)
+      expect(filteredParams.o1.o2).to.deep.equal(testInput.o1.o2)
+      expect(filteredParams.o2).to.deep.equal(testInput.o2)
+    })
+
+    it('can filter two levels deep', function () {
+      var inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push(...['p2', 'o1.o2.o2p1', 'o1.o2.notThere']) // eslint-disable-line
+      var filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p2).to.equal('[FILTERED]')
+      expect(filteredParams.o1.o2.o2p1).to.equal('[FILTERED]')
+      // Unchanged things
+      expect(filteredParams.p1).to.equal(testInput.p1)
+      expect(filteredParams.o1.o1p1).to.equal(testInput.o1.o1p1)
+      expect(filteredParams.o1.o2.o2p2).to.equal(testInput.o1.o2.o2p2)
+    })
+  })
 })
