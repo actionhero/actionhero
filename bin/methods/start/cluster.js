@@ -190,6 +190,20 @@ ActionHeroCluster.prototype.writePidFile = function (callback) {
   process.nextTick(callback)
 }
 
+ActionHeroCluster.prototype.clearPidFile = function (callback) {
+  const file = this.options.pidPath + '/' + this.options.pidfile
+
+  if (fs.existsSync(file)) {
+    const filePid = parseInt(fs.readFileSync(file))
+    if (process.pid !== filePid) {
+      return callback(new Error(`another process wrote this pid ${filePid}`))
+    }
+  }
+
+  fs.unlinkSync(file)
+  process.nextTick(callback)
+}
+
 ActionHeroCluster.prototype.start = function (callback) {
   let jobs = []
 
@@ -239,6 +253,7 @@ ActionHeroCluster.prototype.start = function (callback) {
     this.log('Signal: SIGTTOU', 'info')
     this.log('remove a worker', 'info')
     this.options.expectedWorkers--
+    if (this.options.expectedWorkers < 0) { this.options.expectedWorkers = 0 }
     this.work()
   })
 
@@ -290,7 +305,10 @@ ActionHeroCluster.prototype.start = function (callback) {
 ActionHeroCluster.prototype.stop = function (callback) {
   if (this.workers.length === 0) {
     this.log('all workers stopped', 'notice')
-    callback()
+    this.clearPidFile((error) => {
+      if (error) { throw error }
+      callback()
+    })
   } else {
     this.log(this.workers.length + ' workers running, waiting on stop', 'info')
     setTimeout(() => { this.stop(callback) }, this.options.stopTimeout)
@@ -319,6 +337,7 @@ ActionHeroCluster.prototype.work = function () {
 
   if (
       this.options.expectedWorkers < this.workers.length &&
+      this.workers.length >= 1 &&
       !stateCounts.stopping &&
       !stateCounts.stopped &&
       !stateCounts.restarting
@@ -355,6 +374,8 @@ ActionHeroCluster.prototype.work = function () {
   } else {
     if (stateCounts.started === this.workers.length) {
       this.log('cluster equilibrium state reached with ' + this.workers.length + ' workers', 'notice')
+    } else if (!stateCounts.started && this.workers.length === 0) {
+      this.log('0 workers in this cluster', 'warning')
     }
   }
 }
