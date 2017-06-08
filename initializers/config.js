@@ -104,7 +104,8 @@ module.exports = {
     }
 
     api.loadConfigDirectory = function (configPath, watch) {
-      const configFiles = api.utils.recursiveDirectoryGlob(configPath)
+	  // first load files without linked ones
+      let configFiles = api.utils.recursiveDirectoryGlob(configPath, null, false)
 
       let loadRetries = 0
       let loadErrors = {}
@@ -145,7 +146,10 @@ module.exports = {
           api.watchFileAndAct(f, rebootCallback)
         }
       }
-
+	  
+	  // now we can load linked config files too
+	  configFiles = api.utils.recursiveDirectoryGlob(configPath);
+	  
       // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
       // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
       configFiles.forEach((f) => {
