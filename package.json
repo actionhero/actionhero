@@ -49,7 +49,7 @@
     "ws": "^3.0.0"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "cross-env": "^5.0.0",
     "dirty-chai": "^1.2.2",
     "mocha": "^3.2.0",
