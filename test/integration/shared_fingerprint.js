@@ -20,7 +20,7 @@ var connectClient = (transportOptions, callback) => {
   var S = _Primus.createSocket()
   var clientSocket = new S('http://localhost:' + api.config.servers.web.port, {transport: transportOptions})
 
-  let client = new ActionheroClient({}, clientSocket) // eslint-disable-line
+  var client = new ActionheroClient({}, clientSocket) // eslint-disable-line
   setTimeout(() => {
     callback(null, client)
   }, 100)
