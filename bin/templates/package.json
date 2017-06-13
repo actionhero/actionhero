@@ -14,7 +14,7 @@
   },
   "devDependencies" : {
     "cross-env" : "latest",
-    "chai" : "3.x.x",
+    "chai" : "latest",
     "dirty-chai" : "latest",
     "mocha" : "latest",
     "standard" : "latest"
