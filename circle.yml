@@ -1,8 +1,14 @@
+dependencies:
+  pre:
+    - case $CIRCLE_NODE_INDEX in 0) NODE_VERSION=4 ;; 1) NODE_VERSION=6 ;; 2) NODE_VERSION=8 ;; esac; nvm install $NODE_VERSION && nvm alias default $NODE_VERSION
 machine:
   node:
     version: 8
+  services:
+    - redis
+  environment:
+    FAKEREDIS: false
+    maxMemoryAlloted: 500
 test:
   override:
-    - 'nvm use 4 && npm test'
-    - 'nvm use 6 && npm test'
-    - 'nvm use 8 && npm test'
+    - 'npm test'
