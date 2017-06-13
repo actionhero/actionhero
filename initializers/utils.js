@@ -351,20 +351,20 @@ module.exports = {
       }
     }
 
-    api.utils.filterObjectForLogging = function (params) {
+    api.utils.filterObjectForLogging = function (actionParams) {
       let filteredParams = {}
-      for (let i in params) {
-        if (api.utils.isPlainObject(params[i])) {
-          filteredParams[i] = api.utils.objClone(params[i])
-        } else if (typeof params[i] === 'string') {
-          filteredParams[i] = params[i].substring(0, api.config.logger.maxLogStringLength)
+      for (let i in actionParams) {
+        if (api.utils.isPlainObject(actionParams[i])) {
+          filteredParams[i] = api.utils.objClone(actionParams[i])
+        } else if (typeof actionParams[i] === 'string') {
+          filteredParams[i] = actionParams[i].substring(0, api.config.logger.maxLogStringLength)
         } else {
-          filteredParams[i] = params[i]
+          filteredParams[i] = actionParams[i]
         }
       }
-      api.config.general.filteredParams.forEach((param) => {
-        if (dotProp.get(params, param) !== undefined) {
-          dotProp.set(filteredParams, param, '[FILTERED]')
+      api.config.general.filteredParams.forEach((configParam) => {
+        if (dotProp.get(actionParams, configParam) !== undefined) {
+          dotProp.set(filteredParams, configParam, '[FILTERED]')
         }
       })
       return filteredParams
