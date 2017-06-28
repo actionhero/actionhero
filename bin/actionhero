@@ -79,6 +79,8 @@ if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
 } else {
   actionhero.initialize({configChanges: configChanges}, function (error, api) {
     if (error) { throw error }
+    if (!api.projectRoot) { api.projectRoot = projectRoot }
+    if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionhero
     let runner
 
