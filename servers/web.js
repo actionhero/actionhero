@@ -344,7 +344,7 @@ const initialize = function (api, options, next) {
         remoteAddress: remoteIP,
         remotePort: remotePort,
         customMethods: function (connection) {
-          connection.setHeader = res.setHeader.bind(res)
+          connection.setHeader = connection.rawConnection.res.setHeader.bind(res)
         }
       })
     })
