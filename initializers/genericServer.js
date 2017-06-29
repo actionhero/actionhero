@@ -65,6 +65,11 @@ module.exports = {
         this.processFile(connection)
       }
 
+      // https://github.com/actionhero/actionhero/issues/1025
+      if (data.customMethods && typeof data.customMethods === 'function') {
+        data.customMethods(connection)
+      }
+
       this.emit('connection', connection)
 
       if (this.attributes.logConnections === true) {

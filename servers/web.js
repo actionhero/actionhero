@@ -342,7 +342,10 @@ const initialize = function (api, options, next) {
         id: fingerprint + '-' + uuid.v4(),
         fingerprint: fingerprint,
         remoteAddress: remoteIP,
-        remotePort: remotePort
+        remotePort: remotePort,
+        customMethods: function (connection) {
+          connection.setHeader = connection.rawConnection.res.setHeader.bind(res)
+        }
       })
     })
   }

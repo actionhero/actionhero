@@ -1142,4 +1142,42 @@ describe('Server: Web', () => {
       })
     })
   })
+
+  it('actions handled by the web server support proxy for setHeaders', (done) => {
+    api.actions.versions.proxyHeaders = [1]
+    api.actions.actions.proxyHeaders = {
+      '1': {
+        name: 'proxyHeaders',
+        description: 'proxy test',
+        inputs: {},
+        outputExample: {},
+        run: (api, data, next) => {
+          try {
+            data.connection.setHeader('X-Foo', 'bar')
+            next()
+          } catch (error) {
+            console.log(error)
+            next(error)
+          }
+        }
+      }
+    }
+
+    api.routes.loadRoutes({
+      get: [
+        {path: '/proxy', action: 'proxyHeaders', apiVersion: 1}
+      ]
+    })
+
+    request.get(url + '/api/proxy', (error, response, body) => {
+      expect(error).to.be.null()
+      expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
+
+      api.routes.routes = {}
+      delete api.actions.versions.proxyHeaders
+      delete api.actions.actions.proxyHeaders
+
+      done()
+    })
+  })
 })
