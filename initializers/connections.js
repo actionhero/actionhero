@@ -132,10 +132,13 @@ module.exports = {
       }
 
       let connection = this
-      for (let name in api.servers.servers[connection.type].connectionCustomMethods) {
-        connection[name] = function () {
-          let args = [connection].concat(Array.from(arguments))
-          api.servers.servers[connection.type].connectionCustomMethods[name].apply(null, args)
+      let server = api.servers.servers[connection.type]
+      if (server && server.connectionCustomMethods) {
+        for (let name in server.connectionCustomMethods) {
+          connection[name] = function () {
+            let args = [connection].concat(Array.from(arguments))
+            server.connectionCustomMethods[name].apply(null, args)
+          }
         }
       }
 
