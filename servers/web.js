@@ -236,6 +236,12 @@ const initialize = function (api, options, next) {
     // disconnect handlers
   }
 
+  server.connectionCustomMethods = {
+    setHeader: function (connection, key, value) {
+      connection.rawConnection.res.setHeader(key, value)
+    }
+  }
+
   // //////////
   // EVENTS //
   // //////////
