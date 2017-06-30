@@ -167,6 +167,7 @@ module.exports = {
         if (typeof server.goodbye === 'function') { server.goodbye(this) }
       }
 
+      api.connections.connections[this.id] = undefined
       delete api.connections.connections[this.id]
 
       if (typeof callback === 'function') { callback() }
