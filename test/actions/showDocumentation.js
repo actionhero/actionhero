@@ -27,7 +27,7 @@ describe('Action: Show Documentation', () => {
 
   it('returns the correct parts', (done) => {
     api.specHelper.runAction('showDocumentation', (response) => {
-      expect(Object.keys(response.documentation).length).to.equal(6) // 6 actions
+      expect(Object.keys(response.documentation).length).to.equal(7) // 7 actions
       expect(response.serverInformation.serverName).to.equal('actionhero')
       done()
     })

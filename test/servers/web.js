@@ -108,6 +108,17 @@ describe('Server: Web', () => {
         }, 100)
       })
     })
+
+    it('works for actions with toRender: false', (done) => {
+      expect(Object.keys(api.connections.connections)).to.have.length(0)
+      request.get(url + '/api/randomNumberAsync', (error) => {
+        expect(error).to.be.null()
+        setTimeout(() => {
+          expect(Object.keys(api.connections.connections)).to.have.length(0)
+          done()
+        }, 100)
+      })
+    })
   })
 
   describe('errors', () => {
