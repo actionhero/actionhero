@@ -14,19 +14,3 @@ exports.randomNumber = {
   }
 
 }
-
-exports.randomNumberAsync = {
-  name: 'randomNumberAsync',
-  description: 'I am an API method which will async generate a random number and custom render response',
-  outputExample: '0.123',
-
-  run: function (api, data, next) {
-    data.toRender = false
-    process.nextTick(() => {
-      data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
-      data.connection.rawConnection.res.end(`${Math.random()}`)
-      next(null)
-    })
-  }
-
-}

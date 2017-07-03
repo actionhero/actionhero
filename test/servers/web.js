@@ -85,6 +85,34 @@ describe('Server: Web', () => {
   })
 
   describe('will properly destroy connections', () => {
+    before(() => {
+      api.config.servers.web.returnErrorCodes = true
+      api.actions.versions.customRender = [1]
+      api.actions.actions.customRender = {
+        '1': {
+          name: 'customRender',
+          description: 'I am a test',
+          version: 1,
+          outputExample: {},
+          run: (api, data, next) => {
+            data.toRender = false
+            process.nextTick(() => {
+              data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
+              data.connection.rawConnection.res.end(`${Math.random()}`)
+              next(null)
+            })
+          }
+        }
+      }
+
+      api.routes.loadRoutes()
+    })
+
+    after(() => {
+      delete api.actions.actions.customRender
+      delete api.actions.versions.customRender
+    })
+
     it('works for the API', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       request.get(url + '/api/sleepTest', (error) => {
@@ -111,7 +139,7 @@ describe('Server: Web', () => {
 
     it('works for actions with toRender: false', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
-      request.get(url + '/api/randomNumberAsync', (error) => {
+      request.get(url + '/api/customRender', (error) => {
         expect(error).to.be.null()
         setTimeout(() => {
           expect(Object.keys(api.connections.connections)).to.have.length(0)
