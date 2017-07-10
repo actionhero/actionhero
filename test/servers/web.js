@@ -85,9 +85,37 @@ describe('Server: Web', () => {
   })
 
   describe('will properly destroy connections', () => {
+    before(() => {
+      api.config.servers.web.returnErrorCodes = true
+      api.actions.versions.customRender = [1]
+      api.actions.actions.customRender = {
+        '1': {
+          name: 'customRender',
+          description: 'I am a test',
+          version: 1,
+          outputExample: {},
+          run: (api, data, next) => {
+            data.toRender = false
+            process.nextTick(() => {
+              data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
+              data.connection.rawConnection.res.end(`${Math.random()}`)
+              next(null)
+            })
+          }
+        }
+      }
+
+      api.routes.loadRoutes()
+    })
+
+    after(() => {
+      delete api.actions.actions.customRender
+      delete api.actions.versions.customRender
+    })
+
     it('works for the API', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
-      request.get(url + '/api/sleepTest', (error) => {
+      request.get(url + '/api/sleepTest', (error, body, response) => {
         expect(error).to.be.null()
         expect(Object.keys(api.connections.connections)).to.have.length(0)
         setTimeout(done, 100)
@@ -101,6 +129,17 @@ describe('Server: Web', () => {
     it('works for files', (done) => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       request.get(url + '/simple.html', (error) => {
+        expect(error).to.be.null()
+        setTimeout(() => {
+          expect(Object.keys(api.connections.connections)).to.have.length(0)
+          done()
+        }, 100)
+      })
+    })
+
+    it('works for actions with toRender: false', (done) => {
+      expect(Object.keys(api.connections.connections)).to.have.length(0)
+      request.get(url + '/api/customRender', (error) => {
         expect(error).to.be.null()
         setTimeout(() => {
           expect(Object.keys(api.connections.connections)).to.have.length(0)
@@ -1139,6 +1178,45 @@ describe('Server: Web', () => {
           expect(response.body).to.match(/^That file is not found/)
           done()
         })
+      })
+    })
+  })
+
+  describe('it should work with server custom methods', () => {
+    it('actions handled by the web server support proxy for setHeaders', (done) => {
+      api.actions.versions.proxyHeaders = [1]
+      api.actions.actions.proxyHeaders = {
+        '1': {
+          name: 'proxyHeaders',
+          description: 'proxy test',
+          inputs: {},
+          outputExample: {},
+          run: (api, data, next) => {
+            try {
+              data.connection.setHeader('X-Foo', 'bar')
+              next()
+            } catch (error) {
+              next(error)
+            }
+          }
+        }
+      }
+
+      api.routes.loadRoutes({
+        get: [
+          {path: '/proxy', action: 'proxyHeaders', apiVersion: 1}
+        ]
+      })
+
+      request.get(url + '/api/proxy', (error, response, body) => {
+        expect(error).to.be.null()
+        expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
+
+        api.routes.routes = {}
+        delete api.actions.versions.proxyHeaders
+        delete api.actions.actions.proxyHeaders
+
+        done()
       })
     })
   })

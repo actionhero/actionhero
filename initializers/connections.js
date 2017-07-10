@@ -131,6 +131,17 @@ module.exports = {
         if (this[i] === undefined) { this[i] = connectionDefaults[i] }
       }
 
+      let connection = this
+      let server = api.servers.servers[connection.type]
+      if (server && server.connectionCustomMethods) {
+        for (let name in server.connectionCustomMethods) {
+          connection[name] = function () {
+            let args = [connection].concat(Array.from(arguments))
+            server.connectionCustomMethods[name].apply(null, args)
+          }
+        }
+      }
+
       api.i18n.invokeConnectionLocale(this)
     }
 

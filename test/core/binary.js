@@ -215,7 +215,7 @@ describe('Core: Binary', () => {
         expect(error).to.be.null()
         done()
       })
-    }).timeout(60000)
+    }).timeout(120000)
 
     describe('can run a single server', () => {
       it('can boot a single server')

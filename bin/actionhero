@@ -55,7 +55,7 @@ function formatParams (api, runner) {
 let commands = []
 if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
 optimist.argv._.forEach(function (arg) { commands.push(arg) })
-if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]) >= 0) {
+if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
   let api = {
     projectRoot: projectRoot,
     actionheroRoot: actionheroRoot
@@ -79,12 +79,14 @@ if (commands.length === 1 && ['generate', 'help', 'version'].indexOf(commands[0]
 } else {
   actionhero.initialize({configChanges: configChanges}, function (error, api) {
     if (error) { throw error }
+    if (!api.projectRoot) { api.projectRoot = projectRoot }
+    if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionhero
+    let runner
 
     try {
-      let runner
       let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
-      if (fs.existsSync(p)) {
+      if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
         runner = require(p)
       } else {
         api.config.general.paths.cli.forEach((cliPaths) => {

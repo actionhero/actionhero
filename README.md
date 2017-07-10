@@ -2,7 +2,7 @@
 
 ## The Reusable, Scalable, and Quick node.js API Server
 
-<p align="center"> 
+<p align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </p>
 
@@ -10,7 +10,15 @@
 **[NPM](https://npmjs.org/package/actionhero) | [Docs](http://actionherojs.com/docs) | [Web Site](https://www.actionherojs.com) | [GitHub](https://github.com/actionhero/actionhero) | [Slack](http://slack.actionherojs.com) | [Client](https://github.com/actionhero/actionhero-client)**
 ***
 
-[![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat-square)](https://www.npmjs.com/package/actionhero)[![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)[![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)[![Build Status](https://img.shields.io/travis/actionhero/actionhero/master.svg?style=flat-square)](http://travis-ci.org/actionhero/actionhero)[![Dependency Status](https://david-dm.org/actionhero/actionhero.svg?style=flat-square)](https://david-dm.org/actionhero/actionhero)[![Chat](http://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero) [![Greenkeeper badge](https://badges.greenkeeper.io/actionhero/actionhero.svg)](https://greenkeeper.io/)
+[![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat-square)](https://www.npmjs.com/package/actionhero)[![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)[![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)[![Dependency Status](https://david-dm.org/actionhero/actionhero.svg?style=flat-square)](https://david-dm.org/actionhero/actionhero)
+[![Greenkeeper badge](https://badges.greenkeeper.io/actionhero/actionhero.svg)](https://greenkeeper.io/)
+
+
+[![Build Status](https://circleci.com/gh/actionhero/actionhero.png)](https://circleci.com/gh/actionhero/actionhero.png)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
+[![Chat](http://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)
+
+
 
 
 ## Who is the ActionHero?
