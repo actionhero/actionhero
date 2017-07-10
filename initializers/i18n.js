@@ -22,7 +22,7 @@ module.exports = {
         let cmdParts = api.config.i18n.determineConnectionLocale.split('.')
         let cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-        let method = api.utils.stringToHash(cmdParts.join('.'))
+        let method = api.utils.dotProp.get(api, cmdParts.join('.'))
         let locale = method(connection)
         api.i18n.setLocale(connection, locale)
       },

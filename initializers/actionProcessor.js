@@ -9,7 +9,7 @@ module.exports = {
       const cmdParts = method.split('.')
       const cmd = cmdParts.shift()
       if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-      return api.utils.stringToHash(cmdParts.join('.'))
+      return api.utils.dotProp.get(api, cmdParts.join('.'))
     }
 
     api.ActionProcessor = function (connection, callback) {

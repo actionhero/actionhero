@@ -10,6 +10,8 @@ module.exports = {
   initialize: function (api, next) {
     if (!api.utils) { api.utils = {} }
 
+    api.utils.dotProp = dotProp
+
     // //////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
     api.utils.hashMerge = function (a, b, arg) {
@@ -68,15 +70,6 @@ module.exports = {
       }
       if (o[expandPreventMatchKey] === false) { return false }
       return (o.toString() === '[object Object]')
-    }
-
-    // //////////////////////////////////////////////////////////////////////////
-    // string to hash
-    // http://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
-    api.utils.stringToHash = function (path, object) {
-      if (!object) { object = api }
-      function _index (obj, i) { return obj[i] }
-      return path.split('.').reduce(_index, object)
     }
 
     // //////////////////////////////////////////////////////////////////////////
@@ -363,8 +356,8 @@ module.exports = {
         }
       }
       api.config.general.filteredParams.forEach((configParam) => {
-        if (dotProp.get(actionParams, configParam) !== undefined) {
-          dotProp.set(filteredParams, configParam, '[FILTERED]')
+        if (api.utils.dotProp.get(actionParams, configParam) !== undefined) {
+          api.utils.dotProp.set(filteredParams, configParam, '[FILTERED]')
         }
       })
       return filteredParams
