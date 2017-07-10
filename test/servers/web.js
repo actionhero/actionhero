@@ -421,12 +421,23 @@ describe('Server: Web', () => {
       })
     })
 
-    it('.body should contain unfiltered request body params', (done) => {
+    it('.body should contain unfiltered. parsed request body params', (done) => {
       var requestBody = JSON.stringify({key: 'value'})
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
         expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.body.key).to.equal('value')
+        done()
+      })
+    })
+
+    it('.rawBody will contain the raw POST body without parsing', (done) => {
+      let requestBody = '{"key":      "value"}'
+      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
+        expect(error).to.be.null()
+        body = JSON.parse(body)
+        expect(body.body.key).to.equal('value')
+        expect(body.rawBody).to.equal('{"key":      "value"}')
         done()
       })
     })
