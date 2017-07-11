@@ -431,14 +431,31 @@ describe('Server: Web', () => {
       })
     })
 
-    it('.rawBody will contain the raw POST body without parsing', (done) => {
-      let requestBody = '{"key":      "value"}'
-      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.body.key).to.equal('value')
-        expect(body.rawBody).to.equal('{"key":      "value"}')
-        done()
+    describe('connection.rawConnection.rawBody', () => {
+      after(() => { api.config.servers.web.saveRawBody = false })
+
+      it('.rawBody will contain the raw POST body without parsing', (done) => {
+        api.config.servers.web.saveRawBody = true
+        let requestBody = '{"key":      "value"}'
+        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
+          expect(error).to.be.null()
+          body = JSON.parse(body)
+          expect(body.body.key).to.equal('value')
+          expect(body.rawBody).to.equal('{"key":      "value"}')
+          done()
+        })
+      })
+
+      it('.rawBody can be disabled', (done) => {
+        api.config.servers.web.saveRawBody = false
+        let requestBody = '{"key":      "value"}'
+        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
+          expect(error).to.be.null()
+          body = JSON.parse(body)
+          expect(body.body.key).to.equal('value')
+          expect(body.rawBody).to.equal('')
+          done()
+        })
       })
     })
   })

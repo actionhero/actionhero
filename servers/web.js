@@ -507,7 +507,9 @@ const initialize = function (api, options, next) {
         }
 
         let rawBody = []
-        connection.rawConnection.req.on('data', (chunk) => { rawBody.push(chunk) })
+        if (api.config.servers.web.saveRawBody) {
+          connection.rawConnection.req.on('data', (chunk) => { rawBody.push(chunk) })
+        }
 
         connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
           if (error) {
