@@ -775,20 +775,14 @@ describe('Server: Web', () => {
     describe('can serve files from more than one directory', () => {
       var source = path.join(__dirname, '/../../public/simple.html')
 
-      before((done) => {
+      before(() => {
         fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'))
         api.staticFile.searchLoactions.push(os.tmpdir())
-        process.nextTick(() => {
-          done()
-        })
       })
 
-      after((done) => {
-        fs.unlink(os.tmpdir() + path.sep + 'testFile.html')
+      after(() => {
+        fs.unlinkSync(os.tmpdir() + path.sep + 'testFile.html')
         api.staticFile.searchLoactions.pop()
-        process.nextTick(() => {
-          done()
-        })
       })
 
       it('works for secondary paths', (done) => {
