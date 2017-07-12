@@ -3,11 +3,14 @@
 const fs = require('fs')
 const path = require('path')
 const async = require('async')
+const dotProp = require('dot-prop')
 
 module.exports = {
   loadPriority: 0,
   initialize: function (api, next) {
     if (!api.utils) { api.utils = {} }
+
+    api.utils.dotProp = dotProp
 
     // //////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
@@ -67,15 +70,6 @@ module.exports = {
       }
       if (o[expandPreventMatchKey] === false) { return false }
       return (o.toString() === '[object Object]')
-    }
-
-    // //////////////////////////////////////////////////////////////////////////
-    // string to hash
-    // http://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
-    api.utils.stringToHash = function (path, object) {
-      if (!object) { object = api }
-      function _index (obj, i) { return obj[i] }
-      return path.split('.').reduce(_index, object)
     }
 
     // //////////////////////////////////////////////////////////////////////////
@@ -348,6 +342,25 @@ module.exports = {
         api.log(` - creating symbolic link '${destination}' => '${source}'`)
         fs.symlinkSync(source, destination, 'dir')
       }
+    }
+
+    api.utils.filterObjectForLogging = function (actionParams) {
+      let filteredParams = {}
+      for (let i in actionParams) {
+        if (api.utils.isPlainObject(actionParams[i])) {
+          filteredParams[i] = api.utils.objClone(actionParams[i])
+        } else if (typeof actionParams[i] === 'string') {
+          filteredParams[i] = actionParams[i].substring(0, api.config.logger.maxLogStringLength)
+        } else {
+          filteredParams[i] = actionParams[i]
+        }
+      }
+      api.config.general.filteredParams.forEach((configParam) => {
+        if (api.utils.dotProp.get(actionParams, configParam) !== undefined) {
+          api.utils.dotProp.set(filteredParams, configParam, '[FILTERED]')
+        }
+      })
+      return filteredParams
     }
 
     next()

@@ -77,7 +77,7 @@ module.exports = {
         let cmdParts = message.method.split('.')
         let cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-        let method = api.utils.stringToHash(cmdParts.join('.'))
+        let method = api.utils.dotProp.get(api, cmdParts.join('.'))
         let args = message.args
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }

@@ -32,6 +32,7 @@
   "dependencies": {
     "async": "^2.1.4",
     "browser_fingerprint": "^0.1.0",
+    "dot-prop": "^4.1.1",
     "etag": "^1.7.0",
     "fakeredis": "^2.0.0",
     "formidable": "^1.0.17",
