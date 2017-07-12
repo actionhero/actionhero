@@ -506,9 +506,9 @@ const initialize = function (api, options, next) {
           connection.rawConnection.form[i] = api.config.servers.web.formOptions[i]
         }
 
-        let rawBody = []
+        let rawBody = Buffer.alloc(0)
         if (api.config.servers.web.saveRawBody) {
-          connection.rawConnection.req.on('data', (chunk) => { rawBody.push(chunk) })
+          connection.rawConnection.req.on('data', (chunk) => { rawBody = Buffer.concat([rawBody, chunk]) })
         }
 
         connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
@@ -517,7 +517,7 @@ const initialize = function (api, options, next) {
             connection.error = new Error('There was an error processing this form.')
           } else {
             connection.rawConnection.params.body = fields
-            connection.rawConnection.params.rawBody = Buffer.concat(rawBody).toString().substring(0, api.config.servers.web.formOptions.maxFieldsSize)
+            connection.rawConnection.params.rawBody = rawBody
             connection.rawConnection.params.files = files
             fillParamsFromWebRequest(connection, files)
             fillParamsFromWebRequest(connection, fields)
