@@ -397,6 +397,9 @@ describe('Server: Web', () => {
           version: 1,
           run: (api, data, next) => {
             data.response = data.connection.rawConnection.params
+            if (data.connection.rawConnection.params.rawBody) {
+              data.response.rawBody = data.connection.rawConnection.params.rawBody.toString()
+            }
             next()
           }
         }
@@ -421,13 +424,41 @@ describe('Server: Web', () => {
       })
     })
 
-    it('.body should contain unfiltered request body params', (done) => {
+    it('.body should contain unfiltered. parsed request body params', (done) => {
       var requestBody = JSON.stringify({key: 'value'})
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
         expect(error).to.be.null()
         body = JSON.parse(body)
         expect(body.body.key).to.equal('value')
         done()
+      })
+    })
+
+    describe('connection.rawConnection.rawBody', () => {
+      after(() => { api.config.servers.web.saveRawBody = false })
+
+      it('.rawBody will contain the raw POST body without parsing', (done) => {
+        api.config.servers.web.saveRawBody = true
+        let requestBody = '{"key":      "value"}'
+        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
+          expect(error).to.be.null()
+          body = JSON.parse(body)
+          expect(body.body.key).to.equal('value')
+          expect(body.rawBody).to.equal('{"key":      "value"}')
+          done()
+        })
+      })
+
+      it('.rawBody can be disabled', (done) => {
+        api.config.servers.web.saveRawBody = false
+        let requestBody = '{"key":      "value"}'
+        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
+          expect(error).to.be.null()
+          body = JSON.parse(body)
+          expect(body.body.key).to.equal('value')
+          expect(body.rawBody).to.equal('')
+          done()
+        })
       })
     })
   })
