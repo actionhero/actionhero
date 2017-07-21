@@ -55,7 +55,7 @@ Or deploy a web API server now:
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 
 ## Documentation
-ActionHero's documentation can be found @ [http://www.actionherojs.com/docs](http://www.actionherojs.com/docs).  If you want to contribute to this documentation, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
+ActionHero's documentation can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this documentation, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
 
 ## Who?
 
