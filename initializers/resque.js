@@ -88,21 +88,21 @@ module.exports = {
         }, api.tasks.jobs)
 
         // normal worker emitters
-        this.multiWorker.on('start', (workerId) => { api.log('worker: started', this.workerLogging.start, {workerId: workerId}) })
-        this.multiWorker.on('end', (workerId) => { api.log('worker: ended', this.workerLogging.end, {workerId: workerId}) })
-        this.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(`worker: cleaning old worker ${worker}, (${pid})`, this.workerLogging.cleaning_worker) })
-        this.multiWorker.on('poll', (workerId, queue) => { api.log(`worker: polling ${queue}`, this.workerLogging.poll, {workerId: workerId}) })
-        this.multiWorker.on('job', (workerId, queue, job) => { api.log(`worker: working job ${queue}`, this.workerLogging.job, {workerId: workerId, job: {class: job['class'], queue: job.queue}}) })
-        this.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('worker: reEnqueue job', this.workerLogging.reEnqueue, {workerId: workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
-        this.multiWorker.on('success', (workerId, queue, job, result) => { api.log(`worker: job success ${queue}`, this.workerLogging.success, {workerId: workerId, job: {class: job['class'], queue: job.queue}, result: result}) })
-        this.multiWorker.on('pause', (workerId) => { api.log('worker: paused', this.workerLogging.pause, {workerId: workerId}) })
+        this.multiWorker.on('start', (workerId) => { api.log('[ worker ] started', this.workerLogging.start, {workerId: workerId}) })
+        this.multiWorker.on('end', (workerId) => { api.log('[ worker ] ended', this.workerLogging.end, {workerId: workerId}) })
+        this.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(`[ worker ] cleaning old worker ${worker}, (${pid})`, this.workerLogging.cleaning_worker) })
+        this.multiWorker.on('poll', (workerId, queue) => { api.log(`[ worker ] polling ${queue}`, this.workerLogging.poll, {workerId: workerId}) })
+        this.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, this.workerLogging.job, {workerId: workerId, job: {class: job['class'], queue: job.queue}}) })
+        this.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', this.workerLogging.reEnqueue, {workerId: workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
+        this.multiWorker.on('success', (workerId, queue, job, result) => { api.log(`[ worker ] job success ${queue}`, this.workerLogging.success, {workerId: workerId, job: {class: job['class'], queue: job.queue}, result: result}) })
+        this.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', this.workerLogging.pause, {workerId: workerId}) })
 
         this.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
         this.multiWorker.on('error', (workerId, queue, job, error) => { api.exceptionHandlers.task(error, queue, job, workerId) })
 
         // multiWorker emitters
         this.multiWorker.on('internalError', (error) => { api.log(error, this.workerLogging.internalError) })
-        this.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(`*** checked for worker status: ${verb} (event loop delay: ${delay}ms)`, this.workerLogging.multiWorkerAction) })
+        this.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(`[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`, this.workerLogging.multiWorkerAction) })
 
         if (api.config.tasks.minTaskProcessors > 0) {
           this.multiWorker.start(() => {
