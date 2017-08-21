@@ -1,17 +1,17 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var fs = require('fs')
-var os = require('os')
-var path = require('path')
-var async = require('async')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const async = require('async')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
 describe('Core: Cache', () => {
   before((done) => {
@@ -123,7 +123,7 @@ describe('Core: Cache', () => {
   })
 
   it('cache.load without changing the expireTime will re-apply the redis expire', (done) => {
-    var key = 'testKey'
+    let key = 'testKey'
     api.cache.save(key, 'val', 1000, () => {
       api.cache.load(key, (error, loadResp) => {
         expect(error).to.be.null()
@@ -140,8 +140,8 @@ describe('Core: Cache', () => {
   })
 
   it('cache.load with options that extending expireTime should return cached item', (done) => {
-    var expireTime = 400
-    var timeout = 200
+    let expireTime = 400
+    let timeout = 200
     // save the initial key
     api.cache.save('testKey_slow', 'abc123', expireTime, (error, saveResp) => {
       expect(error).to.be.null()
@@ -186,7 +186,7 @@ describe('Core: Cache', () => {
   })
 
   it('cache.save works with objects', (done) => {
-    var data = {}
+    let data = {}
     data.thing = 'stuff'
     data.otherThing = [1, 2, 3]
     api.cache.save('obj_key', data, (error, saveResp) => {
@@ -221,7 +221,7 @@ describe('Core: Cache', () => {
 
   describe('lists', () => {
     it('can push and pop from an array', (done) => {
-      var jobs = []
+      let jobs = []
 
       jobs.push((next) => { api.cache.push('testListKey', 'a string', next) })
       jobs.push((next) => { api.cache.push('testListKey', ['an array'], next) })
@@ -287,7 +287,7 @@ describe('Core: Cache', () => {
   })
 
   describe('locks', () => {
-    var key = 'testKey'
+    let key = 'testKey'
     afterEach((done) => {
       api.cache.lockName = api.id
       api.cache.unlock(key, done)
@@ -371,11 +371,11 @@ describe('Core: Cache', () => {
             expect(error).to.be.null()
             expect(lockOk).to.equal(false)
 
-            var start = new Date().getTime()
+            let start = new Date().getTime()
             api.cache.load(key, {retry: 2000}, (error, data) => {
               expect(error).to.be.null()
               expect(data).to.equal('value')
-              var delta = new Date().getTime() - start
+              let delta = new Date().getTime() - start
               expect(delta >= 1000).to.equal(true)
               done()
             })
@@ -385,7 +385,7 @@ describe('Core: Cache', () => {
     })
 
     describe('locks are actually blocking', () => {
-      var originalLockName
+      let originalLockName
 
       before(() => {
         originalLockName = api.cache.lockName
@@ -396,13 +396,13 @@ describe('Core: Cache', () => {
       })
 
       it('locks are actually blocking', (done) => {
-        var key = 'test'
-        var locksRetrieved = 0
-        var locksRejected = 0
-        var concurentLocksCount = 100
-        var jobs = []
+        let key = 'test'
+        let locksRetrieved = 0
+        let locksRejected = 0
+        let concurentLocksCount = 100
+        let jobs = []
 
-        var go = (next) => {
+        let go = (next) => {
           // proxy for another actionhero instance accessing the same locked object
           api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected)
 
@@ -419,7 +419,7 @@ describe('Core: Cache', () => {
           })
         }
 
-        for (var i = 0; i < concurentLocksCount; i++) {
+        for (let i = 0; i < concurentLocksCount; i++) {
           jobs.push(go)
         }
 
@@ -432,13 +432,13 @@ describe('Core: Cache', () => {
       })
 
       it('locks are actually blocking (using setnx value)', (done) => {
-        var key = 'test-setnx'
-        var locksRetrieved = 0
-        var locksRejected = 0
-        var concurentLocksCount = 100
-        var jobs = []
+        let key = 'test-setnx'
+        let locksRetrieved = 0
+        let locksRejected = 0
+        let concurentLocksCount = 100
+        let jobs = []
 
-        var go = (next) => {
+        let go = (next) => {
           // proxy for another actionhero instance accessing the same locked object
           api.cache.lockName = 'test-setnx-name-pass-' + (locksRetrieved + locksRejected)
 
@@ -456,7 +456,7 @@ describe('Core: Cache', () => {
           })
         }
 
-        for (var i = 0; i < concurentLocksCount; i++) {
+        for (let i = 0; i < concurentLocksCount; i++) {
           jobs.push(go)
         }
 
@@ -471,7 +471,7 @@ describe('Core: Cache', () => {
   })
 
   describe('cache dump files', () => {
-    var file = os.tmpdir() + path.sep + 'cacheDump'
+    let file = os.tmpdir() + path.sep + 'cacheDump'
 
     it('can read write the cache to a dump file', (done) => {
       api.cache.clear(() => {
@@ -479,8 +479,8 @@ describe('Core: Cache', () => {
           api.cache.dumpWrite(file, (error, count) => {
             expect(error).to.be.null()
             expect(count).to.equal(1)
-            var body = JSON.parse(String(fs.readFileSync(file)))
-            var content = JSON.parse(body['actionhero:cache:thingA'])
+            let body = JSON.parse(String(fs.readFileSync(file)))
+            let content = JSON.parse(body['actionhero:cache:thingA'])
             expect(content.value).to.equal(123)
             done()
           })

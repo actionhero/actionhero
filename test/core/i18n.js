@@ -1,24 +1,24 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var fs = require('fs')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const fs = require('fs')
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
-var readLocaleFile = (locale) => {
-  var file = api.config.general.paths.locale[0] + '/' + locale + '.json'
-  var contents = String(fs.readFileSync(file))
-  var json = JSON.parse(contents)
+const readLocaleFile = (locale) => {
+  let file = api.config.general.paths.locale[0] + '/' + locale + '.json'
+  let contents = String(fs.readFileSync(file))
+  let json = JSON.parse(contents)
   return json
 }
 
-var spanish = {
+let spanish = {
   'Your random number is {{number}}': 'Su número aleatorio es {{number}}',
   actionhero: {
     errors: {
@@ -40,7 +40,7 @@ describe('Core: i18n', () => {
     actionhero.start((error, a) => {
       expect(error).to.be.null()
       api = a
-      var options = api.config.i18n
+      let options = api.config.i18n
       options.directory = api.config.general.paths.locale[0]
       options.locales = ['test-env-en', 'test-env-es']
       options.defaultLocale = 'test-env-en'
@@ -61,7 +61,7 @@ describe('Core: i18n', () => {
     api.specHelper.runAction('randomNumber', (response) => {
       expect(response.randomNumber).to.be.at.most(1)
       expect(response.randomNumber).to.be.at.least(0)
-      var content = readLocaleFile('test-env-en');
+      let content = readLocaleFile('test-env-en');
       [
         'Your random number is {{number}}'
       ].forEach((s) => {

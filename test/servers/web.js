@@ -1,18 +1,18 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var request = require('request')
-var fs = require('fs')
-var os = require('os')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
-var url
+const request = require('request')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
+let url
 
 describe('Server: Web', () => {
   before((done) => {
@@ -31,8 +31,8 @@ describe('Server: Web', () => {
   })
 
   it('file: 404 pages from POST with if-modified-since header', (done) => {
-    var file = Math.random().toString(36)
-    var options = {
+    let file = Math.random().toString(36)
+    let options = {
       url: url + '/' + file,
       headers: {
         'if-modified-since': 'Thu, 19 Apr 2012 09:51:20 GMT'
@@ -231,7 +231,7 @@ describe('Server: Web', () => {
   })
 
   describe('if disableParamScrubbing is set ', () => {
-    var orig
+    let orig
 
     before((done) => {
       orig = api.config.general.disableParamScrubbing
@@ -378,7 +378,7 @@ describe('Server: Web', () => {
   })
 
   it('HTTP Verbs should work: Post with JSON Payload as body', (done) => {
-    var body = JSON.stringify({key: 'key', value: 'value'})
+    let body = JSON.stringify({key: 'key', value: 'value'})
     request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
       expect(error).to.be.null()
       body = JSON.parse(body)
@@ -425,7 +425,7 @@ describe('Server: Web', () => {
     })
 
     it('.body should contain unfiltered. parsed request body params', (done) => {
-      var requestBody = JSON.stringify({key: 'value'})
+      let requestBody = JSON.stringify({key: 'value'})
       request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
         expect(error).to.be.null()
         body = JSON.parse(body)
@@ -568,7 +568,7 @@ describe('Server: Web', () => {
     })
 
     it('keeps sessions with browser_fingerprint', (done) => {
-      var j = request.jar()
+      let j = request.jar()
       request.post({url: url + '/api', jar: j}, (error, response1, body1) => {
         expect(error).to.be.null()
         request.get({url: url + '/api', jar: j}, (error, response2, body2) => {
@@ -588,10 +588,10 @@ describe('Server: Web', () => {
               expect(response3.headers['set-cookie']).to.not.exist()
               expect(response4.headers['set-cookie']).to.not.exist()
 
-              var fingerprint1 = body1.requesterInformation.id.split('-')[0]
-              var fingerprint2 = body2.requesterInformation.id.split('-')[0]
-              var fingerprint3 = body3.requesterInformation.id.split('-')[0]
-              var fingerprint4 = body4.requesterInformation.id.split('-')[0]
+              let fingerprint1 = body1.requesterInformation.id.split('-')[0]
+              let fingerprint2 = body2.requesterInformation.id.split('-')[0]
+              let fingerprint3 = body3.requesterInformation.id.split('-')[0]
+              let fingerprint4 = body4.requesterInformation.id.split('-')[0]
 
               expect(fingerprint1).to.equal(fingerprint2)
               expect(fingerprint1).to.equal(fingerprint3)
@@ -622,7 +622,7 @@ describe('Server: Web', () => {
             key: {required: true}
           },
           run: (api, data, next) => {
-            var error
+            let error
             if (data.params.key !== 'value') {
               error = 'key != value'
               data.connection.rawConnection.responseHttpCode = 402
@@ -698,9 +698,9 @@ describe('Server: Web', () => {
       request.get(url + '/api/showDocumentation', (error, response, body) => {
         expect(error).to.be.null()
         body = JSON.parse(body)
-        for (var actionName in body.documentation) {
-          for (var version in body.documentation[actionName]) {
-            var action = body.documentation[actionName][version]
+        for (let actionName in body.documentation) {
+          for (let version in body.documentation[actionName]) {
+            let action = body.documentation[actionName][version]
             expect(typeof action.name).to.equal('string')
             expect(typeof action.description).to.equal('string')
             expect(action.inputs).to.be.instanceof(Object)
@@ -759,7 +759,7 @@ describe('Server: Web', () => {
 
     describe('can serve files from a specific mapped route', () => {
       before((done) => {
-        var testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
+        let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.mkdirSync(testFolderPublicPath)
         fs.writeFileSync(testFolderPublicPath + '/testFile.html', 'ActionHero Route Test File')
         api.routes.registerRoute('get', '/my/public/route', null, null, true, testFolderPublicPath)
@@ -769,7 +769,7 @@ describe('Server: Web', () => {
       })
 
       after((done) => {
-        var testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
+        let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.unlinkSync(testFolderPublicPath + path.sep + 'testFile.html')
         fs.rmdirSync(testFolderPublicPath)
         process.nextTick(() => {
@@ -804,7 +804,7 @@ describe('Server: Web', () => {
     })
 
     describe('can serve files from more than one directory', () => {
-      var source = path.join(__dirname, '/../../public/simple.html')
+      let source = path.join(__dirname, '/../../public/simple.html')
 
       before(() => {
         fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'))
@@ -1169,11 +1169,11 @@ describe('Server: Web', () => {
     })
 
     describe('spaces in URL with public files', () => {
-      var source = path.join(__dirname, '/../../public/logo/actionhero.png')
+      let source = path.join(__dirname, '/../../public/logo/actionhero.png')
 
       before((done) => {
-        var tmpDir = os.tmpdir()
-        var readStream = fs.createReadStream(source)
+        let tmpDir = os.tmpdir()
+        let readStream = fs.createReadStream(source)
         readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'))
         api.staticFile.searchLoactions.push(tmpDir)
         readStream.on('close', done)

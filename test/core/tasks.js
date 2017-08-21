@@ -1,17 +1,17 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
-var taskOutput = []
-var queue = 'testQueue'
+let taskOutput = []
+let queue = 'testQueue'
 
 describe('Core: Tasks', () => {
   before((done) => {
@@ -103,7 +103,7 @@ describe('Core: Tasks', () => {
   })
 
   it('a bad task definition causes an exception', (done) => {
-    var badTask = {
+    let badTask = {
       name: 'badTask',
       description: 'task',
       // queue: queue, // No Queue
@@ -115,7 +115,7 @@ describe('Core: Tasks', () => {
       }
     }
 
-    var response = api.tasks.validateTask(badTask)
+    let response = api.tasks.validateTask(badTask)
     expect(response).to.equal(false)
     done()
   })
@@ -187,13 +187,13 @@ describe('Core: Tasks', () => {
   })
 
   it('can add a delayed job', (done) => {
-    var time = new Date().getTime() + 1000
+    let time = new Date().getTime() + 1000
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
       expect(error).to.be.null()
       api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
         expect(error).to.be.null()
         expect(timestamps).to.have.length(1)
-        var completeTime = Math.floor(time / 1000)
+        let completeTime = Math.floor(time / 1000)
         expect(Number(timestamps[0])).to.be.at.least(completeTime)
         expect(Number(timestamps[0])).to.be.at.most(completeTime + 2)
         done()
@@ -202,8 +202,8 @@ describe('Core: Tasks', () => {
   })
 
   it('can see enqueued timestmps & see jobs within those timestamps (single + batch)', (done) => {
-    var time = new Date().getTime() + 1000
-    var roundedTime = Math.round(time / 1000) * 1000
+    let time = new Date().getTime() + 1000
+    let roundedTime = Math.round(time / 1000) * 1000
     api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
       expect(error).to.be.null()
       api.tasks.timestamps((error, timestamps) => {
@@ -294,7 +294,7 @@ describe('Core: Tasks', () => {
               expect(Object.keys(details.queues)).to.deep.equal(['testQueue'])
               expect(details.queues.testQueue).to.have.length(0)
               expect(Object.keys(details.workers)).to.have.length(1)
-              var workerName = Object.keys(details.workers)[0]
+              let workerName = Object.keys(details.workers)[0]
               expect(details.workers[workerName].queue).to.equal('testQueue')
               expect(details.workers[workerName].payload.args).to.deep.equal([{a: 1}])
               expect(details.workers[workerName].payload['class']).to.equal('slowTask')
@@ -357,7 +357,7 @@ describe('Core: Tasks', () => {
     it('popping an unknown job will throw an error, but not crash the server', (done) => {
       api.config.tasks.queues = ['*']
 
-      var listener = (workerId, queue, job, f) => {
+      let listener = (workerId, queue, job, f) => {
         expect(queue).to.equal(queue)
         expect(job['class']).to.equal('someCrazyTask')
         expect(job.queue).to.equal('testQueue')

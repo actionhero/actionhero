@@ -1,17 +1,17 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var request = require('request')
-var stream = require('stream')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
-var url
+const request = require('request')
+const stream = require('stream')
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
+let url
 
 describe('Server: sendBuffer', () => {
   before((done) => {

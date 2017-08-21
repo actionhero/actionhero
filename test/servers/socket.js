@@ -1,47 +1,47 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var uuid = require('uuid')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const uuid = require('uuid')
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
-var net = require('net')
-var client = {}
-var client2 = {}
-var client3 = {}
+const net = require('net')
+let client = {}
+let client2 = {}
+let client3 = {}
 
-var client2Details = {}
+let client2Details = {}
 
-var makeSocketRequest = function (thisClient, message, cb, delimiter) {
-  var lines = []
-  var counter = 0
+const makeSocketRequest = function (thisClient, message, cb, delimiter) {
+  let lines = []
+  let counter = 0
 
   if (delimiter === null || typeof delimiter === 'undefined') {
     delimiter = '\r\n'
   }
 
-  var rsp = (d) => {
+  let rsp = (d) => {
     d.split(delimiter).forEach((l) => {
       lines.push(l)
     })
     lines.push()
   }
 
-  var respoder = () => {
+  let respoder = () => {
     if (lines.length === 0 && counter < 20) {
       counter++
       return setTimeout(respoder, 10)
     }
 
-    var lastLine = lines[(lines.length - 1)]
+    let lastLine = lines[(lines.length - 1)]
     if (lastLine === '') { lastLine = lines[(lines.length - 2)] }
-    var parsed = null
+    let parsed = null
     try { parsed = JSON.parse(lastLine) } catch (e) {}
     thisClient.removeListener('data', rsp)
     if (typeof cb === 'function') { cb(parsed) }
@@ -52,7 +52,7 @@ var makeSocketRequest = function (thisClient, message, cb, delimiter) {
   thisClient.write(message + delimiter)
 }
 
-var connectClients = function (callback) {
+const connectClients = function (callback) {
   setTimeout(callback, 1000)
   client = net.connect(api.config.servers.socket.port, () => {
     client.setEncoding('utf8')
@@ -108,7 +108,7 @@ describe('Server: Socket', () => {
   })
 
   it('really long messages are OK', (done) => {
-    var msg = {
+    let msg = {
       action: 'cacheTest',
       params: {
         key: uuid.v4(),
@@ -124,7 +124,7 @@ describe('Server: Socket', () => {
 
   it('I can get my details', (done) => {
     makeSocketRequest(client2, 'detailsView', (response) => {
-      var now = new Date().getTime()
+      let now = new Date().getTime()
       expect(response.status).to.equal('OK')
       expect(response.data).to.be.instanceof(Object)
       expect(response.data.params).to.be.instanceof(Object)
@@ -211,8 +211,8 @@ describe('Server: Socket', () => {
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 900}}) + '\r\n')
     client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 1000}}) + '\r\n')
 
-    var responses = []
-    var checkResponses = function (data) {
+    let responses = []
+    let checkResponses = function (data) {
       data.split('\n').forEach((line) => {
         if (line.length > 0) {
           responses.push(JSON.parse(line))
@@ -220,8 +220,8 @@ describe('Server: Socket', () => {
       })
       if (responses.length === 6) {
         client.removeListener('data', checkResponses)
-        for (var i in responses) {
-          var response = responses[i]
+        for (let i in responses) {
+          let response = responses[i]
           if (i === '0') {
             expect(response.error).to.equal('you have too many pending requests')
           } else {
@@ -238,7 +238,7 @@ describe('Server: Socket', () => {
   it('will error If received data length is bigger then maxDataLength', (done) => {
     api.config.servers.socket.maxDataLength = 64
 
-    var msg = {
+    let msg = {
       action: 'cacheTest',
       params: {
         key: uuid.v4(),
@@ -390,15 +390,15 @@ describe('Server: Socket', () => {
     })
 
     describe('custom room member data', () => {
-      var currentSanitize
-      var currentGenerate
+      let currentSanitize
+      let currentGenerate
 
       before((done) => {
         // Ensure that default behavior works
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.not.exist()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
@@ -439,7 +439,7 @@ describe('Server: Socket', () => {
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.not.exist()
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
@@ -453,7 +453,7 @@ describe('Server: Socket', () => {
         makeSocketRequest(client2, 'roomAdd defaultRoom', (response) => {
           makeSocketRequest(client2, 'roomView defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.equal('socket')
             }
             makeSocketRequest(client2, 'roomLeave defaultRoom')
@@ -496,7 +496,7 @@ describe('Server: Socket', () => {
         expect(client.readable).to.equal(true)
         expect(client.writable).to.equal(true)
 
-        for (var id in api.connections.connections) {
+        for (let id in api.connections.connections) {
           api.connections.connections[id].destroy()
         }
 
