@@ -5,10 +5,7 @@ machine:
     FAKEREDIS: false
     maxMemoryAlloted: 500
   node:
-    version:
-      - 4
-      - 6
-      - 8
+    version: 8
 test:
   override:
     - npm test
