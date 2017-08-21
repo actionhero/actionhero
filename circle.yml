@@ -12,7 +12,7 @@ machine:
     maxMemoryAlloted: 500
 test:
   pre:
-    - node --version
-    - npm --version
+    - nvm use $NODE_VERSION && node --version
+    - nvm use $NODE_VERSION && npm --version
   override:
-    - 'npm test'
+    - nvm use $NODE_VERSION && npm test
