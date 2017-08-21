@@ -1,9 +1,11 @@
 dependencies:
-  post:
+  pre:
     - case $CIRCLE_NODE_INDEX in 0) NODE_VERSION=4 ;; 1) NODE_VERSION=6 ;; 2) NODE_VERSION=8 ;; esac; echo export NODE_VERSION="$NODE_VERSION" >> $HOME/.circlerc
     - cat $HOME/.circlerc
     - nvm install $NODE_VERSION
     - nvm alias default $NODE_VERSION
+  override:
+    - nvm use $NODE_VERSION && npm install
 machine:
   services:
     - redis
@@ -11,8 +13,6 @@ machine:
     FAKEREDIS: false
     maxMemoryAlloted: 500
 test:
-  pre:
-    - nvm use $NODE_VERSION && node --version
-    - nvm use $NODE_VERSION && npm --version
   override:
+    - cat $HOME/.circlerc
     - nvm use $NODE_VERSION && npm test
