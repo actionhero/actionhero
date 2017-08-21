@@ -1,29 +1,32 @@
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+// 'use strict'
+// we cannot use strict here because we want EVAL to work
+
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
-var clientA
-var clientB
-var clientC
+let clientA
+let clientB
+let clientC
 
-var url
+let url
 
-var connectClients = function (callback) {
+const connectClients = function (callback) {
   // get actionheroClient in scope
   // TODO: Perhaps we read this from disk after server boot.
   eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
 
-  var S = api.servers.servers.websocket.server.Socket
+  let S = api.servers.servers.websocket.server.Socket
   url = 'http://localhost:' + api.config.servers.web.port
-  var clientAsocket = new S(url)
-  var clientBsocket = new S(url)
-  var clientCsocket = new S(url)
+  let clientAsocket = new S(url)
+  let clientBsocket = new S(url)
+  let clientCsocket = new S(url)
 
   clientA = new ActionheroClient({}, clientAsocket) // eslint-disable-line
   clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
@@ -119,7 +122,7 @@ describe('Server: Web Socket', () => {
   })
 
   it('will limit how many simultaneous connections I can have', (done) => {
-    var responses = []
+    let responses = []
     clientA.action('sleepTest', {sleepDuration: 100}, (response) => { responses.push(response) })
     clientA.action('sleepTest', {sleepDuration: 200}, (response) => { responses.push(response) })
     clientA.action('sleepTest', {sleepDuration: 300}, (response) => { responses.push(response) })
@@ -129,8 +132,8 @@ describe('Server: Web Socket', () => {
 
     setTimeout(() => {
       expect(responses).to.have.length(6)
-      for (var i in responses) {
-        var response = responses[i]
+      for (let i in responses) {
+        let response = responses[i]
         if (i === 0 || i === '0') {
           expect(response.error).to.equal('you have too many pending requests')
         } else {
@@ -251,7 +254,7 @@ describe('Server: Web Socket', () => {
     })
 
     it('Clients can talk to each other', (done) => {
-      var listener = (response) => {
+      let listener = (response) => {
         clientA.removeListener('say', listener)
         expect(response.context).to.equal('user')
         expect(response.message).to.equal('hello from client 2')
@@ -263,7 +266,7 @@ describe('Server: Web Socket', () => {
     })
 
     it('The client say method does not rely on order', (done) => {
-      var listener = (response) => {
+      let listener = (response) => {
         clientA.removeListener('say', listener)
         expect(response.context).to.equal('user')
         expect(response.message).to.equal('hello from client 2')
@@ -279,7 +282,7 @@ describe('Server: Web Socket', () => {
     })
 
     it('connections are notified when I join a room', (done) => {
-      var listener = (response) => {
+      let listener = (response) => {
         clientA.removeListener('say', listener)
         expect(response.context).to.equal('user')
         expect(response.message).to.equal('I have entered the room: ' + clientB.id)
@@ -293,7 +296,7 @@ describe('Server: Web Socket', () => {
     })
 
     it('connections are notified when I leave a room', (done) => {
-      var listener = (response) => {
+      let listener = (response) => {
         clientA.removeListener('say', listener)
         expect(response.context).to.equal('user')
         expect(response.message).to.equal('I have left the room: ' + clientB.id)
@@ -309,7 +312,7 @@ describe('Server: Web Socket', () => {
         expect(response.error).to.not.exist()
         expect(clientB.rooms.length).to.equal(2)
 
-        var listener = (response) => {
+        let listener = (response) => {
           clientC.removeListener('say', listener)
           expect(response).to.not.exist()
         }
@@ -377,17 +380,17 @@ describe('Server: Web Socket', () => {
           }
         })
 
-        var listenerA = (response) => {
+        let listenerA = (response) => {
           clientA.removeListener('say', listenerA)
           expect(response.message).to.equal('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
         }
 
-        var listenerB = (response) => {
+        let listenerB = (response) => {
           clientB.removeListener('say', listenerB)
           expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
         }
 
-        var listenerC = (response) => {
+        let listenerC = (response) => {
           clientC.removeListener('say', listenerC)
           expect(response.message).to.equal('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
         }
@@ -406,7 +409,7 @@ describe('Server: Web Socket', () => {
       })
 
       it('only one message should be received per connection', (done) => {
-        var firstSayCall = true
+        let firstSayCall = true
         api.chatRoom.addMiddleware({
           name: 'first say middleware',
           say: function (connection, room, messagePayload, callback) {
@@ -421,16 +424,16 @@ describe('Server: Web Socket', () => {
           }
         })
 
-        var messagesReceived = 0
-        var listenerA = (response) => {
+        let messagesReceived = 0
+        let listenerA = (response) => {
           messagesReceived += 1
         }
 
-        var listenerB = (response) => {
+        let listenerB = (response) => {
           messagesReceived += 2
         }
 
-        var listenerC = (response) => {
+        let listenerC = (response) => {
           messagesReceived += 4
         }
 
@@ -457,17 +460,17 @@ describe('Server: Web Socket', () => {
           }
         })
 
-        var listenerA = (response) => {
+        let listenerA = (response) => {
           clientA.removeListener('say', listenerA)
           expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
-        var listenerB = (response) => {
+        let listenerB = (response) => {
           clientB.removeListener('say', listenerB)
           expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
 
-        var listenerC = (response) => {
+        let listenerC = (response) => {
           clientC.removeListener('say', listenerC)
           expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
         }
@@ -487,8 +490,8 @@ describe('Server: Web Socket', () => {
     })
 
     describe('custom room member data', () => {
-      var currentSanitize
-      var currentGenerate
+      let currentSanitize
+      let currentGenerate
 
       before((done) => {
         // Ensure that default behavior works
@@ -496,7 +499,7 @@ describe('Server: Web Socket', () => {
           clientA.roomView('defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
 
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.not.exist()
             }
 
@@ -539,7 +542,7 @@ describe('Server: Web Socket', () => {
         clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.not.exist()
             }
             setTimeout(() => {
@@ -555,7 +558,7 @@ describe('Server: Web Socket', () => {
         clientA.roomAdd('defaultRoom', () => {
           clientA.roomView('defaultRoom', (response) => {
             expect(response.data.room).to.equal('defaultRoom')
-            for (var key in response.data.members) {
+            for (let key in response.data.members) {
               expect(response.data.members[key].type).to.equal('websocket')
             }
             clientA.roomLeave('defaultRoom')
@@ -567,7 +570,7 @@ describe('Server: Web Socket', () => {
   })
 
   describe('param collisions', () => {
-    var originalSimultaneousActions
+    let originalSimultaneousActions
 
     before(() => {
       originalSimultaneousActions = api.config.general.simultaneousActions
@@ -579,11 +582,11 @@ describe('Server: Web Socket', () => {
     })
 
     it('will not have param colisions', (done) => {
-      var completed = 0
-      var started = 0
-      var sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+      let completed = 0
+      let started = 0
+      let sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
 
-      var toComplete = function (sleep, response) {
+      let toComplete = function (sleep, response) {
         expect(sleep).to.equal(response.sleepDuration)
         completed++
         if (completed === started) {
@@ -629,8 +632,8 @@ describe('Server: Web Socket', () => {
       clientA.detailsView((response) => {
         expect(response.data.remoteIP).to.equal('127.0.0.1')
 
-        var count = 0
-        for (var id in api.connections.connections) {
+        let count = 0
+        for (let id in api.connections.connections) {
           count++
           api.connections.connections[id].destroy()
         }

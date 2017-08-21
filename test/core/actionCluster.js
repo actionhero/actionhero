@@ -1,22 +1,22 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
 
-var actionhero1 = new ActionheroPrototype()
-var actionhero2 = new ActionheroPrototype()
-var actionhero3 = new ActionheroPrototype()
+const actionhero1 = new ActionheroPrototype()
+const actionhero2 = new ActionheroPrototype()
+const actionhero3 = new ActionheroPrototype()
 
-var apiA
-var apiB
-var apiC
+let apiA
+let apiB
+let apiC
 
-var configChanges = {
+let configChanges = {
   1: {
     general: {id: 'test-server-1'},
     servers: {}
@@ -31,7 +31,7 @@ var configChanges = {
   }
 }
 
-var startAllServers = (next) => {
+let startAllServers = (next) => {
   actionhero1.start({configChanges: configChanges[1]}, (error, a1) => {
     expect(error).to.be.null()
     actionhero2.start({configChanges: configChanges[2]}, (error, a2) => {
@@ -47,7 +47,7 @@ var startAllServers = (next) => {
   })
 }
 
-var stopAllServers = (next) => {
+let stopAllServers = (next) => {
   actionhero1.stop(() => {
     actionhero2.stop(() => {
       actionhero3.stop(next)
@@ -66,9 +66,9 @@ describe('Core: Action Cluster', () => {
     })
 
     describe('say and clients on separate servers', () => {
-      var client1
-      var client2
-      var client3
+      let client1
+      let client2
+      let client3
 
       before((done) => {
         client1 = new apiA.specHelper.Connection()
@@ -119,7 +119,7 @@ describe('Core: Action Cluster', () => {
       it('clients can communicate across the cluster', (done) => {
         client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], () => {
           setTimeout(() => {
-            var message = client2.messages[(client2.messages.length - 1)]
+            let message = client2.messages[(client2.messages.length - 1)]
             expect(message.message).to.equal('Hi from client 1')
             expect(message.room).to.equal('defaultRoom')
             expect(message.from).to.equal(client1.id)
@@ -164,7 +164,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can call remote methods on all other servers in the cluster', (done) => {
-        var data = {}
+        let data = {}
 
         apiA.rpcTestMethod = (arg1, arg2, next) => {
           data[1] = [arg1, arg2]; next()
@@ -194,9 +194,9 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can call remote methods only on one other cluster who holds a specific connectionId', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
 
-        var data = {}
+        let data = {}
         apiA.rpcTestMethod = (arg1, arg2, next) => {
           data[1] = [arg1, arg2]; next()
         }
@@ -217,7 +217,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can get information about connections connected to other servers', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
 
         apiB.connections.apply(client.id, (connection) => {
           expect(connection.id).to.equal(client.id)
@@ -228,7 +228,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can call remote methods on/about connections connected to other servers', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         expect(client.auth).to.not.exist()
 
         apiB.connections.apply(client.id, 'set', ['auth', true], (connection) => {
@@ -240,10 +240,10 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can send arbitraty messages to connections connected to other servers', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
 
         apiB.connections.apply(client.id, 'sendMessage', {message: 'hi'}, (connection) => {
-          var message = connection.messages[(connection.messages.length - 1)]
+          let message = connection.messages[(connection.messages.length - 1)]
           expect(message.message).to.equal('hi')
 
           done()
@@ -282,7 +282,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can create new room', (done) => {
-        var room = 'newRoom'
+        let room = 'newRoom'
         apiA.chatRoom.exists(room, (error, found) => {
           expect(error).to.be.null()
           expect(found).to.equal(false)
@@ -320,7 +320,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can add connections to a LOCAL room', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
@@ -332,7 +332,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can add connections to a REMOTE room', (done) => {
-        var client = new apiB.specHelper.Connection()
+        let client = new apiB.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
@@ -345,7 +345,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('will not re-add a member to a room', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
@@ -360,7 +360,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('will not add a member to a non-existant room', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'newRoom', (error, didAdd) => {
           expect(error.toString()).to.equal('room does not exist')
@@ -371,7 +371,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server will not remove a member not in a room', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
           expect(error.toString()).to.equal('connection not in this room (defaultRoom)')
           expect(didRemove).to.equal(false)
@@ -381,7 +381,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can remove connections to a room (local)', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
           expect(didAdd).to.equal(true)
@@ -395,7 +395,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can remove connections to a room (remote)', (done) => {
-        var client = new apiB.specHelper.Connection()
+        let client = new apiB.specHelper.Connection()
         apiB.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
           expect(didAdd).to.equal(true)
@@ -409,7 +409,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('server can destroy a room and connections will be removed', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         apiA.chatRoom.add('newRoom', (error) => {
           expect(error).to.be.null()
           apiA.chatRoom.addMember(client.id, 'newRoom', (error, didAdd) => {
@@ -430,7 +430,7 @@ describe('Core: Action Cluster', () => {
       })
 
       it('can get a list of room members', (done) => {
-        var client = new apiA.specHelper.Connection()
+        let client = new apiA.specHelper.Connection()
         expect(client.rooms).to.have.length(0)
         apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
           expect(error).to.be.null()
@@ -445,9 +445,9 @@ describe('Core: Action Cluster', () => {
       })
 
       describe('chat middleware', () => {
-        var clientA
-        var clientB
-        var originalGenerateMessagePayload
+        let clientA
+        let clientB
+        let originalGenerateMessagePayload
 
         beforeEach((done) => {
           originalGenerateMessagePayload = apiA.chatRoom.generateMessagePayload
@@ -486,7 +486,7 @@ describe('Core: Action Cluster', () => {
               clientA.verbs('say', ['defaultRoom', 'hi there'], (error, data) => {
                 expect(error).to.not.exist()
                 setTimeout(() => {
-                  var message = clientB.messages[(clientB.messages.length - 1)]
+                  let message = clientB.messages[(clientB.messages.length - 1)]
                   expect(message.thing).to.equal('stuff')
                   expect(message.message).to.not.exist()
                   done()
@@ -552,7 +552,7 @@ describe('Core: Action Cluster', () => {
                 expect(error).to.be.null()
 
                 setTimeout(() => {
-                  var lastMessage = clientA.messages[(clientA.messages.length - 1)]
+                  let lastMessage = clientA.messages[(clientA.messages.length - 1)]
                   expect(lastMessage.message).to.equal('something else')
 
                   done()
@@ -588,7 +588,7 @@ describe('Core: Action Cluster', () => {
               clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], (error) => {
                 expect(error).to.be.null()
                 setTimeout(() => {
-                  var lastMessage = clientA.messages[(clientA.messages.length - 1)]
+                  let lastMessage = clientA.messages[(clientA.messages.length - 1)]
                   expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
 
                   done()

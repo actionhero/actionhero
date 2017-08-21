@@ -1,22 +1,22 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var fs = require('fs')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const fs = require('fs')
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
 require = require.requireActual // eslint-disable-line
 
-var originalFile = './actions/randomNumber.js'
-var originalContent = fs.readFileSync(originalFile)
+const originalFile = './actions/randomNumber.js'
+const originalContent = fs.readFileSync(originalFile)
 
-var newFileContent = ''
+let newFileContent = ''
 newFileContent += 'exports.randomNumber = {'
 newFileContent += '  name: "randomNumber",'
 newFileContent += '  description: "HACK",'

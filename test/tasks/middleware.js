@@ -1,26 +1,26 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
-var taskParams = {
+const taskParams = {
   foo: 'bar'
 }
 
-var middleware = {
+const middleware = {
   name: 'test-middleware',
   priority: 1000,
   global: false,
   preProcessor: function (next) {
     try {
-      var params = this.args[0]
+      let params = this.args[0]
       expect(params).to.equal(taskParams)
       params.test = true
       next()
@@ -30,10 +30,10 @@ var middleware = {
   },
   postProcessor: function (next) {
     try {
-      var worker = this.worker
-      var params = this.args[0]
+      let worker = this.worker
+      let params = this.args[0]
       expect(params.test).to.equal(true) // Requires disableParamScrubbing or that `test` be a valid param
-      var result = worker.result
+      let result = worker.result
       expect(result.result).to.equal('done')
       result.result = 'fin'
 
@@ -43,7 +43,7 @@ var middleware = {
     }
   },
   preEnqueue: function (next) {
-    var params = this.args[0]
+    let params = this.args[0]
     if (params.invalid) {
       return next(new Error('Invalid Parameter'), false)
     }

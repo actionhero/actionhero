@@ -1,22 +1,22 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
 // These tests will only run on *nix operating systems
 
-var fs = require('fs')
-var os = require('os')
-var path = require('path')
-var exec = require('child_process').exec
-var testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
-var binary = './node_modules/.bin/actionhero'
-var pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const exec = require('child_process').exec
+const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
+const binary = './node_modules/.bin/actionhero'
+const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 
-var doBash = (commands, callback) => {
-  var fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\''
+let doBash = (commands, callback) => {
+  let fullCommand = '/bin/bash -c \'' + commands.join(' && ') + '\''
   // console.log(fullCommand)
   exec(fullCommand, (error, stdout, stderr) => {
     callback(error, stdout, stderr)
@@ -28,17 +28,17 @@ describe('Core: Binary', () => {
     console.log('*** CANNOT RUN BINARY TESTS ON WINDOWS.  Sorry. ***')
   } else {
     before((done) => {
-      var sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
-      var commands = [
+      let sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
+      let commands = [
         'rm -rf ' + testDir,
         'mkdir ' + testDir,
         'cp ' + sourcePackage + ' ' + testDir + '/package.json'
       ]
       doBash(commands, () => {
-        var AHPath = path.normalize(path.join(__dirname, '/../..'))
+        let AHPath = path.normalize(path.join(__dirname, '/../..'))
         fs.readFile(testDir + '/package.json', 'utf8', (error, data) => {
           expect(error).to.be.null()
-          var result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath)
+          let result = data.replace(/%%versionNumber%%/g, 'file:' + AHPath)
           fs.writeFile(testDir + '/package.json', result, 'utf8', () => {
             done()
           })
@@ -137,7 +137,7 @@ describe('Core: Binary', () => {
         binary + ' generate action --name=myAction --description=my_description'
       ], (error) => {
         expect(error).to.be.null()
-        var data = String(fs.readFileSync(testDir + '/actions/myAction.js'))
+        let data = String(fs.readFileSync(testDir + '/actions/myAction.js'))
         expect(data).to.match(/name: 'myAction'/)
         expect(data).to.match(/description: 'my_description'/)
         expect(data).to.match(/next\(error\)/)
@@ -151,7 +151,7 @@ describe('Core: Binary', () => {
         binary + ' generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345'
       ], (error) => {
         expect(error).to.be.null()
-        var data = String(fs.readFileSync(testDir + '/tasks/myTask.js'))
+        let data = String(fs.readFileSync(testDir + '/tasks/myTask.js'))
         expect(data).to.match(/name: 'myTask'/)
         expect(data).to.match(/description: 'my_description'/)
         expect(data).to.match(/queue: 'my_queue'/)
@@ -167,7 +167,7 @@ describe('Core: Binary', () => {
         binary + ' generate cli --name=myCommand --description=my_description --example=my_example'
       ], (error) => {
         expect(error).to.be.null()
-        var data = String(fs.readFileSync(testDir + '/bin/myCommand.js'))
+        let data = String(fs.readFileSync(testDir + '/bin/myCommand.js'))
         expect(data).to.match(/name: 'myCommand'/)
         expect(data).to.match(/description: 'my_description'/)
         expect(data).to.match(/example: 'my_example'/)
@@ -181,7 +181,7 @@ describe('Core: Binary', () => {
         binary + ' generate server --name=myServer'
       ], (error) => {
         expect(error).to.be.null()
-        var data = String(fs.readFileSync(testDir + '/servers/myServer.js'))
+        let data = String(fs.readFileSync(testDir + '/servers/myServer.js'))
         expect(data).to.match(/canChat: true/)
         expect(data).to.match(/logConnections: true/)
         expect(data).to.match(/logExits: true/)
@@ -196,7 +196,7 @@ describe('Core: Binary', () => {
         binary + ' generate initializer --name=myInitializer --stopPriority=123'
       ], (error) => {
         expect(error).to.be.null()
-        var data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'))
+        let data = String(fs.readFileSync(testDir + '/initializers/myInitializer.js'))
         expect(data).to.match(/loadPriority: 1000/)
         expect(data).to.match(/startPriority: 1000/)
         expect(data).to.match(/stopPriority: 123/)

@@ -1,16 +1,16 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var request = require('request')
-var api
-var url
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+const request = require('request')
+let api
+let url
 
 describe('Core: Static File', () => {
   before((done) => {
@@ -98,8 +98,8 @@ describe('Core: Static File', () => {
       expect(response.statusCode).to.equal(200)
       expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       expect(response.headers['etag']).to.be.ok()
-      var etag = response.headers['etag']
-      var options = {
+      let etag = response.headers['etag']
+      let options = {
         url: url + '/simple.html',
         headers: {
           'If-None-Match': etag
@@ -120,12 +120,12 @@ describe('Core: Static File', () => {
       expect(error).to.be.null()
       expect(response.statusCode).to.equal(200)
       expect(response.headers['etag']).to.be.ok()
-      var etagSimple = response.headers['etag']
+      let etagSimple = response.headers['etag']
       request.get(url + '/index.html', (error, response) => {
         expect(error).to.be.null()
         expect(response.statusCode).to.equal(200)
         expect(response.headers['etag']).to.be.ok()
-        var etagIndex = response.headers['etag']
+        let etagIndex = response.headers['etag']
         expect(etagIndex).not.to.equal(etagSimple)
         done()
       })
@@ -136,8 +136,8 @@ describe('Core: Static File', () => {
     request.get(url + '/simple.html', (error, response, body) => {
       expect(error).to.be.null()
       expect(response.statusCode).to.equal(200)
-      var lastModified = new Date(response.headers['last-modified'])
-      var delay = 24 * 1000 * 3600
+      let lastModified = new Date(response.headers['last-modified'])
+      let delay = 24 * 1000 * 3600
 
       request({
         url: url + '/simple.html',
@@ -150,7 +150,7 @@ describe('Core: Static File', () => {
   })
 
   describe('Core: Static File -> Compression Tests', () => {
-    var serverCompressionState
+    let serverCompressionState
     before((done) => {
       serverCompressionState = api.config.servers.web.compress
       api.config.servers.web.compress = true // activate compression, default is likely to be false

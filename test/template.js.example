@@ -1,11 +1,11 @@
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-var ActionheroPrototype = require('actionhero')
-var actionhero = new ActionheroPrototype()
-var api
+const ActionheroPrototype = require('actionhero')
+const actionhero = new ActionheroPrototype()
+let api
 
 describe('actionhero Tests', () => {
   before((done) => {

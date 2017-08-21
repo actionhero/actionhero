@@ -1,14 +1,14 @@
 'use strict'
 
-var chai = require('chai')
-var dirtyChai = require('dirty-chai')
-var expect = chai.expect
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
 chai.use(dirtyChai)
 
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const path = require('path')
+const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const actionhero = new ActionheroPrototype()
+let api
 
 describe('Core: API', () => {
   before((done) => {
@@ -102,7 +102,7 @@ describe('Core: API', () => {
           outputExample: {},
           run: (api, data, next) => {
             data.response.version = 1
-            var error = {
+            let error = {
               'a': {'complex': 'error'}
             }
             next(error)
