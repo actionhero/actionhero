@@ -1,5 +1,4 @@
-// 'use strict'
-// we cannot use strict here because we want EVAL to work
+'use strict'
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
@@ -20,7 +19,7 @@ let url
 const connectClients = function (callback) {
   // get actionheroClient in scope
   // TODO: Perhaps we read this from disk after server boot.
-  eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
+  const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
 
   let S = api.servers.servers.websocket.server.Socket
   url = 'http://localhost:' + api.config.servers.web.port
