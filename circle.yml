@@ -8,4 +8,6 @@ machine:
     version: 8
 test:
   override:
-    - npm test
+    - nvm install 4 && nvm use 4 && npm install && npm test
+    - nvm install 6 && nvm use 6 && npm install && npm test
+    - nvm install 8 && nvm use 8 && npm install && npm test
