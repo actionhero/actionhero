@@ -3,8 +3,6 @@ machine:
   environment:
     FAKEREDIS: false
     maxMemoryAlloted: 500
-  node:
-    version: 8
   services:
     - redis
 test:
