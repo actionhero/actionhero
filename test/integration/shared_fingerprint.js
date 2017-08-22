@@ -1,5 +1,4 @@
-// 'use strict'
-// we cannot use strict here because we want EVAL to work
+'use strict'
 
 const chai = require('chai')
 const dirtyChai = require('dirty-chai')
@@ -18,7 +17,7 @@ let url
 
 let connectClient = (transportOptions, callback) => {
   // get actionheroClient in scope
-  eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
+  const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
 
   let S = _Primus.createSocket()
   let clientSocket = new S('http://localhost:' + api.config.servers.web.port, {transport: transportOptions})
