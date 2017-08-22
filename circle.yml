@@ -17,4 +17,4 @@ test:
       1) nvm install 6 && nvm use 6 && npm install && npm test ;;
       2) nvm install 8 && nvm use 8 && npm install && npm test ;;
       esac;"
-      parallel: true
+        parallel: true
