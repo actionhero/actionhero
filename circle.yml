@@ -1,20 +1,15 @@
+---
 machine:
-  services:
-    - redis
   environment:
     FAKEREDIS: false
     maxMemoryAlloted: 500
   node:
     version: 8
+  services:
+    - redis
 test:
-  pre:
-    - rm -rf node_modules
   override:
-    - >
-        case $CIRCLE_NODE_INDEX in
-        0) nvm install 4 && nvm use 4 && npm install && npm test ;;
-        1) nvm install 4 && nvm use 4 && npm install && npm test ;;
-        2) nvm install 4 && nvm use 4 && npm install && npm test ;;
-        esac:
-        
+    - "case $CIRCLE_NODE_INDEX in 0) nvm install 4 && nvm use 4 && npm install && npm test ;; 1) nvm install 4 && nvm use 4 && npm install && npm test ;; 2) nvm install 4 && nvm use 4 && npm install && npm test ;; esac:"
       parallel: true
+  pre:
+    - "rm -rf node_modules"
