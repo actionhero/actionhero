@@ -5,11 +5,18 @@ machine:
     maxMemoryAlloted: 500
   services:
     - redis
+  node:
+    version: 8
 test:
-  pre:
-    - rm -rf node_modules
   override:
-    - >
-      echo CIRCLE_NODE_INDEX="$CIRCLE_NODE_INDEX" &&
-      case $CIRCLE_NODE_INDEX in 0) NODE_VERSION=4 ;; 1) NODE_VERSION=6 ;; 2) NODE_VERSION=8 ;; esac;
-      nvm install $NODE_VERSION && nvm use $NODE_VERSION && npm install && npm test
+    - npm test
+
+
+# test:
+#   pre:
+#     - rm -rf node_modules
+#   override:
+#     - >
+#       echo CIRCLE_NODE_INDEX="$CIRCLE_NODE_INDEX" &&
+#       case $CIRCLE_NODE_INDEX in 0) NODE_VERSION=4 ;; 1) NODE_VERSION=6 ;; 2) NODE_VERSION=8 ;; esac;
+#       nvm install $NODE_VERSION && nvm use $NODE_VERSION && npm install && npm test
