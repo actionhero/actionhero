@@ -43,7 +43,7 @@ describe('Utils', () => {
 
       let start = (new Date()).getTime()
       let results = await api.utils.asyncWaterfall(jobs)
-      expect((new Date()).getTime() - start).to.be.above(299)
+      expect((new Date()).getTime() - start).to.be.above(290)
       expect(results[1]).to.be.above(results[0])
       expect(results[2]).to.be.above(results[1])
     })
@@ -62,7 +62,7 @@ describe('Utils', () => {
 
       let start = (new Date()).getTime()
       let results = await api.utils.asyncWaterfall(jobs)
-      expect((new Date()).getTime() - start).to.be.above(299)
+      expect((new Date()).getTime() - start).to.be.above(290)
       expect(results[0]).to.equal('a')
       expect(results[1]).to.equal('b')
       expect(results[2]).to.equal('c')
