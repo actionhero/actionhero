@@ -130,24 +130,20 @@ describe('Core: Action Cluster', () => {
     })
 
     describe('shared cache', () => {
-      it('peer 1 writes and peer 2 should read', (done) => {
-        apiA.cache.save('test_key', 'yay', null, () => {
-          apiB.cache.load('test_key', (error, value) => {
-            expect(error).to.be.null()
-            expect(value).to.equal('yay')
-            done()
-          })
-        })
+      it('peer 1 writes and peer 2 should read', async () => {
+        await apiA.cache.save('test_key', 'yay')
+        let {value} = await apiB.cache.load('test_key')
+        expect(value).to.equal('yay')
       })
 
-      it('peer 3 deletes and peer 1 cannot read any more', (done) => {
-        apiC.cache.destroy('test_key', () => {
-          apiA.cache.load('test_key', (error, value) => {
-            expect(error.toString()).to.equal('Error: Object not found')
-            expect(value).to.be.null()
-            done()
-          })
-        })
+      it('peer 3 deletes and peer 1 cannot read any more', async () => {
+        await apiC.cache.destroy('test_key')
+        try {
+          await apiA.cache.load('test_key')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.toString()).to.equal('Error: Object not found')
+        }
       })
     })
 
