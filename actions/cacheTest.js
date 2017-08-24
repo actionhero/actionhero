@@ -44,14 +44,7 @@ exports.cacheTest = {
     try {
       data.response.cacheTestResults.saveResp = await api.cache.save(key, value, 5000)
       data.response.cacheTestResults.sizeResp = await api.cache.size()
-      let results = await api.cache.load(key)
-      data.response.cacheTestResults.loadResp = {
-        key: key,
-        value: results.value,
-        expireTimestamp: results.expireTimestamp,
-        createdAt: results.createdAt,
-        readAt: results.readAt
-      }
+      data.response.cacheTestResults.loadResp = await api.cache.load(key)
       data.response.cacheTestResults.deleteResp = await api.cache.destroy(key)
       next()
     } catch (error) {

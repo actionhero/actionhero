@@ -104,9 +104,9 @@ module.exports = {
       await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
       if (expireTimeSeconds) {
         await redis.expire(api.cache.redisPrefix + key, expireTimeSeconds)
-        return {value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt: lastReadAt}
+        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
       } else {
-        return {value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt: lastReadAt}
+        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
       }
     }
 
