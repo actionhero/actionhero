@@ -35,34 +35,28 @@ exports.cacheTest = {
     }
   },
 
-  run: function (api, data, next) {
+  run: async function (api, data, next) {
     const key = 'cacheTest_' + data.params.key
     const value = data.params.value
 
     data.response.cacheTestResults = {}
 
-    api.cache.save(key, value, 5000, function (error, resp) {
-      if (error) { return next(error) }
-      data.response.cacheTestResults.saveResp = resp
-      api.cache.size(function (error, numberOfCacheObjects) {
-        if (error) { return next(error) }
-        data.response.cacheTestResults.sizeResp = numberOfCacheObjects
-        api.cache.load(key, function (error, resp, expireTimestamp, createdAt, readAt) {
-          if (error) { return next(error) }
-          data.response.cacheTestResults.loadResp = {
-            key: key,
-            value: resp,
-            expireTimestamp: expireTimestamp,
-            createdAt: createdAt,
-            readAt: readAt
-          }
-          api.cache.destroy(key, function (error, resp) {
-            data.response.cacheTestResults.deleteResp = resp
-            next(error)
-          })
-        })
-      })
-    })
+    try {
+      data.response.cacheTestResults.saveResp = await api.cache.save(key, value, 5000)
+      data.response.cacheTestResults.sizeResp = await api.cache.size()
+      let results = await api.cache.load(key)
+      data.response.cacheTestResults.loadResp = {
+        key: key,
+        value: results.value,
+        expireTimestamp: results.expireTimestamp,
+        createdAt: results.createdAt,
+        readAt: results.readAt
+      }
+      data.response.cacheTestResults.deleteResp = await api.cache.destroy(key)
+      next()
+    } catch (error) {
+      next(error)
+    }
   }
 
 }

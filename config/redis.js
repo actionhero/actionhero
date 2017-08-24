@@ -18,43 +18,22 @@ exports['default'] = {
       return Math.min(times * 50, maxBackoff)
     }
 
-    if (process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined) {
-      return {
-        '_toExpand': false,
-        client: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        },
-        subscriber: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        },
-        tasks: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        }
-      }
-    } else {
-      return {
-        '_toExpand': false,
-        client: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        },
-        subscriber: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        },
-        tasks: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        }
+    return {
+      '_toExpand': false,
+      client: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
+      },
+      subscriber: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
+      },
+      tasks: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
       }
     }
   }
