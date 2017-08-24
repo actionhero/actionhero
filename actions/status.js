@@ -18,31 +18,23 @@ exports.status = {
     'uptime': 10469
   },
 
-  run: function (api, data, next) {
-    /* --- Define Helpers --- */
-
-    const checkRam = function (callback) {
+  run: async function (api, data, next) {
+    const checkRam = () => {
       const consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100
       data.response.consumedMemoryMB = consumedMemoryMB
       if (consumedMemoryMB > maxMemoryAlloted) {
         data.response.nodeStatus = data.connection.localize('Unhealthy')
         data.response.problems.push(data.connection.localize(['Using more than {{maxMemoryAlloted}} MB of RAM/HEAP', {maxMemoryAlloted: maxMemoryAlloted}]))
       }
-
-      callback()
     }
 
-    const checkEventLoop = function (callback) {
-      api.utils.eventLoopDelay(10000, function (error, eventLoopDelay) {
-        if (error) { return callback(error) }
-        data.response.eventLoopDelay = eventLoopDelay
-        if (eventLoopDelay > maxEventLoopDelay) {
-          data.response.nodeStatus = data.connection.localize('Node Unhealthy')
-          data.response.problems.push(data.connection.localize(['EventLoop Blocked for more than {{maxEventLoopDelay}} ms', {maxEventLoopDelay: maxEventLoopDelay}]))
-        }
-
-        callback()
-      })
+    const checkEventLoop = async () => {
+      let eventLoopDelay = await api.utils.eventLoopDelay(10000)
+      data.response.eventLoopDelay = eventLoopDelay
+      if (eventLoopDelay > maxEventLoopDelay) {
+        data.response.nodeStatus = data.connection.localize('Node Unhealthy')
+        data.response.problems.push(data.connection.localize(['EventLoop Blocked for more than {{maxEventLoopDelay}} ms', {maxEventLoopDelay: maxEventLoopDelay}]))
+      }
     }
 
     const checkResqueQueues = function (callback) {
@@ -76,14 +68,13 @@ exports.status = {
     data.response.description = packageJSON.description
     data.response.version = packageJSON.version
 
-    checkRam(function (error) {
-      if (error) { return next(error) }
-      checkEventLoop(function (error) {
-        if (error) { return next(error) }
-        checkResqueQueues(function (error) {
-          next(error)
-        })
-      })
-    })
+    try {
+      checkRam()
+      await checkEventLoop()
+      next()
+      checkResqueQueues(next) // TODO: stil callback not async
+    } catch (error) {
+      next(error)
+    }
   }
 }

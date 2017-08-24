@@ -19,20 +19,19 @@ exports.sleepTest = {
     'sleepDuration': 1000
   },
 
-  run: function (api, data, next) {
-    const sleepDuration = data.params.sleepDuration
-    const sleepStarted = new Date().getTime()
+  run: async function (api, data, next) {
+    let sleepDuration = data.params.sleepDuration
+    let sleepStarted = new Date().getTime()
 
-    setTimeout(function () {
-      const sleepEnded = new Date().getTime()
-      const sleepDelta = sleepEnded - sleepStarted
+    await new Promise((resolve) => { setTimeout(resolve, sleepDuration) })
+    let sleepEnded = new Date().getTime()
+    let sleepDelta = sleepEnded - sleepStarted
 
-      data.response.sleepStarted = sleepStarted
-      data.response.sleepEnded = sleepEnded
-      data.response.sleepDelta = sleepDelta
-      data.response.sleepDuration = sleepDuration
+    data.response.sleepStarted = sleepStarted
+    data.response.sleepEnded = sleepEnded
+    data.response.sleepDelta = sleepDelta
+    data.response.sleepDuration = sleepDuration
 
-      next()
-    }, sleepDuration)
+    next()
   }
 }

@@ -113,6 +113,14 @@ describe('Utils', () => {
     expect(a).not.to.equal(b)
   })
 
+  describe('eventLoopDelay', () => {
+    it('works', async () => {
+      let eventLoopDelay = await api.utils.eventLoopDelay(10000)
+      expect(eventLoopDelay).to.be.above(0)
+      expect(eventLoopDelay).to.be.below(1)
+    })
+  })
+
   describe('#parseIPv6URI', () => {
     it('address and port', () => {
       let uri = '[2604:4480::5]:8080'

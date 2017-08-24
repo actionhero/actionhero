@@ -42,6 +42,7 @@ module.exports = {
     api.ActionProcessor.prototype.incrementPendingActions = function (count) {
       if (!count) { count = 1 }
       this.connection.pendingActions = this.connection.pendingActions + count
+      if (this.connection.pendingActions < 0) { this.connection.pendingActions = 0 }
     }
 
     api.ActionProcessor.prototype.getPendingActionCount = function () {

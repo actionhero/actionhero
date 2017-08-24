@@ -204,12 +204,12 @@ describe('Server: Socket', () => {
   })
 
   it('will limit how many simultaneous connections I can have', (done) => {
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 500}}) + '\r\n')
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 600}}) + '\r\n')
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 700}}) + '\r\n')
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 800}}) + '\r\n')
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 900}}) + '\r\n')
-    client.write(JSON.stringify({action: 'sleepTest', params: {sleepDuration: 1000}}) + '\r\n')
+    let msg = ''
+    let i = 0
+    while (i <= api.config.general.simultaneousActions) {
+      msg += `${JSON.stringify({action: 'sleepTest'})} \r\n`
+      i++
+    }
 
     let responses = []
     let checkResponses = function (data) {
@@ -218,7 +218,7 @@ describe('Server: Socket', () => {
           responses.push(JSON.parse(line))
         }
       })
-      if (responses.length === 6) {
+      if (responses.length === (api.config.general.simultaneousActions + 1)) {
         client.removeListener('data', checkResponses)
         for (let i in responses) {
           let response = responses[i]
@@ -233,6 +233,7 @@ describe('Server: Socket', () => {
     }
 
     client.on('data', checkResponses)
+    client.write(msg)
   })
 
   it('will error If received data length is bigger then maxDataLength', (done) => {

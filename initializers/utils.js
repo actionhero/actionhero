@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const path = require('path')
-const async = require('async')
 const dotProp = require('dot-prop')
 const os = require('os')
 
@@ -265,31 +264,32 @@ module.exports = {
     // //////////////////////////////////////////////////////////////////////////
     // Check on how long the event loop is blocked for
     api.utils.eventLoopDelay = async (itterations) => {
-      let intervalJobs = []
-      let intervalTimes = []
+      let jobs = []
 
       if (!itterations) { throw new Error('itterations is required') }
 
-      let i = 0
-      while (i < itterations) {
-        intervalJobs.push((intervalDone) => {
+      let sleepyFunc = async () => {
+        return new Promise((resolve) => {
           let start = process.hrtime()
           process.nextTick(() => {
             let delta = process.hrtime(start)
             let ms = (delta[0] * 1000) + (delta[1] / 1000000)
-            intervalTimes.push(ms)
-            intervalDone()
+            resolve(ms)
           })
         })
+      }
+
+      let i = 0
+      while (i < itterations) {
+        jobs.push(sleepyFunc)
         i++
       }
 
-      async.series(intervalJobs, function () {
-        let sum = 0
-        intervalTimes.forEach((t) => { sum += t })
-        let avg = Math.round(sum / intervalTimes.length * 10000) / 1000
-        return avg
-      })
+      let results = await api.utils.asyncWaterfall(jobs)
+      let sum = 0
+      results.forEach((t) => { sum += t })
+      let avg = Math.round(sum / results.length * 10000) / 1000
+      return avg
     }
 
     // //////////////////////////////////////////////////////////////////////////
