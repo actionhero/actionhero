@@ -192,9 +192,8 @@ module.exports = {
           return false
         }
 
-        setTimeout(() => {
-          return api.cache.checkLock(key, retry, startTime)
-        }, api.cache.lockRetry)
+        await new Promise((resolve) => { setTimeout(resolve, api.cache.lockRetry) })
+        return api.cache.checkLock(key, retry, startTime)
       }
     }
 

@@ -272,10 +272,10 @@ describe('Core: Cache', () => {
     })
 
     it('you can opt to retry to obtain a lock if a lock is held (READ)', async () => {
-      let lockOk = await api.cache.lock(key, 1) // will be rounded up to 1s
-      expect(lockOk).to.equal(true)
       let success = await api.cache.save(key, 'value')
       expect(success).to.equal(true)
+      let lockOk = await api.cache.lock(key, 1) // will be rounded up to 1s
+      expect(lockOk).to.equal(true)
 
       api.cache.lockName = 'otherId'
       lockOk = await api.cache.checkLock(key, null)
