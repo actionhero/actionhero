@@ -25,10 +25,48 @@ describe('Utils', () => {
     })
   })
 
-  it('utils.arrayUniqueify', (done) => {
-    let a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
-    expect(api.utils.arrayUniqueify(a)).to.deep.equal([1, 2, 3, 4, 5])
-    done()
+  describe('utils.arrayUniqueify', () => {
+    it('works', () => {
+      let a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
+      expect(api.utils.arrayUniqueify(a)).to.deep.equal([1, 2, 3, 4, 5])
+    })
+  })
+
+  describe('utils.asyncWaterfall', () => {
+    it('works with no args', async () => {
+      let sleepyFunc = async () => {
+        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        return (new Date()).getTime()
+      }
+
+      let jobs = [sleepyFunc, sleepyFunc, sleepyFunc]
+
+      let start = (new Date()).getTime()
+      let results = await api.utils.asyncWaterfall(jobs)
+      expect((new Date()).getTime() - start).to.be.above(3 * 100)
+      expect(results[1]).to.be.above(results[0])
+      expect(results[2]).to.be.above(results[1])
+    })
+
+    it('works with args', async () => {
+      let sleepyFunc = async (response) => {
+        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        return response
+      }
+
+      let jobs = [
+        {method: sleepyFunc, args: ['a']},
+        {method: sleepyFunc, args: ['b']},
+        {method: sleepyFunc, args: ['c']}
+      ]
+
+      let start = (new Date()).getTime()
+      let results = await api.utils.asyncWaterfall(jobs)
+      expect((new Date()).getTime() - start).to.be.above(3 * 100)
+      expect(results[0]).to.equal('a')
+      expect(results[1]).to.equal('b')
+      expect(results[2]).to.equal('c')
+    })
   })
 
   describe('utils.hashMerge', () => {
@@ -37,33 +75,30 @@ describe('Utils', () => {
     let C = {a: 1, b: {m: 10, n: 11}}
     let D = {a: 1, b: {n: 111, o: 22}}
 
-    it('simple', (done) => {
+    it('simple', () => {
       let Z = api.utils.hashMerge(A, B)
       expect(Z.a).to.equal(1)
       expect(Z.b).to.equal(-2)
       expect(Z.c).to.equal(3)
-      done()
     })
 
-    it('directional', (done) => {
+    it('directional', () => {
       let Z = api.utils.hashMerge(B, A)
       expect(Z.a).to.equal(1)
       expect(Z.b).to.equal(2)
       expect(Z.c).to.equal(3)
-      done()
     })
 
-    it('nested', (done) => {
+    it('nested', () => {
       let Z = api.utils.hashMerge(C, D)
       expect(Z.a).to.equal(1)
       expect(Z.b.m).to.equal(10)
       expect(Z.b.n).to.equal(111)
       expect(Z.b.o).to.equal(22)
-      done()
     })
   })
 
-  it('utils.objClone', (done) => {
+  it('utils.objClone', () => {
     let a = {
       a: 1,
       b: 2,
@@ -76,7 +111,6 @@ describe('Utils', () => {
     expect(a).to.deep.equal(b)
     delete a.a
     expect(a).not.to.equal(b)
-    done()
   })
 
   describe('#parseIPv6URI', () => {
@@ -111,14 +145,17 @@ describe('Utils', () => {
       }
     })
   })
-  describe('utils.filterObjectForLogging', function () {
-    beforeEach(function () {
+
+  describe('utils.filterObjectForLogging', () => {
+    beforeEach(() => {
       expect(api.config.general.filteredParams.length).to.equal(0)
     })
-    afterEach(function () {
+
+    afterEach(() => {
       // after each test, empty the array
       api.config.general.filteredParams.length = 0
     })
+
     let testInput = {
       p1: 1,
       p2: 's3cr3t',
@@ -136,7 +173,7 @@ describe('Utils', () => {
       }
     }
 
-    it('can filter top level params, no matter the type', function () {
+    it('can filter top level params, no matter the type', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p1', 'p2', 'o2')
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -146,7 +183,7 @@ describe('Utils', () => {
       expect(filteredParams.o1).to.deep.equal(testInput.o1) // unchanged
     })
 
-    it('will not filter things that do not exist', function () {
+    it('will not filter things that do not exist', () => {
       // Identity
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -157,7 +194,7 @@ describe('Utils', () => {
       expect(filteredParams2).to.deep.equal(testInput)
     })
 
-    it('can filter a single level dot notation', function () {
+    it('can filter a single level dot notation', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p1', 'o1.o1p1', 'somethingNotExist')
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -170,7 +207,7 @@ describe('Utils', () => {
       expect(filteredParams.o2).to.deep.equal(testInput.o2)
     })
 
-    it('can filter two levels deep', function () {
+    it('can filter two levels deep', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p2', 'o1.o2.o2p1', 'o1.o2.notThere')
       let filteredParams = api.utils.filterObjectForLogging(inputs)
