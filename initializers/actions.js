@@ -67,7 +67,7 @@ module.exports = {
       let action
 
       try {
-        const collection = require(fullFilePath)
+        const collection = api.config.loaders.action(fullFilePath)
         for (let i in collection) {
           action = collection[i]
           if (action.version === null || action.version === undefined) { action.version = 1.0 }
