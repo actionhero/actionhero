@@ -188,7 +188,7 @@ module.exports = {
         return true
       } else {
         let delta = new Date().getTime() - startTime
-        if (retry === null || retry === false || delta > retry) {
+        if (!retry || retry === false || delta > retry) {
           return false
         }
 

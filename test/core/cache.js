@@ -296,59 +296,37 @@ describe('Core: Cache', () => {
 
       it('locks are actually blocking', async () => {
         let key = 'test'
-        let locksRetrieved = 0
-        let locksRejected = 0
-        let concurentLocksCount = 100
-        let jobs = []
+        let lockOk
 
-        // TODO the order of promises here is excuciting linerally
-        for (let i = 0; i < concurentLocksCount; i++) {
-          jobs.push(new Promise(async (resolve) => {
-            // proxy for another actionhero instance accessing the same locked object
-            api.cache.lockName = `test-name-pass-${i}`
-            let lockOk = await api.cache.checkLock(key)
-            if (lockOk) {
-              locksRetrieved++
-              await api.cache.lock(key, (1000 * 60))
-            } else {
-              locksRejected++
-            }
-            resolve()
-          }))
-        }
+        api.cache.lockName = `test-name-pass-${1}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(true)
+        await api.cache.lock(key, (1000 * 60))
 
-        await Promise.all(jobs)
+        api.cache.lockName = `test-name-pass-${2}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(false)
 
-        expect(locksRetrieved).to.equal(1) // Only first atempt
-        expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
+        api.cache.lockName = `test-name-pass-${3}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(false)
       })
 
       it('locks are actually blocking (using setnx value)', async () => {
         let key = 'test-setnx'
-        let locksRetrieved = 0
-        let locksRejected = 0
-        let concurentLocksCount = 100
-        let jobs = []
+        let lockOk
 
-        // TODO the order of promises here is excuciting linerally
-        for (let i = 0; i < concurentLocksCount; i++) {
-          jobs.push(new Promise(async (resolve) => {
-            // proxy for another actionhero instance accessing the same locked object
-            api.cache.lockName = 'test-setnx-name-pass-' + (locksRetrieved + locksRejected)
-            let lockOk = await api.cache.lock(key, (1000 * 60))
-            if (lockOk) {
-              locksRetrieved++
-            } else {
-              locksRejected++
-            }
-            resolve()
-          }))
-        }
+        api.cache.lockName = `test-setnx-name-pass-${1}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(true)
 
-        await Promise.all(jobs)
+        api.cache.lockName = `test-setnx-name-pass-${2}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(false)
 
-        expect(locksRetrieved).to.equal(1) // Only first atempt
-        expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
+        api.cache.lockName = `test-setnx-name-pass-${3}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(false)
       })
     })
   })
