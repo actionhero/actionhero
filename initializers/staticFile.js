@@ -98,7 +98,7 @@ module.exports = {
         })
 
         fileStream.on('error', (error) => {
-          api.log(error)
+          throw error
         })
       },
 
