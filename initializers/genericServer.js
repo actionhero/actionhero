@@ -94,10 +94,9 @@ module.exports = {
       ActionProcessor.processAction()
     }
 
-    api.GenericServer.prototype.processFile = function (connection) {
-      api.staticFile.get(connection, (connection, error, fileStream, mime, length, lastModified) => {
-        this.sendFile(connection, error, fileStream, mime, length, lastModified)
-      })
+    api.GenericServer.prototype.processFile = async function (connection) {
+      let results = await api.staticFile.get(connection)
+      this.sendFile(results.connection, results.error, results.fileStream, results.mime, results.length, results.lastModified)
     }
 
     api.GenericServer.prototype.connections = function () {

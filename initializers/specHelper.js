@@ -157,7 +157,7 @@ module.exports = {
       }
 
       // helpers to get files
-      api.specHelper.getStaticFile = function (file, next) {
+      api.specHelper.getStaticFile = async function (file, next) {
         let connection = new api.specHelper.Connection()
         connection.params.file = file
 
@@ -166,7 +166,7 @@ module.exports = {
           connection.actionCallbacks[(connection.messageCount)] = next
         }
 
-        api.servers.servers.testServer.processFile(connection)
+        await api.servers.servers.testServer.processFile(connection)
       }
 
       // create helpers to run a task

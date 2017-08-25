@@ -146,7 +146,7 @@ describe('Server: Web Socket', () => {
   describe('files', () => {
     it('can request file data', (done) => {
       clientA.file('simple.html', (data) => {
-        expect(data.error).to.be.null()
+        expect(data.error).to.not.exist()
         expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         expect(data.mime).to.equal('text/html')
         expect(data.length).to.equal(101)
