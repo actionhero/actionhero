@@ -1,5 +1,7 @@
 'use strict'
 
+const http = require('http')
+const https = require('https')
 const url = require('url')
 const qs = require('qs')
 const fs = require('fs')
@@ -11,7 +13,7 @@ const Mime = require('mime')
 const uuid = require('uuid')
 const etag = require('etag')
 
-const initialize = function (api, options, next) {
+const initialize = async function (api, options) {
   // ////////
   // INIT //
   // ////////
@@ -37,14 +39,12 @@ const initialize = function (api, options, next) {
   // REQUIRED METHODS //
   // ////////////////////
 
-  server.start = function (next) {
+  server.start = async function () {
     if (options.secure === false) {
-      const http = require('http')
       server.server = http.createServer((req, res) => {
         handleRequest(req, res)
       })
     } else {
-      const https = require('https')
       server.server = https.createServer(api.config.servers.web.serverOptions, (req, res) => {
         handleRequest(req, res)
       })
@@ -61,19 +61,20 @@ const initialize = function (api, options, next) {
           server.server.listen(options.port, options.bindIP)
         }, 1000)
       } else {
-        return next(new Error('cannot start web server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message))
+        throw new Error(`cannot start web server @ ${options.bindIP}:${options.port} => ${e.message}`)
       }
     })
 
-    server.server.listen(options.port, options.bindIP, () => {
-      chmodSocket(options.bindIP, options.port)
-      next()
+    await new Promise((resolve) => {
+      server.server.listen(options.port, options.bindIP, () => {
+        chmodSocket(options.bindIP, options.port)
+        resolve()
+      })
     })
   }
 
-  server.stop = function (next) {
+  server.stop = function () {
     if (server.server) { server.server.close() }
-    process.nextTick(next)
   }
 
   server.sendMessage = function (connection, message) {
@@ -634,7 +635,7 @@ const initialize = function (api, options, next) {
     }
   }
 
-  next(server)
+  return server
 }
 
 function callbackHtmlEscape (str) {

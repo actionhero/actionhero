@@ -3,7 +3,7 @@
 const net = require('net')
 const tls = require('tls')
 
-const initialize = function (api, options, next) {
+const initialize = async function (api, options) {
   // ////////
   // INIT //
   // ////////
@@ -38,7 +38,7 @@ const initialize = function (api, options, next) {
   // REQUIRED METHODS //
   // ////////////////////
 
-  server.start = function (next) {
+  server.start = async function () {
     if (options.secure === false) {
       server.server = net.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
         handleConnection(rawConnection)
@@ -50,16 +50,18 @@ const initialize = function (api, options, next) {
     }
 
     server.server.on('error', (e) => {
-      return next(new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message))
+      throw new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message)
     })
 
-    server.server.listen(options.port, options.bindIP, () => {
-      process.nextTick(next)
+    await new Promise((resolve) => {
+      server.server.listen(options.port, options.bindIP, () => {
+        return resolve()
+      })
     })
   }
 
-  server.stop = function (next) {
-    gracefulShutdown(next)
+  server.stop = async function (next) {
+    await gracefulShutdown(next)
   }
 
   server.sendMessage = function (connection, message, messageCount) {
@@ -228,10 +230,11 @@ const initialize = function (api, options, next) {
     return found
   }
 
-  const gracefulShutdown = function (next, alreadyShutdown) {
+  const gracefulShutdown = async function (alreadyShutdown) {
     if (!alreadyShutdown || alreadyShutdown === false) {
       if (server.server) { server.server.close() }
     }
+
     let pendingConnections = 0
     server.connections().forEach((connection) => {
       if (connection.pendingActions === 0) {
@@ -245,15 +248,19 @@ const initialize = function (api, options, next) {
         }
       }
     })
+
     if (pendingConnections > 0) {
       server.log('waiting on shutdown, there are still ' + pendingConnections + ' connected clients waiting on a response', 'notice')
-      setTimeout(() => {
-        gracefulShutdown(next, true)
-      }, 1000)
-    } else if (typeof next === 'function') { next() }
+
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return gracefulShutdown(true)
+        }, 1000)
+      })
+    }
   }
 
-  next(server)
+  return server
 }
 
 // ///////////////////////////////////////////////////////////////////
