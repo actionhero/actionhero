@@ -5,7 +5,7 @@ const path = require('path')
 
 module.exports = {
   loadPriority: 10,
-  initialize: function (api, next) {
+  initialize: function (api) {
     const options = api.config.i18n
     options.directory = path.normalize(api.config.general.paths.locale[0])
     i18n.configure(options)
@@ -32,7 +32,5 @@ module.exports = {
         return api.i18n.__.apply(options, message)
       }
     }, i18n)
-
-    next()
   }
 }

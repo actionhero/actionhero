@@ -5,7 +5,7 @@ const async = require('async')
 module.exports = {
   startPriority: 200,
   loadPriority: 520,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.chatRoom = {}
     api.chatRoom.keys = {
       rooms: 'actionhero:chatRoom:rooms',
@@ -292,11 +292,9 @@ module.exports = {
         callback(error, newMessagePayload)
       })
     }
-
-    next()
   },
 
-  start: function (api, next) {
+  start: function (api) {
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) {
         api.chatRoom.incomingMessage(message)
@@ -309,8 +307,5 @@ module.exports = {
         api.chatRoom.add(room)
       }
     }
-
-    next()
   }
-
 }

@@ -4,7 +4,7 @@ const uuid = require('uuid')
 
 module.exports = {
   loadPriority: 400,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.connections = {
 
       middleware: {},
@@ -275,7 +275,5 @@ module.exports = {
         if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotAllowed(this, verb)), null) }
       }
     }
-
-    next()
   }
 }

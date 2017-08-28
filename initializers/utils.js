@@ -7,7 +7,7 @@ const os = require('os')
 
 module.exports = {
   loadPriority: 0,
-  initialize: function (api, next) {
+  initialize: async function (api) {
     if (!api.utils) { api.utils = {} }
 
     api.utils.dotProp = dotProp
@@ -387,7 +387,5 @@ module.exports = {
       })
       return filteredParams
     }
-
-    next()
   }
 }

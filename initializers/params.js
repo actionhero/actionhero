@@ -2,7 +2,7 @@
 
 module.exports = {
   loadPriority: 420,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.params = {}
 
     // special params we will always accept
@@ -36,6 +36,5 @@ module.exports = {
     }
 
     api.params.buildPostVariables()
-    next()
   }
 }

@@ -2,7 +2,7 @@
 
 module.exports = {
   loadPriority: 999,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.documentation = {
       documentation: {},
       build: () => {
@@ -26,6 +26,5 @@ module.exports = {
     }
 
     api.documentation.build()
-    next()
   }
 }

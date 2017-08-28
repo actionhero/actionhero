@@ -2,9 +2,11 @@
 
 const os = require('os')
 
+const relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room']
+
 module.exports = {
   loadPriority: 130,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.exceptionHandlers = {}
     api.exceptionHandlers.reporters = []
 
@@ -16,7 +18,6 @@ module.exports = {
       } else if (type === 'action') {
         extraMessages.push('! uncaught error from action: ' + name)
         extraMessages.push('! connection details:')
-        const relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room']
         for (let i in relevantDetails) {
           if (
             objects.connection[relevantDetails[i]] !== null &&
@@ -95,7 +96,5 @@ module.exports = {
       let name = 'task:' + simpleName
       api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure)
     }
-
-    next()
   }
 }

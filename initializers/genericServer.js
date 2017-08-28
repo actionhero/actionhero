@@ -5,7 +5,7 @@ const util = require('util')
 
 module.exports = {
   loadPriority: 450,
-  initialize: function (api, next) {
+  initialize: function (api) {
     // I am the prototypical generic server that all other types of servers inherit from.
     // I shouldn't actually be used by a client
     // Note the methods in this template server, as they are all required for 'real' servers
@@ -133,7 +133,5 @@ module.exports = {
 
     // This method will be used to gracefully disconnect the client
     api.GenericServer.prototype.goodbye = function (connection, reason) { methodNotDefined() }
-
-    next()
   }
 }

@@ -6,11 +6,11 @@
 // https://github.com/actionhero/actionhero
 
 const path = require('path')
-const async = require('async')
+// const async = require('async')
 
 // HELPERS ///
 
-const fatalError = function (api, errors, type) {
+async function fatalError (api, errors, type) {
   if (errors && !(errors instanceof Array)) { errors = [errors] }
   if (errors) {
     if (api.log) {
@@ -20,19 +20,12 @@ const fatalError = function (api, errors, type) {
       console.error('Error with initializer step: ' + type)
       errors.forEach((error) => { console.error(error.stack) })
     }
-    api.commands.stop.call(api, () => {
-      process.exit(1)
-    })
+    await api.commands.stop.call(api)
+    process.exit(1)
   }
 }
 
-const sortNumber = function (a, b) {
-  return a - b
-}
-
-let startCount = 0
-
-const flattenOrderedInitialzer = function (collection) {
+function flattenOrderedInitialzer (collection) {
   let output = []
   let keys = []
   for (let key in collection) {
@@ -48,189 +41,170 @@ const flattenOrderedInitialzer = function (collection) {
   return output
 }
 
-// ACTIONHERO //
-
-const actionhero = function () {
-  this.initializers = {}
-  this.api = {
-    running: false,
-    initialized: false,
-    shuttingDown: false
-  }
+function sortNumber (a, b) {
+  return a - b
 }
 
-actionhero.prototype.initialize = function (params, callback) {
-  this.api.commands = {
-    initialize: (params, callback) => { this.initialize(params, callback) },
-    start: (params, callback) => { this.start(params, callback) },
-    stop: (callback) => { this.stop(callback) },
-    restart: (callback) => { this.restart(callback) }
+// ACTIONHERO //
+
+class ActionHero {
+  constructor () {
+    this.initializers = {}
+    this.startCount = 0
+
+    let projectRoot = process.cwd()
+    if (process.env.project_root) {
+      projectRoot = process.env.project_root
+    } else if (process.env.projectRoot) {
+      projectRoot = process.env.projectRoot
+    } else if (process.env.PROJECT_ROOT) {
+      projectRoot = process.env.PROJECT_ROOT
+    }
+
+    this.api = {
+      running: false,
+      initialized: false,
+      shuttingDown: false,
+      projectRoot: projectRoot,
+      bootTime: null,
+      initializerDefaults: { load: 1000, start: 1000, stop: 1000 }
+    }
+
+    this.api.commands = {
+      initialize: async (params) => { return this.initialize(params) },
+      start: async (params) => { return this.start(params) },
+      stop: async (callback) => { return this.stop() },
+      restart: async (callback) => { return this.restart() }
+    }
+
+    this.api.actionheroVersion = require(path.join(__dirname, 'package.json')).version
   }
 
-  this.api.projectRoot = process.cwd()
+  async initialize (params) {
+    if (!params) { params = {} }
 
-  if (process.env.project_root) {
-    this.api.projectRoot = process.env.project_root
-  } else if (process.env.projectRoot) {
-    this.api.projectRoot = process.env.projectRoot
-  } else if (process.env.PROJECT_ROOT) {
-    this.api.projectRoot = process.env.PROJECT_ROOT
-  }
+    let api = this.api
+    api._startingParams = params
 
-  if (!callback && typeof params === 'function') {
-    callback = params; params = {}
-  }
-  if (params === null) { params = {} }
-  this.startingParams = params
-  this.api._startingParams = this.startingParams
-
-  this.api.initializerDefaults = {
-    load: 1000,
-    start: 1000,
-    stop: 1000
-  }
-
-  let loadInitializerRankings = {}
-  let startInitializerRankings = {}
-  let stopInitializerRankings = {}
-
-  this.configInitializers = []
-  this.loadInitializers = []
-  this.startInitializers = []
-  this.stopInitializers = [];
-
-  // we need to load the config first
-  [
-    path.resolve(__dirname, 'initializers', 'utils.js'),
-    path.resolve(__dirname, 'initializers', 'config.js')
-  ].forEach((file) => {
-    let filename = file.replace(/^.*[\\/]/, '')
-    let initializer = filename.split('.')[0]
-    delete require.cache[require.resolve(file)]
-    this.initializers[initializer] = require(file)
-    this.configInitializers.push((next) => {
-      this.initializers[initializer].initialize(this.api, next)
-    })
-  })
-
-  this.configInitializers.push(() => {
+    let loadInitializerRankings = {}
+    let startInitializerRankings = {}
+    let stopInitializerRankings = {}
     let customInitializers = []
     let duplicatedInitializers = []
-    this.api.config.general.paths.initializer.forEach((startPath) => {
-      customInitializers = customInitializers.concat(this.api.utils.recursiveDirectoryGlob(startPath))
+
+    this.loadInitializers = []
+    this.startInitializers = []
+    this.stopInitializers = [];
+
+    // we need to load the utils & config first
+    [
+      path.resolve(__dirname, 'initializers', 'utils.js'),
+      path.resolve(__dirname, 'initializers', 'config.js')
+    ].forEach(async (file) => {
+      let filename = file.replace(/^.*[\\/]/, '')
+      let initializer = filename.split('.')[0]
+      delete require.cache[require.resolve(file)]
+      this.initializers[initializer] = require(file)
+      try {
+        await this.initializers[initializer].initialize(api)
+      } catch (error) {
+        fatalError(api, error, initializer)
+      }
     })
+
+    api.config.general.paths.initializer.forEach((startPath) => {
+      customInitializers = customInitializers.concat(api.utils.recursiveDirectoryGlob(startPath))
+    })
+
     // load all other initializers
-    this.api.utils.arrayUniqueify(
-      this.api.utils.recursiveDirectoryGlob(path.join(__dirname, 'initializers'))
-      .sort()
-      .concat(
-        customInitializers
-        .sort()
-      )
-    ).forEach((f) => {
+    let initializers = api.utils.arrayUniqueify(
+      api.utils.recursiveDirectoryGlob(path.join(__dirname, 'initializers')).sort().concat(customInitializers.sort())
+    )
+
+    initializers.forEach((f) => {
       let file = path.normalize(f)
-      let initializer = path.basename(f).split('.')[0]
+      let baseName = path.basename(f).split('.')[0]
       let fileParts = file.split('.')
       let ext = fileParts[(fileParts.length - 1)]
-      if (ext === 'js') {
-        // check if initializer already exists (exclude utils and config)
-        if (this.initializers[initializer] &&
-           file !== path.resolve(__dirname, 'initializers', 'utils.js') &&
-           file !== path.resolve(__dirname, 'initializers', 'config.js')) {
-          duplicatedInitializers.push(file)
-        } else {
-          delete require.cache[require.resolve(file)]
-          this.initializers[initializer] = require(file)
-        }
 
-        const loadFunction = (next) => {
-          this.api.watchFileAndAct(file, () => {
-            this.api.log(`*** Rebooting due to initializer change (${file}) ***`, 'info')
-            this.api.commands.restart()
-          })
+      if (ext !== 'js') { return }
 
-          if (typeof this.initializers[initializer].initialize === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(`Loading initializer: ${initializer}`, 'debug', file) }
+      let initializer = this.initializers[baseName]
+
+      // check if initializer already exists (exclude utils and config)
+      if (
+        initializer &&
+        file !== path.resolve(__dirname, 'initializers', 'utils.js') &&
+        file !== path.resolve(__dirname, 'initializers', 'config.js')
+      ) {
+        duplicatedInitializers.push(file)
+      } else {
+        delete require.cache[require.resolve(file)]
+        initializer = require(file)
+      }
+
+      let loadFunction = async () => {
+        api.watchFileAndAct(file, async () => {
+          api.log(`*** Rebooting due to initializer change (${file}) ***`, 'info')
+          await api.commands.restart()
+        })
+
+        if (typeof initializer.initialize === 'function') {
+          if (typeof api.log === 'function') { api.log(`Loading initializer: ${baseName}`, 'debug', file) }
+          try {
+            await initializer.initialize(api)
+            try { api.log(`Loaded initializer: ${baseName}`, 'debug', file) } catch (e) { }
+          } catch (error) {
+            let message = `Exception occured in initializer \`${baseName}\` during load`
             try {
-              this.initializers[initializer].initialize(this.api, (error) => {
-                try { this.api.log(`Loaded initializer: ${initializer}`, 'debug', file) } catch (e) { }
-                next(error)
-              })
-            } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer}  during load`, 'warning', e)
-              next(e)
+              api.log(message, 'warning', error)
+            } catch (error) {
+              console.error(message)
             }
-          } else {
-            next()
+            throw error
           }
-        }
-
-        const startFunction = (next) => {
-          if (typeof this.initializers[initializer].start === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(`Starting initializer: ${initializer}`, 'debug', file) }
-            try {
-              this.initializers[initializer].start(this.api, (error) => {
-                this.api.log(`Started initializer: ${initializer}`, 'debug', file)
-                next(error)
-              })
-            } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer} during start`, 'warning', e)
-              next(e)
-            }
-          } else {
-            next()
-          }
-        }
-
-        const stopFunction = (next) => {
-          if (typeof this.initializers[initializer].stop === 'function') {
-            if (typeof this.api.log === 'function') { this.api.log(`Stopping initializer: ${initializer}`, 'debug', file) }
-            try {
-              this.initializers[initializer].stop(this.api, (error) => {
-                this.api.log(`Stopped initializer: ${initializer}`, 'debug', file)
-                next(error)
-              })
-            } catch (e) {
-              this.api.log(`Exception occured in initializer: ${initializer} during stop`, 'warning', e)
-              next(e)
-            }
-          } else {
-            next()
-          }
-        }
-
-        if (this.initializers[initializer].loadPriority === undefined) {
-          this.initializers[initializer].loadPriority = this.api.initializerDefaults.load
-        }
-        if (this.initializers[initializer].startPriority === undefined) {
-          this.initializers[initializer].startPriority = this.api.initializerDefaults.start
-        }
-        if (this.initializers[initializer].stopPriority === undefined) {
-          this.initializers[initializer].stopPriority = this.api.initializerDefaults.stop
-        }
-
-        if (loadInitializerRankings[this.initializers[initializer].loadPriority] === undefined) {
-          loadInitializerRankings[this.initializers[initializer].loadPriority] = []
-        }
-        if (startInitializerRankings[this.initializers[initializer].startPriority] === undefined) {
-          startInitializerRankings[this.initializers[initializer].startPriority] = []
-        }
-        if (stopInitializerRankings[this.initializers[initializer].stopPriority] === undefined) {
-          stopInitializerRankings[this.initializers[initializer].stopPriority] = []
-        }
-
-        if (this.initializers[initializer].loadPriority > 0) {
-          loadInitializerRankings[this.initializers[initializer].loadPriority].push(loadFunction)
-        }
-
-        if (this.initializers[initializer].startPriority > 0) {
-          startInitializerRankings[this.initializers[initializer].startPriority].push(startFunction)
-        }
-
-        if (this.initializers[initializer].stopPriority > 0) {
-          stopInitializerRankings[this.initializers[initializer].stopPriority].push(stopFunction)
         }
       }
+
+      let startFunction = async () => {
+        if (typeof initializer.start === 'function') {
+          if (typeof api.log === 'function') { api.log(`Starting initializer: ${baseName}`, 'debug', file) }
+          try {
+            await initializer.start(api)
+            api.log(`Started initializer: ${baseName}`, 'debug', file)
+          } catch (error) {
+            api.log(`Exception occured in initializer: ${baseName} during start`, 'warning', error)
+            throw error
+          }
+        }
+      }
+
+      let stopFunction = async () => {
+        if (typeof initializer.stop === 'function') {
+          if (typeof api.log === 'function') { api.log(`Stopping initializer: ${baseName}`, 'debug', file) }
+          try {
+            await initializer.stop(api)
+            api.log(`Stopped initializer: ${baseName}`, 'debug', file)
+          } catch (error) {
+            api.log(`Exception occured in initializer: ${baseName} during stop`, 'warning', error)
+            throw error
+          }
+        }
+      }
+
+      if (initializer.loadPriority === undefined) { initializer.loadPriority = api.initializerDefaults.load }
+      if (initializer.startPriority === undefined) { initializer.startPriority = api.initializerDefaults.start }
+      if (initializer.stopPriority === undefined) { initializer.stopPriority = api.initializerDefaults.stop }
+
+      if (loadInitializerRankings[initializer.loadPriority] === undefined) { loadInitializerRankings[initializer.loadPriority] = [] }
+      if (startInitializerRankings[initializer.startPriority] === undefined) { startInitializerRankings[initializer.startPriority] = [] }
+      if (stopInitializerRankings[initializer.stopPriority] === undefined) { stopInitializerRankings[initializer.stopPriority] = [] }
+
+      if (initializer.loadPriority > 0) { loadInitializerRankings[initializer.loadPriority].push(loadFunction) }
+      if (initializer.startPriority > 0) { startInitializerRankings[initializer.startPriority].push(startFunction) }
+      if (initializer.stopPriority > 0) { stopInitializerRankings[initializer.stopPriority].push(stopFunction) }
+
+      this.initializers[baseName] = initializer // re-assign with changes
     })
 
     // flatten all the ordered initializer methods
@@ -238,105 +212,101 @@ actionhero.prototype.initialize = function (params, callback) {
     this.startInitializers = flattenOrderedInitialzer(startInitializerRankings)
     this.stopInitializers = flattenOrderedInitialzer(stopInitializerRankings)
 
-    this.loadInitializers.push(() => {
-      process.nextTick(() => {
-        this.api.initialized = true
+    try {
+      await api.utils.asyncWaterfall(this.loadInitializers)
+    } catch (error) {
+      return fatalError(api, error, 'initialize')
+    }
 
-        if (duplicatedInitializers.length > 0) {
-          duplicatedInitializers.forEach(initializer => this.api.log(`Initializer ${initializer} already exists!`, 'error'))
-          this.api.commands.stop.call(this.api, () => {
-            process.exit(1)
-          })
-        }
-        callback(null, this.api)
-      })
-    })
+    api.initialized = true
 
-    async.series(this.loadInitializers, (errors) => { fatalError(this.api, errors, 'initialize') })
-  })
+    if (duplicatedInitializers.length > 0) {
+      duplicatedInitializers.forEach(initializer => api.log(`Initializer ${initializer} already exists!`, 'error'))
+      await api.commands.stop()
+      return process.exit(1)
+    }
 
-  async.series(this.configInitializers, (errors) => { fatalError(this.api, errors, 'config') })
-}
-
-actionhero.prototype.start = function (params, callback) {
-  if (!callback && typeof params === 'function') {
-    callback = params; params = {}
+    return api
   }
 
-  const _start = () => {
-    this.api.running = true
+  async start (params) {
+    let api = this.api
+    if (!params) { params = {} }
 
-    this.api.log('*** Starting ActionHero ***', 'notice')
+    if (api.initialized !== true) {
+      await this.initialize(params)
+    }
+
+    api.running = true
+    api.log('*** Starting ActionHero ***', 'notice')
 
     this.startInitializers.push(() => {
-      this.api.bootTime = new Date().getTime()
-      if (startCount === 0) {
-        this.api.log('*** ActionHero Started ***', 'alert')
+      api.bootTime = new Date().getTime()
+      if (this.startCount === 0) {
+        api.log('*** ActionHero Started ***', 'alert')
       } else {
-        this.api.log('*** ActionHero Restarted ***', 'alert')
+        api.log('*** ActionHero Restarted ***', 'alert')
       }
-
-      startCount++
-      callback(null, this.api)
     })
 
-    async.series(this.startInitializers, (errors) => { fatalError(this.api, errors, 'start') })
+    try {
+      await api.utils.asyncWaterfall(this.startInitializers)
+    } catch (error) {
+      return fatalError(api, error, 'start')
+    }
+
+    return api
   }
 
-  if (this.api.initialized === true) {
-    _start()
-  } else {
-    this.initialize(params, () => {
-      _start()
-    })
-  }
-}
+  async stop () {
+    let api = this.api
+    if (api.running === true) {
+      api.shuttingDown = true
+      api.running = false
+      api.initialized = false
 
-actionhero.prototype.stop = function (callback) {
-  if (this.api.running === true) {
-    this.api.shuttingDown = true
-    this.api.running = false
-    this.api.initialized = false
+      api.log('Shutting down open servers and stopping task processing...', 'notice')
 
-    this.api.log('Shutting down open servers and stopping task processing...', 'notice')
-
-    this.stopInitializers.push(() => {
-      this.api.unWatchAllFiles()
-      this.api.pids.clearPidFile()
-      this.api.log('*** ActionHero Stopped ***', 'alert')
-      this.api.log('***', 'debug')
-      delete this.api.shuttingDown
-      // reset initializers to prevent duplicate check on restart
-      this.initializers = {}
-      process.nextTick(() => {
-        if (typeof callback === 'function') { callback(null, this.api) }
+      this.stopInitializers.push(async () => {
+        api.unWatchAllFiles()
+        api.pids.clearPidFile()
+        api.log('*** ActionHero Stopped ***', 'alert')
+        api.log('***', 'debug')
+        delete api.shuttingDown
+        // reset initializers to prevent duplicate check on restart
+        this.initializers = {}
+        await new Promise((resolve) => process.nextTick(resolve))
       })
-    })
 
-    async.series(this.stopInitializers, (errors) => { fatalError(this.api, errors, 'stop') })
-  } else if (this.api.shuttingDown === true) {
-    // double sigterm; ignore it
-  } else {
-    if (this.api.log) { this.api.log('Cannot shut down actionhero, not running', 'error') }
-    if (typeof callback === 'function') { callback(null, this.api) }
+      try {
+        await api.utils.asyncWaterfall(this.stopInitializers)
+      } catch (error) {
+        return fatalError(api, error, 'stop')
+      }
+      return api
+    } else if (api.shuttingDown === true) {
+      // double sigterm; ignore it
+    } else {
+      let message = 'Cannot shut down actionhero, not running'
+      if (api.log) {
+        api.log(message, 'error')
+      } else {
+        console.log(message)
+      }
+      return api
+    }
+  }
+
+  async restart () {
+    let api = this.api
+    if (api.running === true) {
+      await this.stop()
+      await this.start(api._startingParams)
+    } else {
+      await this.start(api._startingParams)
+    }
+    return api
   }
 }
 
-actionhero.prototype.restart = function (callback) {
-  if (this.api.running === true) {
-    this.stop((error) => {
-      if (error) { this.api.log(error, 'error') }
-      this.start(this.startingParams, (error) => {
-        if (error) { this.api.log(error, 'error') }
-        if (typeof callback === 'function') { callback(null, this.api) }
-      })
-    })
-  } else {
-    this.start(this.startingParams, (error) => {
-      if (error) { this.api.log(error, 'error') }
-      if (typeof callback === 'function') { callback(null, this.api) }
-    })
-  }
-}
-
-module.exports = actionhero
+module.exports = ActionHero

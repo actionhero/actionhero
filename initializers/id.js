@@ -7,7 +7,7 @@ const argv = require('optimist').argv
 module.exports = {
   loadPriority: 10,
   startPriority: 2,
-  initialize: function (api, next) {
+  initialize: function (api) {
     if (argv.title) {
       api.id = argv.title
     } else if (process.env.ACTIONHERO_TITLE) {
@@ -29,14 +29,9 @@ module.exports = {
     } else {
       api.id = api.config.general.id
     }
-
-    api.actionheroVersion = require('..' + path.sep + 'package.json').version
-
-    next()
   },
 
-  start: function (api, next) {
+  start: function (api) {
     api.log(`server ID: ${api.id}`, 'notice')
-    next()
   }
 }
