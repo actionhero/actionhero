@@ -4,7 +4,7 @@ module.exports = {
   name: 'actions list',
   description: 'I will list the actions defined on this server',
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     for (let actionName in api.actions.actions) {
       api.log(actionName)
       let collection = api.actions.actions[actionName]
@@ -20,6 +20,6 @@ module.exports = {
       }
     }
 
-    next(null)
+    return true
   }
 }

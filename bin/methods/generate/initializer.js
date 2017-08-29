@@ -15,7 +15,7 @@ module.exports = {
     stopPriority: {required: true, default: 1000}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
     template = String(template);
 
@@ -31,6 +31,6 @@ module.exports = {
 
     api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + data.params.name + '.js', template)
 
-    next(null, true)
+    return true
   }
 }

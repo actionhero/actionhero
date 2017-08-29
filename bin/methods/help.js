@@ -4,7 +4,7 @@ module.exports = {
   name: 'help',
   description: 'get actonhero CLI help; will display this document',
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let files = []
     let methods = {}
 
@@ -58,6 +58,6 @@ module.exports = {
       }
     })
 
-    next(null, true)
+    return true
   }
 }

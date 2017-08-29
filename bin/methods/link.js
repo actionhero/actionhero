@@ -13,7 +13,7 @@ module.exports = {
     overwriteConfig: {required: false}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let linkRelativeBase = api.projectRoot + path.sep
     let pluginRoot
     let overwriteConfig = false
@@ -27,7 +27,7 @@ module.exports = {
 
     if (!pluginRoot) {
       api.log(`plugin \`${data.params.name}\` not found in plugin paths`, 'warning', api.config.general.paths.plugin)
-      return next(null, true)
+      return true
     }
 
     let pluginRootRelative = pluginRoot.replace(linkRelativeBase, '')
@@ -75,6 +75,6 @@ module.exports = {
     // copy config files
     const pluginConfigDir = pluginRoot + path.sep + 'config'
     copyFiles(pluginConfigDir)
-    next(null, true)
+    return true
   }
 }

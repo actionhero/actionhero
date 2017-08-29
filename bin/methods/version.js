@@ -7,8 +7,8 @@ module.exports = {
   name: 'version',
   description: 'return the ActionHero version within this project',
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     console.log(packageJSON.version)
-    next(null, true)
+    return true
   }
 }

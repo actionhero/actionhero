@@ -7,7 +7,7 @@ module.exports = {
   name: 'generate',
   description: 'will prepare an empty directory with a template ActionHero project',
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     // ////// DOCUMENTS ////////
 
     let documents = {}
@@ -112,6 +112,6 @@ module.exports = {
     api.log('You may need to run `npm install` to install some dependancies', 'alert')
     api.log('Run \'npm start\' to start your server')
 
-    next(null, true)
+    return true
   }
 }

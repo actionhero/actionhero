@@ -24,7 +24,7 @@ module.exports = {
     }
   },
 
-  run: function (api, data, next) {
+  run: async function (api, data) {
     let state
 
     // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
@@ -33,65 +33,48 @@ module.exports = {
       shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
     }
 
-    const startServer = function (callback) {
+    const startServer = async function () {
       state = 'starting'
       if (cluster.isWorker) { process.send({state: state}) }
-      api._context.start(function (error, apiFromCallback) {
-        if (error) {
-          api.log(error)
-          process.exit(1)
-        } else {
-          state = 'started'
-          if (cluster.isWorker) { process.send({state: state}) }
-          api = apiFromCallback
-          checkForInernalStop()
-          if (typeof callback === 'function') { callback(null, api) }
-        }
-      })
+      let apiFromCallback = await api._context.start()
+      state = 'started'
+      if (cluster.isWorker) { process.send({state: state}) }
+      api = apiFromCallback
+      checkForInernalStop()
     }
 
-    const stopServer = function (callback) {
+    const stopServer = async function () {
       state = 'stopping'
       if (cluster.isWorker) { process.send({state: state}) }
-      api._context.stop(function () {
-        state = 'stopped'
-        if (cluster.isWorker) { process.send({state: state}) }
-        api = null
-        if (typeof callback === 'function') { callback(null, api) }
-      })
+      await api._context.stop()
+      state = 'stopped'
+      if (cluster.isWorker) { process.send({state: state}) }
+      api = null
     }
 
-    const restartServer = function (callback) {
+    const restartServer = async function () {
       state = 'restarting'
       if (cluster.isWorker) { process.send({state: state}) }
-      api._context.restart(function (error, apiFromCallback) {
-        if (error) { throw (error) }
-
-        state = 'started'
-        if (cluster.isWorker) { process.send({state: state}) }
-        api = apiFromCallback
-        if (typeof callback === 'function') { callback(null, api) }
-      })
+      let apiFromCallback = await api._context.restart()
+      state = 'started'
+      if (cluster.isWorker) { process.send({state: state}) }
+      api = apiFromCallback
     }
 
-    const stopProcess = function () {
+    const stopProcess = async function () {
       setTimeout(function () {
         throw new Error('process stop timeout reached.  terminating now.')
       }, shutdownTimeout)
       // finalTimer.unref();
-      stopServer(function () {
-        process.nextTick(function () {
-          process.exit()
-        })
-      })
+      await stopServer()
+      process.nextTick(() => process.exit)
     }
 
+    // check for an internal stop which doesn't close the processs
     let checkForInernalStopTimer
     const checkForInernalStop = function () {
       clearTimeout(checkForInernalStopTimer)
-      if (api.running !== true && state === 'started') {
-        process.exit(0)
-      }
+      if (api.running !== true && state === 'started') { process.exit(0) }
       checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout)
     }
 
@@ -143,8 +126,7 @@ module.exports = {
     }
 
     // start the server!
-    startServer(function () {
-      next(false, false)
-    })
+    await startServer()
+    return false
   }
 }

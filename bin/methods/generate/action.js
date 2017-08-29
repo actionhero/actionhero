@@ -13,7 +13,7 @@ module.exports = {
     description: {required: true, default: 'an actionhero action'}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
     template = String(template);
 
@@ -27,6 +27,6 @@ module.exports = {
 
     api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + data.params.name + '.js', template)
 
-    next(null, true)
+    return true
   }
 }

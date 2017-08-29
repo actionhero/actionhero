@@ -15,7 +15,7 @@ module.exports = {
     frequency: {required: true, default: 0}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
     template = String(template);
 
@@ -31,6 +31,6 @@ module.exports = {
 
     api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + data.params.name + '.js', template)
 
-    next(null, true)
+    return true
   }
 }

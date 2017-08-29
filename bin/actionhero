@@ -52,10 +52,7 @@ function formatParams (api, runner) {
   return params
 }
 
-let commands = []
-if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
-optimist.argv._.forEach(function (arg) { commands.push(arg) })
-if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+async function handleGenerate () {
   let api = {
     projectRoot: projectRoot,
     actionheroRoot: actionheroRoot
@@ -65,20 +62,23 @@ if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
   api.log = function (message) { console.log(message) }
 
   // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js'))).initialize(api, function (error) {
-    if (error) { throw error }
+  try {
+    let utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
+    api.utils = await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
     const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
     let params = formatParams(api, runner)
-    runner.run(api, {params: params}, function (error) {
-      if (error) { throw error }
-      setTimeout(process.exit, 500, 0)
-    })
-  })
-} else {
-  actionhero.initialize({configChanges: configChanges}, function (error, api) {
-    if (error) { throw error }
+    await runner.run(api, {params: params})
+    setTimeout(process.exit, 500, 0)
+  } catch (error) {
+    throw error
+  }
+}
+
+async function handleMethod () {
+  try {
+    let api = await actionhero.initialize({configChanges: configChanges})
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionhero
@@ -119,14 +119,25 @@ if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
           process.nextTick(process.exit)
         } else {
           let params = formatParams(api, runner)
-          runner.run(api, {params: params}, function (error, toStop) {
-            if (error) { throw error }
-            if (toStop || (arguments.length < 2 && !toStop)) { setTimeout(process.exit, 500, 0) }
-          })
+          let toStop = await runner.run(api, {params: params})
+          if (toStop || (arguments.length < 2 && !toStop)) {
+            setTimeout(process.exit, 500, 0)
+          }
         }
       }
     } catch (e) {
       throw (e)
     }
-  })
+  } catch (error) {
+    throw error
+  }
+}
+
+let commands = []
+if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
+optimist.argv._.forEach(function (arg) { commands.push(arg) })
+if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+  handleGenerate()
+} else {
+  handleMethod()
 }
