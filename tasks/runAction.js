@@ -5,7 +5,7 @@ const task = {
   plugins: [],
   pluginOptions: [],
   frequency: 0,
-  run: function (api, params, next) {
+  run: async function (api, params, next) {
     if (!params) { params = {} }
 
     const connection = new api.Connection({

@@ -37,23 +37,19 @@ exports.status = {
       }
     }
 
-    const checkResqueQueues = function (callback) {
-      api.tasks.details(function (error, details) {
-        if (error) { return callback(error) }
-        let length = 0
-        Object.keys(details.queues).forEach(function (q) {
-          length += details.queues[q].length
-        })
-
-        data.response.resqueTotalQueueLength = length
-
-        if (length > maxResqueQueueLength) {
-          data.response.nodeStatus = data.connection.localize('Node Unhealthy')
-          data.response.problems.push(data.connection.localize(['Resque Queues over {{maxResqueQueueLength}} jobs', {maxResqueQueueLength: maxResqueQueueLength}]))
-        }
-
-        callback()
+    const checkResqueQueues = async function () {
+      let details = await api.tasks.details()
+      let length = 0
+      Object.keys(details.queues).forEach(function (q) {
+        length += details.queues[q].length
       })
+
+      data.response.resqueTotalQueueLength = length
+
+      if (length > maxResqueQueueLength) {
+        data.response.nodeStatus = data.connection.localize('Node Unhealthy')
+        data.response.problems.push(data.connection.localize(['Resque Queues over {{maxResqueQueueLength}} jobs', {maxResqueQueueLength: maxResqueQueueLength}]))
+      }
     }
 
     /* --- Run --- */
@@ -71,8 +67,8 @@ exports.status = {
     try {
       checkRam()
       await checkEventLoop()
+      await checkResqueQueues()
       next()
-      checkResqueQueues(next) // TODO: stil callback not async
     } catch (error) {
       next(error)
     }
