@@ -6,7 +6,7 @@ const argv = require('optimist').argv
 
 module.exports = {
   loadPriority: 0,
-  initialize: function (api, next) {
+  initialize: async function (api) {
     // api.env
 
     if (api._startingParams && api._startingParams.api) {
@@ -131,7 +131,7 @@ module.exports = {
               delete loadErrors[e].error
             })
 
-            return next(new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors)))
+            throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors))
           }
           // adjust configuration files list: remove and push
           // failed configuration to the end of the list and
@@ -167,13 +167,10 @@ module.exports = {
     if (api._startingParams && api._startingParams.configChanges) {
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges)
     }
-
-    process.nextTick(next)
   },
 
-  start: function (api, callback) {
+  start: function (api) {
     api.log(`environment: ${api.env}`, 'notice')
-    callback()
   }
 
 }

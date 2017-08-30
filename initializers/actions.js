@@ -2,7 +2,7 @@
 
 module.exports = {
   loadPriority: 410,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.actions = {}
     api.actions.actions = {}
     api.actions.versions = {}
@@ -22,9 +22,7 @@ module.exports = {
     }
 
     api.actions.validateAction = function (action) {
-      const fail = (msg) => {
-        return next(new Error(msg))
-      }
+      const fail = (msg) => { throw new Error(msg) }
 
       if (action.inputs === undefined) {
         action.inputs = {}
@@ -98,7 +96,5 @@ module.exports = {
         api.actions.loadFile(f)
       })
     })
-
-    next()
   }
 }

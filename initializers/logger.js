@@ -4,7 +4,7 @@ const winston = require('winston')
 
 module.exports = {
   loadPriority: 100,
-  initialize: function (api, next) {
+  initialize: function (api) {
     let transports = []
     let i
     for (i in api.config.logger.transports) {
@@ -28,7 +28,7 @@ module.exports = {
       winston.addColors(api.config.logger.colors)
     }
 
-    api.log = function (message, severity, data) {
+    api.log = (message, severity, data) => {
       if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }
       let args = [severity, message]
       if (data !== null && data !== undefined) { args.push(data) }
@@ -39,7 +39,5 @@ module.exports = {
     for (i in api.logger.levels) { logLevels.push(i) }
 
     api.log('Logger loaded.  Possible levels include:', 'debug', logLevels)
-
-    next()
   }
 }

@@ -7,7 +7,7 @@ const path = require('path')
 const util = require('util')
 const browserFingerprint = require('browser_fingerprint')
 
-const initialize = function (api, options, next) {
+const initialize = async function (api, options) {
   // ////////
   // INIT //
   // ////////
@@ -36,7 +36,7 @@ const initialize = function (api, options, next) {
   // REQUIRED METHODS //
   // ////////////////////
 
-  server.start = function (next) {
+  server.start = function () {
     const webserver = api.servers.servers.web
     server.server = new Primus(webserver.server, api.config.servers.websocket.server)
 
@@ -52,18 +52,13 @@ const initialize = function (api, options, next) {
     server.active = true
 
     server.writeClientJS()
-
-    next()
   }
 
-  server.stop = function (next) {
+  server.stop = function () {
     server.active = false
     if (api.config.servers.websocket.destroyClientsOnShutdown === true) {
-      server.connections().forEach((connection) => {
-        connection.destroy()
-      })
+      server.connections().forEach((connection) => { connection.destroy() })
     }
-    process.nextTick(next)
   }
 
   server.sendMessage = function (connection, message, messageCount) {
@@ -253,7 +248,7 @@ const initialize = function (api, options, next) {
     }
   }
 
-  next(server)
+  return server
 }
 
 // ///////////////////////////////////////////////////////////////////

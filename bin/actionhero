@@ -52,10 +52,7 @@ function formatParams (api, runner) {
   return params
 }
 
-let commands = []
-if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
-optimist.argv._.forEach(function (arg) { commands.push(arg) })
-if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+async function handleGenerate () {
   let api = {
     projectRoot: projectRoot,
     actionheroRoot: actionheroRoot
@@ -65,68 +62,78 @@ if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
   api.log = function (message) { console.log(message) }
 
   // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js'))).initialize(api, function (error) {
-    if (error) { throw error }
+  try {
+    let utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
+    api.utils = await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
     const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
     let params = formatParams(api, runner)
-    runner.run(api, {params: params}, function (error) {
-      if (error) { throw error }
-      setTimeout(process.exit, 500, 0)
-    })
-  })
-} else {
-  actionhero.initialize({configChanges: configChanges}, function (error, api) {
-    if (error) { throw error }
+    await runner.run(api, {params: params})
+    setTimeout(process.exit, 500, 0)
+  } catch (error) {
+    throw error
+  }
+}
+
+async function handleMethod () {
+  try {
+    let api = await actionhero.initialize({configChanges: configChanges})
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionhero
     let runner
 
-    try {
-      let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
-      if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
-        runner = require(p)
-      } else {
-        api.config.general.paths.cli.forEach((cliPaths) => {
-          p = path.join(cliPaths, commands.join(path.sep) + '.js')
-          if (fs.existsSync(p)) { runner = require(p) }
-        })
-      }
+    let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
+    if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
+      runner = require(p)
+    } else {
+      api.config.general.paths.cli.forEach((cliPaths) => {
+        p = path.join(cliPaths, commands.join(path.sep) + '.js')
+        if (fs.existsSync(p)) { runner = require(p) }
+      })
+    }
 
-      if (!runner) {
-        api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
-        api.log('run `actionhero help` to learn more', 'error')
-        setTimeout(process.exit, 500, 1)
-      } else {
-        api.log('--------------------------------------')
-        api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
-        api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
-        api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
-        api.log('--------------------------------------')
+    if (!runner) {
+      api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
+      api.log('run `actionhero help` to learn more', 'error')
+      setTimeout(process.exit, 500, 1)
+    } else {
+      api.log('--------------------------------------')
+      api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
+      api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
+      api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
+      api.log('--------------------------------------')
 
-        if (optimist.argv.daemon) {
-          let newArgs = process.argv.splice(2)
-          for (let i in newArgs) {
-            if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
-          }
-          newArgs.push('--isDaemon=true')
-          const command = path.normalize(actionheroRoot + '/bin/actionhero')
-          const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
-          api.log(`${command} ${newArgs.join(' ')}`, 'debug')
-          api.log(`spawned child process with pid ${child.pid}`, 'notice')
-          process.nextTick(process.exit)
-        } else {
-          let params = formatParams(api, runner)
-          runner.run(api, {params: params}, function (error, toStop) {
-            if (error) { throw error }
-            if (toStop || (arguments.length < 2 && !toStop)) { setTimeout(process.exit, 500, 0) }
-          })
+      if (optimist.argv.daemon) {
+        let newArgs = process.argv.splice(2)
+        for (let i in newArgs) {
+          if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
+        }
+        newArgs.push('--isDaemon=true')
+        const command = path.normalize(actionheroRoot + '/bin/actionhero')
+        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+        api.log(`${command} ${newArgs.join(' ')}`, 'debug')
+        api.log(`spawned child process with pid ${child.pid}`, 'notice')
+        process.nextTick(process.exit)
+      } else {
+        let params = formatParams(api, runner)
+        let toStop = await runner.run(api, {params: params})
+        if (toStop) {
+          setTimeout(process.exit, 500, 0)
         }
       }
-    } catch (e) {
-      throw (e)
     }
-  })
+  } catch (e) {
+    throw (e)
+  }
+}
+
+let commands = []
+if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
+optimist.argv._.forEach(function (arg) { commands.push(arg) })
+if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+  handleGenerate()
+} else {
+  handleMethod()
 }

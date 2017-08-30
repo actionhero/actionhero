@@ -1,11 +1,9 @@
 'use strict'
 
-const async = require('async')
-
 module.exports = {
   startPriority: 900,
   loadPriority: 699,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.tasks = {
 
       tasks: {},
@@ -97,13 +95,11 @@ module.exports = {
             if (args.length === 0) {
               args.push({}) // empty params array
             }
-            args.push(
-              function (error, resp) {
-                self.enqueueRecurrentJob(taskName, function () {
-                  cb(error, resp)
-                })
-              }
-            )
+            args.push((error, resp) => {
+              self.enqueueRecurrentJob(taskName, () => {
+                cb(error, resp)
+              })
+            })
             args.splice(0, 0, api)
             api.tasks.tasks[taskName].run.apply(this, args)
           }
@@ -135,212 +131,270 @@ module.exports = {
         }
       },
 
-      enqueue: function (taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) {
-          callback = queue; queue = this.tasks[taskName].queue
-        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
-          callback = params; queue = this.tasks[taskName].queue; params = {}
-        }
-        api.resque.queue.enqueue(queue, taskName, params, callback)
+      enqueue: async (taskName, params, queue) => {
+        if (!params) { params = {} }
+        if (!queue) { queue = this.tasks[taskName].queue }
+
+        return new Promise((resolve, reject) => {
+          api.resque.queue.enqueue(queue, taskName, params, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      enqueueAt: function (timestamp, taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) {
-          callback = queue; queue = this.tasks[taskName].queue
-        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
-          callback = params; queue = this.tasks[taskName].queue; params = {}
-        }
-        api.resque.queue.enqueueAt(timestamp, queue, taskName, params, callback)
+      enqueueAt: async (timestamp, taskName, params, queue) => {
+        if (!params) { params = {} }
+        if (!queue) { queue = this.tasks[taskName].queue }
+
+        return new Promise((resolve, reject) => {
+          api.resque.queue.enqueueAt(timestamp, queue, taskName, params, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      enqueueIn: function (time, taskName, params, queue, callback) {
-        if (typeof queue === 'function' && callback === undefined) {
-          callback = queue; queue = this.tasks[taskName].queue
-        } else if (typeof params === 'function' && callback === undefined && queue === undefined) {
-          callback = params; queue = this.tasks[taskName].queue; params = {}
-        }
-        api.resque.queue.enqueueIn(time, queue, taskName, params, callback)
+      enqueueIn: async (time, taskName, params, queue) => {
+        if (!params) { params = {} }
+        if (!queue) { queue = this.tasks[taskName].queue }
+
+        return new Promise((resolve, reject) => {
+          api.resque.queue.enqueueIn(time, queue, taskName, params, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      del: function (q, taskName, args, count, callback) {
-        api.resque.queue.del(q, taskName, args, count, callback)
+      del: async (q, taskName, args, count) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.del(q, taskName, args, count, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      delDelayed: function (q, taskName, args, callback) {
-        api.resque.queue.delDelayed(q, taskName, args, callback)
+      delDelayed: async (q, taskName, args) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.delDelayed(q, taskName, args, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      scheduledAt: function (q, taskName, args, callback) {
-        api.resque.queue.scheduledAt(q, taskName, args, callback)
+      scheduledAt: async (q, taskName, args) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.scheduledAt(q, taskName, args, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      stats: function (callback) {
-        api.resque.queue.stats(callback)
+      stats: async () => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.stats((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      queued: function (q, start, stop, callback) {
-        api.resque.queue.queued(q, start, stop, callback)
+      queued: async (q, start, stop) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.queued(q, start, stop, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      delQueue: function (q, callback) {
-        api.resque.queue.delQueue(q, callback)
+      delQueue: async (q) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.delQueue(q, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      locks: function (callback) {
-        api.resque.queue.locks(callback)
+      locks: async () => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.locks((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      delLock: function (lock, callback) {
-        api.resque.queue.delLock(lock, callback)
+      delLock: async (lock) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.delLock(lock, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      timestamps: function (callback) {
-        api.resque.queue.timestamps(callback)
+      timestamps: async () => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.timestamps((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      delayedAt: function (timestamp, callback) {
-        api.resque.queue.delayedAt(timestamp, callback)
+      delayedAt: async (timestamp) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.delayedAt(timestamp, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      allDelayed: function (callback) {
-        api.resque.queue.allDelayed(callback)
+      allDelayed: async (callback) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.allDelayed((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      workers: function (callback) {
-        api.resque.queue.workers(callback)
+      workers: async (callback) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.workers((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      workingOn: function (workerName, queues, callback) {
-        api.resque.queue.workingOn(workerName, queues, callback)
+      workingOn: async (workerName, queues) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.workingOn(workerName, queues, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      allWorkingOn: function (callback) {
-        api.resque.queue.allWorkingOn(callback)
+      allWorkingOn: async () => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.allWorkingOn((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      failedCount: function (callback) {
-        api.resque.queue.failedCount(callback)
+      failedCount: async () => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.failedCount((error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      failed: function (start, stop, callback) {
-        api.resque.queue.failed(start, stop, callback)
+      failed: async (start, stop) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.failed(start, stop, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      removeFailed: function (failedJob, callback) {
-        api.resque.queue.removeFailed(failedJob, callback)
+      removeFailed: async (failedJob) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.removeFailed(failedJob, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      retryAndRemoveFailed: function (failedJob, callback) {
-        api.resque.queue.retryAndRemoveFailed(failedJob, callback)
+      retryAndRemoveFailed: async (failedJob) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.retryAndRemoveFailed(failedJob, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      cleanOldWorkers: function (age, callback) {
-        api.resque.queue.cleanOldWorkers(age, callback)
+      cleanOldWorkers: async (age) => {
+        return new Promise((resolve, reject) => {
+          api.resque.queue.cleanOldWorkers(age, (error, response) => {
+            if (error) { return reject(error) }
+            resolve(response)
+          })
+        })
       },
 
-      enqueueRecurrentJob: function (taskName, callback) {
+      enqueueRecurrentJob: async (taskName) => {
         const task = this.tasks[taskName]
 
-        if (task.frequency <= 0) {
-          callback()
-        } else {
-          this.del(task.queue, taskName, {}, () => {
-            this.delDelayed(task.queue, taskName, {}, () => {
-              this.enqueueIn(task.frequency, taskName, () => {
-                api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
-                callback()
-              })
-            })
-          })
+        if (task.frequency > 0) {
+          await this.del(task.queue, taskName, {})
+          await this.delDelayed(task.queue, taskName, {})
+          await this.enqueueIn(task.frequency, taskName)
+          api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
         }
       },
 
-      enqueueAllRecurrentJobs: function (callback) {
+      enqueueAllRecurrentJobs: async () => {
         let jobs = []
         let loadedTasks = []
 
         Object.keys(this.tasks).forEach((taskName) => {
           const task = this.tasks[taskName]
           if (task.frequency > 0) {
-            jobs.push((done) => {
-              this.enqueue(taskName, (error, toRun) => {
-                if (error) { return done(error) }
-                if (toRun === true) {
-                  api.log(`enqueuing periodic task: ${taskName}`, api.config.tasks.schedulerLogging.enqueue)
-                  loadedTasks.push(taskName)
-                }
-                return done()
-              })
+            jobs.push(async () => {
+              let toRun = await this.enqueue(taskName)
+              if (toRun === true) {
+                api.log(`enqueuing periodic task: ${taskName}`, api.config.tasks.schedulerLogging.enqueue)
+                loadedTasks.push(taskName)
+              }
             })
           }
         })
 
-        async.series(jobs, function (error) {
-          if (error) { return callback(error) }
-          return callback(null, loadedTasks)
-        })
+        await api.utiles.asyncWaterfall(jobs)
+        return loadedTasks
       },
 
-      stopRecurrentJob: function (taskName, callback) {
+      stopRecurrentJob: async (taskName) => {
         // find the jobs in either the normal queue or delayed queues
         const task = this.tasks[taskName]
-        if (task.frequency <= 0) {
-          callback()
-        } else {
+        if (task.frequency > 0) {
           let removedCount = 0
-          this.del(task.queue, task.name, {}, 1, (error, count) => {
-            if (error) { return callback(error) }
-            removedCount = removedCount + count
-            this.delDelayed(task.queue, task.name, {}, (error, timestamps) => {
-              removedCount = removedCount + timestamps.length
-              callback(error, removedCount)
-            })
-          })
+          let count = await this.del(task.queue, task.name, {}, 1)
+          removedCount = removedCount + count
+          let timestamps = await this.delDelayed(task.queue, task.name, {})
+          removedCount = removedCount + timestamps.length
+          return removedCount
         }
       },
 
-      details: function (callback) {
+      details: async () => {
         let details = {'queues': {}, 'workers': {}}
-        let jobs = []
 
-        jobs.push((done) => {
-          api.tasks.allWorkingOn((error, workers) => {
-            if (error) { return done(error) }
-            details.workers = workers
-            return done()
-          })
+        details.workers = await api.tasks.allWorkingOn()
+        details.stats = await api.tasks.stats()
+        let queues = await api.resque.queue.queues()
+        queues.forEach(async (queue) => {
+          let length = await api.resque.queue.length(queue)
+          details.queues[queue] = { length: length }
         })
 
-        jobs.push((done) => {
-          api.tasks.stats((error, stats) => {
-            if (error) { return done(error) }
-            details.stats = stats
-            return done()
-          })
-        })
-
-        jobs.push((done) => {
-          api.resque.queue.queues((error, queues) => {
-            if (error) { return done(error) }
-            let queueJobs = []
-
-            queues.forEach((queue) => {
-              queueJobs.push((qdone) => {
-                api.resque.queue.length(queue, (error, length) => {
-                  if (error) { return qdone(error) }
-                  details.queues[queue] = { length: length }
-                  return qdone()
-                })
-              })
-            })
-
-            async.parallel(queueJobs, done)
-          })
-        })
-
-        async.parallel(jobs, (error) => {
-          return callback(error, details)
-        })
+        return details
       }
     }
 
@@ -365,17 +419,11 @@ module.exports = {
     }
 
     loadTasks(false)
-
-    next()
   },
 
-  start: function (api, next) {
+  start: async (api) => {
     if (api.config.tasks.scheduler === true) {
-      api.tasks.enqueueAllRecurrentJobs((error) => {
-        next(error)
-      })
-    } else {
-      next()
+      await api.tasks.enqueueAllRecurrentJobs()
     }
   }
 }

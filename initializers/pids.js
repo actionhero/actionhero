@@ -6,7 +6,7 @@ const cluster = require('cluster')
 module.exports = {
   startPriority: 1,
   loadPriority: 50,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.pids = {}
     api.pids.pid = process.pid
     api.pids.path = api.config.general.paths.pid[0] // it would be silly to have more than one pid
@@ -29,24 +29,21 @@ module.exports = {
 
     try { fs.mkdirSync(api.pids.path) } catch (e) {};
 
-    api.pids.writePidFile = function () {
+    api.pids.writePidFile = () => {
       fs.writeFileSync(api.pids.path + '/' + api.pids.title, api.pids.pid.toString(), 'ascii')
     }
 
-    api.pids.clearPidFile = function () {
+    api.pids.clearPidFile = () => {
       try {
         fs.unlinkSync(api.pids.path + '/' + api.pids.title)
-      } catch (e) {
-        api.log('Unable to remove pidfile', 'error', e)
+      } catch (error) {
+        api.log('Unable to remove pidfile', 'error', error)
       }
     }
-
-    next()
   },
 
   start: function (api, next) {
     api.pids.writePidFile()
     api.log(`pid: ${process.pid}`, 'notice')
-    next()
   }
 }

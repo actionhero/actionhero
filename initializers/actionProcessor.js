@@ -4,7 +4,7 @@ const async = require('async')
 
 module.exports = {
   loadPriority: 430,
-  initialize: function (api, next) {
+  initialize: function (api) {
     const prepareStringMethod = function (method) {
       const cmdParts = method.split('.')
       const cmd = cmdParts.shift()
@@ -303,7 +303,5 @@ module.exports = {
         }
       })
     }
-
-    next()
   }
 }

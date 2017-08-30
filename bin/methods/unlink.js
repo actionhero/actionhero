@@ -11,7 +11,7 @@ module.exports = {
     name: {required: true}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     const linkRelativeBase = api.projectRoot + path.sep
     let pluginRoot
 
@@ -24,7 +24,7 @@ module.exports = {
 
     if (!pluginRoot) {
       api.log(`plugin \`${data.params.name}\` not found in plugin paths`, 'warning', api.config.general.paths.plugin)
-      return next(null, true)
+      return true
     }
 
     const pluginRootRelative = pluginRoot.replace(linkRelativeBase, '')
@@ -48,6 +48,6 @@ module.exports = {
 
     api.log('Remember that config files have to be deleted manually', 'warning')
     api.log('If your plugin was installed via NPM, also be sure to remove it from your package.json or uninstall it with "npm uninstall --save"', 'warning')
-    next(null, true)
+    return true
   }
 }

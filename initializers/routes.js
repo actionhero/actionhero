@@ -4,7 +4,7 @@ const path = require('path')
 
 module.exports = {
   loadPriority: 500,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.routes = {}
     api.routes.routes = {}
     api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete']
@@ -161,6 +161,5 @@ module.exports = {
     }
 
     api.routes.loadRoutes()
-    next()
   }
 }

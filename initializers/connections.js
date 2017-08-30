@@ -4,7 +4,7 @@ const uuid = require('uuid')
 
 module.exports = {
   loadPriority: 400,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.connections = {
 
       middleware: {},
@@ -32,7 +32,7 @@ module.exports = {
         if (args === undefined && callback === undefined && typeof method === 'function') {
           callback = method; args = null; method = null
         }
-        api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback)
+        return api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, true)
       },
 
       applyCatch: function (connectionId, method, args, callback) {
@@ -275,7 +275,5 @@ module.exports = {
         if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotAllowed(this, verb)), null) }
       }
     }
-
-    next()
   }
 }

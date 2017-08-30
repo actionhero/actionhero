@@ -6,14 +6,14 @@ const NR = require('node-resque')
 module.exports = {
   startPriority: 901,
   loadPriority: 900,
-  initialize: function (api, next) {
+  initialize: function (api) {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
       api.specHelper = {
         returnMetadata: true
       }
 
       // create a test 'server' to run actions
-      api.specHelper.initialize = function (api, options, next) {
+      api.specHelper.initialize = async (api, options) => {
         const type = 'testServer'
         const attributes = {
           canChat: true,
@@ -25,16 +25,15 @@ module.exports = {
 
         const server = new api.GenericServer(type, options, attributes)
 
-        server.start = function (next) {
+        server.start = () => {
           api.log('loading the testServer', 'warning')
-          next()
         }
 
-        server.stop = function (next) {
-          next()
+        server.stop = () => {
+          // nothing to do
         }
 
-        server.sendMessage = function (connection, message, messageCount) {
+        server.sendMessage = (connection, message, messageCount) => {
           process.nextTick(() => {
             connection.messages.push(message)
             if (typeof connection.actionCallbacks[messageCount] === 'function') {
@@ -44,7 +43,7 @@ module.exports = {
           })
         }
 
-        server.sendFile = function (connection, error, fileStream, mime, length) {
+        server.sendFile = (connection, error, fileStream, mime, length) => {
           let content = ''
           let response = {
             error: error,
@@ -69,16 +68,16 @@ module.exports = {
           }
         }
 
-        server.goodbye = function () {
+        server.goodbye = () => {
           //
         }
 
-        server.on('connection', function (connection) {
+        server.on('connection', (connection) => {
           connection.messages = []
           connection.actionCallbacks = {}
         })
 
-        server.on('actionComplete', function (data) {
+        server.on('actionComplete', (data) => {
           if (typeof data.response === 'string' || Array.isArray(data.response)) {
             if (data.response.error) {
               data.response = api.config.errors.serializers.servers.specHelper(data.response.error)
@@ -113,10 +112,10 @@ module.exports = {
           }
         })
 
-        next(server)
+        return server
       }
 
-      api.specHelper.connection = function () {
+      api.specHelper.connection = () => {
         let id = uuid.v4()
         api.servers.servers.testServer.buildConnection({
           id: id,
@@ -132,7 +131,7 @@ module.exports = {
 
       // create helpers to run an action
       // data can be a params hash or a connection
-      api.specHelper.runAction = function (actionName, input, next) {
+      api.specHelper.runAction = (actionName, input, next) => {
         let connection
         if (typeof input === 'function' && !next) {
           next = input
@@ -157,7 +156,7 @@ module.exports = {
       }
 
       // helpers to get files
-      api.specHelper.getStaticFile = async function (file, next) {
+      api.specHelper.getStaticFile = async (file, next) => {
         let connection = new api.specHelper.Connection()
         connection.params.file = file
 
@@ -170,45 +169,37 @@ module.exports = {
       }
 
       // create helpers to run a task
-      api.specHelper.runTask = function (taskName, params, next) {
-        api.tasks.tasks[taskName].run(api, params, next)
+      api.specHelper.runTask = async (taskName, params, next) => {
+        return api.tasks.tasks[taskName].run(api, params)
       }
 
-      api.specHelper.runFullTask = function (taskName, params, next) {
+      api.specHelper.runFullTask = async (taskName, params) => {
         let options = {
           connection: api.redis.clients.tasks,
           queues: api.config.tasks.queues || ['default']
         }
 
         let worker = new NR.worker(options, api.tasks.jobs) // eslint-disable-line
-        worker.connect((error) => {
-          if (error) {
-            return next(error)
-          }
+        await new Promise((resolve, reject) => {
+          worker.connect((error) => {
+            if (error) { return reject(error) }
 
-          worker.performInline(taskName, params, (error, result) => {
-            worker.end()
-            next(error, result)
+            worker.performInline(taskName, params, (error, result) => {
+              worker.end()
+              if (error) { return reject(error) }
+              resolve(error)
+            })
           })
         })
       }
-
-      next()
-    } else {
-      next()
     }
   },
 
-  start: function (api, next) {
+  start: async function (api) {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
-      api.specHelper.initialize(api, {}, (serverObject) => {
-        api.servers.servers.testServer = serverObject
-        api.servers.servers.testServer.start(() => {
-          next()
-        })
-      })
-    } else {
-      next()
+      let serverObject = await api.specHelper.initialize(api, {})
+      api.servers.servers.testServer = serverObject
+      return api.servers.servers.testServer.start()
     }
   }
 }

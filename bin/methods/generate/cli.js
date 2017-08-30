@@ -14,7 +14,7 @@ module.exports = {
     example: {required: false, default: 'actionhero command --option=yes'}
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/cli.js'))
     template = String(template);
 
@@ -29,6 +29,6 @@ module.exports = {
 
     api.utils.createFileSafely(api.config.general.paths.cli[0] + '/' + data.params.name + '.js', template)
 
-    next(null, true)
+    return true
   }
 }

@@ -6,7 +6,9 @@ module.exports = {
   name: 'console',
   description: 'start an interactive REPL session with the api object in-scope',
 
-  run: function (api, data, next) {
+  run: async function (api, data) {
+    let startSleep = 500
+
     for (let i in api.config.servers) { api.config.servers[i].enabled = false }
     api.config.general.developmentMode = false
     api.config.tasks.scheduler = false
@@ -14,9 +16,8 @@ module.exports = {
     api.config.tasks.minTaskProcessors = 0
     api.config.tasks.maxTaskProcessors = 0
 
-    api.commands.start.call(api._context, function (error) {
-      if (error) { return next(error) }
-
+    await api.commands.start.call(api._context)
+    await new Promise((resolve, reject) => {
       setTimeout(() => {
         const repl = REPL.start({
           prompt: '[ AH::' + api.env + ' ] >> ',
@@ -27,10 +28,11 @@ module.exports = {
 
         repl.context.api = api
 
-        repl.on('exit', function () {
-          next(null, true)
-        })
-      }, 500)
+        repl.on('exit', resolve)
+        repl.on('error', reject)
+      }, startSleep)
     })
+
+    return true
   }
 }

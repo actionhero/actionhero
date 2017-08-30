@@ -5,7 +5,7 @@ const fs = require('fs')
 module.exports = {
   startPriority: 300,
   loadPriority: 300,
-  initialize: (api, next) => {
+  initialize: (api) => {
     api.cache = {}
     api.cache.redisPrefix = api.config.general.cachePrefix
     api.cache.lockPrefix = api.config.general.lockPrefix
@@ -196,7 +196,5 @@ module.exports = {
         return api.cache.checkLock(key, retry, startTime)
       }
     }
-
-    next()
   }
 }

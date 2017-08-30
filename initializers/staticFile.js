@@ -24,7 +24,7 @@ function asyncReadLink (file) {
 
 module.exports = {
   loadPriority: 510,
-  initialize: function (api, next) {
+  initialize: function (api) {
     api.staticFile = {
 
       searchLoactions: [],
@@ -180,6 +180,5 @@ module.exports = {
     }
 
     api.log('Static files will be served from these directories', 'debug', api.staticFile.searchLoactions)
-    next()
   }
 }

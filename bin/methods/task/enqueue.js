@@ -11,22 +11,16 @@ module.exports = {
     params: {required: false}
   },
 
-  run: function (api, data, next) {
+  run: async function (api, data) {
     if (!api.tasks.tasks[data.params.name]) { throw new Error('Task "' + data.params.name + '" not found') }
 
     let args = {}
     if (data.params.args) { args = JSON.parse(data.params.args) }
     if (data.params.params) { args = JSON.parse(data.params.params) }
 
-    api.resque.startQueue(function () {
-      api.tasks.enqueue(data.params.name, args, function (error, toRun) {
-        if (error) {
-          api.log(error, 'alert')
-        } else {
-          api.log('response', 'info', toRun)
-        }
-        next(null, true)
-      })
-    })
+    await api.resque.startQueue()
+    let toRun = await api.tasks.enqueue(data.params.name, args)
+    api.log('response', 'info', toRun)
+    return true
   }
 }
