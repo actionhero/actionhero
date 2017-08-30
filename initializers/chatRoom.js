@@ -3,7 +3,7 @@
 module.exports = {
   startPriority: 200,
   loadPriority: 520,
-  initialize: function (api) {
+  initialize: (api) => {
     api.chatRoom = {}
     api.chatRoom.keys = {
       rooms: 'actionhero:chatRoom:rooms',
@@ -14,7 +14,7 @@ module.exports = {
     api.chatRoom.middleware = {}
     api.chatRoom.globalMiddleware = []
 
-    api.chatRoom.addMiddleware = function (data) {
+    api.chatRoom.addMiddleware = (data) => {
       if (!data.name) { throw new Error('middleware.name is required') }
       if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
       data.priority = Number(data.priority)
@@ -30,7 +30,7 @@ module.exports = {
       })
     }
 
-    api.chatRoom.broadcast = async function (connection, room, message) {
+    api.chatRoom.broadcast = async (connection, room, message) => {
       if (!room || room.length === 0 || message === null || message.length === 0) {
         return api.config.errors.connectionRoomAndMessage(connection)
       } else if (connection.rooms === undefined || connection.rooms.indexOf(room) > -1) {
@@ -67,7 +67,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.generateMessagePayload = function (message) {
+    api.chatRoom.generateMessagePayload = (message) => {
       return {
         message: message.message,
         room: message.connection.room,
@@ -77,7 +77,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.incomingMessage = function (message) {
+    api.chatRoom.incomingMessage = (message) => {
       const messagePayload = api.chatRoom.generateMessagePayload(message)
       Object.keys(api.connections.connections).forEach((connetionId) => {
         let connection = api.connections.connections[connetionId]
@@ -85,7 +85,7 @@ module.exports = {
       })
     }
 
-    api.chatRoom.incomingMessagePerConnection = async function (connection, messagePayload) {
+    api.chatRoom.incomingMessagePerConnection = async (connection, messagePayload) => {
       if (connection.canChat === true && connection.rooms.indexOf(messagePayload.room) > -1) {
         try {
           const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
@@ -96,11 +96,11 @@ module.exports = {
       }
     }
 
-    api.chatRoom.list = async function () {
+    api.chatRoom.list = async () => {
       return api.redis.clients.client.smembers(api.chatRoom.keys.rooms)
     }
 
-    api.chatRoom.add = async function (room) {
+    api.chatRoom.add = async (room) => {
       let found = await api.chatRoom.exists(room)
       if (found === false) {
         return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room)
@@ -109,7 +109,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.destroy = async function (room) {
+    api.chatRoom.destroy = async (room) => {
       let found = await api.chatRoom.exists(room)
       if (found === true) {
         await api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room))
@@ -126,21 +126,21 @@ module.exports = {
       }
     }
 
-    api.chatRoom.exists = async function (room) {
+    api.chatRoom.exists = async (room) => {
       let bool = await api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room)
       let found = false
       if (bool === 1 || bool === true) { found = true }
       return found
     }
 
-    api.chatRoom.sanitizeMemberDetails = function (memberData) {
+    api.chatRoom.sanitizeMemberDetails = (memberData) => {
       return {
         id: memberData.id,
         joinedAt: memberData.joinedAt
       }
     }
 
-    api.chatRoom.roomStatus = async function (room) {
+    api.chatRoom.roomStatus = async (room) => {
       if (room) {
         let found = await api.chatRoom.exists(room)
         if (found === true) {
@@ -168,7 +168,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.generateMemberDetails = function (connection) {
+    api.chatRoom.generateMemberDetails = (connection) => {
       return {
         id: connection.id,
         joinedAt: new Date().getTime(),
@@ -176,7 +176,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.addMember = async function (connectionId, room) {
+    api.chatRoom.addMember = async (connectionId, room) => {
       let connection = api.connections.connections[connectionId]
       if (connection) {
         if (connection.rooms.indexOf(room) < 0) {
@@ -198,7 +198,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.removeMember = async function (connectionId, room) {
+    api.chatRoom.removeMember = async (connectionId, room) => {
       let connection = api.connections.connections[connectionId]
       if (connection) {
         if (connection.rooms.indexOf(room) > -1) {
@@ -220,7 +220,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.runMiddleware = async function (connection, room, direction, messagePayload) {
+    api.chatRoom.runMiddleware = async (connection, room, direction, messagePayload) => {
       let newMessagePayload
       if (messagePayload) { newMessagePayload = api.utils.objClone(messagePayload) }
 
@@ -240,7 +240,7 @@ module.exports = {
     }
   },
 
-  start: async function (api) {
+  start: async (api) => {
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) { api.chatRoom.incomingMessage(message) }
     }
