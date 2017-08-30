@@ -280,6 +280,7 @@ module.exports = {
           if (verb === 'say') {
             room = words.shift()
             await api.chatRoom.broadcast(this, room, words.join(' '))
+            return
           }
 
           throw new Error(api.config.errors.verbNotFound(this, verb))

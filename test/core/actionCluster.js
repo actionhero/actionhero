@@ -12,6 +12,10 @@ const actionhero1 = new ActionheroPrototype()
 const actionhero2 = new ActionheroPrototype()
 const actionhero3 = new ActionheroPrototype()
 
+const sleep = async (timeout) => {
+  await new Promise((resolve) => setTimeout(resolve, timeout))
+}
+
 let apiA
 let apiB
 let apiC
@@ -61,51 +65,42 @@ describe('Core: Action Cluster', () => {
         client1.verbs('roomAdd', 'defaultRoom')
         client2.verbs('roomAdd', 'defaultRoom')
         client3.verbs('roomAdd', 'defaultRoom')
-
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await sleep(100)
       })
 
       after(async () => {
         client1.destroy()
         client2.destroy()
         client3.destroy()
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await sleep(100)
       })
 
       it('all connections can join the default room and client #1 can see them', async () => {
-        let data = await client1.verbs('roomView', 'defaultRoom')
-        expect(data.room).to.equal('defaultRoom')
-        expect(data.membersCount).to.equal(3)
+        let {room, membersCount} = await client1.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
       })
 
-      it('all connections can join the default room and client #2 can see them', (done) => {
-        client2.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
+      it('all connections can join the default room and client #2 can see them', async () => {
+        let {room, membersCount} = await client2.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
       })
 
-      it('all connections can join the default room and client #3 can see them', (done) => {
-        client3.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
+      it('all connections can join the default room and client #3 can see them', async () => {
+        let {room, membersCount} = await client3.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
       })
 
-      it('clients can communicate across the cluster', (done) => {
-        client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], () => {
-          setTimeout(() => {
-            let message = client2.messages[(client2.messages.length - 1)]
-            expect(message.message).to.equal('Hi from client 1')
-            expect(message.room).to.equal('defaultRoom')
-            expect(message.from).to.equal(client1.id)
-            done()
-          }, 100)
-        })
+      it('clients can communicate across the cluster', async () => {
+        await client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'])
+        await sleep(100)
+
+        let {message, room, from} = client2.messages[(client2.messages.length - 1)]
+        expect(message).to.equal('Hi from client 1')
+        expect(room).to.equal('defaultRoom')
+        expect(from).to.equal(client1.id)
       })
     })
 

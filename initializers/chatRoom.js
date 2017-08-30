@@ -46,9 +46,9 @@ module.exports = {
             room: room
           }
         }
-        const messagePayload = api.chatRoom.generateMessagePayload(payload)
 
-        let newPayload = await api.chatRoom.handleCallbacks(connection, messagePayload.room, 'onSayReceive', messagePayload)
+        const messagePayload = api.chatRoom.generateMessagePayload(payload)
+        const newPayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'onSayReceive', messagePayload)
         const payloadToSend = {
           messageType: 'chat',
           serverToken: api.config.general.serverToken,
@@ -60,6 +60,7 @@ module.exports = {
             room: newPayload.room
           }
         }
+
         await api.redis.publish(payloadToSend)
       } else {
         return api.config.errors.connectionNotInRoom(connection, room)
@@ -78,17 +79,19 @@ module.exports = {
 
     api.chatRoom.incomingMessage = function (message) {
       const messagePayload = api.chatRoom.generateMessagePayload(message)
-      for (let i in api.connections.connections) {
-        api.chatRoom.incomingMessagePerConnection(api.connections.connections[i], messagePayload)
-      }
+      Object.keys(api.connections.connections).forEach((connetionId) => {
+        let connection = api.connections.connections[connetionId]
+        api.chatRoom.incomingMessagePerConnection(connection, messagePayload)
+      })
     }
 
-    api.chatRoom.incomingMessagePerConnection = function (connection, messagePayload) {
-      if (connection.canChat === true) {
-        if (connection.rooms.indexOf(messagePayload.room) > -1) {
-          api.chatRoom.handleCallbacks(connection, messagePayload.room, 'say', messagePayload, (error, newMessagePayload) => {
-            if (!error) { connection.sendMessage(newMessagePayload, 'say') }
-          })
+    api.chatRoom.incomingMessagePerConnection = async function (connection, messagePayload) {
+      if (connection.canChat === true && connection.rooms.indexOf(messagePayload.room) > -1) {
+        try {
+          const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
+          connection.sendMessage(newMessagePayload, 'say')
+        } catch (error) {
+          api.log(error, 'warning', {messagePayload, connection})
         }
       }
     }
@@ -179,7 +182,7 @@ module.exports = {
         if (connection.rooms.indexOf(room) < 0) {
           let found = await api.chatRoom.exists(room)
           if (found === true) {
-            await api.chatRoom.handleCallbacks(connection, room, 'join', null)
+            await api.chatRoom.runMiddleware(connection, room, 'join', null)
             let memberDetails = api.chatRoom.generateMemberDetails(connection)
             await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
             connection.rooms.push(room)
@@ -201,7 +204,7 @@ module.exports = {
         if (connection.rooms.indexOf(room) > -1) {
           let found = await api.chatRoom.exists(room)
           if (found) {
-            await api.chatRoom.handleCallbacks(connection, room, 'leave', null)
+            await api.chatRoom.runMiddleware(connection, room, 'leave', null)
             await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
             let index = connection.rooms.indexOf(room)
             if (index > -1) { connection.rooms.splice(index, 1) }
@@ -217,7 +220,7 @@ module.exports = {
       }
     }
 
-    api.chatRoom.handleCallbacks = function (connection, room, direction, messagePayload) {
+    api.chatRoom.runMiddleware = async function (connection, room, direction, messagePayload) {
       let newMessagePayload
       if (messagePayload) { newMessagePayload = api.utils.objClone(messagePayload) }
 
