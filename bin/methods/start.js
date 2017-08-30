@@ -49,7 +49,6 @@ module.exports = {
       await api._context.stop()
       state = 'stopped'
       if (cluster.isWorker) { process.send({state: state}) }
-      api = null
     }
 
     const restartServer = async function () {
@@ -65,14 +64,13 @@ module.exports = {
       setTimeout(function () {
         throw new Error('process stop timeout reached.  terminating now.')
       }, shutdownTimeout)
-      // finalTimer.unref();
       await stopServer()
-      process.nextTick(() => process.exit)
+      setTimeout(() => { process.exit() }, 1)
     }
 
     // check for an internal stop which doesn't close the processs
     let checkForInernalStopTimer
-    const checkForInernalStop = function () {
+    const checkForInernalStop = () => {
       clearTimeout(checkForInernalStopTimer)
       if (api.running !== true && state === 'started') { process.exit(0) }
       checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout)

@@ -32,7 +32,7 @@ module.exports = {
         if (args === undefined && callback === undefined && typeof method === 'function') {
           callback = method; args = null; method = null
         }
-        api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback)
+        return api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, true)
       },
 
       applyCatch: function (connectionId, method, args, callback) {

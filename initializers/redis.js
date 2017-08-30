@@ -95,7 +95,8 @@ module.exports = {
 
     // RPC
 
-    api.redis.doCluster = async (method, args, connectionId) => {
+    api.redis.doCluster = async (method, args, connectionId, waitForRespons) => {
+      if (waitForRespons === undefined || waitForRespons === null) { waitForRespons = false }
       const requestId = uuid.v4()
       const payload = {
         messageType: 'do',
@@ -109,10 +110,12 @@ module.exports = {
 
       await api.redis.publish(payload)
 
-      await new Promise((resolve, reject) => {
-        let timer = setTimeout(reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
-        api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}
-      })
+      if (waitForRespons) {
+        await new Promise((resolve, reject) => {
+          let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
+          api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}
+        })
+      }
     }
 
     api.redis.respondCluster = async (requestId, response) => {
@@ -132,11 +135,11 @@ module.exports = {
   },
 
   start: async (api) => {
-    await api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`], null, null)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`], false)
   },
 
   stop: async (api) => {
-    await api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`], null, null)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`], false)
 
     await api.redis.clients.subscriber.unsubscribe()
     api.redis.status.subscribed = false;
