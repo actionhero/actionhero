@@ -2,6 +2,16 @@
 
 const uuid = require('uuid')
 
+const cleanConnection = (connection) => {
+  let clean = {}
+  for (let i in connection) {
+    if (i !== 'rawConnection') {
+      clean[i] = connection[i]
+    }
+  }
+  return clean
+}
+
 module.exports = {
   loadPriority: 400,
   initialize: function (api) {
@@ -28,30 +38,25 @@ module.exports = {
 
       connections: {},
 
-      apply: function (connectionId, method, args, callback) {
-        if (args === undefined && callback === undefined && typeof method === 'function') {
-          callback = method; args = null; method = null
-        }
-        return api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, true)
+      apply: async (connectionId, method, args) => {
+        return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
       },
 
-      applyCatch: function (connectionId, method, args, callback) {
+      applyResponder: async (connectionId, method, args) => {
         const connection = api.connections.connections[connectionId]
+        if (!connection) { return }
+
         if (method && args) {
           if (method === 'sendMessage' || method === 'sendFile') {
-            connection[method](args)
+            await connection[method](args)
           } else {
-            connection[method].apply(connection, args)
+            await connection[method].apply(connection, args)
           }
         }
-        if (typeof callback === 'function') {
-          process.nextTick(() => {
-            callback(cleanConnection(connection))
-          })
-        }
+        return cleanConnection(connection)
       },
 
-      addMiddleware: function (data) {
+      addMiddleware: (data) => {
         if (!data.name) { throw new Error('middleware.name is required') }
         if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
         data.priority = Number(data.priority)
@@ -66,16 +71,6 @@ module.exports = {
           }
         })
       }
-    }
-
-    const cleanConnection = function (connection) {
-      let clean = {}
-      for (let i in connection) {
-        if (i !== 'rawConnection') {
-          clean[i] = connection[i]
-        }
-      }
-      return clean
     }
 
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}

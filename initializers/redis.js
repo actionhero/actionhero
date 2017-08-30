@@ -57,11 +57,6 @@ module.exports = {
 
     api.redis.subscriptionHandlers['do'] = async (message) => {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
-        let callback = async () => { // eslint-disable-line
-          let responseArgs = Array.apply(null, arguments).sort()
-          await api.redis.respondCluster(message.requestId, responseArgs)
-        }
-
         let cmdParts = message.method.split('.')
         let cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
@@ -69,9 +64,9 @@ module.exports = {
         let args = message.args
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }
-        args.push(callback)
         if (method) {
-          await method.apply(null, args)
+          let response = await method.apply(null, args)
+          await api.redis.respondCluster(message.requestId, response)
         } else {
           api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
         }
@@ -105,10 +100,12 @@ module.exports = {
       await api.redis.publish(payload)
 
       if (waitForRespons) {
-        await new Promise((resolve, reject) => {
+        let response = await new Promise((resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
           api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}
         })
+
+        return response
       }
     }
 

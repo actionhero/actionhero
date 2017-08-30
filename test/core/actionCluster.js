@@ -123,79 +123,53 @@ describe('Core: Action Cluster', () => {
     })
 
     describe('RPC', () => {
-      before((done) => {
-        setTimeout(done, 1000)
-      })
+      before(async () => { await sleep(1000) })
 
-      afterEach((done) => {
+      afterEach(() => {
         delete apiA.rpcTestMethod
         delete apiB.rpcTestMethod
         delete apiC.rpcTestMethod
-        done()
       })
 
-      it('can call remote methods on all other servers in the cluster', (done) => {
+      it('can call remote methods on all other servers in the cluster', async () => {
         let data = {}
 
-        apiA.rpcTestMethod = (arg1, arg2, next) => {
-          data[1] = [arg1, arg2]; next()
-        }
-        apiB.rpcTestMethod = (arg1, arg2, next) => {
-          data[2] = [arg1, arg2]; next()
-        }
-        apiC.rpcTestMethod = (arg1, arg2, next) => {
-          data[3] = [arg1, arg2]; next()
-        }
+        apiA.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
+        apiB.rpcTestMethod = (arg1, arg2) => { data[2] = [arg1, arg2] }
+        apiC.rpcTestMethod = (arg1, arg2) => { data[3] = [arg1, arg2] }
 
-        process.nextTick(() => {
-          apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, (error) => {
-            setTimeout(() => {
-              expect(error).to.not.exist()
-              // callback should work too!
-              expect(data[1][0]).to.equal('arg1')
-              expect(data[1][1]).to.equal('arg2')
-              expect(data[2][0]).to.equal('arg1')
-              expect(data[2][1]).to.equal('arg2')
-              expect(data[3][0]).to.equal('arg1')
-              expect(data[3][1]).to.equal('arg2')
-              done()
-            }, 100)
-          })
-        })
+        await apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'])
+        await sleep(100)
+
+        expect(data[1][0]).to.equal('arg1')
+        expect(data[1][1]).to.equal('arg2')
+        expect(data[2][0]).to.equal('arg1')
+        expect(data[2][1]).to.equal('arg2')
+        expect(data[3][0]).to.equal('arg1')
+        expect(data[3][1]).to.equal('arg2')
       })
 
-      it('can call remote methods only on one other cluster who holds a specific connectionId', (done) => {
+      it('can call remote methods only on one other cluster who holds a specific connectionId', async () => {
         let client = new apiA.specHelper.Connection()
 
         let data = {}
-        apiA.rpcTestMethod = (arg1, arg2, next) => {
-          data[1] = [arg1, arg2]; next()
-        }
-        apiB.rpcTestMethod = (arg1, arg2, next) => {
-          throw new Error('should not be here')
-        }
-        apiC.rpcTestMethod = (arg1, arg2, next) => {
-          throw new Error('should not be here')
-        }
+        apiA.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
+        apiB.rpcTestMethod = (arg1, arg) => { throw new Error('should not be here') }
+        apiC.rpcTestMethod = (arg1, arg2) => { throw new Error('should not be here') }
 
-        apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, (error) => {
-          expect(error).to.not.exist()
-          expect(data[1][0]).to.equal('arg1')
-          expect(data[1][1]).to.equal('arg2')
-          client.destroy()
-          done()
-        })
+        await apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id)
+        expect(data[1][0]).to.equal('arg1')
+        expect(data[1][1]).to.equal('arg2')
+        client.destroy()
       })
 
-      it('can get information about connections connected to other servers', (done) => {
+      it('can get information about connections connected to other servers', async () => {
         let client = new apiA.specHelper.Connection()
 
-        apiB.connections.apply(client.id, (connection) => {
-          expect(connection.id).to.equal(client.id)
-          expect(connection.type).to.equal('testServer')
-          expect(connection.canChat).to.equal(true)
-          done()
-        })
+        let {id, type, canChat} = await apiB.connections.apply(client.id)
+        expect(id).to.equal(client.id)
+        expect(type).to.equal('testServer')
+        expect(canChat).to.equal(true)
       })
 
       it('can call remote methods on/about connections connected to other servers', (done) => {
