@@ -1,7 +1,6 @@
 'use strict'
 
 const cluster = require('cluster')
-const path = require('path')
 const argv = require('optimist').argv
 
 module.exports = {

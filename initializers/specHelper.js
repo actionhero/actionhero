@@ -115,19 +115,20 @@ module.exports = {
         return server
       }
 
-      api.specHelper.connection = () => {
-        let id = uuid.v4()
-        api.servers.servers.testServer.buildConnection({
-          id: id,
-          rawConnection: {},
-          remoteAddress: 'testServer',
-          remotePort: 0
-        })
+      api.specHelper.Connection = class {
+        constructor () {
+          let id = uuid.v4()
+          api.servers.servers.testServer.buildConnection({
+            id: id,
+            rawConnection: {},
+            remoteAddress: 'testServer',
+            remotePort: 0
+          })
 
-        return api.connections.connections[id]
+          return api.connections.connections[id]
+        }
       }
-
-      api.specHelper.Connection = api.specHelper.connection
+      api.specHelper.connection = api.specHelper.Connection
 
       // create helpers to run an action
       // data can be a params hash or a connection

@@ -10,9 +10,8 @@ exports.createChatRoom = {
     name: { required: true }
   },
 
-  run: async function (api, data, next) {
+  run: async function (api, data) {
     await api.chatRoom.add(data.params.name)
-    next()
   }
 
 }

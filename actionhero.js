@@ -6,7 +6,6 @@
 // https://github.com/actionhero/actionhero
 
 const path = require('path')
-// const async = require('async')
 
 // HELPERS ///
 

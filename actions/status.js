@@ -68,7 +68,6 @@ exports.status = {
       checkRam()
       await checkEventLoop()
       await checkResqueQueues()
-      next()
     } catch (error) {
       next(error)
     }

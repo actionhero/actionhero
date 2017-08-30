@@ -31,46 +31,29 @@ let configChanges = {
   }
 }
 
-let startAllServers = (next) => {
-  actionhero1.start({configChanges: configChanges[1]}, (error, a1) => {
-    expect(error).to.be.null()
-    actionhero2.start({configChanges: configChanges[2]}, (error, a2) => {
-      expect(error).to.be.null()
-      actionhero3.start({configChanges: configChanges[3]}, (error, a3) => {
-        expect(error).to.be.null()
-        apiA = a1
-        apiB = a2
-        apiC = a3
-        next()
-      })
-    })
-  })
+const startAllServers = async () => {
+  apiA = await actionhero1.start({configChanges: configChanges[1]})
+  apiB = await actionhero2.start({configChanges: configChanges[2]})
+  apiC = await actionhero3.start({configChanges: configChanges[3]})
 }
 
-let stopAllServers = (next) => {
-  actionhero1.stop(() => {
-    actionhero2.stop(() => {
-      actionhero3.stop(next)
-    })
-  })
+const stopAllServers = async () => {
+  await actionhero1.stop()
+  await actionhero2.stop()
+  await actionhero3.stop()
 }
 
 describe('Core: Action Cluster', () => {
   describe('servers', () => {
-    before((done) => {
-      startAllServers(done)
-    })
-
-    after((done) => {
-      stopAllServers(done)
-    })
+    before(async () => { await startAllServers() })
+    after(async () => { await stopAllServers() })
 
     describe('say and clients on separate servers', () => {
       let client1
       let client2
       let client3
 
-      before((done) => {
+      before(async () => {
         client1 = new apiA.specHelper.Connection()
         client2 = new apiB.specHelper.Connection()
         client3 = new apiC.specHelper.Connection()
@@ -79,23 +62,20 @@ describe('Core: Action Cluster', () => {
         client2.verbs('roomAdd', 'defaultRoom')
         client3.verbs('roomAdd', 'defaultRoom')
 
-        setTimeout(done, 100)
+        await new Promise((resolve) => setTimeout(resolve, 100))
       })
 
-      after((done) => {
+      after(async () => {
         client1.destroy()
         client2.destroy()
         client3.destroy()
-        setTimeout(done, 100)
+        await new Promise((resolve) => setTimeout(resolve, 100))
       })
 
-      it('all connections can join the default room and client #1 can see them', (done) => {
-        client1.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
+      it('all connections can join the default room and client #1 can see them', async () => {
+        let data = await client1.verbs('roomView', 'defaultRoom')
+        expect(data.room).to.equal('defaultRoom')
+        expect(data.membersCount).to.equal(3)
       })
 
       it('all connections can join the default room and client #2 can see them', (done) => {

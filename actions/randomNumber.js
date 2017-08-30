@@ -7,10 +7,9 @@ exports.randomNumber = {
     randomNumber: 0.123
   },
 
-  run: function (api, data, next) {
+  run: function (api, data) {
     data.response.randomNumber = Math.random()
     data.response.stringRandomNumber = data.connection.localize(['Your random number is {{number}}', {number: Math.random()}])
-    next(null)
   }
 
 }

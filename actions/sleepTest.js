@@ -19,7 +19,7 @@ exports.sleepTest = {
     'sleepDuration': 1000
   },
 
-  run: async function (api, data, next) {
+  run: async function (api, data) {
     let sleepDuration = data.params.sleepDuration
     let sleepStarted = new Date().getTime()
 
@@ -31,7 +31,5 @@ exports.sleepTest = {
     data.response.sleepEnded = sleepEnded
     data.response.sleepDelta = sleepDelta
     data.response.sleepDuration = sleepDuration
-
-    next()
   }
 }

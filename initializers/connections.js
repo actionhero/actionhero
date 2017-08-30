@@ -80,199 +80,212 @@ module.exports = {
 
     // {type: type, remotePort: remotePort, remoteIP: remoteIP, rawConnection: rawConnection}
     // id is optional and will be generated if missing
-    api.Connection = function (data) {
-      this.setup(data)
-      api.connections.connections[this.id] = this
+    api.Connection = class Connection {
+      constructor (data) {
+        this.setup(data)
+        api.connections.connections[this.id] = this
 
-      api.connections.globalMiddleware.forEach((middlewareName) => {
-        if (typeof api.connections.middleware[middlewareName].create === 'function') {
-          api.connections.middleware[middlewareName].create(this)
-        }
-      })
-    }
-
-    api.Connection.prototype.setup = function (data) {
-      if (data.id) {
-        this.id = data.id
-      } else {
-        this.id = this.generateID()
-      }
-      this.connectedAt = new Date().getTime();
-
-      ['type', 'rawConnection'].forEach((req) => {
-        if (data[req] === null || data[req] === undefined) { throw new Error(req + ' is required to create a new connection object') }
-        this[req] = data[req]
-      });
-
-      ['remotePort', 'remoteIP'].forEach((req) => {
-        if (data[req] === null || data[req] === undefined) {
-          if (api.config.general.enforceConnectionProperties === true) {
-            throw new Error(req + ' is required to create a new connection object')
-          } else {
-            data[req] = 0 // could be a random uuid as well?
+        api.connections.globalMiddleware.forEach((middlewareName) => {
+          if (typeof api.connections.middleware[middlewareName].create === 'function') {
+            api.connections.middleware[middlewareName].create(this)
           }
-        }
-        this[req] = data[req]
-      })
-
-      const connectionDefaults = {
-        error: null,
-        fingerprint: this.id,
-        rooms: [],
-        params: {},
-        pendingActions: 0,
-        totalActions: 0,
-        messageCount: 0,
-        canChat: false
-      }
-
-      for (let i in connectionDefaults) {
-        if (this[i] === undefined && data[i] !== undefined) { this[i] = data[i] }
-        if (this[i] === undefined) { this[i] = connectionDefaults[i] }
-      }
-
-      let connection = this
-      let server = api.servers.servers[connection.type]
-      if (server && server.connectionCustomMethods) {
-        for (let name in server.connectionCustomMethods) {
-          connection[name] = function () {
-            let args = [connection].concat(Array.from(arguments))
-            server.connectionCustomMethods[name].apply(null, args)
-          }
-        }
-      }
-
-      api.i18n.invokeConnectionLocale(this)
-    }
-
-    api.Connection.prototype.localize = function (message) {
-      // this.locale will be sourced automatically
-      return api.i18n.localize(message, this)
-    }
-
-    api.Connection.prototype.generateID = function () {
-      return uuid.v4()
-    }
-
-    api.Connection.prototype.destroy = function (callback) {
-      this.destroyed = true
-
-      api.connections.globalMiddleware.forEach((middlewareName) => {
-        if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
-          api.connections.middleware[middlewareName].destroy(this)
-        }
-      })
-
-      if (this.canChat === true) {
-        this.rooms.forEach((room) => {
-          api.chatRoom.removeMember(this.id, room)
         })
       }
 
-      const server = api.servers.servers[this.type]
-
-      if (server) {
-        if (server.attributes.logExits === true) {
-          server.log('connection closed', 'info', {to: this.remoteIP})
-        }
-        if (typeof server.goodbye === 'function') { server.goodbye(this) }
-      }
-
-      delete api.connections.connections[this.id]
-
-      if (typeof callback === 'function') { callback() }
-    }
-
-    api.Connection.prototype.set = function (key, value) {
-      this[key] = value
-    }
-
-    api.Connection.prototype.verbs = function (verb, words, callback) {
-      let key
-      let value
-      let room
-      const server = api.servers.servers[this.type]
-      const allowedVerbs = server.attributes.verbs
-      if (typeof words === 'function' && !callback) {
-        callback = words
-        words = []
-      }
-      if (!(words instanceof Array)) {
-        words = [words]
-      }
-      if (server && allowedVerbs.indexOf(verb) >= 0) {
-        server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
-        if (verb === 'quit' || verb === 'exit') {
-          server.goodbye(this)
-        } else if (verb === 'paramAdd') {
-          key = words[0]
-          value = words[1]
-          if ((words[0]) && (words[0].indexOf('=') >= 0)) {
-            let parts = words[0].split('=')
-            key = parts[0]
-            value = parts[1]
-          }
-          if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) > 0) {
-            this.params[key] = value
-          }
-          if (typeof callback === 'function') { callback(null, null) }
-        } else if (verb === 'paramDelete') {
-          key = words[0]
-          delete this.params[key]
-          if (typeof callback === 'function') { callback(null, null) }
-        } else if (verb === 'paramView') {
-          key = words[0]
-          if (typeof callback === 'function') { callback(null, this.params[key]) }
-        } else if (verb === 'paramsView') {
-          if (typeof callback === 'function') { callback(null, this.params) }
-        } else if (verb === 'paramsDelete') {
-          for (let i in this.params) {
-            delete this.params[i]
-          }
-          if (typeof callback === 'function') { callback(null, null) }
-        } else if (verb === 'roomAdd') {
-          room = words[0]
-          api.chatRoom.addMember(this.id, room, (error, didHappen) => {
-            if (typeof callback === 'function') { callback(error, didHappen) }
-          })
-        } else if (verb === 'roomLeave') {
-          room = words[0]
-          api.chatRoom.removeMember(this.id, room, (error, didHappen) => {
-            if (typeof callback === 'function') { callback(error, didHappen) }
-          })
-        } else if (verb === 'roomView') {
-          room = words[0]
-          if (this.rooms.indexOf(room) > -1) {
-            api.chatRoom.roomStatus(room, (error, roomStatus) => {
-              if (typeof callback === 'function') { callback(error, roomStatus) }
-            })
-          } else {
-            if (typeof callback === 'function') { callback(new Error('not member of room ' + room)) }
-          }
-        } else if (verb === 'detailsView') {
-          let details = {}
-          details.id = this.id
-          details.fingerprint = this.fingerprint
-          details.remoteIP = this.remoteIP
-          details.remotePort = this.remotePort
-          details.params = this.params
-          details.connectedAt = this.connectedAt
-          details.rooms = this.rooms
-          details.totalActions = this.totalActions
-          details.pendingActions = this.pendingActions
-          if (typeof callback === 'function') { callback(null, details) }
-        } else if (verb === 'documentation') {
-          if (typeof callback === 'function') { callback(null, api.documentation.documentation) }
-        } else if (verb === 'say') {
-          room = words.shift()
-          api.chatRoom.broadcast(this, room, words.join(' '), (error) => {
-            if (typeof callback === 'function') { callback(error) }
-          })
+      setup (data) {
+        if (data.id) {
+          this.id = data.id
         } else {
-          if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotFound(this, verb)), null) }
+          this.id = this.generateID()
         }
-      } else {
-        if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotAllowed(this, verb)), null) }
+        this.connectedAt = new Date().getTime();
+
+        ['type', 'rawConnection'].forEach((req) => {
+          if (data[req] === null || data[req] === undefined) { throw new Error(req + ' is required to create a new connection object') }
+          this[req] = data[req]
+        });
+
+        ['remotePort', 'remoteIP'].forEach((req) => {
+          if (data[req] === null || data[req] === undefined) {
+            if (api.config.general.enforceConnectionProperties === true) {
+              throw new Error(req + ' is required to create a new connection object')
+            } else {
+              data[req] = 0 // could be a random uuid as well?
+            }
+          }
+          this[req] = data[req]
+        })
+
+        const connectionDefaults = {
+          error: null,
+          fingerprint: this.id,
+          rooms: [],
+          params: {},
+          pendingActions: 0,
+          totalActions: 0,
+          messageCount: 0,
+          canChat: false
+        }
+
+        for (let i in connectionDefaults) {
+          if (this[i] === undefined && data[i] !== undefined) { this[i] = data[i] }
+          if (this[i] === undefined) { this[i] = connectionDefaults[i] }
+        }
+
+        let connection = this
+        let server = api.servers.servers[connection.type]
+        if (server && server.connectionCustomMethods) {
+          for (let name in server.connectionCustomMethods) {
+            connection[name] = function () {
+              let args = [connection].concat(Array.from(arguments))
+              server.connectionCustomMethods[name].apply(null, args)
+            }
+          }
+        }
+
+        api.i18n.invokeConnectionLocale(this)
+      }
+
+      localize (message) {
+        // this.locale will be sourced automatically
+        return api.i18n.localize(message, this)
+      }
+
+      generateID () {
+        return uuid.v4()
+      }
+
+      destroy () {
+        this.destroyed = true
+
+        api.connections.globalMiddleware.forEach((middlewareName) => {
+          if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
+            api.connections.middleware[middlewareName].destroy(this)
+          }
+        })
+
+        if (this.canChat === true) {
+          this.rooms.forEach((room) => {
+            api.chatRoom.removeMember(this.id, room)
+          })
+        }
+
+        const server = api.servers.servers[this.type]
+
+        if (server) {
+          if (server.attributes.logExits === true) {
+            server.log('connection closed', 'info', {to: this.remoteIP})
+          }
+          if (typeof server.goodbye === 'function') { server.goodbye(this) }
+        }
+
+        delete api.connections.connections[this.id]
+      }
+
+      set (key, value) {
+        this[key] = value
+      }
+
+      async verbs (verb, words) {
+        let key
+        let value
+        let room
+        const server = api.servers.servers[this.type]
+        const allowedVerbs = server.attributes.verbs
+
+        if (!(words instanceof Array)) { words = [words] }
+
+        if (server && allowedVerbs.indexOf(verb) >= 0) {
+          server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
+
+          // TODO: make this a case statement
+          // TODO: investigage allowedVerbs being an array of Constatnts or Symbols
+
+          if (verb === 'quit' || verb === 'exit') {
+            server.goodbye(this)
+            return
+          }
+
+          if (verb === 'paramAdd') {
+            key = words[0]
+            value = words[1]
+            if ((words[0]) && (words[0].indexOf('=') >= 0)) {
+              let parts = words[0].split('=')
+              key = parts[0]
+              value = parts[1]
+            }
+            if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) > 0) {
+              this.params[key] = value
+            }
+            return
+          }
+
+          if (verb === 'paramDelete') {
+            key = words[0]
+            delete this.params[key]
+            return
+          }
+
+          if (verb === 'paramView') {
+            key = words[0]
+            return this.params[key]
+          }
+
+          if (verb === 'paramsView') {
+            return this.params
+          }
+
+          if (verb === 'paramsDelete') {
+            for (let i in this.params) { delete this.params[i] }
+            return
+          }
+
+          if (verb === 'roomAdd') {
+            room = words[0]
+            return api.chatRoom.addMember(this.id, room)
+          }
+
+          if (verb === 'roomLeave') {
+            room = words[0]
+            return api.chatRoom.removeMember(this.id, room)
+          }
+
+          if (verb === 'roomView') {
+            room = words[0]
+            if (this.rooms.indexOf(room) > -1) {
+              return api.chatRoom.roomStatus(room)
+            }
+
+            throw new Error('not member of room ' + room)
+          }
+
+          if (verb === 'detailsView') {
+            return {
+              id: this.id,
+              fingerprint: this.fingerprint,
+              remoteIP: this.remoteIP,
+              remotePort: this.remotePort,
+              params: this.params,
+              connectedAt: this.connectedAt,
+              rooms: this.rooms,
+              totalActions: this.totalActions,
+              pendingActions: this.pendingActions
+            }
+          }
+
+          if (verb === 'documentation') {
+            return api.documentation.documentation
+          }
+
+          if (verb === 'say') {
+            room = words.shift()
+            await api.chatRoom.broadcast(this, room, words.join(' '))
+          }
+
+          throw new Error(api.config.errors.verbNotFound(this, verb))
+        } else {
+          throw new Error(api.config.errors.verbNotAllowed(this, verb))
+        }
       }
     }
   }

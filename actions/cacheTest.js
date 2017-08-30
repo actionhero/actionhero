@@ -35,21 +35,15 @@ exports.cacheTest = {
     }
   },
 
-  run: async function (api, data, next) {
+  run: async function (api, data) {
     const key = 'cacheTest_' + data.params.key
     const value = data.params.value
 
     data.response.cacheTestResults = {}
 
-    try {
-      data.response.cacheTestResults.saveResp = await api.cache.save(key, value, 5000)
-      data.response.cacheTestResults.sizeResp = await api.cache.size()
-      data.response.cacheTestResults.loadResp = await api.cache.load(key)
-      data.response.cacheTestResults.deleteResp = await api.cache.destroy(key)
-      next()
-    } catch (error) {
-      next(error)
-    }
+    data.response.cacheTestResults.saveResp = await api.cache.save(key, value, 5000)
+    data.response.cacheTestResults.sizeResp = await api.cache.size()
+    data.response.cacheTestResults.loadResp = await api.cache.load(key)
+    data.response.cacheTestResults.deleteResp = await api.cache.destroy(key)
   }
-
 }

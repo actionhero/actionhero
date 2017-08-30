@@ -16,42 +16,36 @@ module.exports = {
     }
 
     api.redis.initialize = async () => {
-      let jobs = [];
+      ['client', 'subscriber', 'tasks'].forEach(async (r) => {
+        if (api.config.redis[r].buildNew === true) {
+          const args = api.config.redis[r].args
+          api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
+          api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+          api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
+        } else {
+          api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
+          api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+          api.log(`Redis connection \`${r}\` connected`, 'debug')
+        }
 
-      ['client', 'subscriber', 'tasks'].forEach((r) => {
-        jobs.push(async () => {
-          if (api.config.redis[r].buildNew === true) {
-            const args = api.config.redis[r].args
-            api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
-            api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
-            api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
-          } else {
-            api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
-            api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
-            api.log(`Redis connection \`${r}\` connected`, 'debug')
-          }
-
-          await api.redis.clients[r].get('_test')
-        })
+        await api.redis.clients[r].get('_test')
       })
 
       if (!api.redis.status.subscribed) {
-        jobs.push(async () => {
-          await api.redis.clients.subscriber.subscribe(api.config.general.channel)
-          api.redis.status.subscribed = true
+        await api.redis.clients.subscriber.subscribe(api.config.general.channel)
+        api.redis.status.subscribed = true
 
-          api.redis.clients.subscriber.on('message', async (messageChannel, message) => {
-            try { message = JSON.parse(message) } catch (e) { message = {} }
-            if (messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken) {
-              if (api.redis.subscriptionHandlers[message.messageType]) {
-                await api.redis.subscriptionHandlers[message.messageType](message)
-              }
+        const messageHandler = async (messageChannel, message) => {
+          try { message = JSON.parse(message) } catch (e) { message = {} }
+          if (messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken) {
+            if (api.redis.subscriptionHandlers[message.messageType]) {
+              await api.redis.subscriptionHandlers[message.messageType](message)
             }
-          })
-        })
-      }
+          }
+        }
 
-      await api.utils.asyncWaterfall(jobs)
+        api.redis.clients.subscriber.on('message', messageHandler)
+      }
     }
 
     api.redis.publish = async (payload) => {
@@ -135,11 +129,11 @@ module.exports = {
   },
 
   start: async (api) => {
-    api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`], false)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`])
   },
 
   stop: async (api) => {
-    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`], false)
+    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
     await api.redis.clients.subscriber.unsubscribe()
     api.redis.status.subscribed = false;
