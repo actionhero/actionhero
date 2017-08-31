@@ -89,7 +89,9 @@ module.exports = {
       if (connection.canChat === true && connection.rooms.indexOf(messagePayload.room) > -1) {
         try {
           const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
-          connection.sendMessage(newMessagePayload, 'say')
+          if (!(newMessagePayload instanceof Error)) {
+            connection.sendMessage(newMessagePayload, 'say')
+          }
         } catch (error) {
           api.log(error, 'warning', {messagePayload, connection})
         }
@@ -105,7 +107,7 @@ module.exports = {
       if (found === false) {
         return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room)
       } else {
-        return api.config.errors.connectionRoomExists(room)
+        throw new Error(api.config.errors.connectionRoomExists(room))
       }
     }
 
@@ -116,13 +118,13 @@ module.exports = {
         let membersHash = await api.redis.clients.client.hgetall(api.chatRoom.keys.members + room)
 
         for (let id in membersHash) {
-          await api.chatRoom.removeMember(id, room)
+          api.chatRoom.removeMember(id, room, false)
         }
 
         await api.redis.clients.client.srem(api.chatRoom.keys.rooms, room)
         await api.redis.clients.client.del(api.chatRoom.keys.members + room)
       } else {
-        return api.config.errors.connectionRoomNotExist(room)
+        throw new Error(api.config.errors.connectionRoomNotExist(room))
       }
     }
 
@@ -161,10 +163,10 @@ module.exports = {
             membersCount: count
           }
         } else {
-          throw api.config.errors.connectionRoomNotExist(room)
+          throw new Error(api.config.errors.connectionRoomNotExist(room))
         }
       } else {
-        throw api.config.errors.connectionRoomRequired()
+        throw new Error(api.config.errors.connectionRoomRequired())
       }
     }
 
@@ -182,60 +184,71 @@ module.exports = {
         if (connection.rooms.indexOf(room) < 0) {
           let found = await api.chatRoom.exists(room)
           if (found === true) {
-            await api.chatRoom.runMiddleware(connection, room, 'join', null)
+            let response = await api.chatRoom.runMiddleware(connection, room, 'join')
+            if (response instanceof Error) { throw response }
+
             let memberDetails = api.chatRoom.generateMemberDetails(connection)
             await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
             connection.rooms.push(room)
             return true
           } else {
-            throw api.config.errors.connectionRoomNotExist(room)
+            throw new Error(api.config.errors.connectionRoomNotExist(room))
           }
         } else {
-          throw api.config.errors.connectionAlreadyInRoom(connection, room)
+          throw new Error(api.config.errors.connectionAlreadyInRoom(connection, room))
         }
       } else {
         return api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, true)
       }
     }
 
-    api.chatRoom.removeMember = async (connectionId, room) => {
+    api.chatRoom.removeMember = async (connectionId, room, toWaitRemote) => {
+      if (toWaitRemote === undefined || toWaitRemote === null) { toWaitRemote = true }
       let connection = api.connections.connections[connectionId]
       if (connection) {
         if (connection.rooms.indexOf(room) > -1) {
           let found = await api.chatRoom.exists(room)
           if (found) {
-            await api.chatRoom.runMiddleware(connection, room, 'leave', null)
+            let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
+            if (response instanceof Error) { throw response }
+
             await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
             let index = connection.rooms.indexOf(room)
             if (index > -1) { connection.rooms.splice(index, 1) }
             return true
           } else {
-            throw api.config.errors.connectionRoomNotExist(room)
+            throw new Error(api.config.errors.connectionRoomNotExist(room))
           }
         } else {
-          throw api.config.errors.connectionNotInRoom(connection, room)
+          throw new Error(api.config.errors.connectionNotInRoom(connection, room))
         }
       } else {
-        return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, true)
+        return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, toWaitRemote)
       }
     }
 
     api.chatRoom.runMiddleware = async (connection, room, direction, messagePayload) => {
       let newMessagePayload
+      let toReturn = true
       if (messagePayload) { newMessagePayload = api.utils.objClone(messagePayload) }
 
       api.chatRoom.globalMiddleware.forEach(async (name) => {
         const m = api.chatRoom.middleware[name]
-        if (typeof m[direction] === 'function') {
-          if (messagePayload) {
-            let data = await m[direction](connection, room, newMessagePayload)
-            if (data) { newMessagePayload = data }
-          } else {
-            await m[direction](connection, room)
+        try {
+          if (typeof m[direction] === 'function') {
+            if (messagePayload) {
+              let data = await m[direction](connection, room, newMessagePayload)
+              if (data) { newMessagePayload = data }
+            } else {
+              await m[direction](connection, room)
+            }
           }
+        } catch (error) {
+          toReturn = error
         }
       })
 
+      if (toReturn !== true) { return toReturn }
       return newMessagePayload
     }
   },
@@ -248,7 +261,11 @@ module.exports = {
     if (api.config.general.startingChatRooms) {
       Object.keys(api.config.general.startingChatRooms).forEach(async (room) => {
         api.log(`ensuring the existence of the chatRoom: ${room}`)
-        await api.chatRoom.add(room)
+        try {
+          await api.chatRoom.add(room)
+        } catch (error) {
+          if (!error.toString().match(api.config.errors.connectionRoomExists(room))) { throw error }
+        }
       })
     }
   }
