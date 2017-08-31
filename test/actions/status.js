@@ -11,25 +11,12 @@ const actionhero = new ActionheroPrototype()
 let api
 
 describe('Action: status', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
-
-  it('returns node status', (done) => {
-    api.specHelper.runAction('status', (response) => {
-      expect(response.problems).to.have.length(0)
-      expect(response.id).to.equal('test-server-' + process.pid)
-      done()
-    })
+  it('returns node status', async () => {
+    let {id, problems} = await api.specHelper.runAction('status')
+    expect(problems).to.have.length(0)
+    expect(id).to.equal('test-server-' + process.pid)
   })
 })

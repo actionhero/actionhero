@@ -5,7 +5,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const request = require('request')
+const request = require('request-promise')
 const stream = require('stream')
 const path = require('path')
 const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
@@ -14,83 +14,70 @@ let api
 let url
 
 describe('Server: sendBuffer', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      url = 'http://localhost:' + api.config.servers.web.port
-      done()
-    })
+  before(async () => {
+    api = await actionhero.start()
+    url = 'http://localhost:' + api.config.servers.web.port
   })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
+  after(async () => { await actionhero.stop() })
+
+  before(() => {
+    api.actions.versions.sendBufferTest = [1]
+    api.actions.actions.sendBufferTest = {
+      '1': {
+        name: 'sendBufferTest',
+        description: 'sendBufferTest',
+        version: 1,
+        run: async (api, data) => {
+          const buffer = 'Example of data buffer'
+          let bufferStream = new stream.PassThrough()
+          data.connection.rawConnection.responseHeaders.push(['Content-Disposition', 'attachment; filename=test.csv'])
+          api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/csv', buffer.length, new Date())
+          data.toRender = false
+          bufferStream.end(buffer)
+        }
+      }
+    }
+
+    api.actions.versions.sendUnknownLengthBufferTest = [1]
+    api.actions.actions.sendUnknownLengthBufferTest = {
+      '1': {
+        name: 'sendUnknownLengthBufferTest',
+        description: 'sendUnknownLengthBufferTest',
+        version: 1,
+        run: (api, data) => {
+          let bufferStream = new stream.PassThrough()
+          api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/plain', null, new Date())
+          const buffer = 'Example of unknown length data buffer'
+          data.toRender = false
+          bufferStream.end(buffer)
+        }
+      }
+    }
+
+    api.routes.loadRoutes()
   })
 
-  describe('errors', () => {
-    before(() => {
-      api.actions.versions.sendBufferTest = [1]
-      api.actions.actions.sendBufferTest = {
-        '1': {
-          name: 'sendBufferTest',
-          description: 'sendBufferTest',
-          version: 1,
-          run: (api, data, next) => {
-            const buffer = 'Example of data buffer'
-            let bufferStream = new stream.PassThrough()
-            bufferStream.end(buffer)
-            data.connection.rawConnection.responseHeaders.push(['Content-Disposition', 'attachment; filename=test.csv'])
-            api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/csv', buffer.length, new Date())
-            data.toRender = false
-            next()
-          }
-        }
-      }
+  after(() => {
+    delete api.actions.actions.sendBufferTest
+    delete api.actions.versions.sendBufferTest
+    delete api.actions.versions.sendUnknownLengthBufferTest
+    delete api.actions.versions.sendUnknownLengthBufferTest
+    api.routes.loadRoutes()
+  })
 
-      api.actions.versions.sendUnknownLengthBufferTest = [1]
-      api.actions.actions.sendUnknownLengthBufferTest = {
-        '1': {
-          name: 'sendUnknownLengthBufferTest',
-          description: 'sendUnknownLengthBufferTest',
-          version: 1,
-          run: (api, data, next) => {
-            const bufferLength = null
-            let bufferStream = new stream.PassThrough()
-            api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/csv', bufferLength, null)
-            const buffer = 'Example of unknown length data buffer'
-            bufferStream.end(buffer)
-            next()
-          }
-        }
-      }
+  it('Server should sendBuffer', async () => {
+    let body = await request.get(url + '/api/sendBufferTest')
+    expect(body).to.equal('Example of data buffer')
+  })
 
-      api.routes.loadRoutes()
+  it('Server should send a stream with no specified length', async () => {
+    let {body, headers} = await request.get({
+      uri: url + '/api/sendUnknownLengthBufferTest',
+      resolveWithFullResponse: true
     })
 
-    after(() => {
-      delete api.actions.actions.sendBufferTest
-      delete api.actions.versions.sendBufferTest
-      delete api.actions.versions.sendUnknownLengthBufferTest
-      delete api.actions.versions.sendUnknownLengthBufferTest
-    })
-
-    it('Server should sendBuffer', (done) => {
-      request.get(url + '/api/sendBufferTest', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(body).to.equal('Example of data buffer')
-        done()
-      })
-    })
-
-    it('Server should send a stream with no specified length', (done) => {
-      request.get(url + '/api/sendUnknownLengthBufferTest', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.headers).to.not.have.property('content-length')
-        expect(body).to.equal('Example of unknown length data buffer')
-        done()
-      })
-    })
+    expect(headers).to.not.have.property('content-length')
+    expect(body).to.equal('Example of unknown length data buffer')
   })
 })

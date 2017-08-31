@@ -11,36 +11,21 @@ const actionhero = new ActionheroPrototype()
 let api
 
 describe('Action: RandomNumber', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
-
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
   let firstNumber = null
-  it('generates random numbers', (done) => {
-    api.specHelper.runAction('randomNumber', (response) => {
-      expect(response.randomNumber).to.be.at.least(0)
-      expect(response.randomNumber).to.be.at.most(1)
-      firstNumber = response.randomNumber
-      done()
-    })
+  it('generates random numbers', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    firstNumber = randomNumber
   })
 
-  it('is unique / random', (done) => {
-    api.specHelper.runAction('randomNumber', (response) => {
-      expect(response.randomNumber).to.be.at.least(0)
-      expect(response.randomNumber).to.be.at.most(1)
-      expect(response.randomNumber).not.to.equal(firstNumber)
-      done()
-    })
+  it('is unique / random', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).not.to.equal(firstNumber)
   })
 })
