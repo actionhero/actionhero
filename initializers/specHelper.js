@@ -132,41 +132,39 @@ module.exports = {
 
       // create helpers to run an action
       // data can be a params hash or a connection
-      api.specHelper.runAction = (actionName, input, next) => {
+      api.specHelper.runAction = async (actionName, input) => {
         let connection
-        if (typeof input === 'function' && !next) {
-          next = input
-          input = {}
-        }
+        if (!input) { input = {} }
         if (input.id && input.type === 'testServer') {
           connection = input
         } else {
           connection = new api.specHelper.Connection()
           connection.params = input
         }
+
         connection.params.action = actionName
 
         connection.messageCount++
-        if (typeof next === 'function') {
-          connection.actionCallbacks[(connection.messageCount)] = next
-        }
-
-        process.nextTick(() => {
+        let response = await new Promise((resolve) => {
           api.servers.servers.testServer.processAction(connection)
+          connection.actionCallbacks[(connection.messageCount)] = resolve
         })
+
+        return response
       }
 
       // helpers to get files
-      api.specHelper.getStaticFile = async (file, next) => {
+      api.specHelper.getStaticFile = async (file) => {
         let connection = new api.specHelper.Connection()
         connection.params.file = file
 
         connection.messageCount++
-        if (typeof next === 'function') {
-          connection.actionCallbacks[(connection.messageCount)] = next
-        }
+        let response = await new Promise((resolve) => {
+          api.servers.servers.testServer.processFile(connection)
+          connection.actionCallbacks[(connection.messageCount)] = resolve
+        })
 
-        await api.servers.servers.testServer.processFile(connection)
+        return response
       }
 
       // create helpers to run a task
