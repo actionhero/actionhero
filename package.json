@@ -27,7 +27,7 @@
     "tcp"
   ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "async": "^2.5.0",
