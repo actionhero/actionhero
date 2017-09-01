@@ -11,19 +11,8 @@ const actionhero = new ActionheroPrototype()
 let api
 
 describe('Utils', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
-
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
   describe('utils.arrayUniqueify', () => {
     it('works', () => {
