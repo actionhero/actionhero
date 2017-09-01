@@ -52,3 +52,11 @@ exports['default'] = {
     }
   }
 }
+
+exports['test'] = {
+  servers: {
+    websocket: function (api) {
+      return { clientUrl: null }
+    }
+  }
+}

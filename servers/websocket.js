@@ -211,7 +211,7 @@ const initialize = async function (api, options) {
     }
   }
 
-  const handleData = function (connection, data) {
+  const handleData = async function (connection, data) {
     const verb = data.event
     delete data.event
     connection.messageCount++
@@ -236,15 +236,14 @@ const initialize = async function (api, options) {
         delete data.room
       }
       for (let i in data) { words.push(data[i]) }
-      connection.verbs(verb, words, (error, data) => {
-        if (!error) {
-          message = {status: 'OK', context: 'response', data: data}
-          server.sendMessage(connection, message)
-        } else {
-          message = {status: error, context: 'response', data: data}
-          server.sendMessage(connection, message)
-        }
-      })
+      try {
+        let data = await connection.verbs(verb, words)
+        message = {status: 'OK', context: 'response', data: data}
+        server.sendMessage(connection, message)
+      } catch (error) {
+        message = {status: error, context: 'response', data: data}
+        server.sendMessage(connection, message)
+      }
     }
   }
 

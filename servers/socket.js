@@ -168,7 +168,7 @@ const initialize = async function (api, options) {
   // HELPERS //
   // ///////////
 
-  const parseRequest = function (connection, line) {
+  const parseRequest = async function (connection, line) {
     let words = line.split(' ')
     let verb = words.shift()
     if (verb === 'file') {
@@ -177,10 +177,11 @@ const initialize = async function (api, options) {
       }
       server.processFile(connection)
     } else {
-      connection.verbs(verb, words, (error, data) => {
-        if (!error) {
-          server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
-        } else if (error.toString().match('verb not found or not allowed')) {
+      try {
+        let data = await connection.verbs(verb, words)
+        server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+      } catch (error) {
+        if (error.toString().match('verb not found or not allowed')) {
           // check for and attempt to check single-use params
           try {
             let requestHash = JSON.parse(line)
@@ -200,9 +201,9 @@ const initialize = async function (api, options) {
           connection.response = {}
           server.processAction(connection)
         } else {
-          server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response', data: data})
+          server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
         }
-      })
+      }
     }
   }
 

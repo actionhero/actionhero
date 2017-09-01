@@ -252,16 +252,22 @@ module.exports = {
         }
 
         if (api.running !== true) {
-          this.completeAction('server_shutting_down')
-        } else if (this.getPendingActionCount(this.connection) > api.config.general.simultaneousActions) {
-          this.completeAction('too_many_requests')
-        } else if (!this.action || !this.actionTemplate) {
-          this.completeAction('unknown_action')
-        } else if (this.actionTemplate.blockedConnectionTypes && this.actionTemplate.blockedConnectionTypes.indexOf(this.connection.type) >= 0) {
-          this.completeAction('unsupported_server_type')
-        } else {
-          return this.runAction()
+          return this.completeAction('server_shutting_down')
         }
+
+        if (this.getPendingActionCount(this.connection) > api.config.general.simultaneousActions) {
+          return this.completeAction('too_many_requests')
+        }
+
+        if (!this.action || !this.actionTemplate) {
+          return this.completeAction('unknown_action')
+        }
+
+        if (this.actionTemplate.blockedConnectionTypes && this.actionTemplate.blockedConnectionTypes.indexOf(this.connection.type) >= 0) {
+          return this.completeAction('unsupported_server_type')
+        }
+
+        return this.runAction()
       }
 
       async runAction () {

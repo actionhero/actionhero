@@ -5,7 +5,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const request = require('request-promise')
+const request = require('request-promise-native')
 const stream = require('stream')
 const path = require('path')
 const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
