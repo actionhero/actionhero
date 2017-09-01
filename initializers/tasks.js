@@ -43,12 +43,13 @@ module.exports = {
 
       jobWrapper: function (taskName) {
         const task = api.tasks.tasks[taskName]
+        const frequency = typeof task.frequency === 'function' ? task.frequency(api) : task.frequency
 
         let middleware = task.middleware || []
         let plugins = task.plugins || []
         let pluginOptions = task.pluginOptions || []
 
-        if (task.frequency > 0) {
+        if (frequency > 0) {
           if (plugins.indexOf('jobLock') < 0) { plugins.push('jobLock') }
           if (plugins.indexOf('queueLock') < 0) { plugins.push('queueLock') }
           if (plugins.indexOf('delayQueueLock') < 0) { plugins.push('delayQueueLock') }
@@ -121,7 +122,7 @@ module.exports = {
         } else if (typeof task.description !== 'string' || task.description.length < 1) {
           fail('Task ' + task.name + ' is missing \'task.description\'')
           return false
-        } else if (typeof task.frequency !== 'number') {
+        } else if (typeof task.frequency !== 'number' && typeof task.frequency !== 'function') {
           fail('Task ' + task.name + ' has no frequency')
           return false
         } else if (typeof task.queue !== 'string') {
@@ -240,13 +241,14 @@ module.exports = {
 
       enqueueRecurrentJob: function (taskName, callback) {
         const task = this.tasks[taskName]
+        const frequency = typeof task.frequency === 'function' ? task.frequency(api) : task.frequency
 
-        if (task.frequency <= 0) {
+        if (frequency <= 0) {
           callback()
         } else {
           this.del(task.queue, taskName, {}, () => {
             this.delDelayed(task.queue, taskName, {}, () => {
-              this.enqueueIn(task.frequency, taskName, () => {
+              this.enqueueIn(frequency, taskName, () => {
                 api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
                 callback()
               })
@@ -261,7 +263,9 @@ module.exports = {
 
         Object.keys(this.tasks).forEach((taskName) => {
           const task = this.tasks[taskName]
-          if (task.frequency > 0) {
+          const frequency = typeof task.frequency === 'function' ? task.frequency(api) : task.frequency
+
+          if (frequency > 0) {
             jobs.push((done) => {
               this.enqueue(taskName, (error, toRun) => {
                 if (error) { return done(error) }
@@ -284,7 +288,9 @@ module.exports = {
       stopRecurrentJob: function (taskName, callback) {
         // find the jobs in either the normal queue or delayed queues
         const task = this.tasks[taskName]
-        if (task.frequency <= 0) {
+        const frequency = typeof task.frequency === 'function' ? task.frequency(api) : task.frequency
+
+        if (frequency <= 0) {
           callback()
         } else {
           let removedCount = 0
