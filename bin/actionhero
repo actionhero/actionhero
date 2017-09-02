@@ -64,7 +64,7 @@ async function handleGenerate () {
   // reload utils, as they won't have been loaded yet
   try {
     let utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
-    api.utils = await utils.initialize(api)
+    await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
     const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))

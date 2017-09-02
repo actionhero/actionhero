@@ -7,12 +7,7 @@ exports.task = {
   queue: '%%queue%%',
   middleware: [],
 
-  run: function (api, params, next) {
+  run: async function (api, params) {
     // your logic here
-    // let error = new Error('something has gone wrong')
-    // let resultLogMessage = {taskResult: 'ok'}
-    // next(error, resultLogMessage)
-
-    return next()
   }
 }

@@ -10,8 +10,8 @@ const actionhero = new ActionheroPrototype()
 let api
 
 describe('actionhero Tests', () => {
-    before(async () => { api = await actionhero.start() })
-    after(async () => { await actionhero.stop() })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
   it('should have booted into the test env', () => {
     expect(process.env.NODE_ENV).to.equal('test')

@@ -1,6 +1,6 @@
 'use strict'
 
-const initialize = function (api, options, next) {
+const initialize = async function (api, options) {
   // ////////
   // INIT //
   // ////////
@@ -57,7 +57,7 @@ const initialize = function (api, options, next) {
   // HELPERS //
   // ///////////
 
-  next(server)
+  return server
 }
 
 exports.initialize = initialize

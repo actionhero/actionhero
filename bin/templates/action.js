@@ -12,9 +12,7 @@ exports.action = {
 
   inputs: {},
 
-  run: function (api, data, next) {
-    let error = null
+  run: async function (api, data) {
     // your logic here
-    return next(error)
   }
 }

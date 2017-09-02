@@ -7,7 +7,7 @@ module.exports = {
 
   inputs: {},
 
-  run: function (api, data, next) {
-    return next(null, true)
+  run: async function (api, data) {
+    return true
   }
 }
