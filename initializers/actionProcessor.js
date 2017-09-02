@@ -196,13 +196,17 @@ module.exports = {
           for (let j in props.validator) {
             let validator = props.validator[j]
             let validatorResponse
-            if (typeof validator === 'function') {
-              validatorResponse = await validator.call(api, params[key], this)
-            } else {
-              const method = prepareStringMethod(validator)
-              validatorResponse = await method.call(api, params[key], this)
+            try {
+              if (typeof validator === 'function') {
+                validatorResponse = await validator.call(api, params[key], this)
+              } else {
+                const method = prepareStringMethod(validator)
+                validatorResponse = await method.call(api, params[key], this)
+              }
+              if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
+            } catch (error) {
+              this.validatorErrors.push(error)
             }
-            if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
           }
         }
 
