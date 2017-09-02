@@ -63,7 +63,7 @@ describe('Task Middleware', () => {
         preProcessor: function (next) {
           try {
             let params = this.args[0]
-            expect(params).to.equal(taskParams)
+            expect(params).to.equal({foo: 'bar'})
             params.test = true
             next()
           } catch (e) {
