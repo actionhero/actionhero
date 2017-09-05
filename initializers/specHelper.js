@@ -186,7 +186,7 @@ module.exports = {
             worker.performInline(taskName, params, (error, result) => {
               worker.end()
               if (error) { return reject(error) }
-              resolve(error)
+              resolve(result)
             })
           })
         })
