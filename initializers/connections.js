@@ -278,9 +278,9 @@ module.exports = {
             return
           }
 
-          throw new Error(api.config.errors.verbNotFound(this, verb))
+          throw new Error(await api.config.errors.verbNotFound(this, verb))
         } else {
-          throw new Error(api.config.errors.verbNotAllowed(this, verb))
+          throw new Error(await api.config.errors.verbNotAllowed(this, verb))
         }
       }
     }

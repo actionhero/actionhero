@@ -47,24 +47,24 @@ module.exports = {
         return this.connection.pendingActions
       }
 
-      completeAction (status) {
+      async completeAction (status) {
         let error = null
         this.actionStatus = String(status)
 
         if (status instanceof Error) {
           error = status
         } else if (status === 'server_shutting_down') {
-          error = api.config.errors.serverShuttingDown(this)
+          error = await api.config.errors.serverShuttingDown(this)
         } else if (status === 'too_many_requests') {
-          error = api.config.errors.tooManyPendingActions(this)
+          error = await api.config.errors.tooManyPendingActions(this)
         } else if (status === 'unknown_action') {
-          error = api.config.errors.unknownAction(this)
+          error = await api.config.errors.unknownAction(this)
         } else if (status === 'unsupported_server_type') {
-          error = api.config.errors.unsupportedServerType(this)
+          error = await api.config.errors.unsupportedServerType(this)
         } else if (status === 'missing_params') {
-          error = api.config.errors.missingParams(this, this.missingParams)
+          error = await api.config.errors.missingParams(this, this.missingParams)
         } else if (status === 'validator_errors') {
-          error = api.config.errors.invalidParams(this, this.validatorErrors)
+          error = await api.config.errors.invalidParams(this, this.validatorErrors)
         } else if (status) {
           error = status
         }
@@ -280,7 +280,7 @@ module.exports = {
           await this.reduceParams()
           await this.validateParams()
         } catch (error) {
-          this.completeAction(error)
+          return this.completeAction(error)
         }
 
         if (this.missingParams.length > 0) {

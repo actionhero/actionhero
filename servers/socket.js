@@ -64,9 +64,9 @@ const initialize = async function (api, options) {
     await gracefulShutdown(next)
   }
 
-  server.sendMessage = function (connection, message, messageCount) {
+  server.sendMessage = async function (connection, message, messageCount) {
     if (message.error) {
-      message.error = api.config.errors.serializers.servers.socket(message.error)
+      message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
 
     if (connection.respondingTo) {
@@ -104,14 +104,14 @@ const initialize = async function (api, options) {
   // EVENTS //
   // //////////
 
-  server.on('connection', function (connection) {
+  server.on('connection', async function (connection) {
     connection.params = {}
 
-    const parseLine = function (line) {
+    const parseLine = async function (line) {
       if (api.config.servers.socket.maxDataLength > 0) {
         let blen = Buffer.byteLength(line, 'utf8')
         if (blen > api.config.servers.socket.maxDataLength) {
-          let error = api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen)
+          let error = await api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen)
           server.log(error, 'error')
           return server.sendMessage(connection, {status: 'error', error: error, context: 'response'})
         }

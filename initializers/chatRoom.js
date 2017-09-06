@@ -107,14 +107,14 @@ module.exports = {
       if (found === false) {
         return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room)
       } else {
-        throw new Error(api.config.errors.connectionRoomExists(room))
+        throw new Error(await api.config.errors.connectionRoomExists(room))
       }
     }
 
     api.chatRoom.destroy = async (room) => {
       let found = await api.chatRoom.exists(room)
       if (found === true) {
-        await api.chatRoom.broadcast({}, room, api.config.errors.connectionRoomHasBeenDeleted(room))
+        await api.chatRoom.broadcast({}, room, await api.config.errors.connectionRoomHasBeenDeleted(room))
         let membersHash = await api.redis.clients.client.hgetall(api.chatRoom.keys.members + room)
 
         for (let id in membersHash) {
@@ -124,7 +124,7 @@ module.exports = {
         await api.redis.clients.client.srem(api.chatRoom.keys.rooms, room)
         await api.redis.clients.client.del(api.chatRoom.keys.members + room)
       } else {
-        throw new Error(api.config.errors.connectionRoomNotExist(room))
+        throw new Error(await api.config.errors.connectionRoomNotExist(room))
       }
     }
 
@@ -163,10 +163,10 @@ module.exports = {
             membersCount: count
           }
         } else {
-          throw new Error(api.config.errors.connectionRoomNotExist(room))
+          throw new Error(await api.config.errors.connectionRoomNotExist(room))
         }
       } else {
-        throw new Error(api.config.errors.connectionRoomRequired())
+        throw new Error(await api.config.errors.connectionRoomRequired())
       }
     }
 
@@ -192,10 +192,10 @@ module.exports = {
             connection.rooms.push(room)
             return true
           } else {
-            throw new Error(api.config.errors.connectionRoomNotExist(room))
+            throw new Error(await api.config.errors.connectionRoomNotExist(room))
           }
         } else {
-          throw new Error(api.config.errors.connectionAlreadyInRoom(connection, room))
+          throw new Error(await api.config.errors.connectionAlreadyInRoom(connection, room))
         }
       } else {
         return api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, true)
@@ -217,10 +217,10 @@ module.exports = {
             if (index > -1) { connection.rooms.splice(index, 1) }
             return true
           } else {
-            throw new Error(api.config.errors.connectionRoomNotExist(room))
+            throw new Error(await api.config.errors.connectionRoomNotExist(room))
           }
         } else {
-          throw new Error(api.config.errors.connectionNotInRoom(connection, room))
+          throw new Error(await api.config.errors.connectionNotInRoom(connection, room))
         }
       } else {
         return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, toWaitRemote)
@@ -264,7 +264,7 @@ module.exports = {
         try {
           await api.chatRoom.add(room)
         } catch (error) {
-          if (!error.toString().match(api.config.errors.connectionRoomExists(room))) { throw error }
+          if (!error.toString().match(await api.config.errors.connectionRoomExists(room))) { throw error }
         }
       })
     }

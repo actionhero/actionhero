@@ -354,7 +354,7 @@ const initialize = async function (api, options) {
     })
   }
 
-  const completeResponse = function (data) {
+  const completeResponse = async function (data) {
     if (data.toRender !== true) {
       if (data.connection.rawConnection.res.finished) {
         data.connection.destroy()
@@ -405,7 +405,7 @@ const initialize = async function (api, options) {
     }
 
     if (data.response.error) {
-      data.response.error = api.config.errors.serializers.servers.web(data.response.error)
+      data.response.error = await api.config.errors.serializers.servers.web(data.response.error)
     }
 
     let stringResponse = ''

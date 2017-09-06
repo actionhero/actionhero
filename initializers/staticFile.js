@@ -36,7 +36,7 @@ module.exports = {
 
         if (!counter) { counter = 0 }
         if (!connection.params.file || !api.staticFile.searchPath(connection, counter)) {
-          return api.staticFile.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection))
+          return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileNotProvided(connection))
         }
 
         if (!path.isAbsolute(connection.params.file)) {
@@ -87,7 +87,7 @@ module.exports = {
 
           return {connection, fileStream, mime, length, lastModified}
         } catch (error) {
-          return api.staticFile.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(error)))
+          return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileReadError(connection, String(error)))
         }
       },
 
@@ -107,9 +107,9 @@ module.exports = {
         api.staticFile.logRequest('{not found}', connection, null, null, false)
         return {
           connection,
-          error: api.config.errors.fileNotFound(connection),
+          error: await api.config.errors.fileNotFound(connection),
           mime: 'text/html',
-          length: api.config.errors.fileNotFound(connection).length
+          length: await api.config.errors.fileNotFound(connection).length
         }
       },
 

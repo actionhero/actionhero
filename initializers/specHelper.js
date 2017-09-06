@@ -77,14 +77,14 @@ module.exports = {
           connection.actionCallbacks = {}
         })
 
-        server.on('actionComplete', (data) => {
+        server.on('actionComplete', async (data) => {
           if (typeof data.response === 'string' || Array.isArray(data.response)) {
             if (data.response.error) {
-              data.response = api.config.errors.serializers.servers.specHelper(data.response.error)
+              data.response = await api.config.errors.serializers.servers.specHelper(data.response.error)
             }
           } else {
             if (data.response.error) {
-              data.response.error = api.config.errors.serializers.servers.specHelper(data.response.error)
+              data.response.error = await api.config.errors.serializers.servers.specHelper(data.response.error)
             }
 
             if (api.specHelper.returnMetadata) {
