@@ -25,7 +25,7 @@ module.exports = {
 
     api.watchedFiles = []
 
-    api.watchFileAndAct = function (file, callback) {
+    api.watchFileAndAct = function (file, handler) {
       file = path.normalize(file)
 
       if (!fs.existsSync(file)) {
@@ -44,7 +44,7 @@ module.exports = {
               let cleanPath = file
               if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
               delete require.cache[require.resolve(cleanPath)]
-              callback(file)
+              handler(file)
             })
           }
         })
@@ -94,10 +94,10 @@ module.exports = {
     }
 
     if (configPaths.length < 1) {
-      return next(new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG'))
+      throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG')
     }
 
-    const rebootCallback = (file) => {
+    const rebootHandler = (file) => {
       api.log(`*** rebooting due to config change (${file}) ***`, 'info')
       delete require.cache[require.resolve(file)]
       api.commands.restart()
@@ -142,7 +142,7 @@ module.exports = {
 
         if (watch !== false) {
           // configuration file loaded: set watch
-          api.watchFileAndAct(f, rebootCallback)
+          api.watchFileAndAct(f, rebootHandler)
         }
       }
 

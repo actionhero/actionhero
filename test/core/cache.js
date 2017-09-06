@@ -14,19 +14,8 @@ const actionhero = new ActionheroPrototype()
 let api
 
 describe('Core: Cache', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
-
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
   it('cache methods should exist', () => {
     expect(api.cache).to.be.instanceof(Object)
