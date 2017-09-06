@@ -106,7 +106,7 @@ module.exports = {
         }
       },
 
-      validateTask: function (task) {
+      validateTask: (task) => {
         const fail = (msg) => {
           api.log(msg, 'emerg')
         }
@@ -388,11 +388,23 @@ module.exports = {
 
         details.workers = await api.tasks.allWorkingOn()
         details.stats = await api.tasks.stats()
-        let queues = await api.resque.queue.queues()
-        queues.forEach(async (queue) => {
-          let length = await api.resque.queue.length(queue)
-          details.queues[queue] = { length: length }
+        let queues = await new Promise((resolve, reject) => {
+          api.resque.queue.queues((error, queues) => {
+            if (error) { return reject(error) }
+            return resolve(queues)
+          })
         })
+
+        for (let i in queues) {
+          let queue = queues[i]
+          let length = await new Promise((resolve, reject) => {
+            api.resque.queue.length(queue, (error, length) => {
+              if (error) { return reject(error) }
+              return resolve(length)
+            })
+          })
+          details.queues[queue] = { length: length }
+        }
 
         return details
       }

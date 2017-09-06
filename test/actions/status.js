@@ -15,8 +15,10 @@ describe('Action: status', () => {
   after(async () => { await actionhero.stop() })
 
   it('returns node status', async () => {
-    let {id, problems} = await api.specHelper.runAction('status')
+    let {id, problems, name, error} = await api.specHelper.runAction('status')
+    expect(error).to.not.exist()
     expect(problems).to.have.length(0)
     expect(id).to.equal('test-server-' + process.pid)
+    expect(name).to.equal('actionhero')
   })
 })

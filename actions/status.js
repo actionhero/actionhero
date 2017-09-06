@@ -37,10 +37,10 @@ exports.status = {
       }
     }
 
-    const checkResqueQueues = async function () {
+    const checkResqueQueues = async () => {
       let details = await api.tasks.details()
       let length = 0
-      Object.keys(details.queues).forEach(function (q) {
+      Object.keys(details.queues).forEach((q) => {
         length += details.queues[q].length
       })
 
