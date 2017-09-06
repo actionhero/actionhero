@@ -13,12 +13,13 @@ module.exports = {
 
     api.i18n = Object.assign({
       // simplistic determination of locale for connection
-      determineConnectionLocale: function (connection) {
+      determineConnectionLocale: (connection) => {
         // perhpas you want to look at the `accept-language` headers from a web requests
         // perhaps your API can use a certain cookie or URL to determine locale
         return api.config.i18n.defaultLocale
       },
-      invokeConnectionLocale: function (connection) {
+
+      invokeConnectionLocale: (connection) => {
         let cmdParts = api.config.i18n.determineConnectionLocale.split('.')
         let cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
@@ -26,7 +27,8 @@ module.exports = {
         let locale = method(connection)
         api.i18n.setLocale(connection, locale)
       },
-      localize: function (message, options) {
+
+      localize: (message, options) => {
         if (!Array.isArray(message)) { message = [message] }
         if (!options) { options = api.i18n }
         return api.i18n.__.apply(options, message)
