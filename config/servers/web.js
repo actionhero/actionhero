@@ -109,7 +109,7 @@ exports.test = {
     web: function (api) {
       return {
         secure: false,
-        port: 1000 + (process.pid % 64535),
+        port: process.env.PORT || 1000 + (process.pid % 64535),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

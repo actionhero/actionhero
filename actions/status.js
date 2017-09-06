@@ -18,7 +18,7 @@ exports.status = {
     'uptime': 10469
   },
 
-  run: async function (api, data, next) {
+  run: async function (api, data) {
     const checkRam = () => {
       const consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100
       data.response.consumedMemoryMB = consumedMemoryMB
@@ -64,12 +64,8 @@ exports.status = {
     data.response.description = packageJSON.description
     data.response.version = packageJSON.version
 
-    try {
-      checkRam()
-      await checkEventLoop()
-      await checkResqueQueues()
-    } catch (error) {
-      next(error)
-    }
+    checkRam()
+    await checkEventLoop()
+    await checkResqueQueues()
   }
 }
