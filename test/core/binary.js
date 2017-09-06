@@ -21,7 +21,7 @@ const port = 8080
 let pid
 
 let AHPath
-const doBash = async (command, useCwd) => {
+const doCommand = async (command, useCwd) => {
   return new Promise((resolve, reject) => {
     if (useCwd === null || useCwd === undefined) { useCwd = true }
 
@@ -72,9 +72,9 @@ describe('Core: Binary', () => {
       let sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
       AHPath = path.normalize(path.join(__dirname, '/../..'))
 
-      await doBash(`rm -rf ${testDir}`, false)
-      await doBash(`mkdir -p ${testDir}`, false)
-      await doBash(`cp ${sourcePackage} ${testDir}/package.json`)
+      await doCommand(`rm -rf ${testDir}`, false)
+      await doCommand(`mkdir -p ${testDir}`, false)
+      await doCommand(`cp ${sourcePackage} ${testDir}/package.json`)
 
       let data = fs.readFileSync(testDir + '/package.json').toString()
       let result = data.replace(/%%versionNumber%%/g, `file:${AHPath}`)
@@ -88,7 +88,7 @@ describe('Core: Binary', () => {
 
     it('can call npm install in the new project', async () => {
       try {
-        await doBash(`npm install`)
+        await doCommand(`npm install`)
       } catch (error) {
         // we might get warnings about package.json locks, etc.  we want to ignore them
         if (error.toString().indexOf('npm') < 0) { throw error }
@@ -97,7 +97,7 @@ describe('Core: Binary', () => {
     }).timeout(60000)
 
     it('can generate a new project', async () => {
-      await doBash(`${binary} generate`);
+      await doCommand(`${binary} generate`);
 
       [
         'actions',
@@ -134,20 +134,20 @@ describe('Core: Binary', () => {
     }).timeout(10000)
 
     it('can call the help command', async () => {
-      let {stdout} = await doBash(`${binary} help`)
+      let {stdout} = await doCommand(`${binary} help`)
       expect(stdout).to.match(/actionhero start cluster/)
       expect(stdout).to.match(/Binary options:/)
       expect(stdout).to.match(/actionhero generate server/)
     })
 
     it('can call the version command', async () => {
-      let {stdout} = await doBash(`${binary} version`)
+      let {stdout} = await doCommand(`${binary} version`)
       expect(stdout.trim()).to.equal(pacakgeJSON.version)
     })
 
     it('will show a warning with bogus input', async () => {
       try {
-        await doBash(`${binary} not-a-thing`)
+        await doCommand(`${binary} not-a-thing`)
         throw new Error('should not get here')
       } catch (error) {
         expect(error).to.exist()
@@ -158,14 +158,14 @@ describe('Core: Binary', () => {
     })
 
     it('can generate an action', async () => {
-      await doBash(`${binary} generate action --name=myAction --description=my_description`)
+      await doCommand(`${binary} generate action --name=myAction --description=my_description`)
       let data = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
       expect(data).to.match(/name: 'myAction'/)
       expect(data).to.match(/description: 'my_description'/)
     })
 
     it('can generate a task', async () => {
-      await doBash(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
+      await doCommand(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
       let data = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
       expect(data).to.match(/name: 'myTask'/)
       expect(data).to.match(/description: 'my_description'/)
@@ -174,7 +174,7 @@ describe('Core: Binary', () => {
     })
 
     it('can generate a CLI command', async () => {
-      await doBash(`${binary} generate cli --name=myCommand --description=my_description --example=my_example`)
+      await doCommand(`${binary} generate cli --name=myCommand --description=my_description --example=my_example`)
       let data = String(fs.readFileSync(`${testDir}/bin/myCommand.js`))
       expect(data).to.match(/name: 'myCommand'/)
       expect(data).to.match(/description: 'my_description'/)
@@ -182,7 +182,7 @@ describe('Core: Binary', () => {
     })
 
     it('can generate a server', async () => {
-      await doBash(`${binary} generate server --name=myServer`)
+      await doCommand(`${binary} generate server --name=myServer`)
       let data = String(fs.readFileSync(`${testDir}/servers/myServer.js`))
       expect(data).to.match(/canChat: true/)
       expect(data).to.match(/logConnections: true/)
@@ -191,7 +191,7 @@ describe('Core: Binary', () => {
     })
 
     it('can generate an initializer', async () => {
-      await doBash(`${binary} generate initializer --name=myInitializer --stopPriority=123`)
+      await doCommand(`${binary} generate initializer --name=myInitializer --stopPriority=123`)
       let data = String(fs.readFileSync(`${testDir}/initializers/myInitializer.js`))
       expect(data).to.match(/loadPriority: 1000/)
       expect(data).to.match(/startPriority: 1000/)
@@ -202,20 +202,20 @@ describe('Core: Binary', () => {
     })
 
     it('can call npm test in the new project and not fail', async () => {
-      await doBash(`npm test`)
+      await doCommand(`npm test`)
     }).timeout(120000)
 
     // NOTE: To run these tests, don't await! It will be fine... what could go wrong?
     describe('can run a single server', () => {
       let serverPid
       before(async function () {
-        doBash(`${binary} start`)
+        doCommand(`${binary} start`)
         await sleep(3000)
         serverPid = pid
       })
 
       after(async () => {
-        if (isrunning(serverPid)) { await doBash(`kill ${serverPid}`) }
+        if (isrunning(serverPid)) { await doCommand(`kill ${serverPid}`) }
       })
 
       it('can boot a single server', async () => {
@@ -224,14 +224,14 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to reboot', async () => {
-        await doBash(`kill -s USR2 ${serverPid}`)
+        await doCommand(`kill -s USR2 ${serverPid}`)
         await sleep(3000)
         let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
       it('can handle signals to stop', async () => {
-        await doBash(`kill ${serverPid}`)
+        await doCommand(`kill ${serverPid}`)
         await sleep(3000)
         try {
           await request(`http://localhost:${port}/api/showDocumentation`)
@@ -247,17 +247,17 @@ describe('Core: Binary', () => {
     describe('can run a cluster', () => {
       let clusterPid
       before(async function () {
-        doBash(`${binary} start cluster --workers=2`)
+        doCommand(`${binary} start cluster --workers=2`)
         await sleep(3000)
         clusterPid = pid
       })
 
       after(async () => {
-        if (isrunning(clusterPid)) { await doBash(`kill ${clusterPid}`) }
+        if (isrunning(clusterPid)) { await doCommand(`kill ${clusterPid}`) }
       })
 
       it('should be running the cluster with 2 nodes', async () => {
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
@@ -268,10 +268,10 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to add a worker', async () => {
-        await doBash(`kill -s TTIN ${clusterPid}`)
+        await doCommand(`kill -s TTIN ${clusterPid}`)
         await sleep(500)
 
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
@@ -279,10 +279,10 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to remove a worker', async () => {
-        await doBash(`kill -s TTOU ${clusterPid}`)
+        await doCommand(`kill -s TTOU ${clusterPid}`)
         await sleep(500)
 
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
@@ -290,10 +290,10 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to reboot (graceful)', async () => {
-        await doBash(`kill -s USR2 ${clusterPid}`)
+        await doCommand(`kill -s USR2 ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
@@ -304,10 +304,10 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to reboot (hup)', async () => {
-        await doBash(`kill -s WINCH ${clusterPid}`)
+        await doCommand(`kill -s WINCH ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
@@ -318,10 +318,10 @@ describe('Core: Binary', () => {
       })
 
       it('can handle signals to stop', async () => {
-        await doBash(`kill ${clusterPid}`)
+        await doCommand(`kill ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doBash(`ps awx`)
+        let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(0)
