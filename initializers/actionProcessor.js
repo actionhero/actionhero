@@ -125,7 +125,8 @@ module.exports = {
           this.actionTemplate.middleware.forEach(function (m) { processorNames.push(m) })
         }
 
-        for (let name in processorNames) {
+        for (let i in processorNames) {
+          let name = processorNames[i]
           if (typeof api.actions.middleware[name].preProcessor === 'function') {
             await api.actions.middleware[name].preProcessor(this)
           }
@@ -139,7 +140,8 @@ module.exports = {
           this.actionTemplate.middleware.forEach((m) => { processorNames.push(m) })
         }
 
-        for (let name in processorNames) {
+        for (let i in processorNames) {
+          let name = processorNames[i]
           if (typeof api.actions.middleware[name].postProcessor === 'function') {
             await api.actions.middleware[name].postProcessor(this)
           }

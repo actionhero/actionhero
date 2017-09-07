@@ -62,8 +62,8 @@ module.exports = {
         data.priority = Number(data.priority)
         api.connections.middleware[data.name] = data
 
-        this.globalMiddleware.push(data.name)
-        this.globalMiddleware.sort((a, b) => {
+        api.connections.globalMiddleware.push(data.name)
+        api.connections.globalMiddleware.sort((a, b) => {
           if (api.connections.middleware[a].priority > api.connections.middleware[b].priority) {
             return 1
           } else {
