@@ -434,6 +434,8 @@ module.exports = {
   },
 
   start: async (api) => {
+    if (api.config.redis.enabled === false) { return }
+
     if (api.config.tasks.scheduler === true) {
       await api.tasks.enqueueAllRecurrentJobs()
     }

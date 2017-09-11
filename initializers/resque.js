@@ -7,6 +7,8 @@ module.exports = {
   stopPriority: 100,
   loadPriority: 600,
   initialize: function (api) {
+    if (api.config.redis === false) { return }
+
     const resqueOverrides = api.config.tasks.resque_overrides
 
     api.resque = {
@@ -137,6 +139,8 @@ module.exports = {
   },
 
   start: async (api) => {
+    if (api.config.redis.enabled === false) { return }
+
     if (api.config.tasks.minTaskProcessors === 0 && api.config.tasks.maxTaskProcessors > 0) {
       api.config.tasks.minTaskProcessors = 1
     }
@@ -147,6 +151,8 @@ module.exports = {
   },
 
   stop: async (api) => {
+    if (api.config.redis.enabled === false) { return }
+
     api.resque.stopScheduler()
     api.resque.stopMultiWorker()
     api.resque.stopQueue()

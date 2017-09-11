@@ -8,6 +8,9 @@ module.exports = {
   loadPriority: 200,
   initialize: async function (api) {
     api.redis = {}
+
+    if (api.config.redis === false) { return }
+
     api.redis.clients = {}
     api.redis.subscriptionHandlers = {}
     api.redis.rpcCallbacks = {}
@@ -122,14 +125,21 @@ module.exports = {
     }
 
     // Boot
+    if (api.config.redis.enabled === false) { return }
     await api.redis.initialize()
   },
 
   start: async (api) => {
-    api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`])
+    if (api.config.redis.enabled === false) {
+      api.log('redis is disabled', 'notice')
+    } else {
+      api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`])
+    }
   },
 
   stop: async (api) => {
+    if (api.config.redis.enabled === false) { return }
+
     api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
     await api.redis.clients.subscriber.unsubscribe()

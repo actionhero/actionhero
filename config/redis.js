@@ -19,6 +19,8 @@ exports['default'] = {
     }
 
     return {
+      enabled: true,
+
       '_toExpand': false,
       client: {
         konstructor: require('ioredis'),
