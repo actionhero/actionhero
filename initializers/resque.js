@@ -1,6 +1,6 @@
 'use strict'
 
-const NR = require('node-resque')
+const NodeResque = require('node-resque')
 
 module.exports = {
   startPriority: 200,
@@ -19,7 +19,7 @@ module.exports = {
       connectionDetails: {redis: api.redis.clients.tasks},
 
       startQueue: async () => {
-        let Queue = NR.queue
+        let Queue = NodeResque.Queue
         if (resqueOverrides && resqueOverrides.queue) { Queue = resqueOverrides.queue }
         api.resque.queue = new Queue({connection: api.resque.connectionDetails}, api.tasks.jobs)
 
@@ -27,27 +27,17 @@ module.exports = {
           api.log(error, 'error', '[api.resque.queue]')
         })
 
-        await new Promise((resolve, reject) => {
-          api.resque.queue.connect((error) => {
-            if (error) { return reject(error) }
-            return resolve()
-          })
-        })
+        await api.resque.queue.connect()
       },
 
       stopQueue: async () => {
         if (api.resque.queue) {
-          await new Promise((resolve, reject) => {
-            api.resque.queue.end((error) => {
-              if (error) { return reject(error) }
-              return resolve()
-            })
-          })
+          await api.resque.queue.end()
         }
       },
 
       startScheduler: async () => {
-        let Scheduler = NR.scheduler
+        let Scheduler = NodeResque.Scheduler
         if (resqueOverrides && resqueOverrides.scheduler) { Scheduler = resqueOverrides.scheduler }
         if (api.config.tasks.scheduler === true) {
           api.resque.schedulerLogging = api.config.tasks.schedulerLogging
@@ -57,34 +47,26 @@ module.exports = {
             api.log(error, 'error', '[api.resque.scheduler]')
           })
 
-          await new Promise((resolve) => {
-            api.resque.scheduler.connect(() => {
-              api.resque.scheduler.on('start', () => { api.log('resque scheduler started', api.resque.schedulerLogging.start) })
-              api.resque.scheduler.on('end', () => { api.log('resque scheduler ended', api.resque.schedulerLogging.end) })
-              api.resque.scheduler.on('poll', () => { api.log('resque scheduler polling', api.resque.schedulerLogging.poll) })
-              api.resque.scheduler.on('working_timestamp', (timestamp) => { api.log(`resque scheduler working timestamp ${timestamp}`, api.resque.schedulerLogging.working_timestamp) })
-              api.resque.scheduler.on('transferred_job', (timestamp, job) => { api.log(`resque scheduler enqueuing job ${timestamp}`, api.resque.schedulerLogging.transferred_job, job) })
-              api.resque.scheduler.on('master', (state) => { api.log('This node is now the Resque scheduler master') })
+          await api.resque.scheduler.connect()
+          api.resque.scheduler.on('start', () => { api.log('resque scheduler started', api.resque.schedulerLogging.start) })
+          api.resque.scheduler.on('end', () => { api.log('resque scheduler ended', api.resque.schedulerLogging.end) })
+          api.resque.scheduler.on('poll', () => { api.log('resque scheduler polling', api.resque.schedulerLogging.poll) })
+          api.resque.scheduler.on('working_timestamp', (timestamp) => { api.log(`resque scheduler working timestamp ${timestamp}`, api.resque.schedulerLogging.working_timestamp) })
+          api.resque.scheduler.on('transferred_job', (timestamp, job) => { api.log(`resque scheduler enqueuing job ${timestamp}`, api.resque.schedulerLogging.transferred_job, job) })
+          api.resque.scheduler.on('master', (state) => { api.log('This node is now the Resque scheduler master') })
 
-              api.resque.scheduler.start()
-              resolve()
-            })
-          })
+          api.resque.scheduler.start()
         }
       },
 
       stopScheduler: async () => {
         if (api.resque.scheduler) {
-          await new Promise((resolve) => {
-            api.resque.scheduler.end(() => {
-              return resolve()
-            })
-          })
+          await api.resque.scheduler.end()
         }
       },
 
       startMultiWorker: async () => {
-        let MultiWorker = NR.multiWorker
+        let MultiWorker = NodeResque.MultiWorker
         if (resqueOverrides && resqueOverrides.multiWorker) { MultiWorker = resqueOverrides.multiWorker }
         api.resque.workerLogging = api.config.tasks.workerLogging
         api.resque.schedulerLogging = api.config.tasks.schedulerLogging
@@ -111,28 +93,20 @@ module.exports = {
         api.resque.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', api.resque.workerLogging.pause, {workerId: workerId}) })
 
         api.resque.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
-        api.resque.multiWorker.on('error', (workerId, queue, job, error) => { api.exceptionHandlers.task(error, queue, job, workerId) })
+        api.resque.multiWorker.on('error', (error, workerId, queue, job) => { api.exceptionHandlers.task(error, queue, job, workerId) })
 
         // multiWorker emitters
         api.resque.multiWorker.on('internalError', (error) => { api.log(error, api.resque.workerLogging.internalError) })
         api.resque.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(`[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`, api.resque.workerLogging.multiWorkerAction) })
 
         if (api.config.tasks.minTaskProcessors > 0) {
-          await new Promise((resolve) => {
-            api.resque.multiWorker.start(() => {
-              return resolve()
-            })
-          })
+          await api.resque.multiWorker.start()
         }
       },
 
       stopMultiWorker: async () => {
         if (api.resque.multiWorker && api.config.tasks.minTaskProcessors > 0) {
-          await new Promise((resolve) => {
-            api.resque.multiWorker.stop(() => {
-              return resolve()
-            })
-          })
+          await api.resque.multiWorker.stop()
         }
       }
     }

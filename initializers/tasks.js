@@ -1,5 +1,7 @@
 'use strict'
 
+const NodeResque = require('node-resque')
+
 module.exports = {
   startPriority: 900,
   loadPriority: 699,
@@ -55,29 +57,12 @@ module.exports = {
         // load middleware into plugins
         const processMiddleware = (m) => {
           if (api.tasks.middleware[m]) { // Ignore middleware until it has been loaded.
-            const plugin = function (worker, func, queue, job, args, options) {
-              this.name = m
-              this.worker = worker
-              this.queue = queue
-              this.func = func
-              this.job = job
-              this.args = args
-              this.options = options
-              this.api = api
-
-              if (this.worker.queueObject) {
-                this.queueObject = this.worker.queueObject
-              } else {
-                this.queueObject = this.worker
-              }
-            }
-
-            if (api.tasks.middleware[m].preProcessor) { plugin.prototype.before_perform = api.tasks.middleware[m].preProcessor }
-            if (api.tasks.middleware[m].postProcessor) { plugin.prototype.after_perform = api.tasks.middleware[m].postProcessor }
-            if (api.tasks.middleware[m].preEnqueue) { plugin.prototype.before_enqueue = api.tasks.middleware[m].preEnqueue }
-            if (api.tasks.middleware[m].postEnqueue) { plugin.prototype.after_enqueue = api.tasks.middleware[m].postEnqueue }
-
-            plugins.push(plugin)
+            class Plugin extends NodeResque.Plugin {}
+            if (api.tasks.middleware[m].preProcessor) { Plugin.beforePerform = api.tasks.middleware[m].preProcessor }
+            if (api.tasks.middleware[m].postProcessor) { Plugin.afterPerform = api.tasks.middleware[m].postProcessor }
+            if (api.tasks.middleware[m].preEnqueue) { Plugin.beforeEnqueue = api.tasks.middleware[m].preEnqueue }
+            if (api.tasks.middleware[m].postEnqueue) { Plugin.afterEnqueue = api.tasks.middleware[m].postEnqueue }
+            plugins.push(Plugin)
           }
         }
 
@@ -134,216 +119,103 @@ module.exports = {
       enqueue: async (taskName, params, queue) => {
         if (!params) { params = {} }
         if (!queue) { queue = this.tasks[taskName].queue }
-
-        return new Promise((resolve, reject) => {
-          api.resque.queue.enqueue(queue, taskName, params, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.enqueue(queue, taskName, params)
       },
 
       enqueueAt: async (timestamp, taskName, params, queue) => {
         if (!params) { params = {} }
         if (!queue) { queue = this.tasks[taskName].queue }
-
-        return new Promise((resolve, reject) => {
-          api.resque.queue.enqueueAt(timestamp, queue, taskName, params, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.enqueueAt(timestamp, queue, taskName, params)
       },
 
       enqueueIn: async (time, taskName, params, queue) => {
         if (!params) { params = {} }
         if (!queue) { queue = this.tasks[taskName].queue }
-
-        return new Promise((resolve, reject) => {
-          api.resque.queue.enqueueIn(time, queue, taskName, params, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.enqueueIn(time, queue, taskName, params)
       },
 
       del: async (q, taskName, args, count) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.del(q, taskName, args, count, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.del(q, taskName, args, count)
       },
 
       delDelayed: async (q, taskName, args) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.delDelayed(q, taskName, args, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.delDelayed(q, taskName, args)
       },
 
       scheduledAt: async (q, taskName, args) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.scheduledAt(q, taskName, args, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.scheduledAt(q, taskName, args)
       },
 
       stats: async () => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.stats((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.stats()
       },
 
       queued: async (q, start, stop) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.queued(q, start, stop, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.queued(q, start, stop)
       },
 
       delQueue: async (q) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.delQueue(q, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.delQueue(q)
       },
 
       locks: async () => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.locks((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.locks()
       },
 
       delLock: async (lock) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.delLock(lock, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.delLock(lock)
       },
 
       timestamps: async () => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.timestamps((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.timestamps()
       },
 
       delayedAt: async (timestamp) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.delayedAt(timestamp, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.delayedAt(timestamp)
       },
 
       allDelayed: async (callback) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.allDelayed((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.allDelayed()
       },
 
       workers: async (callback) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.workers((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.workers()
       },
 
       workingOn: async (workerName, queues) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.workingOn(workerName, queues, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.workingOn(workerName, queues)
       },
 
       allWorkingOn: async () => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.allWorkingOn((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.allWorkingOn()
       },
 
       failedCount: async () => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.failedCount((error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.failedCount()
       },
 
       failed: async (start, stop) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.failed(start, stop, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.failed(start, stop)
       },
 
       removeFailed: async (failedJob) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.removeFailed(failedJob, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.removeFailed(failedJob)
       },
 
       retryAndRemoveFailed: async (failedJob) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.retryAndRemoveFailed(failedJob, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.retryAndRemoveFailed(failedJob)
       },
 
       cleanOldWorkers: async (age) => {
-        return new Promise((resolve, reject) => {
-          api.resque.queue.cleanOldWorkers(age, (error, response) => {
-            if (error) { return reject(error) }
-            resolve(response)
-          })
-        })
+        return api.resque.queue.cleanOldWorkers(age)
       },
 
       enqueueRecurrentJob: async (taskName) => {
         const task = this.tasks[taskName]
 
         if (task.frequency > 0) {
-          await this.del(task.queue, taskName, {})
-          await this.delDelayed(task.queue, taskName, {})
+          await this.del(task.queue, taskName)
+          await this.delDelayed(task.queue, taskName)
           await this.enqueueIn(task.frequency, taskName)
           api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
         }
