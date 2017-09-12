@@ -100,7 +100,7 @@ module.exports = {
         api.resque.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(`[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`, api.resque.workerLogging.multiWorkerAction) })
 
         if (api.config.tasks.minTaskProcessors > 0) {
-          await api.resque.multiWorker.start()
+          api.resque.multiWorker.start()
         }
       },
 

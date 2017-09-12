@@ -14,62 +14,58 @@ let taskOutput = []
 let queue = 'testQueue'
 
 describe('Core: Tasks', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
+  before(async () => {
+    api = await actionhero.start()
 
-      api.resque.multiWorker.options.minTaskProcessors = 1
-      api.resque.multiWorker.options.maxTaskProcessors = 1
+    api.resque.multiWorker.options.minTaskProcessors = 1
+    api.resque.multiWorker.options.maxTaskProcessors = 1
 
-      api.tasks.tasks.regularTask = {
-        name: 'regular',
-        description: 'task: regular',
-        queue: queue,
-        frequency: 0,
-        plugins: [],
-        pluginOptions: {},
-        run: (api, params, next) => {
-          taskOutput.push(params.word)
-          next()
-        }
+    api.tasks.tasks.regularTask = {
+      name: 'regular',
+      description: 'task: regular',
+      queue: queue,
+      frequency: 0,
+      plugins: [],
+      pluginOptions: {},
+      run: async (api, params) => {
+        taskOutput.push(params.word)
+        return params.word
       }
+    }
 
-      api.tasks.tasks.periodicTask = {
-        name: 'periodicTask',
-        description: 'task: periodicTask',
-        queue: queue,
-        frequency: 100,
-        plugins: [],
-        pluginOptions: {},
-        run: (api, params, next) => {
-          taskOutput.push('periodicTask')
-          next()
-        }
+    api.tasks.tasks.periodicTask = {
+      name: 'periodicTask',
+      description: 'task: periodicTask',
+      queue: queue,
+      frequency: 100,
+      plugins: [],
+      pluginOptions: {},
+      run: async (api, params) => {
+        taskOutput.push('periodicTask')
+        return 'periodicTask'
       }
+    }
 
-      api.tasks.tasks.slowTask = {
-        name: 'slowTask',
-        description: 'task: slowTask',
-        queue: queue,
-        frequency: 0,
-        plugins: [],
-        pluginOptions: {},
-        run: (api, params, next) => {
-          taskOutput.push('slowTask')
-          setTimeout(next, 5000)
-        }
+    api.tasks.tasks.slowTask = {
+      name: 'slowTask',
+      description: 'task: slowTask',
+      queue: queue,
+      frequency: 0,
+      plugins: [],
+      pluginOptions: {},
+      run: async (api, params) => {
+        await new Promise((resolve) => { setTimeout(resolve, 5000) })
+        taskOutput.push('slowTask')
+        return 'slowTask'
       }
+    }
 
-      api.tasks.jobs.regularTask = api.tasks.jobWrapper('regularTask')
-      api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask')
-      api.tasks.jobs.slowTask = api.tasks.jobWrapper('slowTask')
-
-      done()
-    })
+    api.tasks.jobs.regularTask = api.tasks.jobWrapper('regularTask')
+    api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask')
+    api.tasks.jobs.slowTask = api.tasks.jobWrapper('slowTask')
   })
 
-  after((done) => {
+  after(async () => {
     delete api.tasks.tasks.regularTask
     delete api.tasks.tasks.periodicTask
     delete api.tasks.tasks.slowTask
@@ -82,27 +78,20 @@ describe('Core: Tasks', () => {
     api.resque.multiWorker.options.minTaskProcessors = 0
     api.resque.multiWorker.options.maxTaskProcessors = 0
 
-    actionhero.stop(() => {
-      done()
-    })
+    await actionhero.stop()
   })
 
-  beforeEach((done) => {
+  beforeEach(async () => {
     taskOutput = []
-    api.resque.queue.connection.redis.flushdb(() => {
-      done()
-    })
+    await api.resque.queue.connection.redis.flushdb()
   })
 
-  afterEach((done) => {
-    api.resque.stopScheduler(() => {
-      api.resque.stopMultiWorker(() => {
-        done()
-      })
-    })
+  afterEach(async () => {
+    await api.resque.stopScheduler()
+    await api.resque.stopMultiWorker()
   })
 
-  it('a bad task definition causes an exception', (done) => {
+  it('a bad task definition causes an exception', () => {
     let badTask = {
       name: 'badTask',
       description: 'task',
@@ -110,200 +99,143 @@ describe('Core: Tasks', () => {
       frequency: 100,
       plugins: [],
       pluginOptions: {},
-      run: (api, params, next) => {
-        next()
-      }
+      run: (api, params) => {}
     }
 
     let response = api.tasks.validateTask(badTask)
     expect(response).to.equal(false)
-    done()
   })
 
   it('will clear crashed workers when booting') // TODO
 
-  it('setup worked', (done) => {
+  it('setup worked', () => {
     expect(Object.keys(api.tasks.tasks)).to.have.length(3 + 1)
-    done()
   })
 
-  it('all queues should start empty', (done) => {
-    api.resque.queue.length(queue, (error, length) => {
-      expect(error).to.be.null()
-      expect(length).to.equal(0)
-      done()
-    })
+  it('all queues should start empty', async () => {
+    let length = await api.resque.queue.length()
+    expect(length).to.equal(0)
   })
 
-  it('can run a task manually', (done) => {
-    api.specHelper.runTask('regularTask', {word: 'theWord'}, () => {
-      expect(taskOutput[0]).to.equal('theWord')
-      done()
-    })
+  it('can run a task manually', async () => {
+    let response = await api.specHelper.runTask('regularTask', {word: 'theWord'})
+    expect(response).to.equal('theWord')
+    expect(taskOutput[0]).to.equal('theWord')
   })
 
-  it('no delayed tasks should be scheduled', (done) => {
-    api.resque.queue.scheduledAt(queue, 'periodicTask', {}, (error, timestamps) => {
-      expect(error).to.be.null()
-      expect(timestamps).to.have.length(0)
-      done()
-    })
+  it('no delayed tasks should be scheduled', async () => {
+    let timestamps = await api.resque.queue.scheduledAt(queue, 'periodicTask', {})
+    expect(timestamps).to.have.length(0)
   })
 
-  it('all periodic tasks can be enqueued at boot', (done) => {
-    api.tasks.enqueueAllRecurrentJobs((error) => {
-      expect(error).to.be.null()
-      api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null()
-        expect(length).to.equal(1)
-        done()
-      })
-    })
+  it('all periodic tasks can be enqueued at boot', async () => {
+    await api.tasks.enqueueAllRecurrentJobs()
+    let length = await api.resque.queue.length(queue)
+    expect(length).to.equal(1)
   })
 
-  it('re-enqueuing a periodic task should not enqueue it again', (done) => {
-    api.tasks.enqueue('periodicTask', (error) => {
-      expect(error).to.be.null()
-      api.tasks.enqueue('periodicTask', (error) => {
-        expect(error).to.be.null()
-        api.resque.queue.length(queue, (error, length) => {
-          expect(error).to.be.null()
-          expect(length).to.equal(1)
-          done()
-        })
-      })
-    })
+  it('re-enqueuing a periodic task should not enqueue it again', async () => {
+    let tryOne = await api.tasks.enqueue('periodicTask')
+    let tryTwo = await api.tasks.enqueue('periodicTask')
+    let length = await api.resque.queue.length(queue)
+    expect(tryOne).to.equal(true)
+    expect(tryTwo).to.equal(false)
+    expect(length).to.equal(1)
   })
 
-  it('can add a normal job', (done) => {
-    api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null()
-      api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null()
-        expect(length).to.equal(1)
-        done()
-      })
-    })
+  it('can add a normal job', async () => {
+    await api.tasks.enqueue('regularTask', {word: 'first'})
+    let length = await api.resque.queue.length(queue)
+    expect(length).to.equal(1)
   })
 
-  it('can add a delayed job', (done) => {
+  it('can add a delayed job', async () => {
     let time = new Date().getTime() + 1000
-    api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null()
-      api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-        expect(error).to.be.null()
-        expect(timestamps).to.have.length(1)
-        let completeTime = Math.floor(time / 1000)
-        expect(Number(timestamps[0])).to.be.at.least(completeTime)
-        expect(Number(timestamps[0])).to.be.at.most(completeTime + 2)
-        done()
-      })
-    })
+    await api.tasks.enqueueAt(time, 'regularTask', {word: 'first'})
+    let timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'})
+    expect(timestamps).to.have.length(1)
+
+    let completeTime = Math.floor(time / 1000)
+    expect(Number(timestamps[0])).to.be.at.least(completeTime)
+    expect(Number(timestamps[0])).to.be.at.most(completeTime + 2)
   })
 
-  it('can see enqueued timestmps & see jobs within those timestamps (single + batch)', (done) => {
+  it('can see enqueued timestmps & see jobs within those timestamps (single + batch)', async () => {
     let time = new Date().getTime() + 1000
     let roundedTime = Math.round(time / 1000) * 1000
-    api.tasks.enqueueAt(time, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null()
-      api.tasks.timestamps((error, timestamps) => {
-        expect(error).to.be.null()
-        expect(timestamps).to.have.length(1)
-        expect(timestamps[0]).to.equal(roundedTime)
 
-        api.tasks.delayedAt(roundedTime, (error, tasks) => {
-          expect(error).to.be.null()
-          expect(tasks).to.have.length(1)
-          expect(tasks[0]['class']).to.equal('regularTask')
-        })
+    await api.tasks.enqueueAt(time, 'regularTask', {word: 'first'})
+    let timestamps = await api.tasks.timestamps()
+    expect(timestamps).to.have.length(1)
+    expect(timestamps[0]).to.equal(roundedTime)
 
-        api.tasks.allDelayed((error, allTasks) => {
-          expect(error).to.be.null()
-          expect(Object.keys(allTasks)).to.have.length(1)
-          expect(Object.keys(allTasks)[0]).to.equal(String(roundedTime))
-          expect(allTasks[roundedTime][0]['class']).to.equal('regularTask')
-          done()
-        })
-      })
-    })
+    let {tasks} = await api.tasks.delayedAt(roundedTime)
+    expect(tasks).to.have.length(1)
+    expect(tasks[0]['class']).to.equal('regularTask')
+
+    let allTasks = await api.tasks.allDelayed()
+    expect(Object.keys(allTasks)).to.have.length(1)
+    expect(Object.keys(allTasks)[0]).to.equal(String(roundedTime))
+    expect(allTasks[roundedTime][0]['class']).to.equal('regularTask')
   })
 
-  it('I can remove an enqueued job', (done) => {
-    api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null()
-      api.resque.queue.length(queue, (error, length) => {
-        expect(error).to.be.null()
-        expect(length).to.equal(1)
-        api.tasks.del(queue, 'regularTask', {word: 'first'}, (error, count) => {
-          expect(error).to.be.null()
-          expect(count).to.equal(1)
-          api.resque.queue.length(queue, (error, length) => {
-            expect(error).to.be.null()
-            expect(length).to.equal(0)
-            done()
-          })
-        })
-      })
-    })
+  it('I can remove an enqueued job', async () => {
+    await api.tasks.enqueue('regularTask', {word: 'first'})
+    let length = await api.resque.queue.length(queue)
+    expect(length).to.equal(1)
+
+    let count = await api.tasks.del(queue, 'regularTask', {word: 'first'})
+    expect(count).to.equal(1)
+
+    let lengthAgain = await api.resque.queue.length()
+    expect(lengthAgain).to.equal(0)
   })
 
-  it('I can remove a delayed job', (done) => {
-    api.tasks.enqueueIn(1000, 'regularTask', {word: 'first'}, (error) => {
-      expect(error).to.be.null()
-      api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-        expect(error).to.be.null()
-        expect(timestamps).to.have.length(1)
-        api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-          expect(error).to.be.null()
-          expect(timestamps).to.have.length(1)
-          api.tasks.delDelayed(queue, 'regularTask', {word: 'first'}, (error, timestamps) => {
-            expect(error).to.be.null()
-            expect(timestamps).to.have.length(0)
-            done()
-          })
-        })
-      })
-    })
+  it('I can remove a delayed job', async () => {
+    await api.tasks.enqueueIn(1000, 'regularTask', {word: 'first'})
+    let timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', {word: 'first'})
+    expect(timestamps).to.have.length(1)
+
+    let timestampsDeleted = await api.tasks.delDelayed(queue, 'regularTask', {word: 'first'})
+    expect(timestampsDeleted).to.have.length(1)
+    expect(timestampsDeleted).to.deep.equal(timestamps)
+
+    let timestampsDeletedAgain = await api.tasks.delDelayed(queue, 'regularTask', {word: 'first'})
+    expect(timestampsDeletedAgain).to.have.length(0)
   })
 
-  it('I can remove and stop a recurring task', (done) => {
+  it('I can remove and stop a recurring task', async () => {
     // enqueue the delayed job 2x, one in each type of queue
-    api.tasks.enqueue('periodicTask', {}, (error) => {
-      expect(error).to.be.null()
-      api.tasks.enqueueIn(1000, 'periodicTask', {}, (error) => {
-        expect(error).to.be.null()
-        api.tasks.stopRecurrentJob('periodicTask', (error, count) => {
-          expect(error).to.be.null()
-          expect(count).to.equal(2)
-          done()
-        })
-      })
-    })
+    await api.tasks.enqueue('periodicTask')
+    await api.tasks.enqueueIn(1000, 'periodicTask')
+
+    let count = await api.tasks.stopRecurrentJob('periodicTask')
+    expect(count).to.equal(2)
   })
 
   describe('details view in a working system', () => {
-    it('can use api.tasks.details to learn about the system', (done) => {
+    it('can use api.tasks.details to learn about the system', async function () {
+      this.timeout(1000 * 10)
+
       api.config.tasks.queues = ['*']
 
-      api.tasks.enqueue('slowTask', {a: 1}, (error) => {
-        expect(error).to.be.null()
-        api.resque.multiWorker.start(() => {
-          setTimeout(() => {
-            api.tasks.details((error, details) => {
-              expect(error).to.be.null()
-              expect(Object.keys(details.queues)).to.deep.equal(['testQueue'])
-              expect(details.queues.testQueue).to.have.length(0)
-              expect(Object.keys(details.workers)).to.have.length(1)
-              let workerName = Object.keys(details.workers)[0]
-              expect(details.workers[workerName].queue).to.equal('testQueue')
-              expect(details.workers[workerName].payload.args).to.deep.equal([{a: 1}])
-              expect(details.workers[workerName].payload['class']).to.equal('slowTask')
-              api.resque.multiWorker.stop(done)
-            })
-          }, 2000)
-        })
-      })
-    }).timeout(10000)
+      await api.tasks.enqueue('slowTask', {a: 1})
+      api.resque.multiWorker.start()
+
+      await new Promise((resolve) => { setTimeout(resolve, 2000) })
+
+      let details = await api.tasks.details()
+
+      expect(Object.keys(details.queues)).to.deep.equal(['testQueue'])
+      expect(details.queues.testQueue).to.have.length(0)
+      expect(Object.keys(details.workers)).to.have.length(1)
+      let workerName = Object.keys(details.workers)[0]
+      expect(details.workers[workerName].queue).to.equal('testQueue')
+      expect(details.workers[workerName].payload.args).to.deep.equal([{a: 1}])
+      expect(details.workers[workerName].payload['class']).to.equal('slowTask')
+
+      await api.resque.multiWorker.stop()
+    })
   })
 
   describe('full worker flow', () => {

@@ -16,12 +16,8 @@ module.exports = {
       loadFile: function (fullFilePath, reload) {
         if (!reload) { reload = false }
 
-        const loadMessage = function (loadedTaskName) {
-          api.log(`task ${(reload ? '(re)' : '')} loaded: ${loadedTaskName}, ${fullFilePath}`, 'debug')
-        }
-
         api.watchFileAndAct(fullFilePath, () => {
-          this.loadFile(fullFilePath, true)
+          api.tasks.loadFile(fullFilePath, true)
         })
 
         let task
@@ -30,9 +26,9 @@ module.exports = {
           for (let i in collection) {
             task = collection[i]
             api.tasks.tasks[task.name] = task
-            this.validateTask(api.tasks.tasks[task.name])
-            api.tasks.jobs[task.name] = this.jobWrapper(task.name)
-            loadMessage(task.name)
+            api.tasks.validateTask(api.tasks.tasks[task.name])
+            api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name)
+            api.log(`task ${(reload ? '(re)' : '')} loaded: ${task.name}, ${fullFilePath}`, 'debug')
           }
         } catch (error) {
           api.exceptionHandlers.loader(fullFilePath, error)
@@ -49,14 +45,14 @@ module.exports = {
         let pluginOptions = task.pluginOptions || []
 
         if (task.frequency > 0) {
-          if (plugins.indexOf('jobLock') < 0) { plugins.push('jobLock') }
-          if (plugins.indexOf('queueLock') < 0) { plugins.push('queueLock') }
-          if (plugins.indexOf('delayQueueLock') < 0) { plugins.push('delayQueueLock') }
+          if (plugins.indexOf('JobLock') < 0) { plugins.push('JobLock') }
+          if (plugins.indexOf('QueueLock') < 0) { plugins.push('QueueLock') }
+          if (plugins.indexOf('DelayQueueLock') < 0) { plugins.push('DelayQueueLock') }
         }
 
         // load middleware into plugins
         const processMiddleware = (m) => {
-          if (api.tasks.middleware[m]) { // Ignore middleware until it has been loaded.
+          if (api.tasks.middleware[m]) {
             class Plugin extends NodeResque.Plugin {}
             if (api.tasks.middleware[m].preProcessor) { Plugin.beforePerform = api.tasks.middleware[m].preProcessor }
             if (api.tasks.middleware[m].postProcessor) { Plugin.afterPerform = api.tasks.middleware[m].postProcessor }
@@ -69,24 +65,13 @@ module.exports = {
         api.tasks.globalMiddleware.forEach(processMiddleware)
         middleware.forEach(processMiddleware)
 
-        // TODO: solve scope issues here
-        let self = this
         return {
-          'plugins': plugins,
-          'pluginOptions': pluginOptions,
-          'perform': function () {
-            let args = Array.prototype.slice.call(arguments)
-            let cb = args.pop()
-            if (args.length === 0) {
-              args.push({}) // empty params array
-            }
-            args.push((error, resp) => {
-              self.enqueueRecurrentJob(taskName, () => {
-                cb(error, resp)
-              })
-            })
-            args.splice(0, 0, api)
-            api.tasks.tasks[taskName].run.apply(this, args)
+          plugins: plugins,
+          pluginOptions: pluginOptions,
+          perform: async function () {
+            let response = await api.tasks.tasks[taskName].run.apply(null, arguments)
+            await api.tasks.enqueueRecurrentJob(taskName)
+            return response
           }
         }
       },
@@ -118,19 +103,19 @@ module.exports = {
 
       enqueue: async (taskName, params, queue) => {
         if (!params) { params = {} }
-        if (!queue) { queue = this.tasks[taskName].queue }
-        return api.resque.queue.enqueue(queue, taskName, params)
+        if (!queue) { queue = api.tasks.tasks[taskName].queue }
+        await api.resque.queue.enqueue(queue, taskName, params)
       },
 
       enqueueAt: async (timestamp, taskName, params, queue) => {
         if (!params) { params = {} }
-        if (!queue) { queue = this.tasks[taskName].queue }
+        if (!queue) { queue = api.tasks.tasks[taskName].queue }
         return api.resque.queue.enqueueAt(timestamp, queue, taskName, params)
       },
 
       enqueueIn: async (time, taskName, params, queue) => {
         if (!params) { params = {} }
-        if (!queue) { queue = this.tasks[taskName].queue }
+        if (!queue) { queue = api.tasks.tasks[taskName].queue }
         return api.resque.queue.enqueueIn(time, queue, taskName, params)
       },
 
@@ -211,12 +196,12 @@ module.exports = {
       },
 
       enqueueRecurrentJob: async (taskName) => {
-        const task = this.tasks[taskName]
+        const task = api.tasks.tasks[taskName]
 
         if (task.frequency > 0) {
-          await this.del(task.queue, taskName)
-          await this.delDelayed(task.queue, taskName)
-          await this.enqueueIn(task.frequency, taskName)
+          await api.tasks.del(task.queue, taskName)
+          await api.tasks.delDelayed(task.queue, taskName)
+          await api.tasks.enqueueIn(task.frequency, taskName)
           api.log(`re-enqueued recurrent job ${taskName}`, api.config.tasks.schedulerLogging.reEnqueue)
         }
       },
@@ -225,11 +210,11 @@ module.exports = {
         let jobs = []
         let loadedTasks = []
 
-        Object.keys(this.tasks).forEach((taskName) => {
-          const task = this.tasks[taskName]
+        Object.keys(api.tasks.tasks).forEach((taskName) => {
+          const task = api.tasks.tasks[taskName]
           if (task.frequency > 0) {
             jobs.push(async () => {
-              let toRun = await this.enqueue(taskName)
+              let toRun = await api.tasks.enqueue(taskName)
               if (toRun === true) {
                 api.log(`enqueuing periodic task: ${taskName}`, api.config.tasks.schedulerLogging.enqueue)
                 loadedTasks.push(taskName)
@@ -238,18 +223,18 @@ module.exports = {
           }
         })
 
-        await api.utiles.asyncWaterfall(jobs)
+        await api.utils.asyncWaterfall(jobs)
         return loadedTasks
       },
 
       stopRecurrentJob: async (taskName) => {
         // find the jobs in either the normal queue or delayed queues
-        const task = this.tasks[taskName]
+        const task = api.tasks.tasks[taskName]
         if (task.frequency > 0) {
           let removedCount = 0
-          let count = await this.del(task.queue, task.name, {}, 1)
+          let count = await api.tasks.del(task.queue, task.name, {}, 1)
           removedCount = removedCount + count
-          let timestamps = await this.delDelayed(task.queue, task.name, {})
+          let timestamps = await api.tasks.delDelayed(task.queue, task.name, {})
           removedCount = removedCount + timestamps.length
           return removedCount
         }
@@ -260,21 +245,11 @@ module.exports = {
 
         details.workers = await api.tasks.allWorkingOn()
         details.stats = await api.tasks.stats()
-        let queues = await new Promise((resolve, reject) => {
-          api.resque.queue.queues((error, queues) => {
-            if (error) { return reject(error) }
-            return resolve(queues)
-          })
-        })
+        let queues = await api.resque.queue.queues()
 
         for (let i in queues) {
           let queue = queues[i]
-          let length = await new Promise((resolve, reject) => {
-            api.resque.queue.length(queue, (error, length) => {
-              if (error) { return reject(error) }
-              return resolve(length)
-            })
-          })
+          let length = await api.resque.queue.length(queue)
           details.queues[queue] = { length: length }
         }
 
