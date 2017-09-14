@@ -123,6 +123,12 @@ describe('Core: Tasks', () => {
     expect(taskOutput[0]).to.equal('theWord')
   })
 
+  it('can run a task fully', async () => {
+    let response = await api.specHelper.runFullTask('regularTask', {word: 'theWord'})
+    expect(response).to.equal('theWord')
+    expect(taskOutput[0]).to.equal('theWord')
+  })
+
   it('no delayed tasks should be scheduled', async () => {
     let timestamps = await api.resque.queue.scheduledAt(queue, 'periodicTask', {})
     expect(timestamps).to.have.length(0)
@@ -211,6 +217,117 @@ describe('Core: Tasks', () => {
 
     let count = await api.tasks.stopRecurrentJob('periodicTask')
     expect(count).to.equal(2)
+  })
+
+  describe('middleware', () => {
+    describe('enqueue modification', () => {
+      before(async () => {
+        const middleware = {
+          name: 'test-middleware',
+          priority: 1000,
+          global: false,
+          preEnqueue: () => {
+            throw new Error('You cannot enqueue me!')
+          }
+        }
+
+        api.tasks.addMiddleware(middleware)
+
+        api.tasks.tasks.middlewareTask = {
+          name: 'middlewareTask',
+          description: 'middlewaretask',
+          queue: 'default',
+          frequency: 0,
+          middleware: ['test-middleware'],
+          run: (api, params) => {
+            throw new Error('Should never get here')
+          }
+        }
+
+        api.tasks.jobs.middlewareTask = api.tasks.jobWrapper('middlewareTask')
+      })
+
+      after(async () => {
+        api.tasks.globalMiddleware = []
+        delete api.tasks.jobs.middlewareTask
+      })
+
+      it('can modify the behavior of enqueue with middleware.preEnqueue', async () => {
+        try {
+          await api.tasks.enqueue('middlewareTask', {})
+        } catch (error) {
+          expect(error.toString()).to.be.equal('Error: You cannot enqueue me!')
+        }
+      })
+    })
+
+    describe('Pre and Post processing', () => {
+      before(() => {
+        const middleware = {
+          name: 'test-middleware',
+          priority: 1000,
+          global: false,
+          preProcessor: function () {
+            let params = this.args[0]
+
+            if (params.stop === true) { return false }
+            if (params.throw === true) { throw new Error('thown!') }
+
+            params.test = true
+            if (!this.worker.result) { this.worker.result = {} }
+            this.worker.result.pre = true
+            return true
+          },
+          postProcessor: function () {
+            this.worker.result.post = true
+            return true
+          }
+        }
+
+        api.tasks.addMiddleware(middleware)
+
+        api.tasks.tasks.middlewareTask = {
+          name: 'middlewareTask',
+          description: 'middlewaretask',
+          queue: 'default',
+          frequency: 0,
+          middleware: ['test-middleware'],
+          run: function (api, params) {
+            expect(params.test).to.equal(true)
+            let result = this.result
+            result.run = true
+            return result
+          }
+        }
+
+        api.tasks.jobs.middlewareTask = api.tasks.jobWrapper('middlewareTask')
+      })
+
+      after(() => {
+        api.tasks.globalMiddleware = []
+        delete api.tasks.jobs.middlewareTask
+      })
+
+      it('can modify parameters before a task and modify result after task completion', async () => {
+        const result = await api.specHelper.runFullTask('middlewareTask', {foo: 'bar'})
+        expect(result.run).to.equal(true)
+        expect(result.pre).to.equal(true)
+        expect(result.post).to.equal(true)
+      })
+
+      it('can prevent the running of a task with error', async () => {
+        try {
+          await api.specHelper.runFullTask('middlewareTask', {throw: true})
+        } catch (error) {
+          expect(error.toString()).to.equal('Error: thown!')
+        }
+      })
+
+      it('can prevent the running of a task with return value', async () => {
+        let result = await api.specHelper.runFullTask('middlewareTask', {stop: true})
+        expect(result).to.be.undefined()
+      })
+    })
   })
 
   describe('details view in a working system', () => {

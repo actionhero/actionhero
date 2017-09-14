@@ -54,10 +54,10 @@ module.exports = {
         const processMiddleware = (m) => {
           if (api.tasks.middleware[m]) {
             class Plugin extends NodeResque.Plugin {}
-            if (api.tasks.middleware[m].preProcessor) { Plugin.beforePerform = api.tasks.middleware[m].preProcessor }
-            if (api.tasks.middleware[m].postProcessor) { Plugin.afterPerform = api.tasks.middleware[m].postProcessor }
-            if (api.tasks.middleware[m].preEnqueue) { Plugin.beforeEnqueue = api.tasks.middleware[m].preEnqueue }
-            if (api.tasks.middleware[m].postEnqueue) { Plugin.afterEnqueue = api.tasks.middleware[m].postEnqueue }
+            if (api.tasks.middleware[m].preProcessor) { Plugin.prototype.beforePerform = api.tasks.middleware[m].preProcessor }
+            if (api.tasks.middleware[m].postProcessor) { Plugin.prototype.afterPerform = api.tasks.middleware[m].postProcessor }
+            if (api.tasks.middleware[m].preEnqueue) { Plugin.prototype.beforeEnqueue = api.tasks.middleware[m].preEnqueue }
+            if (api.tasks.middleware[m].postEnqueue) { Plugin.prototype.afterEnqueue = api.tasks.middleware[m].postEnqueue }
             plugins.push(Plugin)
           }
         }
@@ -70,7 +70,7 @@ module.exports = {
           pluginOptions: pluginOptions,
           perform: async function () {
             let combinedArgs = [api].concat(Array.prototype.slice.call(arguments))
-            let response = await api.tasks.tasks[taskName].run.apply(null, combinedArgs)
+            let response = await api.tasks.tasks[taskName].run.apply(this, combinedArgs)
             await api.tasks.enqueueRecurrentJob(taskName)
             return response
           }

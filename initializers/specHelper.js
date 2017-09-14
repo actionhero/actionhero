@@ -1,7 +1,7 @@
 'use strict'
 
 const uuid = require('uuid')
-const NR = require('node-resque')
+const NodeResque = require('node-resque')
 
 module.exports = {
   startPriority: 901,
@@ -173,23 +173,15 @@ module.exports = {
       }
 
       api.specHelper.runFullTask = async (taskName, params) => {
-        let options = {
+        const worker = new NodeResque.Worker({
           connection: api.redis.clients.tasks,
           queues: api.config.tasks.queues || ['default']
-        }
+        }, api.tasks.jobs)
 
-        let worker = new NR.worker(options, api.tasks.jobs) // eslint-disable-line
-        await new Promise((resolve, reject) => {
-          worker.connect((error) => {
-            if (error) { return reject(error) }
-
-            worker.performInline(taskName, params, (error, result) => {
-              worker.end()
-              if (error) { return reject(error) }
-              resolve(result)
-            })
-          })
-        })
+        await worker.connect()
+        let result = await worker.performInline(taskName, params)
+        await worker.end()
+        return result
       }
     }
   },
