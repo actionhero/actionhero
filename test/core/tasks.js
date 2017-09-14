@@ -239,68 +239,65 @@ describe('Core: Tasks', () => {
   })
 
   describe('full worker flow', () => {
-    it('normal tasks work', (done) => {
-      api.tasks.enqueue('regularTask', {word: 'first'}, (error) => {
-        expect(error).to.be.null()
-        api.config.tasks.queues = ['*']
-        api.resque.multiWorker.start(() => {
-          setTimeout(() => {
-            expect(taskOutput[0]).to.equal('first')
-            api.resque.multiWorker.stop(done)
-          }, 500)
-        })
-      })
+    it('normal tasks work', async () => {
+      await api.tasks.enqueue('regularTask', {word: 'first'})
+      api.config.tasks.queues = ['*']
+      api.resque.multiWorker.start()
+
+      await new Promise((resolve) => { setTimeout(resolve, 500) })
+
+      expect(taskOutput[0]).to.equal('first')
+      await api.resque.multiWorker.stop()
     })
 
-    it('delayed tasks work', (done) => {
-      api.tasks.enqueueIn(100, 'regularTask', {word: 'delayed'}, (error) => {
-        expect(error).to.be.null()
-        api.config.tasks.queues = ['*']
-        api.config.tasks.scheduler = true
-        api.resque.startScheduler(() => {
-          api.resque.multiWorker.start(() => {
-            setTimeout(() => {
-              expect(taskOutput[0]).to.equal('delayed')
-              api.resque.multiWorker.stop(done)
-            }, 1500)
-          })
-        })
-      })
+    it('delayed tasks work', async () => {
+      await api.tasks.enqueueIn(100, 'regularTask', {word: 'delayed'})
+
+      api.config.tasks.queues = ['*']
+      api.config.tasks.scheduler = true
+      await api.resque.startScheduler()
+      await api.resque.multiWorker.start()
+
+      await new Promise((resolve) => { setTimeout(resolve, 1500) })
+      expect(taskOutput[0]).to.equal('delayed')
+      await api.resque.multiWorker.stop()
+      await api.resque.stopScheduler()
     })
 
-    it('recurrent tasks work', (done) => {
-      api.tasks.enqueueRecurrentJob('periodicTask', () => {
-        api.config.tasks.queues = ['*']
-        api.config.tasks.scheduler = true
-        api.resque.startScheduler(() => {
-          api.resque.multiWorker.start(() => {
-            setTimeout(() => {
-              expect(taskOutput[0]).to.equal('periodicTask')
-              expect(taskOutput[1]).to.equal('periodicTask')
-              expect(taskOutput[2]).to.equal('periodicTask')
-              // the task may have run more than 3 times, we just want to ensure that it happened more than once
-              api.resque.multiWorker.stop(done)
-            }, 1500)
-          })
-        })
-      })
+    it('recurrent tasks work', async () => {
+      await api.tasks.enqueueRecurrentJob('periodicTask')
+
+      api.config.tasks.queues = ['*']
+      api.config.tasks.scheduler = true
+      await api.resque.startScheduler()
+      await api.resque.multiWorker.start()
+
+      await new Promise((resolve) => { setTimeout(resolve, 1500) })
+      expect(taskOutput[0]).to.equal('periodicTask')
+      expect(taskOutput[1]).to.equal('periodicTask')
+      expect(taskOutput[2]).to.equal('periodicTask')
+      // the task may have run more than 3 times, we just want to ensure that it happened more than once
+      await api.resque.multiWorker.stop()
+      await api.resque.stopScheduler()
     })
 
-    it('popping an unknown job will throw an error, but not crash the server', (done) => {
+    it('trying to run an unknown job will return a failure, but not crash the server', async () => {
       api.config.tasks.queues = ['*']
 
-      let listener = (workerId, queue, job, f) => {
-        expect(queue).to.equal(queue)
-        expect(job['class']).to.equal('someCrazyTask')
-        expect(job.queue).to.equal('testQueue')
-        expect(String(f)).to.equal('Error: No job defined for class "someCrazyTask"')
-        api.resque.multiWorker.removeListener('failure', listener)
-        api.resque.multiWorker.stop(done)
-      }
+      await new Promise(async (resolve) => {
+        let listener = async (workerId, queue, job, f) => {
+          expect(queue).to.equal(queue)
+          expect(job['class']).to.equal('someCrazyTask')
+          expect(job.queue).to.equal('testQueue')
+          expect(String(f)).to.equal('Error: No job defined for class "someCrazyTask"')
+          api.resque.multiWorker.removeListener('failure', listener)
+          await api.resque.multiWorker.stop()
+          resolve()
+        }
 
-      api.resque.multiWorker.on('failure', listener)
+        api.resque.multiWorker.on('failure', listener)
 
-      api.resque.queue.enqueue(queue, 'someCrazyTask', {}, () => {
+        await api.resque.queue.enqueue(queue, 'someCrazyTask')
         api.resque.multiWorker.start()
       })
     })

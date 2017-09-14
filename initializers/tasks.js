@@ -69,7 +69,8 @@ module.exports = {
           plugins: plugins,
           pluginOptions: pluginOptions,
           perform: async function () {
-            let response = await api.tasks.tasks[taskName].run.apply(null, arguments)
+            let combinedArgs = [api].concat(Array.prototype.slice.call(arguments))
+            let response = await api.tasks.tasks[taskName].run.apply(null, combinedArgs)
             await api.tasks.enqueueRecurrentJob(taskName)
             return response
           }
@@ -104,7 +105,7 @@ module.exports = {
       enqueue: async (taskName, params, queue) => {
         if (!params) { params = {} }
         if (!queue) { queue = api.tasks.tasks[taskName].queue }
-        await api.resque.queue.enqueue(queue, taskName, params)
+        return api.resque.queue.enqueue(queue, taskName, params)
       },
 
       enqueueAt: async (timestamp, taskName, params, queue) => {
