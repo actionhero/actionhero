@@ -228,7 +228,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
-        let body = await toJson(error.body.body)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.crazyParam123).to.equal('something')
       }
     })
@@ -560,88 +560,77 @@ describe('Server: Web', () => {
     it('actions that do not exists should return 404', async () => {
       try {
         await request.post(url + '/api/aFakeAction')
+        throw new Error('should not ge here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
       }
     })
 
-    it('missing params result in a 422', (done) => {
-      request.post(url + '/api/statusTestAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(422)
-        done()
-      })
+    it('missing params result in a 422', async () => {
+      try {
+        await request.post(url + '/api/statusTestAction')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(422)
+      }
     })
 
-    it('status codes can be set for errors', (done) => {
-      request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('status codes can be set for errors', async () => {
+      try {
+        await request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}})
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(402)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('key != value')
-        expect(response.statusCode).to.equal(402)
-        done()
-      })
+      }
     })
 
-    it('status code should still be 200 if everything is OK', (done) => {
-      request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.good).to.equal(true)
-        expect(response.statusCode).to.equal(200)
-        done()
-      })
+    it('status code should still be 200 if everything is OK', async () => {
+      let response = await request.post(url + '/api/statusTestAction', {form: {key: 'value'}, resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      let body = await toJson(response.body)
+      expect(body.good).to.equal(true)
     })
   })
 
   describe('documentation', () => {
-    it('documentation can be returned via a documentation action', (done) => {
-      request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.documentation).to.be.instanceof(Object)
-        done()
-      })
+    it('documentation can be returned via a documentation action', async () => {
+      let body = await request.get(url + '/api/showDocumentation').then(toJson)
+      expect(body.documentation).to.be.instanceof(Object)
     })
 
-    it('should have actions with all the right parts', (done) => {
-      request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        for (let actionName in body.documentation) {
-          for (let version in body.documentation[actionName]) {
-            let action = body.documentation[actionName][version]
-            expect(typeof action.name).to.equal('string')
-            expect(typeof action.description).to.equal('string')
-            expect(action.inputs).to.be.instanceof(Object)
-          }
+    it('should have actions with all the right parts', async () => {
+      let body = await request.get(url + '/api/showDocumentation').then(toJson)
+      for (let actionName in body.documentation) {
+        for (let version in body.documentation[actionName]) {
+          let action = body.documentation[actionName][version]
+          expect(typeof action.name).to.equal('string')
+          expect(typeof action.description).to.equal('string')
+          expect(action.inputs).to.be.instanceof(Object)
         }
-        done()
-      })
+      }
     })
   })
 
   describe('files', () => {
-    it('file: an HTML file', (done) => {
-      request.get(url + '/public/simple.html', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-        done()
-      })
+    it('an HTML file', async () => {
+      let response = await request.get(url + '/public/simple.html', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
     })
 
-    it('file: 404 pages', (done) => {
-      request.get(url + '/public/notARealFile', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(404)
-        expect(response.body).not.to.match(/notARealFile/)
-        done()
-      })
+    it('404 pages', async () => {
+      try {
+        await request.get(url + '/public/notARealFile')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.body).not.to.match(/notARealFile/)
+      }
     })
 
-    it('file: 404 pages from POST with if-modified-since header', (done) => {
+    it('404 pages from POST with if-modified-since header', async () => {
       let file = Math.random().toString(36)
       let options = {
         url: url + '/' + file,
@@ -650,84 +639,73 @@ describe('Server: Web', () => {
         }
       }
 
-      request.get(options, (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(404)
-        expect(response.body).to.equal('That file is not found')
-        done()
-      })
+      try {
+        await request.get(options)
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.response.body).to.equal('That file is not found')
+      }
     })
 
-    it('I should not see files outside of the public dir', (done) => {
-      request.get(url + '/public/../config.json', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(404)
-        expect(response.body).to.equal('That file is not found')
-        done()
-      })
+    it('should not see files outside of the public dir', async () => {
+      try {
+        await request.get(url + '/public/../config.json')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.response.body).to.equal('That file is not found')
+      }
     })
 
-    it('file: index page should be served when requesting a path (trailing slash)', (done) => {
-      request.get(url + '/public/', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(typeof response.body).to.equal('string')
-        done()
-      })
+    it('index page should be served when requesting a path (trailing slash)', async () => {
+      let response = await request.get(url + '/public/', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.match(/ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/)
     })
 
-    it('file: index page should be served when requesting a path (no trailing slash)', (done) => {
-      request.get(url + '/public', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(typeof response.body).to.equal('string')
-        done()
-      })
+    it('index page should be served when requesting a path (no trailing slash)', async () => {
+      let response = await request.get(url + '/public', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.match(/ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/)
     })
 
     describe('can serve files from a specific mapped route', () => {
-      before((done) => {
+      before(() => {
         let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.mkdirSync(testFolderPublicPath)
         fs.writeFileSync(testFolderPublicPath + '/testFile.html', 'ActionHero Route Test File')
         api.routes.registerRoute('get', '/my/public/route', null, null, true, testFolderPublicPath)
-        process.nextTick(() => {
-          done()
-        })
       })
 
-      after((done) => {
+      after(() => {
         let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.unlinkSync(testFolderPublicPath + path.sep + 'testFile.html')
         fs.rmdirSync(testFolderPublicPath)
-        process.nextTick(() => {
-          done()
-        })
       })
 
-      it('works for routes mapped paths', (done) => {
-        request.get(url + '/my/public/route/testFile.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('ActionHero Route Test File')
-          done()
-        })
+      it('works for routes mapped paths', async () => {
+        let response = await request.get(url + '/my/public/route/testFile.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('ActionHero Route Test File')
       })
 
-      it('returns 404 for files not available in route mapped paths', (done) => {
-        request.get(url + '/my/public/route/fileNotFound.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('returns 404 for files not available in route mapped paths', async () => {
+        try {
+          await request.get(url + '/my/public/route/fileNotFound.html')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(error.response.body).to.equal('That file is not found')
+        }
       })
 
-      it('I should not see files outside of the mapped dir', (done) => {
-        request.get(url + '/my/public/route/../../config/servers/web.js', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('should not see files outside of the mapped dir', async () => {
+        try {
+          await request.get(url + '/my/public/route/../../config/servers/web.js')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(error.response.body).to.equal('That file is not found')
+        }
       })
     })
 
@@ -735,22 +713,19 @@ describe('Server: Web', () => {
       let source = path.join(__dirname, '/../../public/simple.html')
 
       before(() => {
-        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'))
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'tmpTestFile.html'))
         api.staticFile.searchLoactions.push(os.tmpdir())
       })
 
       after(() => {
-        fs.unlinkSync(os.tmpdir() + path.sep + 'testFile.html')
+        fs.unlinkSync(os.tmpdir() + path.sep + 'tmpTestFile.html')
         api.staticFile.searchLoactions.pop()
       })
 
-      it('works for secondary paths', (done) => {
-        request.get(url + '/public/testFile.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-          done()
-        })
+      it('works for secondary paths', async () => {
+        let response = await request.get(url + '/public/tmpTestFile.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       })
     })
 
@@ -765,51 +740,46 @@ describe('Server: Web', () => {
         api.config.servers.web.urlPathForFiles = 'public'
       })
 
-      it('old action routes stop working', (done) => {
-        request.get(url + '/api/randomNumber', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('old action routes stop working', async () => {
+        try {
+          await request.get(url + '/api/randomNumber')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+        }
       })
 
-      it('can ask for nested URL actions', (done) => {
-        request.get(url + '/craz/y/action/path/randomNumber', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          done()
-        })
+      it('can ask for nested URL actions', async () => {
+        let response = await request.get(url + '/craz/y/action/path/randomNumber', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
       })
 
-      it('old file routes stop working', (done) => {
-        request.get(url + '/public/simple.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('old file routes stop working', async () => {
+        try {
+          await request.get(url + '/public/simple.html')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+        }
       })
 
-      it('can ask for nested URL files', (done) => {
-        request.get(url + '/a/b/c/simple.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-          done()
-        })
+      it('can ask for nested URL files', async () => {
+        let response = await request.get(url + '/a/b/c/simple.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       })
 
-      it('can ask for nested URL files with depth', (done) => {
-        request.get(url + '/a/b/c/css/cosmo.css', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          done()
-        })
+      it('can ask for nested URL files with depth', async () => {
+        let response = await request.get(url + '/a/b/c/css/cosmo.css', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
       })
     })
   })
 
   describe('routes', () => {
-    before((done) => {
+    let originalRoutes
+    before(() => {
+      originalRoutes = api.routes.routes
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
         '1': {
@@ -821,9 +791,8 @@ describe('Server: Web', () => {
             path: {required: false}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.matchedRoute = data.connection.matchedRoute
-            next()
           }
         }
       }
@@ -838,9 +807,8 @@ describe('Server: Web', () => {
             user_id: {required: true}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.user_id = data.params.user_id
-            next()
           }
         },
 
@@ -852,9 +820,8 @@ describe('Server: Web', () => {
             userID: {required: true}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.userID = data.params.userID
-            next()
           }
         }
       }
@@ -878,265 +845,257 @@ describe('Server: Web', () => {
           {path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login'}
         ]
       })
-
-      done()
     })
 
-    after((done) => {
-      api.routes.routes = {}
+    after(() => {
+      api.routes.routes = originalRoutes
       delete api.actions.versions.mimeTestAction
       delete api.actions.actions.mimeTestAction
       delete api.actions.versions.login
       delete api.actions.actions.login
-      done()
     })
 
-    it('new params will not be allowed in route definitions (an action should do it)', (done) => {
+    it('new params will not be allowed in route definitions (an action should do it)', () => {
       expect(api.params.postVariables).not.to.contain('bogusID')
-      done()
     })
 
-    it('\'all\' routes are duplicated properly', (done) => {
+    it('\'all\' routes are duplicated properly', () => {
       ['get', 'post', 'put', 'delete'].forEach((verb) => {
         expect(api.routes.routes[verb][0].action).to.equal('user')
         expect(api.routes.routes[verb][0].path).to.equal('/user/:userID')
       })
-      done()
     })
 
-    it('unknown actions are still unknown', (done) => {
-      request.get(url + '/api/a_crazy_action', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('unknown actions are still unknown', async () => {
+      try {
+        await request.get(url + '/api/a_crazy_action')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
-        done()
-      })
+      }
     })
 
-    it('explicit action declarations still override routed actions, if the defined action is real', (done) => {
-      request.get(url + '/api/user/123?action=randomNumber', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('randomNumber')
-        done()
-      })
+    it('explicit action declarations still override routed actions, if the defined action is real', async () => {
+      let body = await request.get(url + '/api/user/123?action=randomNumber').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('randomNumber')
     })
 
-    it('route actions will override explicit actions, if the defined action is null', (done) => {
-      request.get(url + '/api/user/123?action=someFakeAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('route actions will override explicit actions, if the defined action is null', async () => {
+      try {
+        await request.get(url + '/api/user/123?action=someFakeAction').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
-        done()
-      })
+      }
     })
 
-    it('route actions have the matched route availalbe to the action', (done) => {
-      request.get(url + '/api/mimeTestAction/thing.json', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
-        expect(body.matchedRoute.action).to.equal('mimeTestAction')
-        done()
-      })
+    it('route actions have the matched route availalbe to the action', async () => {
+      let body = await request.get(url + '/api/mimeTestAction/thing.json').then(toJson)
+      expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
+      expect(body.matchedRoute.action).to.equal('mimeTestAction')
     })
 
-    it('Routes should recognize apiVersion as default param', (done) => {
-      request.get(url + '/api/old_login?user_id=7', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.user_id).to.equal('7')
-        expect(body.requesterInformation.receivedParams.action).to.equal('login')
-        done()
-      })
+    it('Routes should recognize apiVersion as default param', async () => {
+      let body = await request.get(url + '/api/old_login?user_id=7').then(toJson)
+      expect(body.user_id).to.equal('7')
+      expect(body.requesterInformation.receivedParams.action).to.equal('login')
     })
 
-    it('Routes should be mapped for GET (simple)', (done) => {
-      request.get(url + '/api/users', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for GET (simple)', async () => {
+      try {
+        await request.get(url + '/api/users').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('usersList')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for GET (complex)', (done) => {
-      request.get(url + '/api/user/1234', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for GET (complex)', async () => {
+      try {
+        await request.get(url + '/api/user/1234').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for POST', (done) => {
-      request.post(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('user')
-        expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
-        expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
-    })
-
-    it('Routes should be mapped for PUT', (done) => {
-      request.put(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for POST', async () => {
+      try {
+        await request.post(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
         expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for DELETE', (done) => {
-      request.del(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for PUT', async () => {
+      try {
+        await request.put(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
         expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
+      }
     })
 
-    it('route params trump explicit params', (done) => {
-      request.get(url + '/api/user/1?userID=2', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for DELETE', async () => {
+      try {
+        await request.del(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
+        expect(body.requesterInformation.receivedParams.action).to.equal('user')
+        expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
+        expect(body.requesterInformation.receivedParams.key).to.equal('value')
+      }
+    })
+
+    it('route params trump explicit params', async () => {
+      try {
+        await request.get(url + '/api/user/1?userID=2').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1')
-        done()
-      })
+      }
     })
 
-    it('to match, a route much match all parts of the URL', (done) => {
-      request.get(url + '/api/thing', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('to match, a route much match all parts of the URL', async () => {
+      try {
+        await request.get(url + '/api/thing').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('thing')
+      }
 
-        request.get(url + '/api/thing/stuff', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('thingStuff')
-          done()
-        })
-      })
+      try {
+        await request.get(url + '/api/thing/stuff').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
+        expect(body.requesterInformation.receivedParams.action).to.equal('thingStuff')
+      }
     })
 
-    it('regexp matches will provide proper variables', (done) => {
-      request.post(url + '/api/login/123', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('login')
-        expect(body.requesterInformation.receivedParams.userID).to.equal('123')
+    it('regexp matches will provide proper variables', async () => {
+      let body = await request.post(url + '/api/login/123').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('login')
+      expect(body.requesterInformation.receivedParams.userID).to.equal('123')
 
-        request.post(url + '/api/login/admin', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('login')
-          expect(body.requesterInformation.receivedParams.userID).to.equal('admin')
-          done()
-        })
-      })
+      let bodyAgain = await request.post(url + '/api/login/admin').then(toJson)
+      expect(bodyAgain.requesterInformation.receivedParams.action).to.equal('login')
+      expect(bodyAgain.requesterInformation.receivedParams.userID).to.equal('admin')
     })
 
-    it('regexp matches will still work with params with periods and other wacky chars', (done) => {
-      request.get(url + '/api/c/key/log_me-in.com$123.jpg', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
-        expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.jpg')
-        done()
-      })
+    it('regexp matches will still work with params with periods and other wacky chars', async () => {
+      let body = await request.get(url + '/api/c/key/log_me-in.com$123.jpg').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
+      expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.jpg')
     })
 
-    it('regexp match failures will be rejected', (done) => {
-      request.post(url + '/api/login/1234', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('regexp match failures will be rejected', async () => {
+      try {
+        await request.get(url + '/api/login/1234').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
         expect(body.requesterInformation.receivedParams.userID).to.not.exist()
-        done()
-      })
+      }
     })
 
     describe('file extensions + routes', () => {
-      it('will change header information based on extension (when active)', (done) => {
-        request.get(url + '/api/mimeTestAction/val.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.headers['content-type']).to.equal('image/png')
-          done()
-        })
+      it('will change header information based on extension (when active)', async () => {
+        let response = await request.get(url + '/api/mimeTestAction/val.png', {resolveWithFullResponse: true})
+        expect(response.headers['content-type']).to.equal('image/png')
       })
 
-      it('will not change header information if there is a connection.error', (done) => {
-        request.get(url + '/api/mimeTestAction', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(response.headers['content-type']).to.equal('application/json; charset=utf-8')
+      it('will not change header information if there is a connection.error', async () => {
+        try {
+          await request.get(url + '/api/mimeTestAction')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(422)
+          let body = await toJson(error.response.body)
+          expect(error.response.headers['content-type']).to.equal('application/json; charset=utf-8')
           expect(body.error).to.equal('key is a required parameter for this action')
-          done()
-        })
+        }
       })
 
-      it('works with with matchTrailingPathParts', (done) => {
-        request.get(url + '/api/a/wild/theKey/and/some/more/path', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('mimeTestAction')
-          expect(body.requesterInformation.receivedParams.path).to.equal('and/some/more/path')
-          expect(body.requesterInformation.receivedParams.key).to.equal('theKey')
-          done()
-        })
+      it('works with with matchTrailingPathParts', async () => {
+        let body = await request.get(url + '/api/a/wild/theKey/and/some/more/path').then(toJson)
+        expect(body.requesterInformation.receivedParams.action).to.equal('mimeTestAction')
+        expect(body.requesterInformation.receivedParams.path).to.equal('and/some/more/path')
+        expect(body.requesterInformation.receivedParams.key).to.equal('theKey')
       })
     })
 
     describe('spaces in URL with public files', () => {
       let source = path.join(__dirname, '/../../public/logo/actionhero.png')
 
-      before((done) => {
+      before(async () => {
         let tmpDir = os.tmpdir()
         let readStream = fs.createReadStream(source)
-        readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'))
         api.staticFile.searchLoactions.push(tmpDir)
-        readStream.on('close', done)
+
+        await new Promise((resolve) => {
+          readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'))
+          readStream.on('close', resolve)
+        })
       })
 
-      after((done) => {
+      after(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + 'actionhero with space.png')
         api.staticFile.searchLoactions.pop()
-        done()
       })
 
-      it('will decode %20 or plus sign to a space so that file system can read', (done) => {
-        request.get(url + '/actionhero%20with%20space.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.match(/PNG/)
-          expect(response.headers['content-type']).to.equal('image/png')
-          done()
-        })
+      it('will decode %20 or plus sign to a space so that file system can read', async () => {
+        let response = await request.get(url + '/actionhero%20with%20space.png', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.match(/PNG/)
+        expect(response.headers['content-type']).to.equal('image/png')
       })
 
-      it('will capture bad encoding in URL and return NOT FOUND', (done) => {
-        request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          expect(typeof response.body).to.equal('string')
-          expect(response.body).to.match(/^That file is not found/)
-          done()
-        })
+      it('will capture bad encoding in URL and return NOT FOUND', async () => {
+        try {
+          await request.get(url + '/actionhero%20%%%%%%%%%%with+space.png')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(typeof error.response.body).to.equal('string')
+          expect(error.response.body).to.match(/^That file is not found/)
+        }
       })
     })
   })
 
   describe('it should work with server custom methods', () => {
-    it('actions handled by the web server support proxy for setHeaders', (done) => {
+    let originalRoutes
+    before(() => {
+      originalRoutes = api.routes.routes
       api.actions.versions.proxyHeaders = [1]
       api.actions.actions.proxyHeaders = {
         '1': {
@@ -1144,13 +1103,8 @@ describe('Server: Web', () => {
           description: 'proxy test',
           inputs: {},
           outputExample: {},
-          run: (api, data, next) => {
-            try {
-              data.connection.setHeader('X-Foo', 'bar')
-              next()
-            } catch (error) {
-              next(error)
-            }
+          run: (api, data) => {
+            data.connection.setHeader('X-Foo', 'bar')
           }
         }
       }
@@ -1160,17 +1114,17 @@ describe('Server: Web', () => {
           {path: '/proxy', action: 'proxyHeaders', apiVersion: 1}
         ]
       })
+    })
 
-      request.get(url + '/api/proxy', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
+    after(() => {
+      api.routes.routes = originalRoutes
+      delete api.actions.versions.proxyHeaders
+      delete api.actions.actions.proxyHeaders
+    })
 
-        api.routes.routes = {}
-        delete api.actions.versions.proxyHeaders
-        delete api.actions.actions.proxyHeaders
-
-        done()
-      })
+    it('actions handled by the web server support proxy for setHeaders', async () => {
+      let response = await request.get(url + '/api/proxy', {resolveWithFullResponse: true})
+      expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
     })
   })
 })
