@@ -557,19 +557,12 @@ describe('Server: Web', () => {
       delete api.actions.actions.statusTestAction
     })
 
-// HERE!
     it('actions that do not exists should return 404', async () => {
       try {
-
+        await request.post(url + '/api/aFakeAction')
       } catch (error) {
-
+        expect(error.statusCode).to.equal(404)
       }
-      request.post(url + '/api/aFakeAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(404)
-        done()
-      })
     })
 
     it('missing params result in a 422', (done) => {
