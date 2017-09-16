@@ -5,7 +5,7 @@ const UglifyJS = require('uglify-js')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
-const browserFingerprint = require('browser_fingerprint')
+const BrowserFingerprint = require('browser_fingerprint')
 
 const initialize = async function (api, options) {
   // ////////
@@ -191,8 +191,10 @@ const initialize = async function (api, options) {
   // HELPERS //
   // ///////////
 
+  const fingerprinter = new BrowserFingerprint(api.config.servers.web.fingerprintOptions)
+
   const handleConnection = function (rawConnection) {
-    const parsedCookies = browserFingerprint.parseCookies(rawConnection)
+    const parsedCookies = fingerprinter.parseCookies(rawConnection)
     const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
     server.buildConnection({
       rawConnection: rawConnection,
