@@ -269,7 +269,7 @@ describe('Core: Binary', () => {
 
       it('can handle signals to add a worker', async () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
-        await sleep(500)
+        await sleep(1000)
 
         let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
@@ -280,7 +280,7 @@ describe('Core: Binary', () => {
 
       it('can handle signals to remove a worker', async () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
-        await sleep(500)
+        await sleep(1000)
 
         let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
