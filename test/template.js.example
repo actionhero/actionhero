@@ -5,8 +5,8 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const ActionheroPrototype = require('actionhero')
-const actionhero = new ActionheroPrototype()
+const ActionHero = require('actionhero')
+const actionhero = new ActionHero.Process()
 let api
 
 describe('actionhero Tests', () => {

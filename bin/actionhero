@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const optimist = require('optimist')
 const spawn = require('child_process').spawn
-
+const ActionHero = require(path.join(__dirname, '..', 'index.js'))
 const actionheroRoot = path.normalize(path.join(__dirname, '..'))
 let projectRoot
 
@@ -18,10 +18,6 @@ if (process.env.projectRoot) {
 } else {
   projectRoot = path.normalize(process.cwd())
 }
-
-const ActionheroPrototype = require(actionheroRoot + '/actionhero.js')
-const actionhero = new ActionheroPrototype()
-const configChanges = {}
 
 function formatParams (api, runner) {
   let params = {}
@@ -78,10 +74,11 @@ async function handleGenerate () {
 
 async function handleMethod () {
   try {
-    let api = await actionhero.initialize({configChanges: configChanges})
+    let actionHeroProcess = new ActionHero.Process()
+    let api = await actionHeroProcess.initialize()
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
-    api._context = actionhero
+    api._context = actionHeroProcess
     let runner
 
     let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')

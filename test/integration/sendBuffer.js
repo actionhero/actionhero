@@ -8,8 +8,8 @@ chai.use(dirtyChai)
 const request = require('request-promise-native')
 const stream = require('stream')
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 let url
 

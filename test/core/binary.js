@@ -272,8 +272,8 @@ describe('Core: Binary', () => {
         await sleep(500)
 
         let {stdout} = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
         expect(children.length).to.equal(3)
       })
@@ -283,8 +283,8 @@ describe('Core: Binary', () => {
         await sleep(500)
 
         let {stdout} = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).to.equal(1)
         expect(children.length).to.equal(2)
       })

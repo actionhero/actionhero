@@ -6,8 +6,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 describe('Test: RunAction', () => {

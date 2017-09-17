@@ -6,11 +6,11 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
 
-const actionhero1 = new ActionheroPrototype()
-const actionhero2 = new ActionheroPrototype()
-const actionhero3 = new ActionheroPrototype()
+const actionhero1 = new ActionHero.Process()
+const actionhero2 = new ActionHero.Process()
+const actionhero3 = new ActionHero.Process()
 
 const sleep = async (timeout) => {
   await new Promise((resolve) => setTimeout(resolve, timeout))

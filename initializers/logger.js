@@ -4,7 +4,7 @@ const winston = require('winston')
 
 module.exports = {
   loadPriority: 100,
-  initialize: function (api) {
+  initialize: (api) => {
     let transports = []
     let i
     for (i in api.config.logger.transports) {

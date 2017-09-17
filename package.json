@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git://github.com/actionhero/actionhero.git"
   },
-  "main": "actionhero.js",
+  "main": "index.js",
   "keywords": [
     "api",
     "realtime",

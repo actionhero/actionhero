@@ -7,8 +7,8 @@ chai.use(dirtyChai)
 
 const uuid = require('uuid')
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 const net = require('net')
