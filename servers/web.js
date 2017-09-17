@@ -652,6 +652,4 @@ const initialize = async function (api, options) {
   return server
 }
 
-// ///////////////////////////////////////////////////////////////////
-// exports
 exports.initialize = initialize
