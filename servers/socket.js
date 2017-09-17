@@ -3,10 +3,10 @@
 const net = require('net')
 const tls = require('tls')
 
-const initialize = async function (api, options) {
-  // ////////
+const initialize = async (api, options) => {
+  // ///////
   // INIT //
-  // ////////
+  // ///////
 
   const type = 'socket'
   const attributes = {
@@ -34,11 +34,11 @@ const initialize = async function (api, options) {
 
   const server = new api.GenericServer(type, options, attributes)
 
-  // ////////////////////
+  // ///////////////////
   // REQUIRED METHODS //
-  // ////////////////////
+  // ///////////////////
 
-  server.start = async function () {
+  server.start = async () => {
     if (options.secure === false) {
       server.server = net.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
         handleConnection(rawConnection)
@@ -54,17 +54,15 @@ const initialize = async function (api, options) {
     })
 
     await new Promise((resolve) => {
-      server.server.listen(options.port, options.bindIP, () => {
-        return resolve()
-      })
+      server.server.listen(options.port, options.bindIP, () => { resolve() })
     })
   }
 
-  server.stop = async function (next) {
+  server.stop = async (next) => {
     await gracefulShutdown(next)
   }
 
-  server.sendMessage = async function (connection, message, messageCount) {
+  server.sendMessage = async (connection, message, messageCount) => {
     if (message.error) {
       message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
@@ -79,6 +77,7 @@ const initialize = async function (api, options) {
         message.messageCount = connection.messageCount
       }
     }
+
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n')
     } catch (e) {
@@ -86,13 +85,13 @@ const initialize = async function (api, options) {
     }
   }
 
-  server.goodbye = function (connection) {
+  server.goodbye = (connection) => {
     try {
       connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
     } catch (e) {}
   }
 
-  server.sendFile = function (connection, error, fileStream) {
+  server.sendFile = (connection, error, fileStream) => {
     if (error) {
       server.sendMessage(connection, error, connection.messageCount)
     } else {
@@ -100,14 +99,14 @@ const initialize = async function (api, options) {
     }
   }
 
-  // //////////
+  // /////////
   // EVENTS //
-  // //////////
+  // /////////
 
-  server.on('connection', async function (connection) {
+  server.on('connection', async (connection) => {
     connection.params = {}
 
-    const parseLine = async function (line) {
+    const parseLine = async (line) => {
       if (api.config.servers.socket.maxDataLength > 0) {
         let blen = Buffer.byteLength(line, 'utf8')
         if (blen > api.config.servers.socket.maxDataLength) {
@@ -164,50 +163,51 @@ const initialize = async function (api, options) {
     }
   })
 
-  // ///////////
+  // //////////
   // HELPERS //
-  // ///////////
+  // //////////
 
-  const parseRequest = async function (connection, line) {
+  const parseRequest = async (connection, line) => {
     let words = line.split(' ')
     let verb = words.shift()
+
     if (verb === 'file') {
       if (words.length > 0) {
         connection.params.file = words[0]
       }
-      server.processFile(connection)
-    } else {
-      try {
-        let data = await connection.verbs(verb, words)
-        server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
-      } catch (error) {
-        if (error.toString().match('verb not found or not allowed')) {
-          // check for and attempt to check single-use params
-          try {
-            let requestHash = JSON.parse(line)
-            if (requestHash.params !== undefined) {
-              connection.params = {}
-              for (let v in requestHash.params) {
-                connection.params[v] = requestHash.params[v]
-              }
+      return server.processFile(connection)
+    }
+
+    try {
+      let data = await connection.verbs(verb, words)
+      server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+    } catch (error) {
+      if (error.toString().match('verb not found or not allowed')) {
+        // check for and attempt to check single-use params
+        try {
+          let requestHash = JSON.parse(line)
+          if (requestHash.params !== undefined) {
+            connection.params = {}
+            for (let v in requestHash.params) {
+              connection.params[v] = requestHash.params[v]
             }
-            if (requestHash.action) {
-              connection.params.action = requestHash.action
-            }
-          } catch (e) {
-            connection.params.action = verb
           }
-          connection.error = null
-          connection.response = {}
-          server.processAction(connection)
-        } else {
-          server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
+          if (requestHash.action) {
+            connection.params.action = requestHash.action
+          }
+        } catch (e) {
+          connection.params.action = verb
         }
+        connection.error = null
+        connection.response = {}
+        server.processAction(connection)
+      } else {
+        server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
       }
     }
   }
 
-  const handleConnection = function (rawConnection) {
+  const handleConnection = (rawConnection) => {
     if (api.config.servers.socket.setKeepAlive === true) {
       rawConnection.setKeepAlive(true)
     }
@@ -216,11 +216,11 @@ const initialize = async function (api, options) {
       rawConnection: rawConnection,
       remoteAddress: rawConnection.remoteAddress,
       remotePort: rawConnection.remotePort
-    }) // will emit 'connection'
+    })
   }
 
   // I check for ctrl+c in the stream
-  const checkBreakChars = function (chunk) {
+  const checkBreakChars = (chunk) => {
     let found = false
     let hexChunk = chunk.toString('hex', 0, chunk.length)
     if (hexChunk === 'fff4fffd06') {
@@ -231,7 +231,7 @@ const initialize = async function (api, options) {
     return found
   }
 
-  const gracefulShutdown = async function (alreadyShutdown) {
+  const gracefulShutdown = async (alreadyShutdown) => {
     if (!alreadyShutdown || alreadyShutdown === false) {
       if (server.server) { server.server.close() }
     }
@@ -243,21 +243,15 @@ const initialize = async function (api, options) {
       } else {
         pendingConnections++
         if (!connection.rawConnection.shutDownTimer) {
-          connection.rawConnection.shutDownTimer = setTimeout(() => {
-            connection.destroy()
-          }, attributes.pendingShutdownWaitLimit)
+          connection.rawConnection.shutDownTimer = setTimeout(connection.destroy, attributes.pendingShutdownWaitLimit)
         }
       }
     })
 
     if (pendingConnections > 0) {
-      server.log('waiting on shutdown, there are still ' + pendingConnections + ' connected clients waiting on a response', 'notice')
-
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          return gracefulShutdown(true)
-        }, 1000)
-      })
+      server.log(`waiting on shutdown, there are still ${pendingConnections} connected clients waiting on a response`, 'notice')
+      await new Promise((resolve) => { setTimeout(resolve, 1000) })
+      return gracefulShutdown(true)
     }
   }
 
