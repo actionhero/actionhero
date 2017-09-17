@@ -351,16 +351,19 @@ describe('Server: Web Socket', () => {
 
           let listenerA = (response) => {
             messagesReceived++
+            clientA.removeListener('say', listenerA)
             expect(response.message).to.equal('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
           }
 
           let listenerB = (response) => {
             messagesReceived++
+            clientB.removeListener('say', listenerB)
             expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
           }
 
           let listenerC = (response) => {
             messagesReceived++
+            clientC.removeListener('say', listenerC)
             expect(response.message).to.equal('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
           }
 
@@ -371,9 +374,6 @@ describe('Server: Web Socket', () => {
 
           await new Promise((resolve) => { setTimeout(resolve, 1000) })
 
-          clientA.removeListener('say', listenerA)
-          clientB.removeListener('say', listenerB)
-          clientC.removeListener('say', listenerC)
           expect(messagesReceived).to.equal(3)
         })
 
@@ -391,9 +391,20 @@ describe('Server: Web Socket', () => {
           })
 
           let messagesReceived = 0
-          let listenerA = () => { messagesReceived += 1 }
-          let listenerB = () => { messagesReceived += 2 }
-          let listenerC = () => { messagesReceived += 4 }
+          let listenerA = () => {
+            clientA.removeListener('say', listenerA)
+            messagesReceived += 1
+          }
+
+          let listenerB = () => {
+            clientB.removeListener('say', listenerB)
+            messagesReceived += 2
+          }
+
+          let listenerC = () => {
+            clientC.removeListener('say', listenerC)
+            messagesReceived += 4
+          }
 
           clientA.on('say', listenerA)
           clientB.on('say', listenerB)
@@ -402,9 +413,6 @@ describe('Server: Web Socket', () => {
 
           await new Promise((resolve) => { setTimeout(resolve, 1000) })
 
-          clientA.removeListener('say', listenerA)
-          clientB.removeListener('say', listenerB)
-          clientC.removeListener('say', listenerC)
           expect(messagesReceived).to.equal(7)
         })
 
@@ -420,16 +428,19 @@ describe('Server: Web Socket', () => {
 
           let listenerA = (response) => {
             messagesReceived++
+            clientA.removeListener('say', listenerA)
             expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
           }
 
           let listenerB = (response) => {
             messagesReceived++
+            clientB.removeListener('say', listenerB)
             expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
           }
 
           let listenerC = (response) => {
             messagesReceived++
+            clientC.removeListener('say', listenerC)
             expect(response.message).to.equal('Test Message - To: ' + clientB.id) // clientB.id (Sender)
           }
 
@@ -440,9 +451,6 @@ describe('Server: Web Socket', () => {
 
           await new Promise((resolve) => { setTimeout(resolve, 1000) })
 
-          clientA.removeListener('say', listenerA)
-          clientB.removeListener('say', listenerB)
-          clientC.removeListener('say', listenerC)
           expect(messagesReceived).to.equal(3)
         })
       })
