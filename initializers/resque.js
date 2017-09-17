@@ -32,7 +32,7 @@ module.exports = {
 
       stopQueue: async () => {
         if (api.resque.queue) {
-          await api.resque.queue.end()
+          return api.resque.queue.end()
         }
       },
 
@@ -61,7 +61,7 @@ module.exports = {
 
       stopScheduler: async () => {
         if (api.resque.scheduler) {
-          await api.resque.scheduler.end()
+          return api.resque.scheduler.end()
         }
       },
 
@@ -106,7 +106,7 @@ module.exports = {
 
       stopMultiWorker: async () => {
         if (api.resque.multiWorker && api.config.tasks.minTaskProcessors > 0) {
-          await api.resque.multiWorker.stop()
+          return api.resque.multiWorker.stop()
         }
       }
     }
@@ -127,8 +127,8 @@ module.exports = {
   stop: async (api) => {
     if (api.config.redis.enabled === false) { return }
 
-    api.resque.stopScheduler()
-    api.resque.stopMultiWorker()
-    api.resque.stopQueue()
+    await api.resque.stopScheduler()
+    await api.resque.stopMultiWorker()
+    await api.resque.stopQueue()
   }
 }
