@@ -23,7 +23,9 @@ const makeSocketRequest = async (thisClient, message, delimiter) => {
   if (!delimiter) { delimiter = '\r\n' }
 
   let onData = (d) => {
-    d.split(delimiter).forEach((l) => { lines.push(l) })
+    d.split(delimiter).forEach((l) => {
+      if (l.length > 0) { lines.push(l) }
+    })
     lines.push()
   }
 
@@ -34,7 +36,6 @@ const makeSocketRequest = async (thisClient, message, delimiter) => {
   thisClient.removeListener('data', onData)
 
   let lastLine = lines[(lines.length - 1)]
-  if (lastLine === '') { lastLine = lines[(lines.length - 2)] }
   let parsed = null
   try { parsed = JSON.parse(lastLine) } catch (e) {}
   return parsed
