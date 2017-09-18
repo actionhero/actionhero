@@ -160,8 +160,8 @@ describe('Core: Binary', () => {
     it('can generate an action', async () => {
       await doCommand(`${binary} generate action --name=myAction --description=my_description`)
       let data = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
-      expect(data).to.match(/name: 'myAction'/)
-      expect(data).to.match(/description: 'my_description'/)
+      expect(data).to.match(/this.name = 'myAction'/)
+      expect(data).to.match(/this.description = 'my_description'/)
     })
 
     it('can generate a task', async () => {
