@@ -1,25 +1,30 @@
 'use strict'
+const ActionHero = require('./../index.js')
 
-exports.sleepTest = {
-  name: 'sleepTest',
-  description: 'I will sleep and then return',
-
-  inputs: {
-    sleepDuration: {
-      required: true,
-      formatter: function (n) { return parseInt(n) },
-      default: function () { return 1000 }
+module.exports = class CacheTest extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = 'sleepTest'
+    this.description = 'I will sleep and then return'
+    this.outputExample = {
+      'sleepStarted': 1420953571322,
+      'sleepEnded': 1420953572327,
+      'sleepDelta': 1005,
+      'sleepDuration': 1000
     }
-  },
+  }
 
-  outputExample: {
-    'sleepStarted': 1420953571322,
-    'sleepEnded': 1420953572327,
-    'sleepDelta': 1005,
-    'sleepDuration': 1000
-  },
+  inputs () {
+    return {
+      sleepDuration: {
+        required: true,
+        formatter: (n) => { return parseInt(n) },
+        default: () => { return 1000 }
+      }
+    }
+  }
 
-  run: async function (api, data) {
+  async run (api, data) {
     let sleepDuration = data.params.sleepDuration
     let sleepStarted = new Date().getTime()
 

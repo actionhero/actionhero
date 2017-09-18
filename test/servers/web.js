@@ -1010,9 +1010,9 @@ describe('Server: Web', () => {
     })
 
     it('regexp matches will still work with params with periods and other wacky chars', async () => {
-      let body = await request.get(url + '/api/c/key/log_me-in.com$123.jpg').then(toJson)
+      let body = await request.get(url + '/api/c/key/log_me-in.com$123.').then(toJson)
       expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
-      expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.jpg')
+      expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.')
     })
 
     it('regexp match failures will be rejected', async () => {

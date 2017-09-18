@@ -1,18 +1,15 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-exports.action = {
-  name: '%%name%%',
-  description: '%%description%%',
-  blockedConnectionTypes: [],
-  outputExample: {},
-  matchExtensionMimeType: false,
-  version: 1.0,
-  toDocument: true,
-  middleware: [],
+module.exports = class RandomNumber extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.description = '%%description%%'
+    this.outputExample = {}
+  }
 
-  inputs: {},
-
-  run: async function (api, data) {
+  async run (api, data) {
     // your logic here
   }
 }

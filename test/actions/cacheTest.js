@@ -36,7 +36,7 @@ describe('Action: Cache', () => {
 
   it('fails with value shorter than 2 letters', async () => {
     let {error} = await api.specHelper.runAction('cacheTest', {key: 'abc123', value: 'v'})
-    expect(error).to.equal('Error: `value` should be at least 3 letters long')
+    expect(error).to.equal('Error: inputs should be at least 3 letters long')
   })
 
   it('works with correct params', async () => {

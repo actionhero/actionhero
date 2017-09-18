@@ -8,7 +8,6 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-// const async = require('async')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api

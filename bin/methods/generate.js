@@ -38,7 +38,8 @@ module.exports = {
     }
 
     for (let name in oldFileMap) {
-      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name]))
+      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name])).toString()
+      documents[name] = documents[name].replace('const ActionHero = require(\'./../index.js\')', 'const ActionHero = require(\'actionhero\')')
     }
 
     const AHversionNumber = JSON.parse(documents.packageJson).version
