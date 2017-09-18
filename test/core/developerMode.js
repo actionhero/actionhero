@@ -17,15 +17,17 @@ const originalFile = './actions/randomNumber.js'
 const originalContent = fs.readFileSync(originalFile)
 
 let newFileContent = ''
-newFileContent += 'exports.randomNumber = {'
-newFileContent += '  name: "randomNumber",'
-newFileContent += '  description: "HACK",'
-newFileContent += '  outputExample: {},'
-newFileContent += '  run: function(api, connection, next){'
-newFileContent += '    connection.response.randomNumber = "not a number!";'
-newFileContent += '    next(connection, true);'
-newFileContent += '  }'
-newFileContent += '};'
+newFileContent += 'const ActionHero = require(\'./../index.js\')\n'
+newFileContent += 'module.exports = class RandomNumber extends ActionHero.Action {\n'
+newFileContent += '  constructor () {\n'
+newFileContent += '    super()\n'
+newFileContent += '    this.name = \'randomNumber\'\n'
+newFileContent += '    this.description = \'HACK\'\n'
+newFileContent += '  }\n'
+newFileContent += '  async run (api, data) {\n'
+newFileContent += '    data.response.randomNumber = "not a number!"\n'
+newFileContent += '  }\n'
+newFileContent += '}\n'
 
 const sleep = async (timeout) => {
   await new Promise((resolve) => setTimeout(resolve, timeout))
