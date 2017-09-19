@@ -54,16 +54,14 @@ const handleGenerate = async () => {
     actionheroRoot: actionheroRoot
   }
 
-  // proxy the logger, as we can't use the real one yet
-  console.log = function (message) { console.log(message) }
-
   // reload utils, as they won't have been loaded yet
   try {
     let utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
     await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
-    const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+    const RunnerClass = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+    const runner = new RunnerClass()
     let params = formatParams(api, runner)
     await runner.run(api, {params: params})
     setTimeout(process.exit, 500, 0)
@@ -93,8 +91,8 @@ const handleMethod = async () => {
     }
 
     if (!RunnerClass) {
-      console.error(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
-      console.info('run `actionhero help` to learn more', 'error')
+      console.error(`Error: \`${commands.join(' ')}\` is not a method I can perform.`)
+      console.error('run `actionhero help` to learn more')
       setTimeout(process.exit, 500, 1)
     } else {
       console.log('--------------------------------------')
@@ -112,7 +110,7 @@ const handleMethod = async () => {
         console.log(`spawned child process with pid ${child.pid}`, 'notice')
         process.nextTick(process.exit)
       } else {
-        let runner = new RunnerClass()
+        const runner = new RunnerClass()
         let params = formatParams(api, runner)
         let toStop = await runner.run(api, {params: params})
         if (toStop) {

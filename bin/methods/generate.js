@@ -69,8 +69,12 @@ module.exports = class ActionsList extends ActionHero.CLI {
       '/tasks',
       '/test'
     ].forEach((dir) => {
-      let message = api.utils.createDirSafely(api.projectRoot + dir)
-      console.log(message)
+      try {
+        let message = api.utils.createDirSafely(api.projectRoot + dir)
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     })
 
     const newFileMap = {
@@ -98,8 +102,12 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
 
     for (let file in newFileMap) {
-      let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
-      console.log(message)
+      try {
+        let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     }
 
     console.log('')
