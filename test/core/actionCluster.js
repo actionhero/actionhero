@@ -333,6 +333,11 @@ describe('Core: Action Cluster', () => {
     })
 
     it('server can destroy a room and connections will be removed', async () => {
+      try {
+        // to ensure it starts empty
+        await apiA.chatRoom.destroy('newRoom')
+      } catch (error) { }
+
       let client = new apiA.specHelper.Connection()
       await apiA.chatRoom.add('newRoom')
       let didAdd = await apiA.chatRoom.addMember(client.id, 'newRoom')

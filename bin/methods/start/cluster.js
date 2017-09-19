@@ -26,40 +26,42 @@
 const path = require('path')
 const os = require('os')
 const ActionHeroCluster = require(path.join(__dirname, 'lib', 'actionheroCluster.js'))
-console.log(ActionHeroCluster)
+const ActionHero = require('./../../../index.js')
 
-module.exports = {
-  name: 'start cluster',
-  description: 'start an actionhero cluster',
-  example: 'actionhero start cluster --workers=[numWorkers] --workerTitlePrefix=[title] --daemon',
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'start cluster'
+    this.description = 'start an actionhero cluster'
+    this.example = 'actionhero start cluster --workers=[numWorkers] --workerTitlePrefix=[title] --daemon'
+    this.inputs = {
+      workers: {
+        required: true,
+        default: os.cpus().length,
+        note: 'number of workers (defaults to # CPUs)'
+      },
+      title: {
+        required: false,
+        note: 'worker title prefix (default \'actionhero-worker-\') set `--workerTitlePrefix=hostname`, your app.id would be like `your_host_name-#`'
+      },
+      workerTitlePrefix: {
+        required: true,
+        default: 'actionhero-worker-'
+      },
+      daemon: {
+        required: false,
+        note: 'to fork and run as a new background process defaults to false'
+      },
+      silent: {required: false}
+    }
+  }
 
-  inputs: {
-    workers: {
-      required: true,
-      default: os.cpus().length,
-      note: 'number of workers (defaults to # CPUs)'
-    },
-    title: {
-      required: false,
-      note: 'worker title prefix (default \'actionhero-worker-\') set `--workerTitlePrefix=hostname`, your app.id would be like `your_host_name-#`'
-    },
-    workerTitlePrefix: {
-      required: true,
-      default: 'actionhero-worker-'
-    },
-    daemon: {
-      required: false,
-      note: 'to fork and run as a new background process defaults to false'
-    },
-    silent: {required: false}
-  },
-
-  run: async function (api, data) {
+  async run (api, {params}) {
     let options = {
       execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
       args: 'start',
-      silent: (data.params.silent === 'true' || data.params.silent === true),
-      expectedWorkers: data.params.workers,
+      silent: (params.silent === 'true' || params.silent === true),
+      expectedWorkers: params.workers,
       id: api.id,
       buildEnv: (workerId) => {
         let env = {}
@@ -68,7 +70,7 @@ module.exports = {
           env[k] = process.env[k]
         }
 
-        let title = data.params.workerTitlePrefix
+        let title = params.workerTitlePrefix
 
         if (!title || title === '') {
           title = 'actionhero-worker-'

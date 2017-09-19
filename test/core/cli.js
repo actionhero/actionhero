@@ -62,7 +62,7 @@ const sleep = async (timeout) => {
   await new Promise((resolve) => setTimeout(resolve, timeout))
 }
 
-describe('Core: Binary', () => {
+describe('Core: CLI', () => {
   if (process.platform === 'win32') {
     console.log('*** CANNOT RUN BINARY TESTS ON WINDOWS.  Sorry. ***')
   } else {
@@ -142,7 +142,7 @@ describe('Core: Binary', () => {
 
     it('can call the version command', async () => {
       let {stdout} = await doCommand(`${binary} version`)
-      expect(stdout.trim()).to.equal(pacakgeJSON.version)
+      expect(stdout).to.contain(pacakgeJSON.version)
     })
 
     it('will show a warning with bogus input', async () => {
@@ -152,8 +152,8 @@ describe('Core: Binary', () => {
       } catch (error) {
         expect(error).to.exist()
         expect(error.exitCode).to.equal(1)
-        // expect(error.stdout).to.match(/`fake` is not a method I can perform/)
-        // expect(error.stdout).to.match(/run `actionhero help` to learn more/)
+        expect(error.stderr).to.match(/`not-a-thing` is not a method I can perform/)
+        expect(error.stderr).to.match(/run `actionhero help` to learn more/)
       }
     })
 
@@ -176,9 +176,9 @@ describe('Core: Binary', () => {
     it('can generate a CLI command', async () => {
       await doCommand(`${binary} generate cli --name=myCommand --description=my_description --example=my_example`)
       let data = String(fs.readFileSync(`${testDir}/bin/myCommand.js`))
-      expect(data).to.match(/name: 'myCommand'/)
-      expect(data).to.match(/description: 'my_description'/)
-      expect(data).to.match(/example: 'my_example'/)
+      expect(data).to.match(/this.name = 'myCommand'/)
+      expect(data).to.match(/this.description = 'my_description'/)
+      expect(data).to.match(/this.example = 'my_example'/)
     })
 
     it('can generate a server', async () => {

@@ -2,19 +2,22 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../../index.js')
 
-module.exports = {
-  name: 'generate cli',
-  description: 'generate a new cli command',
-  example: 'actionhero generate cli --name=[name]',
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate cli'
+    this.description = 'generate a new cli command'
+    this.example = 'actionhero generate cli --name=[name]'
+    this.inputs = {
+      name: {required: true},
+      description: {required: false, default: 'an actionhero cli command'},
+      example: {required: false, default: 'actionhero command --option=yes'}
+    }
+  }
 
-  inputs: {
-    name: {required: true},
-    description: {required: false, default: 'an actionhero cli command'},
-    example: {required: false, default: 'actionhero command --option=yes'}
-  },
-
-  run: function (api, data) {
+  run (api, {params}) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/cli.js'))
     template = String(template);
 
@@ -22,12 +25,13 @@ module.exports = {
       'name',
       'description',
       'example'
-    ].forEach(function (v) {
+    ].forEach((v) => {
       let regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, data.params[v])
+      template = template.replace(regex, params[v])
     })
 
-    api.utils.createFileSafely(api.config.general.paths.cli[0] + '/' + data.params.name + '.js', template)
+    let message = api.utils.createFileSafely(api.config.general.paths.cli[0] + '/' + params.name + '.js', template)
+    console.log(message)
 
     return true
   }

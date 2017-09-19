@@ -214,7 +214,7 @@ module.exports = class ActionHeroCluster {
   }
 
   sortWorkers () {
-    this.workers.sort(function (a, b) { return (a.id - b.id) })
+    this.workers.sort((a, b) => { return (a.id - b.id) })
   }
 
   work () {
