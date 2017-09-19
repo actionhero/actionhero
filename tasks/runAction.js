@@ -5,10 +5,10 @@ const task = {
   plugins: [],
   pluginOptions: [],
   frequency: 0,
-  run: async (api, params) => {
+  run: async ({log, ActionProcessor, Connection}, params) => {
     if (!params) { params = {} }
 
-    const connection = new api.Connection({
+    const connection = new Connection({
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
@@ -17,17 +17,17 @@ const task = {
 
     connection.params = params
 
-    const actionProcessor = new api.ActionProcessor(connection)
-    let data = await actionProcessor.processAction()
+    const actionProcessor = new ActionProcessor(connection)
+    let {response} = await actionProcessor.processAction()
 
-    if (data.response.error) {
-      api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)})
+    if (response.error) {
+      log('task error: ' + response.error, 'error', {params: JSON.stringify(params)})
     } else {
-      api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
+      log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
     }
 
     connection.destroy()
-    return data.response
+    return response
   }
 }
 

@@ -50,15 +50,15 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async run (api, data) {
-    const key = 'cacheTest_' + data.params.key
-    const value = data.params.value
+  async run ({cache}, {params, response}) {
+    const key = 'cacheTest_' + params.key
+    const value = params.value
 
-    data.response.cacheTestResults = {}
+    response.cacheTestResults = {}
 
-    data.response.cacheTestResults.saveResp = await api.cache.save(key, value, 5000)
-    data.response.cacheTestResults.sizeResp = await api.cache.size()
-    data.response.cacheTestResults.loadResp = await api.cache.load(key)
-    data.response.cacheTestResults.deleteResp = await api.cache.destroy(key)
+    response.cacheTestResults.saveResp = await cache.save(key, value, 5000)
+    response.cacheTestResults.sizeResp = await cache.size()
+    response.cacheTestResults.loadResp = await cache.load(key)
+    response.cacheTestResults.deleteResp = await cache.destroy(key)
   }
 }
