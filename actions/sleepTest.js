@@ -24,7 +24,7 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async run (_, {response, params}) {
+  async run (api, {response, params}) {
     let sleepDuration = params.sleepDuration
     let sleepStarted = new Date().getTime()
 
