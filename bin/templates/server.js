@@ -1,63 +1,48 @@
 'use strict'
 
-const initialize = async function (api, options) {
-  // ////////
-  // INIT //
-  // ////////
+const ActionHero = require('actionhero')
 
-  const type = '%%name%%'
+module.exports = class MyServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = '%%name%%'
 
-  const attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    sendWelcomeMessage: true,
-    verbs: []
+    this.attributes = {
+      canChat: false,
+      logConnections: true,
+      logExits: true,
+      sendWelcomeMessage: false,
+      verbs: []
+    }
   }
 
-  const server = new api.GenericServer(type, options, attributes)
+  initialize () {
+    this.on('connection', (conection) => {
 
-  // ////////////////////
-  // REQUIRED METHODS //
-  // ////////////////////
+    })
 
-  server.start = function (next) {
-    return next()
+    this.on('actionComplete', (data) => {
+
+    })
   }
 
-  server.stop = function (next) {
-    return next()
-  }
-
-  server.sendMessage = function (connection, message, messageCount) {
+  start () {
 
   }
 
-  server.sendFile = function (connection, error, fileStream, mime, length) {
+  stop () {
 
   }
 
-  server.goodbye = function (connection, reason) {
+  sendMessage (connection, message, messageCount) {
 
   }
 
-  // //////////
-  // EVENTS //
-  // //////////
+  sendFile (connection, error, fileStream, mime, length, lastModified) {
 
-  server.on('connection', function (connection) {
+  }
 
-  })
+  goodbye (connection) {
 
-  server.on('actionComplete', function (data) {
-
-  })
-
-  // ///////////
-  // HELPERS //
-  // ///////////
-
-  return server
+  }
 }
-
-exports.initialize = initialize

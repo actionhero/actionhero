@@ -1,7 +1,7 @@
 'use strict'
 const ActionHero = require('actionhero')
 
-module.exports = class RandomNumber extends ActionHero.Action {
+module.exports = class MyAction extends ActionHero.Action {
   constructor () {
     super()
     this.name = '%%name%%'

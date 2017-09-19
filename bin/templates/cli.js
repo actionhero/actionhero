@@ -2,7 +2,7 @@
 
 const ActionHero = require('actionhero')
 
-module.exports = class RandomNumber extends ActionHero.Action {
+module.exports = class MyCLICommand extends ActionHero.Action {
   constructor () {
     super()
     this.name = '%%name%%'

@@ -6,7 +6,7 @@ module.exports = {
   startPriority: 900,
   stopPriority: 100,
   loadPriority: 599,
-  initialize: function (api) {
+  initialize: async (api) => {
     api.servers = {}
     api.servers.servers = {}
 
@@ -21,30 +21,35 @@ module.exports = {
       if (serverFolders.indexOf(p) < 0) { serverFolders.push(p) }
     })
 
-    serverFolders.forEach((p) => {
-      api.utils.recursiveDirectoryGlob(p).forEach(async (f) => {
-        let parts = f.split(/[/\\]+/)
-        let serverName = parts[(parts.length - 1)].split('.')[0]
-        if (api.config.servers[serverName] && api.config.servers[serverName].enabled === true) {
-          let init = require(f).initialize
-          let options = api.config.servers[serverName]
-          let serverObject = await init(api, options)
-          api.servers.servers[serverName] = serverObject
-          api.log(`Initialized server: ${serverName}`, 'debug')
+    for (let i in serverFolders) {
+      let p = serverFolders[i]
+      let files = api.utils.recursiveDirectoryGlob(p)
+      for (let j in files) {
+        let filename = files[j]
+        let ServerClass = require(filename)
+        let server = new ServerClass()
+        server.config = api.config.servers.web // shorthand access
+        if (server.config && server.config.enabled === true) {
+          server.api = api // this is terrible, but needed pass the connection, logger, and staticFile classes on
+          await server.initialize()
+          api.servers.servers[server.type] = server
+          api.log(`Initialized server: ${server.type}`, 'debug')
         }
 
-        api.watchFileAndAct(f, () => {
-          api.log(`*** Rebooting due to server (${serverName}) change ***`, 'info')
+        api.watchFileAndAct(filename, () => {
+          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
           api.commands.restart()
         })
-      })
-    })
+      }
+    }
   },
 
-  start: async function (api) {
-    Object.keys(api.servers.servers).forEach(async (serverName) => {
+  start: async (api) => {
+    const serverNames = Object.keys(api.servers.servers)
+    for (let i in serverNames) {
+      let serverName = serverNames[i]
       let server = api.servers.servers[serverName]
-      if (server && server.options.enabled === true) {
+      if (server && server.config.enabled === true) {
         let message = ''
         message += `Starting server: \`${serverName}\``
         if (api.config.servers[serverName].bindIP) {
@@ -53,22 +58,23 @@ module.exports = {
         if (api.config.servers[serverName].port) {
           message += `:${api.config.servers[serverName].port}`
         }
-
         api.log(message, 'notice')
         await server.start()
         api.log(`Server started: ${serverName}`, 'debug')
       }
-    })
+    }
   },
 
-  stop: async function (api) {
-    Object.keys(api.servers.servers).forEach(async (serverName) => {
+  stop: async (api) => {
+    const serverNames = Object.keys(api.servers.servers)
+    for (let i in serverNames) {
+      let serverName = serverNames[i]
       let server = api.servers.servers[serverName]
-      if ((server && server.options.enabled === true) || !server) {
+      if ((server && server.config.enabled === true) || !server) {
         api.log(`Stopping server: ${serverName}`, 'notice')
         await server.stop()
         api.log(`Server stopped: ${serverName}`, 'debug')
       }
-    })
+    }
   }
 }
