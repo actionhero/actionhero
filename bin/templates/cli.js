@@ -1,13 +1,17 @@
 'use strict'
 
-module.exports = {
-  name: '%%name%%',
-  description: '%%description%%',
-  example: '%%example%%',
+const ActionHero = require('actionhero')
 
-  inputs: {},
+module.exports = class RandomNumber extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.description = '%%description%%'
+    this.example = '%%example%%'
+    this.inputs = {}
+  }
 
-  run: async function (api, data) {
+  async run (api, data) {
     return true
   }
 }

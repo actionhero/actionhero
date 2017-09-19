@@ -305,70 +305,7 @@ module.exports = {
     }
 
     // //////////////////////////////////////////////////////////////////////////
-    // File utils
-    api.utils.dirExists = (dir) => {
-      try {
-        let stats = fs.lstatSync(dir)
-        return (stats.isDirectory() || stats.isSymbolicLink())
-      } catch (e) { return false }
-    }
-
-    api.utils.fileExists = (file) => {
-      try {
-        let stats = fs.lstatSync(file)
-        return (stats.isFile() || stats.isSymbolicLink())
-      } catch (e) { return false }
-    }
-
-    api.utils.createDirSafely = (dir) => {
-      if (api.utils.dirExists(dir)) {
-        api.log(` - directory '${path.normalize(dir)}' already exists, skipping`, 'alert')
-      } else {
-        api.log(` - creating directory '${path.normalize(dir)}'`)
-        fs.mkdirSync(path.normalize(dir), '0766')
-      }
-    }
-
-    api.utils.createFileSafely = (file, data, overwrite) => {
-      if (api.utils.fileExists(file) && !overwrite) {
-        api.log(` - file '${path.normalize(file)}' already exists, skipping`, 'alert')
-      } else {
-        if (overwrite && api.utils.fileExists(file)) {
-          api.log(` - overwritten file '${path.normalize(file)}'`)
-        } else {
-          api.log(` - wrote file '${path.normalize(file)}'`)
-        }
-        fs.writeFileSync(path.normalize(file), data)
-      }
-    }
-
-    api.utils.createLinkfileSafely = (filePath, type, refrence) => {
-      if (api.utils.fileExists(filePath)) {
-        api.log(` - link file '${filePath}' already exists, skipping`, 'alert')
-      } else {
-        api.log(` - creating linkfile '${filePath}'`)
-        fs.writeFileSync(filePath, type)
-      }
-    }
-
-    api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
-      if (!api.utils.fileExists(filePath)) {
-        api.log(` - link file '${filePath}' doesn't exist, skipping`, 'alert')
-      } else {
-        api.log(` - removing linkfile '${filePath}'`)
-        fs.unlinkSync(filePath)
-      }
-    }
-
-    api.utils.createSymlinkSafely = (destination, source) => {
-      if (api.utils.dirExists(destination)) {
-        api.log(` - symbolic link '${destination}' already exists, skipping`, 'alert')
-      } else {
-        api.log(` - creating symbolic link '${destination}' => '${source}'`)
-        fs.symlinkSync(source, destination, 'dir')
-      }
-    }
-
+    // Logger Helper for action payloads
     api.utils.filterObjectForLogging = (actionParams) => {
       let filteredParams = {}
       for (let i in actionParams) {
@@ -386,6 +323,69 @@ module.exports = {
         }
       })
       return filteredParams
+    }
+
+    // //////////////////////////////////////////////////////////////////////////
+    // File utils
+    api.utils.dirExists = (dir) => {
+      try {
+        let stats = fs.lstatSync(dir)
+        return (stats.isDirectory() || stats.isSymbolicLink())
+      } catch (e) { return false }
+    }
+
+    api.utils.fileExists = (file) => {
+      try {
+        let stats = fs.lstatSync(file)
+        return (stats.isFile() || stats.isSymbolicLink())
+      } catch (e) { return false }
+    }
+
+    api.utils.createDirSafely = (dir) => {
+      if (api.utils.dirExists(dir)) {
+        throw new Error(`directory '${path.normalize(dir)}' already exists`)
+      } else {
+        fs.mkdirSync(path.normalize(dir), '0766')
+        return `created directory '${path.normalize(dir)}'`
+      }
+    }
+
+    api.utils.createFileSafely = (file, data, overwrite) => {
+      if (api.utils.fileExists(file) && !overwrite) {
+        throw new Error(`file '${path.normalize(file)}' already exists`)
+      } else {
+        let message = `wrote file '${path.normalize(file)}'`
+        if (overwrite && api.utils.fileExists(file)) { message = ` - overwritten file '${path.normalize(file)}'` }
+        fs.writeFileSync(path.normalize(file), data)
+        return message
+      }
+    }
+
+    api.utils.createLinkfileSafely = (filePath, type, refrence) => {
+      if (api.utils.fileExists(filePath)) {
+        throw new Error(`link file '${filePath}' already exists`)
+      } else {
+        fs.writeFileSync(filePath, type)
+        return `creating linkfile '${filePath}'`
+      }
+    }
+
+    api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
+      if (!api.utils.fileExists(filePath)) {
+        throw new Error(`link file '${filePath}' doesn't exist`)
+      } else {
+        fs.unlinkSync(filePath)
+        return `removing linkfile '${filePath}'`
+      }
+    }
+
+    api.utils.createSymlinkSafely = (destination, source) => {
+      if (api.utils.dirExists(destination)) {
+        throw new Error(`symbolic link '${destination}' already exists`)
+      } else {
+        fs.symlinkSync(source, destination, 'dir')
+        return `creating symbolic link '${destination}' => '${source}'`
+      }
     }
   }
 }

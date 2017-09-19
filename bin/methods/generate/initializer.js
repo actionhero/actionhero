@@ -2,20 +2,23 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../../index.js')
 
-module.exports = {
-  name: 'generate initializer',
-  description: 'generate a new initializer',
-  example: 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]',
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate initializer'
+    this.description = 'generate a new initializer'
+    this.example = 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]'
+    this.inputs = {
+      name: {required: true},
+      loadPriority: {required: true, default: 1000},
+      startPriority: {required: true, default: 1000},
+      stopPriority: {required: true, default: 1000}
+    }
+  }
 
-  inputs: {
-    name: {required: true},
-    loadPriority: {required: true, default: 1000},
-    startPriority: {required: true, default: 1000},
-    stopPriority: {required: true, default: 1000}
-  },
-
-  run: function (api, data) {
+  run (api, {params}) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
     template = String(template);
 
@@ -24,12 +27,13 @@ module.exports = {
       'loadPriority',
       'startPriority',
       'stopPriority'
-    ].forEach(function (v) {
+    ].forEach((v) => {
       let regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, data.params[v])
+      template = template.replace(regex, params[v])
     })
 
-    api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + data.params.name + '.js', template)
+    let message = api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + params.name + '.js', template)
+    console.log(message)
 
     return true
   }

@@ -152,8 +152,8 @@ describe('Core: Binary', () => {
       } catch (error) {
         expect(error).to.exist()
         expect(error.exitCode).to.equal(1)
-        // expect(error.stdout).to.match(/`fake` is not a method I can perform/)
-        // expect(error.stdout).to.match(/run `actionhero help` to learn more/)
+        expect(error.stdout).to.match(/`fake` is not a method I can perform/)
+        expect(error.stdout).to.match(/run `actionhero help` to learn more/)
       }
     })
 

@@ -19,7 +19,7 @@ if (process.env.projectRoot) {
   projectRoot = path.normalize(process.cwd())
 }
 
-function formatParams (api, runner) {
+const formatParams = (api, runner) => {
   let params = {}
   if (!runner.inputs) { runner.inputs = {} }
 
@@ -33,12 +33,12 @@ function formatParams (api, runner) {
       } else {
         value = collection.default
       }
-      api.log(`using default value of \`${value}\` for \`${inputName}\``)
+      console.log(`using default value of \`${value}\` for \`${inputName}\``)
     }
 
     if (collection.required === true && (value === undefined || value === null || value === '')) {
-      api.log(`Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``, 'crit')
-      // api.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
+      console.error(`Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``)
+      // console.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
       process.exit(1)
     }
 
@@ -48,14 +48,14 @@ function formatParams (api, runner) {
   return params
 }
 
-async function handleGenerate () {
+const handleGenerate = async () => {
   let api = {
     projectRoot: projectRoot,
     actionheroRoot: actionheroRoot
   }
 
   // proxy the logger, as we can't use the real one yet
-  api.log = function (message) { console.log(message) }
+  console.log = function (message) { console.log(message) }
 
   // reload utils, as they won't have been loaded yet
   try {
@@ -68,39 +68,38 @@ async function handleGenerate () {
     await runner.run(api, {params: params})
     setTimeout(process.exit, 500, 0)
   } catch (error) {
-    throw error
+    console.error(error.toString())
+    process.exit(1)
   }
 }
 
-async function handleMethod () {
+const handleMethod = async () => {
   try {
     let actionHeroProcess = new ActionHero.Process()
     let api = await actionHeroProcess.initialize()
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionHeroProcess
-    let runner
+    let RunnerClass
 
     let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
     if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
-      runner = require(p)
+      RunnerClass = require(p)
     } else {
       api.config.general.paths.cli.forEach((cliPaths) => {
         p = path.join(cliPaths, commands.join(path.sep) + '.js')
-        if (fs.existsSync(p)) { runner = require(p) }
+        if (fs.existsSync(p)) { RunnerClass = require(p) }
       })
     }
 
-    if (!runner) {
-      api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
-      api.log('run `actionhero help` to learn more', 'error')
+    if (!RunnerClass) {
+      console.error(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
+      console.info('run `actionhero help` to learn more', 'error')
       setTimeout(process.exit, 500, 1)
     } else {
-      api.log('--------------------------------------')
-      api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
-      api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
-      api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
-      api.log('--------------------------------------')
+      console.log('--------------------------------------')
+      console.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
+      console.log('--------------------------------------')
 
       if (optimist.argv.daemon) {
         let newArgs = process.argv.splice(2)
@@ -110,10 +109,10 @@ async function handleMethod () {
         newArgs.push('--isDaemon=true')
         const command = path.normalize(actionheroRoot + '/bin/actionhero')
         const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
-        api.log(`${command} ${newArgs.join(' ')}`, 'debug')
-        api.log(`spawned child process with pid ${child.pid}`, 'notice')
+        console.log(`spawned child process with pid ${child.pid}`, 'notice')
         process.nextTick(process.exit)
       } else {
+        let runner = new RunnerClass()
         let params = formatParams(api, runner)
         let toStop = await runner.run(api, {params: params})
         if (toStop) {
@@ -121,8 +120,9 @@ async function handleMethod () {
         }
       }
     }
-  } catch (e) {
-    throw (e)
+  } catch (error) {
+    console.error(error.toString())
+    process.exit(1)
   }
 }
 

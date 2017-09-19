@@ -3,28 +3,31 @@
 const cluster = require('cluster')
 const readline = require('readline')
 const os = require('os')
+const ActionHero = require('./../../index.js')
 
-module.exports = {
-  name: 'start',
-  description: 'start this ActionHero server',
-  example: 'actionhero start --config=[/path/to/config] --title=[processTitle] --daemon',
-
-  inputs: {
-    config: {
-      required: false,
-      note: 'path to config.js, defaults to "process.cwd() + \'/\' + config.js". You can also use ENV[ACTIONHERO_CONFIG]'
-    },
-    title: {
-      required: false,
-      note: 'process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows'
-    },
-    daemon: {
-      required: false,
-      note: 'to fork and run as a new background process defaults to false'
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'start'
+    this.description = 'start this ActionHero server'
+    this.example = 'actionhero start --config=[/path/to/config] --title=[processTitle] --daemon'
+    this.inputs = {
+      config: {
+        required: false,
+        note: 'path to config.js, defaults to "process.cwd() + \'/\' + config.js". You can also use ENV[ACTIONHERO_CONFIG]'
+      },
+      title: {
+        required: false,
+        note: 'process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows'
+      },
+      daemon: {
+        required: false,
+        note: 'to fork and run as a new background process defaults to false'
+      }
     }
-  },
+  }
 
-  run: async function (api, data) {
+  async run (api) {
     let state
 
     // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
@@ -33,7 +36,7 @@ module.exports = {
       shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
     }
 
-    const startServer = async function () {
+    const startServer = async () => {
       state = 'starting'
       if (cluster.isWorker) { process.send({state: state}) }
       let apiFromCallback = await api._context.start()
@@ -43,7 +46,7 @@ module.exports = {
       checkForInernalStop()
     }
 
-    const stopServer = async function () {
+    const stopServer = async () => {
       state = 'stopping'
       if (cluster.isWorker) { process.send({state: state}) }
       await api._context.stop()
@@ -51,7 +54,7 @@ module.exports = {
       if (cluster.isWorker) { process.send({state: state}) }
     }
 
-    const restartServer = async function () {
+    const restartServer = async () => {
       state = 'restarting'
       if (cluster.isWorker) { process.send({state: state}) }
       let apiFromCallback = await api._context.restart()
@@ -60,8 +63,8 @@ module.exports = {
       api = apiFromCallback
     }
 
-    const stopProcess = async function () {
-      setTimeout(function () {
+    const stopProcess = async () => {
+      setTimeout(() => {
         throw new Error('process stop timeout reached.  terminating now.')
       }, shutdownTimeout)
       await stopServer()
@@ -77,7 +80,7 @@ module.exports = {
     }
 
     if (cluster.isWorker) {
-      process.on('message', function (msg) {
+      process.on('message', (msg) => {
         if (msg === 'start') {
           startServer()
         } else if (msg === 'stop') {
@@ -89,7 +92,7 @@ module.exports = {
         } else if (msg === 'restart') { stopProcess() }
       })
 
-      process.on('uncaughtException', function (error) {
+      process.on('uncaughtException', (error) => {
         let stack
         try {
           stack = error.stack.split(os.EOL)
@@ -103,24 +106,22 @@ module.exports = {
         process.nextTick(process.exit)
       })
 
-      process.on('unhandledRejection', function (reason, p) {
+      process.on('unhandledRejection', (reason, p) => {
         process.send({unhandledRejection: {reason: reason, p: p}})
         process.nextTick(process.exit)
       })
     }
 
-    process.on('SIGINT', function () { stopProcess() })
-    process.on('SIGTERM', function () { stopProcess() })
-    process.on('SIGUSR2', function () { restartServer() })
+    process.on('SIGINT', () => { stopProcess() })
+    process.on('SIGTERM', () => { stopProcess() })
+    process.on('SIGUSR2', () => { restartServer() })
 
     if (process.platform === 'win32' && !process.env.IISNODE_VERSION) {
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
       })
-      rl.on('SIGINT', function () {
-        process.emit('SIGINT')
-      })
+      rl.on('SIGINT', () => { process.emit('SIGINT') })
     }
 
     // start the server!
