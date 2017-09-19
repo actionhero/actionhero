@@ -24,17 +24,17 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async run (api, data) {
-    let sleepDuration = data.params.sleepDuration
+  async run (api, {response, params}) {
+    let sleepDuration = params.sleepDuration
     let sleepStarted = new Date().getTime()
 
     await new Promise((resolve) => { setTimeout(resolve, sleepDuration) })
     let sleepEnded = new Date().getTime()
     let sleepDelta = sleepEnded - sleepStarted
 
-    data.response.sleepStarted = sleepStarted
-    data.response.sleepEnded = sleepEnded
-    data.response.sleepDelta = sleepDelta
-    data.response.sleepDuration = sleepDuration
+    response.sleepStarted = sleepStarted
+    response.sleepEnded = sleepEnded
+    response.sleepDelta = sleepDelta
+    response.sleepDuration = sleepDuration
   }
 }
