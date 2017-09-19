@@ -314,6 +314,14 @@ describe('Server: Socket', () => {
         expect(response).to.be.null()
         resolve()
       })
+
+      await new Promise(async (resolve) => {
+        makeSocketRequest(client, 'say defaultRoom I should not hear myself' + '\r\n')
+        let response = await makeSocketRequest(client, '')
+        // there will be the say response, but no message
+        expect(response.room).to.not.exist()
+        resolve()
+      })
     })
 
     it('I can get my id', async () => {

@@ -28,7 +28,7 @@ module.exports = {
         let filename = files[j]
         let ServerClass = require(filename)
         let server = new ServerClass()
-        server.config = api.config.servers.web // shorthand access
+        server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
           server.api = api // this is terrible, but needed pass the connection, logger, and staticFile classes on
           await server.initialize()

@@ -14,6 +14,9 @@ module.exports = class MyServer extends ActionHero.Server {
       sendWelcomeMessage: false,
       verbs: []
     }
+
+    // this.api will be set at runtime
+    // this.config will be set to equal api.config.servers[this.type]
   }
 
   initialize () {

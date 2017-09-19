@@ -33,12 +33,13 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   initialize () {
     this.fingerprinter = new BrowserFingerprint(this.api.config.servers.web.fingerprintOptions)
-    this.writeClientJS()
   }
 
   start () {
     const webserver = this.api.servers.servers.web
     this.server = new Primus(webserver.server, this.config.server)
+
+    this.writeClientJS()
 
     this.server.on('connection', (rawConnection) => { this.handleConnection(rawConnection) })
     this.server.on('disconnection', (rawConnection) => { this.handleDisconnection(rawConnection) })
