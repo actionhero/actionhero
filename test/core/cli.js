@@ -184,10 +184,11 @@ describe('Core: CLI', () => {
     it('can generate a server', async () => {
       await doCommand(`${binary} generate server --name=myServer`)
       let data = String(fs.readFileSync(`${testDir}/servers/myServer.js`))
-      expect(data).to.match(/canChat: true/)
+      expect(data).to.match(/this.type = 'myServer'/)
+      expect(data).to.match(/canChat: false/)
       expect(data).to.match(/logConnections: true/)
       expect(data).to.match(/logExits: true/)
-      expect(data).to.match(/sendWelcomeMessage: true/)
+      expect(data).to.match(/sendWelcomeMessage: false/)
     })
 
     it('can generate an initializer', async () => {

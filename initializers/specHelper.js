@@ -2,38 +2,37 @@
 
 const uuid = require('uuid')
 const NodeResque = require('node-resque')
+const Actionhero = require('./../index.js')
 
 module.exports = {
   startPriority: 901,
   loadPriority: 900,
-  initialize: function (api) {
+  initialize: (api) => {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
-      api.specHelper = {
-        returnMetadata: true
-      }
-
-      // create a test 'server' to run actions
-      api.specHelper.initialize = async (api, options) => {
-        const type = 'testServer'
-        const attributes = {
-          canChat: true,
-          logConnections: false,
-          logExits: false,
-          sendWelcomeMessage: true,
-          verbs: api.connections.allowedVerbs
+      class TestServer extends Actionhero.Server {
+        constructor () {
+          super()
+          this.type = 'testServer'
+          this.attributes = {
+            canChat: true,
+            logConnections: false,
+            logExits: false,
+            sendWelcomeMessage: true,
+            verbs: api.connections.allowedVerbs
+          }
         }
 
-        const server = new api.GenericServer(type, options, attributes)
-
-        server.start = () => {
+        start () {
           api.log('loading the testServer', 'warning')
+          this.on('connection', (connection) => { this.handleConnection(connection) })
+          this.on('actionComplete', (data) => { this.actionComplete(data) })
         }
 
-        server.stop = () => {
-          // nothing to do
-        }
+        stop () {}
 
-        server.sendMessage = (connection, message, messageCount) => {
+        goodbye () {}
+
+        sendMessage (connection, message, messageCount) {
           process.nextTick(() => {
             connection.messages.push(message)
             if (typeof connection.actionCallbacks[messageCount] === 'function') {
@@ -43,7 +42,7 @@ module.exports = {
           })
         }
 
-        server.sendFile = (connection, error, fileStream, mime, length) => {
+        sendFile (connection, error, fileStream, mime, length) {
           let content = ''
           let response = {
             error: error,
@@ -57,42 +56,38 @@ module.exports = {
               fileStream.on('data', (d) => { content += d })
               fileStream.on('end', () => {
                 response.content = content
-                server.sendMessage(connection, response, connection.messageCount)
+                this.sendMessage(connection, response, connection.messageCount)
               })
             } else {
-              server.sendMessage(connection, response, connection.messageCount)
+              this.sendMessage(connection, response, connection.messageCount)
             }
           } catch (e) {
-            api.log(e, 'warning')
-            server.sendMessage(connection, response, connection.messageCount)
+            this.log(e, 'warning')
+            this.sendMessage(connection, response, connection.messageCount)
           }
         }
 
-        server.goodbye = () => {
-          //
-        }
-
-        server.on('connection', (connection) => {
+        handleConnection (connection) {
           connection.messages = []
           connection.actionCallbacks = {}
-        })
+        }
 
-        server.on('actionComplete', async (data) => {
+        async actionComplete (data) {
           if (typeof data.response === 'string' || Array.isArray(data.response)) {
             if (data.response.error) {
-              data.response = await api.config.errors.serializers.servers.specHelper(data.response.error)
+              data.response = await this.api.config.errors.serializers.servers.specHelper(data.response.error)
             }
           } else {
             if (data.response.error) {
-              data.response.error = await api.config.errors.serializers.servers.specHelper(data.response.error)
+              data.response.error = await this.api.config.errors.serializers.servers.specHelper(data.response.error)
             }
 
-            if (api.specHelper.returnMetadata) {
+            if (this.api.specHelper.returnMetadata) {
               data.response.messageCount = data.messageCount
 
               data.response.serverInformation = {
-                serverName: api.config.general.serverName,
-                apiVersion: api.config.general.apiVersion
+                serverName: this.api.config.general.serverName,
+                apiVersion: this.api.config.general.apiVersion
               }
 
               data.response.requesterInformation = {
@@ -108,11 +103,14 @@ module.exports = {
           }
 
           if (data.toRender === true) {
-            server.sendMessage(data.connection, data.response, data.messageCount)
+            this.sendMessage(data.connection, data.response, data.messageCount)
           }
-        })
+        }
+      }
 
-        return server
+      api.specHelper = {
+        returnMetadata: true,
+        Server: TestServer
       }
 
       api.specHelper.Connection = class {
@@ -128,7 +126,6 @@ module.exports = {
           return api.connections.connections[id]
         }
       }
-      api.specHelper.connection = api.specHelper.Connection
 
       // create helpers to run an action
       // data can be a params hash or a connection
@@ -186,11 +183,13 @@ module.exports = {
     }
   },
 
-  start: async function (api) {
+  start: async (api) => {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
-      let serverObject = await api.specHelper.initialize(api, {})
-      api.servers.servers.testServer = serverObject
-      return api.servers.servers.testServer.start()
+      let server = new api.specHelper.Server()
+      server.api = api
+      server.config = { enabled: true }
+      await server.start(api)
+      api.servers.servers.testServer = server
     }
   }
 }

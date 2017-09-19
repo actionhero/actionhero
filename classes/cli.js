@@ -17,8 +17,8 @@ module.exports = class CLI {
   }
 
   validate (api) {
-    if (!this.name) { throw new Error('name is required for this action') }
-    if (!this.description) { throw new Error(`description is required for the action \`${this.name}\``) }
-    if (!this.run || typeof this.run !== 'function') { throw new Error(`action \`${this.name}\` has no run method`) }
+    if (!this.name) { throw new Error('name is required for this cli command') }
+    if (!this.description) { throw new Error(`description is required for the cli commend \`${this.name}\``) }
+    if (!this.run || typeof this.run !== 'function') { throw new Error(`cli command \`${this.name}\` has no run method`) }
   }
 }

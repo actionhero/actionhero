@@ -3,7 +3,7 @@
 const path = require('path')
 const packageJson = require(path.join(__dirname, '..', 'package.json'))
 
-class Process {
+module.exports = class Process {
   constructor () {
     this.initializers = {}
     this.startCount = 0
@@ -64,7 +64,7 @@ class Process {
       try {
         await this.initializers[initializer].initialize(api)
       } catch (error) {
-        fatalError(api, error, initializer)
+        this.fatalError(api, error, initializer)
       }
     })
 
@@ -164,14 +164,14 @@ class Process {
     })
 
     // flatten all the ordered initializer methods
-    this.loadInitializers = flattenOrderedInitialzer(loadInitializerRankings)
-    this.startInitializers = flattenOrderedInitialzer(startInitializerRankings)
-    this.stopInitializers = flattenOrderedInitialzer(stopInitializerRankings)
+    this.loadInitializers = this.flattenOrderedInitialzer(loadInitializerRankings)
+    this.startInitializers = this.flattenOrderedInitialzer(startInitializerRankings)
+    this.stopInitializers = this.flattenOrderedInitialzer(stopInitializerRankings)
 
     try {
       await api.utils.asyncWaterfall(this.loadInitializers)
     } catch (error) {
-      return fatalError(api, error, 'initialize')
+      return this.fatalError(api, error, 'initialize')
     }
 
     api.initialized = true
@@ -208,7 +208,7 @@ class Process {
     try {
       await api.utils.asyncWaterfall(this.startInitializers)
     } catch (error) {
-      return fatalError(api, error, 'start')
+      return this.fatalError(api, error, 'start')
     }
 
     return api
@@ -237,7 +237,7 @@ class Process {
       try {
         await api.utils.asyncWaterfall(this.stopInitializers)
       } catch (error) {
-        return fatalError(api, error, 'stop')
+        return this.fatalError(api, error, 'stop')
       }
       return api
     } else if (api.shuttingDown === true) {
@@ -263,39 +263,39 @@ class Process {
     }
     return api
   }
-}
 
-async function fatalError (api, errors, type) {
-  if (errors && !(errors instanceof Array)) { errors = [errors] }
-  if (errors) {
-    if (api.log) {
-      api.log(`Error with initializer step: ${type}`, 'emerg')
-      errors.forEach((error) => { api.log(error.stack, 'emerg') })
-    } else {
-      console.error('Error with initializer step: ' + type)
-      errors.forEach((error) => { console.error(error.stack) })
+  // HELPERS
+
+  async fatalError (api, errors, type) {
+    if (errors && !(errors instanceof Array)) { errors = [errors] }
+    if (errors) {
+      if (api.log) {
+        api.log(`Error with initializer step: ${type}`, 'emerg')
+        errors.forEach((error) => { api.log(error.stack, 'emerg') })
+      } else {
+        console.error('Error with initializer step: ' + type)
+        errors.forEach((error) => { console.error(error.stack) })
+      }
+      await api.commands.stop.call(api)
+      process.exit(1)
     }
-    await api.commands.stop.call(api)
-    process.exit(1)
   }
-}
 
-function flattenOrderedInitialzer (collection) {
-  let output = []
-  let keys = []
-  for (let key in collection) {
-    keys.push(parseInt(key))
-  }
-  keys.sort(sortNumber)
-  keys.forEach((key) => {
-    collection[key].forEach((d) => {
-      output.push(d)
+  flattenOrderedInitialzer (collection) {
+    let output = []
+    let keys = []
+    for (let key in collection) {
+      keys.push(parseInt(key))
+    }
+    keys.sort(sortNumber)
+    keys.forEach((key) => {
+      collection[key].forEach((d) => {
+        output.push(d)
+      })
     })
-  })
 
-  return output
+    return output
+  }
 }
 
 function sortNumber (a, b) { return a - b }
-
-module.exports = Process

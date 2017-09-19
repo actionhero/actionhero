@@ -2,69 +2,75 @@
 
 const net = require('net')
 const tls = require('tls')
+const ActionHero = require('./../index.js')
 
-const initialize = async (api, options) => {
-  // ///////
-  // INIT //
-  // ///////
+module.exports = class SocketServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = 'socket'
 
-  const type = 'socket'
-  const attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    pendingShutdownWaitLimit: 5000,
-    sendWelcomeMessage: true,
-    verbs: [
-      'quit',
-      'exit',
-      'documentation',
-      'paramAdd',
-      'paramDelete',
-      'paramView',
-      'paramsView',
-      'paramsDelete',
-      'roomAdd',
-      'roomLeave',
-      'roomView',
-      'detailsView',
-      'say'
-    ]
+    this.attributes = {
+      canChat: true,
+      logConnections: true,
+      logExits: true,
+      pendingShutdownWaitLimit: 5000,
+      sendWelcomeMessage: true,
+      verbs: [
+        'quit',
+        'exit',
+        'documentation',
+        'paramAdd',
+        'paramDelete',
+        'paramView',
+        'paramsView',
+        'paramsDelete',
+        'roomAdd',
+        'roomLeave',
+        'roomView',
+        'detailsView',
+        'say'
+      ]
+    }
   }
 
-  const server = new api.GenericServer(type, options, attributes)
+  async initialize () {
 
-  // ///////////////////
-  // REQUIRED METHODS //
-  // ///////////////////
+  }
 
-  server.start = async () => {
-    if (options.secure === false) {
-      server.server = net.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
-        handleConnection(rawConnection)
-      })
+  async start () {
+    if (this.config.secure === false) {
+      this.server = net.createServer(this.config.serverOptions, (rawConnection) => { this.handleConnection(rawConnection) })
     } else {
-      server.server = tls.createServer(api.config.servers.socket.serverOptions, (rawConnection) => {
-        handleConnection(rawConnection)
-      })
+      this.server = tls.createServer(this.config.serverOptions, (rawConnection) => { this.handleConnection(rawConnection) })
     }
 
-    server.server.on('error', (e) => {
-      throw new Error('Cannot start socket server @ ' + options.bindIP + ':' + options.port + ' => ' + e.message)
+    this.server.on('error', (error) => {
+      throw new Error(`Cannot start socket server @ ${this.config.bindIP}:${this.config.port} => ${error.message}`)
     })
 
     await new Promise((resolve) => {
-      server.server.listen(options.port, options.bindIP, () => { resolve() })
+      this.server.listen(this.config.port, this.config.bindIP, resolve)
+    })
+
+    this.on('connection', async (connection) => {
+      await this.onConnection(connection)
+    })
+
+    this.on('actionComplete', (data) => {
+      if (data.toRender === true) {
+        data.response.context = 'response'
+        this.sendMessage(data.connection, data.response, data.messageCount)
+      }
     })
   }
 
-  server.stop = async (next) => {
-    await gracefulShutdown(next)
+  async stop () {
+    await this.gracefulShutdown()
   }
 
-  server.sendMessage = async (connection, message, messageCount) => {
+  async sendMessage (connection, message, messageCount) {
     if (message.error) {
-      message.error = await api.config.errors.serializers.servers.socket(message.error)
+      message.error = await this.api.config.errors.serializers.servers.socket(message.error)
     }
 
     if (connection.respondingTo) {
@@ -81,61 +87,53 @@ const initialize = async (api, options) => {
     try {
       connection.rawConnection.write(JSON.stringify(message) + '\r\n')
     } catch (e) {
-      api.log(`socket write error: ${e}`, 'error')
+      this.log(`socket write error: ${e}`, 'error')
     }
   }
 
-  server.goodbye = (connection) => {
+  goodbye (connection) {
     try {
       connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
     } catch (e) {}
   }
 
-  server.sendFile = (connection, error, fileStream) => {
+  sendFile (connection, error, fileStream) {
     if (error) {
-      server.sendMessage(connection, error, connection.messageCount)
+      this.sendMessage(connection, error, connection.messageCount)
     } else {
       fileStream.pipe(connection.rawConnection, {end: false})
     }
   }
 
-  // /////////
-  // EVENTS //
-  // /////////
+  handleConnection (rawConnection) {
+    if (this.config.setKeepAlive === true) { rawConnection.setKeepAlive(true) }
+    rawConnection.socketDataString = ''
+    this.buildConnection({
+      rawConnection: rawConnection,
+      remoteAddress: rawConnection.remoteAddress,
+      remotePort: rawConnection.remotePort
+    })
+  }
 
-  server.on('connection', async (connection) => {
+  async onConnection (connection) {
     connection.params = {}
 
-    const parseLine = async (line) => {
-      if (api.config.servers.socket.maxDataLength > 0) {
-        let blen = Buffer.byteLength(line, 'utf8')
-        if (blen > api.config.servers.socket.maxDataLength) {
-          let error = await api.config.errors.dataLengthTooLarge(api.config.servers.socket.maxDataLength, blen)
-          server.log(error, 'error')
-          return server.sendMessage(connection, {status: 'error', error: error, context: 'response'})
-        }
-      }
-      if (line.length > 0) {
-        // increment at the start of the request so that responses can be caught in order on the client
-        // this is not handled by the GenericServer
-        connection.messageCount++
-        parseRequest(connection, line)
-      }
-    }
-
-    connection.rawConnection.on('data', (chunk) => {
-      if (checkBreakChars(chunk)) {
+    connection.rawConnection.on('data', async (chunk) => {
+      if (this.checkBreakChars(chunk)) {
         connection.destroy()
       } else {
         // Replace all carriage returns with newlines.
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n')
         let index
-        let d = String(api.config.servers.socket.delimiter)
+        let d = String(this.config.delimiter)
 
         while ((index = connection.rawConnection.socketDataString.indexOf(d)) > -1) {
           let data = connection.rawConnection.socketDataString.slice(0, index)
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + d.length)
-          data.split(d).forEach(parseLine)
+          let lines = data.split(d)
+          for (let i in lines) {
+            await this.parseLine(connection, lines[i])
+          }
         }
       }
     })
@@ -149,38 +147,43 @@ const initialize = async (api, options) => {
 
     connection.rawConnection.on('error', (e) => {
       if (connection.destroyed !== true) {
-        server.log('socket error: ' + e, 'error')
+        this.log('socket error: ' + e, 'error')
         try { connection.rawConnection.end() } catch (e) {}
         connection.destroy()
       }
     })
-  })
+  }
 
-  server.on('actionComplete', (data) => {
-    if (data.toRender === true) {
-      data.response.context = 'response'
-      server.sendMessage(data.connection, data.response, data.messageCount)
+  async parseLine (connection, line) {
+    if (this.config.maxDataLength > 0) {
+      let blen = Buffer.byteLength(line, 'utf8')
+      if (blen > this.config.maxDataLength) {
+        let error = await this.api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
+        this.log(error, 'error')
+        return this.sendMessage(connection, {status: 'error', error: error, context: 'response'})
+      }
     }
-  })
 
-  // //////////
-  // HELPERS //
-  // //////////
+    if (line.length > 0) {
+      // increment at the start of the request so that responses can be caught in order on the client
+      // this is not handled by the GenericServer
+      connection.messageCount++
+      this.parseRequest(connection, line)
+    }
+  }
 
-  const parseRequest = async (connection, line) => {
+  async parseRequest (connection, line) {
     let words = line.split(' ')
     let verb = words.shift()
 
     if (verb === 'file') {
-      if (words.length > 0) {
-        connection.params.file = words[0]
-      }
-      return server.processFile(connection)
+      if (words.length > 0) { connection.params.file = words[0] }
+      return this.processFile(connection)
     }
 
     try {
       let data = await connection.verbs(verb, words)
-      server.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+      this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
     } catch (error) {
       if (error.toString().match('verb not found or not allowed')) {
         // check for and attempt to check single-use params
@@ -200,27 +203,14 @@ const initialize = async (api, options) => {
         }
         connection.error = null
         connection.response = {}
-        server.processAction(connection)
+        return this.processAction(connection)
       } else {
-        server.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
+        return this.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
       }
     }
   }
 
-  const handleConnection = (rawConnection) => {
-    if (api.config.servers.socket.setKeepAlive === true) {
-      rawConnection.setKeepAlive(true)
-    }
-    rawConnection.socketDataString = ''
-    server.buildConnection({
-      rawConnection: rawConnection,
-      remoteAddress: rawConnection.remoteAddress,
-      remotePort: rawConnection.remotePort
-    })
-  }
-
-  // I check for ctrl+c in the stream
-  const checkBreakChars = (chunk) => {
+  checkBreakChars (chunk) {
     let found = false
     let hexChunk = chunk.toString('hex', 0, chunk.length)
     if (hexChunk === 'fff4fffd06') {
@@ -228,34 +218,31 @@ const initialize = async (api, options) => {
     } else if (hexChunk === '04') {
       found = true // CTRL + D
     }
+
     return found
   }
 
-  const gracefulShutdown = async (alreadyShutdown) => {
+  async gracefulShutdown (alreadyShutdown) {
     if (!alreadyShutdown || alreadyShutdown === false) {
-      if (server.server) { server.server.close() }
+      if (this.server) { this.server.close() }
     }
 
     let pendingConnections = 0
-    server.connections().forEach((connection) => {
+    this.connections().forEach((connection) => {
       if (connection.pendingActions === 0) {
         connection.destroy()
       } else {
         pendingConnections++
         if (!connection.rawConnection.shutDownTimer) {
-          connection.rawConnection.shutDownTimer = setTimeout(connection.destroy, attributes.pendingShutdownWaitLimit)
+          connection.rawConnection.shutDownTimer = setTimeout(connection.destroy, this.attributes.pendingShutdownWaitLimit)
         }
       }
     })
 
     if (pendingConnections > 0) {
-      server.log(`waiting on shutdown, there are still ${pendingConnections} connected clients waiting on a response`, 'notice')
+      this.log(`waiting on shutdown, there are still ${pendingConnections} connected clients waiting on a response`, 'notice')
       await new Promise((resolve) => { setTimeout(resolve, 1000) })
-      return gracefulShutdown(true)
+      return this.gracefulShutdown(true)
     }
   }
-
-  return server
 }
-
-exports.initialize = initialize
