@@ -30,7 +30,7 @@ module.exports = {
         let server = new ServerClass()
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
-          server.api = api // this is terrible, but needed pass the connection, logger, and staticFile classes on
+          server.api = api // TODO: this is terrible, but needed pass the connection, logger, and staticFile classes on
           await server.initialize()
           api.servers.servers[server.type] = server
           api.log(`Initialized server: ${server.type}`, 'debug')
