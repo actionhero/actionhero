@@ -25,71 +25,80 @@ module.exports = class ActionsList extends ActionHero.CLI {
         note: 'to fork and run as a new background process defaults to false'
       }
     }
+
+    this.state = null
+
+    // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
+    this.shutdownTimeout = 1000 * 30
+    if (process.env.ACTIONHERO_SHUTDOWN_TIMEOUT) {
+      this.shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+    }
+  }
+
+  sendState () {
+    if (cluster.isWorker) { process.send({state: this.state}) }
+  }
+
+  async startServer () {
+    this.state = 'starting'
+    this.sendState()
+    await this.api.commands.start()
+    this.state = 'started'
+    this.sendState()
+    this.checkForInernalStop()
+  }
+
+  async stopServer () {
+    this.state = 'stopping'
+    this.sendState()
+    await this.api.commands.stop()
+    this.state = 'stopped'
+    this.sendState()
+  }
+
+  async restartServer () {
+    this.state = 'restarting'
+    this.sendState()
+    await this.api.commands.restart()
+    this.state = 'started'
+    this.sendState()
+  }
+
+  async stopProcess () {
+    if (this.state === 'stopping' || this.state === 'stopped') { return }
+
+    setTimeout(() => {
+      throw new Error('process stop timeout reached.  terminating now.')
+    }, this.shutdownTimeout)
+
+    await this.stopServer()
+    await new Promise((resolve) => { setTimeout(resolve, 10) })
+    process.exit()
+  }
+
+  checkForInernalStop () {
+    // check for an internal stop which doesn't close the processs
+    clearTimeout(this.checkForInernalStopTimer)
+    if (this.api.running !== true && this.state === 'started') { process.exit(0) }
+    this.checkForInernalStopTimer = setTimeout(() => { this.checkForInernalStop() }, this.shutdownTimeout)
   }
 
   async run (api) {
-    let state
-
-    // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
-    let shutdownTimeout = 1000 * 30
-    if (process.env.ACTIONHERO_SHUTDOWN_TIMEOUT) {
-      shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
-    }
-
-    const startServer = async () => {
-      state = 'starting'
-      if (cluster.isWorker) { process.send({state: state}) }
-      let apiFromCallback = await api._context.start()
-      state = 'started'
-      if (cluster.isWorker) { process.send({state: state}) }
-      api = apiFromCallback
-      checkForInernalStop()
-    }
-
-    const stopServer = async () => {
-      state = 'stopping'
-      if (cluster.isWorker) { process.send({state: state}) }
-      await api._context.stop()
-      state = 'stopped'
-      if (cluster.isWorker) { process.send({state: state}) }
-    }
-
-    const restartServer = async () => {
-      state = 'restarting'
-      if (cluster.isWorker) { process.send({state: state}) }
-      let apiFromCallback = await api._context.restart()
-      state = 'started'
-      if (cluster.isWorker) { process.send({state: state}) }
-      api = apiFromCallback
-    }
-
-    const stopProcess = async () => {
-      setTimeout(() => {
-        throw new Error('process stop timeout reached.  terminating now.')
-      }, shutdownTimeout)
-      await stopServer()
-      setTimeout(() => { process.exit() }, 1)
-    }
-
-    // check for an internal stop which doesn't close the processs
-    let checkForInernalStopTimer
-    const checkForInernalStop = () => {
-      clearTimeout(checkForInernalStopTimer)
-      if (api.running !== true && state === 'started') { process.exit(0) }
-      checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout)
-    }
+    this.api = api
 
     if (cluster.isWorker) {
-      process.on('message', (msg) => {
+      process.on('message', async (msg) => {
         if (msg === 'start') {
-          startServer()
+          await this.startServer()
         } else if (msg === 'stop') {
-          stopServer()
+          await this.stopServer()
         } else if (msg === 'stopProcess') {
-          stopProcess()
+          await this.stopProcess()
         // in cluster, we cannot re-bind the port
         // so kill this worker, and then let the cluster start a new worker
-        } else if (msg === 'restart') { stopProcess() }
+        } else if (msg === 'restart') {
+          await this.stopProcess()
+        }
       })
 
       process.on('uncaughtException', (error) => {
@@ -112,9 +121,9 @@ module.exports = class ActionsList extends ActionHero.CLI {
       })
     }
 
-    process.on('SIGINT', () => { stopProcess() })
-    process.on('SIGTERM', () => { stopProcess() })
-    process.on('SIGUSR2', () => { restartServer() })
+    process.on('SIGINT', async () => { await this.stopProcess() })
+    process.on('SIGTERM', async () => { await this.stopProcess() })
+    process.on('SIGUSR2', async () => { await this.restartServer() })
 
     if (process.platform === 'win32' && !process.env.IISNODE_VERSION) {
       const rl = readline.createInterface({
@@ -125,7 +134,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
 
     // start the server!
-    await startServer()
+    await this.startServer()
     return false
   }
 }

@@ -167,10 +167,10 @@ describe('Core: CLI', () => {
     it('can generate a task', async () => {
       await doCommand(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
       let data = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
-      expect(data).to.match(/name: 'myTask'/)
-      expect(data).to.match(/description: 'my_description'/)
-      expect(data).to.match(/queue: 'my_queue'/)
-      expect(data).to.match(/frequency: 12345/)
+      expect(data).to.match(/this.name = 'myTask'/)
+      expect(data).to.match(/this.description = 'my_description'/)
+      expect(data).to.match(/this.queue = 'my_queue'/)
+      expect(data).to.match(/this.frequency = 12345/)
     })
 
     it('can generate a CLI command', async () => {
