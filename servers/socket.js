@@ -33,8 +33,8 @@ module.exports = class SocketServer extends ActionHero.Server {
     }
   }
 
-  async initialize () {
-
+  async initialize (api) {
+    this.api = api
   }
 
   async start () {
@@ -69,8 +69,9 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async sendMessage (connection, message, messageCount) {
+    const api = this.api
     if (message.error) {
-      message.error = await this.api.config.errors.serializers.servers.socket(message.error)
+      message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
 
     if (connection.respondingTo) {
@@ -155,10 +156,11 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async parseLine (connection, line) {
+    const api = this.api
     if (this.config.maxDataLength > 0) {
       let blen = Buffer.byteLength(line, 'utf8')
       if (blen > this.config.maxDataLength) {
-        let error = await this.api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
+        let error = await api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
         this.log(error, 'error')
         return this.sendMessage(connection, {status: 'error', error: error, context: 'response'})
       }

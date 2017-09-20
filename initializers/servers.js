@@ -30,8 +30,7 @@ module.exports = {
         let server = new ServerClass()
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
-          server.api = api // TODO: this is terrible, but needed pass the connection, logger, and staticFile classes on
-          await server.initialize()
+          await server.initialize(api)
           api.servers.servers[server.type] = server
           api.log(`Initialized server: ${server.type}`, 'debug')
         }
@@ -59,7 +58,7 @@ module.exports = {
           message += `:${api.config.servers[serverName].port}`
         }
         api.log(message, 'notice')
-        await server.start()
+        await server.start(api)
         api.log(`Server started: ${serverName}`, 'debug')
       }
     }
@@ -72,7 +71,7 @@ module.exports = {
       let server = api.servers.servers[serverName]
       if ((server && server.config.enabled === true) || !server) {
         api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
+        await server.stop(api)
         api.log(`Server stopped: ${serverName}`, 'debug')
       }
     }
