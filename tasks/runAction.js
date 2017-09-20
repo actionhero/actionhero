@@ -1,11 +1,17 @@
-const task = {
-  name: 'runAction',
-  description: 'I will run an action and return the connection object',
-  queue: 'default',
-  plugins: [],
-  pluginOptions: [],
-  frequency: 0,
-  run: async ({log, ActionProcessor, Connection}, params) => {
+'use strict'
+const ActionHero = require('./../index.js')
+
+module.exports = class RunAction extends ActionHero.Task {
+  constructor () {
+    super()
+    this.name = 'runAction'
+    this.description = 'I will run an action and return the connection object'
+    this.frequency = 0
+    this.queue = 'default'
+    this.middleware = []
+  }
+
+  async run ({log, ActionProcessor, Connection}, params) {
     if (!params) { params = {} }
 
     const connection = new Connection({
@@ -30,5 +36,3 @@ const task = {
     return response
   }
 }
-
-exports.task = task

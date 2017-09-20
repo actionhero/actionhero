@@ -83,17 +83,29 @@ module.exports = {
         }, api.tasks.jobs)
 
         // normal worker emitters
-        api.resque.multiWorker.on('start', (workerId) => { api.log('[ worker ] started', api.resque.workerLogging.start, {workerId: workerId}) })
-        api.resque.multiWorker.on('end', (workerId) => { api.log('[ worker ] ended', api.resque.workerLogging.end, {workerId: workerId}) })
+        api.resque.multiWorker.on('start', (workerId) => { api.log('[ worker ] started', api.resque.workerLogging.start, {workerId}) })
+        api.resque.multiWorker.on('end', (workerId) => { api.log('[ worker ] ended', api.resque.workerLogging.end, {workerId}) })
         api.resque.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(`[ worker ] cleaning old worker ${worker}, (${pid})`, api.resque.workerLogging.cleaning_worker) })
-        api.resque.multiWorker.on('poll', (workerId, queue) => { api.log(`[ worker ] polling ${queue}`, api.resque.workerLogging.poll, {workerId: workerId}) })
-        api.resque.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {workerId: workerId, job: {class: job['class'], queue: job.queue}}) })
-        api.resque.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', api.resque.workerLogging.reEnqueue, {workerId: workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
-        api.resque.multiWorker.on('success', (workerId, queue, job, result) => { api.log(`[ worker ] job success ${queue}`, api.resque.workerLogging.success, {workerId: workerId, job: {class: job['class'], queue: job.queue}, result: result}) })
-        api.resque.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', api.resque.workerLogging.pause, {workerId: workerId}) })
+        api.resque.multiWorker.on('poll', (workerId, queue) => { api.log(`[ worker ] polling ${queue}`, api.resque.workerLogging.poll, {workerId}) })
+        api.resque.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {workerId, job: {class: job['class'], queue: job.queue}}) })
+        api.resque.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', api.resque.workerLogging.reEnqueue, {workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
+        api.resque.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', api.resque.workerLogging.pause, {workerId}) })
 
         api.resque.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
         api.resque.multiWorker.on('error', (error, workerId, queue, job) => { api.exceptionHandlers.task(error, queue, job, workerId) })
+
+        api.resque.multiWorker.on('success', (workerId, queue, job, result) => {
+          let payload = {
+            workerId,
+            job: {
+              class: job['class'],
+              queue: job.queue
+            }
+          }
+
+          if (result !== null && result !== undefined) { payload.result = result }
+          api.log(`[ worker ] job success ${queue}`, api.resque.workerLogging.success, payload)
+        })
 
         // multiWorker emitters
         api.resque.multiWorker.on('internalError', (error) => { api.log(error, api.resque.workerLogging.internalError) })

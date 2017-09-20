@@ -113,7 +113,7 @@ module.exports = class Process {
           } catch (error) {
             let message = `Exception occured in initializer \`${baseName}\` during load`
             try {
-              api.log(message, 'warning', error)
+              api.log(message, 'warning', error.toString())
             } catch (error) {
               console.error(message)
             }
@@ -129,7 +129,7 @@ module.exports = class Process {
             await initializer.start(api)
             api.log(`Started initializer: ${baseName}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${baseName} during start`, 'warning', error)
+            api.log(`Exception occured in initializer: ${baseName} during start`, 'warning', error.toString())
             throw error
           }
         }
@@ -142,7 +142,7 @@ module.exports = class Process {
             await initializer.stop(api)
             api.log(`Stopped initializer: ${baseName}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${baseName} during stop`, 'warning', error)
+            api.log(`Exception occured in initializer: ${baseName} during stop`, 'warning', error.toString())
             throw error
           }
         }

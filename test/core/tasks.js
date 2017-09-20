@@ -20,45 +20,55 @@ describe('Core: Tasks', () => {
     api.resque.multiWorker.options.minTaskProcessors = 1
     api.resque.multiWorker.options.maxTaskProcessors = 1
 
-    api.tasks.tasks.regularTask = {
-      name: 'regular',
-      description: 'task: regular',
-      queue: queue,
-      frequency: 0,
-      plugins: [],
-      pluginOptions: {},
-      run: async (api, params) => {
+    class RegularTask extends ActionHero.Task {
+      constructor () {
+        super()
+        this.name = 'regular'
+        this.description = 'task: regular'
+        this.queue = queue
+        this.frequency = 0
+      }
+
+      run (api, params) {
         taskOutput.push(params.word)
         return params.word
       }
     }
 
-    api.tasks.tasks.periodicTask = {
-      name: 'periodicTask',
-      description: 'task: periodicTask',
-      queue: queue,
-      frequency: 100,
-      plugins: [],
-      pluginOptions: {},
-      run: async (api, params) => {
+    class PeriodicTask extends ActionHero.Task {
+      constructor () {
+        super()
+        this.name = 'periodicTask'
+        this.description = 'task: periodicTask'
+        this.queue = queue
+        this.frequency = 100
+      }
+
+      run (api, params) {
         taskOutput.push('periodicTask')
         return 'periodicTask'
       }
     }
 
-    api.tasks.tasks.slowTask = {
-      name: 'slowTask',
-      description: 'task: slowTask',
-      queue: queue,
-      frequency: 0,
-      plugins: [],
-      pluginOptions: {},
-      run: async (api, params) => {
+    class SlowTask extends ActionHero.Task {
+      constructor () {
+        super()
+        this.name = 'slowTask'
+        this.description = 'task: slowTask'
+        this.queue = queue
+        this.frequency = 0
+      }
+
+      async run (api, params) {
         await new Promise((resolve) => { setTimeout(resolve, 5000) })
         taskOutput.push('slowTask')
         return 'slowTask'
       }
     }
+
+    api.tasks.tasks.regularTask = new RegularTask()
+    api.tasks.tasks.periodicTask = new PeriodicTask()
+    api.tasks.tasks.slowTask = new SlowTask()
 
     api.tasks.jobs.regularTask = api.tasks.jobWrapper('regularTask')
     api.tasks.jobs.periodicTask = api.tasks.jobWrapper('periodicTask')
@@ -91,19 +101,30 @@ describe('Core: Tasks', () => {
     await api.resque.stopMultiWorker()
   })
 
+  it('validates tasks', () => {
+    api.tasks.tasks.regularTask.validate()
+  })
+
   it('a bad task definition causes an exception', () => {
-    let badTask = {
-      name: 'badTask',
-      description: 'task',
-      // queue: queue, // No Queue
-      frequency: 100,
-      plugins: [],
-      pluginOptions: {},
-      run: (api, params) => {}
+    class BadTask extends ActionHero.Task {
+      constructor () {
+        super()
+        // this.name = 'noName'
+        this.description = 'no name'
+        this.queue = queue
+        this.frequency = 0
+      }
+      async run (api, params) {}
     }
 
-    let response = api.tasks.validateTask(badTask)
-    expect(response).to.equal(false)
+    let task = new BadTask()
+
+    try {
+      task.validate()
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.toString()).to.match(/name is required for this task/)
+    }
   })
 
   it('will clear crashed workers when booting') // TODO

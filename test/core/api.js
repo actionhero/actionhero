@@ -127,6 +127,42 @@ describe('Core: API', () => {
     })
   })
 
+  describe('action constructor', () => {
+    it('validates actions', () => {
+      class GoodAction extends ActionHero.Action {
+        constructor () {
+          super()
+          this.name = 'good'
+          this.description = 'good'
+          this.outputExample = {}
+        }
+        async run () {}
+      }
+
+      class BadAction extends ActionHero.Action {
+        constructor () {
+          super()
+          // this.name = 'bad'
+          this.description = 'bad'
+          this.outputExample = {}
+        }
+        async run () {}
+      }
+
+      let goodAction = new GoodAction()
+      let badAction = new BadAction()
+
+      goodAction.validate(api)
+
+      try {
+        badAction.validate(api)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.match(/name is required for this action/)
+      }
+    })
+  })
+
   describe('Action Params', () => {
     before(() => {
       api.actions.versions.testAction = [1]
