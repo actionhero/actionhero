@@ -22,8 +22,7 @@ module.exports = class Process {
       initialized: false,
       shuttingDown: false,
       projectRoot: projectRoot,
-      bootTime: null,
-      initializerDefaults: { load: 1000, start: 1000, stop: 1000 }
+      bootTime: null
     }
 
     this.api.commands = {
@@ -148,9 +147,9 @@ module.exports = class Process {
         }
       }
 
-      if (initializer.loadPriority === undefined) { initializer.loadPriority = api.initializerDefaults.load }
-      if (initializer.startPriority === undefined) { initializer.startPriority = api.initializerDefaults.start }
-      if (initializer.stopPriority === undefined) { initializer.stopPriority = api.initializerDefaults.stop }
+      if (initializer.loadPriority === undefined) { initializer.loadPriority = 1000 }
+      if (initializer.startPriority === undefined) { initializer.startPriority = 1000 }
+      if (initializer.stopPriority === undefined) { initializer.stopPriority = 1000 }
 
       if (loadInitializerRankings[initializer.loadPriority] === undefined) { loadInitializerRankings[initializer.loadPriority] = [] }
       if (startInitializerRankings[initializer.startPriority] === undefined) { startInitializerRankings[initializer.startPriority] = [] }

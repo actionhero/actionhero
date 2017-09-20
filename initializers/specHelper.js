@@ -116,7 +116,7 @@ module.exports = {
       api.specHelper.Connection = class {
         constructor () {
           let id = uuid.v4()
-          api.servers.servers.testServer.buildConnection({
+          api.servers.servers.testServer.buildConnection(api, {
             id: id,
             rawConnection: {},
             remoteAddress: 'testServer',
@@ -143,7 +143,7 @@ module.exports = {
 
         connection.messageCount++
         let response = await new Promise((resolve) => {
-          api.servers.servers.testServer.processAction(connection)
+          api.servers.servers.testServer.processAction(api, connection)
           connection.actionCallbacks[(connection.messageCount)] = resolve
         })
 

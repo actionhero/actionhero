@@ -173,9 +173,10 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   handleConnection (rawConnection) {
+    const api = this.api
     const parsedCookies = this.fingerprinter.parseCookies(rawConnection)
     const fingerprint = parsedCookies[this.api.config.servers.web.fingerprintOptions.cookieKey]
-    this.buildConnection({
+    this.buildConnection(api, {
       rawConnection: rawConnection,
       remoteAddress: rawConnection.address.ip,
       remotePort: rawConnection.address.port,
@@ -195,6 +196,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   async handleData (connection, data) {
     const verb = data.event
+    const api = this.api
     delete data.event
     connection.messageCount++
     connection.params = {}
@@ -205,7 +207,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       }
       connection.error = null
       connection.response = {}
-      return this.processAction(connection)
+      return this.processAction(api, connection)
     }
 
     if (verb === 'file') {

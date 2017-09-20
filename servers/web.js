@@ -43,6 +43,7 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   async start () {
+    const api = this.api
     let bootAttempts = 0
     if (this.config.secure === false) {
       this.server = http.createServer((req, res) => { this.handleRequest(req, res) })
@@ -74,7 +75,7 @@ module.exports = class WebServer extends ActionHero.Server {
     this.on('connection', async (connection) => {
       let requestMode = await this.determineRequestParams(connection)
       if (requestMode === 'api') {
-        this.processAction(connection)
+        this.processAction(api, connection)
       } else if (requestMode === 'file') {
         this.processFile(connection)
       } else if (requestMode === 'options') {
@@ -315,7 +316,7 @@ module.exports = class WebServer extends ActionHero.Server {
       }
     }
 
-    this.buildConnection({
+    this.buildConnection(api, {
       rawConnection: {
         req: req,
         res: res,
