@@ -39,17 +39,16 @@ module.exports = class ActionsList extends ActionHero.CLI {
     const startServer = async () => {
       state = 'starting'
       if (cluster.isWorker) { process.send({state: state}) }
-      let apiFromCallback = await api._context.start()
+      await api.commands.start()
       state = 'started'
       if (cluster.isWorker) { process.send({state: state}) }
-      api = apiFromCallback
       checkForInernalStop()
     }
 
     const stopServer = async () => {
       state = 'stopping'
       if (cluster.isWorker) { process.send({state: state}) }
-      await api._context.stop()
+      await api.commands.stop()
       state = 'stopped'
       if (cluster.isWorker) { process.send({state: state}) }
     }
@@ -57,18 +56,21 @@ module.exports = class ActionsList extends ActionHero.CLI {
     const restartServer = async () => {
       state = 'restarting'
       if (cluster.isWorker) { process.send({state: state}) }
-      let apiFromCallback = await api._context.restart()
+      await api.commands.restart()
       state = 'started'
       if (cluster.isWorker) { process.send({state: state}) }
-      api = apiFromCallback
     }
 
     const stopProcess = async () => {
+      if (state === 'stopping' || state === 'stopped') { return }
+
       setTimeout(() => {
         throw new Error('process stop timeout reached.  terminating now.')
       }, shutdownTimeout)
+
       await stopServer()
-      setTimeout(() => { process.exit() }, 1)
+      await new Promise((resolve) => { setTimeout(resolve, 10) })
+      process.exit()
     }
 
     // check for an internal stop which doesn't close the processs
@@ -80,16 +82,18 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
 
     if (cluster.isWorker) {
-      process.on('message', (msg) => {
+      process.on('message', async (msg) => {
         if (msg === 'start') {
-          startServer()
+          await startServer()
         } else if (msg === 'stop') {
-          stopServer()
+          await stopServer()
         } else if (msg === 'stopProcess') {
-          stopProcess()
+          await stopProcess()
         // in cluster, we cannot re-bind the port
         // so kill this worker, and then let the cluster start a new worker
-        } else if (msg === 'restart') { stopProcess() }
+        } else if (msg === 'restart') {
+          await stopProcess()
+        }
       })
 
       process.on('uncaughtException', (error) => {
@@ -112,9 +116,9 @@ module.exports = class ActionsList extends ActionHero.CLI {
       })
     }
 
-    process.on('SIGINT', () => { stopProcess() })
-    process.on('SIGTERM', () => { stopProcess() })
-    process.on('SIGUSR2', () => { restartServer() })
+    process.on('SIGINT', async () => { await stopProcess() })
+    process.on('SIGTERM', async () => { await stopProcess() })
+    process.on('SIGUSR2', async () => { await restartServer() })
 
     if (process.platform === 'win32' && !process.env.IISNODE_VERSION) {
       const rl = readline.createInterface({
