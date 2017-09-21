@@ -189,7 +189,8 @@ module.exports = class SocketServer extends ActionHero.Server {
       let data = await connection.verbs(verb, words)
       this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
     } catch (error) {
-      if (error.toString().match('verb not found or not allowed')) {
+      const checkString = await api.config.errors.verbNotAllowed(connection, verb)
+      if (error.toString().match(checkString.toString())) {
         // check for and attempt to check single-use params
         try {
           let requestHash = JSON.parse(line)
