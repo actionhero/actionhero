@@ -1,15 +1,14 @@
 const path = require('path');
 
 [
-  'Process',
-  'Action',
-  'Task',
-  'Initializer',
-  'Server',
-  'CLI',
-  'ActionProcessor',
-  'Connection'
-].forEach((component) => {
-  let fileName = component.charAt(0).toLowerCase() + component.substring(1)
-  exports[component] = require(path.join(__dirname, 'classes', `${fileName}.js`))
+  { klass: 'Process', file: 'process.js' },
+  { klass: 'Action', file: 'action.js' },
+  { klass: 'Task', file: 'task.js' },
+  { klass: 'Initializer', file: 'initializer.js' },
+  { klass: 'Server', file: 'server.js' },
+  { klass: 'CLI', file: 'cli.js' },
+  { klass: 'ActionProcessor', file: 'actionProcessor.js' },
+  { klass: 'Connection', file: 'connection.js' }
+].forEach(({klass, file}) => {
+  exports[klass] = require(path.join(__dirname, 'classes', file))
 })

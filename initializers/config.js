@@ -10,6 +10,8 @@ module.exports = class Config extends ActionHero.Initializer {
     super()
     this.name = 'config'
     this.loadPriority = 1
+    this.startPriority = 1
+    this.stopPriority = 1
   }
 
   async initialize (api) {
@@ -35,13 +37,15 @@ module.exports = class Config extends ActionHero.Initializer {
         throw new Error(file + ' does not exist, and cannot be watched')
       }
 
-      if (api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0) {
-        api.watchedFiles.push(file)
-        fs.watchFile(file, {interval: 1000}, (curr, prev) => {
+      let found = false
+      api.watchedFiles.forEach(({file: watchedFile}) => { if (watchedFile === file) { found = true } })
+
+      if (api.config.general.developmentMode === true && found === false) {
+        const watcher = fs.watch(file, (eventType) => {
           if (
             api.running === true &&
             api.config.general.developmentMode === true &&
-            curr.mtime > prev.mtime
+            eventType === 'change'
           ) {
             let cleanPath = file
             if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
@@ -49,14 +53,16 @@ module.exports = class Config extends ActionHero.Initializer {
             handler(file)
           }
         })
+
+        api.watchedFiles.push({file, watcher})
       }
     }
 
     api.unWatchAllFiles = () => {
-      for (let i in api.watchedFiles) {
-        fs.unwatchFile(api.watchedFiles[i])
+      while (api.watchedFiles.length > 0) {
+        const {watcher} = api.watchedFiles.pop()
+        watcher.close()
       }
-      api.watchedFiles = []
     }
 
     // We support multiple configuration paths as follows:
@@ -174,5 +180,9 @@ module.exports = class Config extends ActionHero.Initializer {
 
   start (api) {
     api.log(`environment: ${api.env}`, 'notice')
+  }
+
+  stop (api) {
+    api.unWatchAllFiles()
   }
 }

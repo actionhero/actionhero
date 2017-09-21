@@ -218,7 +218,6 @@ module.exports = class Process {
       api.log('stopping process...', 'notice')
 
       this.stopInitializers.push(async () => {
-        api.unWatchAllFiles()
         api.pids.clearPidFile()
         api.log('*** ActionHero Stopped ***', 'alert')
         api.log('***', 'debug')
