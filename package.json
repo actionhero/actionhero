@@ -38,7 +38,7 @@
     "ioredis": "^3.1.4",
     "is-running": "^2.0.1",
     "mime": "^1.4.0",
-    "node-resque": "git+https://git@github.com/taskrabbit/node-resque.git#master",
+    "node-resque": "^5.0.0",
     "optimist": "^0.6.1",
     "primus": "^7.1.0",
     "qs": "^6.5.1",
