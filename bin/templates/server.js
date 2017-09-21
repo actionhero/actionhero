@@ -1,5 +1,4 @@
 'use strict'
-
 const ActionHero = require('actionhero')
 
 module.exports = class MyServer extends ActionHero.Server {
@@ -14,12 +13,10 @@ module.exports = class MyServer extends ActionHero.Server {
       sendWelcomeMessage: false,
       verbs: []
     }
-
-    // this.api will be set at runtime
     // this.config will be set to equal api.config.servers[this.type]
   }
 
-  initialize () {
+  initialize (api) {
     this.on('connection', (conection) => {
 
     })
@@ -29,13 +26,13 @@ module.exports = class MyServer extends ActionHero.Server {
     })
   }
 
-  start () {
+  start (api) {
     // this.buildConnection (api, data)
     // this.processAction (api, connection)
     // this.processFile (connection)
   }
 
-  stop () {
+  stop (api) {
 
   }
 

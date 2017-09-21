@@ -1,5 +1,4 @@
 'use strict'
-
 const ActionHero = require('actionhero')
 
 module.exports = class MyCLICommand extends ActionHero.Action {

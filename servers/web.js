@@ -34,11 +34,12 @@ module.exports = class WebServer extends ActionHero.Server {
     }
   }
 
-  async initialize () {
+  async initialize (api) {
     if (['api', 'file'].indexOf(this.config.rootEndpointType) < 0) {
       throw new Error('rootEndpointType can only be \'api\' or \'file\'')
     }
 
+    this.api = api
     this.fingerprinter = new BrowserFingerprint(this.config.fingerprintOptions)
   }
 

@@ -35,8 +35,7 @@ module.exports = class Servers extends ActionHero.Initializer {
         let server = new ServerClass()
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
-          server.api = api // TODO: this is terrible, but needed pass the connection, logger, and staticFile classes on
-          await server.initialize()
+          await server.initialize(api)
           api.servers.servers[server.type] = server
           api.log(`Initialized server: ${server.type}`, 'debug')
         }
@@ -64,7 +63,7 @@ module.exports = class Servers extends ActionHero.Initializer {
           message += `:${api.config.servers[serverName].port}`
         }
         api.log(message, 'notice')
-        await server.start()
+        await server.start(api)
         api.log(`Server started: ${serverName}`, 'debug')
       }
     }

@@ -31,12 +31,14 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     }
   }
 
-  initialize () {
+  initialize (api) {
+    this.api = api
     this.fingerprinter = new BrowserFingerprint(this.api.config.servers.web.fingerprintOptions)
   }
 
   start () {
-    const webserver = this.api.servers.servers.web
+    const api = this.api
+    const webserver = api.servers.servers.web
     this.server = new Primus(webserver.server, this.config.server)
 
     this.writeClientJS()
@@ -67,8 +69,9 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   sendMessage (connection, message, messageCount) {
+    const api = this.api
     if (message.error) {
-      message.error = this.api.config.errors.serializers.servers.websocket(message.error)
+      message.error = api.config.errors.serializers.servers.websocket(message.error)
     }
 
     if (!message.context) { message.context = 'response' }
@@ -122,8 +125,9 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   renderClientJS (minimize) {
+    const api = this.api
     if (!minimize) { minimize = false }
-    let libSource = this.api.servers.servers.websocket.server.library()
+    let libSource = api.servers.servers.websocket.server.library()
     let ahClientSource = this.compileActionheroClientJS()
     ahClientSource =
       ';;;\r\n' +
