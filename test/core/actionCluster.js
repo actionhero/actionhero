@@ -347,7 +347,7 @@ describe('Core: Action Cluster', () => {
       await apiA.chatRoom.destroy('newRoom')
       expect(client.rooms).to.have.length(0)
 
-      // TODO: testing for the recepit of this message is a race condition with room.destroy and boradcast in test
+      // testing for the recepit of this message is a race condition with room.destroy and boradcast in test
       // client.messages[1].message.should.equal('this room has been deleted')
       // client.messages[1].room.should.equal('newRoom')
 

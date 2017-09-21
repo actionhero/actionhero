@@ -126,7 +126,7 @@ module.exports = class Connection {
       server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
 
       // TODO: make this a case statement
-      // TODO: investigage allowedVerbs being an array of Constatnts or Symbols
+      // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
       if (verb === 'quit' || verb === 'exit') {
         server.goodbye(this)

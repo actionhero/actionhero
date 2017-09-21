@@ -226,14 +226,10 @@ module.exports = class WebServer extends ActionHero.Server {
 
     if (fileStream) {
       if (compressor) {
-        // headers.push(['Content-Length', fileLength]); // TODO
         connection.rawConnection.res.writeHead(responseHttpCode, this.transformHeaders(headers))
         fileStream.pipe(compressor).pipe(connection.rawConnection.res)
       } else {
-        // file length might be null if we don't know how long the stream is
-        if (fileLength) {
-          headers.push(['Content-Length', fileLength])
-        }
+        if (fileLength) { headers.push(['Content-Length', fileLength]) }
         connection.rawConnection.res.writeHead(responseHttpCode, this.transformHeaders(headers))
         fileStream.pipe(connection.rawConnection.res)
       }

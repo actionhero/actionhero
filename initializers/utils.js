@@ -173,9 +173,6 @@ module.exports = class Utils extends ActionHero.Initializer {
       const pathsToTry = pluginPaths.slice(0)
       let pluginRoot
 
-       // TODO: always also try the local destination's `node_modules` to allow for nested plugins
-       // This might be a security risk without requiring explicit sourcing
-
       pathsToTry.forEach((pluginPath) => {
         let pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
         try {

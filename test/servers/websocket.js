@@ -18,7 +18,6 @@ let url
 
 const connectClients = async () => {
   // get actionheroClient in scope
-  // TODO: Perhaps we read this from disk after server boot.
   const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
 
   let S = api.servers.servers.websocket.server.Socket
@@ -377,7 +376,6 @@ describe('Server: Web Socket', () => {
           expect(messagesReceived).to.equal(3)
         })
 
-// TODO: test polution
         it('only one message should be received per connection', async () => {
           let firstSayCall = true
           api.chatRoom.addMiddleware({
