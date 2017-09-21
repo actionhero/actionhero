@@ -3,7 +3,17 @@
 const fs = require('fs')
 const ActionHero = require('./../index.js')
 
+/**
+ * @class Cache
+ * @extends ActionHero.Initializer
+ * @classdesc
+ * Redis cache connectivity and support methods.
+ */
 module.exports = class Cache extends ActionHero.Initializer {
+  /**
+   * @constructor
+   * @memberOf Cache
+   */
   constructor () {
     super()
     this.name = 'cache'
@@ -126,6 +136,15 @@ module.exports = class Cache extends ActionHero.Initializer {
       return response
     }
 
+    /**
+     * Save a value to the cache. Performs a lock-checking operation to prevent simultaneous writes to the same key.
+     * 
+     * @param {string} key - Cache key to set. Will be prefixed automatically by `api.config.general.cachePrefix`.
+     * @param {*} value - The value to set
+     * @param {Number} [expireTimeMS] - Optional. If provided, the stored key will be set to expire after this interval.
+     * @returns {Promise<boolean>}
+     * @memberOf Cache
+     */
     api.cache.save = async (key, value, expireTimeMS) => {
       let expireTimeSeconds = null
       let expireTimestamp = null
