@@ -56,13 +56,14 @@ const handleGenerate = async () => {
 
   // reload utils, as they won't have been loaded yet
   try {
-    let utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
+    const UtilsClass = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
+    const utils = new UtilsClass()
     await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
     const RunnerClass = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
     const runner = new RunnerClass()
-    let params = formatParams(api, runner)
+    const params = formatParams(api, runner)
     await runner.run(api, {params: params})
     setTimeout(process.exit, 500, 0)
   } catch (error) {
@@ -73,7 +74,7 @@ const handleGenerate = async () => {
 
 const handleMethod = async () => {
   try {
-    let actionHeroProcess = new ActionHero.Process()
+    const actionHeroProcess = new ActionHero.Process()
     let api = await actionHeroProcess.initialize()
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }

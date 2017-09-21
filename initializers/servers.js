@@ -78,6 +78,7 @@ module.exports = class Servers extends ActionHero.Initializer {
       if ((server && server.config.enabled === true) || !server) {
         api.log(`Stopping server: ${serverName}`, 'notice')
         await server.stop()
+        server.removeAllListeners()
         api.log(`Server stopped: ${serverName}`, 'debug')
       }
     }

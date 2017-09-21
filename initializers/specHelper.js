@@ -33,7 +33,8 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         }
       }
 
-      start () {
+      start (api) {
+        this.api = api
         api.log('loading the testServer', 'warning')
         this.on('connection', (connection) => { this.handleConnection(connection) })
         this.on('actionComplete', (data) => { this.actionComplete(data) })
@@ -84,21 +85,23 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
 
       async actionComplete (data) {
+        const api = this.api
+
         if (typeof data.response === 'string' || Array.isArray(data.response)) {
           if (data.response.error) {
-            data.response = await this.api.config.errors.serializers.servers.specHelper(data.response.error)
+            data.response = await api.config.errors.serializers.servers.specHelper(data.response.error)
           }
         } else {
           if (data.response.error) {
-            data.response.error = await this.api.config.errors.serializers.servers.specHelper(data.response.error)
+            data.response.error = await api.config.errors.serializers.servers.specHelper(data.response.error)
           }
 
-          if (this.api.specHelper.returnMetadata) {
+          if (api.specHelper.returnMetadata) {
             data.response.messageCount = data.messageCount
 
             data.response.serverInformation = {
-              serverName: this.api.config.general.serverName,
-              apiVersion: this.api.config.general.apiVersion
+              serverName: api.config.general.serverName,
+              apiVersion: api.config.general.apiVersion
             }
 
             data.response.requesterInformation = {
@@ -197,7 +200,6 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     if (!this.enabled) { return }
 
     let server = new api.specHelper.Server()
-    server.api = api
     server.config = { enabled: true }
     await server.start(api)
     api.servers.servers.testServer = server

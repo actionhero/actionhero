@@ -194,12 +194,12 @@ describe('Core: CLI', () => {
     it('can generate an initializer', async () => {
       await doCommand(`${binary} generate initializer --name=myInitializer --stopPriority=123`)
       let data = String(fs.readFileSync(`${testDir}/initializers/myInitializer.js`))
-      expect(data).to.match(/loadPriority: 1000/)
-      expect(data).to.match(/startPriority: 1000/)
-      expect(data).to.match(/stopPriority: 123/)
-      expect(data).to.match(/initialize: async function \(api\)/)
-      expect(data).to.match(/start: async function \(api\)/)
-      expect(data).to.match(/stop: async function \(api\)/)
+      expect(data).to.match(/this.loadPriority = 1000/)
+      expect(data).to.match(/this.startPriority = 1000/)
+      expect(data).to.match(/this.stopPriority = 123/)
+      expect(data).to.match(/async initialize \(api\) {/)
+      expect(data).to.match(/async start \(api\) {/)
+      expect(data).to.match(/async stop \(api\) {/)
     })
 
     it('can call npm test in the new project and not fail', async () => {
