@@ -2,21 +2,25 @@
 
 const fs = require('fs')
 const cluster = require('cluster')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 1,
-  loadPriority: 50,
-  initialize: function (api) {
+module.exports = class Pids extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'pids'
+    this.loadPriority = 50
+    this.startPriority = 1
+  }
+
+  initialize (api) {
     api.pids = {}
     api.pids.pid = process.pid
     api.pids.path = api.config.general.paths.pid[0] // it would be silly to have more than one pid
 
     api.pids.sanitizeId = function () {
-      let pidfile = api.id
+      let pidfile = String(api.id).trim()
       pidfile = pidfile.replace(new RegExp(':', 'g'), '-')
       pidfile = pidfile.replace(new RegExp(' ', 'g'), '_')
-      pidfile = pidfile.replace(new RegExp('\r', 'g'), '') // eslint-disable-line
-      pidfile = pidfile.replace(new RegExp('\n', 'g'), '') // eslint-disable-line
 
       return pidfile
     }
@@ -40,9 +44,9 @@ module.exports = {
         api.log('Unable to remove pidfile', 'error', error)
       }
     }
-  },
+  }
 
-  start: function (api, next) {
+  start (api) {
     api.pids.writePidFile()
     api.log(`pid: ${process.pid}`, 'notice')
   }

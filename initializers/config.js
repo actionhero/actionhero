@@ -3,12 +3,16 @@
 const fs = require('fs')
 const path = require('path')
 const argv = require('optimist').argv
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  loadPriority: 0,
-  initialize: async function (api) {
-    // api.env
+module.exports = class Config extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'config'
+    this.loadPriority = 1
+  }
 
+  async initialize (api) {
     if (api._startingParams && api._startingParams.api) {
       api.utils.hashMerge(api, api._startingParams.api)
     }
@@ -24,8 +28,7 @@ module.exports = {
     // reloading in development mode
 
     api.watchedFiles = []
-
-    api.watchFileAndAct = function (file, handler) {
+    api.watchFileAndAct = (file, handler) => {
       file = path.normalize(file)
 
       if (!fs.existsSync(file)) {
@@ -40,18 +43,16 @@ module.exports = {
             api.config.general.developmentMode === true &&
             curr.mtime > prev.mtime
           ) {
-            process.nextTick(() => {
-              let cleanPath = file
-              if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
-              delete require.cache[require.resolve(cleanPath)]
-              handler(file)
-            })
+            let cleanPath = file
+            if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
+            delete require.cache[require.resolve(cleanPath)]
+            handler(file)
           }
         })
       }
     }
 
-    api.unWatchAllFiles = function () {
+    api.unWatchAllFiles = () => {
       for (let i in api.watchedFiles) {
         fs.unwatchFile(api.watchedFiles[i])
       }
@@ -87,7 +88,9 @@ module.exports = {
       }
     }
 
-    [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => { addConfigPath(entry, false) })
+    [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => {
+      addConfigPath(entry, false)
+    })
 
     if (configPaths.length < 1) {
       addConfigPath('config', false)
@@ -103,7 +106,7 @@ module.exports = {
       api.commands.restart()
     }
 
-    api.loadConfigDirectory = function (configPath, watch) {
+    api.loadConfigDirectory = (configPath, watch) => {
       const configFiles = api.utils.recursiveDirectoryGlob(configPath)
 
       let loadRetries = 0
@@ -167,10 +170,9 @@ module.exports = {
     if (api._startingParams && api._startingParams.configChanges) {
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges)
     }
-  },
-
-  start: function (api) {
-    api.log(`environment: ${api.env}`, 'notice')
   }
 
+  start (api) {
+    api.log(`environment: ${api.env}`, 'notice')
+  }
 }

@@ -1,11 +1,17 @@
 'use strict'
 
 const NodeResque = require('node-resque')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 900,
-  loadPriority: 699,
-  initialize: (api) => {
+module.exports = class Tasks extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'tasks'
+    this.loadPriority = 699
+    this.startPriority = 900
+  }
+
+  initialize (api) {
     api.tasks = {
       tasks: {},
       jobs: {},
@@ -249,9 +255,9 @@ module.exports = {
     }
 
     api.tasks.loadTasks(false)
-  },
+  }
 
-  start: async (api) => {
+  async start (api) {
     if (api.config.redis.enabled === false) { return }
 
     if (api.config.tasks.scheduler === true) {

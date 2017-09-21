@@ -1,14 +1,21 @@
 'use strict'
 
-module.exports = {
-  loadPriority: 410,
-  initialize: async (api) => {
-    api.actions = {}
-    api.actions.actions = {}
-    api.actions.versions = {}
+const ActionHero = require('./../index.js')
 
-    api.actions.middleware = {}
-    api.actions.globalMiddleware = []
+module.exports = class Actions extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'actions'
+    this.loadPriority = 410
+  }
+
+  async initialize (api) {
+    api.actions = {
+      actions: {},
+      versions: {},
+      middleware: {},
+      globalMiddleware: []
+    }
 
     api.actions.addMiddleware = (data) => {
       if (!data.name) { throw new Error('middleware.name is required') }
@@ -57,7 +64,7 @@ module.exports = {
         try {
           api.exceptionHandlers.loader(fullFilePath, error)
           delete api.actions.actions[action.name][action.version]
-        } catch (err2) {
+        } catch (_error) {
           throw error
         }
       }

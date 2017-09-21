@@ -56,12 +56,13 @@ module.exports = class Process {
       path.resolve(__dirname, '..', 'initializers', 'utils.js'),
       path.resolve(__dirname, '..', 'initializers', 'config.js')
     ].forEach(async (file) => {
-      let filename = file.replace(/^.*[\\/]/, '')
-      let initializer = filename.split('.')[0]
       delete require.cache[require.resolve(file)]
-      this.initializers[initializer] = require(file)
+      const InitializerClass = require(file)
+      const initializer = new InitializerClass()
       try {
-        await this.initializers[initializer].initialize(api)
+        initializer.validate()
+        await initializer.initialize(api)
+        this.initializers[initializer.name] = initializer
       } catch (error) {
         this.fatalError(api, error, initializer)
       }
@@ -72,48 +73,48 @@ module.exports = class Process {
     })
 
     // load all other initializers
-    let initializers = api.utils.arrayUniqueify(
+    let initializerFiles = api.utils.arrayUniqueify(
       api.utils.recursiveDirectoryGlob(path.join(__dirname, '..', 'initializers')).sort().concat(customInitializers.sort())
     )
 
-    initializers.forEach((f) => {
+    initializerFiles.forEach((f) => {
       let file = path.normalize(f)
-      let baseName = path.basename(f).split('.')[0]
       let fileParts = file.split('.')
       let ext = fileParts[(fileParts.length - 1)]
-
       if (ext !== 'js') { return }
 
-      let initializer = this.initializers[baseName]
+      delete require.cache[require.resolve(file)]
+      const InitializerClass = require(file)
+      const initializer = new InitializerClass()
 
       // check if initializer already exists (exclude utils and config)
       if (
-        initializer &&
+        this.initializers[initializer.name] &&
         file !== path.resolve(__dirname, '..', 'initializers', 'utils.js') &&
         file !== path.resolve(__dirname, '..', 'initializers', 'config.js')
       ) {
-        duplicatedInitializers.push(file)
+        return duplicatedInitializers.push(file)
       } else {
-        delete require.cache[require.resolve(file)]
-        initializer = require(file)
+        initializer.validate()
+        this.initializers[initializer.name] = initializer
       }
 
-      let loadFunction = async () => {
+      let initializeFunction = async () => {
         api.watchFileAndAct(file, async () => {
           api.log(`*** Rebooting due to initializer change (${file}) ***`, 'info')
           await api.commands.restart()
         })
 
         if (typeof initializer.initialize === 'function') {
-          if (typeof api.log === 'function') { api.log(`Loading initializer: ${baseName}`, 'debug', file) }
+          if (typeof api.log === 'function') { api.log(`Loading initializer: ${initializer.name}`, 'debug', file) }
           try {
             await initializer.initialize(api)
-            try { api.log(`Loaded initializer: ${baseName}`, 'debug', file) } catch (e) { }
+            try { api.log(`Loaded initializer: ${initializer.name}`, 'debug', file) } catch (e) { }
           } catch (error) {
-            let message = `Exception occured in initializer \`${baseName}\` during load`
+            let message = `Exception occured in initializer \`${initializer.name}\` during load`
             try {
               api.log(message, 'warning', error.toString())
-            } catch (error) {
+            } catch (_error) {
               console.error(message)
             }
             throw error
@@ -123,12 +124,12 @@ module.exports = class Process {
 
       let startFunction = async () => {
         if (typeof initializer.start === 'function') {
-          if (typeof api.log === 'function') { api.log(`Starting initializer: ${baseName}`, 'debug', file) }
+          if (typeof api.log === 'function') { api.log(`Starting initializer: ${initializer.name}`, 'debug', file) }
           try {
             await initializer.start(api)
-            api.log(`Started initializer: ${baseName}`, 'debug', file)
+            api.log(`Started initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${baseName} during start`, 'warning', error.toString())
+            api.log(`Exception occured in initializer: ${initializer.name} during start`, 'warning', error.toString())
             throw error
           }
         }
@@ -136,30 +137,24 @@ module.exports = class Process {
 
       let stopFunction = async () => {
         if (typeof initializer.stop === 'function') {
-          if (typeof api.log === 'function') { api.log(`Stopping initializer: ${baseName}`, 'debug', file) }
+          if (typeof api.log === 'function') { api.log(`Stopping initializer: ${initializer.name}`, 'debug', file) }
           try {
             await initializer.stop(api)
-            api.log(`Stopped initializer: ${baseName}`, 'debug', file)
+            api.log(`Stopped initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${baseName} during stop`, 'warning', error.toString())
+            api.log(`Exception occured in initializer: ${initializer.name} during stop`, 'warning', error.toString())
             throw error
           }
         }
       }
 
-      if (initializer.loadPriority === undefined) { initializer.loadPriority = 1000 }
-      if (initializer.startPriority === undefined) { initializer.startPriority = 1000 }
-      if (initializer.stopPriority === undefined) { initializer.stopPriority = 1000 }
-
       if (loadInitializerRankings[initializer.loadPriority] === undefined) { loadInitializerRankings[initializer.loadPriority] = [] }
       if (startInitializerRankings[initializer.startPriority] === undefined) { startInitializerRankings[initializer.startPriority] = [] }
       if (stopInitializerRankings[initializer.stopPriority] === undefined) { stopInitializerRankings[initializer.stopPriority] = [] }
 
-      if (initializer.loadPriority > 0) { loadInitializerRankings[initializer.loadPriority].push(loadFunction) }
+      if (initializer.loadPriority > 0) { loadInitializerRankings[initializer.loadPriority].push(initializeFunction) }
       if (initializer.startPriority > 0) { startInitializerRankings[initializer.startPriority].push(startFunction) }
       if (initializer.stopPriority > 0) { stopInitializerRankings[initializer.stopPriority].push(stopFunction) }
-
-      this.initializers[baseName] = initializer // re-assign with changes
     })
 
     // flatten all the ordered initializer methods
@@ -220,7 +215,7 @@ module.exports = class Process {
       api.running = false
       api.initialized = false
 
-      api.log('Shutting down open servers and stopping task processing...', 'notice')
+      api.log('stopping process...', 'notice')
 
       this.stopInitializers.push(async () => {
         api.unWatchAllFiles()

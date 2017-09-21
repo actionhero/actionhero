@@ -1,20 +1,17 @@
 'use strict'
 
-const cleanConnection = (connection) => {
-  let clean = {}
-  for (let i in connection) {
-    if (i !== 'rawConnection') {
-      clean[i] = connection[i]
-    }
+const ActionHero = require('./../index.js')
+
+module.exports = class Connections extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'connections'
+    this.loadPriority = 400
   }
-  return clean
-}
 
-module.exports = {
-  loadPriority: 400,
-  initialize: function (api) {
+  initialize (api) {
     api.connections = {
-
+      connections: {},
       middleware: {},
       globalMiddleware: [],
 
@@ -34,8 +31,6 @@ module.exports = {
         'say'
       ],
 
-      connections: {},
-
       apply: async (connectionId, method, args) => {
         return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
       },
@@ -51,7 +46,7 @@ module.exports = {
             await connection[method].apply(connection, args)
           }
         }
-        return cleanConnection(connection)
+        return api.connections.cleanConnection(connection)
       },
 
       addMiddleware: (data) => {
@@ -68,6 +63,16 @@ module.exports = {
             return -1
           }
         })
+      },
+
+      cleanConnection: (connection) => {
+        let clean = {}
+        for (let i in connection) {
+          if (i !== 'rawConnection') {
+            clean[i] = connection[i]
+          }
+        }
+        return clean
       }
     }
   }
