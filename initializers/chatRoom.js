@@ -1,18 +1,25 @@
 'use strict'
 
-module.exports = {
-  startPriority: 200,
-  loadPriority: 520,
-  initialize: (api) => {
-    api.chatRoom = {}
-    api.chatRoom.keys = {
-      rooms: 'actionhero:chatRoom:rooms',
-      members: 'actionhero:chatRoom:members:'
-    }
-    api.chatRoom.messageChannel = '/actionhero/chat/chat'
+const ActionHero = require('./../index.js')
 
-    api.chatRoom.middleware = {}
-    api.chatRoom.globalMiddleware = []
+module.exports = class ChatRoom extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'chatRoom'
+    this.loadPriority = 520
+    this.startPriority = 200
+  }
+
+  initialize (api) {
+    api.chatRoom = {
+      middleware: {},
+      globalMiddleware: [],
+      messageChannel: '/actionhero/chat/chat',
+      keys: {
+        rooms: 'actionhero:chatRoom:rooms',
+        members: 'actionhero:chatRoom:members:'
+      }
+    }
 
     api.chatRoom.addMiddleware = (data) => {
       if (!data.name) { throw new Error('middleware.name is required') }
@@ -81,6 +88,7 @@ module.exports = {
       const messagePayload = api.chatRoom.generateMessagePayload(message)
       Object.keys(api.connections.connections).forEach((connetionId) => {
         let connection = api.connections.connections[connetionId]
+        // we can parallize this, no need to await
         api.chatRoom.incomingMessagePerConnection(connection, messagePayload)
       })
     }
@@ -180,51 +188,51 @@ module.exports = {
 
     api.chatRoom.addMember = async (connectionId, room) => {
       let connection = api.connections.connections[connectionId]
-      if (connection) {
-        if (connection.rooms.indexOf(room) < 0) {
-          let found = await api.chatRoom.exists(room)
-          if (found === true) {
-            let response = await api.chatRoom.runMiddleware(connection, room, 'join')
-            if (response instanceof Error) { throw response }
-
-            let memberDetails = api.chatRoom.generateMemberDetails(connection)
-            await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
-            connection.rooms.push(room)
-            return true
-          } else {
-            throw new Error(await api.config.errors.connectionRoomNotExist(room))
-          }
-        } else {
-          throw new Error(await api.config.errors.connectionAlreadyInRoom(connection, room))
-        }
-      } else {
+      if (!connection) {
         return api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, true)
       }
+
+      if (connection.rooms.indexOf(room) >= 0) {
+        throw new Error(await api.config.errors.connectionAlreadyInRoom(connection, room))
+      }
+
+      let found = await api.chatRoom.exists(room)
+      if (!found) {
+        throw new Error(await api.config.errors.connectionRoomNotExist(room))
+      }
+
+      let response = await api.chatRoom.runMiddleware(connection, room, 'join')
+      if (response instanceof Error) { throw response }
+
+      let memberDetails = api.chatRoom.generateMemberDetails(connection)
+      await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
+      connection.rooms.push(room)
+      return true
     }
 
     api.chatRoom.removeMember = async (connectionId, room, toWaitRemote) => {
       if (toWaitRemote === undefined || toWaitRemote === null) { toWaitRemote = true }
       let connection = api.connections.connections[connectionId]
-      if (connection) {
-        if (connection.rooms.indexOf(room) > -1) {
-          let found = await api.chatRoom.exists(room)
-          if (found) {
-            let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
-            if (response instanceof Error) { throw response }
-
-            await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
-            let index = connection.rooms.indexOf(room)
-            if (index > -1) { connection.rooms.splice(index, 1) }
-            return true
-          } else {
-            throw new Error(await api.config.errors.connectionRoomNotExist(room))
-          }
-        } else {
-          throw new Error(await api.config.errors.connectionNotInRoom(connection, room))
-        }
-      } else {
+      if (!connection) {
         return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, toWaitRemote)
       }
+
+      if (connection.rooms.indexOf(room) < 0) {
+        throw new Error(await api.config.errors.connectionNotInRoom(connection, room))
+      }
+
+      let found = await api.chatRoom.exists(room)
+      if (!found) {
+        throw new Error(await api.config.errors.connectionRoomNotExist(room))
+      }
+
+      let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
+      if (response instanceof Error) { throw response }
+
+      await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
+      let index = connection.rooms.indexOf(room)
+      if (index > -1) { connection.rooms.splice(index, 1) }
+      return true
     }
 
     api.chatRoom.runMiddleware = async (connection, room, direction, messagePayload) => {
@@ -251,9 +259,9 @@ module.exports = {
       if (toReturn !== true) { return toReturn }
       return newMessagePayload
     }
-  },
+  }
 
-  start: async (api) => {
+  async start (api) {
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) { api.chatRoom.incomingMessage(message) }
     }

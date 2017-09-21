@@ -107,9 +107,10 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   handleConnection (rawConnection) {
+    const api = this.api
     if (this.config.setKeepAlive === true) { rawConnection.setKeepAlive(true) }
     rawConnection.socketDataString = ''
-    this.buildConnection({
+    this.buildConnection(api, {
       rawConnection: rawConnection,
       remoteAddress: rawConnection.remoteAddress,
       remotePort: rawConnection.remotePort
@@ -175,6 +176,7 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async parseRequest (connection, line) {
+    const api = this.api
     let words = line.split(' ')
     let verb = words.shift()
 
@@ -205,7 +207,7 @@ module.exports = class SocketServer extends ActionHero.Server {
         }
         connection.error = null
         connection.response = {}
-        return this.processAction(connection)
+        return this.processAction(api, connection)
       } else {
         return this.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
       }

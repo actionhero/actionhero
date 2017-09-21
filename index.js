@@ -1,8 +1,14 @@
-const path = require('path')
+const path = require('path');
 
-exports.Process = require(path.join(__dirname, 'classes', 'process.js'))
-exports.Action = require(path.join(__dirname, 'classes', 'action.js'))
-exports.Task = require(path.join(__dirname, 'classes', 'task.js'))
-// exports.Initializer = require(path.join(__dirname, 'classes', 'initializer.js'))
-exports.Server = require(path.join(__dirname, 'classes', 'server.js'))
-exports.CLI = require(path.join(__dirname, 'classes', 'cli.js'))
+[
+  { klass: 'Process', file: 'process.js' },
+  { klass: 'Action', file: 'action.js' },
+  { klass: 'Task', file: 'task.js' },
+  { klass: 'Initializer', file: 'initializer.js' },
+  { klass: 'Server', file: 'server.js' },
+  { klass: 'CLI', file: 'cli.js' },
+  { klass: 'ActionProcessor', file: 'actionProcessor.js' },
+  { klass: 'Connection', file: 'connection.js' }
+].forEach(({klass, file}) => {
+  exports[klass] = require(path.join(__dirname, 'classes', file))
+})

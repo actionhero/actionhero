@@ -27,7 +27,9 @@ module.exports = class MyServer extends ActionHero.Server {
   }
 
   start (api) {
-
+    // this.buildConnection (api, data)
+    // this.processAction (api, connection)
+    // this.processFile (connection)
   }
 
   stop (api) {

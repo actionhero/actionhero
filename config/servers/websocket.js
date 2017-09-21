@@ -4,7 +4,7 @@
 
 exports['default'] = {
   servers: {
-    websocket: function (api) {
+    websocket: (api) => {
       return {
         enabled: true,
         // you can pass a FQDN (string) here or 'window.location.origin'
@@ -55,7 +55,7 @@ exports['default'] = {
 
 exports['test'] = {
   servers: {
-    websocket: function (api) {
+    websocket: (api) => {
       return { clientUrl: null }
     }
   }

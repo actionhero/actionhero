@@ -5,7 +5,7 @@ const password = process.env.REDIS_PASSWORD || null
 const maxBackoff = 1000
 
 exports['default'] = {
-  redis: function (api) {
+  redis: (api) => {
     // konstructor: The redis client constructor method.  All redis methods must be promises
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?

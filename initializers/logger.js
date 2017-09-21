@@ -1,12 +1,19 @@
 'use strict'
 
 const winston = require('winston')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  loadPriority: 100,
-  initialize: (api) => {
+module.exports = class Logger extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'logger'
+    this.loadPriority = 100
+  }
+
+  initialize (api) {
     let transports = []
     let i
+
     for (i in api.config.logger.transports) {
       let t = api.config.logger.transports[i]
       if (typeof t === 'function') {

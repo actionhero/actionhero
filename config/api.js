@@ -3,7 +3,7 @@
 const path = require('path')
 
 exports['default'] = {
-  general: function (api) {
+  general: (api) => {
     const packageJSON = require(api.projectRoot + path.sep + 'package.json')
 
     return {
@@ -67,7 +67,7 @@ exports['default'] = {
 }
 
 exports.test = {
-  general: function (api) {
+  general: (api) => {
     return {
       id: 'test-server-' + process.pid,
       serverToken: 'serverToken-' + process.pid,
@@ -88,7 +88,7 @@ exports.test = {
 }
 
 exports.production = {
-  general: function (api) {
+  general: (api) => {
     return {
       fileRequestLogLevel: 'debug',
       developmentMode: false

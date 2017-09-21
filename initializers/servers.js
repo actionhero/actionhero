@@ -1,19 +1,24 @@
 'use strict'
 
 const path = require('path')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 900,
-  stopPriority: 100,
-  loadPriority: 599,
-  initialize: async (api) => {
-    api.servers = {}
-    api.servers.servers = {}
+module.exports = class Servers extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'servers'
+    this.loadPriority = 599
+    this.startPriority = 900
+    this.stopPriority = 100
+  }
 
-    // Load the servers
+  async initialize (api) {
+    api.servers = {
+      servers: {}
+    }
 
     let serverFolders = [
-      path.resolve(path.join(__dirname, '/../servers'))
+      path.resolve(path.join(__dirname, '..', 'servers'))
     ]
 
     api.config.general.paths.server.forEach((p) => {
@@ -41,9 +46,9 @@ module.exports = {
         })
       }
     }
-  },
+  }
 
-  start: async (api) => {
+  async start (api) {
     const serverNames = Object.keys(api.servers.servers)
     for (let i in serverNames) {
       let serverName = serverNames[i]
@@ -62,16 +67,17 @@ module.exports = {
         api.log(`Server started: ${serverName}`, 'debug')
       }
     }
-  },
+  }
 
-  stop: async (api) => {
+  async stop (api) {
     const serverNames = Object.keys(api.servers.servers)
     for (let i in serverNames) {
       let serverName = serverNames[i]
       let server = api.servers.servers[serverName]
       if ((server && server.config.enabled === true) || !server) {
         api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop(api)
+        await server.stop()
+        server.removeAllListeners()
         api.log(`Server stopped: ${serverName}`, 'debug')
       }
     }

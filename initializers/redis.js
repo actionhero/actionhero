@@ -1,16 +1,21 @@
 'use strict'
 
 const uuid = require('uuid')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 101,
-  stopPriority: 99999,
-  loadPriority: 200,
-  initialize: async function (api) {
+module.exports = class Redis extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'redis'
+    this.loadPriority = 200
+    this.startPriority = 101
+    this.stopPriority = 99999
+  }
+
+  async initialize (api) {
+    if (api.config.redis.enabled === false) { return }
+
     api.redis = {}
-
-    if (api.config.redis === false) { return }
-
     api.redis.clients = {}
     api.redis.subscriptionHandlers = {}
     api.redis.rpcCallbacks = {}
@@ -18,45 +23,10 @@ module.exports = {
       subscribed: false
     }
 
-    api.redis.initialize = async () => {
-      ['client', 'subscriber', 'tasks'].forEach(async (r) => {
-        if (api.config.redis[r].buildNew === true) {
-          const args = api.config.redis[r].args
-          api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
-          api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
-          api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
-        } else {
-          api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
-          api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
-          api.log(`Redis connection \`${r}\` connected`, 'debug')
-        }
-
-        await api.redis.clients[r].get('_test')
-      })
-
-      if (!api.redis.status.subscribed) {
-        await api.redis.clients.subscriber.subscribe(api.config.general.channel)
-        api.redis.status.subscribed = true
-
-        const messageHandler = async (messageChannel, message) => {
-          try { message = JSON.parse(message) } catch (e) { message = {} }
-          if (messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken) {
-            if (api.redis.subscriptionHandlers[message.messageType]) {
-              await api.redis.subscriptionHandlers[message.messageType](message)
-            }
-          }
-        }
-
-        api.redis.clients.subscriber.on('message', messageHandler)
-      }
-    }
-
     api.redis.publish = async (payload) => {
       const channel = api.config.general.channel
       return api.redis.clients.client.publish(channel, JSON.stringify(payload))
     }
-
-    // Subsciption Handlers
 
     api.redis.subscriptionHandlers['do'] = async (message) => {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
@@ -84,8 +54,6 @@ module.exports = {
         delete api.redis.rpcCallbacks[message.requestId]
       }
     }
-
-    // RPC
 
     api.redis.doCluster = async (method, args, connectionId, waitForRespons) => {
       if (waitForRespons === undefined || waitForRespons === null) { waitForRespons = false }
@@ -124,20 +92,49 @@ module.exports = {
       await api.redis.publish(payload)
     }
 
-    // Boot
-    if (api.config.redis.enabled === false) { return }
-    await api.redis.initialize()
-  },
+    const connectionNames = ['client', 'subscriber', 'tasks']
+    for (var i in connectionNames) {
+      let r = connectionNames[i]
+      if (api.config.redis[r].buildNew === true) {
+        const args = api.config.redis[r].args
+        api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
+        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+        api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
+      } else {
+        api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
+        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+        api.log(`Redis connection \`${r}\` connected`, 'debug')
+      }
 
-  start: async (api) => {
+      await api.redis.clients[r].get('_test')
+    }
+
+    if (!api.redis.status.subscribed) {
+      await api.redis.clients.subscriber.subscribe(api.config.general.channel)
+      api.redis.status.subscribed = true
+
+      const messageHandler = async (messageChannel, message) => {
+        try { message = JSON.parse(message) } catch (e) { message = {} }
+        if (messageChannel === api.config.general.channel && message.serverToken === api.config.general.serverToken) {
+          if (api.redis.subscriptionHandlers[message.messageType]) {
+            await api.redis.subscriptionHandlers[message.messageType](message)
+          }
+        }
+      }
+
+      api.redis.clients.subscriber.on('message', messageHandler)
+    }
+  }
+
+  async start (api) {
     if (api.config.redis.enabled === false) {
       api.log('redis is disabled', 'notice')
     } else {
-      api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`])
+      await api.redis.doCluster('api.log', [`actionhero member ${api.id} has joined the cluster`])
     }
-  },
+  }
 
-  stop: async (api) => {
+  async stop (api) {
     if (api.config.redis.enabled === false) { return }
 
     api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])

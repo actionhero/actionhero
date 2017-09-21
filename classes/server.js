@@ -1,4 +1,5 @@
 const EventEmitter = require('events').EventEmitter
+const ActionHero = require('./../index.js')
 
 // 2 events: connection and actionComplete
 module.exports = class Server extends EventEmitter {
@@ -36,13 +37,13 @@ module.exports = class Server extends EventEmitter {
       'sendMessage', // connection, message
       'goodbye'
     ].forEach((method) => {
-      if (!this[method] && typeof this[method] !== 'function') {
+      if (!this[method] || typeof this[method] !== 'function') {
         throw new Error(`${method} is a required method for the server \`${this.name}\``)
       }
     })
   }
 
-  buildConnection (data) {
+  buildConnection (api, data) {
     const details = {
       type: this.type,
       id: data.id,
@@ -54,7 +55,7 @@ module.exports = class Server extends EventEmitter {
     if (this.attributes.canChat === true) { details.canChat = true }
     if (data.fingerprint) { details.fingerprint = data.fingerprint }
 
-    let connection = new this.api.Connection(details)
+    let connection = new ActionHero.Connection(api, details)
 
     connection.sendMessage = (message) => {
       this.sendMessage(connection, message)
@@ -86,8 +87,8 @@ module.exports = class Server extends EventEmitter {
     }
   }
 
-  async processAction (connection) {
-    const actionProcessor = new this.api.ActionProcessor(connection)
+  async processAction (api, connection) {
+    const actionProcessor = new ActionHero.ActionProcessor(api, connection)
     let data = await actionProcessor.processAction()
     this.emit('actionComplete', data)
   }

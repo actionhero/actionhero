@@ -1,19 +1,26 @@
 'use strict'
 
 const fs = require('fs')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 300,
-  loadPriority: 300,
-  initialize: (api) => {
-    api.cache = {}
-    api.cache.redisPrefix = api.config.general.cachePrefix
-    api.cache.lockPrefix = api.config.general.lockPrefix
-    api.cache.lockDuration = api.config.general.lockDuration
-    api.cache.lockName = api.id
-    api.cache.lockRetry = 100
+module.exports = class Cache extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'cache'
+    this.loadPriority = 300
+    this.startPriority = 300
+  }
 
+  initialize (api) {
     const redis = api.redis.clients.client
+
+    api.cache = {
+      redisPrefix: api.config.general.cachePrefix,
+      lockPrefix: api.config.general.lockPrefix,
+      lockDuration: api.config.general.lockDuration,
+      lockName: api.id,
+      lockRetry: 100
+    }
 
     api.cache.keys = async () => {
       return redis.keys(api.cache.redisPrefix + '*')

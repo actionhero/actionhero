@@ -1,12 +1,18 @@
 'use strict'
 
 const NodeResque = require('node-resque')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  startPriority: 200,
-  stopPriority: 100,
-  loadPriority: 600,
-  initialize: function (api) {
+module.exports = class Resque extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'resque'
+    this.loadPriority = 600
+    this.startPriority = 200
+    this.stopPriority = 100
+  }
+
+  initialize (api) {
     if (api.config.redis === false) { return }
 
     const resqueOverrides = api.config.tasks.resque_overrides
@@ -122,9 +128,9 @@ module.exports = {
         }
       }
     }
-  },
+  }
 
-  start: async (api) => {
+  async start (api) {
     if (api.config.redis.enabled === false) { return }
 
     if (api.config.tasks.minTaskProcessors === 0 && api.config.tasks.maxTaskProcessors > 0) {
@@ -134,9 +140,9 @@ module.exports = {
     await api.resque.startQueue()
     await api.resque.startScheduler()
     await api.resque.startMultiWorker()
-  },
+  }
 
-  stop: async (api) => {
+  async stop (api) {
     if (api.config.redis.enabled === false) { return }
 
     await api.resque.stopScheduler()

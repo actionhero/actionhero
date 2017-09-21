@@ -4,7 +4,7 @@ const fs = require('fs')
 const cluster = require('cluster')
 
 exports['default'] = {
-  logger: function (api) {
+  logger: (api) => {
     let logger = {transports: []}
 
     // console logger
@@ -52,7 +52,7 @@ exports['default'] = {
 }
 
 exports.test = {
-  logger: function (api) {
+  logger: (api) => {
     return {
       transports: null
     }

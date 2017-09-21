@@ -4,7 +4,7 @@ const os = require('os')
 
 exports['default'] = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         enabled: true,
         // HTTP or HTTPS?
@@ -92,7 +92,7 @@ exports['default'] = {
 
 exports.production = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         padding: null,
         metadataOptions: {
@@ -106,7 +106,7 @@ exports.production = {
 
 exports.test = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         secure: false,
         port: process.env.PORT || 1000 + (process.pid % 64535),
