@@ -1,6 +1,6 @@
 # ActionHero
 
-## The Reusable, Scalable, and Quick node.js API Server
+## The reusable, scalable, and quick node.js API server for stateless and stateful applications
 
 <p align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
@@ -22,7 +22,7 @@
 
 
 ## Who is the ActionHero?
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs.  Clients connected to an actionhero server can [**consume the api**](https://www.actionherojs.com/docs/core/actions), [**consume static content**](https://www.actionherojs.com/docs/core/file-server), and [**communicate with each other**](https://www.actionherojs.com/docs/core/chat).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
+ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://www.actionherojs.com/docs/core/actions), [**consume static content**](https://www.actionherojs.com/docs/core/file-server), and [**communicate with each other**](https://www.actionherojs.com/docs/core/chat).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.
 
 Currently actionhero supports the following out of the box...
 
