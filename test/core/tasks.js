@@ -127,6 +127,24 @@ describe('Core: Tasks', () => {
     }
   })
 
+  it('tasks can have a number or a method which returns a number as frequency', async () => {
+    class FreqFuncTask extends ActionHero.Task {
+      constructor () {
+        super()
+        this.name = 'freqFuncTask'
+        this.description = 'freqFuncTask'
+        this.queue = queue
+      }
+      frequency () { return 1 + 2 + 3 }
+      run (api, params) { return 'yay' }
+    }
+
+    let task = new FreqFuncTask()
+    task.validate() // should not throw
+    expect(task.name).to.equal('freqFuncTask')
+    expect(task.frequency).to.equal(6)
+  })
+
   it('will clear crashed workers when booting') // TODO
 
   it('setup worked', () => {
