@@ -7,9 +7,9 @@ const path = require('path');
  */
 
 /**
- * The ActionHero modeule.
+ * The ActionHero module.
  *
- * @module ActionHero
+ * @class ActionHero
  */
 
 [
