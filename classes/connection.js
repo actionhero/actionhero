@@ -179,11 +179,13 @@ module.exports = class Connection {
 
       if (verb === 'roomView') {
         room = words[0]
-        if (this.rooms.indexOf(room) > -1) {
+        if (this.rooms.indexOf(room) >= 0) {
           return api.chatRoom.roomStatus(room)
         }
 
-        throw new Error('not member of room ' + room)
+        let error = new Error(await api.config.errors.connectionNotInRoom(this, room))
+        error.verb = verb
+        throw error
       }
 
       if (verb === 'detailsView') {
@@ -210,9 +212,13 @@ module.exports = class Connection {
         return
       }
 
-      throw new Error(await api.config.errors.verbNotFound(this, verb))
+      let error = new Error(await api.config.errors.verbNotFound(this, verb))
+      error.verb = verb
+      throw error
     } else {
-      throw new Error(await api.config.errors.verbNotAllowed(this, verb))
+      let error = new Error(await api.config.errors.verbNotAllowed(this, verb))
+      error.verb = verb
+      throw error
     }
   }
 }
