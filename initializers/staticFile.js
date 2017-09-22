@@ -79,7 +79,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
 
       try {
         let stats = await asyncStats(file)
-        let mime = Mime.lookup(file)
+        let mime = Mime.getType(file)
         let length = stats.size
         let start = new Date().getTime()
         lastModified = stats.mtime
