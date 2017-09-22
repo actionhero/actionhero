@@ -1,0 +1,17 @@
+{
+  "source": {
+    "include": [
+      "index.js",
+      "initializers/",
+      "classes/",
+      "bin/",
+      "config/"
+    ],
+    "exclude": [ "test" ],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "destination": "./docs/"
+  }
+}

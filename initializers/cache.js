@@ -3,7 +3,13 @@
 const fs = require('fs')
 const ActionHero = require('./../index.js')
 
-module.exports = class Cache extends ActionHero.Initializer {
+/**
+ * Redis cache connectivity and support methods.
+ *
+ * @namespace api.cache
+ * @extends ActionHero.Initializer
+ */
+class Cache extends ActionHero.Initializer {
   constructor () {
     super()
     this.name = 'cache'
@@ -22,14 +28,32 @@ module.exports = class Cache extends ActionHero.Initializer {
       lockRetry: 100
     }
 
+    /**
+     * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<array>} Promise resolves an Array of keys
+     */
     api.cache.keys = async () => {
       return redis.keys(api.cache.redisPrefix + '*')
     }
 
+    /**
+     * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
+     *
+     * @async
+     * @return {Promise<array>} Promise resolves an Array of keys
+     */
     api.cache.locks = async () => {
       return redis.keys(api.cache.lockPrefix + '*')
     }
 
+    /**
+     * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<number>} Promise reslves in interger (length)
+     */
     api.cache.size = async () => {
       let keys = await api.cache.keys()
       let length = 0
@@ -37,6 +61,12 @@ module.exports = class Cache extends ActionHero.Initializer {
       return length
     }
 
+    /**
+     * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<boolean>} will return true if successful.
+     */
     api.cache.clear = async () => {
       let keys = await api.cache.keys()
       let jobs = []
@@ -45,6 +75,14 @@ module.exports = class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * Write the current concents of redis (only the keys in ActionHero's namespace) to a file.
+     *
+     * @async
+     * @param  {string}  file The file to save the cache to.
+     * @return {Promise<number>} The number of keys saved to disk.
+     * @see api.cache.dumpRead
+     */
     api.cache.dumpWrite = async (file) => {
       let data = {}
       let jobs = []
@@ -60,6 +98,14 @@ module.exports = class Cache extends ActionHero.Initializer {
       return keys.length
     }
 
+    /**
+     * Load in contents for redis (and api.cache) saved to a file
+     * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
+     *
+     * @param  {string}  file The file to load into the cache.
+     * @return {Promise<number>} The number of keys loaded into redis.
+     * @see api.cache.dumpWrite
+     */
     api.cache.dumpRead = async (file) => {
       let jobs = []
       await api.cache.clear()
@@ -205,3 +251,5 @@ module.exports = class Cache extends ActionHero.Initializer {
     }
   }
 }
+
+module.exports = Cache

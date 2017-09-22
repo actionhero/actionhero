@@ -51,6 +51,7 @@
     "chai": "^4.1.2",
     "cross-env": "^5.0.5",
     "dirty-chai": "^2.0.0",
+    "jsdoc": "^3.5.5",
     "mocha": "^3.5.3",
     "request": "^2.82.0",
     "request-promise-native": "^1.0.4",
@@ -80,6 +81,8 @@
     "help": "node ./bin/actionhero help",
     "test": "cross-env NODE_ENV=test mocha",
     "pretest": "standard",
-    "start": "node ./bin/actionhero"
+    "posttest": "docs",
+    "start": "node ./bin/actionhero",
+    "docs": "jsdoc -c jsdoc-conf.json"
   }
 }
