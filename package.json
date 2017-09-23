@@ -81,7 +81,7 @@
     "help": "node ./bin/actionhero help",
     "test": "cross-env NODE_ENV=test mocha",
     "pretest": "standard",
-    "posttest": "docs",
+    "posttest": "npm run docs",
     "start": "node ./bin/actionhero",
     "docs": "jsdoc -c jsdoc-conf.json"
   }
