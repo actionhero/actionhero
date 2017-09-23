@@ -245,3 +245,121 @@ moneyInCents: {
 ```
 
 Formatters and Validators can also be named method names. For example, you might have an action like:
+
+```js
+exports.cacheTest = {
+  name: 'cacheTest',
+  description: 'I will test the internal cache functions of the API',
+  outputExample: {},
+
+  inputs: {
+    key: {
+      required: true,
+      formatter: [
+         function(s){ return String(s); },
+         'api.formatter.uniqueKeyName' // <----------- HERE
+      ]
+    },
+    value: {
+      required: true,
+      formatter: function(s){ return String(s); },
+      validator: function(s){
+        if(s.length < 3){ return '\`value\` should be at least 3 letters long'; }
+        else{ return true; }
+      }
+    },
+  },
+
+  run: function(api, data, next){
+    // ...
+  }
+};
+```
+
+You can define `api.formatter.uniqueKeyName` elsewhere in your project, like this initializer:
+
+```js
+module.exports = {
+  initialize: function(api, next){
+    api.formatter = {
+      uniqueKeyName: function(key){
+        return key + '-' + this.connection.id;
+      }
+    };
+
+    next();
+  },
+};
+```
+
+Example schema input:
+
+```js
+exports.addUser = {
+  name: 'api/addUser',
+  description: 'I add user',
+
+  firstName: { required: true },
+  lastName: { required: false },
+  username: { required: true },
+  address: {
+    required: false,
+    schema: {
+      country: {
+        required: true,
+        default: 'USA'
+      },
+      state: { required: false },
+      city: {
+        required: true,
+        formatter: (val) => \`City:\${val}\`,
+        validator: (val) => val.length > 10,
+      }
+    }
+  }
+  run: () => {},
+}
+```
+
+## The Data Object
+
+The `data` object passed into your action captures the state of the connection at the time the action was started.  Middleware preProcessors have already fired, and input formatting and validation has occurred.  Here are the properties of the `data` object.
+
+```js
+data = {
+  connection: connection,
+  action: 'randomNumber',
+  toProcess: true,
+  toRender: true,
+  messageCount: 123,
+  params: { action: 'randomNumber', apiVersion: 1 },
+  actionStartTime: 123,
+  response: {},
+}
+```
+
+The goal of most actions is to do work and then modify the value of `data.response`, which will eventually be sent down to the client.
+
+You can also modify properties of the connection by accessing `data.connection`, IE changing the response header for a HTTP request.
+
+If you don't want your action to respond to the client, or you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
+
+If you are certain that your action is only going to be handled by a web server, then a connivence function has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See <a href='/docs/core/servers#customizing-servers'>Servers: Customizing the Connection</a> for more details.</p>
+
+## Middleware
+
+You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, specified in each action via `action.middleware = []`.  Supply the `names` of any middleware you want to use.
+
+You can <a href='/docs/core/#middleware'>learn more about middleware here</a>.
+
+## Notes
+
+* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an error, be sure that it is a `new Error()` object, and not a string.
+* The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).
+* You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaneousActions`
+* `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that <a href='/docs/core/#middleware'>Middleware</a> preProcessors will always have access to all params pre-scrubbing.
+* `matchExtensionMimeType` is currently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
+* ActionHero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogeneous way.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `{`data.connection.rawConnection = {req: req, res: res}`}` for example.
+  * You can learn more about some of the `rawConnection` options by learning how to <a href='/docs/core/#file-server-sending-files-from-actions'>send files from actions</a>.
+
+<a href='/docs/servers/web#sending-files'>You can learn more about handling HTTP verbs and file uploads here</a> and <a href='/docs/servers/socket'>TCP Clients</a> and <a href='/docs/servers/websocket'>Web-Socket Clients</a>
