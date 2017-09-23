@@ -1,7 +1,6 @@
 module.exports = class Action {
   /**
-   * Create a new ActionHero Action
-   * The required properties of an action. These can be defined statically (this.name) or as methods which return a value
+   * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value
    *
    * @class ActionHero.Action
    *
@@ -15,6 +14,26 @@ module.exports = class Action {
    * @property {string}  logLevel               - Under what level should connections to this action be logged (default 'info')?
    * @property {boolean} matchExtensionMimeType - If this action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)?
    * @property {boolean} toDocument             - Should this action appear in api.documenation.documenation? (default: true)?
+   *
+   * @tutorial actions
+   * @example
+// A simple Action
+
+'use strict'
+const ActionHero = require('actionhero')
+
+module.exports = class MyAction extends ActionHero.Action {
+ constructor () {
+   super()
+   this.name = 'randomNumber'
+   this.description = 'I am an API method which will generate a random number'
+   this.outputExample = {randomNumber: 0.1234}
+ }
+
+ async run (api, data) {
+   data.response.randomNumber = Math.random()
+ }
+}
    */
   constructor () {
     let coreProperties = this.coreProperties()
