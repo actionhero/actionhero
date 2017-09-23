@@ -102,6 +102,7 @@ class Cache extends ActionHero.Initializer {
      * Load in contents for redis (and api.cache) saved to a file
      * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
      *
+     * @async
      * @param  {string}  file The file to load into the cache.
      * @return {Promise<number>} The number of keys loaded into redis.
      * @see api.cache.dumpWrite
@@ -132,6 +133,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Load an item from the cache.  Will throw an error if the item named by `key` cannot be found.
+     *
+     * @async
      * @param  {string}  key     The name of the item to load from the cache.
      * @param  {object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
      * @return {Promise<object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
@@ -173,6 +176,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Delete an item in the cache.  Will throw an error if the item named by `key` is locked.
+     *
+     * @async
      * @param  {string}  key The name of the item to destroy in the cache.
      * @return {Promise<boolean>}     returns true if the item was deleted, false if it was not (or not found).
      * @see api.cache.load
@@ -189,6 +194,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Save an item in the cache.  If an item is already in the cache with the same key, it will be overritten.  Throws an error if the object is already in the cache and is locked.
+     *
+     * @async
      * @param  {string}  key          The name of the object to save.
      * @param  {object}  value        The object to save.  It can also be a Number, String, or Array.
      * @param  {number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
@@ -222,6 +229,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Push an item to a shared queue/list in redis.
+     *
+     * @async
      * @param  {string}  key  Name of the shared queue/list.
      * @param  {object}  item The item The object to save.  It can also be a Number, String, or Array.
      * @return {Promise<boolean>}      Returns true if the object was pushed.
@@ -236,6 +245,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Pop (get) an item to a shared queue/list in redis.
+     *
+     * @async
      * @param  {string}  key  The name of the shared queue/list.
      * @return {Promise<object>}   The item The object which was saved.  It can also be a Number, String, or Array.
      * @see api.cache.push
@@ -250,6 +261,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Check how many items are stored in a shared queue/list in redis.
+     *
+     * @async
      * @param  {string}  key  The name of the object to save.
      * @return {Promise<number>}     The length of the list in redis.  0 will re returned for non-existant lists.
      */
@@ -259,6 +272,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Lock an item in redis (can be a list or a saved item) to this ActionHero process.
+     *
+     * @async
      * @param  {string}  key          The name of the object to lock.
      * @param  {string}  expireTimeMS How long to lock this item for.
      * @return {Promise<boolean>}     Returns true or false, depending on if the item was locked successfully.
@@ -279,6 +294,8 @@ class Cache extends ActionHero.Initializer {
 
     /**
      * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
+     *
+     * @async
      * @param  {string}  key The name of the object to unlock.
      * @return {Promise<boolean>}     Returns true or false, depending on if the item was unlocked successfully.
      * @see api.cache.lock
@@ -292,6 +309,9 @@ class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * @private
+     */
     api.cache.checkLock = async (key, retry, startTime) => {
       if (!startTime) { startTime = new Date().getTime() }
 
