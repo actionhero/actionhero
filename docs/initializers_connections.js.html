@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>initializers/connections.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">initializers/connections.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const ActionHero = require('./../index.js')
+
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback ActionHero~ConnectionCallback
+ * @param {Object} connection - The connection being created/destroyed.
+ */
+
+/**
+ * Middleware definition for processing connection events
+ *
+ * @typedef {Object} ActionHero~ConnectionMiddleware
+ * @property {string} name - Unique name for the middleware.
+ * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
+ * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
+ */
+
+/**
+ * Server connection handling.
+ *
+ * @namespace api.connections
+ * @property {Object} connections - Dictionary of currently-established client connections.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @property {Array} allowedVerbs - Verbs the server will allow clients to send.
+ * @extends ActionHero.Initializer
+ */
+module.exports = class Connections extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'connections'
+    this.loadPriority = 400
+  }
+
+  initialize (api) {
+    api.connections = {
+      connections: {},
+      middleware: {},
+      globalMiddleware: [],
+
+      allowedVerbs: [
+        'quit',
+        'exit',
+        'documentation',
+        'paramAdd',
+        'paramDelete',
+        'paramView',
+        'paramsView',
+        'paramsDelete',
+        'roomAdd',
+        'roomLeave',
+        'roomView',
+        'detailsView',
+        'say'
+      ],
+
+      /**
+       * @private
+       */
+      apply: async (connectionId, method, args) => {
+        return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
+      },
+
+      /**
+       * @private
+       */
+      applyResponder: async (connectionId, method, args) => {
+        const connection = api.connections.connections[connectionId]
+        if (!connection) { return }
+
+        if (method &amp;&amp; args) {
+          if (method === 'sendMessage' || method === 'sendFile') {
+            await connection[method](args)
+          } else {
+            await connection[method].apply(connection, args)
+          }
+        }
+        return api.connections.cleanConnection(connection)
+      },
+
+      /**
+       * Add a middleware component to connection handling.
+       *
+       * @param {object} data The middleware definition to add.
+       * @memberOf api.connections
+       */
+      addMiddleware: (data) => {
+        if (!data.name) { throw new Error('middleware.name is required') }
+        if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
+        data.priority = Number(data.priority)
+        api.connections.middleware[data.name] = data
+
+        api.connections.globalMiddleware.push(data.name)
+        api.connections.globalMiddleware.sort((a, b) => {
+          if (api.connections.middleware[a].priority > api.connections.middleware[b].priority) {
+            return 1
+          } else {
+            return -1
+          }
+        })
+      },
+
+      /**
+       * @private
+       */
+      cleanConnection: (connection) => {
+        let clean = {}
+        for (let i in connection) {
+          if (i !== 'rawConnection' &amp;&amp; i !== 'api') {
+            try {
+              JSON.stringify(connection[i])
+              clean[i] = connection[i]
+            } catch (error) {}
+          }
+        }
+
+        return clean
+      }
+    }
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 11:30:45 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
