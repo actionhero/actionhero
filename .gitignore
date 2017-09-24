@@ -10,6 +10,9 @@ locales/test-env-*
 public/javascript/actionheroClient.js
 public/javascript/actionheroClient.min.js
 
+#JSDoc
+docs/out
+
 # Node / NPM
 npm-debug.log
 

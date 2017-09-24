@@ -3,7 +3,13 @@
 const fs = require('fs')
 const ActionHero = require('./../index.js')
 
-module.exports = class Cache extends ActionHero.Initializer {
+/**
+ * Redis cache connectivity and support methods.
+ *
+ * @namespace api.cache
+ * @extends ActionHero.Initializer
+ */
+class Cache extends ActionHero.Initializer {
   constructor () {
     super()
     this.name = 'cache'
@@ -22,14 +28,32 @@ module.exports = class Cache extends ActionHero.Initializer {
       lockRetry: 100
     }
 
+    /**
+     * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<array>} Promise resolves an Array of keys
+     */
     api.cache.keys = async () => {
       return redis.keys(api.cache.redisPrefix + '*')
     }
 
+    /**
+     * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
+     *
+     * @async
+     * @return {Promise<array>} Promise resolves an Array of keys
+     */
     api.cache.locks = async () => {
       return redis.keys(api.cache.lockPrefix + '*')
     }
 
+    /**
+     * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<number>} Promise reslves in interger (length)
+     */
     api.cache.size = async () => {
       let keys = await api.cache.keys()
       let length = 0
@@ -37,6 +61,12 @@ module.exports = class Cache extends ActionHero.Initializer {
       return length
     }
 
+    /**
+     * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<boolean>} will return true if successful.
+     */
     api.cache.clear = async () => {
       let keys = await api.cache.keys()
       let jobs = []
@@ -45,6 +75,14 @@ module.exports = class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * Write the current concents of redis (only the keys in ActionHero's namespace) to a file.
+     *
+     * @async
+     * @param  {string}  file The file to save the cache to.
+     * @return {Promise<number>} The number of keys saved to disk.
+     * @see api.cache.dumpRead
+     */
     api.cache.dumpWrite = async (file) => {
       let data = {}
       let jobs = []
@@ -60,6 +98,15 @@ module.exports = class Cache extends ActionHero.Initializer {
       return keys.length
     }
 
+    /**
+     * Load in contents for redis (and api.cache) saved to a file
+     * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
+     *
+     * @async
+     * @param  {string}  file The file to load into the cache.
+     * @return {Promise<number>} The number of keys loaded into redis.
+     * @see api.cache.dumpWrite
+     */
     api.cache.dumpRead = async (file) => {
       let jobs = []
       await api.cache.clear()
@@ -84,6 +131,16 @@ module.exports = class Cache extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Load an item from the cache.  Will throw an error if the item named by `key` cannot be found.
+     *
+     * @async
+     * @param  {string}  key     The name of the item to load from the cache.
+     * @param  {object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
+     * @return {Promise<object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
+     * @see api.cache.save
+     * @see api.cache.destroy
+     */
     api.cache.load = async (key, options) => {
       if (!options) { options = {} }
       let cacheObj = await redis.get(api.cache.redisPrefix + key)
@@ -117,6 +174,15 @@ module.exports = class Cache extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Delete an item in the cache.  Will throw an error if the item named by `key` is locked.
+     *
+     * @async
+     * @param  {string}  key The name of the item to destroy in the cache.
+     * @return {Promise<boolean>}     returns true if the item was deleted, false if it was not (or not found).
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
     api.cache.destroy = async (key) => {
       let lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
@@ -126,6 +192,17 @@ module.exports = class Cache extends ActionHero.Initializer {
       return response
     }
 
+    /**
+     * Save an item in the cache.  If an item is already in the cache with the same key, it will be overritten.  Throws an error if the object is already in the cache and is locked.
+     *
+     * @async
+     * @param  {string}  key          The name of the object to save.
+     * @param  {object}  value        The object to save.  It can also be a Number, String, or Array.
+     * @param  {number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
+     * @return {Promise<boolean>}     Returns true if the object was saved.
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
     api.cache.save = async (key, value, expireTimeMS) => {
       let expireTimeSeconds = null
       let expireTimestamp = null
@@ -150,12 +227,31 @@ module.exports = class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * Push an item to a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  Name of the shared queue/list.
+     * @param  {object}  item The item The object to save.  It can also be a Number, String, or Array.
+     * @return {Promise<boolean>}      Returns true if the object was pushed.
+     * @see api.cache.pop
+     * @see api.cache.listLength
+     */
     api.cache.push = async (key, item) => {
       let object = JSON.stringify({data: item})
       await redis.rpush(api.cache.redisPrefix + key, object)
       return true
     }
 
+    /**
+     * Pop (get) an item to a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  The name of the shared queue/list.
+     * @return {Promise<object>}   The item The object which was saved.  It can also be a Number, String, or Array.
+     * @see api.cache.push
+     * @see api.cache.listLength
+     */
     api.cache.pop = async (key) => {
       let object = await redis.lpop(api.cache.redisPrefix + key)
       if (!object) { return null }
@@ -163,10 +259,27 @@ module.exports = class Cache extends ActionHero.Initializer {
       return item.data
     }
 
+    /**
+     * Check how many items are stored in a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  The name of the object to save.
+     * @return {Promise<number>}     The length of the list in redis.  0 will re returned for non-existant lists.
+     */
     api.cache.listLength = async (key) => {
       return redis.llen(api.cache.redisPrefix + key)
     }
 
+    /**
+     * Lock an item in redis (can be a list or a saved item) to this ActionHero process.
+     *
+     * @async
+     * @param  {string}  key          The name of the object to lock.
+     * @param  {string}  expireTimeMS How long to lock this item for.
+     * @return {Promise<boolean>}     Returns true or false, depending on if the item was locked successfully.
+     * @see api.cache.unlock
+     * @see api.cache.checkLock
+     */
     api.cache.lock = async (key, expireTimeMS) => {
       if (expireTimeMS === null) { expireTimeMS = api.cache.lockDuration }
       let lockOk = await api.cache.checkLock(key, null)
@@ -179,6 +292,15 @@ module.exports = class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
+     *
+     * @async
+     * @param  {string}  key The name of the object to unlock.
+     * @return {Promise<boolean>}     Returns true or false, depending on if the item was unlocked successfully.
+     * @see api.cache.lock
+     * @see api.cache.checkLock
+     */
     api.cache.unlock = async (key) => {
       let lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { return false }
@@ -187,6 +309,9 @@ module.exports = class Cache extends ActionHero.Initializer {
       return true
     }
 
+    /**
+     * @private
+     */
     api.cache.checkLock = async (key, retry, startTime) => {
       if (!startTime) { startTime = new Date().getTime() }
 
@@ -205,3 +330,5 @@ module.exports = class Cache extends ActionHero.Initializer {
     }
   }
 }
+
+module.exports = Cache

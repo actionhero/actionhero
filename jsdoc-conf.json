@@ -1,0 +1,28 @@
+{
+  "source": {
+    "include": [
+      "index.js",
+      "initializers",
+      "classes",
+      "bin",
+      "config"
+    ],
+    "exclude": [
+      "test",
+      "bin/templates"
+    ],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "destination": "./docs",
+    "template": "node_modules/docdash-actionhero",
+    "tutorials": "./tutorials",
+    "readme": "./README.md",
+    "recurse": true,
+    "verbose": true
+  },
+  "plugins": [
+    "plugins/markdown"
+  ]
+}

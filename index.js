@@ -1,5 +1,17 @@
 const path = require('path');
 
+/**
+ * The top-level for all actionhero methods which can be used within your project.
+ *
+ * @namespace api
+ */
+
+/**
+ * The ActionHero module.
+ *
+ * @class ActionHero
+ */
+
 [
   { klass: 'Process', file: 'process.js' },
   { klass: 'Action', file: 'action.js' },
