@@ -65,6 +65,7 @@
   "standard": {
     "ignore": [
       "bin/templates",
+      "docs",
       "client"
     ],
     "globals": [
