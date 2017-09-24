@@ -2,6 +2,32 @@
 
 const ActionHero = require('./../index.js')
 
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback ActionHero~ConnectionCallback
+ * @param {Object} connection - The connection being created/destroyed.
+ */
+
+/**
+ * Middleware definition for processing connection events
+ *
+ * @typedef {Object} ActionHero~ConnectionMiddleware
+ * @property {string} name - Unique name for the middleware.
+ * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
+ * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
+ */
+
+/**
+ * Server connection handling.
+ *
+ * @namespace api.connections
+ * @property {Object} connections - Dictionary of currently-established client connections.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @property {Array} allowedVerbs - Verbs the server will allow clients to send.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Connections extends ActionHero.Initializer {
   constructor () {
     super()
@@ -31,10 +57,16 @@ module.exports = class Connections extends ActionHero.Initializer {
         'say'
       ],
 
+      /**
+       * @private
+       */
       apply: async (connectionId, method, args) => {
         return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
       },
 
+      /**
+       * @private
+       */
       applyResponder: async (connectionId, method, args) => {
         const connection = api.connections.connections[connectionId]
         if (!connection) { return }
@@ -49,6 +81,12 @@ module.exports = class Connections extends ActionHero.Initializer {
         return api.connections.cleanConnection(connection)
       },
 
+      /**
+       * Add a middleware component to connection handling.
+       *
+       * @param {object} data The middleware definition to add.
+       * @memberOf api.connections
+       */
       addMiddleware: (data) => {
         if (!data.name) { throw new Error('middleware.name is required') }
         if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
@@ -65,6 +103,9 @@ module.exports = class Connections extends ActionHero.Initializer {
         })
       },
 
+      /**
+       * @private
+       */
       cleanConnection: (connection) => {
         let clean = {}
         for (let i in connection) {
