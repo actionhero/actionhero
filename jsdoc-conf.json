@@ -16,11 +16,13 @@
   },
   "opts": {
     "destination": "./docs/out",
-    "template": "node_modules/docdash",
+    "template": "node_modules/docdash-actionhero",
     "tutorials": "./docs/tutorials",
     "readme": "./README.md",
     "recurse": true,
     "verbose": true
   },
-  "plugins": ["plugins/markdown"]
+  "plugins": [
+    "plugins/markdown"
+  ]
 }
