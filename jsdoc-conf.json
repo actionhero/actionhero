@@ -15,9 +15,9 @@
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "opts": {
-    "destination": "./docs/out",
+    "destination": "./docs",
     "template": "node_modules/docdash-actionhero",
-    "tutorials": "./docs/tutorials",
+    "tutorials": "./tutorials",
     "readme": "./README.md",
     "recurse": true,
     "verbose": true
