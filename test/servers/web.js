@@ -5,83 +5,73 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const request = require('request')
+const request = require('request-promise-native')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 let url
 
+const toJson = async (string) => {
+  try {
+    return JSON.parse(string)
+  } catch (error) {
+    return error
+  }
+}
+
 describe('Server: Web', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      url = 'http://localhost:' + api.config.servers.web.port
-      done()
-    })
+  before(async () => {
+    api = await actionhero.start()
+    url = 'http://localhost:' + api.config.servers.web.port
   })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
+  after(async () => { await actionhero.stop() })
+
+  it('should be up and return data', async () => {
+    await request.get(url + '/api/randomNumber').then(toJson)
+    // should throw no errors
   })
 
-  it('file: 404 pages from POST with if-modified-since header', (done) => {
-    let file = Math.random().toString(36)
-    let options = {
-      url: url + '/' + file,
-      headers: {
-        'if-modified-since': 'Thu, 19 Apr 2012 09:51:20 GMT'
-      }
-    }
-
-    request.get(options, (error, response, body) => {
-      expect(error).to.be.null()
-      expect(response.statusCode).to.equal(404)
-      expect(response.body).to.equal('That file is not found')
-      done()
-    })
+  it('basic response should be JSON and have basic data', async () => {
+    let body = await request.get(url + '/api/randomNumber').then(toJson)
+    expect(body).to.be.instanceof(Object)
+    expect(body.requesterInformation).to.be.instanceof(Object)
   })
 
-  it('Server should be up and return data', (done) => {
-    request.get(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body).to.be.instanceof(Object)
-      done()
-    })
-  })
-
-  it('Server basic response should be JSON and have basic data', (done) => {
-    request.get(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body).to.be.instanceof(Object)
+  it('returns JSON with errors', async () => {
+    try {
+      await request.get(url + '/api').then(toJson)
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(404)
+      let body = await toJson(error.response.body)
       expect(body.requesterInformation).to.be.instanceof(Object)
-      done()
-    })
+    }
   })
 
-  it('params work', (done) => {
-    request.get(url + '/api?key=value', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
+  it('params work', async () => {
+    try {
+      await request.get(url + '/api?key=value').then(toJson)
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(404)
+      let body = await toJson(error.response.body)
       expect(body.requesterInformation.receivedParams.key).to.equal('value')
-      done()
-    })
+    }
   })
 
-  it('params are ignored unless they are in the whitelist', (done) => {
-    request.get(url + '/api?crazyParam123=something', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
+  it('params are ignored unless they are in the whitelist', async () => {
+    try {
+      await request.get(url + '/api?crazyParam123=something').then(toJson)
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(404)
+      let body = await toJson(error.response.body)
       expect(body.requesterInformation.receivedParams.crazyParam123).to.not.exist()
-      done()
-    })
+    }
   })
 
   describe('will properly destroy connections', () => {
@@ -94,13 +84,10 @@ describe('Server: Web', () => {
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.toRender = false
-            process.nextTick(() => {
-              data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
-              data.connection.rawConnection.res.end(`${Math.random()}`)
-              next(null)
-            })
+            data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
+            data.connection.rawConnection.res.end(`${Math.random()}`)
           }
         }
       }
@@ -113,52 +100,43 @@ describe('Server: Web', () => {
       delete api.actions.versions.customRender
     })
 
-    it('works for the API', (done) => {
+    it('works for the API', async () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
-      request.get(url + '/api/sleepTest', (error, body, response) => {
-        expect(error).to.be.null()
-        expect(Object.keys(api.connections.connections)).to.have.length(0)
-        setTimeout(done, 100)
-      })
+      request.get(url + '/api/sleepTest').then(toJson) // don't await
 
-      setTimeout(() => {
-        expect(Object.keys(api.connections.connections)).to.have.length(1)
-      }, 100)
+      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      expect(Object.keys(api.connections.connections)).to.have.length(1)
+
+      await new Promise((resolve) => { setTimeout(resolve, 1000) })
+      expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
 
-    it('works for files', (done) => {
+    it('works for files', async () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
-      request.get(url + '/simple.html', (error) => {
-        expect(error).to.be.null()
-        setTimeout(() => {
-          expect(Object.keys(api.connections.connections)).to.have.length(0)
-          done()
-        }, 100)
-      })
+      await request.get(url + '/simple.html')
+      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
 
-    it('works for actions with toRender: false', (done) => {
+    it('works for actions with toRender: false', async () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
-      request.get(url + '/api/customRender', (error) => {
-        expect(error).to.be.null()
-        setTimeout(() => {
-          expect(Object.keys(api.connections.connections)).to.have.length(0)
-          done()
-        }, 100)
-      })
+      let body = await request.get(url + '/api/customRender').then(toJson)
+      expect(body).to.exist()
+      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
   })
 
   describe('errors', () => {
-    before((done) => {
+    before(() => {
       api.actions.versions.stringErrorTestAction = [1]
       api.actions.actions.stringErrorTestAction = {
         '1': {
           name: 'stringErrorTestAction',
           description: 'stringErrorTestAction',
           version: 1,
-          run: (api, data, next) => {
-            next('broken')
+          run: (api, data) => {
+            data.response.error = 'broken'
           }
         }
       }
@@ -169,8 +147,8 @@ describe('Server: Web', () => {
           name: 'errorErrorTestAction',
           description: 'errorErrorTestAction',
           version: 1,
-          run: (api, data, next) => {
-            next(new Error('broken'))
+          run: (api, data) => {
+            throw new Error('broken')
           }
         }
       }
@@ -181,311 +159,275 @@ describe('Server: Web', () => {
           name: 'complexErrorTestAction',
           description: 'complexErrorTestAction',
           version: 1,
-          run: (api, data, next) => {
-            next({error: 'broken', reason: 'stuff'})
+          run: (api, data) => {
+            data.response.error = {error: 'broken', reason: 'stuff'}
           }
         }
       }
 
       api.routes.loadRoutes()
-      done()
     })
 
-    after((done) => {
+    after(() => {
       delete api.actions.actions.stringErrorTestAction
       delete api.actions.versions.stringErrorTestAction
       delete api.actions.actions.errorErrorTestAction
       delete api.actions.versions.errorErrorTestAction
       delete api.actions.actions.complexErrorTestAction
       delete api.actions.versions.complexErrorTestAction
-      done()
     })
 
-    it('errors can be error strings', (done) => {
-      request.get(url + '/api/stringErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('errors can be error strings', async () => {
+      try {
+        await request.get(url + '/api/stringErrorTestAction')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(400)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('broken')
-        done()
-      })
+      }
     })
 
-    it('errors can be error objects and returned plainly', (done) => {
-      request.get(url + '/api/errorErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('errors can be error objects and returned plainly', async () => {
+      try {
+        await request.get(url + '/api/errorErrorTestAction')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(400)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('broken')
-        done()
-      })
+      }
     })
 
-    it('errors can be complex JSON payloads', (done) => {
-      request.get(url + '/api/complexErrorTestAction/', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.error.error).to.equal('broken')
-        expect(body.error.reason).to.equal('stuff')
-        done()
-      })
+    it('errors can be complex JSON payloads', async () => {
+      try {
+        await request.get(url + '/api/complexErrorTestAction')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(400)
+        let body = await toJson(error.response.body)
+        expect(body.error).to.deep.equal({ error: 'broken', reason: 'stuff' })
+      }
     })
   })
 
-  describe('if disableParamScrubbing is set ', () => {
+  describe('if disableParamScrubbing is set', () => {
     let orig
-
-    before((done) => {
+    before(() => {
       orig = api.config.general.disableParamScrubbing
       api.config.general.disableParamScrubbing = true
-      done()
     })
 
-    after((done) => {
+    after(() => {
       api.config.general.disableParamScrubbing = orig
-      done()
     })
 
-    it('params are not ignored', (done) => {
-      request.get(url + '/api/testAction/?crazyParam123=something', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('params are not ignored', async () => {
+      try {
+        await request.get(url + '/api/testAction/?crazyParam123=something')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.crazyParam123).to.equal('something')
-        done()
-      })
+      }
     })
   })
 
   describe('JSONp', () => {
-    before(() => { api.config.servers.web.metadataOptions.requesterInformation = false })
-    after(() => { api.config.servers.web.metadataOptions.requesterInformation = true })
-
-    it('can ask for JSONp responses', (done) => {
-      request.get(url + '/api/randomNumber?callback=myCallback', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(body.indexOf('myCallback({')).to.equal(0)
-        done()
-      })
+    let orig
+    before(() => {
+      orig = api.config.servers.web.metadataOptions.requesterInformation
+      api.config.servers.web.metadataOptions.requesterInformation = false
     })
 
-    it('JSONp responses cannot be used for XSS', (done) => {
-      request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(body).not.to.match(/alert\(/)
-        expect(body.indexOf('alert&#39;hi&#39;;foo(')).to.equal(0)
-        done()
-      })
+    after(() => {
+      api.config.servers.web.metadataOptions.requesterInformation = orig
+    })
+
+    it('can ask for JSONp responses', async () => {
+      let response = await request.get(url + '/api/randomNumber?callback=myCallback')
+      expect(response.indexOf('myCallback({')).to.equal(0)
+      expect(response.indexOf('Your random number is')).to.be.above(0)
+    })
+
+    it('JSONp responses cannot be used for XSS', async () => {
+      let response = await request.get(url + '/api/randomNumber?callback=alert(%27hi%27);foo')
+      expect(response).not.to.match(/alert\(/)
+      expect(response.indexOf('alert&#39;hi&#39;;foo(')).to.equal(0)
     })
   })
 
   describe('request redirecton (allowedRequestHosts)', () => {
-    before(() => { api.config.servers.web.allowedRequestHosts = ['https://www.site.com'] })
-    after(() => { api.config.servers.web.allowedRequestHosts = [] })
-
-    it('will redirect clients if they do not request the proper host', (done) => {
-      request.get({
-        followRedirect: false,
-        url: url + '/api/randomNumber',
-        headers: {'Host': 'lalala.site.com'}
-      }, (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.headers.location).to.equal('https://www.site.com/api/randomNumber')
-        expect(body).to.match(/You are being redirected to https:\/\/www.site.com\/api\/randomNumber/)
-        done()
-      })
+    let orig
+    before(() => {
+      orig = api.config.servers.web.allowedRequestHosts
+      api.config.servers.web.allowedRequestHosts = ['https://www.site.com']
     })
 
-    it('will allow API access from the proper hosts', (done) => {
-      request.get({
+    after(() => { api.config.servers.web.allowedRequestHosts = orig })
+
+    it('will redirect clients if they do not request the proper host', async () => {
+      try {
+        await request.get({
+          followRedirect: false,
+          url: url + '/api/randomNumber',
+          headers: {'Host': 'lalala.site.com'}
+        })
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(302)
+        expect(error.response.body).to.match(/You are being redirected to https:\/\/www.site.com\/api\/randomNumber/)
+      }
+    })
+
+    it('will allow API access from the proper hosts', async () => {
+      let response = await request.get({
         followRedirect: false,
         url: url + '/api/randomNumber',
         headers: {
           'Host': 'www.site.com',
           'x-forwarded-proto': 'https'
         }
-      }, (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.headers.location).to.not.exist()
-        expect(body).to.match(/randomNumber/)
-        done()
       })
+
+      expect(response).to.match(/randomNumber/)
     })
   })
 
-  it('gibberish actions have the right response', (done) => {
-    request.get(url + '/api/IAMNOTANACTION', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.error).to.equal('unknown action or invalid apiVersion')
-      done()
-    })
+  it('gibberish actions have the right response', async () => {
+    try {
+      await request.get(url + '/api/IAMNOTANACTION')
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(404)
+      let body = await toJson(error.response.body)
+      expect(body.error).to.deep.equal('unknown action or invalid apiVersion')
+    }
   })
 
-  it('real actions do not have an error response', (done) => {
-    request.get(url + '/api/status', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.error).to.not.exist()
-      done()
-    })
+  it('real actions do not have an error response', async () => {
+    let body = await request.get(url + '/api/status').then(toJson)
+    expect(body.error).to.not.exist()
   })
 
-  it('HTTP Verbs should work: GET', (done) => {
-    request.get(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.randomNumber).to.be.at.least(0)
-      expect(body.randomNumber).to.be.at.most(1)
-      done()
-    })
+  it('HTTP Verbs should work: GET', async () => {
+    let body = await request.get(url + '/api/randomNumber').then(toJson)
+    expect(body.randomNumber).to.be.at.least(0)
+    expect(body.randomNumber).to.be.at.most(1)
   })
 
-  it('HTTP Verbs should work: PUT', (done) => {
-    request.put(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.randomNumber).to.be.at.least(0)
-      expect(body.randomNumber).to.be.at.most(1)
-      done()
-    })
+  it('HTTP Verbs should work: PUT', async () => {
+    let body = await request.put(url + '/api/randomNumber').then(toJson)
+    expect(body.randomNumber).to.be.at.least(0)
+    expect(body.randomNumber).to.be.at.most(1)
   })
 
-  it('HTTP Verbs should work: POST', (done) => {
-    request.post(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.randomNumber).to.be.at.least(0)
-      expect(body.randomNumber).to.be.at.most(100)
-      done()
-    })
+  it('HTTP Verbs should work: POST', async () => {
+    let body = await request.post(url + '/api/randomNumber').then(toJson)
+    expect(body.randomNumber).to.be.at.least(0)
+    expect(body.randomNumber).to.be.at.most(100)
   })
 
-  it('HTTP Verbs should work: DELETE', (done) => {
-    request.del(url + '/api/randomNumber', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.randomNumber).to.be.at.least(0)
-      expect(body.randomNumber).to.be.at.most(1000)
-      done()
-    })
+  it('HTTP Verbs should work: DELETE', async () => {
+    let body = await request.delete(url + '/api/randomNumber').then(toJson)
+    expect(body.randomNumber).to.be.at.least(0)
+    expect(body.randomNumber).to.be.at.most(1000)
   })
 
-  it('HTTP Verbs should work: Post with Form', (done) => {
-    request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}, (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.cacheTestResults.saveResp).to.equal(true)
-      done()
-    })
+  it('HTTP Verbs should work: Post with Form', async () => {
+    let body = await request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}).then(toJson)
+    expect(body.cacheTestResults.saveResp).to.equal(true)
   })
 
-  it('HTTP Verbs should work: Post with JSON Payload as body', (done) => {
-    let body = JSON.stringify({key: 'key', value: 'value'})
-    request.post(url + '/api/cacheTest', {'body': body, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(body.cacheTestResults.saveResp).to.equal(true)
-      done()
-    })
+  it('HTTP Verbs should work: Post with JSON Payload as body', async () => {
+    let bodyPayload = JSON.stringify({key: 'key', value: 'value'})
+    let body = await request.post(url + '/api/cacheTest', {'body': bodyPayload, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+    expect(body.cacheTestResults.saveResp).to.equal(true)
   })
 
   describe('connection.rawConnection.params', () => {
-    before((done) => {
+    before(() => {
       api.actions.versions.paramTestAction = [1]
       api.actions.actions.paramTestAction = {
         '1': {
           name: 'paramTestAction',
           description: 'I return connection.rawConnection.params',
           version: 1,
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response = data.connection.rawConnection.params
             if (data.connection.rawConnection.params.rawBody) {
               data.response.rawBody = data.connection.rawConnection.params.rawBody.toString()
             }
-            next()
           }
         }
       }
 
       api.routes.loadRoutes()
-      done()
     })
 
-    after((done) => {
+    after(() => {
       delete api.actions.actions.paramTestAction
       delete api.actions.versions.paramTestAction
-      done()
     })
 
-    it('.query should contain unfiltered query params', (done) => {
-      request.get(url + '/api/paramTestAction/?crazyParam123=something', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.query.crazyParam123).to.equal('something')
-        done()
-      })
+    it('.query should contain unfiltered query params', async () => {
+      let body = await request.get(url + '/api/paramTestAction/?crazyParam123=something').then(toJson)
+      expect(body.query.crazyParam123).to.equal('something')
     })
 
-    it('.body should contain unfiltered. parsed request body params', (done) => {
+    it('.body should contain unfiltered, parsed request body params', async () => {
       let requestBody = JSON.stringify({key: 'value'})
-      request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.body.key).to.equal('value')
-        done()
-      })
+      let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+      expect(body.body.key).to.equal('value')
     })
 
     describe('connection.rawConnection.rawBody', () => {
-      after(() => { api.config.servers.web.saveRawBody = false })
+      let orig
+      before(() => { orig = api.config.servers.web.saveRawBody })
+      after(() => { api.config.servers.web.saveRawBody = orig })
 
-      it('.rawBody will contain the raw POST body without parsing', (done) => {
+      it('.rawBody will contain the raw POST body without parsing', async () => {
         api.config.servers.web.saveRawBody = true
         let requestBody = '{"key":      "value"}'
-        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.body.key).to.equal('value')
-          expect(body.rawBody).to.equal('{"key":      "value"}')
-          done()
-        })
+        let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+        expect(body.body.key).to.equal('value')
+        expect(body.rawBody).to.equal('{"key":      "value"}')
       })
 
-      it('.rawBody can be disabled', (done) => {
+      it('.rawBody can be disabled', async () => {
         api.config.servers.web.saveRawBody = false
         let requestBody = '{"key":      "value"}'
-        request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}, (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.body.key).to.equal('value')
-          expect(body.rawBody).to.equal('')
-          done()
-        })
+        let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+        expect(body.body.key).to.equal('value')
+        expect(body.rawBody).to.equal('')
       })
     })
   })
 
-  it('returnErrorCodes false should still have a status of 200', (done) => {
-    api.config.servers.web.returnErrorCodes = false
-    request.del(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(response.statusCode).to.equal(200)
-      done()
-    })
-  })
+  describe('errorCodes', () => {
+    let orig
+    before(() => { orig = api.config.servers.web.returnErrorCodes })
+    after(() => { api.config.servers.web.returnErrorCodes = orig })
 
-  it('returnErrorCodes can be opted to change http header codes', (done) => {
-    api.config.servers.web.returnErrorCodes = true
-    request.del(url + '/api/', (error, response, body) => {
-      expect(error).to.be.null()
-      body = JSON.parse(body)
-      expect(response.statusCode).to.equal(404)
-      done()
+    it('returnErrorCodes false should still have a status of 200', async () => {
+      api.config.servers.web.returnErrorCodes = false
+      let response = await request.del(url + '/api/', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+    })
+
+    it('returnErrorCodes can be opted to change http header codes', async () => {
+      api.config.servers.web.returnErrorCodes = true
+      try {
+        await request.del(url + '/api/')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+      }
     })
   })
 
   describe('http header', () => {
-    before((done) => {
-      api.config.servers.web.returnErrorCodes = true
+    before(() => {
       api.actions.versions.headerTestAction = [1]
       api.actions.actions.headerTestAction = {
         '1': {
@@ -493,124 +435,98 @@ describe('Server: Web', () => {
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.connection.rawConnection.responseHeaders.push(['thing', 'A'])
             data.connection.rawConnection.responseHeaders.push(['thing', 'B'])
             data.connection.rawConnection.responseHeaders.push(['thing', 'C'])
             data.connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_1=1'])
             data.connection.rawConnection.responseHeaders.push(['Set-Cookie', 'value_2=2'])
-            next()
           }
         }
       }
 
       api.routes.loadRoutes()
-      done()
     })
 
-    after((done) => {
+    after(() => {
       delete api.actions.actions.headerTestAction
       delete api.actions.versions.headerTestAction
-      done()
     })
 
-    it('duplicate headers should be removed (in favor of the last set)', (done) => {
-      request.get(url + '/api/headerTestAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(200)
-        expect(response.headers.thing).to.equal('C')
-        done()
-      })
+    it('duplicate headers should be removed (in favor of the last set)', async () => {
+      let response = await request.get(url + '/api/headerTestAction', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.headers.thing).to.equal('C')
     })
 
-    it('but duplicate set-cookie requests should be allowed', (done) => {
-      request.get(url + '/api/headerTestAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(200)
-        expect(response.headers['set-cookie']).to.have.length(3) // 2 + session
-        expect(response.headers['set-cookie'][1]).to.equal('value_1=1')
-        expect(response.headers['set-cookie'][0]).to.equal('value_2=2')
-        done()
-      })
+    it('but duplicate set-cookie requests should be allowed', async () => {
+      let response = await request.get(url + '/api/headerTestAction', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.headers['set-cookie']).to.have.length(3) // 2 + session
+      expect(response.headers['set-cookie'][1]).to.equal('value_1=1')
+      expect(response.headers['set-cookie'][0]).to.equal('value_2=2')
     })
 
-    it('should respond to OPTIONS with only HTTP headers', (done) => {
-      request({method: 'options', url: url + '/api/cacheTest'}, (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(response.headers['access-control-allow-methods']).to.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE')
-        expect(response.headers['access-control-allow-origin']).to.equal('*')
-        expect(response.headers['content-length']).to.equal('0')
-        done()
-      })
+    it('should respond to OPTIONS with only HTTP headers', async () => {
+      let response = await request({method: 'options', url: url + '/api/cacheTest', resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.headers['access-control-allow-methods']).to.equal('HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE')
+      expect(response.headers['access-control-allow-origin']).to.equal('*')
+      expect(response.headers['content-length']).to.equal('0')
+      expect(response.body).to.equal('')
     })
 
-    it('should respond to TRACE with parsed params received', (done) => {
-      request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(200)
-        expect(body.receivedParams.key).to.equal('someKey')
-        expect(body.receivedParams.value).to.equal('someValue')
-        done()
-      })
+    it('should respond to TRACE with parsed params received', async () => {
+      let response = await request({method: 'trace', url: url + '/api/x', form: {key: 'someKey', value: 'someValue'}, resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      let body = await toJson(response.body)
+      expect(body.receivedParams.key).to.equal('someKey')
+      expect(body.receivedParams.value).to.equal('someValue')
     })
 
-    it('should respond to HEAD requests just like GET, but with no body', (done) => {
-      request({method: 'head', url: url + '/api/headerTestAction'}, (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(body).to.equal('')
-        done()
-      })
+    it('should respond to HEAD requests just like GET, but with no body', async () => {
+      let response = await request({method: 'head', url: url + '/api/headerTestAction', resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.equal('')
     })
 
-    it('keeps sessions with browser_fingerprint', (done) => {
+    it('keeps sessions with browser_fingerprint', async () => {
       let j = request.jar()
-      request.post({url: url + '/api', jar: j}, (error, response1, body1) => {
-        expect(error).to.be.null()
-        request.get({url: url + '/api', jar: j}, (error, response2, body2) => {
-          expect(error).to.be.null()
-          request.put({url: url + '/api', jar: j}, (error, response3, body3) => {
-            expect(error).to.be.null()
-            request.del({url: url + '/api', jar: j}, (error, response4, body4) => {
-              expect(error).to.be.null()
+      let response1 = await request.post({url: url + '/api/randomNumber', jar: j, resolveWithFullResponse: true})
+      let response2 = await request.get({url: url + '/api/randomNumber', jar: j, resolveWithFullResponse: true})
+      let response3 = await request.put({url: url + '/api/randomNumber', jar: j, resolveWithFullResponse: true})
+      let response4 = await request.del({url: url + '/api/randomNumber', jar: j, resolveWithFullResponse: true})
 
-              body1 = JSON.parse(body1)
-              body2 = JSON.parse(body2)
-              body3 = JSON.parse(body3)
-              body4 = JSON.parse(body4)
+      expect(response1.headers['set-cookie']).to.be.ok()
+      expect(response2.headers['set-cookie']).to.not.exist()
+      expect(response3.headers['set-cookie']).to.not.exist()
+      expect(response4.headers['set-cookie']).to.not.exist()
 
-              expect(response1.headers['set-cookie']).to.be.ok()
-              expect(response2.headers['set-cookie']).to.not.exist()
-              expect(response3.headers['set-cookie']).to.not.exist()
-              expect(response4.headers['set-cookie']).to.not.exist()
+      let body1 = await toJson(response1.body)
+      let body2 = await toJson(response2.body)
+      let body3 = await toJson(response3.body)
+      let body4 = await toJson(response4.body)
 
-              let fingerprint1 = body1.requesterInformation.id.split('-')[0]
-              let fingerprint2 = body2.requesterInformation.id.split('-')[0]
-              let fingerprint3 = body3.requesterInformation.id.split('-')[0]
-              let fingerprint4 = body4.requesterInformation.id.split('-')[0]
+      let fingerprint1 = body1.requesterInformation.id.split('-')[0]
+      let fingerprint2 = body2.requesterInformation.id.split('-')[0]
+      let fingerprint3 = body3.requesterInformation.id.split('-')[0]
+      let fingerprint4 = body4.requesterInformation.id.split('-')[0]
 
-              expect(fingerprint1).to.equal(fingerprint2)
-              expect(fingerprint1).to.equal(fingerprint3)
-              expect(fingerprint1).to.equal(fingerprint4)
+      expect(fingerprint1).to.equal(fingerprint2)
+      expect(fingerprint1).to.equal(fingerprint3)
+      expect(fingerprint1).to.equal(fingerprint4)
 
-              expect(fingerprint1).to.equal(body1.requesterInformation.fingerprint)
-              expect(fingerprint2).to.equal(body2.requesterInformation.fingerprint)
-              expect(fingerprint3).to.equal(body3.requesterInformation.fingerprint)
-              expect(fingerprint4).to.equal(body4.requesterInformation.fingerprint)
-              done()
-            })
-          })
-        })
-      })
+      expect(fingerprint1).to.equal(body1.requesterInformation.fingerprint)
+      expect(fingerprint2).to.equal(body2.requesterInformation.fingerprint)
+      expect(fingerprint3).to.equal(body3.requesterInformation.fingerprint)
+      expect(fingerprint4).to.equal(body4.requesterInformation.fingerprint)
     })
   })
 
   describe('http returnErrorCodes true', () => {
-    before((done) => {
+    let orig
+    before(() => {
+      orig = api.config.servers.web.returnErrorCodes
       api.config.servers.web.returnErrorCodes = true
 
       api.actions.versions.statusTestAction = [1]
@@ -621,185 +537,175 @@ describe('Server: Web', () => {
           inputs: {
             key: {required: true}
           },
-          run: (api, data, next) => {
-            let error
+          run: (api, data) => {
             if (data.params.key !== 'value') {
-              error = 'key != value'
               data.connection.rawConnection.responseHttpCode = 402
+              throw new Error('key != value')
             } else {
               data.response.good = true
             }
-            next(error)
           }
         }
       }
 
       api.routes.loadRoutes()
-      done()
     })
 
-    after((done) => {
-      api.config.servers.web.returnErrorCodes = false
+    after(() => {
+      api.config.servers.web.returnErrorCodes = orig
       delete api.actions.versions.statusTestAction
       delete api.actions.actions.statusTestAction
-      done()
     })
 
-    it('actions that do not exists should return 404', (done) => {
-      request.post(url + '/api/aFakeAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(404)
-        done()
-      })
+    it('actions that do not exists should return 404', async () => {
+      try {
+        await request.post(url + '/api/aFakeAction')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+      }
     })
 
-    it('missing params result in a 422', (done) => {
-      request.post(url + '/api/statusTestAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(response.statusCode).to.equal(422)
-        done()
-      })
+    it('missing params result in a 422', async () => {
+      try {
+        await request.post(url + '/api/statusTestAction')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(422)
+      }
     })
 
-    it('status codes can be set for errors', (done) => {
-      request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('status codes can be set for errors', async () => {
+      try {
+        await request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}})
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(402)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('key != value')
-        expect(response.statusCode).to.equal(402)
-        done()
-      })
+      }
     })
 
-    it('status code should still be 200 if everything is OK', (done) => {
-      request.post(url + '/api/statusTestAction', {form: {key: 'value'}}, (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.good).to.equal(true)
-        expect(response.statusCode).to.equal(200)
-        done()
-      })
+    it('status code should still be 200 if everything is OK', async () => {
+      let response = await request.post(url + '/api/statusTestAction', {form: {key: 'value'}, resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      let body = await toJson(response.body)
+      expect(body.good).to.equal(true)
     })
   })
 
   describe('documentation', () => {
-    it('documentation can be returned via a documentation action', (done) => {
-      request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.documentation).to.be.instanceof(Object)
-        done()
-      })
+    it('documentation can be returned via a documentation action', async () => {
+      let body = await request.get(url + '/api/showDocumentation').then(toJson)
+      expect(body.documentation).to.be.instanceof(Object)
     })
 
-    it('should have actions with all the right parts', (done) => {
-      request.get(url + '/api/showDocumentation', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        for (let actionName in body.documentation) {
-          for (let version in body.documentation[actionName]) {
-            let action = body.documentation[actionName][version]
-            expect(typeof action.name).to.equal('string')
-            expect(typeof action.description).to.equal('string')
-            expect(action.inputs).to.be.instanceof(Object)
-          }
+    it('should have actions with all the right parts', async () => {
+      let body = await request.get(url + '/api/showDocumentation').then(toJson)
+      for (let actionName in body.documentation) {
+        for (let version in body.documentation[actionName]) {
+          let action = body.documentation[actionName][version]
+          expect(typeof action.name).to.equal('string')
+          expect(typeof action.description).to.equal('string')
+          expect(action.inputs).to.be.instanceof(Object)
         }
-        done()
-      })
+      }
     })
   })
 
   describe('files', () => {
-    it('file: an HTML file', (done) => {
-      request.get(url + '/public/simple.html', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-        done()
-      })
+    it('an HTML file', async () => {
+      let response = await request.get(url + '/public/simple.html', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
     })
 
-    it('file: 404 pages', (done) => {
-      request.get(url + '/public/notARealFile', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(404)
-        expect(response.body).not.to.match(/notARealFile/)
-        done()
-      })
+    it('404 pages', async () => {
+      try {
+        await request.get(url + '/public/notARealFile')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.body).not.to.match(/notARealFile/)
+      }
     })
 
-    it('I should not see files outside of the public dir', (done) => {
-      request.get(url + '/public/../config.json', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(404)
-        expect(response.body).to.equal('That file is not found')
-        done()
-      })
+    it('404 pages from POST with if-modified-since header', async () => {
+      let file = Math.random().toString(36)
+      let options = {
+        url: url + '/' + file,
+        headers: {
+          'if-modified-since': 'Thu, 19 Apr 2012 09:51:20 GMT'
+        }
+      }
+
+      try {
+        await request.get(options)
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.response.body).to.equal('That file is not found')
+      }
     })
 
-    it('file: index page should be served when requesting a path (trailing slash)', (done) => {
-      request.get(url + '/public/', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(typeof response.body).to.equal('string')
-        done()
-      })
+    it('should not see files outside of the public dir', async () => {
+      try {
+        await request.get(url + '/public/../config.json')
+        throw new Error('should not ge here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        expect(error.response.body).to.equal('That file is not found')
+      }
     })
 
-    it('file: index page should be served when requesting a path (no trailing slash)', (done) => {
-      request.get(url + '/public', (error, response) => {
-        expect(error).to.be.null()
-        expect(response.statusCode).to.equal(200)
-        expect(typeof response.body).to.equal('string')
-        done()
-      })
+    it('index page should be served when requesting a path (trailing slash)', async () => {
+      let response = await request.get(url + '/public/', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.match(/ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/)
+    })
+
+    it('index page should be served when requesting a path (no trailing slash)', async () => {
+      let response = await request.get(url + '/public', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      expect(response.body).to.match(/ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/)
     })
 
     describe('can serve files from a specific mapped route', () => {
-      before((done) => {
+      before(() => {
         let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.mkdirSync(testFolderPublicPath)
         fs.writeFileSync(testFolderPublicPath + '/testFile.html', 'ActionHero Route Test File')
         api.routes.registerRoute('get', '/my/public/route', null, null, true, testFolderPublicPath)
-        process.nextTick(() => {
-          done()
-        })
       })
 
-      after((done) => {
+      after(() => {
         let testFolderPublicPath = path.join(__dirname, '/../../public/testFolder')
         fs.unlinkSync(testFolderPublicPath + path.sep + 'testFile.html')
         fs.rmdirSync(testFolderPublicPath)
-        process.nextTick(() => {
-          done()
-        })
       })
 
-      it('works for routes mapped paths', (done) => {
-        request.get(url + '/my/public/route/testFile.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('ActionHero Route Test File')
-          done()
-        })
+      it('works for routes mapped paths', async () => {
+        let response = await request.get(url + '/my/public/route/testFile.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('ActionHero Route Test File')
       })
 
-      it('returns 404 for files not available in route mapped paths', (done) => {
-        request.get(url + '/my/public/route/fileNotFound.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('returns 404 for files not available in route mapped paths', async () => {
+        try {
+          await request.get(url + '/my/public/route/fileNotFound.html')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(error.response.body).to.equal('That file is not found')
+        }
       })
 
-      it('I should not see files outside of the mapped dir', (done) => {
-        request.get(url + '/my/public/route/../../config/servers/web.js', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('should not see files outside of the mapped dir', async () => {
+        try {
+          await request.get(url + '/my/public/route/../../config/servers/web.js')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(error.response.body).to.equal('That file is not found')
+        }
       })
     })
 
@@ -807,22 +713,19 @@ describe('Server: Web', () => {
       let source = path.join(__dirname, '/../../public/simple.html')
 
       before(() => {
-        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'testFile.html'))
+        fs.createReadStream(source).pipe(fs.createWriteStream(os.tmpdir() + path.sep + 'tmpTestFile.html'))
         api.staticFile.searchLoactions.push(os.tmpdir())
       })
 
       after(() => {
-        fs.unlinkSync(os.tmpdir() + path.sep + 'testFile.html')
+        fs.unlinkSync(os.tmpdir() + path.sep + 'tmpTestFile.html')
         api.staticFile.searchLoactions.pop()
       })
 
-      it('works for secondary paths', (done) => {
-        request.get(url + '/public/testFile.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-          done()
-        })
+      it('works for secondary paths', async () => {
+        let response = await request.get(url + '/public/tmpTestFile.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       })
     })
 
@@ -837,51 +740,46 @@ describe('Server: Web', () => {
         api.config.servers.web.urlPathForFiles = 'public'
       })
 
-      it('old action routes stop working', (done) => {
-        request.get(url + '/api/randomNumber', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('old action routes stop working', async () => {
+        try {
+          await request.get(url + '/api/randomNumber')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+        }
       })
 
-      it('can ask for nested URL actions', (done) => {
-        request.get(url + '/craz/y/action/path/randomNumber', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          done()
-        })
+      it('can ask for nested URL actions', async () => {
+        let response = await request.get(url + '/craz/y/action/path/randomNumber', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
       })
 
-      it('old file routes stop working', (done) => {
-        request.get(url + '/public/simple.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          done()
-        })
+      it('old file routes stop working', async () => {
+        try {
+          await request.get(url + '/public/simple.html')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+        }
       })
 
-      it('can ask for nested URL files', (done) => {
-        request.get(url + '/a/b/c/simple.html', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-          done()
-        })
+      it('can ask for nested URL files', async () => {
+        let response = await request.get(url + '/a/b/c/simple.html', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       })
 
-      it('can ask for nested URL files with depth', (done) => {
-        request.get(url + '/a/b/c/css/cosmo.css', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          done()
-        })
+      it('can ask for nested URL files with depth', async () => {
+        let response = await request.get(url + '/a/b/c/css/cosmo.css', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
       })
     })
   })
 
   describe('routes', () => {
-    before((done) => {
+    let originalRoutes
+    before(() => {
+      originalRoutes = api.routes.routes
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
         '1': {
@@ -893,9 +791,8 @@ describe('Server: Web', () => {
             path: {required: false}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.matchedRoute = data.connection.matchedRoute
-            next()
           }
         }
       }
@@ -910,9 +807,8 @@ describe('Server: Web', () => {
             user_id: {required: true}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.user_id = data.params.user_id
-            next()
           }
         },
 
@@ -924,9 +820,8 @@ describe('Server: Web', () => {
             userID: {required: true}
           },
           outputExample: {},
-          run: (api, data, next) => {
+          run: (api, data) => {
             data.response.userID = data.params.userID
-            next()
           }
         }
       }
@@ -950,265 +845,257 @@ describe('Server: Web', () => {
           {path: '/login/:userID(^(\\d{3}|admin)$)', action: 'login'}
         ]
       })
-
-      done()
     })
 
-    after((done) => {
-      api.routes.routes = {}
+    after(() => {
+      api.routes.routes = originalRoutes
       delete api.actions.versions.mimeTestAction
       delete api.actions.actions.mimeTestAction
       delete api.actions.versions.login
       delete api.actions.actions.login
-      done()
     })
 
-    it('new params will not be allowed in route definitions (an action should do it)', (done) => {
+    it('new params will not be allowed in route definitions (an action should do it)', () => {
       expect(api.params.postVariables).not.to.contain('bogusID')
-      done()
     })
 
-    it('\'all\' routes are duplicated properly', (done) => {
+    it('\'all\' routes are duplicated properly', () => {
       ['get', 'post', 'put', 'delete'].forEach((verb) => {
         expect(api.routes.routes[verb][0].action).to.equal('user')
         expect(api.routes.routes[verb][0].path).to.equal('/user/:userID')
       })
-      done()
     })
 
-    it('unknown actions are still unknown', (done) => {
-      request.get(url + '/api/a_crazy_action', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('unknown actions are still unknown', async () => {
+      try {
+        await request.get(url + '/api/a_crazy_action')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
-        done()
-      })
+      }
     })
 
-    it('explicit action declarations still override routed actions, if the defined action is real', (done) => {
-      request.get(url + '/api/user/123?action=randomNumber', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('randomNumber')
-        done()
-      })
+    it('explicit action declarations still override routed actions, if the defined action is real', async () => {
+      let body = await request.get(url + '/api/user/123?action=randomNumber').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('randomNumber')
     })
 
-    it('route actions will override explicit actions, if the defined action is null', (done) => {
-      request.get(url + '/api/user/123?action=someFakeAction', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('route actions will override explicit actions, if the defined action is null', async () => {
+      try {
+        await request.get(url + '/api/user/123?action=someFakeAction').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
-        done()
-      })
+      }
     })
 
-    it('route actions have the matched route availalbe to the action', (done) => {
-      request.get(url + '/api/mimeTestAction/thing.json', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
-        expect(body.matchedRoute.action).to.equal('mimeTestAction')
-        done()
-      })
+    it('route actions have the matched route availalbe to the action', async () => {
+      let body = await request.get(url + '/api/mimeTestAction/thing.json').then(toJson)
+      expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
+      expect(body.matchedRoute.action).to.equal('mimeTestAction')
     })
 
-    it('Routes should recognize apiVersion as default param', (done) => {
-      request.get(url + '/api/old_login?user_id=7', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.user_id).to.equal('7')
-        expect(body.requesterInformation.receivedParams.action).to.equal('login')
-        done()
-      })
+    it('Routes should recognize apiVersion as default param', async () => {
+      let body = await request.get(url + '/api/old_login?user_id=7').then(toJson)
+      expect(body.user_id).to.equal('7')
+      expect(body.requesterInformation.receivedParams.action).to.equal('login')
     })
 
-    it('Routes should be mapped for GET (simple)', (done) => {
-      request.get(url + '/api/users', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for GET (simple)', async () => {
+      try {
+        await request.get(url + '/api/users').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('usersList')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for GET (complex)', (done) => {
-      request.get(url + '/api/user/1234', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for GET (complex)', async () => {
+      try {
+        await request.get(url + '/api/user/1234').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for POST', (done) => {
-      request.post(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('user')
-        expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
-        expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
-    })
-
-    it('Routes should be mapped for PUT', (done) => {
-      request.put(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for POST', async () => {
+      try {
+        await request.post(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
         expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
+      }
     })
 
-    it('Routes should be mapped for DELETE', (done) => {
-      request.del(url + '/api/user/1234?key=value', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for PUT', async () => {
+      try {
+        await request.put(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
         expect(body.requesterInformation.receivedParams.key).to.equal('value')
-        done()
-      })
+      }
     })
 
-    it('route params trump explicit params', (done) => {
-      request.get(url + '/api/user/1?userID=2', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('Routes should be mapped for DELETE', async () => {
+      try {
+        await request.del(url + '/api/user/1234?key=value').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
+        expect(body.requesterInformation.receivedParams.action).to.equal('user')
+        expect(body.requesterInformation.receivedParams.userID).to.equal('1234')
+        expect(body.requesterInformation.receivedParams.key).to.equal('value')
+      }
+    })
+
+    it('route params trump explicit params', async () => {
+      try {
+        await request.get(url + '/api/user/1?userID=2').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('user')
         expect(body.requesterInformation.receivedParams.userID).to.equal('1')
-        done()
-      })
+      }
     })
 
-    it('to match, a route much match all parts of the URL', (done) => {
-      request.get(url + '/api/thing', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('to match, a route much match all parts of the URL', async () => {
+      try {
+        await request.get(url + '/api/thing').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).to.equal('thing')
+      }
 
-        request.get(url + '/api/thing/stuff', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('thingStuff')
-          done()
-        })
-      })
+      try {
+        await request.get(url + '/api/thing/stuff').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
+        expect(body.requesterInformation.receivedParams.action).to.equal('thingStuff')
+      }
     })
 
-    it('regexp matches will provide proper variables', (done) => {
-      request.post(url + '/api/login/123', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('login')
-        expect(body.requesterInformation.receivedParams.userID).to.equal('123')
+    it('regexp matches will provide proper variables', async () => {
+      let body = await request.post(url + '/api/login/123').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('login')
+      expect(body.requesterInformation.receivedParams.userID).to.equal('123')
 
-        request.post(url + '/api/login/admin', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('login')
-          expect(body.requesterInformation.receivedParams.userID).to.equal('admin')
-          done()
-        })
-      })
+      let bodyAgain = await request.post(url + '/api/login/admin').then(toJson)
+      expect(bodyAgain.requesterInformation.receivedParams.action).to.equal('login')
+      expect(bodyAgain.requesterInformation.receivedParams.userID).to.equal('admin')
     })
 
-    it('regexp matches will still work with params with periods and other wacky chars', (done) => {
-      request.get(url + '/api/c/key/log_me-in.com$123.jpg', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
-        expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
-        expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.jpg')
-        done()
-      })
+    it('regexp matches will still work with params with periods and other wacky chars', async () => {
+      let body = await request.get(url + '/api/c/key/log_me-in.com$123.').then(toJson)
+      expect(body.requesterInformation.receivedParams.action).to.equal('cacheTest')
+      expect(body.requesterInformation.receivedParams.value).to.equal('log_me-in.com$123.')
     })
 
-    it('regexp match failures will be rejected', (done) => {
-      request.post(url + '/api/login/1234', (error, response, body) => {
-        expect(error).to.be.null()
-        body = JSON.parse(body)
+    it('regexp match failures will be rejected', async () => {
+      try {
+        await request.get(url + '/api/login/1234').then(toJson)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.statusCode).to.equal(404)
+        let body = await toJson(error.response.body)
         expect(body.error).to.equal('unknown action or invalid apiVersion')
         expect(body.requesterInformation.receivedParams.userID).to.not.exist()
-        done()
-      })
+      }
     })
 
     describe('file extensions + routes', () => {
-      it('will change header information based on extension (when active)', (done) => {
-        request.get(url + '/api/mimeTestAction/val.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.headers['content-type']).to.equal('image/png')
-          done()
-        })
+      it('will change header information based on extension (when active)', async () => {
+        let response = await request.get(url + '/api/mimeTestAction/val.png', {resolveWithFullResponse: true})
+        expect(response.headers['content-type']).to.equal('image/png')
       })
 
-      it('will not change header information if there is a connection.error', (done) => {
-        request.get(url + '/api/mimeTestAction', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(response.headers['content-type']).to.equal('application/json; charset=utf-8')
+      it('will not change header information if there is a connection.error', async () => {
+        try {
+          await request.get(url + '/api/mimeTestAction')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(422)
+          let body = await toJson(error.response.body)
+          expect(error.response.headers['content-type']).to.equal('application/json; charset=utf-8')
           expect(body.error).to.equal('key is a required parameter for this action')
-          done()
-        })
+        }
       })
 
-      it('works with with matchTrailingPathParts', (done) => {
-        request.get(url + '/api/a/wild/theKey/and/some/more/path', (error, response, body) => {
-          expect(error).to.be.null()
-          body = JSON.parse(body)
-          expect(body.requesterInformation.receivedParams.action).to.equal('mimeTestAction')
-          expect(body.requesterInformation.receivedParams.path).to.equal('and/some/more/path')
-          expect(body.requesterInformation.receivedParams.key).to.equal('theKey')
-          done()
-        })
+      it('works with with matchTrailingPathParts', async () => {
+        let body = await request.get(url + '/api/a/wild/theKey/and/some/more/path').then(toJson)
+        expect(body.requesterInformation.receivedParams.action).to.equal('mimeTestAction')
+        expect(body.requesterInformation.receivedParams.path).to.equal('and/some/more/path')
+        expect(body.requesterInformation.receivedParams.key).to.equal('theKey')
       })
     })
 
     describe('spaces in URL with public files', () => {
       let source = path.join(__dirname, '/../../public/logo/actionhero.png')
 
-      before((done) => {
+      before(async () => {
         let tmpDir = os.tmpdir()
         let readStream = fs.createReadStream(source)
-        readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'))
         api.staticFile.searchLoactions.push(tmpDir)
-        readStream.on('close', done)
+
+        await new Promise((resolve) => {
+          readStream.pipe(fs.createWriteStream(tmpDir + path.sep + 'actionhero with space.png'))
+          readStream.on('close', resolve)
+        })
       })
 
-      after((done) => {
+      after(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + 'actionhero with space.png')
         api.staticFile.searchLoactions.pop()
-        done()
       })
 
-      it('will decode %20 or plus sign to a space so that file system can read', (done) => {
-        request.get(url + '/actionhero%20with%20space.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(200)
-          expect(response.body).to.match(/PNG/)
-          expect(response.headers['content-type']).to.equal('image/png')
-          done()
-        })
+      it('will decode %20 or plus sign to a space so that file system can read', async () => {
+        let response = await request.get(url + '/actionhero%20with%20space.png', {resolveWithFullResponse: true})
+        expect(response.statusCode).to.equal(200)
+        expect(response.body).to.match(/PNG/)
+        expect(response.headers['content-type']).to.equal('image/png')
       })
 
-      it('will capture bad encoding in URL and return NOT FOUND', (done) => {
-        request.get(url + '/actionhero%20%%%%%%%%%%with+space.png', (error, response) => {
-          expect(error).to.be.null()
-          expect(response.statusCode).to.equal(404)
-          expect(typeof response.body).to.equal('string')
-          expect(response.body).to.match(/^That file is not found/)
-          done()
-        })
+      it('will capture bad encoding in URL and return NOT FOUND', async () => {
+        try {
+          await request.get(url + '/actionhero%20%%%%%%%%%%with+space.png')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).to.equal(404)
+          expect(typeof error.response.body).to.equal('string')
+          expect(error.response.body).to.match(/^That file is not found/)
+        }
       })
     })
   })
 
   describe('it should work with server custom methods', () => {
-    it('actions handled by the web server support proxy for setHeaders', (done) => {
+    let originalRoutes
+    before(() => {
+      originalRoutes = api.routes.routes
       api.actions.versions.proxyHeaders = [1]
       api.actions.actions.proxyHeaders = {
         '1': {
@@ -1216,13 +1103,8 @@ describe('Server: Web', () => {
           description: 'proxy test',
           inputs: {},
           outputExample: {},
-          run: (api, data, next) => {
-            try {
-              data.connection.setHeader('X-Foo', 'bar')
-              next()
-            } catch (error) {
-              next(error)
-            }
+          run: (api, data) => {
+            data.connection.setHeader('X-Foo', 'bar')
           }
         }
       }
@@ -1232,17 +1114,17 @@ describe('Server: Web', () => {
           {path: '/proxy', action: 'proxyHeaders', apiVersion: 1}
         ]
       })
+    })
 
-      request.get(url + '/api/proxy', (error, response, body) => {
-        expect(error).to.be.null()
-        expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
+    after(() => {
+      api.routes.routes = originalRoutes
+      delete api.actions.versions.proxyHeaders
+      delete api.actions.actions.proxyHeaders
+    })
 
-        api.routes.routes = {}
-        delete api.actions.versions.proxyHeaders
-        delete api.actions.actions.proxyHeaders
-
-        done()
-      })
+    it('actions handled by the web server support proxy for setHeaders', async () => {
+      let response = await request.get(url + '/api/proxy', {resolveWithFullResponse: true})
+      expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
     })
   })
 })

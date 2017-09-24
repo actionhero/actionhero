@@ -7,8 +7,8 @@ chai.use(dirtyChai)
 
 const fs = require('fs')
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 require = require.requireActual // eslint-disable-line
@@ -17,73 +17,66 @@ const originalFile = './actions/randomNumber.js'
 const originalContent = fs.readFileSync(originalFile)
 
 let newFileContent = ''
-newFileContent += 'exports.randomNumber = {'
-newFileContent += '  name: "randomNumber",'
-newFileContent += '  description: "HACK",'
-newFileContent += '  outputExample: {},'
-newFileContent += '  run: function(api, connection, next){'
-newFileContent += '    connection.response.randomNumber = "not a number!";'
-newFileContent += '    next(connection, true);'
-newFileContent += '  }'
-newFileContent += '};'
+newFileContent += 'const ActionHero = require(\'./../index.js\')\n'
+newFileContent += 'module.exports = class RandomNumber extends ActionHero.Action {\n'
+newFileContent += '  constructor () {\n'
+newFileContent += '    super()\n'
+newFileContent += '    this.name = \'randomNumber\'\n'
+newFileContent += '    this.description = \'HACK\'\n'
+newFileContent += '  }\n'
+newFileContent += '  async run (api, data) {\n'
+newFileContent += '    data.response.randomNumber = "not a number!"\n'
+newFileContent += '  }\n'
+newFileContent += '}\n'
+
+const sleep = async (timeout) => {
+  await new Promise((resolve) => setTimeout(resolve, timeout))
+}
 
 describe('Core: Developer Mode', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      setTimeout(done, 1001) // allow the file to get stat-ed once in the original state
-    })
+  before(async () => {
+    api = await actionhero.start()
+    await sleep(1001) // allow the file to get stat-ed once in the original state
   })
 
-  after((done) => {
-    actionhero.stop(() => {
-      fs.writeFileSync(originalFile, originalContent)
-      setTimeout(done, 1001 * 3)
-    })
+  after(async () => {
+    await actionhero.stop()
+    fs.writeFileSync(originalFile, originalContent)
+    await sleep(1001 * 3)
   })
 
-  it('random numbers work initially', (done) => {
-    api.specHelper.runAction('randomNumber', (response) => {
-      expect(response.error).to.not.exist()
-      expect(response.randomNumber).to.be.at.most(1)
-      expect(response.randomNumber).to.be.at.least(0)
-      done()
-    })
+  it('random numbers work initially', async () => {
+    let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(error).to.not.exist()
+    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).to.be.at.least(0)
   })
 
   describe('with new file', () => {
-    before((done) => {
-      fs.writeFile(originalFile, newFileContent, done)
+    before(() => {
+      fs.writeFileSync(originalFile, newFileContent)
     })
 
-    it('I can change the file and new actions will be loaded up', (done) => {
-      setTimeout(() => {
-        expect(api.actions.actions.randomNumber['1'].description).to.equal('HACK')
-        api.specHelper.runAction('randomNumber', (response) => {
-          expect(response.randomNumber).to.equal('not a number!')
-          done()
-        })
-      }, 3001) // file read timer is 1 second; time to notice the change + 3x time to reload API
+    it('I can change the file and new actions will be loaded up', async () => {
+      await sleep(3001) // file read timer is 1 second; time to notice the change + 3x time to reload API
+      expect(api.actions.actions.randomNumber['1'].description).to.equal('HACK')
+      let {randomNumber} = await api.specHelper.runAction('randomNumber')
+      expect(randomNumber).to.equal('not a number!')
     }).timeout(10000)
   })
 
   describe('reseting', () => {
-    it('can be placed back', (done) => {
+    it('can be placed back', async () => {
       fs.writeFileSync(originalFile, originalContent)
-      setTimeout(() => {
-        expect(api.actions.actions.randomNumber['1'].description).to.equal('I am an API method which will generate a random number')
-        done()
-      }, 5001)
+      await sleep(5001)
+      expect(api.actions.actions.randomNumber['1'].description).to.equal('I am an API method which will generate a random number')
     }).timeout(10000)
 
-    it('works as it did originally', (done) => {
-      api.specHelper.runAction('randomNumber', (response) => {
-        expect(response.error).to.not.exist()
-        expect(response.randomNumber).to.be.at.most(1)
-        expect(response.randomNumber).to.be.at.least(0)
-        done()
-      })
+    it('works as it did originally', async () => {
+      let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
+      expect(error).to.not.exist()
+      expect(randomNumber).to.be.at.most(1)
+      expect(randomNumber).to.be.at.least(0)
     })
   })
 })

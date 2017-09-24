@@ -6,30 +6,19 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 describe('Action: status', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
-
-  it('returns node status', (done) => {
-    api.specHelper.runAction('status', (response) => {
-      expect(response.problems).to.have.length(0)
-      expect(response.id).to.equal('test-server-' + process.pid)
-      done()
-    })
+  it('returns node status', async () => {
+    let {id, problems, name, error} = await api.specHelper.runAction('status')
+    expect(error).to.not.exist()
+    expect(problems).to.have.length(0)
+    expect(id).to.equal('test-server-' + process.pid)
+    expect(name).to.equal('actionhero')
   })
 })

@@ -8,464 +8,313 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const async = require('async')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 describe('Core: Cache', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
-  })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
-  })
-
-  it('cache methods should exist', (done) => {
+  it('cache methods should exist', () => {
     expect(api.cache).to.be.instanceof(Object)
     expect(api.cache.save).to.be.instanceof(Function)
     expect(api.cache.load).to.be.instanceof(Function)
     expect(api.cache.destroy).to.be.instanceof(Function)
-    done()
   })
 
-  it('cache.save', (done) => {
-    api.cache.save('testKey', 'abc123', null, (error, resp) => {
-      expect(error).to.be.null()
-      expect(resp).to.equal(true)
-      done()
-    })
+  it('cache.save', async () => {
+    let resp = await api.cache.save('testKey', 'abc123')
+    expect(resp).to.equal(true)
   })
 
-  it('cache.load', (done) => {
-    api.cache.load('testKey', (error, resp) => {
-      expect(error).to.be.null()
-      expect(resp).to.equal('abc123')
-      done()
-    })
+  it('cache.load', async () => {
+    await api.cache.save('testKey', 'abc123')
+    let { value } = await api.cache.load('testKey')
+    expect(value).to.equal('abc123')
   })
 
-  it('cache.load failures', (done) => {
-    api.cache.load('something else', (error, resp) => {
+  it('cache.load failures', async () => {
+    try {
+      await api.cache.load('something else')
+      throw new Error('should not get here')
+    } catch (error) {
       expect(String(error)).to.equal('Error: Object not found')
-      expect(resp).to.be.null()
-      done()
-    })
+    }
   })
 
-  it('cache.destroy', (done) => {
-    api.cache.destroy('testKey', (error, resp) => {
-      expect(error).to.be.null()
-      expect(resp).to.equal(true)
-      done()
-    })
+  it('cache.destroy', async () => {
+    let resp = await api.cache.destroy('testKey')
+    expect(resp).to.equal(true)
   })
 
-  it('cache.destroy failure', (done) => {
-    api.cache.destroy('testKey', (error, resp) => {
-      expect(error).to.be.null()
-      expect(resp).to.equal(false)
-      done()
-    })
+  it('cache.destroy failure', async () => {
+    let resp = await api.cache.destroy('testKey')
+    expect(resp).to.equal(false)
   })
 
-  it('cache.save with expire time', (done) => {
-    api.cache.save('testKey', 'abc123', 10, (error, resp) => {
-      expect(error).to.be.null()
-      expect(resp).to.equal(true)
-      done()
-    })
+  it('cache.save with expire time', async () => {
+    let resp = await api.cache.save('testKey', 'abc123', 10)
+    expect(resp).to.equal(true)
   })
 
-  it('cache.load with expired items should not return them', (done) => {
-    api.cache.save('testKey_slow', 'abc123', 10, (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      setTimeout(() => {
-        api.cache.load('testKey_slow', (error, loadResp) => {
-          expect(String(error)).to.equal('Error: Object expired')
-          expect(loadResp).to.not.exist()
-          done()
-        })
-      }, 20)
-    })
+  it('cache.load with expired items should not return them', async () => {
+    let saveResp = await api.cache.save('testKey_slow', 'abc123', 10)
+    expect(saveResp).to.equal(true)
+    await new Promise((resolve) => { setTimeout(resolve, 20) })
+    try {
+      await api.cache.load('testKey_slow')
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(String(error)).to.equal('Error: Object expired')
+    }
   })
 
-  it('cache.load with negative expire times will never load', (done) => {
-    api.cache.save('testKeyInThePast', 'abc123', -1, (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      api.cache.load('testKeyInThePast', (error, loadResp) => {
-        expect(String(error)).to.match(/Error: Object/)
-        expect(loadResp).to.not.exist()
-        done()
-      })
-    })
+  it('cache.load with negative expire times will never load', async () => {
+    let saveResp = await api.cache.save('testKeyInThePast', 'abc123', -1)
+    expect(saveResp).to.equal(true)
+    try {
+      await api.cache.load('testKeyInThePast')
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(String(error)).to.match(/Error: Object/)
+    }
   })
 
-  it('cache.save does not need to pass expireTime', (done) => {
-    api.cache.save('testKeyForNullExpireTime', 'abc123', (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      api.cache.load('testKeyForNullExpireTime', (error, loadResp) => {
-        expect(error).to.be.null()
-        expect(loadResp).to.equal('abc123')
-        done()
-      })
-    })
+  it('cache.save does not need to pass expireTime', async () => {
+    let saveResp = await api.cache.save('testKeyForNullExpireTime', 'abc123')
+    expect(saveResp).to.equal(true)
+    let {value} = await api.cache.load('testKeyForNullExpireTime')
+    expect(value).to.equal('abc123')
   })
 
-  it('cache.load without changing the expireTime will re-apply the redis expire', (done) => {
+  it('cache.load without changing the expireTime will re-apply the redis expire', async () => {
     let key = 'testKey'
-    api.cache.save(key, 'val', 1000, () => {
-      api.cache.load(key, (error, loadResp) => {
-        expect(error).to.be.null()
-        expect(loadResp).to.equal('val')
-        setTimeout(() => {
-          api.cache.load(key, (error, loadResp) => {
-            expect(String(error)).to.match(/Error: Object not found/)
-            expect(loadResp).to.be.null()
-            done()
-          })
-        }, 1001)
-      })
-    })
+    await api.cache.save(key, 'val', 1000)
+    let loadResp = await api.cache.load(key)
+    expect(loadResp.value).to.equal('val')
+    await new Promise((resolve) => { setTimeout(resolve, 1001) })
+    try {
+      await api.cache.load(key)
+      throw new Error('should not get here')
+    } catch (error) {
+      // expect(String(error)).to.match(/Error: Object expired/)
+      expect(error).to.exist()
+    }
   })
 
-  it('cache.load with options that extending expireTime should return cached item', (done) => {
+  it('cache.load with options that extending expireTime should return cached item', async () => {
     let expireTime = 400
     let timeout = 200
+
     // save the initial key
-    api.cache.save('testKey_slow', 'abc123', expireTime, (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      // wait for `timeout` and try to load the key
-      setTimeout(() => {
-        api.cache.load('testKey_slow', {expireTimeMS: expireTime}, (error, loadResp) => {
-          expect(error).to.be.null()
-          expect(loadResp).to.equal('abc123')
-          // wait another `timeout` and load the key again within the extended expire time
-          setTimeout(() => {
-            api.cache.load('testKey_slow', (error, loadResp) => {
-              expect(error).to.be.null()
-              expect(loadResp).to.equal('abc123')
-              // wait another `timeout` and the key load should fail without the extension
-              setTimeout(() => {
-                api.cache.load('testKey_slow', (error, loadResp) => {
-                  expect(String(error)).to.equal('Error: Object not found')
-                  expect(loadResp).to.be.null()
-                  done()
-                })
-              }, timeout)
-            })
-          }, timeout)
-        })
-      }, timeout)
-    })
+    let saveResp = await api.cache.save('testKey_slow', 'abc123', expireTime)
+    expect(saveResp).to.equal(true)
+
+    // wait for `timeout` and try to load the key
+    await new Promise((resolve) => { setTimeout(resolve, timeout) })
+    let loadResp = await api.cache.load('testKey_slow', {expireTimeMS: expireTime})
+    expect(loadResp.value).to.equal('abc123')
+
+    // wait another `timeout` and load the key again within the extended expire time
+    await new Promise((resolve) => { setTimeout(resolve, timeout) })
+    loadResp = await api.cache.load('testKey_slow')
+    expect(loadResp.value).to.equal('abc123')
+
+    // wait another `timeout` and the key load should fail without the extension
+    await new Promise((resolve) => { setTimeout(resolve, timeout) })
+    try {
+      loadResp = await api.cache.load('testKey_slow')
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(String(error)).to.equal('Error: Object expired')
+    }
   })
 
-  it('cache.save works with arrays', (done) => {
-    api.cache.save('array_key', [1, 2, 3], (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      api.cache.load('array_key', (error, loadResp) => {
-        expect(error).to.be.null()
-        expect(loadResp[0]).to.equal(1)
-        expect(loadResp[1]).to.equal(2)
-        expect(loadResp[2]).to.equal(3)
-        done()
-      })
-    })
+  it('cache.save works with arrays', async () => {
+    let saveResp = await api.cache.save('array_key', [1, 2, 3])
+    expect(saveResp).to.equal(true)
+    let {value} = await api.cache.load('array_key')
+    expect(value[0]).to.equal(1)
+    expect(value[1]).to.equal(2)
+    expect(value[2]).to.equal(3)
   })
 
-  it('cache.save works with objects', (done) => {
+  it('cache.save works with objects', async () => {
     let data = {}
     data.thing = 'stuff'
     data.otherThing = [1, 2, 3]
-    api.cache.save('obj_key', data, (error, saveResp) => {
-      expect(error).to.be.null()
-      expect(saveResp).to.equal(true)
-      api.cache.load('obj_key', (error, loadResp) => {
-        expect(error).to.be.null()
-        expect(loadResp.thing).to.equal('stuff')
-        expect(loadResp.otherThing[0]).to.equal(1)
-        expect(loadResp.otherThing[1]).to.equal(2)
-        expect(loadResp.otherThing[2]).to.equal(3)
-        done()
-      })
-    })
+    let saveResp = await api.cache.save('obj_key', data)
+    expect(saveResp).to.equal(true)
+    let {value} = await api.cache.load('obj_key')
+    expect(value.thing).to.equal('stuff')
+    expect(value.otherThing[0]).to.equal(1)
+    expect(value.otherThing[1]).to.equal(2)
+    expect(value.otherThing[2]).to.equal(3)
   })
 
-  it('can clear the cache entirely', (done) => {
-    api.cache.save('thingA', 123, () => {
-      api.cache.size((error, count) => {
-        expect(error).to.be.null()
-        expect(count > 0).to.equal(true)
-        api.cache.clear(() => {
-          api.cache.size((error, count) => {
-            expect(error).to.be.null()
-            expect(count).to.equal(0)
-            done()
-          })
-        })
-      })
-    })
+  it('can read the cache size', async () => {
+    await api.cache.save('thingA')
+    let count = await api.cache.size()
+    expect(count > 0).to.equal(true)
+  })
+
+  it('can clear the cache entirely', async () => {
+    await api.cache.save('thingA')
+    let count = await api.cache.size()
+    expect(count > 0).to.equal(true)
+    await api.cache.clear()
+    count = await api.cache.size()
+    expect(count).to.equal(0)
   })
 
   describe('lists', () => {
-    it('can push and pop from an array', (done) => {
-      let jobs = []
+    it('can push and pop from an array', async () => {
+      await api.cache.push('testListKey', 'a string')
+      await api.cache.push('testListKey', ['an array'])
+      await api.cache.push('testListKey', {what: 'an object'})
 
-      jobs.push((next) => { api.cache.push('testListKey', 'a string', next) })
-      jobs.push((next) => { api.cache.push('testListKey', ['an array'], next) })
-      jobs.push((next) => { api.cache.push('testListKey', {what: 'an aobject'}, next) })
-      async.parallel(jobs, (error) => {
-        expect(error).to.be.null()
-        jobs = []
-
-        jobs.push((next) => {
-          api.cache.pop('testListKey', (error, data) => {
-            expect(error).to.be.null()
-            expect(data).to.equal('a string')
-            next()
-          })
-        })
-        jobs.push((next) => {
-          api.cache.pop('testListKey', (error, data) => {
-            expect(error).to.be.null()
-            expect(data).to.deep.equal(['an array'])
-            next()
-          })
-        })
-        jobs.push((next) => {
-          api.cache.pop('testListKey', (error, data) => {
-            expect(error).to.be.null()
-            expect(data).to.deep.equal({what: 'an aobject'})
-            next()
-          })
-        })
-
-        async.series(jobs, (error) => {
-          expect(error).to.be.null()
-          done()
-        })
-      })
+      let data
+      data = await api.cache.pop('testListKey')
+      expect(data).to.equal('a string')
+      data = await api.cache.pop('testListKey')
+      expect(data).to.deep.equal(['an array'])
+      data = await api.cache.pop('testListKey')
+      expect(data).to.deep.equal({what: 'an object'})
+      data = await api.cache.pop('testListKey')
+      expect(data).to.not.exist()
     })
 
-    it('will return undefined if the list is empty', (done) => {
-      api.cache.pop('emptyListKey', (error, data) => {
-        expect(error).to.not.exist()
-        expect(data).to.not.exist()
-        done()
-      })
+    it('will return undefined if the list is empty', async () => {
+      let data = await api.cache.pop('emptyListKey')
+      expect(data).to.not.exist()
     })
 
-    it('can get the length of an array when full', (done) => {
-      api.cache.push('testListKey2', 'a string', () => {
-        api.cache.listLength('testListKey2', (error, l) => {
-          expect(error).to.be.null()
-          expect(l).to.equal(1)
-          done()
-        })
-      })
+    it('can get the length of an array when full', async () => {
+      await api.cache.push('testListKey2', 'a string')
+      let length = await api.cache.listLength('testListKey2')
+      expect(length).to.equal(1)
     })
 
-    it('will return 0 length when the key does not exist', (done) => {
-      api.cache.listLength('testListKey3', (error, l) => {
-        expect(error).to.be.null()
-        expect(l).to.equal(0)
-        done()
-      })
+    it('will return 0 length when the key does not exist', async () => {
+      let length = await api.cache.listLength('testListKey3')
+      expect(length).to.equal(0)
     })
   })
 
   describe('locks', () => {
     let key = 'testKey'
-    afterEach((done) => {
+
+    afterEach(async () => {
       api.cache.lockName = api.id
-      api.cache.unlock(key, done)
+      await api.cache.unlock(key)
     })
 
-    it('things can be locked, checked, and unlocked aribitrarily', (done) => {
-      api.cache.lock(key, 100, (error, lockOk) => {
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.cache.checkLock(key, null, (error, lockOk) => {
-          expect(error).to.be.null()
-          expect(lockOk).to.equal(true)
-          api.cache.unlock(key, (error, lockOk) => {
-            expect(error).to.be.null()
-            expect(lockOk).to.equal(true)
-            done()
-          })
-        })
-      })
+    it('things can be locked, checked, and unlocked aribitrarily', async () => {
+      let lockOk
+      lockOk = await api.cache.lock(key, 100)
+      expect(lockOk).to.equal(true)
+      lockOk = await api.cache.checkLock(key)
+      expect(lockOk).to.equal(true)
+      lockOk = await api.cache.unlock(key)
+      expect(lockOk).to.equal(true)
     })
 
-    it('locks have a TTL and the default will be assumed from config', (done) => {
-      api.cache.lock(key, null, (error, lockOk) => {
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.redis.clients.client.ttl(api.cache.lockPrefix + key, (error, ttl) => {
-          expect(error).to.be.null()
-          expect(ttl >= 9).to.equal(true)
-          expect(ttl <= 10).to.equal(true)
-          done()
-        })
-      })
+    it('locks have a TTL and the default will be assumed from config', async () => {
+      let lockOk = await api.cache.lock(key, null)
+      expect(lockOk).to.equal(true)
+      let ttl = await api.redis.clients.client.ttl(api.cache.lockPrefix + key)
+      expect(ttl >= 9).to.equal(true)
+      expect(ttl <= 10).to.equal(true)
     })
 
-    it('you can save an item if you do hold the lock', (done) => {
-      api.cache.lock(key, null, (error, lockOk) => {
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.cache.save(key, 'value', (error, success) => {
-          expect(error).to.be.null()
-          expect(success).to.equal(true)
-          done()
-        })
-      })
+    it('you can save an item if you do hold the lock', async () => {
+      let lockOk = await api.cache.lock(key, null)
+      expect(lockOk).to.equal(true)
+      let success = await api.cache.save(key, 'value')
+      expect(success).to.equal(true)
     })
 
-    it('you cannot save a locked item if you do not hold the lock', (done) => {
-      api.cache.lock(key, null, (error, lockOk) => {
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.cache.lockName = 'otherId'
-        api.cache.save(key, 'value', (error) => {
-          expect(String(error)).to.equal('Error: Object locked')
-          done()
-        })
-      })
+    it('you cannot save a locked item if you do not hold the lock', async () => {
+      let lockOk = await api.cache.lock(key, null)
+      expect(lockOk).to.equal(true)
+      api.cache.lockName = 'otherId'
+      try {
+        await api.cache.save(key, 'value')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(String(error)).to.equal('Error: Object locked')
+      }
     })
 
-    it('you cannot destroy a locked item if you do not hold the lock', (done) => {
-      api.cache.lock(key, null, (error, lockOk) => {
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.cache.lockName = 'otherId'
-        api.cache.destroy(key, (error) => {
-          expect(String(error)).to.equal('Error: Object locked')
-          done()
-        })
-      })
+    it('you cannot destroy a locked item if you do not hold the lock', async () => {
+      let lockOk = await api.cache.lock(key, null)
+      expect(lockOk).to.equal(true)
+      api.cache.lockName = 'otherId'
+      try {
+        await api.cache.destroy(key, 'value')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(String(error)).to.equal('Error: Object locked')
+      }
     })
 
-    it('you can opt to retry to obtain a lock if a lock is held (READ)', (done) => {
-      api.cache.lock(key, 1, (error, lockOk) => { // will be rounded up to 1s
-        expect(error).to.be.null()
-        expect(lockOk).to.equal(true)
-        api.cache.save(key, 'value', (error, success) => {
-          expect(error).to.be.null()
-          expect(success).to.equal(true)
+    it('you can opt to retry to obtain a lock if a lock is held (READ)', async () => {
+      let success = await api.cache.save(key, 'value')
+      expect(success).to.equal(true)
+      let lockOk = await api.cache.lock(key, 1) // will be rounded up to 1s
+      expect(lockOk).to.equal(true)
 
-          api.cache.lockName = 'otherId'
-          api.cache.checkLock(key, null, (error, lockOk) => {
-            expect(error).to.be.null()
-            expect(lockOk).to.equal(false)
+      api.cache.lockName = 'otherId'
+      lockOk = await api.cache.checkLock(key, null)
+      expect(lockOk).to.equal(false)
 
-            let start = new Date().getTime()
-            api.cache.load(key, {retry: 2000}, (error, data) => {
-              expect(error).to.be.null()
-              expect(data).to.equal('value')
-              let delta = new Date().getTime() - start
-              expect(delta >= 1000).to.equal(true)
-              done()
-            })
-          })
-        })
-      })
+      let start = new Date().getTime()
+      let {value} = await api.cache.load(key, {retry: 2000})
+      expect(value).to.equal('value')
+      let delta = new Date().getTime() - start
+      expect(delta >= 1000).to.equal(true)
     })
 
     describe('locks are actually blocking', () => {
       let originalLockName
 
-      before(() => {
-        originalLockName = api.cache.lockName
-      })
+      before(() => { originalLockName = api.cache.lockName })
+      after(() => { api.cache.lockName = originalLockName })
 
-      after(() => {
-        api.cache.lockName = originalLockName
-      })
-
-      it('locks are actually blocking', (done) => {
+      it('locks are actually blocking', async () => {
         let key = 'test'
-        let locksRetrieved = 0
-        let locksRejected = 0
-        let concurentLocksCount = 100
-        let jobs = []
+        let lockOk
 
-        let go = (next) => {
-          // proxy for another actionhero instance accessing the same locked object
-          api.cache.lockName = 'test-name-pass-' + (locksRetrieved + locksRejected)
+        api.cache.lockName = `test-name-pass-${1}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(true)
+        await api.cache.lock(key, (1000 * 60))
 
-          api.cache.checkLock(key, null, (error, lockOk) => {
-            if (error) { return next(error) }
+        api.cache.lockName = `test-name-pass-${2}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(false)
 
-            if (lockOk) {
-              locksRetrieved++
-              api.cache.lock(key, (1000 * 60), next)
-            } else {
-              locksRejected++
-              next()
-            }
-          })
-        }
-
-        for (let i = 0; i < concurentLocksCount; i++) {
-          jobs.push(go)
-        }
-
-        async.series(jobs, (error) => {
-          expect(error).to.be.null()
-          expect(locksRetrieved).to.equal(1) // Only first atempt
-          expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
-          done()
-        })
+        api.cache.lockName = `test-name-pass-${3}`
+        lockOk = await api.cache.checkLock(key)
+        expect(lockOk).to.equal(false)
       })
 
-      it('locks are actually blocking (using setnx value)', (done) => {
+      it('locks are actually blocking (using setnx value)', async () => {
         let key = 'test-setnx'
-        let locksRetrieved = 0
-        let locksRejected = 0
-        let concurentLocksCount = 100
-        let jobs = []
+        let lockOk
 
-        let go = (next) => {
-          // proxy for another actionhero instance accessing the same locked object
-          api.cache.lockName = 'test-setnx-name-pass-' + (locksRetrieved + locksRejected)
+        api.cache.lockName = `test-setnx-name-pass-${1}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(true)
 
-          api.cache.lock(key, (1000 * 60), (error, lockOk) => {
-            if (error) {
-              return next(error)
-            }
+        api.cache.lockName = `test-setnx-name-pass-${2}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(false)
 
-            if (lockOk) {
-              locksRetrieved++
-            } else {
-              locksRejected++
-            }
-            next()
-          })
-        }
-
-        for (let i = 0; i < concurentLocksCount; i++) {
-          jobs.push(go)
-        }
-
-        async.parallel(jobs, (error) => {
-          expect(error).to.be.null()
-          expect(locksRetrieved).to.equal(1) // Only first atempt
-          expect(locksRejected).to.equal(concurentLocksCount - 1) // Everything else
-          done()
-        })
+        api.cache.lockName = `test-setnx-name-pass-${3}`
+        lockOk = await api.cache.lock(key, (1000 * 60))
+        expect(lockOk).to.equal(false)
       })
     })
   })
@@ -473,33 +322,22 @@ describe('Core: Cache', () => {
   describe('cache dump files', () => {
     let file = os.tmpdir() + path.sep + 'cacheDump'
 
-    it('can read write the cache to a dump file', (done) => {
-      api.cache.clear(() => {
-        api.cache.save('thingA', 123, () => {
-          api.cache.dumpWrite(file, (error, count) => {
-            expect(error).to.be.null()
-            expect(count).to.equal(1)
-            let body = JSON.parse(String(fs.readFileSync(file)))
-            let content = JSON.parse(body['actionhero:cache:thingA'])
-            expect(content.value).to.equal(123)
-            done()
-          })
-        })
-      })
+    it('can read write the cache to a dump file', async () => {
+      await api.cache.clear()
+      await api.cache.save('thingA', 123)
+      let count = await api.cache.dumpWrite(file)
+      expect(count).to.equal(1)
+      let body = JSON.parse(String(fs.readFileSync(file)))
+      let content = JSON.parse(body['actionhero:cache:thingA'])
+      expect(content.value).to.equal(123)
     })
 
-    it('can laod the cache from a dump file', (done) => {
-      api.cache.clear(() => {
-        api.cache.dumpRead(file, (error, count) => {
-          expect(error).to.be.null()
-          expect(count).to.equal(1)
-          api.cache.load('thingA', (error, value) => {
-            expect(error).to.be.null()
-            expect(value).to.equal(123)
-            done()
-          })
-        })
-      })
+    it('can load the cache from a dump file', async () => {
+      await api.cache.clear()
+      let count = await api.cache.dumpRead(file)
+      expect(count).to.equal(1)
+      let {value} = await api.cache.load('thingA')
+      expect(value).to.equal(123)
     })
   })
 })

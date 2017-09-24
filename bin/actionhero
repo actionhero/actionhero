@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const optimist = require('optimist')
 const spawn = require('child_process').spawn
-
+const ActionHero = require(path.join(__dirname, '..', 'index.js'))
 const actionheroRoot = path.normalize(path.join(__dirname, '..'))
 let projectRoot
 
@@ -19,11 +19,7 @@ if (process.env.projectRoot) {
   projectRoot = path.normalize(process.cwd())
 }
 
-const ActionheroPrototype = require(actionheroRoot + '/actionhero.js')
-const actionhero = new ActionheroPrototype()
-const configChanges = {}
-
-function formatParams (api, runner) {
+const formatParams = (api, runner) => {
   let params = {}
   if (!runner.inputs) { runner.inputs = {} }
 
@@ -37,12 +33,12 @@ function formatParams (api, runner) {
       } else {
         value = collection.default
       }
-      api.log(`using default value of \`${value}\` for \`${inputName}\``)
+      console.log(`using default value of \`${value}\` for \`${inputName}\``)
     }
 
     if (collection.required === true && (value === undefined || value === null || value === '')) {
-      api.log(`Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``, 'crit')
-      // api.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
+      console.error(`Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``)
+      // console.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
       process.exit(1)
     }
 
@@ -52,81 +48,88 @@ function formatParams (api, runner) {
   return params
 }
 
-let commands = []
-if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
-optimist.argv._.forEach(function (arg) { commands.push(arg) })
-if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+const handleGenerate = async () => {
   let api = {
     projectRoot: projectRoot,
     actionheroRoot: actionheroRoot
   }
 
-  // proxy the logger, as we can't use the real one yet
-  api.log = function (message) { console.log(message) }
-
   // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(path.join(__dirname, '/../initializers/utils.js'))).initialize(api, function (error) {
-    if (error) { throw error }
+  try {
+    const UtilsClass = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
+    const utils = new UtilsClass()
+    await utils.initialize(api)
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
-    const runner = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
-    let params = formatParams(api, runner)
-    runner.run(api, {params: params}, function (error) {
-      if (error) { throw error }
-      setTimeout(process.exit, 500, 0)
-    })
-  })
-} else {
-  actionhero.initialize({configChanges: configChanges}, function (error, api) {
-    if (error) { throw error }
+    const RunnerClass = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
+    const runner = new RunnerClass()
+    const params = formatParams(api, runner)
+    await runner.run(api, {params: params})
+    setTimeout(process.exit, 500, 0)
+  } catch (error) {
+    console.error(error.toString())
+    process.exit(1)
+  }
+}
+
+const handleMethod = async () => {
+  try {
+    const actionHeroProcess = new ActionHero.Process()
+    let api = await actionHeroProcess.initialize()
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
-    api._context = actionhero
-    let runner
+    api._context = actionHeroProcess
+    let RunnerClass
 
-    try {
-      let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
-      if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
-        runner = require(p)
+    let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
+    if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
+      RunnerClass = require(p)
+    } else {
+      api.config.general.paths.cli.forEach((cliPaths) => {
+        p = path.join(cliPaths, commands.join(path.sep) + '.js')
+        if (fs.existsSync(p)) { RunnerClass = require(p) }
+      })
+    }
+
+    if (!RunnerClass) {
+      console.error(`Error: \`${commands.join(' ')}\` is not a method I can perform.`)
+      console.error('run `actionhero help` to learn more')
+      setTimeout(process.exit, 500, 1)
+    } else {
+      console.log('--------------------------------------')
+      console.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
+      console.log('--------------------------------------')
+
+      if (optimist.argv.daemon) {
+        let newArgs = process.argv.splice(2)
+        for (let i in newArgs) {
+          if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
+        }
+        newArgs.push('--isDaemon=true')
+        const command = path.normalize(actionheroRoot + '/bin/actionhero')
+        const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+        console.log(`spawned child process with pid ${child.pid}`, 'notice')
+        process.nextTick(process.exit)
       } else {
-        api.config.general.paths.cli.forEach((cliPaths) => {
-          p = path.join(cliPaths, commands.join(path.sep) + '.js')
-          if (fs.existsSync(p)) { runner = require(p) }
-        })
-      }
-
-      if (!runner) {
-        api.log(`Error: \`${commands.join(' ')}\` is not a method I can perform`, 'error')
-        api.log('run `actionhero help` to learn more', 'error')
-        setTimeout(process.exit, 500, 1)
-      } else {
-        api.log('--------------------------------------')
-        api.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
-        api.log(`projectRoot: ${path.normalize(projectRoot)}`, 'debug')
-        api.log(`actionheroRoot: ${path.normalize(actionheroRoot)}`, 'debug')
-        api.log('--------------------------------------')
-
-        if (optimist.argv.daemon) {
-          let newArgs = process.argv.splice(2)
-          for (let i in newArgs) {
-            if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
-          }
-          newArgs.push('--isDaemon=true')
-          const command = path.normalize(actionheroRoot + '/bin/actionhero')
-          const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
-          api.log(`${command} ${newArgs.join(' ')}`, 'debug')
-          api.log(`spawned child process with pid ${child.pid}`, 'notice')
-          process.nextTick(process.exit)
-        } else {
-          let params = formatParams(api, runner)
-          runner.run(api, {params: params}, function (error, toStop) {
-            if (error) { throw error }
-            if (toStop || (arguments.length < 2 && !toStop)) { setTimeout(process.exit, 500, 0) }
-          })
+        const runner = new RunnerClass()
+        let params = formatParams(api, runner)
+        let toStop = await runner.run(api, {params: params})
+        if (toStop) {
+          setTimeout(process.exit, 500, 0)
         }
       }
-    } catch (e) {
-      throw (e)
     }
-  })
+  } catch (error) {
+    console.error(error.toString())
+    process.exit(1)
+  }
+}
+
+let commands = []
+if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
+optimist.argv._.forEach(function (arg) { commands.push(arg) })
+if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+  handleGenerate()
+} else {
+  handleMethod()
 }

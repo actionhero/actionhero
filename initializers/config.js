@@ -3,12 +3,18 @@
 const fs = require('fs')
 const path = require('path')
 const argv = require('optimist').argv
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  loadPriority: 0,
-  initialize: function (api, next) {
-    // api.env
+module.exports = class Config extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'config'
+    this.loadPriority = 1
+    this.startPriority = 1
+    this.stopPriority = 1
+  }
 
+  async initialize (api) {
     if (api._startingParams && api._startingParams.api) {
       api.utils.hashMerge(api, api._startingParams.api)
     }
@@ -24,38 +30,39 @@ module.exports = {
     // reloading in development mode
 
     api.watchedFiles = []
-
-    api.watchFileAndAct = function (file, callback) {
+    api.watchFileAndAct = (file, handler) => {
       file = path.normalize(file)
 
       if (!fs.existsSync(file)) {
         throw new Error(file + ' does not exist, and cannot be watched')
       }
 
-      if (api.config.general.developmentMode === true && api.watchedFiles.indexOf(file) < 0) {
-        api.watchedFiles.push(file)
-        fs.watchFile(file, {interval: 1000}, (curr, prev) => {
+      let found = false
+      api.watchedFiles.forEach(({file: watchedFile}) => { if (watchedFile === file) { found = true } })
+
+      if (api.config.general.developmentMode === true && found === false) {
+        const watcher = fs.watch(file, (eventType) => {
           if (
             api.running === true &&
             api.config.general.developmentMode === true &&
-            curr.mtime > prev.mtime
+            eventType === 'change'
           ) {
-            process.nextTick(() => {
-              let cleanPath = file
-              if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
-              delete require.cache[require.resolve(cleanPath)]
-              callback(file)
-            })
+            let cleanPath = file
+            if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
+            delete require.cache[require.resolve(cleanPath)]
+            handler(file)
           }
         })
+
+        api.watchedFiles.push({file, watcher})
       }
     }
 
-    api.unWatchAllFiles = function () {
-      for (let i in api.watchedFiles) {
-        fs.unwatchFile(api.watchedFiles[i])
+    api.unWatchAllFiles = () => {
+      while (api.watchedFiles.length > 0) {
+        const {watcher} = api.watchedFiles.pop()
+        watcher.close()
       }
-      api.watchedFiles = []
     }
 
     // We support multiple configuration paths as follows:
@@ -87,23 +94,25 @@ module.exports = {
       }
     }
 
-    [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => { addConfigPath(entry, false) })
+    [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => {
+      addConfigPath(entry, false)
+    })
 
     if (configPaths.length < 1) {
       addConfigPath('config', false)
     }
 
     if (configPaths.length < 1) {
-      return next(new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG'))
+      throw new Error(configPaths + 'No config directory found in this project, specified with --config, or found in process.env.ACTIONHERO_CONFIG')
     }
 
-    const rebootCallback = (file) => {
+    const rebootHandler = (file) => {
       api.log(`*** rebooting due to config change (${file}) ***`, 'info')
       delete require.cache[require.resolve(file)]
       api.commands.restart()
     }
 
-    api.loadConfigDirectory = function (configPath, watch) {
+    api.loadConfigDirectory = (configPath, watch) => {
       const configFiles = api.utils.recursiveDirectoryGlob(configPath)
 
       let loadRetries = 0
@@ -131,7 +140,7 @@ module.exports = {
               delete loadErrors[e].error
             })
 
-            return next(new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors)))
+            throw new Error('Unable to load configurations, errors: ' + JSON.stringify(loadErrors))
           }
           // adjust configuration files list: remove and push
           // failed configuration to the end of the list and
@@ -142,7 +151,7 @@ module.exports = {
 
         if (watch !== false) {
           // configuration file loaded: set watch
-          api.watchFileAndAct(f, rebootCallback)
+          api.watchFileAndAct(f, rebootHandler)
         }
       }
 
@@ -167,13 +176,13 @@ module.exports = {
     if (api._startingParams && api._startingParams.configChanges) {
       api.config = api.utils.hashMerge(api.config, api._startingParams.configChanges)
     }
-
-    process.nextTick(next)
-  },
-
-  start: function (api, callback) {
-    api.log(`environment: ${api.env}`, 'notice')
-    callback()
   }
 
+  start (api) {
+    api.log(`environment: ${api.env}`, 'notice')
+  }
+
+  stop (api) {
+    api.unWatchAllFiles()
+  }
 }

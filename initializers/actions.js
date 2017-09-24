@@ -1,16 +1,23 @@
 'use strict'
 
-module.exports = {
-  loadPriority: 410,
-  initialize: function (api, next) {
-    api.actions = {}
-    api.actions.actions = {}
-    api.actions.versions = {}
+const ActionHero = require('./../index.js')
 
-    api.actions.middleware = {}
-    api.actions.globalMiddleware = []
+module.exports = class Actions extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'actions'
+    this.loadPriority = 410
+  }
 
-    api.actions.addMiddleware = function (data) {
+  async initialize (api) {
+    api.actions = {
+      actions: {},
+      versions: {},
+      middleware: {},
+      globalMiddleware: []
+    }
+
+    api.actions.addMiddleware = (data) => {
       if (!data.name) { throw new Error('middleware.name is required') }
       if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
       data.priority = Number(data.priority)
@@ -21,33 +28,7 @@ module.exports = {
       }
     }
 
-    api.actions.validateAction = function (action) {
-      const fail = (msg) => {
-        return next(new Error(msg))
-      }
-
-      if (action.inputs === undefined) {
-        action.inputs = {}
-      }
-
-      if (typeof action.name !== 'string' || action.name.length < 1) {
-        fail('an action is missing \'action.name\'')
-        return false
-      } else if (typeof action.description !== 'string' || action.description.length < 1) {
-        fail('Action ' + action.name + ' is missing \'action.description\'')
-        return false
-      } else if (typeof action.run !== 'function') {
-        fail('Action ' + action.name + ' has no run method')
-        return false
-      } else if (api.connections !== null && api.connections.allowedVerbs.indexOf(action.name) >= 0) {
-        fail(action.name + ' is a reserved verb for connections. choose a new name')
-        return false
-      } else {
-        return true
-      }
-    }
-
-    api.actions.loadFile = function (fullFilePath, reload) {
+    api.actions.loadFile = async (fullFilePath, reload) => {
       if (reload === null) { reload = false }
 
       const loadMessage = (action) => {
@@ -58,7 +39,7 @@ module.exports = {
         }
       }
 
-      api.watchFileAndAct(fullFilePath, function () {
+      api.watchFileAndAct(fullFilePath, () => {
         api.actions.loadFile(fullFilePath, true)
         api.params.buildPostVariables()
         api.routes.loadRoutes()
@@ -67,38 +48,32 @@ module.exports = {
       let action
 
       try {
-        const collection = require(fullFilePath)
+        let collection = require(fullFilePath)
+        if (typeof collection === 'function') { collection = [collection] }
         for (let i in collection) {
-          action = collection[i]
-          if (action.version === null || action.version === undefined) { action.version = 1.0 }
-          if (api.actions.actions[action.name] === null || api.actions.actions[action.name] === undefined) {
-            api.actions.actions[action.name] = {}
-          }
+          action = new collection[i]()
+          await action.validate(api)
+          if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
+          if (!api.actions.versions[action.name]) { api.actions.versions[action.name] = [] }
           api.actions.actions[action.name][action.version] = action
-          if (api.actions.versions[action.name] === null || api.actions.versions[action.name] === undefined) {
-            api.actions.versions[action.name] = []
-          }
           api.actions.versions[action.name].push(action.version)
           api.actions.versions[action.name].sort()
-          api.actions.validateAction(api.actions.actions[action.name][action.version])
           loadMessage(action)
         }
       } catch (error) {
         try {
           api.exceptionHandlers.loader(fullFilePath, error)
           delete api.actions.actions[action.name][action.version]
-        } catch (err2) {
+        } catch (_error) {
           throw error
         }
       }
     }
 
-    api.config.general.paths.action.forEach(function (p) {
-      api.utils.recursiveDirectoryGlob(p).forEach(function (f) {
-        api.actions.loadFile(f)
-      })
-    })
-
-    next()
+    for (let i in api.config.general.paths.action) {
+      let path = api.config.general.paths.action[i]
+      let files = api.utils.recursiveDirectoryGlob(path)
+      for (let j in files) { await api.actions.loadFile(files[j]) }
+    }
   }
 }

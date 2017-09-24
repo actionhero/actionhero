@@ -2,14 +2,16 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../index.js')
 
-module.exports = {
-  name: 'generate',
-  description: 'will prepare an empty directory with a template ActionHero project',
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate'
+    this.description = 'will prepare an empty directory with a template ActionHero project'
+  }
 
-  run: function (api, data, next) {
-    // ////// DOCUMENTS ////////
-
+  run (api) {
     let documents = {}
 
     documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
@@ -38,7 +40,8 @@ module.exports = {
     }
 
     for (let name in oldFileMap) {
-      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name]))
+      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name])).toString()
+      documents[name] = documents[name].replace('const ActionHero = require(\'./../index.js\')', 'const ActionHero = require(\'actionhero\')')
     }
 
     const AHversionNumber = JSON.parse(documents.packageJson).version
@@ -47,11 +50,8 @@ module.exports = {
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
     documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
 
-    // ////// LOGIC ////////
+    console.log('Generating a new actionhero project...');
 
-    api.log('Generating a new actionhero project...');
-
-    // make directories
     [
       '/actions',
       '/pids',
@@ -68,11 +68,15 @@ module.exports = {
       '/public/logo',
       '/tasks',
       '/test'
-    ].forEach(function (dir) {
-      api.utils.createDirSafely(api.projectRoot + dir)
+    ].forEach((dir) => {
+      try {
+        let message = api.utils.createDirSafely(api.projectRoot + dir)
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     })
 
-    // make files
     const newFileMap = {
       '/config/api.js': 'configApiJs',
       '/config/logger.js': 'configLoggerJs',
@@ -98,20 +102,25 @@ module.exports = {
     }
 
     for (let file in newFileMap) {
-      api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+      try {
+        let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     }
 
-    api.log('')
-    api.log('Generation Complete.  Your project directory should look like this:')
+    console.log('')
+    console.log('Generation Complete.  Your project directory should look like this:')
 
-    api.log('')
+    console.log('')
     documents.projectMap.toString().split('\n').forEach(function (line) {
-      api.log(line)
+      console.log(line)
     })
 
-    api.log('You may need to run `npm install` to install some dependancies', 'alert')
-    api.log('Run \'npm start\' to start your server')
+    console.log('You may need to run `npm install` to install some dependancies', 'alert')
+    console.log('Run \'npm start\' to start your server')
 
-    next(null, true)
+    return true
   }
 }

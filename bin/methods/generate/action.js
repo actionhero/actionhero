@@ -2,31 +2,35 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../../index.js')
 
-module.exports = {
-  name: 'generate action',
-  description: 'generate a new action',
-  example: 'actionhero generate action --name=[name] --description=[description]',
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate action'
+    this.description = 'generate a new action'
+    this.example = 'actionhero generate action --name=[name] --description=[description]'
+    this.inputs = {
+      name: {required: true},
+      description: {required: true, default: `an actionhero action`}
+    }
+  }
 
-  inputs: {
-    name: {required: true},
-    description: {required: true, default: 'an actionhero action'}
-  },
-
-  run: function (api, data, next) {
+  run (api, {params}) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
     template = String(template);
 
     [
       'name',
       'description'
-    ].forEach(function (v) {
+    ].forEach((v) => {
       let regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, data.params[v])
+      template = template.replace(regex, params[v])
     })
 
-    api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + data.params.name + '.js', template)
+    let message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', template)
+    console.info(message)
 
-    next(null, true)
+    return true
   }
 }

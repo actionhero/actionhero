@@ -1,14 +1,20 @@
-const task = {
-  name: 'runAction',
-  description: 'I will run an action and return the connection object',
-  queue: 'default',
-  plugins: [],
-  pluginOptions: [],
-  frequency: 0,
-  run: function (api, params, next) {
+'use strict'
+const ActionHero = require('./../index.js')
+
+module.exports = class RunAction extends ActionHero.Task {
+  constructor () {
+    super()
+    this.name = 'runAction'
+    this.description = 'I will run an action and return the connection object'
+    this.frequency = 0
+    this.queue = 'default'
+    this.middleware = []
+  }
+
+  async run (api, params) {
     if (!params) { params = {} }
 
-    const connection = new api.Connection({
+    const connection = new ActionHero.Connection(api, {
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
@@ -17,20 +23,16 @@ const task = {
 
     connection.params = params
 
-    const ActionProcessor = new api.ActionProcessor(connection, function (data) {
-      if (data.response.error) {
-        api.log('task error: ' + data.response.error, 'error', {params: JSON.stringify(params)})
-      } else {
-        api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
-      }
+    const actionProcessor = new ActionHero.ActionProcessor(api, connection)
+    let {response} = await actionProcessor.processAction()
 
-      connection.destroy(function () {
-        next(data.response.error, data.response)
-      })
-    })
+    if (response.error) {
+      api.log('task error: ' + response.error, 'error', {params: JSON.stringify(params)})
+    } else {
+      api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
+    }
 
-    ActionProcessor.processAction()
+    connection.destroy()
+    return response
   }
 }
-
-exports.task = task

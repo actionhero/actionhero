@@ -6,66 +6,43 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-const actionhero = new ActionheroPrototype()
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
 let api
 
 describe('Action: Cache', () => {
-  before((done) => {
-    actionhero.start((error, a) => {
-      expect(error).to.be.null()
-      api = a
-      done()
-    })
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
+
+  it('fails with no params', async () => {
+    let {error} = await api.specHelper.runAction('cacheTest', {})
+    expect(error).to.equal('Error: key is a required parameter for this action')
   })
 
-  after((done) => {
-    actionhero.stop(() => {
-      done()
-    })
+  it('fails with just key', async () => {
+    let {error} = await api.specHelper.runAction('cacheTest', {key: 'test key'})
+    expect(error).to.equal('Error: value is a required parameter for this action')
   })
 
-  it('no params', (done) => {
-    api.specHelper.runAction('cacheTest', {}, (response) => {
-      expect(response.error).to.equal('Error: key is a required parameter for this action')
-      done()
-    })
+  it('fails with just value', async () => {
+    let {error} = await api.specHelper.runAction('cacheTest', {value: 'abc123'})
+    expect(error).to.equal('Error: key is a required parameter for this action')
   })
 
-  it('just key', (done) => {
-    api.specHelper.runAction('cacheTest', {key: 'test key'}, (response) => {
-      expect(response.error).to.equal('Error: value is a required parameter for this action')
-      done()
-    })
+  it('fails with gibberish param', async () => {
+    let {error} = await api.specHelper.runAction('cacheTest', {thingy: 'abc123'})
+    expect(error).to.equal('Error: key is a required parameter for this action')
   })
 
-  it('just value', (done) => {
-    api.specHelper.runAction('cacheTest', {value: 'abc123'}, (response) => {
-      expect(response.error).to.equal('Error: key is a required parameter for this action')
-      done()
-    })
+  it('fails with value shorter than 2 letters', async () => {
+    let {error} = await api.specHelper.runAction('cacheTest', {key: 'abc123', value: 'v'})
+    expect(error).to.equal('Error: inputs should be at least 3 letters long')
   })
 
-  it('gibberish param', (done) => {
-    api.specHelper.runAction('cacheTest', {thingy: 'abc123'}, (response) => {
-      expect(response.error).to.equal('Error: key is a required parameter for this action')
-      done()
-    })
-  })
-
-  it('requires value to be longer than 2 letters', (done) => {
-    api.specHelper.runAction('cacheTest', {key: 'abc123', value: 'v'}, (response) => {
-      expect(response.error).to.equal('Error: `value` should be at least 3 letters long')
-      done()
-    })
-  })
-
-  it('correct params', (done) => {
-    api.specHelper.runAction('cacheTest', {key: 'testKey', value: 'abc123'}, (response) => {
-      expect(response.cacheTestResults.saveResp).to.equal(true)
-      expect(response.cacheTestResults.loadResp.value).to.equal('abc123')
-      expect(response.cacheTestResults.deleteResp).to.equal(true)
-      done()
-    })
+  it('works with correct params', async () => {
+    let {cacheTestResults} = await api.specHelper.runAction('cacheTest', {key: 'testKey', value: 'abc123'})
+    expect(cacheTestResults.saveResp).to.equal(true)
+    expect(cacheTestResults.loadResp.value).to.equal('abc123')
+    expect(cacheTestResults.deleteResp).to.equal(true)
   })
 })

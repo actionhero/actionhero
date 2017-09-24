@@ -1,10 +1,15 @@
 'use strict'
 
-module.exports = {
-  name: 'help',
-  description: 'get actonhero CLI help; will display this document',
+const ActionHero = require('./../../index.js')
 
-  run: function (api, data, next) {
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'help'
+    this.description = 'get actonhero CLI help; will display this document'
+  }
+
+  run (api) {
     let files = []
     let methods = {}
 
@@ -18,7 +23,8 @@ module.exports = {
 
     files.forEach((f) => {
       try {
-        let req = require(f)
+        let ReqClass = require(f)
+        let req = new ReqClass()
         if (req.name && req.name !== '%%name%%' && req.description && typeof req.run === 'function') {
           if (methods[req.name]) { throw new Error(`${req.name} is already defined`) }
           methods[req.name] = req
@@ -58,6 +64,6 @@ module.exports = {
       }
     })
 
-    next(null, true)
+    return true
   }
 }

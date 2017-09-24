@@ -2,13 +2,17 @@
 
 const path = require('path')
 const packageJSON = require(path.join(__dirname, '/../../package.json'))
+const ActionHero = require('./../../index.js')
 
-module.exports = {
-  name: 'version',
-  description: 'return the ActionHero version within this project',
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'version'
+    this.description = 'return the ActionHero version within this project'
+  }
 
-  run: function (api, data, next) {
+  run (api, data) {
     console.log(packageJSON.version)
-    next(null, true)
+    return true
   }
 }

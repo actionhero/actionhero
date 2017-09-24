@@ -2,20 +2,23 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../../index.js')
 
-module.exports = {
-  name: 'generate task',
-  description: 'generate a new task',
-  example: 'actionhero generate task --name=[name] --description=[description] --scope=[scope] --frequency=[frequency]',
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate task'
+    this.description = 'generate a new task'
+    this.example = 'actionhero generate task --name=[name] --description=[description] --scope=[scope] --frequency=[frequency]'
+    this.inputs = {
+      name: {required: true},
+      queue: {required: true},
+      description: {required: true, default: 'an actionhero task'},
+      frequency: {required: true, default: 0}
+    }
+  }
 
-  inputs: {
-    name: {required: true},
-    queue: {required: true},
-    description: {required: true, default: 'an actionhero task'},
-    frequency: {required: true, default: 0}
-  },
-
-  run: function (api, data, next) {
+  run (api, {params}) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
     template = String(template);
 
@@ -24,13 +27,14 @@ module.exports = {
       'description',
       'queue',
       'frequency'
-    ].forEach(function (v) {
+    ].forEach((v) => {
       let regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, data.params[v])
+      template = template.replace(regex, params[v])
     })
 
-    api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + data.params.name + '.js', template)
+    let message = api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + params.name + '.js', template)
+    console.log(message)
 
-    next(null, true)
+    return true
   }
 }

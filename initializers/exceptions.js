@@ -1,10 +1,20 @@
 'use strict'
 
 const os = require('os')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  loadPriority: 130,
-  initialize: function (api, next) {
+module.exports = class Exceptions extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'exceptions'
+    this.loadPriority = 130
+  }
+
+  relevantDetails () {
+    return ['action', 'remoteIP', 'type', 'params', 'room']
+  }
+
+  initialize (api) {
     api.exceptionHandlers = {}
     api.exceptionHandlers.reporters = []
 
@@ -16,14 +26,15 @@ module.exports = {
       } else if (type === 'action') {
         extraMessages.push('! uncaught error from action: ' + name)
         extraMessages.push('! connection details:')
-        const relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room']
+        let relevantDetails = this.relevantDetails()
         for (let i in relevantDetails) {
+          let relevantDetail = relevantDetails[i]
           if (
-            objects.connection[relevantDetails[i]] !== null &&
-            objects.connection[relevantDetails[i]] !== undefined &&
-            typeof objects.connection[relevantDetails[i]] !== 'function'
+            objects.connection[relevantDetail] !== null &&
+            objects.connection[relevantDetail] !== undefined &&
+            typeof objects.connection[relevantDetail] !== 'function'
           ) {
-            extraMessages.push('!     ' + relevantDetails[i] + ': ' + JSON.stringify(objects.connection[relevantDetails[i]]))
+            extraMessages.push('!     ' + relevantDetail + ': ' + JSON.stringify(objects.connection[relevantDetail]))
           }
         }
       } else if (type === 'task') {
@@ -63,10 +74,6 @@ module.exports = {
       }
     }
 
-    // /////////
-    // TYPES //
-    // /////////
-
     api.exceptionHandlers.loader = function (fullFilePath, error) {
       let name = 'loader:' + fullFilePath
       api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert')
@@ -95,7 +102,5 @@ module.exports = {
       let name = 'task:' + simpleName
       api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure)
     }
-
-    next()
   }
 }

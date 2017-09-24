@@ -6,11 +6,15 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
 
-const actionhero1 = new ActionheroPrototype()
-const actionhero2 = new ActionheroPrototype()
-const actionhero3 = new ActionheroPrototype()
+const actionhero1 = new ActionHero.Process()
+const actionhero2 = new ActionHero.Process()
+const actionhero3 = new ActionHero.Process()
+
+const sleep = async (timeout) => {
+  await new Promise((resolve) => setTimeout(resolve, timeout))
+}
 
 let apiA
 let apiB
@@ -31,635 +35,501 @@ let configChanges = {
   }
 }
 
-let startAllServers = (next) => {
-  actionhero1.start({configChanges: configChanges[1]}, (error, a1) => {
-    expect(error).to.be.null()
-    actionhero2.start({configChanges: configChanges[2]}, (error, a2) => {
-      expect(error).to.be.null()
-      actionhero3.start({configChanges: configChanges[3]}, (error, a3) => {
-        expect(error).to.be.null()
-        apiA = a1
-        apiB = a2
-        apiC = a3
-        next()
-      })
-    })
-  })
+const startAllServers = async () => {
+  apiA = await actionhero1.start({configChanges: configChanges[1]})
+  apiB = await actionhero2.start({configChanges: configChanges[2]})
+  apiC = await actionhero3.start({configChanges: configChanges[3]})
 }
 
-let stopAllServers = (next) => {
-  actionhero1.stop(() => {
-    actionhero2.stop(() => {
-      actionhero3.stop(next)
-    })
-  })
+const stopAllServers = async () => {
+  await actionhero1.stop()
+  await actionhero2.stop()
+  await actionhero3.stop()
 }
 
 describe('Core: Action Cluster', () => {
-  describe('servers', () => {
-    before((done) => {
-      startAllServers(done)
+  before(async () => {
+    await startAllServers()
+    for (var room in apiA.config.general.startingChatRooms) {
+      try {
+        await apiA.chatRoom.destroy(room)
+        await apiA.chatRoom.add(room)
+      } catch (error) {
+        if (!error.toString().match(apiA.config.errors.connectionRoomExists(room))) { throw error }
+      }
+    }
+  })
+
+  after(async () => { await stopAllServers() })
+
+  describe('say and clients on separate servers', () => {
+    let client1
+    let client2
+    let client3
+
+    before(async () => {
+      client1 = new apiA.specHelper.Connection()
+      client2 = new apiB.specHelper.Connection()
+      client3 = new apiC.specHelper.Connection()
+
+      client1.verbs('roomAdd', 'defaultRoom')
+      client2.verbs('roomAdd', 'defaultRoom')
+      client3.verbs('roomAdd', 'defaultRoom')
+      await sleep(100)
     })
 
-    after((done) => {
-      stopAllServers(done)
+    after(async () => {
+      client1.destroy()
+      client2.destroy()
+      client3.destroy()
+      await sleep(100)
     })
 
-    describe('say and clients on separate servers', () => {
-      let client1
-      let client2
-      let client3
-
-      before((done) => {
-        client1 = new apiA.specHelper.Connection()
-        client2 = new apiB.specHelper.Connection()
-        client3 = new apiC.specHelper.Connection()
-
-        client1.verbs('roomAdd', 'defaultRoom')
-        client2.verbs('roomAdd', 'defaultRoom')
-        client3.verbs('roomAdd', 'defaultRoom')
-
-        setTimeout(done, 100)
-      })
-
-      after((done) => {
-        client1.destroy()
-        client2.destroy()
-        client3.destroy()
-        setTimeout(done, 100)
-      })
-
-      it('all connections can join the default room and client #1 can see them', (done) => {
-        client1.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
-      })
-
-      it('all connections can join the default room and client #2 can see them', (done) => {
-        client2.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
-      })
-
-      it('all connections can join the default room and client #3 can see them', (done) => {
-        client3.verbs('roomView', 'defaultRoom', (error, data) => {
-          expect(error).to.be.null()
-          expect(data.room).to.equal('defaultRoom')
-          expect(data.membersCount).to.equal(3)
-          done()
-        })
-      })
-
-      it('clients can communicate across the cluster', (done) => {
-        client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'], () => {
-          setTimeout(() => {
-            let message = client2.messages[(client2.messages.length - 1)]
-            expect(message.message).to.equal('Hi from client 1')
-            expect(message.room).to.equal('defaultRoom')
-            expect(message.from).to.equal(client1.id)
-            done()
-          }, 100)
-        })
-      })
+    it('all connections can join the default room and client #1 can see them', async () => {
+      let {room, membersCount} = await client1.verbs('roomView', 'defaultRoom')
+      expect(room).to.equal('defaultRoom')
+      expect(membersCount).to.equal(3)
     })
 
-    describe('shared cache', () => {
-      it('peer 1 writes and peer 2 should read', (done) => {
-        apiA.cache.save('test_key', 'yay', null, () => {
-          apiB.cache.load('test_key', (error, value) => {
-            expect(error).to.be.null()
-            expect(value).to.equal('yay')
-            done()
-          })
-        })
-      })
-
-      it('peer 3 deletes and peer 1 cannot read any more', (done) => {
-        apiC.cache.destroy('test_key', () => {
-          apiA.cache.load('test_key', (error, value) => {
-            expect(error.toString()).to.equal('Error: Object not found')
-            expect(value).to.be.null()
-            done()
-          })
-        })
-      })
+    it('all connections can join the default room and client #2 can see them', async () => {
+      let {room, membersCount} = await client2.verbs('roomView', 'defaultRoom')
+      expect(room).to.equal('defaultRoom')
+      expect(membersCount).to.equal(3)
     })
 
-    describe('RPC', () => {
-      before((done) => {
-        setTimeout(done, 1000)
-      })
+    it('all connections can join the default room and client #3 can see them', async () => {
+      let {room, membersCount} = await client3.verbs('roomView', 'defaultRoom')
+      expect(room).to.equal('defaultRoom')
+      expect(membersCount).to.equal(3)
+    })
 
-      afterEach((done) => {
-        delete apiA.rpcTestMethod
-        delete apiB.rpcTestMethod
-        delete apiC.rpcTestMethod
-        done()
-      })
+    it('clients can communicate across the cluster', async () => {
+      await client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'])
+      await sleep(100)
 
-      it('can call remote methods on all other servers in the cluster', (done) => {
-        let data = {}
+      let {message, room, from} = client2.messages[(client2.messages.length - 1)]
+      expect(message).to.equal('Hi from client 1')
+      expect(room).to.equal('defaultRoom')
+      expect(from).to.equal(client1.id)
+    })
+  })
 
-        apiA.rpcTestMethod = (arg1, arg2, next) => {
-          data[1] = [arg1, arg2]; next()
-        }
-        apiB.rpcTestMethod = (arg1, arg2, next) => {
-          data[2] = [arg1, arg2]; next()
-        }
-        apiC.rpcTestMethod = (arg1, arg2, next) => {
-          data[3] = [arg1, arg2]; next()
-        }
+  describe('shared cache', () => {
+    it('peer 1 writes and peer 2 should read', async () => {
+      await apiA.cache.save('test_key', 'yay')
+      let {value} = await apiB.cache.load('test_key')
+      expect(value).to.equal('yay')
+    })
 
-        process.nextTick(() => {
-          apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], null, (error) => {
-            setTimeout(() => {
-              expect(error).to.not.exist()
-              // callback should work too!
-              expect(data[1][0]).to.equal('arg1')
-              expect(data[1][1]).to.equal('arg2')
-              expect(data[2][0]).to.equal('arg1')
-              expect(data[2][1]).to.equal('arg2')
-              expect(data[3][0]).to.equal('arg1')
-              expect(data[3][1]).to.equal('arg2')
-              done()
-            }, 100)
-          })
-        })
-      })
+    it('peer 3 deletes and peer 1 cannot read any more', async () => {
+      await apiC.cache.destroy('test_key')
+      try {
+        await apiA.cache.load('test_key')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: Object not found')
+      }
+    })
+  })
 
-      it('can call remote methods only on one other cluster who holds a specific connectionId', (done) => {
-        let client = new apiA.specHelper.Connection()
+  describe('RPC', () => {
+    before(async () => { await sleep(1000) })
 
-        let data = {}
-        apiA.rpcTestMethod = (arg1, arg2, next) => {
-          data[1] = [arg1, arg2]; next()
-        }
-        apiB.rpcTestMethod = (arg1, arg2, next) => {
-          throw new Error('should not be here')
-        }
-        apiC.rpcTestMethod = (arg1, arg2, next) => {
-          throw new Error('should not be here')
-        }
+    afterEach(() => {
+      delete apiA.rpcTestMethod
+      delete apiB.rpcTestMethod
+      delete apiC.rpcTestMethod
+    })
 
-        apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id, (error) => {
-          expect(error).to.not.exist()
-          expect(data[1][0]).to.equal('arg1')
-          expect(data[1][1]).to.equal('arg2')
-          client.destroy()
-          done()
-        })
-      })
+    it('can call remote methods on all other servers in the cluster', async () => {
+      let data = {}
 
-      it('can get information about connections connected to other servers', (done) => {
-        let client = new apiA.specHelper.Connection()
+      apiA.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
+      apiB.rpcTestMethod = (arg1, arg2) => { data[2] = [arg1, arg2] }
+      apiC.rpcTestMethod = (arg1, arg2) => { data[3] = [arg1, arg2] }
 
-        apiB.connections.apply(client.id, (connection) => {
-          expect(connection.id).to.equal(client.id)
-          expect(connection.type).to.equal('testServer')
-          expect(connection.canChat).to.equal(true)
-          done()
-        })
-      })
+      await apiA.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'])
+      await sleep(100)
 
-      it('can call remote methods on/about connections connected to other servers', (done) => {
-        let client = new apiA.specHelper.Connection()
-        expect(client.auth).to.not.exist()
+      expect(data[1][0]).to.equal('arg1')
+      expect(data[1][1]).to.equal('arg2')
+      expect(data[2][0]).to.equal('arg1')
+      expect(data[2][1]).to.equal('arg2')
+      expect(data[3][0]).to.equal('arg1')
+      expect(data[3][1]).to.equal('arg2')
+    })
 
-        apiB.connections.apply(client.id, 'set', ['auth', true], (connection) => {
-          expect(connection.id).to.equal(client.id)
-          expect(client.auth).to.equal(true)
-          client.destroy()
-          done()
-        })
-      })
+    it('can call remote methods only on one other cluster who holds a specific connectionId', async () => {
+      let client = new apiA.specHelper.Connection()
 
-      it('can send arbitraty messages to connections connected to other servers', (done) => {
-        let client = new apiA.specHelper.Connection()
+      let data = {}
+      apiA.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
+      apiB.rpcTestMethod = (arg1, arg) => { throw new Error('should not be here') }
+      apiC.rpcTestMethod = (arg1, arg2) => { throw new Error('should not be here') }
 
-        apiB.connections.apply(client.id, 'sendMessage', {message: 'hi'}, (connection) => {
-          let message = connection.messages[(connection.messages.length - 1)]
-          expect(message.message).to.equal('hi')
+      await apiB.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id)
+      await sleep(100)
 
-          done()
-        })
-      })
+      expect(data[1][0]).to.equal('arg1')
+      expect(data[1][1]).to.equal('arg2')
+      client.destroy()
+    })
 
-      it('failing RPC calls with a callback will have a failure callback', (done) => {
-        apiB.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', (error) => {
-          expect(error.toString()).to.equal('Error: RPC Timeout')
-          done()
-        })
+    it('can get information about connections connected to other servers', async () => {
+      let client = new apiA.specHelper.Connection()
+
+      let {id, type, canChat} = await apiB.connections.apply(client.id)
+      expect(id).to.equal(client.id)
+      expect(type).to.equal('testServer')
+      expect(canChat).to.equal(true)
+    })
+
+    it('can call remote methods on/about connections connected to other servers', async () => {
+      let client = new apiA.specHelper.Connection()
+      expect(client.auth).to.not.exist()
+
+      let connection = await apiB.connections.apply(client.id, 'set', ['auth', true])
+      expect(connection.id).to.equal(client.id)
+      expect(client.auth).to.equal(true)
+      client.destroy()
+    })
+
+    it('can send arbitraty messages to connections connected to other servers', async () => {
+      let client = new apiA.specHelper.Connection()
+
+      let connection = await apiB.connections.apply(client.id, 'sendMessage', {message: 'hi'})
+      let message = connection.messages[(connection.messages.length - 1)]
+      expect(message.message).to.equal('hi')
+    })
+
+    it('failing RPC calls with a callback will have a failure callback', async () => {
+      try {
+        await apiB.redis.doCluster('api.rpcTestMethod', [], 'A missing clientId', true)
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: RPC Timeout')
+      }
+    })
+  })
+
+  describe('chat', () => {
+    beforeEach(async () => {
+      try {
+        await apiA.chatRoom.destroy('newRoom')
+      } catch (error) {
+        // it's fine
+      }
+    })
+
+    it('can check if rooms exist', async () => {
+      let found = await apiA.chatRoom.exists('defaultRoom')
+      expect(found).to.equal(true)
+    })
+
+    it('can check if a room does not exist', async () => {
+      let found = await apiA.chatRoom.exists('missingRoom')
+      expect(found).to.equal(false)
+    })
+
+    it('server can create new room', async () => {
+      let room = 'newRoom'
+      let found
+      found = await apiA.chatRoom.exists(room)
+      expect(found).to.equal(false)
+      await apiA.chatRoom.add(room)
+      found = await apiA.chatRoom.exists(room)
+      expect(found).to.equal(true)
+    })
+
+    it('server cannot create already existing room', async () => {
+      try {
+        await apiA.chatRoom.add('defaultRoom')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: room exists')
+      }
+    })
+
+    it('can enumerate all the rooms in the system', async () => {
+      await apiA.chatRoom.add('newRoom')
+      let rooms = await apiA.chatRoom.list()
+      expect(rooms).to.have.length(3);
+      ['defaultRoom', 'newRoom', 'otherRoom'].forEach((r) => {
+        expect(rooms.indexOf(r)).to.be.above(-1)
       })
     })
 
-    describe('chat', () => {
-      afterEach((done) => {
-        apiA.chatRoom.destroy('newRoom', () => {
-          done()
-        })
+    it('server can add connections to a LOCAL room', async () => {
+      let client = new apiA.specHelper.Connection()
+      expect(client.rooms).to.have.length(0)
+      let didAdd = await apiA.chatRoom.addMember(client.id, 'defaultRoom')
+      expect(didAdd).to.equal(true)
+      expect(client.rooms[0]).to.equal('defaultRoom')
+      client.destroy()
+    })
+
+    it('server can add connections to a REMOTE room', async () => {
+      let client = new apiB.specHelper.Connection()
+      expect(client.rooms).to.have.length(0)
+      let didAdd = await apiA.chatRoom.addMember(client.id, 'defaultRoom')
+      expect(didAdd).to.equal(true)
+      expect(client.rooms).to.have.length(1)
+      expect(client.rooms[0]).to.equal('defaultRoom')
+    })
+
+    it('will not re-add a member to a room', async () => {
+      let client = new apiA.specHelper.Connection()
+      expect(client.rooms).to.have.length(0)
+      let didAdd = await apiA.chatRoom.addMember(client.id, 'defaultRoom')
+      expect(didAdd).to.equal(true)
+      try {
+        didAdd = await apiA.chatRoom.addMember(client.id, 'defaultRoom')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: connection already in this room (defaultRoom)')
+        client.destroy()
+      }
+    })
+
+    it('will not add a member to a non-existant room', async () => {
+      let client = new apiA.specHelper.Connection()
+      expect(client.rooms).to.have.length(0)
+      try {
+        await apiA.chatRoom.addMember(client.id, 'crazyRoom')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: room does not exist')
+        client.destroy()
+      }
+    })
+
+    it('server will not remove a member not in a room', async () => {
+      let client = new apiA.specHelper.Connection()
+      try {
+        await apiA.chatRoom.removeMember(client.id, 'defaultRoom')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.equal('Error: connection not in this room (defaultRoom)')
+        client.destroy()
+      }
+    })
+
+    it('server can remove connections to a room (local)', async () => {
+      let client = new apiA.specHelper.Connection()
+      let didAdd = await apiA.chatRoom.addMember(client.id, 'defaultRoom')
+      expect(didAdd).to.equal(true)
+      let didRemove = await apiA.chatRoom.removeMember(client.id, 'defaultRoom')
+      expect(didRemove).to.equal(true)
+      client.destroy()
+    })
+
+    it('server can remove connections to a room (remote)', async () => {
+      let client = new apiB.specHelper.Connection()
+      let didAdd = await apiB.chatRoom.addMember(client.id, 'defaultRoom')
+      expect(didAdd).to.equal(true)
+      let didRemove = await apiA.chatRoom.removeMember(client.id, 'defaultRoom')
+      expect(didRemove).to.equal(true)
+      client.destroy()
+    })
+
+    it('server can destroy a room and connections will be removed', async () => {
+      try {
+        // to ensure it starts empty
+        await apiA.chatRoom.destroy('newRoom')
+      } catch (error) { }
+
+      let client = new apiA.specHelper.Connection()
+      await apiA.chatRoom.add('newRoom')
+      let didAdd = await apiA.chatRoom.addMember(client.id, 'newRoom')
+      expect(didAdd).to.equal(true)
+      expect(client.rooms[0]).to.equal('newRoom')
+
+      await apiA.chatRoom.destroy('newRoom')
+      expect(client.rooms).to.have.length(0)
+
+      // testing for the recepit of this message is a race condition with room.destroy and boradcast in test
+      // client.messages[1].message.should.equal('this room has been deleted')
+      // client.messages[1].room.should.equal('newRoom')
+
+      client.destroy()
+    })
+
+    it('can get a list of room members', async () => {
+      let client = new apiA.specHelper.Connection()
+      expect(client.rooms).to.have.length(0)
+      await apiA.chatRoom.add('newRoom')
+      await apiA.chatRoom.addMember(client.id, 'newRoom')
+      let {room, membersCount} = await apiA.chatRoom.roomStatus('newRoom')
+      expect(room).to.equal('newRoom')
+      expect(membersCount).to.equal(1)
+      client.destroy()
+      await apiA.chatRoom.destroy('newRoom')
+    })
+
+    describe('chat middleware', () => {
+      let clientA
+      let clientB
+      let originalGenerateMessagePayload
+
+      beforeEach(() => {
+        originalGenerateMessagePayload = apiA.chatRoom.generateMessagePayload
+        clientA = new apiA.specHelper.Connection()
+        clientB = new apiA.specHelper.Connection()
       })
 
-      it('can check if rooms exist', (done) => {
-        apiA.chatRoom.exists('defaultRoom', (error, found) => {
-          expect(error).to.be.null()
-          expect(found).to.equal(true)
-          done()
-        })
+      afterEach(() => {
+        apiA.chatRoom.middleware = {}
+        apiA.chatRoom.globalMiddleware = []
+
+        clientA.destroy()
+        clientB.destroy()
+
+        apiA.chatRoom.generateMessagePayload = originalGenerateMessagePayload
       })
 
-      it('can check if a room does not exist', (done) => {
-        apiA.chatRoom.exists('missingRoom', (error, found) => {
-          expect(error).to.be.null()
-          expect(found).to.equal(false)
-          done()
-        })
-      })
-
-      it('server can create new room', (done) => {
-        let room = 'newRoom'
-        apiA.chatRoom.exists(room, (error, found) => {
-          expect(error).to.be.null()
-          expect(found).to.equal(false)
-          apiA.chatRoom.add(room, (error) => {
-            expect(error).to.be.null()
-            apiA.chatRoom.exists(room, (error, found) => {
-              expect(error).to.be.null()
-              expect(found).to.equal(true)
-              done()
-            })
-          })
-        })
-      })
-
-      it('server cannot create already existing room', (done) => {
-        apiA.chatRoom.add('defaultRoom', (error) => {
-          expect(error.toString()).to.equal('room exists')
-          done()
-        })
-      })
-
-      it('can enumerate all the rooms in the system', (done) => {
-        apiA.chatRoom.add('defaultRoom', () => {
-          apiA.chatRoom.add('newRoom', () => {
-            apiA.chatRoom.list((error, rooms) => {
-              expect(error).to.be.null()
-              expect(rooms).to.have.length(3);
-              ['defaultRoom', 'newRoom', 'otherRoom'].forEach((r) => {
-                expect(rooms.indexOf(r)).to.be.above(-1)
-              })
-              done()
-            })
-          })
-        })
-      })
-
-      it('server can add connections to a LOCAL room', (done) => {
-        let client = new apiA.specHelper.Connection()
-        expect(client.rooms).to.have.length(0)
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          expect(didAdd).to.equal(true)
-          expect(client.rooms[0]).to.equal('defaultRoom')
-          client.destroy()
-          done()
-        })
-      })
-
-      it('server can add connections to a REMOTE room', (done) => {
-        let client = new apiB.specHelper.Connection()
-        expect(client.rooms).to.have.length(0)
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          expect(didAdd).to.equal(true)
-          expect(client.rooms).to.have.length(1)
-          expect(client.rooms[0]).to.equal('defaultRoom')
-          client.destroy()
-          done()
-        })
-      })
-
-      it('will not re-add a member to a room', (done) => {
-        let client = new apiA.specHelper.Connection()
-        expect(client.rooms).to.have.length(0)
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          expect(didAdd).to.equal(true)
-          apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-            expect(error.toString()).to.equal('connection already in this room (defaultRoom)')
-            expect(didAdd).to.equal(false)
-            client.destroy()
-            done()
-          })
-        })
-      })
-
-      it('will not add a member to a non-existant room', (done) => {
-        let client = new apiA.specHelper.Connection()
-        expect(client.rooms).to.have.length(0)
-        apiA.chatRoom.addMember(client.id, 'newRoom', (error, didAdd) => {
-          expect(error.toString()).to.equal('room does not exist')
-          expect(didAdd).to.equal(false)
-          client.destroy()
-          done()
-        })
-      })
-
-      it('server will not remove a member not in a room', (done) => {
-        let client = new apiA.specHelper.Connection()
-        apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
-          expect(error.toString()).to.equal('connection not in this room (defaultRoom)')
-          expect(didRemove).to.equal(false)
-          client.destroy()
-          done()
-        })
-      })
-
-      it('server can remove connections to a room (local)', (done) => {
-        let client = new apiA.specHelper.Connection()
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          expect(didAdd).to.equal(true)
-          apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
-            expect(error).to.be.null()
-            expect(didRemove).to.equal(true)
-            client.destroy()
-            done()
-          })
-        })
-      })
-
-      it('server can remove connections to a room (remote)', (done) => {
-        let client = new apiB.specHelper.Connection()
-        apiB.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          expect(didAdd).to.equal(true)
-          apiA.chatRoom.removeMember(client.id, 'defaultRoom', (error, didRemove) => {
-            expect(error).to.be.null()
-            expect(didRemove).to.equal(true)
-            client.destroy()
-            done()
-          })
-        })
-      })
-
-      it('server can destroy a room and connections will be removed', (done) => {
-        let client = new apiA.specHelper.Connection()
-        apiA.chatRoom.add('newRoom', (error) => {
-          expect(error).to.be.null()
-          apiA.chatRoom.addMember(client.id, 'newRoom', (error, didAdd) => {
-            expect(error).to.be.null()
-            expect(didAdd).to.equal(true)
-            expect(client.rooms[0]).to.equal('newRoom')
-            apiA.chatRoom.destroy('newRoom', (error) => {
-              expect(error).to.not.exist()
-              expect(client.rooms).to.have.length(0)
-              // TODO: testing for the recepit of this message is a race condition with room.destroy and boradcast in test
-              // client.messages[1].message.should.equal('this room has been deleted');
-              // client.messages[1].room.should.equal('newRoom');
-              client.destroy()
-              done()
-            })
-          })
-        })
-      })
-
-      it('can get a list of room members', (done) => {
-        let client = new apiA.specHelper.Connection()
-        expect(client.rooms).to.have.length(0)
-        apiA.chatRoom.addMember(client.id, 'defaultRoom', (error, didAdd) => {
-          expect(error).to.be.null()
-          apiA.chatRoom.roomStatus('defaultRoom', (error, data) => {
-            expect(error).to.be.null()
-            expect(data.room).to.equal('defaultRoom')
-            expect(data.membersCount).to.equal(1)
-            client.destroy()
-            done()
-          })
-        })
-      })
-
-      describe('chat middleware', () => {
-        let clientA
-        let clientB
-        let originalGenerateMessagePayload
-
-        beforeEach((done) => {
-          originalGenerateMessagePayload = apiA.chatRoom.generateMessagePayload
-          clientA = new apiA.specHelper.Connection()
-          clientB = new apiA.specHelper.Connection()
-
-          done()
-        })
-
-        afterEach((done) => {
-          apiA.chatRoom.middleware = {}
-          apiA.chatRoom.globalMiddleware = []
-
-          clientA.destroy()
-          clientB.destroy()
-
-          apiA.chatRoom.generateMessagePayload = originalGenerateMessagePayload
-          setTimeout(() => {
-            done()
-          }, 100)
-        })
-
-        it('generateMessagePayload can be overloaded', (done) => {
-          apiA.chatRoom.generateMessagePayload = (message) => {
-            return {
-              thing: 'stuff',
-              room: message.connection.room,
-              from: message.connection.id
-            }
+      it('generateMessagePayload can be overloaded', async () => {
+        apiA.chatRoom.generateMessagePayload = (message) => {
+          return {
+            thing: 'stuff',
+            room: message.connection.room,
+            from: message.connection.id
           }
+        }
 
-          clientA.verbs('roomAdd', 'defaultRoom', (error, data) => {
-            expect(error).to.not.exist()
-            clientB.verbs('roomAdd', 'defaultRoom', (error, data) => {
-              expect(error).to.not.exist()
-              clientA.verbs('say', ['defaultRoom', 'hi there'], (error, data) => {
-                expect(error).to.not.exist()
-                setTimeout(() => {
-                  let message = clientB.messages[(clientB.messages.length - 1)]
-                  expect(message.thing).to.equal('stuff')
-                  expect(message.message).to.not.exist()
-                  done()
-                }, 100)
-              })
-            })
-          })
+        await clientA.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomAdd', 'defaultRoom')
+        await clientA.verbs('say', ['defaultRoom', 'hi there'])
+        await sleep(100)
+        let message = clientB.messages[(clientB.messages.length - 1)]
+        expect(message.thing).to.equal('stuff')
+        expect(message.message).to.not.exist()
+      })
+
+      it('(join + leave) can add middleware to announce members', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'add chat middleware',
+          join: async (connection, room) => {
+            await apiA.chatRoom.broadcast({}, room, `I have entered the room: ${connection.id}`)
+          }
         })
 
-        it('(join + leave) can add middleware to announce members', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'add chat middleware',
-            join: function (connection, room, callback) {
-              apiA.chatRoom.broadcast({}, room, 'I have entered the room: ' + connection.id, () => {
-                callback()
-              })
-            }
-          })
-
-          apiA.chatRoom.addMiddleware({
-            name: 'leave chat middleware',
-            leave: function (connection, room, callback) {
-              apiA.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, () => {
-                callback()
-              })
-            }
-          })
-
-          clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null()
-            clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null()
-              clientB.verbs('roomLeave', 'defaultRoom', (error) => {
-                expect(error).to.be.null()
-
-                setTimeout(() => {
-                  expect(clientA.messages.pop().message).to.equal('I have left the room: ' + clientB.id)
-                  expect(clientA.messages.pop().message).to.equal('I have entered the room: ' + clientB.id)
-
-                  done()
-                }, 100)
-              })
-            })
-          })
+        apiA.chatRoom.addMiddleware({
+          name: 'leave chat middleware',
+          leave: async (connection, room) => {
+            await apiA.chatRoom.broadcast({}, room, `I have left the room: ${connection.id}`)
+          }
         })
 
-        it('(say) can modify message payloads', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware',
-            say: function (connection, room, messagePayload, callback) {
-              if (messagePayload.from !== 0) {
-                messagePayload.message = 'something else'
-              }
-              callback(null, messagePayload)
-            }
-          })
+        await clientA.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomLeave', 'defaultRoom')
+        await sleep(100)
 
-          clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null()
-            clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null()
-              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], (error) => {
-                expect(error).to.be.null()
+        expect(clientA.messages.pop().message).to.equal('I have left the room: ' + clientB.id)
+        expect(clientA.messages.pop().message).to.equal('I have entered the room: ' + clientB.id)
+      })
 
-                setTimeout(() => {
-                  let lastMessage = clientA.messages[(clientA.messages.length - 1)]
-                  expect(lastMessage.message).to.equal('something else')
-
-                  done()
-                }, 100)
-              })
-            })
-          })
+      it('(say) can modify message payloads', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware',
+          say: (connection, room, messagePayload) => {
+            if (messagePayload.from !== 0) { messagePayload.message = 'something else' }
+            return messagePayload
+          }
         })
 
-        it('can add middleware in a particular order and will be passed modified messagePayloads', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware 1',
-            priority: 1000,
-            say: function (connection, room, messagePayload, callback) {
-              messagePayload.message = 'MIDDLEWARE 1'
-              callback(null, messagePayload)
-            }
-          })
+        await clientA.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+        await sleep(100)
 
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware 2',
-            priority: 2000,
-            say: function (connection, room, messagePayload, callback) {
-              messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
-              callback(null, messagePayload)
-            }
-          })
+        let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+        expect(lastMessage.message).to.equal('something else')
+      })
 
-          clientA.verbs('roomAdd', 'defaultRoom', (error) => {
-            expect(error).to.be.null()
-            clientB.verbs('roomAdd', 'defaultRoom', (error) => {
-              expect(error).to.be.null()
-              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], (error) => {
-                expect(error).to.be.null()
-                setTimeout(() => {
-                  let lastMessage = clientA.messages[(clientA.messages.length - 1)]
-                  expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
-
-                  done()
-                }, 100)
-              })
-            })
-          })
+      it('can add middleware in a particular order and will be passed modified messagePayloads', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware 1',
+          priority: 1000,
+          say: (connection, room, messagePayload, callback) => {
+            messagePayload.message = 'MIDDLEWARE 1'
+            return messagePayload
+          }
         })
 
-        it('say middleware can block excecution', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware',
-            say: function (connection, room, messagePayload, callback) {
-              callback(new Error('messages blocked'))
-            }
-          })
-
-          clientA.verbs('roomAdd', 'defaultRoom', () => {
-            clientB.verbs('roomAdd', 'defaultRoom', () => {
-              clientB.verbs('say', ['defaultRoom', 'something', 'awesome'], () => {
-                setTimeout(() => {
-                  // welcome message is passed, no join/leave/or say messages
-                  expect(clientA.messages).to.have.length(1)
-
-                  done()
-                }, 100)
-              })
-            })
-          })
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware 2',
+          priority: 2000,
+          say: (connection, room, messagePayload) => {
+            messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
+            return messagePayload
+          }
         })
 
-        it('join middleware can block excecution', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware',
-            join: function (connection, room, callback) {
-              callback(new Error('joining rooms blocked'))
-            }
-          })
+        await clientA.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+        await sleep(100)
 
-          clientA.verbs('roomAdd', 'defaultRoom', (error, didJoin) => {
-            expect(error.toString()).to.equal('Error: joining rooms blocked')
-            expect(didJoin).to.equal(false)
-            expect(clientA.rooms).to.have.length(0)
+        let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+        expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
+      })
 
-            done()
-          })
+      it('say middleware can block excecution', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware',
+          say: (connection, room, messagePayload) => {
+            throw new Error('messages blocked')
+          }
         })
 
-        it('leave middleware can block excecution', (done) => {
-          apiA.chatRoom.addMiddleware({
-            name: 'chat middleware',
-            leave: function (connection, room, callback) {
-              callback(new Error('Hotel California'))
-            }
-          })
+        await clientA.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('roomAdd', 'defaultRoom')
+        await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+        await sleep(100)
 
-          clientA.verbs('roomAdd', 'defaultRoom', (error, didJoin) => {
-            expect(error).to.be.null()
-            expect(didJoin).to.equal(true)
-            expect(clientA.rooms).to.have.length(1)
-            expect(clientA.rooms[0]).to.equal('defaultRoom')
+        // welcome message is passed, no join/leave/or say messages
+        expect(clientA.messages).to.have.length(1)
+        expect(clientA.messages[0].welcome).to.match(/Welcome/)
+      })
 
-            clientA.verbs('roomLeave', 'defaultRoom', (error, didLeave) => {
-              expect(error.toString()).to.equal('Error: Hotel California')
-              expect(didLeave).to.equal(false)
-              expect(clientA.rooms).to.have.length(1)
-
-              done()
-            })
-          })
+      it('join middleware can block excecution', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware',
+          join: (connection, room) => {
+            throw new Error('joining rooms blocked')
+          }
         })
+
+        try {
+          await clientA.verbs('roomAdd', 'defaultRoom')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.toString()).to.equal('Error: joining rooms blocked')
+          expect(clientA.rooms).to.have.length(0)
+        }
+      })
+
+      it('leave middleware can block excecution', async () => {
+        apiA.chatRoom.addMiddleware({
+          name: 'chat middleware',
+          leave: (connection, room) => {
+            throw new Error('Hotel California')
+          }
+        })
+
+        let didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
+        expect(didJoin).to.equal(true)
+        expect(clientA.rooms).to.have.length(1)
+        expect(clientA.rooms[0]).to.equal('defaultRoom')
+
+        try {
+          await clientA.verbs('roomLeave', 'defaultRoom')
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.toString()).to.equal('Error: Hotel California')
+          expect(clientA.rooms).to.have.length(1)
+        }
       })
     })
   })

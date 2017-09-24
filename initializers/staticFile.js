@@ -3,120 +3,156 @@
 const fs = require('fs')
 const path = require('path')
 const Mime = require('mime')
+const ActionHero = require('./../index.js')
 
-module.exports = {
-  loadPriority: 510,
-  initialize: function (api, next) {
+function asyncStats (file) {
+  return new Promise((resolve, reject) => {
+    fs.stat(file, (error, stats) => {
+      if (error) { return reject(error) }
+      resolve(stats)
+    })
+  })
+}
+
+function asyncReadLink (file) {
+  return new Promise((resolve, reject) => {
+    fs.readLink(file, (error, truePath) => {
+      if (error) { return reject(error) }
+      resolve(truePath)
+    })
+  })
+}
+
+module.exports = class StaticFile extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'staticFile'
+    this.loadPriority = 510
+  }
+
+  initialize (api) {
     api.staticFile = {
+      searchLoactions: []
+    }
 
-      searchLoactions: [],
+    // connection.params.file should be set
+    // return is of the form: {connection, error, fileStream, mime, length}
+    api.staticFile.get = async (connection, counter) => {
+      let file
 
-      searchPath: function (connection, counter) {
-        if (!counter) { counter = 0 }
-        if (api.staticFile.searchLoactions.length === 0 || counter >= api.staticFile.searchLoactions.length) {
-          return null
-        } else {
-          return api.staticFile.searchLoactions[counter]
-        }
-      },
-
-      // connection.params.file should be set
-      // callback is of the form: callback(connection, error, fileStream, mime, length)
-      get: function (connection, callback, counter) {
-        if (!counter) { counter = 0 }
-        if (!connection.params.file || !api.staticFile.searchPath(connection, counter)) {
-          this.sendFileNotFound(connection, api.config.errors.fileNotProvided(connection), callback)
-        } else {
-          let file
-          if (!path.isAbsolute(connection.params.file)) {
-            file = path.normalize(api.staticFile.searchPath(connection, counter) + '/' + connection.params.file)
-          } else {
-            file = connection.params.file
-          }
-
-          if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
-            api.staticFile.get(connection, callback, counter + 1)
-          } else {
-            this.checkExistence(file, (error, exists, truePath) => {
-              if (error) { throw error }
-              if (exists) {
-                this.sendFile(truePath, connection, callback)
-              } else {
-                api.staticFile.get(connection, callback, counter + 1)
-              }
-            })
-          }
-        }
-      },
-
-      sendFile: function (file, connection, callback) {
-        let lastModified
-        fs.stat(file, (error, stats) => {
-          if (error) {
-            this.sendFileNotFound(connection, api.config.errors.fileReadError(connection, String(error)), callback)
-          } else {
-            let mime = Mime.lookup(file)
-            let length = stats.size
-            let fileStream = fs.createReadStream(file)
-            let start = new Date().getTime()
-            lastModified = stats.mtime
-            fileStream.on('end', () => {
-              let duration = new Date().getTime() - start
-              this.logRequest(file, connection, length, duration, true)
-            })
-            fileStream.on('error', (error) => {
-              api.log(error)
-            })
-            fileStream.on('open', () => {
-              callback(connection, null, fileStream, mime, length, lastModified)
-            })
-          }
-        })
-      },
-
-      sendFileNotFound: function (connection, errorMessage, callback) {
-        connection.error = new Error(errorMessage)
-        this.logRequest('{not found}', connection, null, null, false)
-        callback(connection, api.config.errors.fileNotFound(connection), null, 'text/html', api.config.errors.fileNotFound(connection).length)
-      },
-
-      checkExistence: function (file, callback) {
-        fs.stat(file, (error, stats) => {
-          if (error) {
-            callback(null, false, file)
-          } else {
-            if (stats.isDirectory()) {
-              let indexPath = file + '/' + api.config.general.directoryFileType
-              api.staticFile.checkExistence(indexPath, callback)
-            } else if (stats.isSymbolicLink()) {
-              fs.readLink(file, function (error, truePath) {
-                if (error) {
-                  callback(null, false, file)
-                } else {
-                  truePath = path.normalize(truePath)
-                  api.staticFile.checkExistence(truePath, callback)
-                }
-              })
-            } else if (stats.isFile()) {
-              callback(null, true, file)
-            } else {
-              callback(null, false, file)
-            }
-          }
-        })
-      },
-
-      logRequest: function (file, connection, length, duration, success) {
-        api.log(`[ file @ ${connection.type} ]`, api.config.general.fileRequestLogLevel, {
-          to: connection.remoteIP,
-          file: file,
-          requestedFile: connection.params.file,
-          size: length,
-          duration: duration,
-          success: success
-        })
+      if (!counter) { counter = 0 }
+      if (!connection.params.file || !api.staticFile.searchPath(connection, counter)) {
+        return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileNotProvided(connection))
       }
 
+      if (!path.isAbsolute(connection.params.file)) {
+        file = path.normalize(
+          path.join(api.staticFile.searchPath(connection, counter), connection.params.file)
+        )
+      } else {
+        file = connection.params.file
+      }
+
+      if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
+        return api.staticFile.get(connection, counter + 1)
+      } else {
+        let {exists, truePath} = await api.staticFile.checkExistence(file)
+        if (exists) {
+          return api.staticFile.sendFile(truePath, connection)
+        } else {
+          return api.staticFile.get(connection, counter + 1)
+        }
+      }
+    }
+
+    api.staticFile.searchPath = (connection, counter) => {
+      if (!counter) { counter = 0 }
+      if (api.staticFile.searchLoactions.length === 0 || counter >= api.staticFile.searchLoactions.length) {
+        return null
+      } else {
+        return api.staticFile.searchLoactions[counter]
+      }
+    }
+
+    api.staticFile.sendFile = async (file, connection) => {
+      let lastModified
+
+      try {
+        let stats = await asyncStats(file)
+        let mime = Mime.getType(file)
+        let length = stats.size
+        let start = new Date().getTime()
+        lastModified = stats.mtime
+
+        let fileStream = fs.createReadStream(file)
+        api.staticFile.fileLogger(fileStream, connection, start, file, length)
+
+        await new Promise((resolve) => {
+          fileStream.on('open', () => { resolve() })
+        })
+
+        return {connection, fileStream, mime, length, lastModified}
+      } catch (error) {
+        return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileReadError(connection, String(error)))
+      }
+    }
+
+    api.staticFile.fileLogger = (fileStream, connection, start, file, length) => {
+      fileStream.on('end', () => {
+        let duration = new Date().getTime() - start
+        api.staticFile.logRequest(file, connection, length, duration, true)
+      })
+
+      fileStream.on('error', (error) => {
+        throw error
+      })
+    }
+
+    api.staticFile.sendFileNotFound = async (connection, errorMessage) => {
+      connection.error = new Error(errorMessage)
+      api.staticFile.logRequest('{not found}', connection, null, null, false)
+      return {
+        connection,
+        error: await api.config.errors.fileNotFound(connection),
+        mime: 'text/html',
+        length: await api.config.errors.fileNotFound(connection).length
+      }
+    }
+
+    api.staticFile.checkExistence = async (file) => {
+      try {
+        let stats = await asyncStats(file)
+
+        if (stats.isDirectory()) {
+          let indexPath = file + '/' + api.config.general.directoryFileType
+          return api.staticFile.checkExistence(indexPath)
+        }
+
+        if (stats.isSymbolicLink()) {
+          let truePath = await asyncReadLink(file)
+          truePath = path.normalize(truePath)
+          return api.staticFile.checkExistence(truePath)
+        }
+
+        if (stats.isFile()) {
+          return {exists: true, truePath: file}
+        }
+
+        return {exists: false, truePath: file}
+      } catch (error) {
+        return {exists: false, truePath: file}
+      }
+    }
+
+    api.staticFile.logRequest = (file, connection, length, duration, success) => {
+      api.log(`[ file @ ${connection.type} ]`, api.config.general.fileRequestLogLevel, {
+        to: connection.remoteIP,
+        file: file,
+        requestedFile: connection.params.file,
+        size: length,
+        duration: duration,
+        success: success
+      })
     }
 
     // load in the explicit public paths first
@@ -147,7 +183,6 @@ module.exports = {
       })
     }
 
-    api.log('Static files will be served from these directories', 'debug', api.staticFile.searchLoactions)
-    next()
+    api.log('static files will be served from these directories', 'debug', api.staticFile.searchLoactions)
   }
 }

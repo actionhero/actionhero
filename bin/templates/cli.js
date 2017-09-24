@@ -1,13 +1,16 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-module.exports = {
-  name: '%%name%%',
-  description: '%%description%%',
-  example: '%%example%%',
+module.exports = class MyCLICommand extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.description = '%%description%%'
+    this.example = '%%example%%'
+    this.inputs = {}
+  }
 
-  inputs: {},
-
-  run: function (api, data, next) {
-    return next(null, true)
+  async run (api, data) {
+    return true
   }
 }

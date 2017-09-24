@@ -3,112 +3,105 @@
 const cluster = require('cluster')
 const readline = require('readline')
 const os = require('os')
+const ActionHero = require('./../../index.js')
 
-module.exports = {
-  name: 'start',
-  description: 'start this ActionHero server',
-  example: 'actionhero start --config=[/path/to/config] --title=[processTitle] --daemon',
-
-  inputs: {
-    config: {
-      required: false,
-      note: 'path to config.js, defaults to "process.cwd() + \'/\' + config.js". You can also use ENV[ACTIONHERO_CONFIG]'
-    },
-    title: {
-      required: false,
-      note: 'process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows'
-    },
-    daemon: {
-      required: false,
-      note: 'to fork and run as a new background process defaults to false'
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'start'
+    this.description = 'start this ActionHero server'
+    this.example = 'actionhero start --config=[/path/to/config] --title=[processTitle] --daemon'
+    this.inputs = {
+      config: {
+        required: false,
+        note: 'path to config.js, defaults to "process.cwd() + \'/\' + config.js". You can also use ENV[ACTIONHERO_CONFIG]'
+      },
+      title: {
+        required: false,
+        note: 'process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows'
+      },
+      daemon: {
+        required: false,
+        note: 'to fork and run as a new background process defaults to false'
+      }
     }
-  },
 
-  run: function (api, data, next) {
-    let state
+    this.state = null
 
     // number of ms to wait to do a forcible shutdown if actionhero won't stop gracefully
-    let shutdownTimeout = 1000 * 30
+    this.shutdownTimeout = 1000 * 30
     if (process.env.ACTIONHERO_SHUTDOWN_TIMEOUT) {
-      shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+      this.shutdownTimeout = parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
     }
+  }
 
-    const startServer = function (callback) {
-      state = 'starting'
-      if (cluster.isWorker) { process.send({state: state}) }
-      api._context.start(function (error, apiFromCallback) {
-        if (error) {
-          api.log(error)
-          process.exit(1)
-        } else {
-          state = 'started'
-          if (cluster.isWorker) { process.send({state: state}) }
-          api = apiFromCallback
-          checkForInernalStop()
-          if (typeof callback === 'function') { callback(null, api) }
-        }
-      })
-    }
+  sendState () {
+    if (cluster.isWorker) { process.send({state: this.state}) }
+  }
 
-    const stopServer = function (callback) {
-      state = 'stopping'
-      if (cluster.isWorker) { process.send({state: state}) }
-      api._context.stop(function () {
-        state = 'stopped'
-        if (cluster.isWorker) { process.send({state: state}) }
-        api = null
-        if (typeof callback === 'function') { callback(null, api) }
-      })
-    }
+  async startServer () {
+    this.state = 'starting'
+    this.sendState()
+    await this.api.commands.start()
+    this.state = 'started'
+    this.sendState()
+    this.checkForInernalStop()
+  }
 
-    const restartServer = function (callback) {
-      state = 'restarting'
-      if (cluster.isWorker) { process.send({state: state}) }
-      api._context.restart(function (error, apiFromCallback) {
-        if (error) { throw (error) }
+  async stopServer () {
+    this.state = 'stopping'
+    this.sendState()
+    await this.api.commands.stop()
+    this.state = 'stopped'
+    this.sendState()
+  }
 
-        state = 'started'
-        if (cluster.isWorker) { process.send({state: state}) }
-        api = apiFromCallback
-        if (typeof callback === 'function') { callback(null, api) }
-      })
-    }
+  async restartServer () {
+    this.state = 'restarting'
+    this.sendState()
+    await this.api.commands.restart()
+    this.state = 'started'
+    this.sendState()
+  }
 
-    const stopProcess = function () {
-      setTimeout(function () {
-        throw new Error('process stop timeout reached.  terminating now.')
-      }, shutdownTimeout)
-      // finalTimer.unref();
-      stopServer(function () {
-        process.nextTick(function () {
-          process.exit()
-        })
-      })
-    }
+  async stopProcess () {
+    if (this.state === 'stopping' || this.state === 'stopped') { return }
 
-    let checkForInernalStopTimer
-    const checkForInernalStop = function () {
-      clearTimeout(checkForInernalStopTimer)
-      if (api.running !== true && state === 'started') {
-        process.exit(0)
-      }
-      checkForInernalStopTimer = setTimeout(checkForInernalStop, shutdownTimeout)
-    }
+    setTimeout(() => {
+      throw new Error('process stop timeout reached.  terminating now.')
+    }, this.shutdownTimeout)
+
+    await this.stopServer()
+    await new Promise((resolve) => { setTimeout(resolve, 10) })
+    process.exit()
+  }
+
+  checkForInernalStop () {
+    // check for an internal stop which doesn't close the processs
+    clearTimeout(this.checkForInernalStopTimer)
+    if (this.api.running !== true && this.state === 'started') { process.exit(0) }
+    this.checkForInernalStopTimer = setTimeout(() => { this.checkForInernalStop() }, this.shutdownTimeout)
+  }
+
+  async run (api) {
+    this.api = api
 
     if (cluster.isWorker) {
-      process.on('message', function (msg) {
+      process.on('message', async (msg) => {
         if (msg === 'start') {
-          startServer()
+          await this.startServer()
         } else if (msg === 'stop') {
-          stopServer()
+          await this.stopServer()
         } else if (msg === 'stopProcess') {
-          stopProcess()
+          await this.stopProcess()
         // in cluster, we cannot re-bind the port
         // so kill this worker, and then let the cluster start a new worker
-        } else if (msg === 'restart') { stopProcess() }
+        } else if (msg === 'restart') {
+          await this.stopProcess()
+        }
       })
 
-      process.on('uncaughtException', function (error) {
+      process.on('uncaughtException', (error) => {
         let stack
         try {
           stack = error.stack.split(os.EOL)
@@ -122,29 +115,26 @@ module.exports = {
         process.nextTick(process.exit)
       })
 
-      process.on('unhandledRejection', function (reason, p) {
+      process.on('unhandledRejection', (reason, p) => {
         process.send({unhandledRejection: {reason: reason, p: p}})
         process.nextTick(process.exit)
       })
     }
 
-    process.on('SIGINT', function () { stopProcess() })
-    process.on('SIGTERM', function () { stopProcess() })
-    process.on('SIGUSR2', function () { restartServer() })
+    process.on('SIGINT', async () => { await this.stopProcess() })
+    process.on('SIGTERM', async () => { await this.stopProcess() })
+    process.on('SIGUSR2', async () => { await this.restartServer() })
 
     if (process.platform === 'win32' && !process.env.IISNODE_VERSION) {
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
       })
-      rl.on('SIGINT', function () {
-        process.emit('SIGINT')
-      })
+      rl.on('SIGINT', () => { process.emit('SIGINT') })
     }
 
     // start the server!
-    startServer(function () {
-      next(false, false)
-    })
+    await this.startServer()
+    return false
   }
 }
