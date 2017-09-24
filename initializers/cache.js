@@ -7,6 +7,11 @@ const ActionHero = require('./../index.js')
  * Redis cache connectivity and support methods.
  *
  * @namespace api.cache
+ * @property {string} redisPrefix - The prefix for all redis keys (from `api.config.general.cachePrefix`).
+ * @property {string} redisPrefix - The prefix for all redis locks (from `api.config.general.lockPrefix`).
+ * @property {Number} lockDuration - The default time a key will be locked for (from `api.config.general.lockDuration`).
+ * @property {string} lockName - The name of the lock for this ActionHero instance (from `api.id`).
+ * @property {Number} lockRetry - How long to wait before trying to get a lock again (100ms).
  * @extends ActionHero.Initializer
  */
 class Cache extends ActionHero.Initializer {
@@ -32,7 +37,7 @@ class Cache extends ActionHero.Initializer {
      * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise<array>} Promise resolves an Array of keys
+     * @return {Promise<Array>} Promise resolves an Array of keys
      */
     api.cache.keys = async () => {
       return redis.keys(api.cache.redisPrefix + '*')
@@ -42,7 +47,7 @@ class Cache extends ActionHero.Initializer {
      * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
      *
      * @async
-     * @return {Promise<array>} Promise resolves an Array of keys
+     * @return {Promise<Array>} Promise resolves an Array of keys
      */
     api.cache.locks = async () => {
       return redis.keys(api.cache.lockPrefix + '*')
@@ -52,7 +57,7 @@ class Cache extends ActionHero.Initializer {
      * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise<number>} Promise reslves in interger (length)
+     * @return {Promise<Number>} Promise reslves in interger (length)
      */
     api.cache.size = async () => {
       let keys = await api.cache.keys()
@@ -65,7 +70,7 @@ class Cache extends ActionHero.Initializer {
      * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise<boolean>} will return true if successful.
+     * @return {Promise<Boolean>} will return true if successful.
      */
     api.cache.clear = async () => {
       let keys = await api.cache.keys()
@@ -80,7 +85,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  file The file to save the cache to.
-     * @return {Promise<number>} The number of keys saved to disk.
+     * @return {Promise<Number>} The number of keys saved to disk.
      * @see api.cache.dumpRead
      */
     api.cache.dumpWrite = async (file) => {
@@ -104,7 +109,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  file The file to load into the cache.
-     * @return {Promise<number>} The number of keys loaded into redis.
+     * @return {Promise<Number>} The number of keys loaded into redis.
      * @see api.cache.dumpWrite
      */
     api.cache.dumpRead = async (file) => {
@@ -136,8 +141,8 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key     The name of the item to load from the cache.
-     * @param  {object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
-     * @return {Promise<object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
+     * @param  {Object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
+     * @return {Promise<Object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
      * @see api.cache.save
      * @see api.cache.destroy
      */
@@ -179,7 +184,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key The name of the item to destroy in the cache.
-     * @return {Promise<boolean>}     returns true if the item was deleted, false if it was not (or not found).
+     * @return {Promise<Boolean>}     returns true if the item was deleted, false if it was not (or not found).
      * @see api.cache.load
      * @see api.cache.destroy
      */
@@ -197,9 +202,9 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key          The name of the object to save.
-     * @param  {object}  value        The object to save.  It can also be a Number, String, or Array.
-     * @param  {number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
-     * @return {Promise<boolean>}     Returns true if the object was saved.
+     * @param  {Object}  value        The object to save.  It can also be a Number, String, or Array.
+     * @param  {Number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
+     * @return {Promise<Boolean>}     Returns true if the object was saved.
      * @see api.cache.load
      * @see api.cache.destroy
      */
@@ -232,8 +237,8 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  Name of the shared queue/list.
-     * @param  {object}  item The item The object to save.  It can also be a Number, String, or Array.
-     * @return {Promise<boolean>}      Returns true if the object was pushed.
+     * @param  {Object}  item The item The object to save.  It can also be a Number, String, or Array.
+     * @return {Promise<Boolean>}      Returns true if the object was pushed.
      * @see api.cache.pop
      * @see api.cache.listLength
      */
@@ -248,7 +253,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  The name of the shared queue/list.
-     * @return {Promise<object>}   The item The object which was saved.  It can also be a Number, String, or Array.
+     * @return {Promise<Object>}   The item The object which was saved.  It can also be a Number, String, or Array.
      * @see api.cache.push
      * @see api.cache.listLength
      */
@@ -264,7 +269,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  The name of the object to save.
-     * @return {Promise<number>}     The length of the list in redis.  0 will re returned for non-existant lists.
+     * @return {Promise<Number>}     The length of the list in redis.  0 will re returned for non-existant lists.
      */
     api.cache.listLength = async (key) => {
       return redis.llen(api.cache.redisPrefix + key)
@@ -276,7 +281,7 @@ class Cache extends ActionHero.Initializer {
      * @async
      * @param  {string}  key          The name of the object to lock.
      * @param  {string}  expireTimeMS How long to lock this item for.
-     * @return {Promise<boolean>}     Returns true or false, depending on if the item was locked successfully.
+     * @return {Promise<Boolean>}     Returns true or false, depending on if the item was locked successfully.
      * @see api.cache.unlock
      * @see api.cache.checkLock
      */
@@ -297,7 +302,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key The name of the object to unlock.
-     * @return {Promise<boolean>}     Returns true or false, depending on if the item was unlocked successfully.
+     * @return {Promise<Boolean>}     Returns true or false, depending on if the item was unlocked successfully.
      * @see api.cache.lock
      * @see api.cache.checkLock
      */

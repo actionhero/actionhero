@@ -6,6 +6,7 @@ const ActionHero = require('./../index.js')
  * This callback is displayed as part of the Requester class.
  * @callback ActionHero~ConnectionCallback
  * @param {Object} connection - The connection being created/destroyed.
+ * @see ActionHero~ConnectionMiddleware
  */
 
 /**
@@ -16,6 +17,7 @@ const ActionHero = require('./../index.js')
  * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
  * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
  * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
+ * @see api.connections.addMiddleware
  */
 
 /**
@@ -86,6 +88,7 @@ module.exports = class Connections extends ActionHero.Initializer {
        *
        * @param {object} data The middleware definition to add.
        * @memberOf api.connections
+       * @see ActionHero~ConnectionMiddleware
        */
       addMiddleware: (data) => {
         if (!data.name) { throw new Error('middleware.name is required') }

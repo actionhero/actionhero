@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
 </nav>
 
 <div id="main">
@@ -46,6 +46,7 @@ const ActionHero = require('./../index.js')
  * This callback is displayed as part of the Requester class.
  * @callback ActionHero~ConnectionCallback
  * @param {Object} connection - The connection being created/destroyed.
+ * @see ActionHero~ConnectionMiddleware
  */
 
 /**
@@ -56,6 +57,7 @@ const ActionHero = require('./../index.js')
  * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
  * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
  * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
+ * @see api.connections.addMiddleware
  */
 
 /**
@@ -126,6 +128,7 @@ module.exports = class Connections extends ActionHero.Initializer {
        *
        * @param {object} data The middleware definition to add.
        * @memberOf api.connections
+       * @see ActionHero~ConnectionMiddleware
        */
       addMiddleware: (data) => {
         if (!data.name) { throw new Error('middleware.name is required') }
@@ -176,7 +179,7 @@ module.exports = class Connections extends ActionHero.Initializer {
 <footer>
     Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
     <br />
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 11:30:45 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 12:47:53 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
 </nav>
 
 <div id="main">
@@ -47,6 +47,11 @@ const ActionHero = require('./../index.js')
  * Redis cache connectivity and support methods.
  *
  * @namespace api.cache
+ * @property {string} redisPrefix - The prefix for all redis keys (from `api.config.general.cachePrefix`).
+ * @property {string} redisPrefix - The prefix for all redis locks (from `api.config.general.lockPrefix`).
+ * @property {Number} lockDuration - The default time a key will be locked for (from `api.config.general.lockDuration`).
+ * @property {string} lockName - The name of the lock for this ActionHero instance (from `api.id`).
+ * @property {Number} lockRetry - How long to wait before trying to get a lock again (100ms).
  * @extends ActionHero.Initializer
  */
 class Cache extends ActionHero.Initializer {
@@ -72,7 +77,7 @@ class Cache extends ActionHero.Initializer {
      * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise&lt;array>} Promise resolves an Array of keys
+     * @return {Promise&lt;Array>} Promise resolves an Array of keys
      */
     api.cache.keys = async () => {
       return redis.keys(api.cache.redisPrefix + '*')
@@ -82,7 +87,7 @@ class Cache extends ActionHero.Initializer {
      * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
      *
      * @async
-     * @return {Promise&lt;array>} Promise resolves an Array of keys
+     * @return {Promise&lt;Array>} Promise resolves an Array of keys
      */
     api.cache.locks = async () => {
       return redis.keys(api.cache.lockPrefix + '*')
@@ -92,7 +97,7 @@ class Cache extends ActionHero.Initializer {
      * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise&lt;number>} Promise reslves in interger (length)
+     * @return {Promise&lt;Number>} Promise reslves in interger (length)
      */
     api.cache.size = async () => {
       let keys = await api.cache.keys()
@@ -105,7 +110,7 @@ class Cache extends ActionHero.Initializer {
      * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
      *
      * @async
-     * @return {Promise&lt;boolean>} will return true if successful.
+     * @return {Promise&lt;Boolean>} will return true if successful.
      */
     api.cache.clear = async () => {
       let keys = await api.cache.keys()
@@ -120,7 +125,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  file The file to save the cache to.
-     * @return {Promise&lt;number>} The number of keys saved to disk.
+     * @return {Promise&lt;Number>} The number of keys saved to disk.
      * @see api.cache.dumpRead
      */
     api.cache.dumpWrite = async (file) => {
@@ -144,7 +149,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  file The file to load into the cache.
-     * @return {Promise&lt;number>} The number of keys loaded into redis.
+     * @return {Promise&lt;Number>} The number of keys loaded into redis.
      * @see api.cache.dumpWrite
      */
     api.cache.dumpRead = async (file) => {
@@ -176,8 +181,8 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key     The name of the item to load from the cache.
-     * @param  {object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
-     * @return {Promise&lt;object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
+     * @param  {Object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
+     * @return {Promise&lt;Object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
      * @see api.cache.save
      * @see api.cache.destroy
      */
@@ -219,7 +224,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key The name of the item to destroy in the cache.
-     * @return {Promise&lt;boolean>}     returns true if the item was deleted, false if it was not (or not found).
+     * @return {Promise&lt;Boolean>}     returns true if the item was deleted, false if it was not (or not found).
      * @see api.cache.load
      * @see api.cache.destroy
      */
@@ -237,9 +242,9 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key          The name of the object to save.
-     * @param  {object}  value        The object to save.  It can also be a Number, String, or Array.
-     * @param  {number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
-     * @return {Promise&lt;boolean>}     Returns true if the object was saved.
+     * @param  {Object}  value        The object to save.  It can also be a Number, String, or Array.
+     * @param  {Number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
+     * @return {Promise&lt;Boolean>}     Returns true if the object was saved.
      * @see api.cache.load
      * @see api.cache.destroy
      */
@@ -272,8 +277,8 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  Name of the shared queue/list.
-     * @param  {object}  item The item The object to save.  It can also be a Number, String, or Array.
-     * @return {Promise&lt;boolean>}      Returns true if the object was pushed.
+     * @param  {Object}  item The item The object to save.  It can also be a Number, String, or Array.
+     * @return {Promise&lt;Boolean>}      Returns true if the object was pushed.
      * @see api.cache.pop
      * @see api.cache.listLength
      */
@@ -288,7 +293,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  The name of the shared queue/list.
-     * @return {Promise&lt;object>}   The item The object which was saved.  It can also be a Number, String, or Array.
+     * @return {Promise&lt;Object>}   The item The object which was saved.  It can also be a Number, String, or Array.
      * @see api.cache.push
      * @see api.cache.listLength
      */
@@ -304,7 +309,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key  The name of the object to save.
-     * @return {Promise&lt;number>}     The length of the list in redis.  0 will re returned for non-existant lists.
+     * @return {Promise&lt;Number>}     The length of the list in redis.  0 will re returned for non-existant lists.
      */
     api.cache.listLength = async (key) => {
       return redis.llen(api.cache.redisPrefix + key)
@@ -316,7 +321,7 @@ class Cache extends ActionHero.Initializer {
      * @async
      * @param  {string}  key          The name of the object to lock.
      * @param  {string}  expireTimeMS How long to lock this item for.
-     * @return {Promise&lt;boolean>}     Returns true or false, depending on if the item was locked successfully.
+     * @return {Promise&lt;Boolean>}     Returns true or false, depending on if the item was locked successfully.
      * @see api.cache.unlock
      * @see api.cache.checkLock
      */
@@ -337,7 +342,7 @@ class Cache extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  key The name of the object to unlock.
-     * @return {Promise&lt;boolean>}     Returns true or false, depending on if the item was unlocked successfully.
+     * @return {Promise&lt;Boolean>}     Returns true or false, depending on if the item was unlocked successfully.
      * @see api.cache.lock
      * @see api.cache.checkLock
      */
@@ -386,7 +391,7 @@ module.exports = Cache
 <footer>
     Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
     <br />
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 11:30:45 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 12:47:53 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

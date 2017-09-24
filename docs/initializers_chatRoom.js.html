@@ -1,4 +1,44 @@
-'use strict'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>initializers/chatRoom.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">initializers/chatRoom.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
 
 const ActionHero = require('./../index.js')
 
@@ -7,7 +47,7 @@ const ActionHero = require('./../index.js')
  * @callback ActionHero~ChatSayCallback
  * @param {Object} connection - The connection being created/destroyed.
  * @param {string} room - The room being chatted within.
- * @param {Object} messagePayload - The message & metadata.
+ * @param {Object} messagePayload - The message &amp; metadata.
  * @see ActionHero~ChatMiddleware
  */
 
@@ -35,13 +75,13 @@ const ActionHero = require('./../index.js')
  */
 
 /**
- * Chat & Realtime Communication Methods
+ * Chat &amp; Realtime Communication Methods
  *
  * @namespace api.chatRoom
  * @property {Object} middleware - Dictionary of loaded middleware modules.
  * @property {Array} globalMiddleware - Array of global middleware modules.
  * @property {string} messageChannel - The redis pub/sub channel for chat communication.
- * @property {Object} keys - Stores the base keys for stats about the chat system (rooms & members).
+ * @property {Object} keys - Stores the base keys for stats about the chat system (rooms &amp; members).
  * @extends ActionHero.Initializer
  */
 class ChatRoom extends ActionHero.Initializer {
@@ -160,7 +200,7 @@ class ChatRoom extends ActionHero.Initializer {
      * @private
      */
     api.chatRoom.incomingMessagePerConnection = async (connection, messagePayload) => {
-      if (connection.canChat === true && connection.rooms.indexOf(messagePayload.room) > -1) {
+      if (connection.canChat === true &amp;&amp; connection.rooms.indexOf(messagePayload.room) > -1) {
         try {
           const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
           if (!(newMessagePayload instanceof Error)) {
@@ -176,7 +216,7 @@ class ChatRoom extends ActionHero.Initializer {
      * List all chat rooms created
      *
      * @async
-     * @return {Promise<Array>} Returns an array of chatRoom names.
+     * @return {Promise&lt;Array>} Returns an array of chatRoom names.
      */
     api.chatRoom.list = async () => {
       return api.redis.clients.client.smembers(api.chatRoom.keys.rooms)
@@ -229,7 +269,7 @@ class ChatRoom extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  room The name of the room
-     * @return {Promise<Boolean>}
+     * @return {Promise&lt;Boolean>}
      */
     api.chatRoom.exists = async (room) => {
       let bool = await api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room)
@@ -258,7 +298,7 @@ class ChatRoom extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  room The name of the room
-     * @return {Promise<Object>} Returns a hash of the form { room: room, members: cleanedMembers, membersCount: count }.  Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`
+     * @return {Promise&lt;Object>} Returns a hash of the form { room: room, members: cleanedMembers, membersCount: count }.  Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`
      */
     api.chatRoom.roomStatus = async (room) => {
       if (room) {
@@ -309,7 +349,7 @@ class ChatRoom extends ActionHero.Initializer {
      *
      * @param  {string}  connectionId An existing connection's ID
      * @param  {srting}  room         The name of the room.
-     * @return {Promise<Boolean>}
+     * @return {Promise&lt;Boolean>}
      * @see api.chatRoom.removeMember
      */
     api.chatRoom.addMember = async (connectionId, room) => {
@@ -342,7 +382,7 @@ class ChatRoom extends ActionHero.Initializer {
      * @param  {string}  connectionId  An existing connection's ID
      * @param  {srting}  room          The name of the room.
      * @param  {Boolean}  toWaitRemote Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?
-     * @return {Promise<Boolean>}
+     * @return {Promise&lt;Boolean>}
      * @see api.chatRoom.addMember
      */
     api.chatRoom.removeMember = async (connectionId, room, toWaitRemote) => {
@@ -352,7 +392,7 @@ class ChatRoom extends ActionHero.Initializer {
         return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, toWaitRemote)
       }
 
-      if (connection.rooms.indexOf(room) < 0) {
+      if (connection.rooms.indexOf(room) &lt; 0) {
         throw new Error(await api.config.errors.connectionNotInRoom(connection, room))
       }
 
@@ -418,3 +458,24 @@ class ChatRoom extends ActionHero.Initializer {
 }
 
 module.exports = ChatRoom
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 12:47:53 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

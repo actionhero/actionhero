@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
 </nav>
 
 <div id="main">
@@ -96,6 +96,150 @@
 
 
 
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>redisPrefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The prefix for all redis keys (from <code>api.config.general.cachePrefix</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redisPrefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The prefix for all redis locks (from <code>api.config.general.lockPrefix</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lockDuration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The default time a key will be locked for (from <code>api.config.general.lockDuration</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lockName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the lock for this ActionHero instance (from <code>api.id</code>).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lockRetry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>How long to wait before trying to get a lock again (100ms).</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
 
         
             <div class="description"><p>Redis cache connectivity and support methods.</p></div>
@@ -136,7 +280,7 @@
 
     
 
-    <h4 class="name" id=".clear"><span class="type-signature">(async, static) </span>clear<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".clear"><span class="type-signature">(async, static) </span>clear<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -148,7 +292,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line70">line 70</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -228,7 +372,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -242,7 +386,7 @@
 
     
 
-    <h4 class="name" id=".destroy"><span class="type-signature">(async, static) </span>destroy<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".destroy"><span class="type-signature">(async, static) </span>destroy<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -254,7 +398,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line186">line 186</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -392,7 +536,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -406,7 +550,7 @@
 
     
 
-    <h4 class="name" id=".dumpRead"><span class="type-signature">(async, static) </span>dumpRead<span class="signature">(file)</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
+    <h4 class="name" id=".dumpRead"><span class="type-signature">(async, static) </span>dumpRead<span class="signature">(file)</span><span class="type-signature"> &rarr; {Promise.&lt;Number>}</span></h4>
 
     
 
@@ -418,7 +562,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line110">line 110</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line115">line 115</a>
     </li></ul></dd>
     
 
@@ -555,7 +699,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;number></span>
+<span class="param-type">Promise.&lt;Number></span>
 
 
     </dd>
@@ -569,7 +713,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".dumpWrite"><span class="type-signature">(async, static) </span>dumpWrite<span class="signature">(file)</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
+    <h4 class="name" id=".dumpWrite"><span class="type-signature">(async, static) </span>dumpWrite<span class="signature">(file)</span><span class="type-signature"> &rarr; {Promise.&lt;Number>}</span></h4>
 
     
 
@@ -581,7 +725,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line86">line 86</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line91">line 91</a>
     </li></ul></dd>
     
 
@@ -717,7 +861,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;number></span>
+<span class="param-type">Promise.&lt;Number></span>
 
 
     </dd>
@@ -731,7 +875,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".keys"><span class="type-signature">(async, static) </span>keys<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;array>}</span></h4>
+    <h4 class="name" id=".keys"><span class="type-signature">(async, static) </span>keys<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
 
     
 
@@ -743,7 +887,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line37">line 37</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -823,7 +967,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;array></span>
+<span class="param-type">Promise.&lt;Array></span>
 
 
     </dd>
@@ -837,7 +981,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".listLength"><span class="type-signature">(async, static) </span>listLength<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
+    <h4 class="name" id=".listLength"><span class="type-signature">(async, static) </span>listLength<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;Number>}</span></h4>
 
     
 
@@ -849,7 +993,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line269">line 269</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line274">line 274</a>
     </li></ul></dd>
     
 
@@ -978,7 +1122,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;number></span>
+<span class="param-type">Promise.&lt;Number></span>
 
 
     </dd>
@@ -992,7 +1136,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".load"><span class="type-signature">(async, static) </span>load<span class="signature">(key, options)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    <h4 class="name" id=".load"><span class="type-signature">(async, static) </span>load<span class="signature">(key, options)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
 
     
 
@@ -1004,7 +1148,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line144">line 144</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line149">line 149</a>
     </li></ul></dd>
     
 
@@ -1120,7 +1264,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1165,7 +1309,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;object></span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1179,7 +1323,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".lock"><span class="type-signature">(async, static) </span>lock<span class="signature">(key, expireTimeMS)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".lock"><span class="type-signature">(async, static) </span>lock<span class="signature">(key, expireTimeMS)</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -1191,7 +1335,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line283">line 283</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line288">line 288</a>
     </li></ul></dd>
     
 
@@ -1352,7 +1496,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -1366,7 +1510,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".locks"><span class="type-signature">(async, static) </span>locks<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;array>}</span></h4>
+    <h4 class="name" id=".locks"><span class="type-signature">(async, static) </span>locks<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
 
     
 
@@ -1378,7 +1522,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line47">line 47</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -1458,7 +1602,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;array></span>
+<span class="param-type">Promise.&lt;Array></span>
 
 
     </dd>
@@ -1472,7 +1616,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".pop"><span class="type-signature">(async, static) </span>pop<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    <h4 class="name" id=".pop"><span class="type-signature">(async, static) </span>pop<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
 
     
 
@@ -1484,7 +1628,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line255">line 255</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line260">line 260</a>
     </li></ul></dd>
     
 
@@ -1622,7 +1766,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;object></span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1636,7 +1780,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".push"><span class="type-signature">(async, static) </span>push<span class="signature">(key, item)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".push"><span class="type-signature">(async, static) </span>push<span class="signature">(key, item)</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -1648,7 +1792,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line240">line 240</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line245">line 245</a>
     </li></ul></dd>
     
 
@@ -1764,7 +1908,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1809,7 +1953,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -1823,7 +1967,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".save"><span class="type-signature">(async, static) </span>save<span class="signature">(key, value, expireTimeMS)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".save"><span class="type-signature">(async, static) </span>save<span class="signature">(key, value, expireTimeMS)</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -1835,7 +1979,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line206">line 206</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -1951,7 +2095,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1974,7 +2118,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">Number</span>
 
 
             
@@ -2019,7 +2163,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -2033,7 +2177,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".size"><span class="type-signature">(async, static) </span>size<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;number>}</span></h4>
+    <h4 class="name" id=".size"><span class="type-signature">(async, static) </span>size<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Number>}</span></h4>
 
     
 
@@ -2045,7 +2189,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line57">line 57</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -2125,7 +2269,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;number></span>
+<span class="param-type">Promise.&lt;Number></span>
 
 
     </dd>
@@ -2139,7 +2283,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 
     
 
-    <h4 class="name" id=".unlock"><span class="type-signature">(async, static) </span>unlock<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+    <h4 class="name" id=".unlock"><span class="type-signature">(async, static) </span>unlock<span class="signature">(key)</span><span class="type-signature"> &rarr; {Promise.&lt;Boolean>}</span></h4>
 
     
 
@@ -2151,7 +2295,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line304">line 304</a>
+        <a href="initializers_cache.js.html">initializers/cache.js</a>, <a href="initializers_cache.js.html#line309">line 309</a>
     </li></ul></dd>
     
 
@@ -2289,7 +2433,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;boolean></span>
+<span class="param-type">Promise.&lt;Boolean></span>
 
 
     </dd>
@@ -2318,7 +2462,7 @@ Warning! Any existing keys in redis (under this ActionHero namespace) will be re
 <footer>
     Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
     <br />
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 11:30:45 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 24 2017 12:47:53 GMT-0700 (PDT) using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
