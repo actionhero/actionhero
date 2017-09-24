@@ -22,6 +22,11 @@
     "recurse": true,
     "verbose": true
   },
+  "templates": {
+    "default": {
+      "includeDate": false
+    }
+  },
   "plugins": [
     "plugins/markdown"
   ]

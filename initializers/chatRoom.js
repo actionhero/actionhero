@@ -32,6 +32,31 @@ const ActionHero = require('./../index.js')
  * @see api.chatRoom.addMiddleware
  * @see ActionHero~ChatRoomCallback
  * @see ActionHero~ChatSayCallback
+ * @example
+ var chatMiddleware = {
+  name: 'chat middleware',
+  priority: 1000,
+  join: (connection, room) => {
+    // announce all connections entering a room
+    api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
+  },
+  leave:(connection, room, callback) => {
+    // announce all connections leaving a room
+    api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
+  },
+  // Will be executed once per client connection before delivering the message.
+  say: (connection, room, messagePayload) => {
+    // do stuff
+    api.log(messagePayload)
+  },
+  // Will be executed only once, when the message is sent to the server.
+  onSayReceive: (connection, room, messagePayload) => {
+    // do stuff
+    api.log(messagePayload)
+  }
+}
+
+api.chatRoom.addMiddleware(chatMiddleware)
  */
 
 /**

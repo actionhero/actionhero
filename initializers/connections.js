@@ -18,6 +18,19 @@ const ActionHero = require('./../index.js')
  * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
  * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
  * @see api.connections.addMiddleware
+ * @example
+ var connectionMiddleware = {
+  name: 'connection middleware',
+  priority: 1000,
+  create: (connection) => {
+    // do stuff
+  },
+  destroy:(connection) => {
+    // do stuff
+  }
+}
+
+api.connections.addMiddleware(connectionMiddleware)
  */
 
 /**
