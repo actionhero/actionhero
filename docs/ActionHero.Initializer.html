@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Action - Documentation</title>
+    <title>Initializer - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Action</h1>
+    <h1 class="page-title">Initializer</h1>
     
 
     
@@ -43,7 +43,7 @@
         <h2>
             <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
         
-        Action
+        Initializer
         </h2>
         
     
@@ -56,7 +56,7 @@
 
     
 
-    <h4 class="name" id="Action"><span class="type-signature"></span>new Action<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Initializer"><span class="type-signature"></span>new Initializer<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -68,7 +68,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_action.js.html">classes/action.js</a>, <a href="classes_action.js.html#line2">line 2</a>
+        <a href="classes_initializer.js.html">classes/initializer.js</a>, <a href="classes_initializer.js.html#line2">line 2</a>
     </li></ul></dd>
     
 
@@ -100,7 +100,7 @@
     <dt class="tag-tutorial">Tutorials:</dt>
     <dd class="tag-tutorial">
         <ul>
-            <li><a href="tutorial-actions.html">actions</a></li>
+            <li><em class="disabled">Tutorial: initializers</em></li>
         </ul>
     </dd>
     
@@ -154,37 +154,14 @@
 
             
 
-            <td class="description last"><p>The name of the Action.</p></td>
+            <td class="description last"><p>The name of the Initializer.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>description</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The description of the Action (default this.name).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>version</code></td>
+                <td class="name"><code>loadPriority</code></td>
             
 
             <td class="type">
@@ -200,20 +177,20 @@
 
             
 
-            <td class="description last"><p>The version of this Action (default: 1).</p></td>
+            <td class="description last"><p>What order should this Initializer load at (Default: 1000, ActionHero core methods are &lt; 1000).</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>outputExample</code></td>
+                <td class="name"><code>startPriority</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Number</span>
 
 
             
@@ -223,20 +200,20 @@
 
             
 
-            <td class="description last"><p>An example response payload  (default: {}).</p></td>
+            <td class="description last"><p>What order should this Initializer start at (Default: 1000, ActionHero core methods are &lt; 1000).</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>inputs</code></td>
+                <td class="name"><code>stopPriority</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Number</span>
 
 
             
@@ -246,122 +223,7 @@
 
             
 
-            <td class="description last"><p>The inputs of the Action (default: {}).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>middleware</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Middleware specifit to this Action (default: []).  Middleware is descibed by the string names of the middleware.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>blockedConnectionTypes</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Are there connections from any servers which cannot use this Action (default: [])?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>logLevel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Under what level should connections to this Action be logged (default 'info')?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>matchExtensionMimeType</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>If this Action is responding to a <code>web</code> request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>toDocument</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Should this Action appear in api.documenation.documenation? (default: true)?</p></td>
+            <td class="description last"><p>What order should this Initializer stop at (Default: 1000, ActionHero core methods are &lt; 1000).</p></td>
         </tr>
 
     
@@ -374,7 +236,7 @@
 
 
 <div class="description">
-    <p>Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.</p>
+    <p>Create a new ActionHero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.</p>
 </div>
 
 
@@ -390,17 +252,25 @@
     <pre class="prettyprint"><code>'use strict'
 const ActionHero = require('actionhero')
 
-module.exports = class RandomNumber extends ActionHero.Action {
- constructor () {
-   super()
-   this.name = 'randomNumber'
-   this.description = 'I am an API method which will generate a random number'
-   this.outputExample = {randomNumber: 0.1234}
- }
+module.exports = class MyCLICommand extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'connectToDatabase'
+    this.loadPriority = 1000
+    this.startPriority = 1000
+    this.stopPriority = 1000
+  }
 
- async run (api, data) {
-   data.response.randomNumber = Math.random()
- }
+  async initialize (api) {
+    api.connectToDatabase = {}
+  }
+
+  async start (api) {
+    // connect
+  }
+  async stop (api) {
+    // disconnect
+  }
 }</code></pre>
 
 
@@ -443,7 +313,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
     
 
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(api, data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".initialize"><span class="type-signature">(async, static) </span>initialize<span class="signature">(api)</span><span class="type-signature"></span></h4>
 
     
 
@@ -455,7 +325,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_action.js.html">classes/action.js</a>, <a href="classes_action.js.html#line44">line 44</a>
+        <a href="classes_initializer.js.html">classes/initializer.js</a>, <a href="classes_initializer.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -495,7 +365,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
 
 <div class="description">
-    <p>The main &quot;do something&quot; method for this action.  It can be <code>async</code>.  Usually the goal of this run method is to set properties on <code>data.response</code>.  If error is thrown in this method, it will be logged, caught, and appended to <code>data.response.error</code></p>
+    <p>Method run as part of the <code>initialize</code> lifecycle of your server.  Ususally sets api['YourNamespace']</p>
 </div>
 
 
@@ -553,10 +423,120 @@ module.exports = class RandomNumber extends ActionHero.Action {
         </tr>
 
     
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".start"><span class="type-signature">(async, static) </span>start<span class="signature">(api)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="classes_initializer.js.html">classes/initializer.js</a>, <a href="classes_initializer.js.html#line53">line 53</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Method run as part of the <code>start</code> lifecycle of your server.  Ususally connects to remote servers or processes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
 
         <tr>
             
-                <td class="name"><code>data</code></td>
+                <td class="name"><code>api</code></td>
             
 
             <td class="type">
@@ -572,7 +552,140 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
             
 
-            <td class="description last"><p>The data about this connection, response, and params.</p></td>
+            <td class="description last"><p>The api object.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".stop"><span class="type-signature">(async, static) </span>stop<span class="signature">(api)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="classes_initializer.js.html">classes/initializer.js</a>, <a href="classes_initializer.js.html#line61">line 61</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Method run as part of the <code>initialize</code> lifecycle of your server.  Ususally disconnects from remote servers or processes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>api</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The api object.</p></td>
         </tr>
 
     

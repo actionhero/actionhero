@@ -1,28 +1,26 @@
 module.exports = class Action {
   /**
-   * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value
+   * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
    *
    * @class ActionHero.Action
    *
-   * @property {string}  name                   - The name of the action.
-   * @property {string}  description            - The description of the action (default this.name).
-   * @property {number}  version                - The version of this action (default: 1).
-   * @property {object}  outputExample          - An example response payload  (default: {}).
-   * @property {object}  inputs                 - The inputs of the action (default: {}).
-   * @property {array}   middleware             - The Middleware specifit to this action (default: []).  Middleware is descibed by the string names of the middleware.
-   * @property {array}   blockedConnectionTypes - Are there connections from any servers which cannot use this action (default: [])?
-   * @property {string}  logLevel               - Under what level should connections to this action be logged (default 'info')?
-   * @property {boolean} matchExtensionMimeType - If this action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)?
-   * @property {boolean} toDocument             - Should this action appear in api.documenation.documenation? (default: true)?
+   * @property {string}  name                   - The name of the Action.
+   * @property {string}  description            - The description of the Action (default this.name).
+   * @property {Number}  version                - The version of this Action (default: 1).
+   * @property {Object}  outputExample          - An example response payload  (default: {}).
+   * @property {Object}  inputs                 - The inputs of the Action (default: {}).
+   * @property {Array}   middleware             - The Middleware specifit to this Action (default: []).  Middleware is descibed by the string names of the middleware.
+   * @property {Array}   blockedConnectionTypes - Are there connections from any servers which cannot use this Action (default: [])?
+   * @property {string}  logLevel               - Under what level should connections to this Action be logged (default 'info')?
+   * @property {Boolean} matchExtensionMimeType - If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)?
+   * @property {Boolean} toDocument             - Should this Action appear in api.documenation.documenation? (default: true)?
    *
    * @tutorial actions
    * @example
-// A simple Action
-
 'use strict'
 const ActionHero = require('actionhero')
 
-module.exports = class MyAction extends ActionHero.Action {
+module.exports = class RandomNumber extends ActionHero.Action {
  constructor () {
    super()
    this.name = 'randomNumber'
@@ -47,8 +45,8 @@ module.exports = class MyAction extends ActionHero.Action {
    * @function run
    * @async
    * @memberof ActionHero.Action
-   * @param  {object}  api The api object.
-   * @param  {object}  data The data about this connection, response, and params.
+   * @param  {Object}  api The api object.
+   * @param  {Object}  data The data about this connection, response, and params.
    * @description The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
    */
 

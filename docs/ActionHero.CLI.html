@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>index.js - Documentation</title>
+    <title>CLI - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,45 +28,446 @@
 
 <div id="main">
     
-    <h1 class="page-title">index.js</h1>
+    <h1 class="page-title">CLI</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const path = require('path');
+        <h2>
+            <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
+        
+        CLI
+        </h2>
+        
+    
+</header>
 
-/**
- * The top-level for all actionhero methods which can be used within your project.
- *
- * @namespace api
- */
+<article>
+    <div class="container-overview">
+    
+        
 
-/**
- * The ActionHero module.
- *
- * @class ActionHero
- */
+    
 
-[
-  { klass: 'Process', file: 'process.js' },
-  { klass: 'Action', file: 'action.js' },
-  { klass: 'Task', file: 'task.js' },
-  { klass: 'Initializer', file: 'initializer.js' },
-  { klass: 'Server', file: 'server.js' },
-  { klass: 'CLI', file: 'cli.js' },
-  { klass: 'ActionProcessor', file: 'actionProcessor.js' },
-  { klass: 'Connection', file: 'connection.js' }
-].forEach(({klass, file}) => {
-  exports[klass] = require(path.join(__dirname, 'classes', file))
-})
-</code></pre>
-        </article>
-    </section>
+    <h4 class="name" id="CLI"><span class="type-signature"></span>new CLI<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="classes_cli.js.html">classes/cli.js</a>, <a href="classes_cli.js.html#line2">line 2</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><em class="disabled">Tutorial: cli</em></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the CLI command.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>description</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The description of the CLI command (default this.name).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>example</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An example of how to run this CLI command.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The inputs of the CLI command (default: {}).</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Create a new ActionHero CLI Command. The required properties of an CLI command. These can be defined statically (this.name) or as methods which return a value.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>'use strict'
+const ActionHero = require('actionhero')
+
+module.exports = class MyCLICommand extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'backup redis'
+    this.description = 'I save the contents of redis to a file'
+    this.example = 'actionhero backup redis --file=/path/to/file'
+    this.inputs = {
+      file: {required: true}
+    }
+  }
+
+  async run (api, {params}) {
+    return api.cache.dumpWrite(params.file)
+  }
+}</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(api, data)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="classes_cli.js.html">classes/cli.js</a>, <a href="classes_cli.js.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>The main &quot;do something&quot; method for this CLI command.  It can be <code>async</code>.  If error is thrown in this method, it will be logged to STDERR, and the process will terminate with a non-0 exit code.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>api</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The api object.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The data about this instance of the CLI run, specifically params.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

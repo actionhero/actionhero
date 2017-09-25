@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>index.js - Documentation</title>
+    <title>classes/cli.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">index.js</h1>
+    <h1 class="page-title">classes/cli.js</h1>
     
 
     
@@ -38,32 +38,70 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const path = require('path');
+            <pre class="prettyprint source linenums"><code>module.exports = class CLI {
+  /**
+   * Create a new ActionHero CLI Command. The required properties of an CLI command. These can be defined statically (this.name) or as methods which return a value.
+   *
+   * @class ActionHero.CLI
+   *
+   * @property {string}  name        - The name of the CLI command.
+   * @property {string}  description - The description of the CLI command (default this.name).
+   * @property {string}  example     - An example of how to run this CLI command.
+   * @property {Object}  inputs      - The inputs of the CLI command (default: {}).
+   *
+   * @tutorial cli
+   * @example
+'use strict'
+const ActionHero = require('actionhero')
 
-/**
- * The top-level for all actionhero methods which can be used within your project.
- *
- * @namespace api
- */
+module.exports = class MyCLICommand extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'backup redis'
+    this.description = 'I save the contents of redis to a file'
+    this.example = 'actionhero backup redis --file=/path/to/file'
+    this.inputs = {
+      file: {required: true}
+    }
+  }
 
-/**
- * The ActionHero module.
- *
- * @class ActionHero
- */
+  async run (api, {params}) {
+    return api.cache.dumpWrite(params.file)
+  }
+}
+   */
+  constructor () {
+    let coreProperties = this.coreProperties()
+    for (let key in coreProperties) {
+      if (!this[key]) { this[key] = coreProperties[key] }
+      if (typeof this[key] === 'function') { this[key] = this[key]() }
+    }
+  }
 
-[
-  { klass: 'Process', file: 'process.js' },
-  { klass: 'Action', file: 'action.js' },
-  { klass: 'Task', file: 'task.js' },
-  { klass: 'Initializer', file: 'initializer.js' },
-  { klass: 'Server', file: 'server.js' },
-  { klass: 'CLI', file: 'cli.js' },
-  { klass: 'ActionProcessor', file: 'actionProcessor.js' },
-  { klass: 'Connection', file: 'connection.js' }
-].forEach(({klass, file}) => {
-  exports[klass] = require(path.join(__dirname, 'classes', file))
-})
+  /**
+   * @function run
+   * @async
+   * @memberof ActionHero.CLI
+   * @param  {Object}  api The api object.
+   * @param  {Object}  data The data about this instance of the CLI run, specifically params.
+   * @description The main "do something" method for this CLI command.  It can be `async`.  If error is thrown in this method, it will be logged to STDERR, and the process will terminate with a non-0 exit code.
+   */
+
+  coreProperties () {
+    return {
+      name: null,
+      description: this.name,
+      example: '',
+      inputs: {}
+    }
+  }
+
+  validate (api) {
+    if (!this.name) { throw new Error('name is required for this cli command') }
+    if (!this.description) { throw new Error(`description is required for the cli commend \`${this.name}\``) }
+    if (!this.run || typeof this.run !== 'function') { throw new Error(`cli command \`${this.name}\` has no run method`) }
+  }
+}
 </code></pre>
         </article>
     </section>

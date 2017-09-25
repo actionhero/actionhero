@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>index.js - Documentation</title>
+    <title>classes/initializer.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">index.js</h1>
+    <h1 class="page-title">classes/initializer.js</h1>
     
 
     
@@ -38,32 +38,88 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const path = require('path');
+            <pre class="prettyprint source linenums"><code>module.exports = class Initializer {
+  /**
+   * Create a new ActionHero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
+   *
+   * @class ActionHero.Initializer
+   *
+   * @property {string}  name          - The name of the Initializer.
+   * @property {Number}  loadPriority  - What order should this Initializer load at (Default: 1000, ActionHero core methods are &lt; 1000).
+   * @property {Number}  startPriority - What order should this Initializer start at (Default: 1000, ActionHero core methods are &lt; 1000).
+   * @property {Number}  stopPriority  - What order should this Initializer stop at (Default: 1000, ActionHero core methods are &lt; 1000).
+   *
+   * @tutorial initializers
+   * @example
+'use strict'
+const ActionHero = require('actionhero')
 
-/**
- * The top-level for all actionhero methods which can be used within your project.
- *
- * @namespace api
- */
+module.exports = class MyCLICommand extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'connectToDatabase'
+    this.loadPriority = 1000
+    this.startPriority = 1000
+    this.stopPriority = 1000
+  }
 
-/**
- * The ActionHero module.
- *
- * @class ActionHero
- */
+  async initialize (api) {
+    api.connectToDatabase = {}
+  }
 
-[
-  { klass: 'Process', file: 'process.js' },
-  { klass: 'Action', file: 'action.js' },
-  { klass: 'Task', file: 'task.js' },
-  { klass: 'Initializer', file: 'initializer.js' },
-  { klass: 'Server', file: 'server.js' },
-  { klass: 'CLI', file: 'cli.js' },
-  { klass: 'ActionProcessor', file: 'actionProcessor.js' },
-  { klass: 'Connection', file: 'connection.js' }
-].forEach(({klass, file}) => {
-  exports[klass] = require(path.join(__dirname, 'classes', file))
-})
+  async start (api) {
+    // connect
+  }
+  async stop (api) {
+    // disconnect
+  }
+}
+  */
+  constructor (defaults) {
+    this.name = null
+    this.loadPriority = 1000
+    this.startPriority = 1000
+    this.stopPriority = 1000
+  }
+
+  /**
+   * @function initialize
+   * @async
+   * @memberof ActionHero.Initializer
+   * @param  {Object}  api The api object.
+   * @description Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
+   */
+
+  /**
+   * @function start
+   * @async
+   * @memberof ActionHero.Initializer
+   * @param  {Object}  api The api object.
+   * @description Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes.
+   */
+
+  /**
+   * @function stop
+   * @async
+   * @memberof ActionHero.Initializer
+   * @param  {Object}  api The api object.
+   * @description Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
+   */
+
+  validate (api) {
+    if (!this.name) { throw new Error('name is required for this initializer') }
+
+    [
+      'loadPriority',
+      'startPriority',
+      'stopPriority'
+    ].forEach((priority) => {
+      if (!this[priority] || typeof this[priority] !== 'number' || this[priority] &lt; 0) {
+        throw new Error(`${priority} is a required property for the initializer \`${this.name}\``)
+      }
+    })
+  }
+}
 </code></pre>
         </article>
     </section>

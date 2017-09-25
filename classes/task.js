@@ -1,4 +1,33 @@
 module.exports = class Task {
+  /**
+   * Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
+   *
+   * @class ActionHero.Task
+   *
+   * @property {string}  name        - The name of the Task.
+   * @property {string}  description - The description of the Task (default this.name).
+   * @property {Number}  frequency   - How often to run this Task, in ms.  0 is non-recurring. (default: 0).
+   * @property {Array}   middleware  - The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.
+   * @property {string}  queue       - The default queue to run this Task on (default: 'default').
+   *
+   * @tutorial tasks
+   * @example
+'use strict'
+const ActionHero = require('actionhero')
+
+module.exports = class SayHello extends ActionHero.Task {
+ constructor () {
+   super()
+   this.name = 'sayHello'
+   this.description = 'I say Hello every minute'
+   this.frequency = (60 * 1000)
+ }
+
+ async run (api, data) {
+   console.log('Hello!')
+ }
+}
+   */
   constructor () {
     let coreProperties = this.coreProperties()
     for (let key in coreProperties) {
@@ -6,6 +35,15 @@ module.exports = class Task {
       if (typeof this[key] === 'function') { this[key] = this[key]() }
     }
   }
+
+  /**
+   * @function run
+   * @async
+   * @memberof ActionHero.Task
+   * @param  {Object}  api The api object.
+   * @param  {Object}  data The data about this instance of the task, specifically params.
+   * @description The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
+   */
 
   coreProperties () {
     return {
