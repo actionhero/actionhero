@@ -65,8 +65,8 @@ describe('Core: API', () => {
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run: async (api, connection) => {
-            connection.response.version = 1
+          run: async (data) => {
+            data.response.version = 1
           }
         },
         '2': {
@@ -74,8 +74,8 @@ describe('Core: API', () => {
           description: 'I am a test',
           version: 2,
           outputExample: {},
-          run: async (api, connection) => {
-            connection.response.version = 2
+          run: async (data) => {
+            data.response.version = 2
           }
         },
         '3': {
@@ -83,7 +83,7 @@ describe('Core: API', () => {
           description: 'I am a test',
           version: 3,
           outputExample: {},
-          run: async (api, data, next) => {
+          run: async (data) => {
             data.response.version = 3
             data.response.error = {
               'a': {'complex': 'error'}
@@ -152,10 +152,10 @@ describe('Core: API', () => {
       let goodAction = new GoodAction()
       let badAction = new BadAction()
 
-      goodAction.validate(api)
+      goodAction.validate()
 
       try {
-        badAction.validate(api)
+        badAction.validate()
         throw new Error('should not get here')
       } catch (error) {
         expect(error.toString()).to.match(/name is required for this action/)
@@ -185,8 +185,8 @@ describe('Core: API', () => {
               }
             }
           },
-          run: async (api, connection, next) => {
-            connection.response.params = connection.params
+          run: async (data) => {
+            data.response.params = data.params
           }
         }
       }
@@ -268,15 +268,15 @@ describe('Core: API', () => {
                   validator: function (s) {
                     if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
                   },
-                  formatter: function (s) {
+                  formatter: (s) => {
                     return String(s)
                   }
                 }
               }
             }
           },
-          run: function async (api, connection) {
-            connection.response.params = connection.params
+          run: function async (data) {
+            data.response.params = data.params
           }
         }
       }
@@ -343,11 +343,11 @@ describe('Core: API', () => {
   describe('named action validations', () => {
     before(() => {
       api.validators = {
-        validator1: function (param) {
+        validator1: (param) => {
           if (typeof param !== 'string') { throw new Error('only strings') }
           return true
         },
-        validator2: function (param) {
+        validator2: (param) => {
           if (param !== 'correct') { throw new Error('that is not correct') }
           return true
         }
@@ -363,7 +363,7 @@ describe('Core: API', () => {
               validator: ['api.validators.validator1', 'api.validators.validator2']
             }
           },
-          run: (api, data) => { }
+          run: (data) => { }
         }
       }
     })
@@ -393,10 +393,10 @@ describe('Core: API', () => {
   describe('named action formatters', () => {
     before(() => {
       api._formatters = {
-        formatter1: function (param) {
+        formatter1: (param) => {
           return '*' + param + '*'
         },
-        formatter2: function (param) {
+        formatter2: (param) => {
           return '~' + param + '~'
         }
       }
@@ -411,7 +411,7 @@ describe('Core: API', () => {
               formatter: ['api._formatters.formatter1', 'api._formatters.formatter2']
             }
           },
-          run: async (api, data) => {
+          run: async (data) => {
             data.response.a = data.params.a
           }
         }

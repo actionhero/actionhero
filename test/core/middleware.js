@@ -53,7 +53,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'test middleware',
         global: false,
-        preProcessor: function (data) {
+        preProcessor: (data) => {
           data.response._preProcessorNote = 'note'
         }
       })
@@ -121,7 +121,7 @@ describe('Core: Middleware', () => {
         name: 'first test middleware',
         global: true,
         priority: api.config.general.defaultProcessorPriority - 1,
-        preProcessor: (data, next) => {
+        preProcessor: (data) => {
           data.response._processorNoteFirst = 'first'
         }
       })
@@ -130,7 +130,7 @@ describe('Core: Middleware', () => {
         name: 'late test middleware',
         global: true,
         priority: api.config.general.defaultProcessorPriority - 1,
-        preProcessor: (data, next) => {
+        preProcessor: (data) => {
           data.response._processorNoteSecond = 'second'
         }
       })

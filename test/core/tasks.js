@@ -29,7 +29,7 @@ describe('Core: Tasks', () => {
         this.frequency = 0
       }
 
-      run (api, params) {
+      run (params) {
         taskOutput.push(params.word)
         return params.word
       }
@@ -44,7 +44,7 @@ describe('Core: Tasks', () => {
         this.frequency = 100
       }
 
-      run (api, params) {
+      run (params) {
         taskOutput.push('periodicTask')
         return 'periodicTask'
       }
@@ -59,7 +59,7 @@ describe('Core: Tasks', () => {
         this.frequency = 0
       }
 
-      async run (api, params) {
+      async run (params) {
         await new Promise((resolve) => { setTimeout(resolve, 5000) })
         taskOutput.push('slowTask')
         return 'slowTask'
@@ -114,7 +114,7 @@ describe('Core: Tasks', () => {
         this.queue = queue
         this.frequency = 0
       }
-      async run (api, params) {}
+      async run (params) {}
     }
 
     let task = new BadTask()
@@ -136,7 +136,7 @@ describe('Core: Tasks', () => {
         this.queue = queue
       }
       frequency () { return 1 + 2 + 3 }
-      run (api, params) { return 'yay' }
+      run (params) { return 'yay' }
     }
 
     let task = new FreqFuncTask()
@@ -331,7 +331,7 @@ describe('Core: Tasks', () => {
           queue: 'default',
           frequency: 0,
           middleware: ['test-middleware'],
-          run: function (api, params) {
+          run: function (params) {
             expect(params.test).to.equal(true)
             let result = this.result
             result.run = true
